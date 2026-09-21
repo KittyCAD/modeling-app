@@ -46,7 +46,7 @@ description: Operations executed pattern_circular_in_module.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "9e24d3b1-23b0-5737-82c9-f5aee2198f63"
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       },
@@ -94,25 +94,25 @@ description: Operations executed pattern_circular_in_module.kcl
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "7976e9f4-c433-5caa-bb0b-831d7cabb0c9"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "f629c1b3-ef34-5d38-9392-d0ad05fafac3"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "6ba6c4ce-a540-5418-9a8d-61e357b6b1c9"
+                "artifactId": "[uuid]"
               }
             }
           ]
@@ -126,8 +126,10 @@ description: Operations executed pattern_circular_in_module.kcl
             "value": 1.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -192,7 +194,7 @@ description: Operations executed pattern_circular_in_module.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "9e24d3b1-23b0-5737-82c9-f5aee2198f63"
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       },
@@ -240,25 +242,25 @@ description: Operations executed pattern_circular_in_module.kcl
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "7c4571e0-7b14-576f-a82e-22280b05874d"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "ff644541-0515-5cbb-b057-003c3c1247eb"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "348addf4-a7bf-5d18-a8d1-fa1c52cb243d"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "3c03572f-d09c-563b-972c-bca035963672"
+                "artifactId": "[uuid]"
               }
             }
           ]
@@ -272,8 +274,10 @@ description: Operations executed pattern_circular_in_module.kcl
             "value": 1.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -345,7 +349,9 @@ description: Operations executed pattern_circular_in_module.kcl
         "value": 2.718281828459045,
         "ty": {
           "type": "Known",
-          "type": "Count"
+          "value": {
+            "type": "Count"
+          }
         }
       },
       "visibility": "export",
@@ -373,7 +379,9 @@ description: Operations executed pattern_circular_in_module.kcl
         "value": 6.283185307179586,
         "ty": {
           "type": "Known",
-          "type": "Count"
+          "value": {
+            "type": "Count"
+          }
         }
       },
       "visibility": "export",
@@ -407,7 +415,7 @@ description: Operations executed pattern_circular_in_module.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 23
+            "index": 24
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -431,7 +439,7 @@ description: Operations executed pattern_circular_in_module.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 24
+            "index": 25
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -455,7 +463,7 @@ description: Operations executed pattern_circular_in_module.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 25
+            "index": 26
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -479,7 +487,7 @@ description: Operations executed pattern_circular_in_module.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 26
+            "index": 27
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -503,7 +511,7 @@ description: Operations executed pattern_circular_in_module.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 27
+            "index": 28
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -527,7 +535,7 @@ description: Operations executed pattern_circular_in_module.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 28
+            "index": 29
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -551,7 +559,7 @@ description: Operations executed pattern_circular_in_module.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 29
+            "index": 30
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -575,7 +583,7 @@ description: Operations executed pattern_circular_in_module.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 30
+            "index": 31
           },
           {
             "type": "VariableDeclarationDeclaration"

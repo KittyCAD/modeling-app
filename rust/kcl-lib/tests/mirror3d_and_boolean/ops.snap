@@ -11,9 +11,11 @@ description: Operations executed mirror3d_and_boolean.kcl
         "type": "Number",
         "value": 110.0,
         "ty": {
-          "mm": null,
           "type": "Known",
-          "type": "Length"
+          "value": {
+            "type": "Length",
+            "value": "mm"
+          }
         }
       },
       "visibility": "default",
@@ -40,9 +42,11 @@ description: Operations executed mirror3d_and_boolean.kcl
         "type": "Number",
         "value": 18.0,
         "ty": {
-          "mm": null,
           "type": "Known",
-          "type": "Length"
+          "value": {
+            "type": "Length",
+            "value": "mm"
+          }
         }
       },
       "visibility": "default",
@@ -70,8 +74,10 @@ description: Operations executed mirror3d_and_boolean.kcl
         "value": 55.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -98,9 +104,11 @@ description: Operations executed mirror3d_and_boolean.kcl
         "type": "Number",
         "value": 71.05,
         "ty": {
-          "mm": null,
           "type": "Known",
-          "type": "Length"
+          "value": {
+            "type": "Length",
+            "value": "mm"
+          }
         }
       },
       "visibility": "default",
@@ -127,9 +135,11 @@ description: Operations executed mirror3d_and_boolean.kcl
         "type": "Number",
         "value": 5.0,
         "ty": {
-          "mm": null,
           "type": "Known",
-          "type": "Length"
+          "value": {
+            "type": "Length",
+            "value": "mm"
+          }
         }
       },
       "visibility": "default",
@@ -156,9 +166,11 @@ description: Operations executed mirror3d_and_boolean.kcl
         "type": "Number",
         "value": 64.0,
         "ty": {
-          "mm": null,
           "type": "Known",
-          "type": "Length"
+          "value": {
+            "type": "Length",
+            "value": "mm"
+          }
         }
       },
       "visibility": "default",
@@ -185,9 +197,11 @@ description: Operations executed mirror3d_and_boolean.kcl
         "type": "Number",
         "value": 4.5,
         "ty": {
-          "mm": null,
           "type": "Known",
-          "type": "Length"
+          "value": {
+            "type": "Length",
+            "value": "mm"
+          }
         }
       },
       "visibility": "default",
@@ -215,8 +229,10 @@ description: Operations executed mirror3d_and_boolean.kcl
         "value": 8.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -243,9 +259,11 @@ description: Operations executed mirror3d_and_boolean.kcl
         "type": "Number",
         "value": 22.5,
         "ty": {
-          "degrees": null,
           "type": "Known",
-          "type": "Angle"
+          "value": {
+            "type": "Angle",
+            "value": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -272,9 +290,11 @@ description: Operations executed mirror3d_and_boolean.kcl
         "type": "Number",
         "value": 32.0,
         "ty": {
-          "mm": null,
           "type": "Known",
-          "type": "Length"
+          "value": {
+            "type": "Length",
+            "value": "mm"
+          }
         }
       },
       "visibility": "default",
@@ -329,18 +349,22 @@ description: Operations executed mirror3d_and_boolean.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -355,18 +379,22 @@ description: Operations executed mirror3d_and_boolean.kcl
                 "type": "SketchVar",
                 "value": 55.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -420,18 +448,22 @@ description: Operations executed mirror3d_and_boolean.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -566,18 +598,22 @@ description: Operations executed mirror3d_and_boolean.kcl
                 "type": "Number",
                 "value": 40.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -594,14 +630,14 @@ description: Operations executed mirror3d_and_boolean.kcl
                   "sketch": {
                     "type": "Sketch",
                     "value": {
-                      "artifactId": "8a662fcd-9569-5482-8c42-aafff7b3f8d4"
+                      "artifactId": "[uuid]"
                     }
                   }
                 }
               },
               "outerProfile": {
                 "type": "Segment",
-                "artifact_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
+                "artifact_id": "[uuid]"
               }
             }
           },
@@ -634,7 +670,7 @@ description: Operations executed mirror3d_and_boolean.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -645,9 +681,11 @@ description: Operations executed mirror3d_and_boolean.kcl
             "type": "Number",
             "value": 18.0,
             "ty": {
-              "mm": null,
               "type": "Known",
-              "type": "Length"
+              "value": {
+                "type": "Length",
+                "value": "mm"
+              }
             }
           },
           "sourceRange": []
@@ -676,7 +714,7 @@ description: Operations executed mirror3d_and_boolean.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "8a662fcd-9569-5482-8c42-aafff7b3f8d4"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -733,18 +771,22 @@ description: Operations executed mirror3d_and_boolean.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -759,18 +801,22 @@ description: Operations executed mirror3d_and_boolean.kcl
                 "type": "SketchVar",
                 "value": 28.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -824,18 +870,22 @@ description: Operations executed mirror3d_and_boolean.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -970,18 +1020,22 @@ description: Operations executed mirror3d_and_boolean.kcl
                 "type": "Number",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -994,7 +1048,7 @@ description: Operations executed mirror3d_and_boolean.kcl
             "value": {
               "boreProfile": {
                 "type": "Segment",
-                "artifact_id": "9370af21-6a1d-5f9a-b1d3-83351b2043e6"
+                "artifact_id": "[uuid]"
               },
               "meta": {
                 "type": "Object",
@@ -1002,7 +1056,7 @@ description: Operations executed mirror3d_and_boolean.kcl
                   "sketch": {
                     "type": "Sketch",
                     "value": {
-                      "artifactId": "6f9536f6-0229-5cbb-bd5f-d3e20949d527"
+                      "artifactId": "[uuid]"
                     }
                   }
                 }
@@ -1038,7 +1092,7 @@ description: Operations executed mirror3d_and_boolean.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "53a9149e-1246-5c44-9e3c-558201ff438c"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -1049,9 +1103,11 @@ description: Operations executed mirror3d_and_boolean.kcl
             "type": "Number",
             "value": 40.0,
             "ty": {
-              "mm": null,
               "type": "Known",
-              "type": "Length"
+              "value": {
+                "type": "Length",
+                "value": "mm"
+              }
             }
           },
           "sourceRange": []
@@ -1087,7 +1143,7 @@ description: Operations executed mirror3d_and_boolean.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "38f0111a-8034-5e85-9ec1-07dbc9646b06"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -1100,7 +1156,7 @@ description: Operations executed mirror3d_and_boolean.kcl
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "b680fe3e-a804-583c-99d9-1693b2432aeb"
+                  "artifactId": "[uuid]"
                 }
               }
             ]
@@ -1131,7 +1187,7 @@ description: Operations executed mirror3d_and_boolean.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "6f9536f6-0229-5cbb-bd5f-d3e20949d527"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -1188,18 +1244,22 @@ description: Operations executed mirror3d_and_boolean.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -1214,18 +1274,22 @@ description: Operations executed mirror3d_and_boolean.kcl
                 "type": "SketchVar",
                 "value": 35.525,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -1279,18 +1343,22 @@ description: Operations executed mirror3d_and_boolean.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -1425,18 +1493,22 @@ description: Operations executed mirror3d_and_boolean.kcl
                 "type": "Number",
                 "value": 34.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -1453,14 +1525,14 @@ description: Operations executed mirror3d_and_boolean.kcl
                   "sketch": {
                     "type": "Sketch",
                     "value": {
-                      "artifactId": "c4fac378-d3df-5505-98c1-308b81b0fd96"
+                      "artifactId": "[uuid]"
                     }
                   }
                 }
               },
               "recessProfile": {
                 "type": "Segment",
-                "artifact_id": "e383621f-755a-5f2e-ada3-608aff393dab"
+                "artifact_id": "[uuid]"
               }
             }
           },
@@ -1493,7 +1565,7 @@ description: Operations executed mirror3d_and_boolean.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "7d4c814d-f292-503d-a012-68ab58c77524"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -1504,9 +1576,11 @@ description: Operations executed mirror3d_and_boolean.kcl
             "type": "Number",
             "value": 5.0,
             "ty": {
-              "mm": null,
               "type": "Known",
-              "type": "Length"
+              "value": {
+                "type": "Length",
+                "value": "mm"
+              }
             }
           },
           "sourceRange": []
@@ -1535,7 +1609,7 @@ description: Operations executed mirror3d_and_boolean.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "907cac50-3701-5367-b35c-4ec2132c824f"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -1548,7 +1622,7 @@ description: Operations executed mirror3d_and_boolean.kcl
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "ad4b4be8-b535-5c5c-bc14-07fc0c74a448"
+                  "artifactId": "[uuid]"
                 }
               }
             ]
@@ -1579,7 +1653,7 @@ description: Operations executed mirror3d_and_boolean.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "c4fac378-d3df-5505-98c1-308b81b0fd96"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -1636,18 +1710,22 @@ description: Operations executed mirror3d_and_boolean.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -1662,18 +1740,22 @@ description: Operations executed mirror3d_and_boolean.kcl
                 "type": "SketchVar",
                 "value": 2.25,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -1727,18 +1809,22 @@ description: Operations executed mirror3d_and_boolean.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -1873,18 +1959,22 @@ description: Operations executed mirror3d_and_boolean.kcl
                 "type": "Number",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -1897,7 +1987,7 @@ description: Operations executed mirror3d_and_boolean.kcl
             "value": {
               "holeProfile": {
                 "type": "Segment",
-                "artifact_id": "92f30fc6-0b46-5a71-948c-66f8df3d30c0"
+                "artifact_id": "[uuid]"
               },
               "meta": {
                 "type": "Object",
@@ -1905,7 +1995,7 @@ description: Operations executed mirror3d_and_boolean.kcl
                   "sketch": {
                     "type": "Sketch",
                     "value": {
-                      "artifactId": "bc4183c3-53a3-5213-a2cc-6fc8ca38dc19"
+                      "artifactId": "[uuid]"
                     }
                   }
                 }
@@ -1945,7 +2035,7 @@ description: Operations executed mirror3d_and_boolean.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "4482cd0e-0ba6-5706-bd3a-a7e479e352c8"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -1956,9 +2046,11 @@ description: Operations executed mirror3d_and_boolean.kcl
             "type": "Number",
             "value": 40.0,
             "ty": {
-              "mm": null,
               "type": "Known",
-              "type": "Length"
+              "value": {
+                "type": "Length",
+                "value": "mm"
+              }
             }
           },
           "sourceRange": []
@@ -1998,7 +2090,7 @@ description: Operations executed mirror3d_and_boolean.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "3eb4eacd-aa5c-58ee-841d-0c851c6c7c6b"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -2019,27 +2111,33 @@ description: Operations executed mirror3d_and_boolean.kcl
                 "type": "Number",
                 "value": 32.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -2074,7 +2172,7 @@ description: Operations executed mirror3d_and_boolean.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "3eb4eacd-aa5c-58ee-841d-0c851c6c7c6b"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -2085,9 +2183,11 @@ description: Operations executed mirror3d_and_boolean.kcl
             "type": "Number",
             "value": 22.5,
             "ty": {
-              "degrees": null,
               "type": "Known",
-              "type": "Angle"
+              "value": {
+                "type": "Angle",
+                "value": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -2101,8 +2201,10 @@ description: Operations executed mirror3d_and_boolean.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -2110,8 +2212,10 @@ description: Operations executed mirror3d_and_boolean.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -2119,8 +2223,10 @@ description: Operations executed mirror3d_and_boolean.kcl
                 "value": 1.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               }
             ]
@@ -2162,7 +2268,7 @@ description: Operations executed mirror3d_and_boolean.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "3eb4eacd-aa5c-58ee-841d-0c851c6c7c6b"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -2173,9 +2279,11 @@ description: Operations executed mirror3d_and_boolean.kcl
             "type": "Number",
             "value": 360.0,
             "ty": {
-              "degrees": null,
               "type": "Known",
-              "type": "Angle"
+              "value": {
+                "type": "Angle",
+                "value": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -2192,8 +2300,10 @@ description: Operations executed mirror3d_and_boolean.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   },
                   {
@@ -2201,8 +2311,10 @@ description: Operations executed mirror3d_and_boolean.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   },
                   {
@@ -2210,8 +2322,10 @@ description: Operations executed mirror3d_and_boolean.kcl
                     "value": 1.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   }
                 ]
@@ -2224,8 +2338,10 @@ description: Operations executed mirror3d_and_boolean.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   },
                   {
@@ -2233,8 +2349,10 @@ description: Operations executed mirror3d_and_boolean.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   },
                   {
@@ -2242,8 +2360,10 @@ description: Operations executed mirror3d_and_boolean.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   }
                 ]
@@ -2260,27 +2380,33 @@ description: Operations executed mirror3d_and_boolean.kcl
                 "type": "Number",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -2293,7 +2419,9 @@ description: Operations executed mirror3d_and_boolean.kcl
             "value": 8.0,
             "ty": {
               "type": "Known",
-              "type": "Count"
+              "value": {
+                "type": "Count"
+              }
             }
           },
           "sourceRange": []
@@ -2329,7 +2457,7 @@ description: Operations executed mirror3d_and_boolean.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "bf36bb46-40a6-5ff3-9663-2020512db63c"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -2342,49 +2470,49 @@ description: Operations executed mirror3d_and_boolean.kcl
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "3eb4eacd-aa5c-58ee-841d-0c851c6c7c6b"
+                  "artifactId": "[uuid]"
                 }
               },
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "edd9c2e6-adc3-5ec7-8290-11a85e1a5c93"
+                  "artifactId": "[uuid]"
                 }
               },
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "587ff65e-f937-5129-a0cd-631a1a2bc164"
+                  "artifactId": "[uuid]"
                 }
               },
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "8211603e-f3e3-55c6-8b12-000104bb9799"
+                  "artifactId": "[uuid]"
                 }
               },
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "cd064c5d-3fe1-5a71-8683-f9a462789846"
+                  "artifactId": "[uuid]"
                 }
               },
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "ea9d431e-98ee-574a-81a0-b01ad3e6c5d3"
+                  "artifactId": "[uuid]"
                 }
               },
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "85854d7c-18d6-5345-8bde-26b7271e7173"
+                  "artifactId": "[uuid]"
                 }
               },
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "2dd44361-cbc4-5a94-9528-d144ba5c6d0c"
+                  "artifactId": "[uuid]"
                 }
               }
             ]
@@ -2415,7 +2543,7 @@ description: Operations executed mirror3d_and_boolean.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "bc4183c3-53a3-5213-a2cc-6fc8ca38dc19"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -2472,18 +2600,22 @@ description: Operations executed mirror3d_and_boolean.kcl
                 "type": "SketchVar",
                 "value": -38.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 17.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -2498,18 +2630,22 @@ description: Operations executed mirror3d_and_boolean.kcl
                 "type": "SketchVar",
                 "value": -38.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 47.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -2559,18 +2695,22 @@ description: Operations executed mirror3d_and_boolean.kcl
                 "type": "SketchVar",
                 "value": -28.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 17.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -2585,18 +2725,22 @@ description: Operations executed mirror3d_and_boolean.kcl
                 "type": "SketchVar",
                 "value": -38.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 17.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -2690,18 +2834,22 @@ description: Operations executed mirror3d_and_boolean.kcl
                 "type": "SketchVar",
                 "value": -28.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 47.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -2716,18 +2864,22 @@ description: Operations executed mirror3d_and_boolean.kcl
                 "type": "SketchVar",
                 "value": -28.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 17.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -2821,18 +2973,22 @@ description: Operations executed mirror3d_and_boolean.kcl
                 "type": "SketchVar",
                 "value": -38.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 47.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -2847,18 +3003,22 @@ description: Operations executed mirror3d_and_boolean.kcl
                 "type": "SketchVar",
                 "value": -28.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 47.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -3147,18 +3307,22 @@ description: Operations executed mirror3d_and_boolean.kcl
                 "type": "SketchVar",
                 "value": -28.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -3173,18 +3337,22 @@ description: Operations executed mirror3d_and_boolean.kcl
                 "type": "SketchVar",
                 "value": -28.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 17.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -3285,18 +3453,22 @@ description: Operations executed mirror3d_and_boolean.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -3311,18 +3483,22 @@ description: Operations executed mirror3d_and_boolean.kcl
                 "type": "SketchVar",
                 "value": -28.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -3420,18 +3596,22 @@ description: Operations executed mirror3d_and_boolean.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -3653,18 +3833,22 @@ description: Operations executed mirror3d_and_boolean.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -37.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -3679,18 +3863,22 @@ description: Operations executed mirror3d_and_boolean.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -3788,18 +3976,22 @@ description: Operations executed mirror3d_and_boolean.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -3855,18 +4047,22 @@ description: Operations executed mirror3d_and_boolean.kcl
                 "type": "SketchVar",
                 "value": -28.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -37.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -3881,18 +4077,22 @@ description: Operations executed mirror3d_and_boolean.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -37.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -4029,18 +4229,22 @@ description: Operations executed mirror3d_and_boolean.kcl
                 "type": "SketchVar",
                 "value": -28.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -4055,18 +4259,22 @@ description: Operations executed mirror3d_and_boolean.kcl
                 "type": "SketchVar",
                 "value": -28.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -37.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -4294,18 +4502,22 @@ description: Operations executed mirror3d_and_boolean.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 47.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -4320,18 +4532,22 @@ description: Operations executed mirror3d_and_boolean.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -4429,18 +4645,22 @@ description: Operations executed mirror3d_and_boolean.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -4496,18 +4716,22 @@ description: Operations executed mirror3d_and_boolean.kcl
                 "type": "SketchVar",
                 "value": -28.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 47.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -4522,18 +4746,22 @@ description: Operations executed mirror3d_and_boolean.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 47.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -4798,7 +5026,7 @@ description: Operations executed mirror3d_and_boolean.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "9805aa95-ef4b-534e-9b73-76cd3f91a6fc"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -4833,18 +5061,22 @@ description: Operations executed mirror3d_and_boolean.kcl
                 "type": "Number",
                 "value": -35.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 30.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -4857,47 +5089,47 @@ description: Operations executed mirror3d_and_boolean.kcl
             "value": {
               "line1": {
                 "type": "Segment",
-                "artifact_id": "1a0ade6f-d355-5121-9adb-351976a78284"
+                "artifact_id": "[uuid]"
               },
               "line10": {
                 "type": "Segment",
-                "artifact_id": "6be94036-fce8-50e0-a9cd-4631846bb4fc"
+                "artifact_id": "[uuid]"
               },
               "line11": {
                 "type": "Segment",
-                "artifact_id": "c496fd9a-d996-5b8a-811c-f9066ac8b2c6"
+                "artifact_id": "[uuid]"
               },
               "line2": {
                 "type": "Segment",
-                "artifact_id": "1cca8d80-f404-5b33-b6e0-cca169c4da48"
+                "artifact_id": "[uuid]"
               },
               "line3": {
                 "type": "Segment",
-                "artifact_id": "d5eaf678-0440-563f-ac19-e473850b9270"
+                "artifact_id": "[uuid]"
               },
               "line4": {
                 "type": "Segment",
-                "artifact_id": "d005938d-7477-557a-bef2-28dfc45d0fce"
+                "artifact_id": "[uuid]"
               },
               "line5": {
                 "type": "Segment",
-                "artifact_id": "4e2356a5-d19d-5536-bce9-94192c5d96fb"
+                "artifact_id": "[uuid]"
               },
               "line6": {
                 "type": "Segment",
-                "artifact_id": "e8637a6d-00c2-5b87-831e-2db8c2223948"
+                "artifact_id": "[uuid]"
               },
               "line7": {
                 "type": "Segment",
-                "artifact_id": "9d54d724-527e-5b4f-96a3-d09d0f4fca8a"
+                "artifact_id": "[uuid]"
               },
               "line8": {
                 "type": "Segment",
-                "artifact_id": "724b87fd-c709-5232-b7a1-547c15affb9b"
+                "artifact_id": "[uuid]"
               },
               "line9": {
                 "type": "Segment",
-                "artifact_id": "3312f826-b323-5332-871a-6a8a59a3ae93"
+                "artifact_id": "[uuid]"
               },
               "meta": {
                 "type": "Object",
@@ -4905,7 +5137,7 @@ description: Operations executed mirror3d_and_boolean.kcl
                   "sketch": {
                     "type": "Sketch",
                     "value": {
-                      "artifactId": "9805aa95-ef4b-534e-9b73-76cd3f91a6fc"
+                      "artifactId": "[uuid]"
                     }
                   }
                 }
@@ -4938,7 +5170,7 @@ description: Operations executed mirror3d_and_boolean.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "ca431487-8e9a-59ce-a472-84fe45652fab"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -4950,8 +5182,10 @@ description: Operations executed mirror3d_and_boolean.kcl
             "value": 45.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -5022,18 +5256,22 @@ description: Operations executed mirror3d_and_boolean.kcl
                 "type": "SketchVar",
                 "value": 47.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -5048,18 +5286,22 @@ description: Operations executed mirror3d_and_boolean.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -5113,18 +5355,22 @@ description: Operations executed mirror3d_and_boolean.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -5177,18 +5423,22 @@ description: Operations executed mirror3d_and_boolean.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -5291,18 +5541,22 @@ description: Operations executed mirror3d_and_boolean.kcl
                 "type": "SketchVar",
                 "value": 47.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 52.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -5317,18 +5571,22 @@ description: Operations executed mirror3d_and_boolean.kcl
                 "type": "SketchVar",
                 "value": 47.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -5465,18 +5723,22 @@ description: Operations executed mirror3d_and_boolean.kcl
                 "type": "SketchVar",
                 "value": 35.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 52.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -5491,18 +5753,22 @@ description: Operations executed mirror3d_and_boolean.kcl
                 "type": "SketchVar",
                 "value": 47.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 52.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -5603,18 +5869,22 @@ description: Operations executed mirror3d_and_boolean.kcl
                 "type": "SketchVar",
                 "value": 35.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 29.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -5629,18 +5899,22 @@ description: Operations executed mirror3d_and_boolean.kcl
                 "type": "SketchVar",
                 "value": 47.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 29.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -5813,18 +6087,22 @@ description: Operations executed mirror3d_and_boolean.kcl
                 "type": "SketchVar",
                 "value": 35.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 52.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -5839,18 +6117,22 @@ description: Operations executed mirror3d_and_boolean.kcl
                 "type": "SketchVar",
                 "value": 35.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 29.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -6165,18 +6447,22 @@ description: Operations executed mirror3d_and_boolean.kcl
                 "type": "SketchVar",
                 "value": 35.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 52.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -6191,18 +6477,22 @@ description: Operations executed mirror3d_and_boolean.kcl
                 "type": "SketchVar",
                 "value": 36.95,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 53.57,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -6296,18 +6586,22 @@ description: Operations executed mirror3d_and_boolean.kcl
                 "type": "SketchVar",
                 "value": 35.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 29.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -6322,18 +6616,22 @@ description: Operations executed mirror3d_and_boolean.kcl
                 "type": "SketchVar",
                 "value": 35.43,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 26.54,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -6507,7 +6805,7 @@ description: Operations executed mirror3d_and_boolean.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "16e09773-2c0d-5da9-bdec-993f8a9ed856"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -6542,18 +6840,22 @@ description: Operations executed mirror3d_and_boolean.kcl
                 "type": "Number",
                 "value": 34.5699653,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 31.4601985,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -6566,31 +6868,31 @@ description: Operations executed mirror3d_and_boolean.kcl
             "value": {
               "circle1": {
                 "type": "Segment",
-                "artifact_id": "c444b134-67e1-507a-bb00-d4998ba97afb"
+                "artifact_id": "[uuid]"
               },
               "circle2": {
                 "type": "Segment",
-                "artifact_id": "acb6b8b6-e024-57d9-a856-353e5c4d001f"
+                "artifact_id": "[uuid]"
               },
               "line1": {
                 "type": "Segment",
-                "artifact_id": "0a3927a3-4dca-5e67-855f-5c8045a33997"
+                "artifact_id": "[uuid]"
               },
               "line2": {
                 "type": "Segment",
-                "artifact_id": "2e4398f0-3503-52f1-9fb1-caadee14f488"
+                "artifact_id": "[uuid]"
               },
               "line3": {
                 "type": "Segment",
-                "artifact_id": "d7522563-c424-5aea-962e-3d6a85a0b99d"
+                "artifact_id": "[uuid]"
               },
               "line4": {
                 "type": "Segment",
-                "artifact_id": "c0c1140b-284f-50ff-b80d-615b8b938475"
+                "artifact_id": "[uuid]"
               },
               "line5": {
                 "type": "Segment",
-                "artifact_id": "4ea8409b-834f-5214-b812-e276f2ff01f4"
+                "artifact_id": "[uuid]"
               },
               "meta": {
                 "type": "Object",
@@ -6598,7 +6900,7 @@ description: Operations executed mirror3d_and_boolean.kcl
                   "sketch": {
                     "type": "Sketch",
                     "value": {
-                      "artifactId": "16e09773-2c0d-5da9-bdec-993f8a9ed856"
+                      "artifactId": "[uuid]"
                     }
                   }
                 }
@@ -6637,18 +6939,22 @@ description: Operations executed mirror3d_and_boolean.kcl
                 "type": "Number",
                 "value": 33.054656,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 50.4337487,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -6661,31 +6967,31 @@ description: Operations executed mirror3d_and_boolean.kcl
             "value": {
               "circle1": {
                 "type": "Segment",
-                "artifact_id": "c444b134-67e1-507a-bb00-d4998ba97afb"
+                "artifact_id": "[uuid]"
               },
               "circle2": {
                 "type": "Segment",
-                "artifact_id": "acb6b8b6-e024-57d9-a856-353e5c4d001f"
+                "artifact_id": "[uuid]"
               },
               "line1": {
                 "type": "Segment",
-                "artifact_id": "0a3927a3-4dca-5e67-855f-5c8045a33997"
+                "artifact_id": "[uuid]"
               },
               "line2": {
                 "type": "Segment",
-                "artifact_id": "2e4398f0-3503-52f1-9fb1-caadee14f488"
+                "artifact_id": "[uuid]"
               },
               "line3": {
                 "type": "Segment",
-                "artifact_id": "d7522563-c424-5aea-962e-3d6a85a0b99d"
+                "artifact_id": "[uuid]"
               },
               "line4": {
                 "type": "Segment",
-                "artifact_id": "c0c1140b-284f-50ff-b80d-615b8b938475"
+                "artifact_id": "[uuid]"
               },
               "line5": {
                 "type": "Segment",
-                "artifact_id": "4ea8409b-834f-5214-b812-e276f2ff01f4"
+                "artifact_id": "[uuid]"
               },
               "meta": {
                 "type": "Object",
@@ -6693,7 +6999,7 @@ description: Operations executed mirror3d_and_boolean.kcl
                   "sketch": {
                     "type": "Sketch",
                     "value": {
-                      "artifactId": "16e09773-2c0d-5da9-bdec-993f8a9ed856"
+                      "artifactId": "[uuid]"
                     }
                   }
                 }
@@ -6729,13 +7035,13 @@ description: Operations executed mirror3d_and_boolean.kcl
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "9fd615c8-7274-5e8b-830b-8b3ce00ff1e5"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "0807f469-38fd-5e01-a326-82a66aa0f1d0"
+                "artifactId": "[uuid]"
               }
             }
           ]
@@ -6749,8 +7055,10 @@ description: Operations executed mirror3d_and_boolean.kcl
             "value": 100.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -6793,7 +7101,7 @@ description: Operations executed mirror3d_and_boolean.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "93954f29-a246-54bd-ac2a-62572f26d508"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -6806,13 +7114,13 @@ description: Operations executed mirror3d_and_boolean.kcl
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "adff1f15-bda5-5ed0-a4e1-c29f7d185797"
+                  "artifactId": "[uuid]"
                 }
               },
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "0616b09c-75f9-545b-bd98-b7fbaf5b3587"
+                  "artifactId": "[uuid]"
                 }
               }
             ]
@@ -6871,18 +7179,22 @@ description: Operations executed mirror3d_and_boolean.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -6897,18 +7209,22 @@ description: Operations executed mirror3d_and_boolean.kcl
                 "type": "SketchVar",
                 "value": 37.14,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 40.56,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -6962,18 +7278,22 @@ description: Operations executed mirror3d_and_boolean.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -7022,18 +7342,22 @@ description: Operations executed mirror3d_and_boolean.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -7048,18 +7372,22 @@ description: Operations executed mirror3d_and_boolean.kcl
                 "type": "SketchVar",
                 "value": 49.71,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 47.49,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -7228,7 +7556,7 @@ description: Operations executed mirror3d_and_boolean.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "b45580d1-28b2-5700-a6b3-7be443b3bfd8"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -7263,18 +7591,22 @@ description: Operations executed mirror3d_and_boolean.kcl
                 "type": "Number",
                 "value": -49.70913,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": -47.4891688,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -7287,11 +7619,11 @@ description: Operations executed mirror3d_and_boolean.kcl
             "value": {
               "circle1": {
                 "type": "Segment",
-                "artifact_id": "b8cc464b-6248-5cb4-8c70-30f634da184c"
+                "artifact_id": "[uuid]"
               },
               "circle2": {
                 "type": "Segment",
-                "artifact_id": "bdd2605a-480e-5ad5-b52f-c6889529c457"
+                "artifact_id": "[uuid]"
               },
               "meta": {
                 "type": "Object",
@@ -7299,7 +7631,7 @@ description: Operations executed mirror3d_and_boolean.kcl
                   "sketch": {
                     "type": "Sketch",
                     "value": {
-                      "artifactId": "b45580d1-28b2-5700-a6b3-7be443b3bfd8"
+                      "artifactId": "[uuid]"
                     }
                   }
                 }
@@ -7332,7 +7664,7 @@ description: Operations executed mirror3d_and_boolean.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "880f0f46-f5a4-5d69-b352-2aabbd0c7ed4"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -7344,8 +7676,10 @@ description: Operations executed mirror3d_and_boolean.kcl
             "value": 100.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -7381,7 +7715,7 @@ description: Operations executed mirror3d_and_boolean.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "9fad4f1e-4b1e-597b-9a2e-c77aa6ca6d94"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -7391,7 +7725,7 @@ description: Operations executed mirror3d_and_boolean.kcl
           "value": {
             "type": "Solid",
             "value": {
-              "artifactId": "d4cbda13-cf30-51b5-adde-debccd5ae685"
+              "artifactId": "[uuid]"
             }
           },
           "sourceRange": []
@@ -7420,7 +7754,7 @@ description: Operations executed mirror3d_and_boolean.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "44d94cee-dac7-5b9f-829d-112d277b8975"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -7429,7 +7763,7 @@ description: Operations executed mirror3d_and_boolean.kcl
         "across": {
           "value": {
             "type": "Plane",
-            "artifact_id": "7c4571e0-7b14-576f-a82e-22280b05874d"
+            "artifact_id": "[uuid]"
           },
           "sourceRange": []
         }
@@ -7487,7 +7821,9 @@ description: Operations executed mirror3d_and_boolean.kcl
         "value": 2.718281828459045,
         "ty": {
           "type": "Known",
-          "type": "Count"
+          "value": {
+            "type": "Count"
+          }
         }
       },
       "visibility": "export",
@@ -7515,7 +7851,9 @@ description: Operations executed mirror3d_and_boolean.kcl
         "value": 6.283185307179586,
         "ty": {
           "type": "Known",
-          "type": "Count"
+          "value": {
+            "type": "Count"
+          }
         }
       },
       "visibility": "export",
@@ -7549,7 +7887,7 @@ description: Operations executed mirror3d_and_boolean.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 23
+            "index": 24
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -7573,7 +7911,7 @@ description: Operations executed mirror3d_and_boolean.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 24
+            "index": 25
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -7597,7 +7935,7 @@ description: Operations executed mirror3d_and_boolean.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 25
+            "index": 26
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -7621,7 +7959,7 @@ description: Operations executed mirror3d_and_boolean.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 26
+            "index": 27
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -7645,7 +7983,7 @@ description: Operations executed mirror3d_and_boolean.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 27
+            "index": 28
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -7669,7 +8007,7 @@ description: Operations executed mirror3d_and_boolean.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 28
+            "index": 29
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -7693,7 +8031,7 @@ description: Operations executed mirror3d_and_boolean.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 29
+            "index": 30
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -7717,7 +8055,7 @@ description: Operations executed mirror3d_and_boolean.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 30
+            "index": 31
           },
           {
             "type": "VariableDeclarationDeclaration"

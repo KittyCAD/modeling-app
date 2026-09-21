@@ -6,8 +6,8 @@ description: Variables in memory after executing crash-box.kcl
   "__sketch_1_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
-      "id": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
+      "artifactId": "[uuid]",
+      "id": "[uuid]",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -38,8 +38,8 @@ description: Variables in memory after executing crash-box.kcl
   "__sketch_39_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "7c4571e0-7b14-576f-a82e-22280b05874d",
-      "id": "bc4183c3-53a3-5213-a2cc-6fc8ca38dc19",
+      "artifactId": "[uuid]",
+      "id": "[uuid]",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -70,8 +70,8 @@ description: Variables in memory after executing crash-box.kcl
   "__sketch_65_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "6be94036-fce8-50e0-a9cd-4631846bb4fc",
-      "id": "6be94036-fce8-50e0-a9cd-4631846bb4fc",
+      "artifactId": "[uuid]",
+      "id": "[uuid]",
       "objectId": 64,
       "kind": "Custom",
       "origin": {
@@ -105,22 +105,24 @@ description: Variables in memory after executing crash-box.kcl
     "value": 300.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "beamEndFillets": {
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "0919e597-7112-50da-97bb-e5ba198e1dcd",
-      "originalId": "0919e597-7112-50da-97bb-e5ba198e1dcd",
-      "topologyId": "0919e597-7112-50da-97bb-e5ba198e1dcd",
-      "artifactId": "e442b4e0-3e58-50e0-9ed6-85e63a7afccf",
+      "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
+      "artifactId": "[uuid]",
       "value": [
         {
-          "faceId": "8c6b764c-5b64-58a0-a55f-f29bfc2bf59a",
-          "id": "0241175c-6274-55f9-b4e1-0f81ba1af849",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 3444,
@@ -133,8 +135,8 @@ description: Variables in memory after executing crash-box.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "d4f0536f-fe66-50fb-8c98-10f86fdd3379",
-          "id": "ee37ec98-f6bc-519b-8ae5-64502373f8e3",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 3521,
@@ -147,8 +149,8 @@ description: Variables in memory after executing crash-box.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "53a5d4cf-2981-56a3-a4c2-669de2e2248d",
-          "id": "f68d346d-bc83-5d4f-9d87-65036ce694b4",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 3602,
@@ -161,8 +163,8 @@ description: Variables in memory after executing crash-box.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "8e7efc3a-7c05-55f5-a101-54cfa7e6c49f",
-          "id": "5e3a4301-f9f1-5831-9b8e-8d290292b81d",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 3687,
@@ -175,8 +177,8 @@ description: Variables in memory after executing crash-box.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "2b99159c-05ec-53e5-a65f-2bc7cb6026ed",
-          "id": "2b99159c-05ec-53e5-a65f-2bc7cb6026ed",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 4539,
@@ -189,8 +191,8 @@ description: Variables in memory after executing crash-box.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "29b4228c-8d7b-5fa7-bcd0-2bbeb0422ac6",
-          "id": "29b4228c-8d7b-5fa7-bcd0-2bbeb0422ac6",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 4564,
@@ -216,11 +218,11 @@ description: Variables in memory after executing crash-box.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "0919e597-7112-50da-97bb-e5ba198e1dcd",
+        "id": "[uuid]",
         "paths": [
           {
             "__geoMeta": {
-              "id": "0241175c-6274-55f9-b4e1-0f81ba1af849",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -244,7 +246,7 @@ description: Variables in memory after executing crash-box.kcl
           },
           {
             "__geoMeta": {
-              "id": "ee37ec98-f6bc-519b-8ae5-64502373f8e3",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -268,7 +270,7 @@ description: Variables in memory after executing crash-box.kcl
           },
           {
             "__geoMeta": {
-              "id": "f68d346d-bc83-5d4f-9d87-65036ce694b4",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -292,7 +294,7 @@ description: Variables in memory after executing crash-box.kcl
           },
           {
             "__geoMeta": {
-              "id": "5e3a4301-f9f1-5831-9b8e-8d290292b81d",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -317,8 +319,8 @@ description: Variables in memory after executing crash-box.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "c5b43f3a-de89-5e69-93ff-c926dbe3c139",
-          "id": "c5b43f3a-de89-5e69-93ff-c926dbe3c139",
+          "artifactId": "[uuid]",
+          "id": "[uuid]",
           "objectId": 38,
           "kind": "Custom",
           "origin": {
@@ -358,7 +360,7 @@ description: Variables in memory after executing crash-box.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "f88ee97f-bd8d-58c2-8a13-430790ee61a8",
+            "id": "[uuid]",
             "sourceRange": []
           }
         },
@@ -388,40 +390,44 @@ description: Variables in memory after executing crash-box.kcl
             "value": "topEdge"
           }
         },
-        "artifactId": "0919e597-7112-50da-97bb-e5ba198e1dcd",
-        "originalId": "0919e597-7112-50da-97bb-e5ba198e1dcd",
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
         "units": "mm",
         "isClosed": "explicitly"
       },
-      "startCapId": "2b99159c-05ec-53e5-a65f-2bc7cb6026ed",
-      "endCapId": "29b4228c-8d7b-5fa7-bcd0-2bbeb0422ac6",
+      "startCapId": "[uuid]",
+      "endCapId": "[uuid]",
       "edgeCuts": [
         {
           "type": "fillet",
-          "id": "9f697a29-88bc-5a95-8fab-2b0aea89d002",
+          "id": "[uuid]",
           "radius": {
             "n": 80.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
-          "edgeId": "691b8c76-5891-5a28-bdac-73fb42581964",
+          "edgeId": "[uuid]",
           "tag": null
         },
         {
           "type": "fillet",
-          "id": "9f697a29-88bc-5a95-8fab-2b0aea89d002",
+          "id": "[uuid]",
           "radius": {
             "n": 80.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
-          "edgeId": "f68d346d-bc83-5d4f-9d87-65036ce694b4",
+          "edgeId": "[uuid]",
           "tag": null
         }
       ],
@@ -438,7 +444,7 @@ description: Variables in memory after executing crash-box.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "0d2fa0a7-0d7c-5dcf-b9b9-f7010642f7b0",
+                "id": "[uuid]",
                 "objectId": 48,
                 "kind": {
                   "line": {
@@ -446,17 +452,21 @@ description: Variables in memory after executing crash-box.kcl
                       {
                         "n": 873.9799999999998,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": -300.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -464,17 +474,21 @@ description: Variables in memory after executing crash-box.kcl
                       {
                         "n": -870.13,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": -300.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -512,8 +526,8 @@ description: Variables in memory after executing crash-box.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "c5b43f3a-de89-5e69-93ff-c926dbe3c139",
-                  "id": "c5b43f3a-de89-5e69-93ff-c926dbe3c139",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 38,
                   "origin": {
@@ -542,7 +556,7 @@ description: Variables in memory after executing crash-box.kcl
                     "units": null
                   }
                 },
-                "sketchId": "6017d8cf-00f1-589a-82b7-0cc09717f0ab",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "bottomEdge"
@@ -558,7 +572,7 @@ description: Variables in memory after executing crash-box.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "1144ecbd-366d-5a7a-bb6c-2e169ba3c205",
+                "id": "[uuid]",
                 "objectId": 51,
                 "kind": {
                   "line": {
@@ -566,17 +580,21 @@ description: Variables in memory after executing crash-box.kcl
                       {
                         "n": -870.13,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": -300.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -584,17 +602,21 @@ description: Variables in memory after executing crash-box.kcl
                       {
                         "n": -870.13,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.000000000000000002799998101685873,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -632,8 +654,8 @@ description: Variables in memory after executing crash-box.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "c5b43f3a-de89-5e69-93ff-c926dbe3c139",
-                  "id": "c5b43f3a-de89-5e69-93ff-c926dbe3c139",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 38,
                   "origin": {
@@ -662,7 +684,7 @@ description: Variables in memory after executing crash-box.kcl
                     "units": null
                   }
                 },
-                "sketchId": "6017d8cf-00f1-589a-82b7-0cc09717f0ab",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "leftEdge"
@@ -679,11 +701,11 @@ description: Variables in memory after executing crash-box.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "6017d8cf-00f1-589a-82b7-0cc09717f0ab",
+              "id": "[uuid]",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "fc8b23af-e276-5b5c-a7c2-b40c2f8d3f71",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -707,7 +729,7 @@ description: Variables in memory after executing crash-box.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "0917d07d-5996-5994-8a06-602d43e2b6f3",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -731,7 +753,7 @@ description: Variables in memory after executing crash-box.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "0d2fa0a7-0d7c-5dcf-b9b9-f7010642f7b0",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -755,7 +777,7 @@ description: Variables in memory after executing crash-box.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "1144ecbd-366d-5a7a-bb6c-2e169ba3c205",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -780,8 +802,8 @@ description: Variables in memory after executing crash-box.kcl
               ],
               "on": {
                 "type": "plane",
-                "artifactId": "c5b43f3a-de89-5e69-93ff-c926dbe3c139",
-                "id": "c5b43f3a-de89-5e69-93ff-c926dbe3c139",
+                "artifactId": "[uuid]",
+                "id": "[uuid]",
                 "objectId": 38,
                 "kind": "Custom",
                 "origin": {
@@ -821,7 +843,7 @@ description: Variables in memory after executing crash-box.kcl
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "f88ee97f-bd8d-58c2-8a13-430790ee61a8",
+                  "id": "[uuid]",
                   "sourceRange": []
                 }
               },
@@ -843,8 +865,8 @@ description: Variables in memory after executing crash-box.kcl
                   "value": "topEdge"
                 }
               },
-              "artifactId": "6017d8cf-00f1-589a-82b7-0cc09717f0ab",
-              "originalId": "6017d8cf-00f1-589a-82b7-0cc09717f0ab",
+              "artifactId": "[uuid]",
+              "originalId": "[uuid]",
               "units": "mm",
               "isClosed": "implicitly"
             }
@@ -858,7 +880,7 @@ description: Variables in memory after executing crash-box.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "0917d07d-5996-5994-8a06-602d43e2b6f3",
+                "id": "[uuid]",
                 "objectId": 45,
                 "kind": {
                   "line": {
@@ -866,17 +888,21 @@ description: Variables in memory after executing crash-box.kcl
                       {
                         "n": 873.9799999999998,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0000000000000000037999949421747045,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -884,17 +910,21 @@ description: Variables in memory after executing crash-box.kcl
                       {
                         "n": 873.9799999999998,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": -300.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -932,8 +962,8 @@ description: Variables in memory after executing crash-box.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "c5b43f3a-de89-5e69-93ff-c926dbe3c139",
-                  "id": "c5b43f3a-de89-5e69-93ff-c926dbe3c139",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 38,
                   "origin": {
@@ -962,7 +992,7 @@ description: Variables in memory after executing crash-box.kcl
                     "units": null
                   }
                 },
-                "sketchId": "6017d8cf-00f1-589a-82b7-0cc09717f0ab",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "rightEdge"
@@ -978,7 +1008,7 @@ description: Variables in memory after executing crash-box.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "fc8b23af-e276-5b5c-a7c2-b40c2f8d3f71",
+                "id": "[uuid]",
                 "objectId": 42,
                 "kind": {
                   "line": {
@@ -986,17 +1016,21 @@ description: Variables in memory after executing crash-box.kcl
                       {
                         "n": -870.13,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0000000000000000019999978168807254,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -1004,17 +1038,21 @@ description: Variables in memory after executing crash-box.kcl
                       {
                         "n": 873.9799999999998,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0000000000000000027999956201440355,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -1052,8 +1090,8 @@ description: Variables in memory after executing crash-box.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "c5b43f3a-de89-5e69-93ff-c926dbe3c139",
-                  "id": "c5b43f3a-de89-5e69-93ff-c926dbe3c139",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 38,
                   "origin": {
@@ -1082,7 +1120,7 @@ description: Variables in memory after executing crash-box.kcl
                     "units": null
                   }
                 },
-                "sketchId": "6017d8cf-00f1-589a-82b7-0cc09717f0ab",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "topEdge"
@@ -1099,11 +1137,11 @@ description: Variables in memory after executing crash-box.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "0919e597-7112-50da-97bb-e5ba198e1dcd",
+      "id": "[uuid]",
       "paths": [
         {
           "__geoMeta": {
-            "id": "0241175c-6274-55f9-b4e1-0f81ba1af849",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -1127,7 +1165,7 @@ description: Variables in memory after executing crash-box.kcl
         },
         {
           "__geoMeta": {
-            "id": "ee37ec98-f6bc-519b-8ae5-64502373f8e3",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -1151,7 +1189,7 @@ description: Variables in memory after executing crash-box.kcl
         },
         {
           "__geoMeta": {
-            "id": "f68d346d-bc83-5d4f-9d87-65036ce694b4",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -1175,7 +1213,7 @@ description: Variables in memory after executing crash-box.kcl
         },
         {
           "__geoMeta": {
-            "id": "5e3a4301-f9f1-5831-9b8e-8d290292b81d",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -1200,8 +1238,8 @@ description: Variables in memory after executing crash-box.kcl
       ],
       "on": {
         "type": "plane",
-        "artifactId": "c5b43f3a-de89-5e69-93ff-c926dbe3c139",
-        "id": "c5b43f3a-de89-5e69-93ff-c926dbe3c139",
+        "artifactId": "[uuid]",
+        "id": "[uuid]",
         "objectId": 38,
         "kind": "Custom",
         "origin": {
@@ -1241,7 +1279,7 @@ description: Variables in memory after executing crash-box.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "f88ee97f-bd8d-58c2-8a13-430790ee61a8",
+          "id": "[uuid]",
           "sourceRange": []
         }
       },
@@ -1271,8 +1309,8 @@ description: Variables in memory after executing crash-box.kcl
           "value": "topEdge"
         }
       },
-      "artifactId": "0919e597-7112-50da-97bb-e5ba198e1dcd",
-      "originalId": "0919e597-7112-50da-97bb-e5ba198e1dcd",
+      "artifactId": "[uuid]",
+      "originalId": "[uuid]",
       "units": "mm",
       "isClosed": "explicitly"
     }
@@ -1281,14 +1319,14 @@ description: Variables in memory after executing crash-box.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "0919e597-7112-50da-97bb-e5ba198e1dcd",
-      "originalId": "0919e597-7112-50da-97bb-e5ba198e1dcd",
-      "topologyId": "0919e597-7112-50da-97bb-e5ba198e1dcd",
-      "artifactId": "e442b4e0-3e58-50e0-9ed6-85e63a7afccf",
+      "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
+      "artifactId": "[uuid]",
       "value": [
         {
-          "faceId": "8c6b764c-5b64-58a0-a55f-f29bfc2bf59a",
-          "id": "0241175c-6274-55f9-b4e1-0f81ba1af849",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 3444,
@@ -1301,8 +1339,8 @@ description: Variables in memory after executing crash-box.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "d4f0536f-fe66-50fb-8c98-10f86fdd3379",
-          "id": "ee37ec98-f6bc-519b-8ae5-64502373f8e3",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 3521,
@@ -1315,8 +1353,8 @@ description: Variables in memory after executing crash-box.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "53a5d4cf-2981-56a3-a4c2-669de2e2248d",
-          "id": "f68d346d-bc83-5d4f-9d87-65036ce694b4",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 3602,
@@ -1329,8 +1367,8 @@ description: Variables in memory after executing crash-box.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "8e7efc3a-7c05-55f5-a101-54cfa7e6c49f",
-          "id": "5e3a4301-f9f1-5831-9b8e-8d290292b81d",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 3687,
@@ -1343,8 +1381,8 @@ description: Variables in memory after executing crash-box.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "2b99159c-05ec-53e5-a65f-2bc7cb6026ed",
-          "id": "2b99159c-05ec-53e5-a65f-2bc7cb6026ed",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 4539,
@@ -1357,8 +1395,8 @@ description: Variables in memory after executing crash-box.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "29b4228c-8d7b-5fa7-bcd0-2bbeb0422ac6",
-          "id": "29b4228c-8d7b-5fa7-bcd0-2bbeb0422ac6",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 4564,
@@ -1384,11 +1422,11 @@ description: Variables in memory after executing crash-box.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "0919e597-7112-50da-97bb-e5ba198e1dcd",
+        "id": "[uuid]",
         "paths": [
           {
             "__geoMeta": {
-              "id": "0241175c-6274-55f9-b4e1-0f81ba1af849",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -1412,7 +1450,7 @@ description: Variables in memory after executing crash-box.kcl
           },
           {
             "__geoMeta": {
-              "id": "ee37ec98-f6bc-519b-8ae5-64502373f8e3",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -1436,7 +1474,7 @@ description: Variables in memory after executing crash-box.kcl
           },
           {
             "__geoMeta": {
-              "id": "f68d346d-bc83-5d4f-9d87-65036ce694b4",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -1460,7 +1498,7 @@ description: Variables in memory after executing crash-box.kcl
           },
           {
             "__geoMeta": {
-              "id": "5e3a4301-f9f1-5831-9b8e-8d290292b81d",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -1485,8 +1523,8 @@ description: Variables in memory after executing crash-box.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "c5b43f3a-de89-5e69-93ff-c926dbe3c139",
-          "id": "c5b43f3a-de89-5e69-93ff-c926dbe3c139",
+          "artifactId": "[uuid]",
+          "id": "[uuid]",
           "objectId": 38,
           "kind": "Custom",
           "origin": {
@@ -1526,7 +1564,7 @@ description: Variables in memory after executing crash-box.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "f88ee97f-bd8d-58c2-8a13-430790ee61a8",
+            "id": "[uuid]",
             "sourceRange": []
           }
         },
@@ -1556,29 +1594,26 @@ description: Variables in memory after executing crash-box.kcl
             "value": "topEdge"
           }
         },
-        "artifactId": "0919e597-7112-50da-97bb-e5ba198e1dcd",
-        "originalId": "0919e597-7112-50da-97bb-e5ba198e1dcd",
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
         "units": "mm",
         "isClosed": "explicitly"
       },
-      "startCapId": "2b99159c-05ec-53e5-a65f-2bc7cb6026ed",
-      "endCapId": "29b4228c-8d7b-5fa7-bcd0-2bbeb0422ac6",
+      "startCapId": "[uuid]",
+      "endCapId": "[uuid]",
       "units": "mm",
       "sectional": false
     }
   },
   "bottomEdge": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "bottomEdge"
   },
   "capEnd001": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "capEnd001"
   },
   "capStart001": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "capStart001"
   },
@@ -1587,22 +1622,24 @@ description: Variables in memory after executing crash-box.kcl
     "value": -1200.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "crashBoxFinal": {
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "03cd9cd9-3406-55e1-ae54-f1d9525eb3ba",
-      "originalId": "72dddee3-1330-5c4f-b767-659f762ad674",
-      "topologyId": "03cd9cd9-3406-55e1-ae54-f1d9525eb3ba",
-      "artifactId": "03cd9cd9-3406-55e1-ae54-f1d9525eb3ba",
+      "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
+      "artifactId": "[uuid]",
       "value": [
         {
-          "faceId": "092755e4-e002-58b9-a194-69b526ae6929",
-          "id": "1b0b0c60-a447-579e-b1b3-c921dfddeafc",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 983,
@@ -1615,8 +1652,8 @@ description: Variables in memory after executing crash-box.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "bb04bee5-f92e-54fd-b9d8-0e476678cb88",
-          "id": "86bdbceb-1f3e-5644-8535-dcbe75b5fc3f",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 1068,
@@ -1629,8 +1666,8 @@ description: Variables in memory after executing crash-box.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "a49b9612-c4dc-5d46-9c14-74c0b7247edd",
-          "id": "eb116575-1f8f-50df-810e-a61970915fe0",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 1150,
@@ -1643,8 +1680,8 @@ description: Variables in memory after executing crash-box.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "00f8003d-3b65-5f10-b911-9092660fca40",
-          "id": "3eeacc05-5c65-53e8-ad05-5ff4071739c5",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 1230,
@@ -1660,11 +1697,11 @@ description: Variables in memory after executing crash-box.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "03cd9cd9-3406-55e1-ae54-f1d9525eb3ba",
+        "id": "[uuid]",
         "paths": [
           {
             "__geoMeta": {
-              "id": "1b0b0c60-a447-579e-b1b3-c921dfddeafc",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -1688,7 +1725,7 @@ description: Variables in memory after executing crash-box.kcl
           },
           {
             "__geoMeta": {
-              "id": "86bdbceb-1f3e-5644-8535-dcbe75b5fc3f",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -1712,7 +1749,7 @@ description: Variables in memory after executing crash-box.kcl
           },
           {
             "__geoMeta": {
-              "id": "eb116575-1f8f-50df-810e-a61970915fe0",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -1736,7 +1773,7 @@ description: Variables in memory after executing crash-box.kcl
           },
           {
             "__geoMeta": {
-              "id": "3eeacc05-5c65-53e8-ad05-5ff4071739c5",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -1761,8 +1798,8 @@ description: Variables in memory after executing crash-box.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "artifactId": "[uuid]",
+          "id": "[uuid]",
           "objectId": 0,
           "kind": "Custom",
           "origin": {
@@ -1802,7 +1839,7 @@ description: Variables in memory after executing crash-box.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "e383621f-755a-5f2e-ada3-608aff393dab",
+            "id": "[uuid]",
             "sourceRange": []
           }
         },
@@ -1824,68 +1861,76 @@ description: Variables in memory after executing crash-box.kcl
             "value": "topEdge"
           }
         },
-        "artifactId": "72dddee3-1330-5c4f-b767-659f762ad674",
-        "originalId": "72dddee3-1330-5c4f-b767-659f762ad674",
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
         "units": "mm",
         "isClosed": "explicitly"
       },
-      "startCapId": "a9521f68-97ee-5d4b-8bdc-3e3f26483ee9",
-      "endCapId": "36ddadba-7da4-56f0-bc1f-59abaa29211e",
+      "startCapId": "[uuid]",
+      "endCapId": "[uuid]",
       "edgeCuts": [
         {
           "type": "fillet",
-          "id": "067ed736-8554-5b63-8bf6-a3fbc610eb7a",
+          "id": "[uuid]",
           "radius": {
             "n": 60.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
-          "edgeId": "1084cca5-0297-5dc3-92ac-287642feefac",
+          "edgeId": "[uuid]",
           "tag": null
         },
         {
           "type": "fillet",
-          "id": "067ed736-8554-5b63-8bf6-a3fbc610eb7a",
+          "id": "[uuid]",
           "radius": {
             "n": 60.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
-          "edgeId": "5b5a27ed-100b-5b1f-8bb6-7235b969ff88",
+          "edgeId": "[uuid]",
           "tag": null
         },
         {
           "type": "fillet",
-          "id": "067ed736-8554-5b63-8bf6-a3fbc610eb7a",
+          "id": "[uuid]",
           "radius": {
             "n": 60.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
-          "edgeId": "1ea630fe-9406-5262-a2d2-c618a59c9710",
+          "edgeId": "[uuid]",
           "tag": null
         },
         {
           "type": "fillet",
-          "id": "067ed736-8554-5b63-8bf6-a3fbc610eb7a",
+          "id": "[uuid]",
           "radius": {
             "n": 60.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
-          "edgeId": "e4d97f2c-dab4-5c05-b8f9-901bfb9447ac",
+          "edgeId": "[uuid]",
           "tag": null
         }
       ],
@@ -1897,14 +1942,14 @@ description: Variables in memory after executing crash-box.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "72dddee3-1330-5c4f-b767-659f762ad674",
-      "originalId": "72dddee3-1330-5c4f-b767-659f762ad674",
-      "topologyId": "72dddee3-1330-5c4f-b767-659f762ad674",
-      "artifactId": "eedabccb-e42b-5224-a499-7c2981b239e5",
+      "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
+      "artifactId": "[uuid]",
       "value": [
         {
-          "faceId": "092755e4-e002-58b9-a194-69b526ae6929",
-          "id": "1b0b0c60-a447-579e-b1b3-c921dfddeafc",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 983,
@@ -1917,8 +1962,8 @@ description: Variables in memory after executing crash-box.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "bb04bee5-f92e-54fd-b9d8-0e476678cb88",
-          "id": "86bdbceb-1f3e-5644-8535-dcbe75b5fc3f",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 1068,
@@ -1931,8 +1976,8 @@ description: Variables in memory after executing crash-box.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "a49b9612-c4dc-5d46-9c14-74c0b7247edd",
-          "id": "eb116575-1f8f-50df-810e-a61970915fe0",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 1150,
@@ -1945,8 +1990,8 @@ description: Variables in memory after executing crash-box.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "00f8003d-3b65-5f10-b911-9092660fca40",
-          "id": "3eeacc05-5c65-53e8-ad05-5ff4071739c5",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 1230,
@@ -1962,11 +2007,11 @@ description: Variables in memory after executing crash-box.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "72dddee3-1330-5c4f-b767-659f762ad674",
+        "id": "[uuid]",
         "paths": [
           {
             "__geoMeta": {
-              "id": "1b0b0c60-a447-579e-b1b3-c921dfddeafc",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -1990,7 +2035,7 @@ description: Variables in memory after executing crash-box.kcl
           },
           {
             "__geoMeta": {
-              "id": "86bdbceb-1f3e-5644-8535-dcbe75b5fc3f",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -2014,7 +2059,7 @@ description: Variables in memory after executing crash-box.kcl
           },
           {
             "__geoMeta": {
-              "id": "eb116575-1f8f-50df-810e-a61970915fe0",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -2038,7 +2083,7 @@ description: Variables in memory after executing crash-box.kcl
           },
           {
             "__geoMeta": {
-              "id": "3eeacc05-5c65-53e8-ad05-5ff4071739c5",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -2063,8 +2108,8 @@ description: Variables in memory after executing crash-box.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "artifactId": "[uuid]",
+          "id": "[uuid]",
           "objectId": 0,
           "kind": "Custom",
           "origin": {
@@ -2104,7 +2149,7 @@ description: Variables in memory after executing crash-box.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "e383621f-755a-5f2e-ada3-608aff393dab",
+            "id": "[uuid]",
             "sourceRange": []
           }
         },
@@ -2126,68 +2171,76 @@ description: Variables in memory after executing crash-box.kcl
             "value": "topEdge"
           }
         },
-        "artifactId": "72dddee3-1330-5c4f-b767-659f762ad674",
-        "originalId": "72dddee3-1330-5c4f-b767-659f762ad674",
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
         "units": "mm",
         "isClosed": "explicitly"
       },
-      "startCapId": "a9521f68-97ee-5d4b-8bdc-3e3f26483ee9",
-      "endCapId": "36ddadba-7da4-56f0-bc1f-59abaa29211e",
+      "startCapId": "[uuid]",
+      "endCapId": "[uuid]",
       "edgeCuts": [
         {
           "type": "fillet",
-          "id": "067ed736-8554-5b63-8bf6-a3fbc610eb7a",
+          "id": "[uuid]",
           "radius": {
             "n": 60.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
-          "edgeId": "1084cca5-0297-5dc3-92ac-287642feefac",
+          "edgeId": "[uuid]",
           "tag": null
         },
         {
           "type": "fillet",
-          "id": "067ed736-8554-5b63-8bf6-a3fbc610eb7a",
+          "id": "[uuid]",
           "radius": {
             "n": 60.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
-          "edgeId": "5b5a27ed-100b-5b1f-8bb6-7235b969ff88",
+          "edgeId": "[uuid]",
           "tag": null
         },
         {
           "type": "fillet",
-          "id": "067ed736-8554-5b63-8bf6-a3fbc610eb7a",
+          "id": "[uuid]",
           "radius": {
             "n": 60.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
-          "edgeId": "1ea630fe-9406-5262-a2d2-c618a59c9710",
+          "edgeId": "[uuid]",
           "tag": null
         },
         {
           "type": "fillet",
-          "id": "067ed736-8554-5b63-8bf6-a3fbc610eb7a",
+          "id": "[uuid]",
           "radius": {
             "n": 60.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
-          "edgeId": "e4d97f2c-dab4-5c05-b8f9-901bfb9447ac",
+          "edgeId": "[uuid]",
           "tag": null
         }
       ],
@@ -2200,8 +2253,10 @@ description: Variables in memory after executing crash-box.kcl
     "value": 400.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "crashBoxProfile": {
@@ -2213,7 +2268,7 @@ description: Variables in memory after executing crash-box.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+                "id": "[uuid]",
                 "objectId": 4,
                 "kind": {
                   "line": {
@@ -2221,17 +2276,21 @@ description: Variables in memory after executing crash-box.kcl
                       {
                         "n": -199.99999999992593,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": -200.00000000025676,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -2239,17 +2298,21 @@ description: Variables in memory after executing crash-box.kcl
                       {
                         "n": 200.00000000006747,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": -200.0000000002362,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -2287,8 +2350,8 @@ description: Variables in memory after executing crash-box.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -2317,7 +2380,7 @@ description: Variables in memory after executing crash-box.kcl
                     "units": null
                   }
                 },
-                "sketchId": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "bottomEdge"
@@ -2333,7 +2396,7 @@ description: Variables in memory after executing crash-box.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "89316223-2ea1-5731-9c72-0492bc30fbe2",
+                "id": "[uuid]",
                 "objectId": 19,
                 "kind": {
                   "line": {
@@ -2341,17 +2404,21 @@ description: Variables in memory after executing crash-box.kcl
                       {
                         "n": 0.000000000026393474782940177,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": -0.00000000008219289590512571,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -2359,17 +2426,21 @@ description: Variables in memory after executing crash-box.kcl
                       {
                         "n": 200.0000000000396,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": -0.00000000008219289370124194,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -2408,8 +2479,8 @@ description: Variables in memory after executing crash-box.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -2438,7 +2509,7 @@ description: Variables in memory after executing crash-box.kcl
                     "units": null
                   }
                 },
-                "sketchId": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "horizontalCenterGuide"
@@ -2454,7 +2525,7 @@ description: Variables in memory after executing crash-box.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
+                "id": "[uuid]",
                 "objectId": 13,
                 "kind": {
                   "line": {
@@ -2462,17 +2533,21 @@ description: Variables in memory after executing crash-box.kcl
                       {
                         "n": -199.9999999999177,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 199.99999999965075,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -2480,17 +2555,21 @@ description: Variables in memory after executing crash-box.kcl
                       {
                         "n": -199.999999999921,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": -200.00000000030815,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -2528,8 +2607,8 @@ description: Variables in memory after executing crash-box.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -2558,7 +2637,7 @@ description: Variables in memory after executing crash-box.kcl
                     "units": null
                   }
                 },
-                "sketchId": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "leftEdge"
@@ -2575,11 +2654,11 @@ description: Variables in memory after executing crash-box.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
+              "id": "[uuid]",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -2603,7 +2682,7 @@ description: Variables in memory after executing crash-box.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "91226189-7e64-5690-9203-67ee33a6eb03",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -2627,7 +2706,7 @@ description: Variables in memory after executing crash-box.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -2651,7 +2730,7 @@ description: Variables in memory after executing crash-box.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -2676,8 +2755,8 @@ description: Variables in memory after executing crash-box.kcl
               ],
               "on": {
                 "type": "plane",
-                "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                "artifactId": "[uuid]",
+                "id": "[uuid]",
                 "objectId": 0,
                 "kind": "Custom",
                 "origin": {
@@ -2717,7 +2796,7 @@ description: Variables in memory after executing crash-box.kcl
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "e383621f-755a-5f2e-ada3-608aff393dab",
+                  "id": "[uuid]",
                   "sourceRange": []
                 }
               },
@@ -2739,8 +2818,8 @@ description: Variables in memory after executing crash-box.kcl
                   "value": "topEdge"
                 }
               },
-              "artifactId": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
-              "originalId": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
+              "artifactId": "[uuid]",
+              "originalId": "[uuid]",
               "units": "mm",
               "isClosed": "implicitly"
             }
@@ -2754,7 +2833,7 @@ description: Variables in memory after executing crash-box.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "91226189-7e64-5690-9203-67ee33a6eb03",
+                "id": "[uuid]",
                 "objectId": 7,
                 "kind": {
                   "line": {
@@ -2762,17 +2841,21 @@ description: Variables in memory after executing crash-box.kcl
                       {
                         "n": 200.00000000005923,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": -200.0000000002465,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -2780,17 +2863,21 @@ description: Variables in memory after executing crash-box.kcl
                       {
                         "n": 200.00000000005593,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 199.9999999995891,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -2828,8 +2915,8 @@ description: Variables in memory after executing crash-box.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -2858,7 +2945,7 @@ description: Variables in memory after executing crash-box.kcl
                     "units": null
                   }
                 },
-                "sketchId": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "rightEdge"
@@ -2874,7 +2961,7 @@ description: Variables in memory after executing crash-box.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
+                "id": "[uuid]",
                 "objectId": 10,
                 "kind": {
                   "line": {
@@ -2882,17 +2969,21 @@ description: Variables in memory after executing crash-box.kcl
                       {
                         "n": 200.00000000005758,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 199.9999999995994,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -2900,17 +2991,21 @@ description: Variables in memory after executing crash-box.kcl
                       {
                         "n": -199.999999999916,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 199.99999999961994,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -2948,8 +3043,8 @@ description: Variables in memory after executing crash-box.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -2978,7 +3073,7 @@ description: Variables in memory after executing crash-box.kcl
                     "units": null
                   }
                 },
-                "sketchId": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "topEdge"
@@ -2994,7 +3089,7 @@ description: Variables in memory after executing crash-box.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
+                "id": "[uuid]",
                 "objectId": 16,
                 "kind": {
                   "line": {
@@ -3002,17 +3097,21 @@ description: Variables in memory after executing crash-box.kcl
                       {
                         "n": 0.000000000013196736239219076,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": -0.00000000008219290030646442,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -3020,17 +3119,21 @@ description: Variables in memory after executing crash-box.kcl
                       {
                         "n": 0.000000000013196735149226639,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": -200.0000000001644,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -3069,8 +3172,8 @@ description: Variables in memory after executing crash-box.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -3099,7 +3202,7 @@ description: Variables in memory after executing crash-box.kcl
                     "units": null
                   }
                 },
-                "sketchId": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "verticalCenterGuide"
@@ -3116,11 +3219,11 @@ description: Variables in memory after executing crash-box.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "72dddee3-1330-5c4f-b767-659f762ad674",
+      "id": "[uuid]",
       "paths": [
         {
           "__geoMeta": {
-            "id": "1b0b0c60-a447-579e-b1b3-c921dfddeafc",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -3144,7 +3247,7 @@ description: Variables in memory after executing crash-box.kcl
         },
         {
           "__geoMeta": {
-            "id": "86bdbceb-1f3e-5644-8535-dcbe75b5fc3f",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -3168,7 +3271,7 @@ description: Variables in memory after executing crash-box.kcl
         },
         {
           "__geoMeta": {
-            "id": "eb116575-1f8f-50df-810e-a61970915fe0",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -3192,7 +3295,7 @@ description: Variables in memory after executing crash-box.kcl
         },
         {
           "__geoMeta": {
-            "id": "3eeacc05-5c65-53e8-ad05-5ff4071739c5",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -3217,8 +3320,8 @@ description: Variables in memory after executing crash-box.kcl
       ],
       "on": {
         "type": "plane",
-        "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-        "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+        "artifactId": "[uuid]",
+        "id": "[uuid]",
         "objectId": 0,
         "kind": "Custom",
         "origin": {
@@ -3258,7 +3361,7 @@ description: Variables in memory after executing crash-box.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "e383621f-755a-5f2e-ada3-608aff393dab",
+          "id": "[uuid]",
           "sourceRange": []
         }
       },
@@ -3280,8 +3383,8 @@ description: Variables in memory after executing crash-box.kcl
           "value": "topEdge"
         }
       },
-      "artifactId": "72dddee3-1330-5c4f-b767-659f762ad674",
-      "originalId": "72dddee3-1330-5c4f-b767-659f762ad674",
+      "artifactId": "[uuid]",
+      "originalId": "[uuid]",
       "units": "mm",
       "isClosed": "explicitly"
     }
@@ -3290,14 +3393,14 @@ description: Variables in memory after executing crash-box.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "72dddee3-1330-5c4f-b767-659f762ad674",
-      "originalId": "72dddee3-1330-5c4f-b767-659f762ad674",
-      "topologyId": "72dddee3-1330-5c4f-b767-659f762ad674",
-      "artifactId": "eedabccb-e42b-5224-a499-7c2981b239e5",
+      "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
+      "artifactId": "[uuid]",
       "value": [
         {
-          "faceId": "092755e4-e002-58b9-a194-69b526ae6929",
-          "id": "1b0b0c60-a447-579e-b1b3-c921dfddeafc",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 983,
@@ -3310,8 +3413,8 @@ description: Variables in memory after executing crash-box.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "bb04bee5-f92e-54fd-b9d8-0e476678cb88",
-          "id": "86bdbceb-1f3e-5644-8535-dcbe75b5fc3f",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 1068,
@@ -3324,8 +3427,8 @@ description: Variables in memory after executing crash-box.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "a49b9612-c4dc-5d46-9c14-74c0b7247edd",
-          "id": "eb116575-1f8f-50df-810e-a61970915fe0",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 1150,
@@ -3338,8 +3441,8 @@ description: Variables in memory after executing crash-box.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "00f8003d-3b65-5f10-b911-9092660fca40",
-          "id": "3eeacc05-5c65-53e8-ad05-5ff4071739c5",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 1230,
@@ -3355,11 +3458,11 @@ description: Variables in memory after executing crash-box.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "72dddee3-1330-5c4f-b767-659f762ad674",
+        "id": "[uuid]",
         "paths": [
           {
             "__geoMeta": {
-              "id": "1b0b0c60-a447-579e-b1b3-c921dfddeafc",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -3383,7 +3486,7 @@ description: Variables in memory after executing crash-box.kcl
           },
           {
             "__geoMeta": {
-              "id": "86bdbceb-1f3e-5644-8535-dcbe75b5fc3f",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -3407,7 +3510,7 @@ description: Variables in memory after executing crash-box.kcl
           },
           {
             "__geoMeta": {
-              "id": "eb116575-1f8f-50df-810e-a61970915fe0",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -3431,7 +3534,7 @@ description: Variables in memory after executing crash-box.kcl
           },
           {
             "__geoMeta": {
-              "id": "3eeacc05-5c65-53e8-ad05-5ff4071739c5",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -3456,8 +3559,8 @@ description: Variables in memory after executing crash-box.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "artifactId": "[uuid]",
+          "id": "[uuid]",
           "objectId": 0,
           "kind": "Custom",
           "origin": {
@@ -3497,7 +3600,7 @@ description: Variables in memory after executing crash-box.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "e383621f-755a-5f2e-ada3-608aff393dab",
+            "id": "[uuid]",
             "sourceRange": []
           }
         },
@@ -3519,68 +3622,76 @@ description: Variables in memory after executing crash-box.kcl
             "value": "topEdge"
           }
         },
-        "artifactId": "72dddee3-1330-5c4f-b767-659f762ad674",
-        "originalId": "72dddee3-1330-5c4f-b767-659f762ad674",
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
         "units": "mm",
         "isClosed": "explicitly"
       },
-      "startCapId": "a9521f68-97ee-5d4b-8bdc-3e3f26483ee9",
-      "endCapId": "36ddadba-7da4-56f0-bc1f-59abaa29211e",
+      "startCapId": "[uuid]",
+      "endCapId": "[uuid]",
       "edgeCuts": [
         {
           "type": "fillet",
-          "id": "067ed736-8554-5b63-8bf6-a3fbc610eb7a",
+          "id": "[uuid]",
           "radius": {
             "n": 60.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
-          "edgeId": "1084cca5-0297-5dc3-92ac-287642feefac",
+          "edgeId": "[uuid]",
           "tag": null
         },
         {
           "type": "fillet",
-          "id": "067ed736-8554-5b63-8bf6-a3fbc610eb7a",
+          "id": "[uuid]",
           "radius": {
             "n": 60.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
-          "edgeId": "5b5a27ed-100b-5b1f-8bb6-7235b969ff88",
+          "edgeId": "[uuid]",
           "tag": null
         },
         {
           "type": "fillet",
-          "id": "067ed736-8554-5b63-8bf6-a3fbc610eb7a",
+          "id": "[uuid]",
           "radius": {
             "n": 60.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
-          "edgeId": "1ea630fe-9406-5262-a2d2-c618a59c9710",
+          "edgeId": "[uuid]",
           "tag": null
         },
         {
           "type": "fillet",
-          "id": "067ed736-8554-5b63-8bf6-a3fbc610eb7a",
+          "id": "[uuid]",
           "radius": {
             "n": 60.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
-          "edgeId": "e4d97f2c-dab4-5c05-b8f9-901bfb9447ac",
+          "edgeId": "[uuid]",
           "tag": null
         }
       ],
@@ -3592,14 +3703,14 @@ description: Variables in memory after executing crash-box.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "72dddee3-1330-5c4f-b767-659f762ad674",
-      "originalId": "72dddee3-1330-5c4f-b767-659f762ad674",
-      "topologyId": "72dddee3-1330-5c4f-b767-659f762ad674",
-      "artifactId": "eedabccb-e42b-5224-a499-7c2981b239e5",
+      "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
+      "artifactId": "[uuid]",
       "value": [
         {
-          "faceId": "092755e4-e002-58b9-a194-69b526ae6929",
-          "id": "1b0b0c60-a447-579e-b1b3-c921dfddeafc",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 983,
@@ -3612,8 +3723,8 @@ description: Variables in memory after executing crash-box.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "bb04bee5-f92e-54fd-b9d8-0e476678cb88",
-          "id": "86bdbceb-1f3e-5644-8535-dcbe75b5fc3f",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 1068,
@@ -3626,8 +3737,8 @@ description: Variables in memory after executing crash-box.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "a49b9612-c4dc-5d46-9c14-74c0b7247edd",
-          "id": "eb116575-1f8f-50df-810e-a61970915fe0",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 1150,
@@ -3640,8 +3751,8 @@ description: Variables in memory after executing crash-box.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "00f8003d-3b65-5f10-b911-9092660fca40",
-          "id": "3eeacc05-5c65-53e8-ad05-5ff4071739c5",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 1230,
@@ -3657,11 +3768,11 @@ description: Variables in memory after executing crash-box.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "72dddee3-1330-5c4f-b767-659f762ad674",
+        "id": "[uuid]",
         "paths": [
           {
             "__geoMeta": {
-              "id": "1b0b0c60-a447-579e-b1b3-c921dfddeafc",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -3685,7 +3796,7 @@ description: Variables in memory after executing crash-box.kcl
           },
           {
             "__geoMeta": {
-              "id": "86bdbceb-1f3e-5644-8535-dcbe75b5fc3f",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -3709,7 +3820,7 @@ description: Variables in memory after executing crash-box.kcl
           },
           {
             "__geoMeta": {
-              "id": "eb116575-1f8f-50df-810e-a61970915fe0",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -3733,7 +3844,7 @@ description: Variables in memory after executing crash-box.kcl
           },
           {
             "__geoMeta": {
-              "id": "3eeacc05-5c65-53e8-ad05-5ff4071739c5",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -3758,8 +3869,8 @@ description: Variables in memory after executing crash-box.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "artifactId": "[uuid]",
+          "id": "[uuid]",
           "objectId": 0,
           "kind": "Custom",
           "origin": {
@@ -3799,7 +3910,7 @@ description: Variables in memory after executing crash-box.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "e383621f-755a-5f2e-ada3-608aff393dab",
+            "id": "[uuid]",
             "sourceRange": []
           }
         },
@@ -3821,13 +3932,13 @@ description: Variables in memory after executing crash-box.kcl
             "value": "topEdge"
           }
         },
-        "artifactId": "72dddee3-1330-5c4f-b767-659f762ad674",
-        "originalId": "72dddee3-1330-5c4f-b767-659f762ad674",
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
         "units": "mm",
         "isClosed": "explicitly"
       },
-      "startCapId": "a9521f68-97ee-5d4b-8bdc-3e3f26483ee9",
-      "endCapId": "36ddadba-7da4-56f0-bc1f-59abaa29211e",
+      "startCapId": "[uuid]",
+      "endCapId": "[uuid]",
       "units": "mm",
       "sectional": false
     }
@@ -3836,14 +3947,14 @@ description: Variables in memory after executing crash-box.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "129583cc-c953-5cdf-8ea4-5e7d50b41896",
-      "originalId": "72dddee3-1330-5c4f-b767-659f762ad674",
-      "topologyId": "129583cc-c953-5cdf-8ea4-5e7d50b41896",
-      "artifactId": "129583cc-c953-5cdf-8ea4-5e7d50b41896",
+      "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
+      "artifactId": "[uuid]",
       "value": [
         {
-          "faceId": "092755e4-e002-58b9-a194-69b526ae6929",
-          "id": "1b0b0c60-a447-579e-b1b3-c921dfddeafc",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 983,
@@ -3856,8 +3967,8 @@ description: Variables in memory after executing crash-box.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "bb04bee5-f92e-54fd-b9d8-0e476678cb88",
-          "id": "86bdbceb-1f3e-5644-8535-dcbe75b5fc3f",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 1068,
@@ -3870,8 +3981,8 @@ description: Variables in memory after executing crash-box.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "a49b9612-c4dc-5d46-9c14-74c0b7247edd",
-          "id": "eb116575-1f8f-50df-810e-a61970915fe0",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 1150,
@@ -3884,8 +3995,8 @@ description: Variables in memory after executing crash-box.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "00f8003d-3b65-5f10-b911-9092660fca40",
-          "id": "3eeacc05-5c65-53e8-ad05-5ff4071739c5",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 1230,
@@ -3901,11 +4012,11 @@ description: Variables in memory after executing crash-box.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "129583cc-c953-5cdf-8ea4-5e7d50b41896",
+        "id": "[uuid]",
         "paths": [
           {
             "__geoMeta": {
-              "id": "1b0b0c60-a447-579e-b1b3-c921dfddeafc",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -3929,7 +4040,7 @@ description: Variables in memory after executing crash-box.kcl
           },
           {
             "__geoMeta": {
-              "id": "86bdbceb-1f3e-5644-8535-dcbe75b5fc3f",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -3953,7 +4064,7 @@ description: Variables in memory after executing crash-box.kcl
           },
           {
             "__geoMeta": {
-              "id": "eb116575-1f8f-50df-810e-a61970915fe0",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -3977,7 +4088,7 @@ description: Variables in memory after executing crash-box.kcl
           },
           {
             "__geoMeta": {
-              "id": "3eeacc05-5c65-53e8-ad05-5ff4071739c5",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -4002,8 +4113,8 @@ description: Variables in memory after executing crash-box.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "artifactId": "[uuid]",
+          "id": "[uuid]",
           "objectId": 0,
           "kind": "Custom",
           "origin": {
@@ -4043,7 +4154,7 @@ description: Variables in memory after executing crash-box.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "e383621f-755a-5f2e-ada3-608aff393dab",
+            "id": "[uuid]",
             "sourceRange": []
           }
         },
@@ -4065,68 +4176,76 @@ description: Variables in memory after executing crash-box.kcl
             "value": "topEdge"
           }
         },
-        "artifactId": "72dddee3-1330-5c4f-b767-659f762ad674",
-        "originalId": "72dddee3-1330-5c4f-b767-659f762ad674",
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
         "units": "mm",
         "isClosed": "explicitly"
       },
-      "startCapId": "a9521f68-97ee-5d4b-8bdc-3e3f26483ee9",
-      "endCapId": "36ddadba-7da4-56f0-bc1f-59abaa29211e",
+      "startCapId": "[uuid]",
+      "endCapId": "[uuid]",
       "edgeCuts": [
         {
           "type": "fillet",
-          "id": "067ed736-8554-5b63-8bf6-a3fbc610eb7a",
+          "id": "[uuid]",
           "radius": {
             "n": 60.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
-          "edgeId": "1084cca5-0297-5dc3-92ac-287642feefac",
+          "edgeId": "[uuid]",
           "tag": null
         },
         {
           "type": "fillet",
-          "id": "067ed736-8554-5b63-8bf6-a3fbc610eb7a",
+          "id": "[uuid]",
           "radius": {
             "n": 60.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
-          "edgeId": "5b5a27ed-100b-5b1f-8bb6-7235b969ff88",
+          "edgeId": "[uuid]",
           "tag": null
         },
         {
           "type": "fillet",
-          "id": "067ed736-8554-5b63-8bf6-a3fbc610eb7a",
+          "id": "[uuid]",
           "radius": {
             "n": 60.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
-          "edgeId": "1ea630fe-9406-5262-a2d2-c618a59c9710",
+          "edgeId": "[uuid]",
           "tag": null
         },
         {
           "type": "fillet",
-          "id": "067ed736-8554-5b63-8bf6-a3fbc610eb7a",
+          "id": "[uuid]",
           "radius": {
             "n": 60.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
-          "edgeId": "e4d97f2c-dab4-5c05-b8f9-901bfb9447ac",
+          "edgeId": "[uuid]",
           "tag": null
         }
       ],
@@ -4141,14 +4260,14 @@ description: Variables in memory after executing crash-box.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "f9290fd4-5c3f-5c2e-8173-812972a413d9",
-          "originalId": "f9290fd4-5c3f-5c2e-8173-812972a413d9",
-          "topologyId": "f9290fd4-5c3f-5c2e-8173-812972a413d9",
-          "artifactId": "b111fba8-8876-56ff-b0a2-c225f35bfbdc",
+          "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
+          "artifactId": "[uuid]",
           "value": [
             {
-              "faceId": "1e1a4c91-45fe-56bb-8d1e-a13ad66cda13",
-              "id": "9c9c17b7-d32d-5157-8f5a-29acc7a19f06",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 5285,
@@ -4164,11 +4283,11 @@ description: Variables in memory after executing crash-box.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "f9290fd4-5c3f-5c2e-8173-812972a413d9",
+            "id": "[uuid]",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "9c9c17b7-d32d-5157-8f5a-29acc7a19f06",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -4199,8 +4318,8 @@ description: Variables in memory after executing crash-box.kcl
             ],
             "on": {
               "type": "plane",
-              "artifactId": "6be94036-fce8-50e0-a9cd-4631846bb4fc",
-              "id": "6be94036-fce8-50e0-a9cd-4631846bb4fc",
+              "artifactId": "[uuid]",
+              "id": "[uuid]",
               "objectId": 64,
               "kind": "Custom",
               "origin": {
@@ -4240,7 +4359,7 @@ description: Variables in memory after executing crash-box.kcl
               "units": "mm",
               "tag": null,
               "__geoMeta": {
-                "id": "f65c8713-a1f8-5ea9-a702-cab0411afc85",
+                "id": "[uuid]",
                 "sourceRange": []
               }
             },
@@ -4254,13 +4373,13 @@ description: Variables in memory after executing crash-box.kcl
                 "value": "rightHole"
               }
             },
-            "artifactId": "f9290fd4-5c3f-5c2e-8173-812972a413d9",
-            "originalId": "f9290fd4-5c3f-5c2e-8173-812972a413d9",
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
             "units": "mm",
             "isClosed": "explicitly"
           },
-          "startCapId": "37878247-af01-5229-9578-1b396441ffb7",
-          "endCapId": "484386ab-589f-5cf4-b251-e51d82a52563",
+          "startCapId": "[uuid]",
+          "endCapId": "[uuid]",
           "units": "mm",
           "sectional": false
         }
@@ -4269,14 +4388,14 @@ description: Variables in memory after executing crash-box.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "c3c8712b-a8b4-5375-b311-6de9fe3f4ee3",
-          "originalId": "c3c8712b-a8b4-5375-b311-6de9fe3f4ee3",
-          "topologyId": "c3c8712b-a8b4-5375-b311-6de9fe3f4ee3",
-          "artifactId": "f4e71cbc-068a-5ab6-8914-ad9db323a7b6",
+          "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
+          "artifactId": "[uuid]",
           "value": [
             {
-              "faceId": "bb3e384f-4752-5f87-bd6d-5795fcd464fa",
-              "id": "6053fac1-def2-596d-b29b-b30a9b8f64ca",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 5489,
@@ -4292,11 +4411,11 @@ description: Variables in memory after executing crash-box.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "c3c8712b-a8b4-5375-b311-6de9fe3f4ee3",
+            "id": "[uuid]",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "6053fac1-def2-596d-b29b-b30a9b8f64ca",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -4327,8 +4446,8 @@ description: Variables in memory after executing crash-box.kcl
             ],
             "on": {
               "type": "plane",
-              "artifactId": "6be94036-fce8-50e0-a9cd-4631846bb4fc",
-              "id": "6be94036-fce8-50e0-a9cd-4631846bb4fc",
+              "artifactId": "[uuid]",
+              "id": "[uuid]",
               "objectId": 64,
               "kind": "Custom",
               "origin": {
@@ -4368,7 +4487,7 @@ description: Variables in memory after executing crash-box.kcl
               "units": "mm",
               "tag": null,
               "__geoMeta": {
-                "id": "f65c8713-a1f8-5ea9-a702-cab0411afc85",
+                "id": "[uuid]",
                 "sourceRange": []
               }
             },
@@ -4382,13 +4501,13 @@ description: Variables in memory after executing crash-box.kcl
                 "value": "rightHole"
               }
             },
-            "artifactId": "c3c8712b-a8b4-5375-b311-6de9fe3f4ee3",
-            "originalId": "c3c8712b-a8b4-5375-b311-6de9fe3f4ee3",
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
             "units": "mm",
             "isClosed": "explicitly"
           },
-          "startCapId": "44f6bc34-f251-50c9-817b-022e6ffaf92c",
-          "endCapId": "ed533cb3-8cc1-5243-b057-c38d17ea3beb",
+          "startCapId": "[uuid]",
+          "endCapId": "[uuid]",
           "units": "mm",
           "sectional": false
         }
@@ -4398,8 +4517,8 @@ description: Variables in memory after executing crash-box.kcl
   "holePlane": {
     "type": "Plane",
     "value": {
-      "artifactId": "6be94036-fce8-50e0-a9cd-4631846bb4fc",
-      "id": "6be94036-fce8-50e0-a9cd-4631846bb4fc",
+      "artifactId": "[uuid]",
+      "id": "[uuid]",
       "objectId": 64,
       "kind": "Custom",
       "origin": {
@@ -4437,7 +4556,7 @@ description: Variables in memory after executing crash-box.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "c496fd9a-d996-5b8a-811c-f9066ac8b2c6",
+                "id": "[uuid]",
                 "objectId": 68,
                 "kind": {
                   "circle": {
@@ -4445,17 +4564,21 @@ description: Variables in memory after executing crash-box.kcl
                       {
                         "n": -84.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": -150.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -4463,17 +4586,21 @@ description: Variables in memory after executing crash-box.kcl
                       {
                         "n": -100.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": -150.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -4511,8 +4638,8 @@ description: Variables in memory after executing crash-box.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "6be94036-fce8-50e0-a9cd-4631846bb4fc",
-                  "id": "6be94036-fce8-50e0-a9cd-4631846bb4fc",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 64,
                   "origin": {
@@ -4541,7 +4668,7 @@ description: Variables in memory after executing crash-box.kcl
                     "units": null
                   }
                 },
-                "sketchId": "3bcd28fd-2b1b-5bfe-a9ba-ee907292b41f",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "leftHole"
@@ -4558,11 +4685,11 @@ description: Variables in memory after executing crash-box.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "3bcd28fd-2b1b-5bfe-a9ba-ee907292b41f",
+              "id": "[uuid]",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "c496fd9a-d996-5b8a-811c-f9066ac8b2c6",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -4592,7 +4719,7 @@ description: Variables in memory after executing crash-box.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "bb0f6270-9c1c-51e3-923b-b25b8a1a44ab",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -4609,7 +4736,7 @@ description: Variables in memory after executing crash-box.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "5f95e913-96e4-58df-abe6-125bedd61cad",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -4640,8 +4767,8 @@ description: Variables in memory after executing crash-box.kcl
               ],
               "on": {
                 "type": "plane",
-                "artifactId": "6be94036-fce8-50e0-a9cd-4631846bb4fc",
-                "id": "6be94036-fce8-50e0-a9cd-4631846bb4fc",
+                "artifactId": "[uuid]",
+                "id": "[uuid]",
                 "objectId": 64,
                 "kind": "Custom",
                 "origin": {
@@ -4681,7 +4808,7 @@ description: Variables in memory after executing crash-box.kcl
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "f65c8713-a1f8-5ea9-a702-cab0411afc85",
+                  "id": "[uuid]",
                   "sourceRange": []
                 }
               },
@@ -4695,8 +4822,8 @@ description: Variables in memory after executing crash-box.kcl
                   "value": "rightHole"
                 }
               },
-              "artifactId": "3bcd28fd-2b1b-5bfe-a9ba-ee907292b41f",
-              "originalId": "3bcd28fd-2b1b-5bfe-a9ba-ee907292b41f",
+              "artifactId": "[uuid]",
+              "originalId": "[uuid]",
               "units": "mm",
               "isClosed": "no"
             }
@@ -4710,7 +4837,7 @@ description: Variables in memory after executing crash-box.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "5f95e913-96e4-58df-abe6-125bedd61cad",
+                "id": "[uuid]",
                 "objectId": 71,
                 "kind": {
                   "circle": {
@@ -4718,17 +4845,21 @@ description: Variables in memory after executing crash-box.kcl
                       {
                         "n": 116.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": -150.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -4736,17 +4867,21 @@ description: Variables in memory after executing crash-box.kcl
                       {
                         "n": 100.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": -150.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -4784,8 +4919,8 @@ description: Variables in memory after executing crash-box.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "6be94036-fce8-50e0-a9cd-4631846bb4fc",
-                  "id": "6be94036-fce8-50e0-a9cd-4631846bb4fc",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 64,
                   "origin": {
@@ -4814,7 +4949,7 @@ description: Variables in memory after executing crash-box.kcl
                     "units": null
                   }
                 },
-                "sketchId": "3bcd28fd-2b1b-5bfe-a9ba-ee907292b41f",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "rightHole"
@@ -4829,11 +4964,9 @@ description: Variables in memory after executing crash-box.kcl
   },
   "leftEdge": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "leftEdge"
   },
   "leftHole": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "leftHole"
   },
@@ -4841,11 +4974,11 @@ description: Variables in memory after executing crash-box.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "f9290fd4-5c3f-5c2e-8173-812972a413d9",
+      "id": "[uuid]",
       "paths": [
         {
           "__geoMeta": {
-            "id": "9c9c17b7-d32d-5157-8f5a-29acc7a19f06",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "ccw": true,
@@ -4876,8 +5009,8 @@ description: Variables in memory after executing crash-box.kcl
       ],
       "on": {
         "type": "plane",
-        "artifactId": "6be94036-fce8-50e0-a9cd-4631846bb4fc",
-        "id": "6be94036-fce8-50e0-a9cd-4631846bb4fc",
+        "artifactId": "[uuid]",
+        "id": "[uuid]",
         "objectId": 64,
         "kind": "Custom",
         "origin": {
@@ -4917,7 +5050,7 @@ description: Variables in memory after executing crash-box.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "f65c8713-a1f8-5ea9-a702-cab0411afc85",
+          "id": "[uuid]",
           "sourceRange": []
         }
       },
@@ -4931,8 +5064,8 @@ description: Variables in memory after executing crash-box.kcl
           "value": "rightHole"
         }
       },
-      "artifactId": "f9290fd4-5c3f-5c2e-8173-812972a413d9",
-      "originalId": "f9290fd4-5c3f-5c2e-8173-812972a413d9",
+      "artifactId": "[uuid]",
+      "originalId": "[uuid]",
       "units": "mm",
       "isClosed": "explicitly"
     }
@@ -4942,8 +5075,10 @@ description: Variables in memory after executing crash-box.kcl
     "value": 150.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "mountHoleRadius": {
@@ -4951,8 +5086,10 @@ description: Variables in memory after executing crash-box.kcl
     "value": 16.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "mountHoleSpacing": {
@@ -4960,17 +5097,17 @@ description: Variables in memory after executing crash-box.kcl
     "value": 200.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "rightEdge": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "rightEdge"
   },
   "rightHole": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "rightHole"
   },
@@ -4978,11 +5115,11 @@ description: Variables in memory after executing crash-box.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "c3c8712b-a8b4-5375-b311-6de9fe3f4ee3",
+      "id": "[uuid]",
       "paths": [
         {
           "__geoMeta": {
-            "id": "6053fac1-def2-596d-b29b-b30a9b8f64ca",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "ccw": true,
@@ -5013,8 +5150,8 @@ description: Variables in memory after executing crash-box.kcl
       ],
       "on": {
         "type": "plane",
-        "artifactId": "6be94036-fce8-50e0-a9cd-4631846bb4fc",
-        "id": "6be94036-fce8-50e0-a9cd-4631846bb4fc",
+        "artifactId": "[uuid]",
+        "id": "[uuid]",
         "objectId": 64,
         "kind": "Custom",
         "origin": {
@@ -5054,7 +5191,7 @@ description: Variables in memory after executing crash-box.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "f65c8713-a1f8-5ea9-a702-cab0411afc85",
+          "id": "[uuid]",
           "sourceRange": []
         }
       },
@@ -5068,14 +5205,13 @@ description: Variables in memory after executing crash-box.kcl
           "value": "rightHole"
         }
       },
-      "artifactId": "c3c8712b-a8b4-5375-b311-6de9fe3f4ee3",
-      "originalId": "c3c8712b-a8b4-5375-b311-6de9fe3f4ee3",
+      "artifactId": "[uuid]",
+      "originalId": "[uuid]",
       "units": "mm",
       "isClosed": "explicitly"
     }
   },
   "topEdge": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "topEdge"
   }

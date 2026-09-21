@@ -919,7 +919,7 @@ pub struct ArgData {
     /// Constraint on the KCL version at or after which this argument is deprecated.
     pub deprecated_since: Option<VersionConstraint>,
     /// Constraint on the KCL version at or after which this argument is removed.
-    pub removed_since: Option<VersionConstraint>,
+    pub removed_in: Option<VersionConstraint>,
 }
 
 impl fmt::Display for ArgData {
@@ -961,7 +961,7 @@ impl ArgData {
             added_in: arg.added_in.clone(),
             deprecated: arg.deprecated,
             deprecated_since: arg.deprecated_since.clone(),
-            removed_since: arg.removed_since.clone(),
+            removed_in: arg.removed_in.clone(),
         };
 
         for attr in &arg.identifier.outer_attrs {
@@ -1674,6 +1674,7 @@ mod test {
     use kcl_derive_docs::for_each_example_test;
 
     use super::*;
+    use crate::test_server::TestGraphicsArtifact;
 
     fn stdlib_module_path(module_name: &str) -> PathBuf {
         let file_stem = match module_name {
@@ -1749,7 +1750,7 @@ mod test {
                 .iter()
                 .find(|a| a.name == param)
                 .unwrap_or_else(|| panic!("{func} should declare {param}"));
-            assert_eq!(arg.removed_since, VersionConstraint::parse("3.0"), "{func}({param})");
+            assert_eq!(arg.removed_in, VersionConstraint::parse("3.0"), "{func}({param})");
         }
     }
 
@@ -1861,50 +1862,56 @@ mod test {
             }
             eprintln!("Testing example {NAME} for {owner_name} in {}", source_path.display());
             eprintln!("KCL program:\n---\n{}\n---", eg.0.trim_end());
-            let result = match crate::test_server::execute_and_snapshot_3d(&eg.0, None, !eg.1.no3d).await {
-                Err(crate::errors::ExecError::Kcl(e)) => {
+
+            let result =
+                match crate::test_server::kcl_doc_execute_and_snapshot(&eg.0, None, eg.1.no3d, eg.1.norun).await {
+                    Err(crate::errors::ExecError::Kcl(e)) => {
+                        panic!(
+                            "Error testing example {NAME} for {owner_name} in {}: {}",
+                            source_path.display(),
+                            e.error.message()
+                        );
+                    }
+                    Err(other_err) => panic!(
+                        "Error testing example {NAME} for {owner_name} in {}: {other_err}",
+                        source_path.display()
+                    ),
+                    Ok(img) => img,
+                };
+
+            let assert_images_match = |img: image::DynamicImage| {
+                if let Err(err) = twenty_twenty::try_assert_image(
+                    format!(
+                        "tests/outputs/serial_test_example_fn_{}{i}.png",
+                        qualname.replace("::", "-")
+                    ),
+                    &img,
+                    0.99,
+                ) {
                     panic!(
-                        "Error testing example {NAME} for {owner_name} in {}: {}",
-                        source_path.display(),
-                        e.error.message()
+                        "Image assertion failed for example {NAME} for {owner_name} in {}: {err}",
+                        source_path.display()
                     );
                 }
-                Err(other_err) => panic!(
-                    "Error testing example {NAME} for {owner_name} in {}: {other_err}",
-                    source_path.display()
-                ),
-                Ok(img) => img,
             };
-            if eg.1.norun {
-                return;
-            }
-            if let Err(err) = twenty_twenty::try_assert_image(
-                format!(
-                    "tests/outputs/serial_test_example_fn_{}{i}.png",
-                    qualname.replace("::", "-")
-                ),
-                &result.image,
-                0.99,
-            ) {
-                panic!(
-                    "Image assertion failed for example {NAME} for {owner_name} in {}: {err}",
-                    source_path.display()
-                );
-            }
-            // Doc generation omits the model viewer for a `no3d` example. Its
-            // glTF export was already skipped by `execute_and_snapshot_3d`.
-            // Keep this in step with the `gltf_path` rule in `gen_std_tests`.
-            if !eg.1.no3d {
-                for gltf_file in result.gltf {
+
+            match result {
+                TestGraphicsArtifact::None => return,
+                TestGraphicsArtifact::Image(img) => assert_images_match(img),
+                TestGraphicsArtifact::ImageAndGlb { image, glb } => {
+                    assert_images_match(image);
+                    // Doc generation omits the model viewer for a `no3d` example. Its
+                    // glb export was already skipped by `execute_and_snapshot_3d`.
+                    // Keep this in step with the `gltf_path` rule in `gen_std_tests`.
                     let path = format!(
                         "tests/outputs/models/serial_test_example_fn_{}{i}_{}",
                         qualname.replace("::", "-"),
-                        gltf_file.name,
+                        glb.name,
                     );
                     let mut f = std::fs::File::create(path).expect("could not create file");
-                    std::io::Write::write_all(&mut f, &gltf_file.contents).expect("could not write to file");
+                    std::io::Write::write_all(&mut f, &glb.bytes).expect("could not write to file");
                 }
-            }
+            };
             return;
         }
 

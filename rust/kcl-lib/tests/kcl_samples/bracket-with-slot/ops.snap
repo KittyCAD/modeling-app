@@ -12,8 +12,10 @@ description: Operations executed bracket-with-slot.kcl
         "value": 20.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -41,8 +43,10 @@ description: Operations executed bracket-with-slot.kcl
         "value": 12.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -70,8 +74,10 @@ description: Operations executed bracket-with-slot.kcl
         "value": 22.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -99,8 +105,10 @@ description: Operations executed bracket-with-slot.kcl
         "value": 50.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -128,8 +136,10 @@ description: Operations executed bracket-with-slot.kcl
         "value": 150.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -157,8 +167,10 @@ description: Operations executed bracket-with-slot.kcl
         "value": 4.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -186,8 +198,10 @@ description: Operations executed bracket-with-slot.kcl
         "value": 8.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -215,8 +229,10 @@ description: Operations executed bracket-with-slot.kcl
         "value": 12.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -244,8 +260,10 @@ description: Operations executed bracket-with-slot.kcl
         "value": 40.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -273,8 +291,10 @@ description: Operations executed bracket-with-slot.kcl
         "value": 12.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -302,8 +322,10 @@ description: Operations executed bracket-with-slot.kcl
         "value": 36.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -331,8 +353,10 @@ description: Operations executed bracket-with-slot.kcl
         "value": 5.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -360,8 +384,10 @@ description: Operations executed bracket-with-slot.kcl
         "value": 0.2,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -416,18 +442,22 @@ description: Operations executed bracket-with-slot.kcl
                 "type": "SketchVar",
                 "value": 9.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 66.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -442,18 +472,22 @@ description: Operations executed bracket-with-slot.kcl
                 "type": "SketchVar",
                 "value": -8.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -6.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -503,18 +537,22 @@ description: Operations executed bracket-with-slot.kcl
                 "type": "SketchVar",
                 "value": 6.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 73.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -529,18 +567,22 @@ description: Operations executed bracket-with-slot.kcl
                 "type": "SketchVar",
                 "value": 6.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 65.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -634,18 +676,22 @@ description: Operations executed bracket-with-slot.kcl
                 "type": "SketchVar",
                 "value": 5.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -660,18 +706,22 @@ description: Operations executed bracket-with-slot.kcl
                 "type": "SketchVar",
                 "value": 5.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 74.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -765,18 +815,22 @@ description: Operations executed bracket-with-slot.kcl
                 "type": "SketchVar",
                 "value": 164.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 4.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -791,18 +845,22 @@ description: Operations executed bracket-with-slot.kcl
                 "type": "SketchVar",
                 "value": 3.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 6.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -896,18 +954,22 @@ description: Operations executed bracket-with-slot.kcl
                 "type": "SketchVar",
                 "value": 168.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -8.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -922,18 +984,22 @@ description: Operations executed bracket-with-slot.kcl
                 "type": "SketchVar",
                 "value": 168.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 7.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -1027,18 +1093,22 @@ description: Operations executed bracket-with-slot.kcl
                 "type": "SketchVar",
                 "value": -6.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 2.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -1053,18 +1123,22 @@ description: Operations executed bracket-with-slot.kcl
                 "type": "SketchVar",
                 "value": 172.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -2.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -1422,18 +1496,22 @@ description: Operations executed bracket-with-slot.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -1718,11 +1796,11 @@ description: Operations executed bracket-with-slot.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
+                "artifact_id": "[uuid]"
               },
               {
                 "type": "Segment",
-                "artifact_id": "91226189-7e64-5690-9203-67ee33a6eb03"
+                "artifact_id": "[uuid]"
               }
             ]
           },
@@ -1752,7 +1830,7 @@ description: Operations executed bracket-with-slot.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -1781,7 +1859,7 @@ description: Operations executed bracket-with-slot.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "72dddee3-1330-5c4f-b767-659f762ad674"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -1793,8 +1871,10 @@ description: Operations executed bracket-with-slot.kcl
             "value": 40.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -1844,7 +1924,7 @@ description: Operations executed bracket-with-slot.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "c4fac378-d3df-5505-98c1-308b81b0fd96"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -1856,8 +1936,10 @@ description: Operations executed bracket-with-slot.kcl
             "value": 8.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -1865,7 +1947,7 @@ description: Operations executed bracket-with-slot.kcl
         "tags": {
           "value": {
             "type": "Uuid",
-            "value": "e8e8a799-080a-5af7-b552-92f258391b5a"
+            "value": "[uuid]"
           },
           "sourceRange": []
         }
@@ -1893,7 +1975,7 @@ description: Operations executed bracket-with-slot.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "c4fac378-d3df-5505-98c1-308b81b0fd96"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -1905,8 +1987,10 @@ description: Operations executed bracket-with-slot.kcl
             "value": 12.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -1914,7 +1998,7 @@ description: Operations executed bracket-with-slot.kcl
         "tags": {
           "value": {
             "type": "Uuid",
-            "value": "375909ca-005f-5bf2-83c9-5f0b348dac37"
+            "value": "[uuid]"
           },
           "sourceRange": []
         }
@@ -1942,7 +2026,7 @@ description: Operations executed bracket-with-slot.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "c4fac378-d3df-5505-98c1-308b81b0fd96"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -1954,8 +2038,10 @@ description: Operations executed bracket-with-slot.kcl
             "value": 20.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -1966,19 +2052,19 @@ description: Operations executed bracket-with-slot.kcl
             "value": [
               {
                 "type": "Uuid",
-                "value": "25d85146-207e-50e0-aa94-a6fb2beccf0a"
+                "value": "[uuid]"
               },
               {
                 "type": "Uuid",
-                "value": "41d8aa02-4a9b-5fb6-90fb-724c008b2567"
+                "value": "[uuid]"
               },
               {
                 "type": "Uuid",
-                "value": "1084cca5-0297-5dc3-92ac-287642feefac"
+                "value": "[uuid]"
               },
               {
                 "type": "Uuid",
-                "value": "9efbcccc-288a-5a5c-b7f4-7d2f8bbae204"
+                "value": "[uuid]"
               }
             ]
           },
@@ -2036,18 +2122,22 @@ description: Operations executed bracket-with-slot.kcl
                 "type": "SketchVar",
                 "value": 48.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -2.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -2062,18 +2152,22 @@ description: Operations executed bracket-with-slot.kcl
                 "type": "SketchVar",
                 "value": 57.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 3.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -2123,18 +2217,22 @@ description: Operations executed bracket-with-slot.kcl
                 "type": "SketchVar",
                 "value": 51.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -2149,18 +2247,22 @@ description: Operations executed bracket-with-slot.kcl
                 "type": "SketchVar",
                 "value": 60.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -4.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -2217,18 +2319,22 @@ description: Operations executed bracket-with-slot.kcl
                 "type": "SketchVar",
                 "value": 54.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -2243,18 +2349,22 @@ description: Operations executed bracket-with-slot.kcl
                 "type": "SketchVar",
                 "value": 47.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -1.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -2482,18 +2592,22 @@ description: Operations executed bracket-with-slot.kcl
                 "type": "SketchVar",
                 "value": 58.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -3.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -2508,18 +2622,22 @@ description: Operations executed bracket-with-slot.kcl
                 "type": "SketchVar",
                 "value": 46.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 2.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -2789,8 +2907,10 @@ description: Operations executed bracket-with-slot.kcl
                   "value": 50.0,
                   "ty": {
                     "type": "Default",
-                    "len": "mm",
-                    "angle": "degrees"
+                    "value": {
+                      "len": "mm",
+                      "angle": "degrees"
+                    }
                   }
                 },
                 {
@@ -2798,8 +2918,10 @@ description: Operations executed bracket-with-slot.kcl
                   "value": 0.0,
                   "ty": {
                     "type": "Default",
-                    "len": "mm",
-                    "angle": "degrees"
+                    "value": {
+                      "len": "mm",
+                      "angle": "degrees"
+                    }
                   }
                 }
               ]
@@ -2846,8 +2968,10 @@ description: Operations executed bracket-with-slot.kcl
         "value": 11.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -2875,8 +2999,10 @@ description: Operations executed bracket-with-slot.kcl
         "value": 7.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -2938,18 +3064,22 @@ description: Operations executed bracket-with-slot.kcl
                 "type": "SketchVar",
                 "value": 12.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -2964,18 +3094,22 @@ description: Operations executed bracket-with-slot.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -3025,18 +3159,22 @@ description: Operations executed bracket-with-slot.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -3051,18 +3189,22 @@ description: Operations executed bracket-with-slot.kcl
                 "type": "SketchVar",
                 "value": 11.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -3116,18 +3258,22 @@ description: Operations executed bracket-with-slot.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -3379,18 +3525,22 @@ description: Operations executed bracket-with-slot.kcl
                 "type": "SketchVar",
                 "value": 7.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -3405,18 +3555,22 @@ description: Operations executed bracket-with-slot.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -3466,18 +3620,22 @@ description: Operations executed bracket-with-slot.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -3492,18 +3650,22 @@ description: Operations executed bracket-with-slot.kcl
                 "type": "SketchVar",
                 "value": 7.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -3557,18 +3719,22 @@ description: Operations executed bracket-with-slot.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -3789,7 +3955,7 @@ description: Operations executed bracket-with-slot.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "a54ad82c-be8d-599a-9764-c6498922dd5c"
+                "artifact_id": "[uuid]"
               }
             ]
           },
@@ -3823,7 +3989,7 @@ description: Operations executed bracket-with-slot.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "a8570d66-ad9e-5a33-ad3b-ebb30322f5b5"
+                "artifact_id": "[uuid]"
               }
             ]
           },
@@ -3856,13 +4022,13 @@ description: Operations executed bracket-with-slot.kcl
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "5e09e1ff-f381-55c4-87b4-0eda2d4522ce"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "c820e130-6f59-5cd5-8ff1-7228a584ef66"
+                "artifactId": "[uuid]"
               }
             }
           ]
@@ -3896,7 +4062,7 @@ description: Operations executed bracket-with-slot.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "c4fac378-d3df-5505-98c1-308b81b0fd96"
+                "artifactId": "[uuid]"
               }
             }
           ]
@@ -3911,7 +4077,7 @@ description: Operations executed bracket-with-slot.kcl
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "d90f6603-b0cd-5c83-a076-386b01d9e12a"
+                  "artifactId": "[uuid]"
                 }
               }
             ]
@@ -3942,7 +4108,7 @@ description: Operations executed bracket-with-slot.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "1cca8d80-f404-5b33-b6e0-cca169c4da48"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -3971,7 +4137,7 @@ description: Operations executed bracket-with-slot.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "ae5c05bc-b83d-501f-ba06-b7f12cf8cc2d"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -4000,7 +4166,7 @@ description: Operations executed bracket-with-slot.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "c3c8712b-a8b4-5375-b311-6de9fe3f4ee3"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -4057,18 +4223,22 @@ description: Operations executed bracket-with-slot.kcl
                 "type": "SketchVar",
                 "value": 112.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -6.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -4083,18 +4253,22 @@ description: Operations executed bracket-with-slot.kcl
                 "type": "SketchVar",
                 "value": 149.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -7.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -4144,18 +4318,22 @@ description: Operations executed bracket-with-slot.kcl
                 "type": "SketchVar",
                 "value": 111.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -4170,18 +4348,22 @@ description: Operations executed bracket-with-slot.kcl
                 "type": "SketchVar",
                 "value": 112.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -5.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -4196,18 +4378,22 @@ description: Operations executed bracket-with-slot.kcl
                 "type": "SketchVar",
                 "value": 112.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 7.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -4301,18 +4487,22 @@ description: Operations executed bracket-with-slot.kcl
                 "type": "SketchVar",
                 "value": 149.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 6.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -4327,18 +4517,22 @@ description: Operations executed bracket-with-slot.kcl
                 "type": "SketchVar",
                 "value": 111.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 7.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -4432,18 +4626,22 @@ description: Operations executed bracket-with-slot.kcl
                 "type": "SketchVar",
                 "value": 149.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -4458,18 +4656,22 @@ description: Operations executed bracket-with-slot.kcl
                 "type": "SketchVar",
                 "value": 149.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 6.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -4484,18 +4686,22 @@ description: Operations executed bracket-with-slot.kcl
                 "type": "SketchVar",
                 "value": 149.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -6.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -4712,18 +4918,22 @@ description: Operations executed bracket-with-slot.kcl
                 "type": "SketchVar",
                 "value": 149.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -1.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -4738,18 +4948,22 @@ description: Operations executed bracket-with-slot.kcl
                 "type": "SketchVar",
                 "value": 115.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -4930,18 +5144,22 @@ description: Operations executed bracket-with-slot.kcl
                 "type": "SketchVar",
                 "value": 110.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 8.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -4956,18 +5174,22 @@ description: Operations executed bracket-with-slot.kcl
                 "type": "SketchVar",
                 "value": 110.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -5148,18 +5370,22 @@ description: Operations executed bracket-with-slot.kcl
                 "type": "SketchVar",
                 "value": 112.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -8.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -5174,18 +5400,22 @@ description: Operations executed bracket-with-slot.kcl
                 "type": "SketchVar",
                 "value": 112.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -5366,18 +5596,22 @@ description: Operations executed bracket-with-slot.kcl
                 "type": "SketchVar",
                 "value": 149.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 8.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -5392,18 +5626,22 @@ description: Operations executed bracket-with-slot.kcl
                 "type": "SketchVar",
                 "value": 149.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -5584,18 +5822,22 @@ description: Operations executed bracket-with-slot.kcl
                 "type": "SketchVar",
                 "value": 149.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -8.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -5610,18 +5852,22 @@ description: Operations executed bracket-with-slot.kcl
                 "type": "SketchVar",
                 "value": 149.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -1.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -5925,8 +6171,10 @@ description: Operations executed bracket-with-slot.kcl
                   "value": 150.0,
                   "ty": {
                     "type": "Default",
-                    "len": "mm",
-                    "angle": "degrees"
+                    "value": {
+                      "len": "mm",
+                      "angle": "degrees"
+                    }
                   }
                 },
                 {
@@ -5934,8 +6182,10 @@ description: Operations executed bracket-with-slot.kcl
                   "value": 0.0,
                   "ty": {
                     "type": "Default",
-                    "len": "mm",
-                    "angle": "degrees"
+                    "value": {
+                      "len": "mm",
+                      "angle": "degrees"
+                    }
                   }
                 }
               ]
@@ -5985,11 +6235,11 @@ description: Operations executed bracket-with-slot.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "63f9b5f8-bdd0-5943-9b5e-46fa635aacbc"
+                "artifact_id": "[uuid]"
               },
               {
                 "type": "Segment",
-                "artifact_id": "bbc9bd1d-6402-59d1-a098-3cf2005cc1c2"
+                "artifact_id": "[uuid]"
               }
             ]
           },
@@ -6019,7 +6269,7 @@ description: Operations executed bracket-with-slot.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "8b2b0b37-868e-50d3-badd-0213fb4b5d6a"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -6031,8 +6281,10 @@ description: Operations executed bracket-with-slot.kcl
             "value": 4.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -6068,7 +6320,7 @@ description: Operations executed bracket-with-slot.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "41b24a95-09ce-5f5c-a1cb-748e4f7a41b6"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -6100,7 +6352,7 @@ description: Operations executed bracket-with-slot.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "7cba4b1e-0ab8-5276-a74e-b8b435085d01"
+                "artifactId": "[uuid]"
               }
             }
           ]
@@ -6115,7 +6367,7 @@ description: Operations executed bracket-with-slot.kcl
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "9fd615c8-7274-5e8b-830b-8b3ce00ff1e5"
+                  "artifactId": "[uuid]"
                 }
               }
             ]
@@ -6146,7 +6398,7 @@ description: Operations executed bracket-with-slot.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "969d96c2-dff1-582e-8974-a3f5fef9c547"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -6165,7 +6417,9 @@ description: Operations executed bracket-with-slot.kcl
             "value": 0.0,
             "ty": {
               "type": "Known",
-              "type": "Count"
+              "value": {
+                "type": "Count"
+              }
             }
           },
           "sourceRange": []
@@ -6176,7 +6430,9 @@ description: Operations executed bracket-with-slot.kcl
             "value": 50.0,
             "ty": {
               "type": "Known",
-              "type": "Count"
+              "value": {
+                "type": "Count"
+              }
             }
           },
           "sourceRange": []
@@ -6232,7 +6488,9 @@ description: Operations executed bracket-with-slot.kcl
         "value": 2.718281828459045,
         "ty": {
           "type": "Known",
-          "type": "Count"
+          "value": {
+            "type": "Count"
+          }
         }
       },
       "visibility": "export",
@@ -6260,7 +6518,9 @@ description: Operations executed bracket-with-slot.kcl
         "value": 6.283185307179586,
         "ty": {
           "type": "Known",
-          "type": "Count"
+          "value": {
+            "type": "Count"
+          }
         }
       },
       "visibility": "export",
@@ -6294,7 +6554,7 @@ description: Operations executed bracket-with-slot.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 23
+            "index": 24
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -6318,7 +6578,7 @@ description: Operations executed bracket-with-slot.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 24
+            "index": 25
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -6342,7 +6602,7 @@ description: Operations executed bracket-with-slot.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 25
+            "index": 26
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -6366,7 +6626,7 @@ description: Operations executed bracket-with-slot.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 26
+            "index": 27
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -6390,7 +6650,7 @@ description: Operations executed bracket-with-slot.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 27
+            "index": 28
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -6414,7 +6674,7 @@ description: Operations executed bracket-with-slot.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 28
+            "index": 29
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -6438,7 +6698,7 @@ description: Operations executed bracket-with-slot.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 29
+            "index": 30
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -6462,7 +6722,7 @@ description: Operations executed bracket-with-slot.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 30
+            "index": 31
           },
           {
             "type": "VariableDeclarationDeclaration"

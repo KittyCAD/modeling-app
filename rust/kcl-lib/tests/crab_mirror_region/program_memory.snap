@@ -6,8 +6,8 @@ description: Variables in memory after executing crab_mirror_region.kcl
   "__sketch_1_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
-      "id": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
+      "artifactId": "[uuid]",
+      "id": "[uuid]",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -37,51 +37,41 @@ description: Variables in memory after executing crab_mirror_region.kcl
   },
   "belly": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "belly"
   },
   "bodyAfterClaw": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "bodyAfterClaw"
   },
   "bodyToEye": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "bodyToEye"
   },
   "bodyToLeg1": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "bodyToLeg1"
   },
   "bodyToLeg2": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "bodyToLeg2"
   },
   "bodyToLeg3": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "bodyToLeg3"
   },
   "clawNotch": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "clawNotch"
   },
   "clawOuterLower": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "clawOuterLower"
   },
   "clawReturn": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "clawReturn"
   },
   "clawUpperArm": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "clawUpperArm"
   },
@@ -94,7 +84,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
+                "id": "[uuid]",
                 "objectId": 78,
                 "kind": {
                   "arc": {
@@ -102,17 +92,21 @@ description: Variables in memory after executing crab_mirror_region.kcl
                       {
                         "n": 1.5092409450050073,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -2.2730097068559973,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -120,17 +114,21 @@ description: Variables in memory after executing crab_mirror_region.kcl
                       {
                         "n": -0.07604392031568925,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -2.6114163875126164,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -138,17 +136,21 @@ description: Variables in memory after executing crab_mirror_region.kcl
                       {
                         "n": 0.8575619696760547,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -3.1025641840410274,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -200,8 +202,8 @@ description: Variables in memory after executing crab_mirror_region.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -230,7 +232,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
                     "units": null
                   }
                 },
-                "sketchId": "c4fac378-d3df-5505-98c1-308b81b0fd96",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "belly"
@@ -246,7 +248,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "f5cca6d8-813c-5e62-81d9-e4e8e17ede93",
+                "id": "[uuid]",
                 "objectId": 38,
                 "kind": {
                   "line": {
@@ -254,17 +256,21 @@ description: Variables in memory after executing crab_mirror_region.kcl
                       {
                         "n": 3.06,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.88,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -272,17 +278,21 @@ description: Variables in memory after executing crab_mirror_region.kcl
                       {
                         "n": 2.02,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.8,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -320,8 +330,8 @@ description: Variables in memory after executing crab_mirror_region.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -350,7 +360,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
                     "units": null
                   }
                 },
-                "sketchId": "c4fac378-d3df-5505-98c1-308b81b0fd96",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "bodyAfterClaw"
@@ -366,7 +376,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+                "id": "[uuid]",
                 "objectId": 4,
                 "kind": {
                   "line": {
@@ -374,17 +384,21 @@ description: Variables in memory after executing crab_mirror_region.kcl
                       {
                         "n": 0.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 1.75,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -392,17 +406,21 @@ description: Variables in memory after executing crab_mirror_region.kcl
                       {
                         "n": 0.55,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 1.92,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -440,8 +458,8 @@ description: Variables in memory after executing crab_mirror_region.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -470,7 +488,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
                     "units": null
                   }
                 },
-                "sketchId": "c4fac378-d3df-5505-98c1-308b81b0fd96",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "bodyToEye"
@@ -486,7 +504,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7",
+                "id": "[uuid]",
                 "objectId": 41,
                 "kind": {
                   "line": {
@@ -494,17 +512,21 @@ description: Variables in memory after executing crab_mirror_region.kcl
                       {
                         "n": 2.02,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.8,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -512,17 +534,21 @@ description: Variables in memory after executing crab_mirror_region.kcl
                       {
                         "n": 1.92,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.42,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -560,8 +586,8 @@ description: Variables in memory after executing crab_mirror_region.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -590,7 +616,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
                     "units": null
                   }
                 },
-                "sketchId": "c4fac378-d3df-5505-98c1-308b81b0fd96",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "bodyToLeg1"
@@ -606,7 +632,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "7b681387-29ea-57f1-8713-d63280827139",
+                "id": "[uuid]",
                 "objectId": 53,
                 "kind": {
                   "line": {
@@ -614,17 +640,21 @@ description: Variables in memory after executing crab_mirror_region.kcl
                       {
                         "n": 2.14,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -0.08,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -632,17 +662,21 @@ description: Variables in memory after executing crab_mirror_region.kcl
                       {
                         "n": 1.96,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -0.56,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -680,8 +714,8 @@ description: Variables in memory after executing crab_mirror_region.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -710,7 +744,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
                     "units": null
                   }
                 },
-                "sketchId": "c4fac378-d3df-5505-98c1-308b81b0fd96",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "bodyToLeg2"
@@ -726,7 +760,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "f084ad07-5777-5607-a544-c69f455c2aab",
+                "id": "[uuid]",
                 "objectId": 65,
                 "kind": {
                   "line": {
@@ -734,17 +768,21 @@ description: Variables in memory after executing crab_mirror_region.kcl
                       {
                         "n": 2.24,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -1.24,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -752,17 +790,21 @@ description: Variables in memory after executing crab_mirror_region.kcl
                       {
                         "n": 1.82,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -1.74,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -800,8 +842,8 @@ description: Variables in memory after executing crab_mirror_region.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -830,7 +872,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
                     "units": null
                   }
                 },
-                "sketchId": "c4fac378-d3df-5505-98c1-308b81b0fd96",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "bodyToLeg3"
@@ -846,7 +888,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "523b9fc1-d681-5ef3-b407-128525533bfe",
+                "id": "[uuid]",
                 "objectId": 26,
                 "kind": {
                   "line": {
@@ -854,17 +896,21 @@ description: Variables in memory after executing crab_mirror_region.kcl
                       {
                         "n": 5.05,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 2.42,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -872,17 +918,21 @@ description: Variables in memory after executing crab_mirror_region.kcl
                       {
                         "n": 4.38,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 1.82,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -920,8 +970,8 @@ description: Variables in memory after executing crab_mirror_region.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -950,7 +1000,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
                     "units": null
                   }
                 },
-                "sketchId": "c4fac378-d3df-5505-98c1-308b81b0fd96",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "clawNotch"
@@ -966,7 +1016,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
+                "id": "[uuid]",
                 "objectId": 32,
                 "kind": {
                   "line": {
@@ -974,17 +1024,21 @@ description: Variables in memory after executing crab_mirror_region.kcl
                       {
                         "n": 4.98,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 1.12,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -992,17 +1046,21 @@ description: Variables in memory after executing crab_mirror_region.kcl
                       {
                         "n": 4.28,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.6,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -1040,8 +1098,8 @@ description: Variables in memory after executing crab_mirror_region.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1070,7 +1128,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
                     "units": null
                   }
                 },
-                "sketchId": "c4fac378-d3df-5505-98c1-308b81b0fd96",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "clawOuterLower"
@@ -1086,7 +1144,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "fc1035ae-3877-5cf6-9e94-7e1f3b755966",
+                "id": "[uuid]",
                 "objectId": 35,
                 "kind": {
                   "line": {
@@ -1094,17 +1152,21 @@ description: Variables in memory after executing crab_mirror_region.kcl
                       {
                         "n": 4.28,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.6,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -1112,17 +1174,21 @@ description: Variables in memory after executing crab_mirror_region.kcl
                       {
                         "n": 3.06,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.88,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -1160,8 +1226,8 @@ description: Variables in memory after executing crab_mirror_region.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1190,7 +1256,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
                     "units": null
                   }
                 },
-                "sketchId": "c4fac378-d3df-5505-98c1-308b81b0fd96",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "clawReturn"
@@ -1206,7 +1272,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "89316223-2ea1-5731-9c72-0492bc30fbe2",
+                "id": "[uuid]",
                 "objectId": 20,
                 "kind": {
                   "line": {
@@ -1214,17 +1280,21 @@ description: Variables in memory after executing crab_mirror_region.kcl
                       {
                         "n": 2.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 1.58,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -1232,17 +1302,21 @@ description: Variables in memory after executing crab_mirror_region.kcl
                       {
                         "n": 3.35,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 2.7,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -1280,8 +1354,8 @@ description: Variables in memory after executing crab_mirror_region.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1310,7 +1384,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
                     "units": null
                   }
                 },
-                "sketchId": "c4fac378-d3df-5505-98c1-308b81b0fd96",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "clawUpperArm"
@@ -1326,7 +1400,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
+                "id": "[uuid]",
                 "objectId": 11,
                 "kind": {
                   "arc": {
@@ -1334,17 +1408,21 @@ description: Variables in memory after executing crab_mirror_region.kcl
                       {
                         "n": 1.04,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 3.26,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -1352,17 +1430,21 @@ description: Variables in memory after executing crab_mirror_region.kcl
                       {
                         "n": 0.3,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 3.26,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -1370,17 +1452,21 @@ description: Variables in memory after executing crab_mirror_region.kcl
                       {
                         "n": 0.67,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 3.26,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -1432,8 +1518,8 @@ description: Variables in memory after executing crab_mirror_region.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1462,7 +1548,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
                     "units": null
                   }
                 },
-                "sketchId": "c4fac378-d3df-5505-98c1-308b81b0fd96",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "eyeBulb"
@@ -1478,7 +1564,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
+                "id": "[uuid]",
                 "objectId": 14,
                 "kind": {
                   "line": {
@@ -1486,17 +1572,21 @@ description: Variables in memory after executing crab_mirror_region.kcl
                       {
                         "n": 0.3,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 3.26,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -1504,17 +1594,21 @@ description: Variables in memory after executing crab_mirror_region.kcl
                       {
                         "n": 0.72,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 2.18,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -1552,8 +1646,8 @@ description: Variables in memory after executing crab_mirror_region.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1582,7 +1676,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
                     "units": null
                   }
                 },
-                "sketchId": "c4fac378-d3df-5505-98c1-308b81b0fd96",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "eyeStalkInner"
@@ -1598,7 +1692,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "91226189-7e64-5690-9203-67ee33a6eb03",
+                "id": "[uuid]",
                 "objectId": 7,
                 "kind": {
                   "line": {
@@ -1606,17 +1700,21 @@ description: Variables in memory after executing crab_mirror_region.kcl
                       {
                         "n": 0.55,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 1.92,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -1624,17 +1722,21 @@ description: Variables in memory after executing crab_mirror_region.kcl
                       {
                         "n": 1.04,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 3.26,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -1672,8 +1774,8 @@ description: Variables in memory after executing crab_mirror_region.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1702,7 +1804,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
                     "units": null
                   }
                 },
-                "sketchId": "c4fac378-d3df-5505-98c1-308b81b0fd96",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "eyeStalkOuter"
@@ -1718,7 +1820,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
+                "id": "[uuid]",
                 "objectId": 17,
                 "kind": {
                   "line": {
@@ -1726,17 +1828,21 @@ description: Variables in memory after executing crab_mirror_region.kcl
                       {
                         "n": 0.72,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 2.18,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -1744,17 +1850,21 @@ description: Variables in memory after executing crab_mirror_region.kcl
                       {
                         "n": 2.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 1.58,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -1792,8 +1902,8 @@ description: Variables in memory after executing crab_mirror_region.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1822,7 +1932,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
                     "units": null
                   }
                 },
-                "sketchId": "c4fac378-d3df-5505-98c1-308b81b0fd96",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "eyeToClaw"
@@ -1838,7 +1948,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
+                "id": "[uuid]",
                 "objectId": 50,
                 "kind": {
                   "line": {
@@ -1846,17 +1956,21 @@ description: Variables in memory after executing crab_mirror_region.kcl
                       {
                         "n": 4.9,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.18,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -1864,17 +1978,21 @@ description: Variables in memory after executing crab_mirror_region.kcl
                       {
                         "n": 2.14,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -0.08,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -1912,8 +2030,8 @@ description: Variables in memory after executing crab_mirror_region.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1942,7 +2060,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
                     "units": null
                   }
                 },
-                "sketchId": "c4fac378-d3df-5505-98c1-308b81b0fd96",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "leg1Lower"
@@ -1958,7 +2076,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "fe76cc2a-18a1-5937-82e8-b2572a7c2149",
+                "id": "[uuid]",
                 "objectId": 47,
                 "kind": {
                   "line": {
@@ -1966,17 +2084,21 @@ description: Variables in memory after executing crab_mirror_region.kcl
                       {
                         "n": 4.26,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.57,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -1984,17 +2106,21 @@ description: Variables in memory after executing crab_mirror_region.kcl
                       {
                         "n": 4.9,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.18,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -2032,8 +2158,8 @@ description: Variables in memory after executing crab_mirror_region.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -2062,7 +2188,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
                     "units": null
                   }
                 },
-                "sketchId": "c4fac378-d3df-5505-98c1-308b81b0fd96",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "leg1Tip"
@@ -2078,7 +2204,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "38f0111a-8034-5e85-9ec1-07dbc9646b06",
+                "id": "[uuid]",
                 "objectId": 44,
                 "kind": {
                   "line": {
@@ -2086,17 +2212,21 @@ description: Variables in memory after executing crab_mirror_region.kcl
                       {
                         "n": 1.92,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.42,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -2104,17 +2234,21 @@ description: Variables in memory after executing crab_mirror_region.kcl
                       {
                         "n": 4.26,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.57,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -2152,8 +2286,8 @@ description: Variables in memory after executing crab_mirror_region.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -2182,7 +2316,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
                     "units": null
                   }
                 },
-                "sketchId": "c4fac378-d3df-5505-98c1-308b81b0fd96",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "leg1Upper"
@@ -2198,7 +2332,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
+                "id": "[uuid]",
                 "objectId": 62,
                 "kind": {
                   "line": {
@@ -2206,17 +2340,21 @@ description: Variables in memory after executing crab_mirror_region.kcl
                       {
                         "n": 4.96,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -1.22,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -2224,17 +2362,21 @@ description: Variables in memory after executing crab_mirror_region.kcl
                       {
                         "n": 2.24,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -1.24,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -2272,8 +2414,8 @@ description: Variables in memory after executing crab_mirror_region.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -2302,7 +2444,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
                     "units": null
                   }
                 },
-                "sketchId": "c4fac378-d3df-5505-98c1-308b81b0fd96",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "leg2Lower"
@@ -2318,7 +2460,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "e00e9caf-6e9e-5221-8545-b199546c367f",
+                "id": "[uuid]",
                 "objectId": 59,
                 "kind": {
                   "line": {
@@ -2326,17 +2468,21 @@ description: Variables in memory after executing crab_mirror_region.kcl
                       {
                         "n": 4.28,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -0.76,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -2344,17 +2490,21 @@ description: Variables in memory after executing crab_mirror_region.kcl
                       {
                         "n": 4.96,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -1.22,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -2392,8 +2542,8 @@ description: Variables in memory after executing crab_mirror_region.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -2422,7 +2572,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
                     "units": null
                   }
                 },
-                "sketchId": "c4fac378-d3df-5505-98c1-308b81b0fd96",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "leg2Tip"
@@ -2438,7 +2588,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "19fe8534-2bed-5e2a-afe9-63f57b621004",
+                "id": "[uuid]",
                 "objectId": 56,
                 "kind": {
                   "line": {
@@ -2446,17 +2596,21 @@ description: Variables in memory after executing crab_mirror_region.kcl
                       {
                         "n": 1.96,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -0.56,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -2464,17 +2618,21 @@ description: Variables in memory after executing crab_mirror_region.kcl
                       {
                         "n": 4.28,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -0.76,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -2512,8 +2670,8 @@ description: Variables in memory after executing crab_mirror_region.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -2542,7 +2700,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
                     "units": null
                   }
                 },
-                "sketchId": "c4fac378-d3df-5505-98c1-308b81b0fd96",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "leg2Upper"
@@ -2558,7 +2716,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "c6c38d17-92b3-5556-b0a7-5be52ccdd1ec",
+                "id": "[uuid]",
                 "objectId": 74,
                 "kind": {
                   "line": {
@@ -2566,17 +2724,21 @@ description: Variables in memory after executing crab_mirror_region.kcl
                       {
                         "n": 4.72,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -2.98,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -2584,17 +2746,21 @@ description: Variables in memory after executing crab_mirror_region.kcl
                       {
                         "n": 1.5092409450357664,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -2.2730097068229878,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -2632,8 +2798,8 @@ description: Variables in memory after executing crab_mirror_region.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -2662,7 +2828,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
                     "units": null
                   }
                 },
-                "sketchId": "c4fac378-d3df-5505-98c1-308b81b0fd96",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "leg3Lower"
@@ -2678,7 +2844,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "9370af21-6a1d-5f9a-b1d3-83351b2043e6",
+                "id": "[uuid]",
                 "objectId": 71,
                 "kind": {
                   "line": {
@@ -2686,17 +2852,21 @@ description: Variables in memory after executing crab_mirror_region.kcl
                       {
                         "n": 4.02,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -2.34,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -2704,17 +2874,21 @@ description: Variables in memory after executing crab_mirror_region.kcl
                       {
                         "n": 4.72,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -2.98,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -2752,8 +2926,8 @@ description: Variables in memory after executing crab_mirror_region.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -2782,7 +2956,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
                     "units": null
                   }
                 },
-                "sketchId": "c4fac378-d3df-5505-98c1-308b81b0fd96",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "leg3Tip"
@@ -2798,7 +2972,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
+                "id": "[uuid]",
                 "objectId": 68,
                 "kind": {
                   "line": {
@@ -2806,17 +2980,21 @@ description: Variables in memory after executing crab_mirror_region.kcl
                       {
                         "n": 1.82,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -1.74,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -2824,17 +3002,21 @@ description: Variables in memory after executing crab_mirror_region.kcl
                       {
                         "n": 4.02,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -2.34,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -2872,8 +3054,8 @@ description: Variables in memory after executing crab_mirror_region.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -2902,7 +3084,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
                     "units": null
                   }
                 },
-                "sketchId": "c4fac378-d3df-5505-98c1-308b81b0fd96",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "leg3Upper"
@@ -2918,7 +3100,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "41c630c9-9d44-581b-98af-caee575bea48",
+                "id": "[uuid]",
                 "objectId": 29,
                 "kind": {
                   "line": {
@@ -2926,17 +3108,21 @@ description: Variables in memory after executing crab_mirror_region.kcl
                       {
                         "n": 4.38,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 1.82,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -2944,17 +3130,21 @@ description: Variables in memory after executing crab_mirror_region.kcl
                       {
                         "n": 4.98,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 1.12,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -2992,8 +3182,8 @@ description: Variables in memory after executing crab_mirror_region.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -3022,7 +3212,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
                     "units": null
                   }
                 },
-                "sketchId": "c4fac378-d3df-5505-98c1-308b81b0fd96",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "lowerPincer"
@@ -3039,11 +3229,11 @@ description: Variables in memory after executing crab_mirror_region.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "c4fac378-d3df-5505-98c1-308b81b0fd96",
+              "id": "[uuid]",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -3067,7 +3257,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "91226189-7e64-5690-9203-67ee33a6eb03",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -3091,7 +3281,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -3121,7 +3311,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -3145,7 +3335,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -3169,7 +3359,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "89316223-2ea1-5731-9c72-0492bc30fbe2",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -3193,7 +3383,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -3217,7 +3407,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "523b9fc1-d681-5ef3-b407-128525533bfe",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -3241,7 +3431,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "41c630c9-9d44-581b-98af-caee575bea48",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -3265,7 +3455,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -3289,7 +3479,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "fc1035ae-3877-5cf6-9e94-7e1f3b755966",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -3313,7 +3503,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "f5cca6d8-813c-5e62-81d9-e4e8e17ede93",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -3337,7 +3527,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -3361,7 +3551,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "38f0111a-8034-5e85-9ec1-07dbc9646b06",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -3385,7 +3575,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "fe76cc2a-18a1-5937-82e8-b2572a7c2149",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -3409,7 +3599,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -3433,7 +3623,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "7b681387-29ea-57f1-8713-d63280827139",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -3457,7 +3647,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "19fe8534-2bed-5e2a-afe9-63f57b621004",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -3481,7 +3671,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "e00e9caf-6e9e-5221-8545-b199546c367f",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -3505,7 +3695,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -3529,7 +3719,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "f084ad07-5777-5607-a544-c69f455c2aab",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -3553,7 +3743,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -3577,7 +3767,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "9370af21-6a1d-5f9a-b1d3-83351b2043e6",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -3601,7 +3791,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "c6c38d17-92b3-5556-b0a7-5be52ccdd1ec",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -3625,7 +3815,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -3656,8 +3846,8 @@ description: Variables in memory after executing crab_mirror_region.kcl
               ],
               "on": {
                 "type": "plane",
-                "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                "artifactId": "[uuid]",
+                "id": "[uuid]",
                 "objectId": 0,
                 "kind": "Custom",
                 "origin": {
@@ -3697,7 +3887,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
                 "units": "in",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "5f95e913-96e4-58df-abe6-125bedd61cad",
+                  "id": "[uuid]",
                   "sourceRange": []
                 }
               },
@@ -3803,8 +3993,8 @@ description: Variables in memory after executing crab_mirror_region.kcl
                   "value": "upperPincer"
                 }
               },
-              "artifactId": "c4fac378-d3df-5505-98c1-308b81b0fd96",
-              "originalId": "c4fac378-d3df-5505-98c1-308b81b0fd96",
+              "artifactId": "[uuid]",
+              "originalId": "[uuid]",
               "units": "in",
               "isClosed": "no"
             }
@@ -3818,7 +4008,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b",
+                "id": "[uuid]",
                 "objectId": 23,
                 "kind": {
                   "line": {
@@ -3826,17 +4016,21 @@ description: Variables in memory after executing crab_mirror_region.kcl
                       {
                         "n": 3.35,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 2.7,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -3844,17 +4038,21 @@ description: Variables in memory after executing crab_mirror_region.kcl
                       {
                         "n": 5.05,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 2.42,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -3892,8 +4090,8 @@ description: Variables in memory after executing crab_mirror_region.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -3922,7 +4120,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
                     "units": null
                   }
                 },
-                "sketchId": "c4fac378-d3df-5505-98c1-308b81b0fd96",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "upperPincer"
@@ -3939,11 +4137,11 @@ description: Variables in memory after executing crab_mirror_region.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "c4fac378-d3df-5505-98c1-308b81b0fd96",
+      "id": "[uuid]",
       "paths": [
         {
           "__geoMeta": {
-            "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -3967,7 +4165,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
         },
         {
           "__geoMeta": {
-            "id": "91226189-7e64-5690-9203-67ee33a6eb03",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -3991,7 +4189,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
         },
         {
           "__geoMeta": {
-            "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "ccw": true,
@@ -4021,7 +4219,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
         },
         {
           "__geoMeta": {
-            "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -4045,7 +4243,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
         },
         {
           "__geoMeta": {
-            "id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -4069,7 +4267,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
         },
         {
           "__geoMeta": {
-            "id": "89316223-2ea1-5731-9c72-0492bc30fbe2",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -4093,7 +4291,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
         },
         {
           "__geoMeta": {
-            "id": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -4117,7 +4315,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
         },
         {
           "__geoMeta": {
-            "id": "523b9fc1-d681-5ef3-b407-128525533bfe",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -4141,7 +4339,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
         },
         {
           "__geoMeta": {
-            "id": "41c630c9-9d44-581b-98af-caee575bea48",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -4165,7 +4363,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
         },
         {
           "__geoMeta": {
-            "id": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -4189,7 +4387,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
         },
         {
           "__geoMeta": {
-            "id": "fc1035ae-3877-5cf6-9e94-7e1f3b755966",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -4213,7 +4411,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
         },
         {
           "__geoMeta": {
-            "id": "f5cca6d8-813c-5e62-81d9-e4e8e17ede93",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -4237,7 +4435,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
         },
         {
           "__geoMeta": {
-            "id": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -4261,7 +4459,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
         },
         {
           "__geoMeta": {
-            "id": "38f0111a-8034-5e85-9ec1-07dbc9646b06",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -4285,7 +4483,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
         },
         {
           "__geoMeta": {
-            "id": "fe76cc2a-18a1-5937-82e8-b2572a7c2149",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -4309,7 +4507,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
         },
         {
           "__geoMeta": {
-            "id": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -4333,7 +4531,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
         },
         {
           "__geoMeta": {
-            "id": "7b681387-29ea-57f1-8713-d63280827139",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -4357,7 +4555,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
         },
         {
           "__geoMeta": {
-            "id": "19fe8534-2bed-5e2a-afe9-63f57b621004",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -4381,7 +4579,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
         },
         {
           "__geoMeta": {
-            "id": "e00e9caf-6e9e-5221-8545-b199546c367f",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -4405,7 +4603,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
         },
         {
           "__geoMeta": {
-            "id": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -4429,7 +4627,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
         },
         {
           "__geoMeta": {
-            "id": "f084ad07-5777-5607-a544-c69f455c2aab",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -4453,7 +4651,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
         },
         {
           "__geoMeta": {
-            "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -4477,7 +4675,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
         },
         {
           "__geoMeta": {
-            "id": "9370af21-6a1d-5f9a-b1d3-83351b2043e6",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -4501,7 +4699,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
         },
         {
           "__geoMeta": {
-            "id": "c6c38d17-92b3-5556-b0a7-5be52ccdd1ec",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -4525,7 +4723,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
         },
         {
           "__geoMeta": {
-            "id": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "ccw": true,
@@ -4556,8 +4754,8 @@ description: Variables in memory after executing crab_mirror_region.kcl
       ],
       "on": {
         "type": "plane",
-        "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-        "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+        "artifactId": "[uuid]",
+        "id": "[uuid]",
         "objectId": 0,
         "kind": "Custom",
         "origin": {
@@ -4597,7 +4795,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
         "units": "in",
         "tag": null,
         "__geoMeta": {
-          "id": "5f95e913-96e4-58df-abe6-125bedd61cad",
+          "id": "[uuid]",
           "sourceRange": []
         }
       },
@@ -4703,8 +4901,8 @@ description: Variables in memory after executing crab_mirror_region.kcl
           "value": "upperPincer"
         }
       },
-      "artifactId": "c4fac378-d3df-5505-98c1-308b81b0fd96",
-      "originalId": "c4fac378-d3df-5505-98c1-308b81b0fd96",
+      "artifactId": "[uuid]",
+      "originalId": "[uuid]",
       "units": "in",
       "isClosed": "maybe"
     }
@@ -4713,11 +4911,11 @@ description: Variables in memory after executing crab_mirror_region.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "1c78fa6a-a102-5dd7-82bb-60d7ccea8fa1",
+      "id": "[uuid]",
       "paths": [
         {
           "__geoMeta": {
-            "id": "ad4c7373-f024-5795-883a-da5ddd30d675",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -4741,7 +4939,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
         },
         {
           "__geoMeta": {
-            "id": "82782340-9189-5cae-8eed-388e62b5b299",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -4765,7 +4963,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
         },
         {
           "__geoMeta": {
-            "id": "b9783d4a-18e7-5c43-bee8-94d6ac9046a5",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -4789,7 +4987,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
         },
         {
           "__geoMeta": {
-            "id": "08b7e050-7844-5c85-a30b-72e0aa29adb1",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -4813,7 +5011,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
         },
         {
           "__geoMeta": {
-            "id": "6ebf2286-df9b-5dce-b3d5-cb4838a9703e",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -4837,7 +5035,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
         },
         {
           "__geoMeta": {
-            "id": "c5e4d6d5-55ab-55a4-a635-62aaa53956ca",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -4861,7 +5059,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
         },
         {
           "__geoMeta": {
-            "id": "969502ce-db48-5a37-9b2e-96bbce139959",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -4885,7 +5083,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
         },
         {
           "__geoMeta": {
-            "id": "d1f3a375-5481-5dfa-9f65-5cf33b5f72b4",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -4909,7 +5107,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
         },
         {
           "__geoMeta": {
-            "id": "308c5ac0-f1e0-579d-b904-03b34b3554e6",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -4933,7 +5131,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
         },
         {
           "__geoMeta": {
-            "id": "3b9f38a4-dea0-5ed2-b0d0-dbe839c91e41",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -4957,7 +5155,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
         },
         {
           "__geoMeta": {
-            "id": "75eff1d2-3dfa-5c79-97d7-57d103210069",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -4981,7 +5179,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
         },
         {
           "__geoMeta": {
-            "id": "ca21a329-1119-5eb4-8765-85340b98194d",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -5005,7 +5203,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
         },
         {
           "__geoMeta": {
-            "id": "f896a166-113e-525d-a9ca-5ac54459d702",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -5029,7 +5227,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
         },
         {
           "__geoMeta": {
-            "id": "3a8de36a-3d51-5f43-83d4-d1412748cb8d",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -5053,7 +5251,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
         },
         {
           "__geoMeta": {
-            "id": "b1038f25-e90b-585e-b612-6d51a51e5ae2",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -5077,7 +5275,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
         },
         {
           "__geoMeta": {
-            "id": "89c01bb6-a73c-5bec-9a57-80613ab46316",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -5101,7 +5299,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
         },
         {
           "__geoMeta": {
-            "id": "c5fb8efc-97be-583a-92b7-66a30a022af5",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -5125,7 +5323,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
         },
         {
           "__geoMeta": {
-            "id": "40ac79ef-f1bb-57ed-afaa-ea4efb8c6fa2",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -5149,7 +5347,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
         },
         {
           "__geoMeta": {
-            "id": "c626a2f3-e471-590e-a6e0-82e3975d5f93",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -5173,7 +5371,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
         },
         {
           "__geoMeta": {
-            "id": "5776e9de-55fd-57fa-9216-48f9a730ba14",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -5197,7 +5395,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
         },
         {
           "__geoMeta": {
-            "id": "71e5667f-120b-5cc6-9f34-84cf4c22f940",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -5221,7 +5419,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
         },
         {
           "__geoMeta": {
-            "id": "15e2cdab-527a-5310-a829-8c30e394ddd8",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -5245,7 +5443,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
         },
         {
           "__geoMeta": {
-            "id": "ca1eb218-932e-5bab-84fb-21439a59cfa7",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -5269,7 +5467,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
         },
         {
           "__geoMeta": {
-            "id": "c5104e89-b71d-56f3-a702-582eb084570c",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "ccw": true,
@@ -5300,8 +5498,8 @@ description: Variables in memory after executing crab_mirror_region.kcl
       ],
       "on": {
         "type": "plane",
-        "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-        "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+        "artifactId": "[uuid]",
+        "id": "[uuid]",
         "objectId": 0,
         "kind": "Custom",
         "origin": {
@@ -5341,7 +5539,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
         "units": "in",
         "tag": null,
         "__geoMeta": {
-          "id": "5f95e913-96e4-58df-abe6-125bedd61cad",
+          "id": "[uuid]",
           "sourceRange": []
         }
       },
@@ -5447,8 +5645,8 @@ description: Variables in memory after executing crab_mirror_region.kcl
           "value": "upperPincer"
         }
       },
-      "artifactId": "1c78fa6a-a102-5dd7-82bb-60d7ccea8fa1",
-      "originalId": "1c78fa6a-a102-5dd7-82bb-60d7ccea8fa1",
+      "artifactId": "[uuid]",
+      "originalId": "[uuid]",
       "units": "in",
       "isClosed": "explicitly"
     }
@@ -5457,14 +5655,14 @@ description: Variables in memory after executing crab_mirror_region.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "1c78fa6a-a102-5dd7-82bb-60d7ccea8fa1",
-      "originalId": "1c78fa6a-a102-5dd7-82bb-60d7ccea8fa1",
-      "topologyId": "1c78fa6a-a102-5dd7-82bb-60d7ccea8fa1",
-      "artifactId": "c2ac0614-6028-5f8f-a889-66b05d4aa1c7",
+      "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
+      "artifactId": "[uuid]",
       "value": [
         {
-          "faceId": "c85c4e1a-2c09-5f1a-9dd9-007d03435b07",
-          "id": "ad4c7373-f024-5795-883a-da5ddd30d675",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 87,
@@ -5477,8 +5675,8 @@ description: Variables in memory after executing crab_mirror_region.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "65d236f6-0708-5ec6-89db-55c85e0be3bb",
-          "id": "82782340-9189-5cae-8eed-388e62b5b299",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 169,
@@ -5491,8 +5689,8 @@ description: Variables in memory after executing crab_mirror_region.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "558eb171-8d89-5a72-895f-e6db98260326",
-          "id": "b9783d4a-18e7-5c43-bee8-94d6ac9046a5",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 375,
@@ -5505,8 +5703,8 @@ description: Variables in memory after executing crab_mirror_region.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "398276fa-0471-5fb2-b9e6-5b236f2649b6",
-          "id": "08b7e050-7844-5c85-a30b-72e0aa29adb1",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 464,
@@ -5519,8 +5717,8 @@ description: Variables in memory after executing crab_mirror_region.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "9ac6ca44-5eb8-5152-815c-e15cbd120df0",
-          "id": "6ebf2286-df9b-5dce-b3d5-cb4838a9703e",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 549,
@@ -5533,8 +5731,8 @@ description: Variables in memory after executing crab_mirror_region.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "267d2084-c323-571f-bc57-da5c740faf5d",
-          "id": "c5e4d6d5-55ab-55a4-a635-62aaa53956ca",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 637,
@@ -5547,8 +5745,8 @@ description: Variables in memory after executing crab_mirror_region.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "d441b67f-ef54-5dd6-9c2d-0ebdb49b4e5e",
-          "id": "969502ce-db48-5a37-9b2e-96bbce139959",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 724,
@@ -5561,8 +5759,8 @@ description: Variables in memory after executing crab_mirror_region.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "2fce90dc-4280-51e6-bd0c-4050d4051c9f",
-          "id": "d1f3a375-5481-5dfa-9f65-5cf33b5f72b4",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 809,
@@ -5575,8 +5773,8 @@ description: Variables in memory after executing crab_mirror_region.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "a4b677e0-1f6a-5600-bfd2-743b525fa42d",
-          "id": "308c5ac0-f1e0-579d-b904-03b34b3554e6",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 896,
@@ -5589,8 +5787,8 @@ description: Variables in memory after executing crab_mirror_region.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "7013a77e-298e-509c-8e1b-4a6635dfa821",
-          "id": "3b9f38a4-dea0-5ed2-b0d0-dbe839c91e41",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 986,
@@ -5603,8 +5801,8 @@ description: Variables in memory after executing crab_mirror_region.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "68b1eb36-979a-55a5-a7fd-895f21a990bc",
-          "id": "75eff1d2-3dfa-5c79-97d7-57d103210069",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 1072,
@@ -5617,8 +5815,8 @@ description: Variables in memory after executing crab_mirror_region.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "8d1c464a-e7ef-5764-8bd4-a804bfb25553",
-          "id": "ca21a329-1119-5eb4-8765-85340b98194d",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 1161,
@@ -5631,8 +5829,8 @@ description: Variables in memory after executing crab_mirror_region.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "e848b164-e9d9-5073-a72f-98abeaba1f12",
-          "id": "f896a166-113e-525d-a9ca-5ac54459d702",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 1247,
@@ -5645,8 +5843,8 @@ description: Variables in memory after executing crab_mirror_region.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "bbf23060-5737-50bc-9bd5-b361ea132f5c",
-          "id": "3a8de36a-3d51-5f43-83d4-d1412748cb8d",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 1332,
@@ -5659,8 +5857,8 @@ description: Variables in memory after executing crab_mirror_region.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "1514fe48-c58d-5678-a258-54a774f78d17",
-          "id": "b1038f25-e90b-585e-b612-6d51a51e5ae2",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 1415,
@@ -5673,8 +5871,8 @@ description: Variables in memory after executing crab_mirror_region.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "18da4ab5-3f50-52b9-a093-19dc76957d35",
-          "id": "89c01bb6-a73c-5bec-9a57-80613ab46316",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 1501,
@@ -5687,8 +5885,8 @@ description: Variables in memory after executing crab_mirror_region.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "a5b568a9-bcb6-5abd-bb6e-eca494c51a17",
-          "id": "c5fb8efc-97be-583a-92b7-66a30a022af5",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 1589,
@@ -5701,8 +5899,8 @@ description: Variables in memory after executing crab_mirror_region.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "8433dac8-5ed1-521d-b2a5-010931750e00",
-          "id": "40ac79ef-f1bb-57ed-afaa-ea4efb8c6fa2",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 1676,
@@ -5715,8 +5913,8 @@ description: Variables in memory after executing crab_mirror_region.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "e5799cf5-de1a-5da4-b357-8a5929270c4b",
-          "id": "c626a2f3-e471-590e-a6e0-82e3975d5f93",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 1761,
@@ -5729,8 +5927,8 @@ description: Variables in memory after executing crab_mirror_region.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "dab9a8a6-fdf2-5ba7-beff-5aed6e1f6727",
-          "id": "5776e9de-55fd-57fa-9216-48f9a730ba14",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 1848,
@@ -5743,8 +5941,8 @@ description: Variables in memory after executing crab_mirror_region.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "512d9a4b-e48b-5f24-8cfd-c7e9155d18ee",
-          "id": "71e5667f-120b-5cc6-9f34-84cf4c22f940",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 1936,
@@ -5757,8 +5955,8 @@ description: Variables in memory after executing crab_mirror_region.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "c36e5475-762f-554d-89da-1fa3e79b8479",
-          "id": "15e2cdab-527a-5310-a829-8c30e394ddd8",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 2023,
@@ -5771,8 +5969,8 @@ description: Variables in memory after executing crab_mirror_region.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "5a357f7f-e4e4-57f2-8ab9-f9193618cd66",
-          "id": "ca1eb218-932e-5bab-84fb-21439a59cfa7",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 2108,
@@ -5785,8 +5983,8 @@ description: Variables in memory after executing crab_mirror_region.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "acaa86dc-0cdd-5d43-b6ad-3ff72ddb7db4",
-          "id": "c5104e89-b71d-56f3-a702-582eb084570c",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 2195,
@@ -5802,11 +6000,11 @@ description: Variables in memory after executing crab_mirror_region.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "1c78fa6a-a102-5dd7-82bb-60d7ccea8fa1",
+        "id": "[uuid]",
         "paths": [
           {
             "__geoMeta": {
-              "id": "ad4c7373-f024-5795-883a-da5ddd30d675",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -5830,7 +6028,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
           },
           {
             "__geoMeta": {
-              "id": "82782340-9189-5cae-8eed-388e62b5b299",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -5854,7 +6052,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
           },
           {
             "__geoMeta": {
-              "id": "b9783d4a-18e7-5c43-bee8-94d6ac9046a5",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -5878,7 +6076,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
           },
           {
             "__geoMeta": {
-              "id": "08b7e050-7844-5c85-a30b-72e0aa29adb1",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -5902,7 +6100,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
           },
           {
             "__geoMeta": {
-              "id": "6ebf2286-df9b-5dce-b3d5-cb4838a9703e",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -5926,7 +6124,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
           },
           {
             "__geoMeta": {
-              "id": "c5e4d6d5-55ab-55a4-a635-62aaa53956ca",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -5950,7 +6148,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
           },
           {
             "__geoMeta": {
-              "id": "969502ce-db48-5a37-9b2e-96bbce139959",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -5974,7 +6172,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
           },
           {
             "__geoMeta": {
-              "id": "d1f3a375-5481-5dfa-9f65-5cf33b5f72b4",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -5998,7 +6196,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
           },
           {
             "__geoMeta": {
-              "id": "308c5ac0-f1e0-579d-b904-03b34b3554e6",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -6022,7 +6220,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
           },
           {
             "__geoMeta": {
-              "id": "3b9f38a4-dea0-5ed2-b0d0-dbe839c91e41",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -6046,7 +6244,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
           },
           {
             "__geoMeta": {
-              "id": "75eff1d2-3dfa-5c79-97d7-57d103210069",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -6070,7 +6268,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
           },
           {
             "__geoMeta": {
-              "id": "ca21a329-1119-5eb4-8765-85340b98194d",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -6094,7 +6292,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
           },
           {
             "__geoMeta": {
-              "id": "f896a166-113e-525d-a9ca-5ac54459d702",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -6118,7 +6316,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
           },
           {
             "__geoMeta": {
-              "id": "3a8de36a-3d51-5f43-83d4-d1412748cb8d",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -6142,7 +6340,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
           },
           {
             "__geoMeta": {
-              "id": "b1038f25-e90b-585e-b612-6d51a51e5ae2",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -6166,7 +6364,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
           },
           {
             "__geoMeta": {
-              "id": "89c01bb6-a73c-5bec-9a57-80613ab46316",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -6190,7 +6388,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
           },
           {
             "__geoMeta": {
-              "id": "c5fb8efc-97be-583a-92b7-66a30a022af5",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -6214,7 +6412,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
           },
           {
             "__geoMeta": {
-              "id": "40ac79ef-f1bb-57ed-afaa-ea4efb8c6fa2",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -6238,7 +6436,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
           },
           {
             "__geoMeta": {
-              "id": "c626a2f3-e471-590e-a6e0-82e3975d5f93",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -6262,7 +6460,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
           },
           {
             "__geoMeta": {
-              "id": "5776e9de-55fd-57fa-9216-48f9a730ba14",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -6286,7 +6484,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
           },
           {
             "__geoMeta": {
-              "id": "71e5667f-120b-5cc6-9f34-84cf4c22f940",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -6310,7 +6508,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
           },
           {
             "__geoMeta": {
-              "id": "15e2cdab-527a-5310-a829-8c30e394ddd8",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -6334,7 +6532,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
           },
           {
             "__geoMeta": {
-              "id": "ca1eb218-932e-5bab-84fb-21439a59cfa7",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -6358,7 +6556,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
           },
           {
             "__geoMeta": {
-              "id": "c5104e89-b71d-56f3-a702-582eb084570c",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": true,
@@ -6389,8 +6587,8 @@ description: Variables in memory after executing crab_mirror_region.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "artifactId": "[uuid]",
+          "id": "[uuid]",
           "objectId": 0,
           "kind": "Custom",
           "origin": {
@@ -6430,7 +6628,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
           "units": "in",
           "tag": null,
           "__geoMeta": {
-            "id": "5f95e913-96e4-58df-abe6-125bedd61cad",
+            "id": "[uuid]",
             "sourceRange": []
           }
         },
@@ -6536,13 +6734,13 @@ description: Variables in memory after executing crab_mirror_region.kcl
             "value": "upperPincer"
           }
         },
-        "artifactId": "1c78fa6a-a102-5dd7-82bb-60d7ccea8fa1",
-        "originalId": "1c78fa6a-a102-5dd7-82bb-60d7ccea8fa1",
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
         "units": "in",
         "isClosed": "explicitly"
       },
-      "startCapId": "a807c987-1e3f-56cc-8a50-8c98a320f35f",
-      "endCapId": "0a369814-3da2-5a42-96e5-b789a913e72d",
+      "startCapId": "[uuid]",
+      "endCapId": "[uuid]",
       "units": "in",
       "sectional": false
     }
@@ -6551,83 +6749,70 @@ description: Variables in memory after executing crab_mirror_region.kcl
     "type": "Number",
     "value": 2.0,
     "ty": {
-      "in": null,
       "type": "Known",
-      "type": "Length"
+      "value": {
+        "type": "Length",
+        "value": "in"
+      }
     }
   },
   "eyeBulb": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "eyeBulb"
   },
   "eyeStalkInner": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "eyeStalkInner"
   },
   "eyeStalkOuter": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "eyeStalkOuter"
   },
   "eyeToClaw": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "eyeToClaw"
   },
   "leg1Lower": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "leg1Lower"
   },
   "leg1Tip": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "leg1Tip"
   },
   "leg1Upper": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "leg1Upper"
   },
   "leg2Lower": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "leg2Lower"
   },
   "leg2Tip": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "leg2Tip"
   },
   "leg2Upper": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "leg2Upper"
   },
   "leg3Lower": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "leg3Lower"
   },
   "leg3Tip": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "leg3Tip"
   },
   "leg3Upper": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "leg3Upper"
   },
   "lowerPincer": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "lowerPincer"
   },
   "upperPincer": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "upperPincer"
   }

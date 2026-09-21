@@ -6,8 +6,8 @@ description: Variables in memory after executing single-impeller-blade.kcl
   "__sketch_1_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
-      "id": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
+      "artifactId": "[uuid]",
+      "id": "[uuid]",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -38,8 +38,8 @@ description: Variables in memory after executing single-impeller-blade.kcl
   "__sketch_21_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "5173c024-ac32-59f6-acbe-69ddbf68893d",
-      "id": "5173c024-ac32-59f6-acbe-69ddbf68893d",
+      "artifactId": "[uuid]",
+      "id": "[uuid]",
       "objectId": 20,
       "kind": "Custom",
       "origin": {
@@ -73,8 +73,10 @@ description: Variables in memory after executing single-impeller-blade.kcl
     "value": 40.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "bladeHeight": {
@@ -82,8 +84,10 @@ description: Variables in memory after executing single-impeller-blade.kcl
     "value": 60.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "bladeThickness": {
@@ -91,35 +95,33 @@ description: Variables in memory after executing single-impeller-blade.kcl
     "value": 5.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "line1": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "line1"
   },
   "line2": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "line2"
   },
   "line3": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "line3"
   },
   "line4": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "line4"
   },
   "rootPlane": {
     "type": "Plane",
     "value": {
-      "artifactId": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
-      "id": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
+      "artifactId": "[uuid]",
+      "id": "[uuid]",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -156,7 +158,7 @@ description: Variables in memory after executing single-impeller-blade.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+                "id": "[uuid]",
                 "objectId": 4,
                 "kind": {
                   "line": {
@@ -164,17 +166,21 @@ description: Variables in memory after executing single-impeller-blade.kcl
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -182,17 +188,21 @@ description: Variables in memory after executing single-impeller-blade.kcl
                       {
                         "n": 5.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -230,8 +240,8 @@ description: Variables in memory after executing single-impeller-blade.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -260,7 +270,7 @@ description: Variables in memory after executing single-impeller-blade.kcl
                     "units": null
                   }
                 },
-                "sketchId": "fc1035ae-3877-5cf6-9e94-7e1f3b755966",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -276,7 +286,7 @@ description: Variables in memory after executing single-impeller-blade.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "91226189-7e64-5690-9203-67ee33a6eb03",
+                "id": "[uuid]",
                 "objectId": 7,
                 "kind": {
                   "line": {
@@ -284,17 +294,21 @@ description: Variables in memory after executing single-impeller-blade.kcl
                       {
                         "n": 5.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -302,17 +316,21 @@ description: Variables in memory after executing single-impeller-blade.kcl
                       {
                         "n": 5.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 40.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -350,8 +368,8 @@ description: Variables in memory after executing single-impeller-blade.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -380,7 +398,7 @@ description: Variables in memory after executing single-impeller-blade.kcl
                     "units": null
                   }
                 },
-                "sketchId": "fc1035ae-3877-5cf6-9e94-7e1f3b755966",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line2"
@@ -396,7 +414,7 @@ description: Variables in memory after executing single-impeller-blade.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
+                "id": "[uuid]",
                 "objectId": 11,
                 "kind": {
                   "line": {
@@ -404,17 +422,21 @@ description: Variables in memory after executing single-impeller-blade.kcl
                       {
                         "n": 5.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 40.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -422,17 +444,21 @@ description: Variables in memory after executing single-impeller-blade.kcl
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 40.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -470,8 +496,8 @@ description: Variables in memory after executing single-impeller-blade.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -500,7 +526,7 @@ description: Variables in memory after executing single-impeller-blade.kcl
                     "units": null
                   }
                 },
-                "sketchId": "fc1035ae-3877-5cf6-9e94-7e1f3b755966",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line3"
@@ -516,7 +542,7 @@ description: Variables in memory after executing single-impeller-blade.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "89316223-2ea1-5731-9c72-0492bc30fbe2",
+                "id": "[uuid]",
                 "objectId": 15,
                 "kind": {
                   "line": {
@@ -524,17 +550,21 @@ description: Variables in memory after executing single-impeller-blade.kcl
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 40.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -542,17 +572,21 @@ description: Variables in memory after executing single-impeller-blade.kcl
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -590,8 +624,8 @@ description: Variables in memory after executing single-impeller-blade.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -620,7 +654,7 @@ description: Variables in memory after executing single-impeller-blade.kcl
                     "units": null
                   }
                 },
-                "sketchId": "fc1035ae-3877-5cf6-9e94-7e1f3b755966",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line4"
@@ -637,11 +671,11 @@ description: Variables in memory after executing single-impeller-blade.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "fc1035ae-3877-5cf6-9e94-7e1f3b755966",
+              "id": "[uuid]",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -665,7 +699,7 @@ description: Variables in memory after executing single-impeller-blade.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "91226189-7e64-5690-9203-67ee33a6eb03",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -689,7 +723,7 @@ description: Variables in memory after executing single-impeller-blade.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -713,7 +747,7 @@ description: Variables in memory after executing single-impeller-blade.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "89316223-2ea1-5731-9c72-0492bc30fbe2",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -738,8 +772,8 @@ description: Variables in memory after executing single-impeller-blade.kcl
               ],
               "on": {
                 "type": "plane",
-                "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                "artifactId": "[uuid]",
+                "id": "[uuid]",
                 "objectId": 0,
                 "kind": "Custom",
                 "origin": {
@@ -779,7 +813,7 @@ description: Variables in memory after executing single-impeller-blade.kcl
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "90a5d279-3b15-5070-b2fd-a30474df87a6",
+                  "id": "[uuid]",
                   "sourceRange": []
                 }
               },
@@ -801,8 +835,8 @@ description: Variables in memory after executing single-impeller-blade.kcl
                   "value": "line4"
                 }
               },
-              "artifactId": "fc1035ae-3877-5cf6-9e94-7e1f3b755966",
-              "originalId": "fc1035ae-3877-5cf6-9e94-7e1f3b755966",
+              "artifactId": "[uuid]",
+              "originalId": "[uuid]",
               "units": "mm",
               "isClosed": "implicitly"
             }
@@ -816,8 +850,8 @@ description: Variables in memory after executing single-impeller-blade.kcl
   "tipPlane": {
     "type": "Plane",
     "value": {
-      "artifactId": "5173c024-ac32-59f6-acbe-69ddbf68893d",
-      "id": "5173c024-ac32-59f6-acbe-69ddbf68893d",
+      "artifactId": "[uuid]",
+      "id": "[uuid]",
       "objectId": 20,
       "kind": "Custom",
       "origin": {
@@ -855,7 +889,7 @@ description: Variables in memory after executing single-impeller-blade.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
+                "id": "[uuid]",
                 "objectId": 24,
                 "kind": {
                   "line": {
@@ -863,17 +897,21 @@ description: Variables in memory after executing single-impeller-blade.kcl
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -881,17 +919,21 @@ description: Variables in memory after executing single-impeller-blade.kcl
                       {
                         "n": 5.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -929,8 +971,8 @@ description: Variables in memory after executing single-impeller-blade.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "5173c024-ac32-59f6-acbe-69ddbf68893d",
-                  "id": "5173c024-ac32-59f6-acbe-69ddbf68893d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 20,
                   "origin": {
@@ -959,7 +1001,7 @@ description: Variables in memory after executing single-impeller-blade.kcl
                     "units": null
                   }
                 },
-                "sketchId": "6023bee8-3980-5182-88ac-ac06420ce00f",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -975,7 +1017,7 @@ description: Variables in memory after executing single-impeller-blade.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "1173902c-36a4-51e4-ba62-e51739ec2a5c",
+                "id": "[uuid]",
                 "objectId": 27,
                 "kind": {
                   "line": {
@@ -983,17 +1025,21 @@ description: Variables in memory after executing single-impeller-blade.kcl
                       {
                         "n": 5.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -1001,17 +1047,21 @@ description: Variables in memory after executing single-impeller-blade.kcl
                       {
                         "n": 5.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 40.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -1049,8 +1099,8 @@ description: Variables in memory after executing single-impeller-blade.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "5173c024-ac32-59f6-acbe-69ddbf68893d",
-                  "id": "5173c024-ac32-59f6-acbe-69ddbf68893d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 20,
                   "origin": {
@@ -1079,7 +1129,7 @@ description: Variables in memory after executing single-impeller-blade.kcl
                     "units": null
                   }
                 },
-                "sketchId": "6023bee8-3980-5182-88ac-ac06420ce00f",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line2"
@@ -1095,7 +1145,7 @@ description: Variables in memory after executing single-impeller-blade.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "5b7e9cc5-005c-5005-bc98-32d1ba6bf697",
+                "id": "[uuid]",
                 "objectId": 31,
                 "kind": {
                   "line": {
@@ -1103,17 +1153,21 @@ description: Variables in memory after executing single-impeller-blade.kcl
                       {
                         "n": 5.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 40.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -1121,17 +1175,21 @@ description: Variables in memory after executing single-impeller-blade.kcl
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 40.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -1169,8 +1227,8 @@ description: Variables in memory after executing single-impeller-blade.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "5173c024-ac32-59f6-acbe-69ddbf68893d",
-                  "id": "5173c024-ac32-59f6-acbe-69ddbf68893d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 20,
                   "origin": {
@@ -1199,7 +1257,7 @@ description: Variables in memory after executing single-impeller-blade.kcl
                     "units": null
                   }
                 },
-                "sketchId": "6023bee8-3980-5182-88ac-ac06420ce00f",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line3"
@@ -1215,7 +1273,7 @@ description: Variables in memory after executing single-impeller-blade.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "b680fe3e-a804-583c-99d9-1693b2432aeb",
+                "id": "[uuid]",
                 "objectId": 35,
                 "kind": {
                   "line": {
@@ -1223,17 +1281,21 @@ description: Variables in memory after executing single-impeller-blade.kcl
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 40.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -1241,17 +1303,21 @@ description: Variables in memory after executing single-impeller-blade.kcl
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -1289,8 +1355,8 @@ description: Variables in memory after executing single-impeller-blade.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "5173c024-ac32-59f6-acbe-69ddbf68893d",
-                  "id": "5173c024-ac32-59f6-acbe-69ddbf68893d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 20,
                   "origin": {
@@ -1319,7 +1385,7 @@ description: Variables in memory after executing single-impeller-blade.kcl
                     "units": null
                   }
                 },
-                "sketchId": "6023bee8-3980-5182-88ac-ac06420ce00f",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line4"
@@ -1336,11 +1402,11 @@ description: Variables in memory after executing single-impeller-blade.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "6023bee8-3980-5182-88ac-ac06420ce00f",
+              "id": "[uuid]",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -1364,7 +1430,7 @@ description: Variables in memory after executing single-impeller-blade.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "1173902c-36a4-51e4-ba62-e51739ec2a5c",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -1388,7 +1454,7 @@ description: Variables in memory after executing single-impeller-blade.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "5b7e9cc5-005c-5005-bc98-32d1ba6bf697",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -1412,7 +1478,7 @@ description: Variables in memory after executing single-impeller-blade.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "b680fe3e-a804-583c-99d9-1693b2432aeb",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -1437,8 +1503,8 @@ description: Variables in memory after executing single-impeller-blade.kcl
               ],
               "on": {
                 "type": "plane",
-                "artifactId": "5173c024-ac32-59f6-acbe-69ddbf68893d",
-                "id": "5173c024-ac32-59f6-acbe-69ddbf68893d",
+                "artifactId": "[uuid]",
+                "id": "[uuid]",
                 "objectId": 20,
                 "kind": "Custom",
                 "origin": {
@@ -1478,7 +1544,7 @@ description: Variables in memory after executing single-impeller-blade.kcl
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "cf3baf1a-5582-5a3b-97c6-f5beb1dcc1a7",
+                  "id": "[uuid]",
                   "sourceRange": []
                 }
               },
@@ -1500,8 +1566,8 @@ description: Variables in memory after executing single-impeller-blade.kcl
                   "value": "line4"
                 }
               },
-              "artifactId": "6023bee8-3980-5182-88ac-ac06420ce00f",
-              "originalId": "6023bee8-3980-5182-88ac-ac06420ce00f",
+              "artifactId": "[uuid]",
+              "originalId": "[uuid]",
               "units": "mm",
               "isClosed": "implicitly"
             }
@@ -1517,22 +1583,24 @@ description: Variables in memory after executing single-impeller-blade.kcl
     "value": 30.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "twistedBlade": {
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "7d4c814d-f292-503d-a012-68ab58c77524",
-      "originalId": "7d4c814d-f292-503d-a012-68ab58c77524",
-      "topologyId": "7d4c814d-f292-503d-a012-68ab58c77524",
-      "artifactId": "7d4c814d-f292-503d-a012-68ab58c77524",
+      "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
+      "artifactId": "[uuid]",
       "value": [
         {
-          "faceId": "042684a6-719f-526b-8be4-8043d5b0c183",
-          "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 596,
@@ -1545,8 +1613,8 @@ description: Variables in memory after executing single-impeller-blade.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "e2aad6ee-698e-53f1-a24e-dc49433a33c1",
-          "id": "91226189-7e64-5690-9203-67ee33a6eb03",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 665,
@@ -1559,8 +1627,8 @@ description: Variables in memory after executing single-impeller-blade.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "84565983-23f7-53cc-99af-7545f451bee0",
-          "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 774,
@@ -1573,8 +1641,8 @@ description: Variables in memory after executing single-impeller-blade.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "70234578-22da-5570-b77f-9ab44bbf8710",
-          "id": "89316223-2ea1-5731-9c72-0492bc30fbe2",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 884,
@@ -1590,11 +1658,11 @@ description: Variables in memory after executing single-impeller-blade.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "7d4c814d-f292-503d-a012-68ab58c77524",
+        "id": "[uuid]",
         "paths": [
           {
             "__geoMeta": {
-              "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -1618,7 +1686,7 @@ description: Variables in memory after executing single-impeller-blade.kcl
           },
           {
             "__geoMeta": {
-              "id": "91226189-7e64-5690-9203-67ee33a6eb03",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -1642,7 +1710,7 @@ description: Variables in memory after executing single-impeller-blade.kcl
           },
           {
             "__geoMeta": {
-              "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -1666,7 +1734,7 @@ description: Variables in memory after executing single-impeller-blade.kcl
           },
           {
             "__geoMeta": {
-              "id": "89316223-2ea1-5731-9c72-0492bc30fbe2",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -1691,8 +1759,8 @@ description: Variables in memory after executing single-impeller-blade.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "artifactId": "[uuid]",
+          "id": "[uuid]",
           "objectId": 0,
           "kind": "Custom",
           "origin": {
@@ -1732,7 +1800,7 @@ description: Variables in memory after executing single-impeller-blade.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "90a5d279-3b15-5070-b2fd-a30474df87a6",
+            "id": "[uuid]",
             "sourceRange": []
           }
         },
@@ -1754,13 +1822,13 @@ description: Variables in memory after executing single-impeller-blade.kcl
             "value": "line4"
           }
         },
-        "artifactId": "fc1035ae-3877-5cf6-9e94-7e1f3b755966",
-        "originalId": "7d4c814d-f292-503d-a012-68ab58c77524",
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
         "units": "mm",
         "isClosed": "explicitly"
       },
-      "startCapId": "96c71cb9-3d0a-5ae9-af8e-0674c606a31d",
-      "endCapId": "638fc546-4103-5d59-9bf1-24031278ff97",
+      "startCapId": "[uuid]",
+      "endCapId": "[uuid]",
       "units": "mm",
       "sectional": false
     }

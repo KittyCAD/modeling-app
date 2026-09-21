@@ -12,8 +12,10 @@ description: Operations executed stylized-cybertruck.kcl
         "value": 3.5,
         "ty": {
           "type": "Default",
-          "len": "m",
-          "angle": "degrees"
+          "value": {
+            "len": "m",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -41,8 +43,10 @@ description: Operations executed stylized-cybertruck.kcl
         "value": 1.8,
         "ty": {
           "type": "Default",
-          "len": "m",
-          "angle": "degrees"
+          "value": {
+            "len": "m",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -70,8 +74,10 @@ description: Operations executed stylized-cybertruck.kcl
         "value": 0.4,
         "ty": {
           "type": "Default",
-          "len": "m",
-          "angle": "degrees"
+          "value": {
+            "len": "m",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -99,8 +105,10 @@ description: Operations executed stylized-cybertruck.kcl
         "value": 2.3,
         "ty": {
           "type": "Default",
-          "len": "m",
-          "angle": "degrees"
+          "value": {
+            "len": "m",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -128,8 +136,10 @@ description: Operations executed stylized-cybertruck.kcl
         "value": 0.7,
         "ty": {
           "type": "Default",
-          "len": "m",
-          "angle": "degrees"
+          "value": {
+            "len": "m",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -157,8 +167,10 @@ description: Operations executed stylized-cybertruck.kcl
         "value": 0.27,
         "ty": {
           "type": "Default",
-          "len": "m",
-          "angle": "degrees"
+          "value": {
+            "len": "m",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -186,8 +198,10 @@ description: Operations executed stylized-cybertruck.kcl
         "value": 0.1,
         "ty": {
           "type": "Default",
-          "len": "m",
-          "angle": "degrees"
+          "value": {
+            "len": "m",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -215,8 +229,10 @@ description: Operations executed stylized-cybertruck.kcl
         "value": 3.7,
         "ty": {
           "type": "Default",
-          "len": "m",
-          "angle": "degrees"
+          "value": {
+            "len": "m",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -244,8 +260,10 @@ description: Operations executed stylized-cybertruck.kcl
         "value": 2.0,
         "ty": {
           "type": "Default",
-          "len": "m",
-          "angle": "degrees"
+          "value": {
+            "len": "m",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -273,8 +291,10 @@ description: Operations executed stylized-cybertruck.kcl
         "value": 0.35,
         "ty": {
           "type": "Default",
-          "len": "m",
-          "angle": "degrees"
+          "value": {
+            "len": "m",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -302,8 +322,10 @@ description: Operations executed stylized-cybertruck.kcl
         "value": 0.4,
         "ty": {
           "type": "Default",
-          "len": "m",
-          "angle": "degrees"
+          "value": {
+            "len": "m",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -331,8 +353,10 @@ description: Operations executed stylized-cybertruck.kcl
         "value": 0.75,
         "ty": {
           "type": "Default",
-          "len": "m",
-          "angle": "degrees"
+          "value": {
+            "len": "m",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -360,8 +384,10 @@ description: Operations executed stylized-cybertruck.kcl
         "value": 0.0,
         "ty": {
           "type": "Default",
-          "len": "m",
-          "angle": "degrees"
+          "value": {
+            "len": "m",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -389,8 +415,10 @@ description: Operations executed stylized-cybertruck.kcl
         "value": 1.15,
         "ty": {
           "type": "Default",
-          "len": "m",
-          "angle": "degrees"
+          "value": {
+            "len": "m",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -418,8 +446,10 @@ description: Operations executed stylized-cybertruck.kcl
         "value": 0.8,
         "ty": {
           "type": "Default",
-          "len": "m",
-          "angle": "degrees"
+          "value": {
+            "len": "m",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -447,8 +477,10 @@ description: Operations executed stylized-cybertruck.kcl
         "value": 1.4000000000000001,
         "ty": {
           "type": "Default",
-          "len": "m",
-          "angle": "degrees"
+          "value": {
+            "len": "m",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -476,8 +508,10 @@ description: Operations executed stylized-cybertruck.kcl
         "value": 2.0999999999999996,
         "ty": {
           "type": "Default",
-          "len": "m",
-          "angle": "degrees"
+          "value": {
+            "len": "m",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -505,8 +539,10 @@ description: Operations executed stylized-cybertruck.kcl
         "value": 0.36000000000000004,
         "ty": {
           "type": "Default",
-          "len": "m",
-          "angle": "degrees"
+          "value": {
+            "len": "m",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -534,8 +570,10 @@ description: Operations executed stylized-cybertruck.kcl
         "value": 1.15,
         "ty": {
           "type": "Default",
-          "len": "m",
-          "angle": "degrees"
+          "value": {
+            "len": "m",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -563,8 +601,10 @@ description: Operations executed stylized-cybertruck.kcl
         "value": 1.35,
         "ty": {
           "type": "Default",
-          "len": "m",
-          "angle": "degrees"
+          "value": {
+            "len": "m",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -592,8 +632,10 @@ description: Operations executed stylized-cybertruck.kcl
         "value": 0.08000000000000002,
         "ty": {
           "type": "Default",
-          "len": "m",
-          "angle": "degrees"
+          "value": {
+            "len": "m",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -621,8 +663,10 @@ description: Operations executed stylized-cybertruck.kcl
         "value": 1.8,
         "ty": {
           "type": "Default",
-          "len": "m",
-          "angle": "degrees"
+          "value": {
+            "len": "m",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -650,8 +694,10 @@ description: Operations executed stylized-cybertruck.kcl
         "value": 0.05,
         "ty": {
           "type": "Default",
-          "len": "m",
-          "angle": "degrees"
+          "value": {
+            "len": "m",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -679,8 +725,10 @@ description: Operations executed stylized-cybertruck.kcl
         "value": 0.0,
         "ty": {
           "type": "Default",
-          "len": "m",
-          "angle": "degrees"
+          "value": {
+            "len": "m",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -708,8 +756,10 @@ description: Operations executed stylized-cybertruck.kcl
         "value": 0.08000000000000002,
         "ty": {
           "type": "Default",
-          "len": "m",
-          "angle": "degrees"
+          "value": {
+            "len": "m",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -737,8 +787,10 @@ description: Operations executed stylized-cybertruck.kcl
         "value": 1.8,
         "ty": {
           "type": "Default",
-          "len": "m",
-          "angle": "degrees"
+          "value": {
+            "len": "m",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -766,8 +818,10 @@ description: Operations executed stylized-cybertruck.kcl
         "value": 1.15,
         "ty": {
           "type": "Default",
-          "len": "m",
-          "angle": "degrees"
+          "value": {
+            "len": "m",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -795,8 +849,10 @@ description: Operations executed stylized-cybertruck.kcl
         "value": 0.0,
         "ty": {
           "type": "Default",
-          "len": "m",
-          "angle": "degrees"
+          "value": {
+            "len": "m",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -824,8 +880,10 @@ description: Operations executed stylized-cybertruck.kcl
         "value": 0.32000000000000006,
         "ty": {
           "type": "Default",
-          "len": "m",
-          "angle": "degrees"
+          "value": {
+            "len": "m",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -880,18 +938,22 @@ description: Operations executed stylized-cybertruck.kcl
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -906,18 +968,22 @@ description: Operations executed stylized-cybertruck.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -967,18 +1033,22 @@ description: Operations executed stylized-cybertruck.kcl
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -993,18 +1063,22 @@ description: Operations executed stylized-cybertruck.kcl
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -1054,18 +1128,22 @@ description: Operations executed stylized-cybertruck.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -1080,18 +1158,22 @@ description: Operations executed stylized-cybertruck.kcl
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -1141,18 +1223,22 @@ description: Operations executed stylized-cybertruck.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -1167,18 +1253,22 @@ description: Operations executed stylized-cybertruck.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -1552,18 +1642,22 @@ description: Operations executed stylized-cybertruck.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -1616,18 +1710,22 @@ description: Operations executed stylized-cybertruck.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -1777,7 +1875,7 @@ description: Operations executed stylized-cybertruck.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
+                "artifact_id": "[uuid]"
               }
             ]
           },
@@ -1807,7 +1905,7 @@ description: Operations executed stylized-cybertruck.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "2c522d90-5fef-5750-b489-b008732bd2c3"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -1819,8 +1917,10 @@ description: Operations executed stylized-cybertruck.kcl
             "value": -2.0,
             "ty": {
               "type": "Default",
-              "len": "m",
-              "angle": "degrees"
+              "value": {
+                "len": "m",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -1860,7 +1960,7 @@ description: Operations executed stylized-cybertruck.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "cc87388f-5797-5adb-95fb-8f68e65f73c1"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -1901,7 +2001,7 @@ description: Operations executed stylized-cybertruck.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "7b681387-29ea-57f1-8713-d63280827139"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -1955,18 +2055,22 @@ description: Operations executed stylized-cybertruck.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.35,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -1988,18 +2092,22 @@ description: Operations executed stylized-cybertruck.kcl
                 "type": "SketchVar",
                 "value": 0.5,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.35,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -2049,18 +2157,22 @@ description: Operations executed stylized-cybertruck.kcl
                 "type": "SketchVar",
                 "value": -0.25,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.8,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -2075,18 +2187,22 @@ description: Operations executed stylized-cybertruck.kcl
                 "type": "SketchVar",
                 "value": -0.5,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.35,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -2136,18 +2252,22 @@ description: Operations executed stylized-cybertruck.kcl
                 "type": "SketchVar",
                 "value": 0.25,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.8,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -2162,18 +2282,22 @@ description: Operations executed stylized-cybertruck.kcl
                 "type": "SketchVar",
                 "value": -0.25,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.8,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -2267,18 +2391,22 @@ description: Operations executed stylized-cybertruck.kcl
                 "type": "SketchVar",
                 "value": 0.5,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.35,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -2293,18 +2421,22 @@ description: Operations executed stylized-cybertruck.kcl
                 "type": "SketchVar",
                 "value": 0.25,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.8,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -2442,18 +2574,22 @@ description: Operations executed stylized-cybertruck.kcl
                 "type": "SketchVar",
                 "value": 0.25,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -0.1,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -2468,18 +2604,22 @@ description: Operations executed stylized-cybertruck.kcl
                 "type": "SketchVar",
                 "value": 0.5,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.35,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -2573,18 +2713,22 @@ description: Operations executed stylized-cybertruck.kcl
                 "type": "SketchVar",
                 "value": -0.25,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -0.1,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -2599,18 +2743,22 @@ description: Operations executed stylized-cybertruck.kcl
                 "type": "SketchVar",
                 "value": 0.25,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -0.1,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -2704,18 +2852,22 @@ description: Operations executed stylized-cybertruck.kcl
                 "type": "SketchVar",
                 "value": -0.5,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.35,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -2730,18 +2882,22 @@ description: Operations executed stylized-cybertruck.kcl
                 "type": "SketchVar",
                 "value": -0.25,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -0.1,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -3162,18 +3318,22 @@ description: Operations executed stylized-cybertruck.kcl
                 "type": "SketchVar",
                 "value": 0.5,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.35,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -3188,18 +3348,22 @@ description: Operations executed stylized-cybertruck.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.35,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -3374,18 +3538,22 @@ description: Operations executed stylized-cybertruck.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -3441,18 +3609,22 @@ description: Operations executed stylized-cybertruck.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -3555,7 +3727,7 @@ description: Operations executed stylized-cybertruck.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "eedabccb-e42b-5224-a499-7c2981b239e5"
+                "artifact_id": "[uuid]"
               }
             ]
           },
@@ -3585,7 +3757,7 @@ description: Operations executed stylized-cybertruck.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "9be00e59-09ca-5d92-b815-256daf9fc98e"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -3597,8 +3769,10 @@ description: Operations executed stylized-cybertruck.kcl
             "value": 0.81,
             "ty": {
               "type": "Default",
-              "len": "m",
-              "angle": "degrees"
+              "value": {
+                "len": "m",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -3634,7 +3808,7 @@ description: Operations executed stylized-cybertruck.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "da6695c0-7255-5538-b0f4-c4ea3977fe7d"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -3660,7 +3834,7 @@ description: Operations executed stylized-cybertruck.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "1da187cf-4f25-596d-a170-2007a75f41c6"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -3693,7 +3867,7 @@ description: Operations executed stylized-cybertruck.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "1233ad6c-ef2a-5cf0-a663-cc9dd7ccebcd"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -3712,8 +3886,10 @@ description: Operations executed stylized-cybertruck.kcl
             "value": -1.15,
             "ty": {
               "type": "Default",
-              "len": "m",
-              "angle": "degrees"
+              "value": {
+                "len": "m",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -3724,8 +3900,10 @@ description: Operations executed stylized-cybertruck.kcl
             "value": -1.0,
             "ty": {
               "type": "Default",
-              "len": "m",
-              "angle": "degrees"
+              "value": {
+                "len": "m",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -3736,8 +3914,10 @@ description: Operations executed stylized-cybertruck.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": "m",
-              "angle": "degrees"
+              "value": {
+                "len": "m",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -3770,7 +3950,7 @@ description: Operations executed stylized-cybertruck.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "1da187cf-4f25-596d-a170-2007a75f41c6"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -3803,7 +3983,7 @@ description: Operations executed stylized-cybertruck.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "3312f826-b323-5332-871a-6a8a59a3ae93"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -3822,8 +4002,10 @@ description: Operations executed stylized-cybertruck.kcl
             "value": 1.15,
             "ty": {
               "type": "Default",
-              "len": "m",
-              "angle": "degrees"
+              "value": {
+                "len": "m",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -3834,8 +4016,10 @@ description: Operations executed stylized-cybertruck.kcl
             "value": -1.0,
             "ty": {
               "type": "Default",
-              "len": "m",
-              "angle": "degrees"
+              "value": {
+                "len": "m",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -3846,8 +4030,10 @@ description: Operations executed stylized-cybertruck.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": "m",
-              "angle": "degrees"
+              "value": {
+                "len": "m",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -3880,7 +4066,7 @@ description: Operations executed stylized-cybertruck.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "1da187cf-4f25-596d-a170-2007a75f41c6"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -3913,7 +4099,7 @@ description: Operations executed stylized-cybertruck.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "c496fd9a-d996-5b8a-811c-f9066ac8b2c6"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -3932,8 +4118,10 @@ description: Operations executed stylized-cybertruck.kcl
             "value": -1.15,
             "ty": {
               "type": "Default",
-              "len": "m",
-              "angle": "degrees"
+              "value": {
+                "len": "m",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -3944,8 +4132,10 @@ description: Operations executed stylized-cybertruck.kcl
             "value": 1.0,
             "ty": {
               "type": "Default",
-              "len": "m",
-              "angle": "degrees"
+              "value": {
+                "len": "m",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -3956,8 +4146,10 @@ description: Operations executed stylized-cybertruck.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": "m",
-              "angle": "degrees"
+              "value": {
+                "len": "m",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -3990,7 +4182,7 @@ description: Operations executed stylized-cybertruck.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "1da187cf-4f25-596d-a170-2007a75f41c6"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -4009,8 +4201,10 @@ description: Operations executed stylized-cybertruck.kcl
             "value": 1.15,
             "ty": {
               "type": "Default",
-              "len": "m",
-              "angle": "degrees"
+              "value": {
+                "len": "m",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -4021,8 +4215,10 @@ description: Operations executed stylized-cybertruck.kcl
             "value": 1.0,
             "ty": {
               "type": "Default",
-              "len": "m",
-              "angle": "degrees"
+              "value": {
+                "len": "m",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -4033,8 +4229,10 @@ description: Operations executed stylized-cybertruck.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": "m",
-              "angle": "degrees"
+              "value": {
+                "len": "m",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -4067,7 +4265,7 @@ description: Operations executed stylized-cybertruck.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "cc87388f-5797-5adb-95fb-8f68e65f73c1"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -4080,25 +4278,25 @@ description: Operations executed stylized-cybertruck.kcl
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "1233ad6c-ef2a-5cf0-a663-cc9dd7ccebcd"
+                  "artifactId": "[uuid]"
                 }
               },
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "3312f826-b323-5332-871a-6a8a59a3ae93"
+                  "artifactId": "[uuid]"
                 }
               },
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "c496fd9a-d996-5b8a-811c-f9066ac8b2c6"
+                  "artifactId": "[uuid]"
                 }
               },
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "1da187cf-4f25-596d-a170-2007a75f41c6"
+                  "artifactId": "[uuid]"
                 }
               }
             ]
@@ -4133,7 +4331,7 @@ description: Operations executed stylized-cybertruck.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "9d7fbae6-97b8-5b45-94f9-3c60e7ae1b62"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -4202,18 +4400,22 @@ description: Operations executed stylized-cybertruck.kcl
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -4228,18 +4430,22 @@ description: Operations executed stylized-cybertruck.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -4289,18 +4495,22 @@ description: Operations executed stylized-cybertruck.kcl
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -4315,18 +4525,22 @@ description: Operations executed stylized-cybertruck.kcl
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -4376,18 +4590,22 @@ description: Operations executed stylized-cybertruck.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -4402,18 +4620,22 @@ description: Operations executed stylized-cybertruck.kcl
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -4463,18 +4685,22 @@ description: Operations executed stylized-cybertruck.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -4489,18 +4715,22 @@ description: Operations executed stylized-cybertruck.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -4874,18 +5104,22 @@ description: Operations executed stylized-cybertruck.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -4938,18 +5172,22 @@ description: Operations executed stylized-cybertruck.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -5099,7 +5337,7 @@ description: Operations executed stylized-cybertruck.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "0030d44a-e936-52d0-b5b6-efd80f2f6770"
+                "artifact_id": "[uuid]"
               }
             ]
           },
@@ -5129,7 +5367,7 @@ description: Operations executed stylized-cybertruck.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "7207dcef-ae46-501c-bdb4-7d4d031bf641"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -5141,8 +5379,10 @@ description: Operations executed stylized-cybertruck.kcl
             "value": -1.8,
             "ty": {
               "type": "Default",
-              "len": "m",
-              "angle": "degrees"
+              "value": {
+                "len": "m",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -5182,7 +5422,7 @@ description: Operations executed stylized-cybertruck.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "db5c3d30-91ae-5a67-ae73-8acbcb44a5a3"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -5223,7 +5463,7 @@ description: Operations executed stylized-cybertruck.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "d90f6603-b0cd-5c83-a076-386b01d9e12a"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -5277,18 +5517,22 @@ description: Operations executed stylized-cybertruck.kcl
                 "type": "SketchVar",
                 "value": -0.35,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.95,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -5303,18 +5547,22 @@ description: Operations executed stylized-cybertruck.kcl
                 "type": "SketchVar",
                 "value": -1.75,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.15,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -5364,18 +5612,22 @@ description: Operations executed stylized-cybertruck.kcl
                 "type": "SketchVar",
                 "value": 1.75,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.15,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -5390,18 +5642,22 @@ description: Operations executed stylized-cybertruck.kcl
                 "type": "SketchVar",
                 "value": -0.35,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.95,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -5451,18 +5707,22 @@ description: Operations executed stylized-cybertruck.kcl
                 "type": "SketchVar",
                 "value": -1.75,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.15,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -5477,18 +5737,22 @@ description: Operations executed stylized-cybertruck.kcl
                 "type": "SketchVar",
                 "value": 1.75,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.15,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -5710,18 +5974,22 @@ description: Operations executed stylized-cybertruck.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -5774,18 +6042,22 @@ description: Operations executed stylized-cybertruck.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -6029,15 +6301,15 @@ description: Operations executed stylized-cybertruck.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "bb2ee501-11e8-5c4e-b7a4-cf4d0273f1d6"
+                "artifact_id": "[uuid]"
               },
               {
                 "type": "Segment",
-                "artifact_id": "d7522563-c424-5aea-962e-3d6a85a0b99d"
+                "artifact_id": "[uuid]"
               },
               {
                 "type": "Segment",
-                "artifact_id": "f58fd62a-578c-542c-94f8-dd627caab5d0"
+                "artifact_id": "[uuid]"
               }
             ]
           },
@@ -6067,7 +6339,7 @@ description: Operations executed stylized-cybertruck.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "76d81d0d-ef16-5794-bc58-3132468566e9"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -6079,8 +6351,10 @@ description: Operations executed stylized-cybertruck.kcl
             "value": -1.8,
             "ty": {
               "type": "Default",
-              "len": "m",
-              "angle": "degrees"
+              "value": {
+                "len": "m",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -6116,7 +6390,7 @@ description: Operations executed stylized-cybertruck.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "41b24a95-09ce-5f5c-a1cb-748e4f7a41b6"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -6170,18 +6444,22 @@ description: Operations executed stylized-cybertruck.kcl
                 "type": "SketchVar",
                 "value": -0.54,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.95,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -6196,18 +6474,22 @@ description: Operations executed stylized-cybertruck.kcl
                 "type": "SketchVar",
                 "value": -0.9,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.15,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -6257,18 +6539,22 @@ description: Operations executed stylized-cybertruck.kcl
                 "type": "SketchVar",
                 "value": 0.54,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.95,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -6283,18 +6569,22 @@ description: Operations executed stylized-cybertruck.kcl
                 "type": "SketchVar",
                 "value": -0.54,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.95,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -6344,18 +6634,22 @@ description: Operations executed stylized-cybertruck.kcl
                 "type": "SketchVar",
                 "value": 0.9,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.15,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -6370,18 +6664,22 @@ description: Operations executed stylized-cybertruck.kcl
                 "type": "SketchVar",
                 "value": 0.54,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.95,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -6431,18 +6729,22 @@ description: Operations executed stylized-cybertruck.kcl
                 "type": "SketchVar",
                 "value": -0.9,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.15,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -6457,18 +6759,22 @@ description: Operations executed stylized-cybertruck.kcl
                 "type": "SketchVar",
                 "value": 0.9,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.15,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -6770,18 +7076,22 @@ description: Operations executed stylized-cybertruck.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -6834,18 +7144,22 @@ description: Operations executed stylized-cybertruck.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -7136,7 +7450,7 @@ description: Operations executed stylized-cybertruck.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "2b45af9b-6b90-5530-b9b7-b193031152d8"
+                "artifact_id": "[uuid]"
               }
             ]
           },
@@ -7166,7 +7480,7 @@ description: Operations executed stylized-cybertruck.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "7239bb75-ea9c-5e04-812d-426e933ce851"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -7178,8 +7492,10 @@ description: Operations executed stylized-cybertruck.kcl
             "value": 3.8500000000000005,
             "ty": {
               "type": "Default",
-              "len": "m",
-              "angle": "degrees"
+              "value": {
+                "len": "m",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -7215,7 +7531,7 @@ description: Operations executed stylized-cybertruck.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "95b7331f-664e-5be5-b9c0-fdd7570bf701"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -7244,13 +7560,13 @@ description: Operations executed stylized-cybertruck.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "fbbcaed5-0a21-593e-a7bc-e653364344a4"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "6dc9e0c0-84d4-5f0c-af6a-4eb8bcc4f6fc"
+                "artifactId": "[uuid]"
               }
             }
           ]
@@ -7285,7 +7601,7 @@ description: Operations executed stylized-cybertruck.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "bd2c7879-5553-55c3-bc25-46df0c8081fc"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -7354,18 +7670,22 @@ description: Operations executed stylized-cybertruck.kcl
                 "type": "SketchVar",
                 "value": -0.01,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.35,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -7380,18 +7700,22 @@ description: Operations executed stylized-cybertruck.kcl
                 "type": "SketchVar",
                 "value": 0.32,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.21,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -7441,18 +7765,22 @@ description: Operations executed stylized-cybertruck.kcl
                 "type": "SketchVar",
                 "value": -0.01,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.35,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -7467,18 +7795,22 @@ description: Operations executed stylized-cybertruck.kcl
                 "type": "SketchVar",
                 "value": 0.18,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.45,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -7579,18 +7911,22 @@ description: Operations executed stylized-cybertruck.kcl
                 "type": "SketchVar",
                 "value": -0.01,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.35,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -7605,18 +7941,22 @@ description: Operations executed stylized-cybertruck.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -7711,18 +8051,22 @@ description: Operations executed stylized-cybertruck.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -7778,18 +8122,22 @@ description: Operations executed stylized-cybertruck.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -8127,7 +8475,7 @@ description: Operations executed stylized-cybertruck.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "d4cbda13-cf30-51b5-adde-debccd5ae685"
+                "artifact_id": "[uuid]"
               }
             ]
           },
@@ -8161,7 +8509,7 @@ description: Operations executed stylized-cybertruck.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "3e6c46b9-bbdd-5d47-a756-0be941ae8b98"
+                "artifact_id": "[uuid]"
               }
             ]
           },
@@ -8191,7 +8539,7 @@ description: Operations executed stylized-cybertruck.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "ff1065dd-9055-5af8-80e6-8be3e4a026ad"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -8203,8 +8551,10 @@ description: Operations executed stylized-cybertruck.kcl
             "value": -0.27,
             "ty": {
               "type": "Default",
-              "len": "m",
-              "angle": "degrees"
+              "value": {
+                "len": "m",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -8237,7 +8587,7 @@ description: Operations executed stylized-cybertruck.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "7faa0516-2581-52ca-b80e-97150bf2f040"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -8278,7 +8628,7 @@ description: Operations executed stylized-cybertruck.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "1583b450-a578-582f-8d23-686bccf95d8b"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -8290,8 +8640,10 @@ description: Operations executed stylized-cybertruck.kcl
             "value": -0.27,
             "ty": {
               "type": "Default",
-              "len": "m",
-              "angle": "degrees"
+              "value": {
+                "len": "m",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -8324,7 +8676,7 @@ description: Operations executed stylized-cybertruck.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "c349d1a9-19a0-5db8-b19d-4e0dc473c583"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -8365,7 +8717,7 @@ description: Operations executed stylized-cybertruck.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "33bbd8bc-5a6b-54a8-9fab-10db26810cb4"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -8394,13 +8746,13 @@ description: Operations executed stylized-cybertruck.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "7faa0516-2581-52ca-b80e-97150bf2f040"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "c349d1a9-19a0-5db8-b19d-4e0dc473c583"
+                "artifactId": "[uuid]"
               }
             }
           ]
@@ -8438,13 +8790,13 @@ description: Operations executed stylized-cybertruck.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "94906884-1803-5336-93e6-0aca938f73f1"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "af94b4da-da53-5386-a65f-ed75c251c9ff"
+                "artifactId": "[uuid]"
               }
             }
           ]
@@ -8465,8 +8817,10 @@ description: Operations executed stylized-cybertruck.kcl
             "value": -1.15,
             "ty": {
               "type": "Default",
-              "len": "m",
-              "angle": "degrees"
+              "value": {
+                "len": "m",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -8477,8 +8831,10 @@ description: Operations executed stylized-cybertruck.kcl
             "value": -1.0,
             "ty": {
               "type": "Default",
-              "len": "m",
-              "angle": "degrees"
+              "value": {
+                "len": "m",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -8489,8 +8845,10 @@ description: Operations executed stylized-cybertruck.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": "m",
-              "angle": "degrees"
+              "value": {
+                "len": "m",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -8526,13 +8884,13 @@ description: Operations executed stylized-cybertruck.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "7faa0516-2581-52ca-b80e-97150bf2f040"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "c349d1a9-19a0-5db8-b19d-4e0dc473c583"
+                "artifactId": "[uuid]"
               }
             }
           ]
@@ -8570,13 +8928,13 @@ description: Operations executed stylized-cybertruck.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "e47f2e3b-0460-52b0-a07e-9a08403f5c49"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "887f8b95-6182-5637-a45b-e92f2860796c"
+                "artifactId": "[uuid]"
               }
             }
           ]
@@ -8597,8 +8955,10 @@ description: Operations executed stylized-cybertruck.kcl
             "value": 1.15,
             "ty": {
               "type": "Default",
-              "len": "m",
-              "angle": "degrees"
+              "value": {
+                "len": "m",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -8609,8 +8969,10 @@ description: Operations executed stylized-cybertruck.kcl
             "value": -1.0,
             "ty": {
               "type": "Default",
-              "len": "m",
-              "angle": "degrees"
+              "value": {
+                "len": "m",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -8621,8 +8983,10 @@ description: Operations executed stylized-cybertruck.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": "m",
-              "angle": "degrees"
+              "value": {
+                "len": "m",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -8658,13 +9022,13 @@ description: Operations executed stylized-cybertruck.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "7faa0516-2581-52ca-b80e-97150bf2f040"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "c349d1a9-19a0-5db8-b19d-4e0dc473c583"
+                "artifactId": "[uuid]"
               }
             }
           ]
@@ -8702,13 +9066,13 @@ description: Operations executed stylized-cybertruck.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "c42bee5e-b2b1-5cbc-8ff1-ab224da718f1"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "e6ed3605-69e2-53c9-bebb-df82937c0962"
+                "artifactId": "[uuid]"
               }
             }
           ]
@@ -8729,8 +9093,10 @@ description: Operations executed stylized-cybertruck.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": "m",
-              "angle": "degrees"
+              "value": {
+                "len": "m",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -8741,8 +9107,10 @@ description: Operations executed stylized-cybertruck.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": "m",
-              "angle": "degrees"
+              "value": {
+                "len": "m",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -8753,8 +9121,10 @@ description: Operations executed stylized-cybertruck.kcl
             "value": 180.0,
             "ty": {
               "type": "Default",
-              "len": "m",
-              "angle": "degrees"
+              "value": {
+                "len": "m",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -8790,13 +9160,13 @@ description: Operations executed stylized-cybertruck.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "c42bee5e-b2b1-5cbc-8ff1-ab224da718f1"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "e6ed3605-69e2-53c9-bebb-df82937c0962"
+                "artifactId": "[uuid]"
               }
             }
           ]
@@ -8817,8 +9187,10 @@ description: Operations executed stylized-cybertruck.kcl
             "value": 1.15,
             "ty": {
               "type": "Default",
-              "len": "m",
-              "angle": "degrees"
+              "value": {
+                "len": "m",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -8829,8 +9201,10 @@ description: Operations executed stylized-cybertruck.kcl
             "value": -1.0,
             "ty": {
               "type": "Default",
-              "len": "m",
-              "angle": "degrees"
+              "value": {
+                "len": "m",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -8841,8 +9215,10 @@ description: Operations executed stylized-cybertruck.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": "m",
-              "angle": "degrees"
+              "value": {
+                "len": "m",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -8878,13 +9254,13 @@ description: Operations executed stylized-cybertruck.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "7faa0516-2581-52ca-b80e-97150bf2f040"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "c349d1a9-19a0-5db8-b19d-4e0dc473c583"
+                "artifactId": "[uuid]"
               }
             }
           ]
@@ -8905,8 +9281,10 @@ description: Operations executed stylized-cybertruck.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": "m",
-              "angle": "degrees"
+              "value": {
+                "len": "m",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -8917,8 +9295,10 @@ description: Operations executed stylized-cybertruck.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": "m",
-              "angle": "degrees"
+              "value": {
+                "len": "m",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -8929,8 +9309,10 @@ description: Operations executed stylized-cybertruck.kcl
             "value": 180.0,
             "ty": {
               "type": "Default",
-              "len": "m",
-              "angle": "degrees"
+              "value": {
+                "len": "m",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -8966,13 +9348,13 @@ description: Operations executed stylized-cybertruck.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "7faa0516-2581-52ca-b80e-97150bf2f040"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "c349d1a9-19a0-5db8-b19d-4e0dc473c583"
+                "artifactId": "[uuid]"
               }
             }
           ]
@@ -8993,8 +9375,10 @@ description: Operations executed stylized-cybertruck.kcl
             "value": -1.15,
             "ty": {
               "type": "Default",
-              "len": "m",
-              "angle": "degrees"
+              "value": {
+                "len": "m",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -9005,8 +9389,10 @@ description: Operations executed stylized-cybertruck.kcl
             "value": -1.0,
             "ty": {
               "type": "Default",
-              "len": "m",
-              "angle": "degrees"
+              "value": {
+                "len": "m",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -9017,8 +9403,10 @@ description: Operations executed stylized-cybertruck.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": "m",
-              "angle": "degrees"
+              "value": {
+                "len": "m",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -9050,7 +9438,7 @@ description: Operations executed stylized-cybertruck.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "7c4571e0-7b14-576f-a82e-22280b05874d"
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       },
@@ -9061,8 +9449,10 @@ description: Operations executed stylized-cybertruck.kcl
             "value": -1.75,
             "ty": {
               "type": "Default",
-              "len": "m",
-              "angle": "degrees"
+              "value": {
+                "len": "m",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -9119,18 +9509,22 @@ description: Operations executed stylized-cybertruck.kcl
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -9145,18 +9539,22 @@ description: Operations executed stylized-cybertruck.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -9206,18 +9604,22 @@ description: Operations executed stylized-cybertruck.kcl
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -9232,18 +9634,22 @@ description: Operations executed stylized-cybertruck.kcl
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -9293,18 +9699,22 @@ description: Operations executed stylized-cybertruck.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -9319,18 +9729,22 @@ description: Operations executed stylized-cybertruck.kcl
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -9380,18 +9794,22 @@ description: Operations executed stylized-cybertruck.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -9406,18 +9824,22 @@ description: Operations executed stylized-cybertruck.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -9791,18 +10213,22 @@ description: Operations executed stylized-cybertruck.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -9855,18 +10281,22 @@ description: Operations executed stylized-cybertruck.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -10016,7 +10446,7 @@ description: Operations executed stylized-cybertruck.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "77202593-ebf9-50c7-b715-41557309d9ab"
+                "artifact_id": "[uuid]"
               }
             ]
           },
@@ -10046,7 +10476,7 @@ description: Operations executed stylized-cybertruck.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "855fafc2-5621-5264-953e-1be6964b7a16"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -10058,8 +10488,10 @@ description: Operations executed stylized-cybertruck.kcl
             "value": -0.05,
             "ty": {
               "type": "Default",
-              "len": "m",
-              "angle": "degrees"
+              "value": {
+                "len": "m",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -10092,7 +10524,7 @@ description: Operations executed stylized-cybertruck.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "aa0e2533-e8d9-5b33-ac82-b003e1e03207"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -10133,7 +10565,7 @@ description: Operations executed stylized-cybertruck.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "5cc9b1ef-6bbb-5732-ab74-2b614503d639"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -10158,7 +10590,7 @@ description: Operations executed stylized-cybertruck.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "7c4571e0-7b14-576f-a82e-22280b05874d"
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       },
@@ -10169,8 +10601,10 @@ description: Operations executed stylized-cybertruck.kcl
             "value": 1.75,
             "ty": {
               "type": "Default",
-              "len": "m",
-              "angle": "degrees"
+              "value": {
+                "len": "m",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -10227,18 +10661,22 @@ description: Operations executed stylized-cybertruck.kcl
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -10253,18 +10691,22 @@ description: Operations executed stylized-cybertruck.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -10314,18 +10756,22 @@ description: Operations executed stylized-cybertruck.kcl
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -10340,18 +10786,22 @@ description: Operations executed stylized-cybertruck.kcl
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -10401,18 +10851,22 @@ description: Operations executed stylized-cybertruck.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -10427,18 +10881,22 @@ description: Operations executed stylized-cybertruck.kcl
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -10488,18 +10946,22 @@ description: Operations executed stylized-cybertruck.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -10514,18 +10976,22 @@ description: Operations executed stylized-cybertruck.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -10899,18 +11365,22 @@ description: Operations executed stylized-cybertruck.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -10963,18 +11433,22 @@ description: Operations executed stylized-cybertruck.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -11124,7 +11598,7 @@ description: Operations executed stylized-cybertruck.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "27284bc1-5676-5b5a-baa2-003a7224d266"
+                "artifact_id": "[uuid]"
               }
             ]
           },
@@ -11154,7 +11628,7 @@ description: Operations executed stylized-cybertruck.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "e8fa8cfb-5619-5bad-a6f8-bfb3bfe36b79"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -11166,8 +11640,10 @@ description: Operations executed stylized-cybertruck.kcl
             "value": 0.05,
             "ty": {
               "type": "Default",
-              "len": "m",
-              "angle": "degrees"
+              "value": {
+                "len": "m",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -11200,7 +11676,7 @@ description: Operations executed stylized-cybertruck.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "7a96966c-8df1-5353-a0a1-c191f9108448"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -11241,7 +11717,7 @@ description: Operations executed stylized-cybertruck.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "13284012-5aa9-5cfb-8236-12f94ca6550e"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -11297,7 +11773,9 @@ description: Operations executed stylized-cybertruck.kcl
         "value": 2.718281828459045,
         "ty": {
           "type": "Known",
-          "type": "Count"
+          "value": {
+            "type": "Count"
+          }
         }
       },
       "visibility": "export",
@@ -11325,7 +11803,9 @@ description: Operations executed stylized-cybertruck.kcl
         "value": 6.283185307179586,
         "ty": {
           "type": "Known",
-          "type": "Count"
+          "value": {
+            "type": "Count"
+          }
         }
       },
       "visibility": "export",
@@ -11359,7 +11839,7 @@ description: Operations executed stylized-cybertruck.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 23
+            "index": 24
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -11383,7 +11863,7 @@ description: Operations executed stylized-cybertruck.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 24
+            "index": 25
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -11407,7 +11887,7 @@ description: Operations executed stylized-cybertruck.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 25
+            "index": 26
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -11431,7 +11911,7 @@ description: Operations executed stylized-cybertruck.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 26
+            "index": 27
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -11455,7 +11935,7 @@ description: Operations executed stylized-cybertruck.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 27
+            "index": 28
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -11479,7 +11959,7 @@ description: Operations executed stylized-cybertruck.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 28
+            "index": 29
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -11503,7 +11983,7 @@ description: Operations executed stylized-cybertruck.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 29
+            "index": 30
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -11527,7 +12007,7 @@ description: Operations executed stylized-cybertruck.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 30
+            "index": 31
           },
           {
             "type": "VariableDeclarationDeclaration"

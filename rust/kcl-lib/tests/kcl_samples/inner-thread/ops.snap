@@ -11,9 +11,11 @@ description: Operations executed inner-thread.kcl
         "type": "Number",
         "value": 5.0,
         "ty": {
-          "mm": null,
           "type": "Known",
-          "type": "Length"
+          "value": {
+            "type": "Length",
+            "value": "mm"
+          }
         }
       },
       "visibility": "default",
@@ -68,18 +70,22 @@ description: Operations executed inner-thread.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -94,18 +100,22 @@ description: Operations executed inner-thread.kcl
                 "type": "SketchVar",
                 "value": 5.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -159,18 +169,22 @@ description: Operations executed inner-thread.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -314,7 +328,7 @@ description: Operations executed inner-thread.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
+                "artifact_id": "[uuid]"
               }
             ]
           },
@@ -344,7 +358,7 @@ description: Operations executed inner-thread.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "8a662fcd-9569-5482-8c42-aafff7b3f8d4"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -370,7 +384,7 @@ description: Operations executed inner-thread.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -381,9 +395,11 @@ description: Operations executed inner-thread.kcl
             "type": "Number",
             "value": 10.0,
             "ty": {
-              "mm": null,
               "type": "Known",
-              "type": "Length"
+              "value": {
+                "type": "Length",
+                "value": "mm"
+              }
             }
           },
           "sourceRange": []
@@ -440,18 +456,22 @@ description: Operations executed inner-thread.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -466,18 +486,22 @@ description: Operations executed inner-thread.kcl
                 "type": "SketchVar",
                 "value": 4.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -531,18 +555,22 @@ description: Operations executed inner-thread.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -686,7 +714,7 @@ description: Operations executed inner-thread.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "9370af21-6a1d-5f9a-b1d3-83351b2043e6"
+                "artifact_id": "[uuid]"
               }
             ]
           },
@@ -716,7 +744,7 @@ description: Operations executed inner-thread.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "6f9536f6-0229-5cbb-bd5f-d3e20949d527"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -742,7 +770,7 @@ description: Operations executed inner-thread.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "53a9149e-1246-5c44-9e3c-558201ff438c"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -753,9 +781,11 @@ description: Operations executed inner-thread.kcl
             "type": "Number",
             "value": 10.0,
             "ty": {
-              "mm": null,
               "type": "Known",
-              "type": "Length"
+              "value": {
+                "type": "Length",
+                "value": "mm"
+              }
             }
           },
           "sourceRange": []
@@ -784,9 +814,11 @@ description: Operations executed inner-thread.kcl
         "type": "Number",
         "value": 0.5,
         "ty": {
-          "mm": null,
           "type": "Known",
-          "type": "Length"
+          "value": {
+            "type": "Length",
+            "value": "mm"
+          }
         }
       },
       "visibility": "default",
@@ -813,9 +845,11 @@ description: Operations executed inner-thread.kcl
         "type": "Number",
         "value": 0.5,
         "ty": {
-          "mm": null,
           "type": "Known",
-          "type": "Length"
+          "value": {
+            "type": "Length",
+            "value": "mm"
+          }
         }
       },
       "visibility": "default",
@@ -870,18 +904,22 @@ description: Operations executed inner-thread.kcl
                 "type": "SketchVar",
                 "value": 4.3,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -0.2,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -896,18 +934,22 @@ description: Operations executed inner-thread.kcl
                 "type": "SketchVar",
                 "value": 3.7,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -0.2,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -957,18 +999,22 @@ description: Operations executed inner-thread.kcl
                 "type": "SketchVar",
                 "value": 4.3,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.2,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -983,18 +1029,22 @@ description: Operations executed inner-thread.kcl
                 "type": "SketchVar",
                 "value": 4.3,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -0.2,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -1088,18 +1138,22 @@ description: Operations executed inner-thread.kcl
                 "type": "SketchVar",
                 "value": 3.7,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.2,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -1114,18 +1168,22 @@ description: Operations executed inner-thread.kcl
                 "type": "SketchVar",
                 "value": 4.3,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.2,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -1219,18 +1277,22 @@ description: Operations executed inner-thread.kcl
                 "type": "SketchVar",
                 "value": 3.7,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -0.2,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -1245,18 +1307,22 @@ description: Operations executed inner-thread.kcl
                 "type": "SketchVar",
                 "value": 3.7,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.2,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -1539,18 +1605,22 @@ description: Operations executed inner-thread.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -1606,18 +1676,22 @@ description: Operations executed inner-thread.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -1766,9 +1840,11 @@ description: Operations executed inner-thread.kcl
             "type": "Number",
             "value": 0.0,
             "ty": {
-              "degrees": null,
               "type": "Known",
-              "type": "Angle"
+              "value": {
+                "type": "Angle",
+                "value": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -1777,7 +1853,7 @@ description: Operations executed inner-thread.kcl
           "value": {
             "type": "Solid",
             "value": {
-              "artifactId": "2c522d90-5fef-5750-b489-b008732bd2c3"
+              "artifactId": "[uuid]"
             }
           },
           "sourceRange": []
@@ -1787,9 +1863,11 @@ description: Operations executed inner-thread.kcl
             "type": "Number",
             "value": 11.0,
             "ty": {
-              "mm": null,
               "type": "Known",
-              "type": "Length"
+              "value": {
+                "type": "Length",
+                "value": "mm"
+              }
             }
           },
           "sourceRange": []
@@ -1800,7 +1878,9 @@ description: Operations executed inner-thread.kcl
             "value": 10.0,
             "ty": {
               "type": "Known",
-              "type": "Count"
+              "value": {
+                "type": "Count"
+              }
             }
           },
           "sourceRange": []
@@ -1833,11 +1913,11 @@ description: Operations executed inner-thread.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "2f481fd4-203e-57d7-b5d6-b16289577621"
+                "artifact_id": "[uuid]"
               },
               {
                 "type": "Segment",
-                "artifact_id": "e383621f-755a-5f2e-ada3-608aff393dab"
+                "artifact_id": "[uuid]"
               }
             ]
           },
@@ -1867,7 +1947,7 @@ description: Operations executed inner-thread.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "1144ecbd-366d-5a7a-bb6c-2e169ba3c205"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -1877,7 +1957,7 @@ description: Operations executed inner-thread.kcl
           "value": {
             "type": "Helix",
             "value": {
-              "artifactId": "0d2fa0a7-0d7c-5dcf-b9b9-f7010642f7b0"
+              "artifactId": "[uuid]"
             }
           },
           "sourceRange": []
@@ -1906,7 +1986,7 @@ description: Operations executed inner-thread.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "bbcacf2c-f132-502a-87e1-0b0ffa846931"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -1932,7 +2012,7 @@ description: Operations executed inner-thread.kcl
         "value": {
           "type": "Helix",
           "value": {
-            "artifactId": "0d2fa0a7-0d7c-5dcf-b9b9-f7010642f7b0"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -1961,7 +2041,7 @@ description: Operations executed inner-thread.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "fe76cc2a-18a1-5937-82e8-b2572a7c2149"
+                "artifactId": "[uuid]"
               }
             }
           ]
@@ -1976,13 +2056,13 @@ description: Operations executed inner-thread.kcl
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "2c522d90-5fef-5750-b489-b008732bd2c3"
+                  "artifactId": "[uuid]"
                 }
               },
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "468f6520-a683-5392-9492-de009fdcddef"
+                  "artifactId": "[uuid]"
                 }
               }
             ]
@@ -2043,7 +2123,9 @@ description: Operations executed inner-thread.kcl
         "value": 2.718281828459045,
         "ty": {
           "type": "Known",
-          "type": "Count"
+          "value": {
+            "type": "Count"
+          }
         }
       },
       "visibility": "export",
@@ -2071,7 +2153,9 @@ description: Operations executed inner-thread.kcl
         "value": 6.283185307179586,
         "ty": {
           "type": "Known",
-          "type": "Count"
+          "value": {
+            "type": "Count"
+          }
         }
       },
       "visibility": "export",
@@ -2105,7 +2189,7 @@ description: Operations executed inner-thread.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 23
+            "index": 24
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2129,7 +2213,7 @@ description: Operations executed inner-thread.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 24
+            "index": 25
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2153,7 +2237,7 @@ description: Operations executed inner-thread.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 25
+            "index": 26
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2177,7 +2261,7 @@ description: Operations executed inner-thread.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 26
+            "index": 27
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2201,7 +2285,7 @@ description: Operations executed inner-thread.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 27
+            "index": 28
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2225,7 +2309,7 @@ description: Operations executed inner-thread.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 28
+            "index": 29
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2249,7 +2333,7 @@ description: Operations executed inner-thread.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 29
+            "index": 30
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2273,7 +2357,7 @@ description: Operations executed inner-thread.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 30
+            "index": 31
           },
           {
             "type": "VariableDeclarationDeclaration"

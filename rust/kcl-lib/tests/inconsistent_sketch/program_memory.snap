@@ -6,8 +6,8 @@ description: Variables in memory after executing inconsistent_sketch.kcl
   "__sketch_1_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
-      "id": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
+      "artifactId": "[uuid]",
+      "id": "[uuid]",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -40,8 +40,10 @@ description: Variables in memory after executing inconsistent_sketch.kcl
     "value": 1234.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "sketch001": {
@@ -53,7 +55,7 @@ description: Variables in memory after executing inconsistent_sketch.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+                "id": "[uuid]",
                 "objectId": 4,
                 "kind": {
                   "line": {
@@ -61,17 +63,21 @@ description: Variables in memory after executing inconsistent_sketch.kcl
                       {
                         "n": -2.6470451105581825,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 2.789598916417392,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -79,17 +85,21 @@ description: Variables in memory after executing inconsistent_sketch.kcl
                       {
                         "n": 1.6970454036727465,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 2.090401083582608,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -127,8 +137,8 @@ description: Variables in memory after executing inconsistent_sketch.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -157,7 +167,7 @@ description: Variables in memory after executing inconsistent_sketch.kcl
                     "units": null
                   }
                 },
-                "sketchId": "efd1e3b2-5268-50fd-858e-26540f8146e5",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -174,11 +184,11 @@ description: Variables in memory after executing inconsistent_sketch.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
+              "id": "[uuid]",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -203,8 +213,8 @@ description: Variables in memory after executing inconsistent_sketch.kcl
               ],
               "on": {
                 "type": "plane",
-                "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                "artifactId": "[uuid]",
+                "id": "[uuid]",
                 "objectId": 0,
                 "kind": "Custom",
                 "origin": {
@@ -244,7 +254,7 @@ description: Variables in memory after executing inconsistent_sketch.kcl
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
+                  "id": "[uuid]",
                   "sourceRange": []
                 }
               },
@@ -254,8 +264,8 @@ description: Variables in memory after executing inconsistent_sketch.kcl
                   "value": "line1"
                 }
               },
-              "artifactId": "efd1e3b2-5268-50fd-858e-26540f8146e5",
-              "originalId": "efd1e3b2-5268-50fd-858e-26540f8146e5",
+              "artifactId": "[uuid]",
+              "originalId": "[uuid]",
               "units": "mm",
               "isClosed": "no"
             }

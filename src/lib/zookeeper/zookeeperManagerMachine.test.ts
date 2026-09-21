@@ -7,6 +7,7 @@ import { resetReportedClientErrorsForTests } from '@src/lib/clientErrors'
 import type { FileMeta } from '@src/lib/types'
 import {
   type Conversation,
+  createZookeeperManagerActor,
   createZookeeperCorrelation,
   getZookeeperAttachmentKey,
   hasBeenInterruptedOnLast,
@@ -25,6 +26,7 @@ import {
   ZookeeperManagerTransitions,
   ZookeeperSetupErrors,
   zookeeperManagerMachine,
+  stopZookeeperManagerActor,
   ZOOKEEPER_RESUME_SUPERSEDED_CLOSE_CODE,
 } from '@src/lib/zookeeper/zookeeperManagerMachine'
 import { S } from '@src/machines/utils'
@@ -243,7 +245,17 @@ describe('zookeeperManagerMachine', () => {
     ControllableSetupWebSocket.instances = []
   })
 
+  it('creates a started manager actor', () => {
+    const actor = createZookeeperManagerActor('api-token')
+
+    expect(actor.getSnapshot().status).toBe('active')
+    expect(actor.getSnapshot().context.apiToken).toBe('api-token')
+
+    stopZookeeperManagerActor(actor)
+  })
+
   afterEach(() => {
+    vi.useRealTimers()
     vi.restoreAllMocks()
     vi.unstubAllGlobals()
   })
@@ -648,6 +660,61 @@ describe('zookeeperManagerMachine', () => {
       expect(socket.close).toHaveBeenCalledOnce()
 
       actor.stop()
+    })
+
+    it('closes the socket and stops its heartbeat when stopped', async () => {
+      vi.useFakeTimers()
+      vi.stubGlobal('WebSocket', ControllableSetupWebSocket)
+      const actor = createActor(zookeeperManagerMachine, {
+        input: {
+          apiToken: 'token',
+        },
+      }).start()
+
+      actor.send({
+        type: ZookeeperManagerTransitions.CacheSetupAndConnect,
+        refParentSend: vi.fn(),
+      })
+
+      const socket = ControllableSetupWebSocket.instances[0]
+      socket.open()
+      await vi.waitFor(() => {
+        expect(socket.sentPayloads).toContain(
+          JSON.stringify({ type: 'list_modes' })
+        )
+      })
+      socket.receive({
+        conversation_id: { conversation_id: 'conversation-id' },
+      })
+
+      await waitFor(actor, (state) =>
+        state.matches(ZookeeperManagerStates.WaitForContinueCheck)
+      )
+      actor.send({
+        type: ZookeeperManagerStates.ContinueCheck,
+        projectName: 'zoo-project',
+        projectFiles: [],
+      })
+      await waitFor(actor, (state) =>
+        state.matches(ZookeeperManagerStates.Ready)
+      )
+
+      expect(socket.readyState).toBe(ControllableSetupWebSocket.OPEN)
+      expect(socket.close).not.toHaveBeenCalled()
+
+      await vi.advanceTimersByTimeAsync(ZOOKEEPER_HEARTBEAT_INTERVAL_MS)
+      expect(socket.sentPayloads).toContain(JSON.stringify({ type: 'ping' }))
+      const sentBeforeStop = [...socket.sentPayloads]
+
+      stopZookeeperManagerActor(actor)
+
+      expect(socket.close).toHaveBeenCalledOnce()
+      expect(socket.readyState).toBe(ControllableSetupWebSocket.CLOSED)
+      expect(vi.getTimerCount()).toBe(0)
+
+      await vi.advanceTimersByTimeAsync(2 * ZOOKEEPER_HEARTBEAT_INTERVAL_MS)
+      expect(socket.sentPayloads).toEqual(sentBeforeStop)
+      expect(ControllableSetupWebSocket.instances).toHaveLength(1)
     })
 
     it('times out setup attempts instead of waiting forever', async () => {

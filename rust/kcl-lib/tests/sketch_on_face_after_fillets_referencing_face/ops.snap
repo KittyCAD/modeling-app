@@ -12,8 +12,10 @@ description: Operations executed sketch_on_face_after_fillets_referencing_face.k
         "value": 8.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -41,8 +43,10 @@ description: Operations executed sketch_on_face_after_fillets_referencing_face.k
         "value": 6.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -70,8 +74,10 @@ description: Operations executed sketch_on_face_after_fillets_referencing_face.k
         "value": 35000.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -99,8 +105,10 @@ description: Operations executed sketch_on_face_after_fillets_referencing_face.k
         "value": 6.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -128,8 +136,10 @@ description: Operations executed sketch_on_face_after_fillets_referencing_face.k
         "value": 300.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -157,8 +167,10 @@ description: Operations executed sketch_on_face_after_fillets_referencing_face.k
         "value": 12.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -186,8 +198,10 @@ description: Operations executed sketch_on_face_after_fillets_referencing_face.k
         "value": 1800.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -215,8 +229,10 @@ description: Operations executed sketch_on_face_after_fillets_referencing_face.k
         "value": 2.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -244,8 +260,10 @@ description: Operations executed sketch_on_face_after_fillets_referencing_face.k
         "value": 0.32071349029490925,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -273,8 +291,10 @@ description: Operations executed sketch_on_face_after_fillets_referencing_face.k
         "value": 0.25,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -300,7 +320,7 @@ description: Operations executed sketch_on_face_after_fillets_referencing_face.k
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "400a2ed4-52ae-5786-967d-7fdba1bd0850"
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       },
@@ -332,7 +352,7 @@ description: Operations executed sketch_on_face_after_fillets_referencing_face.k
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -344,8 +364,10 @@ description: Operations executed sketch_on_face_after_fillets_referencing_face.k
             "value": 6.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -378,7 +400,7 @@ description: Operations executed sketch_on_face_after_fillets_referencing_face.k
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "fc1035ae-3877-5cf6-9e94-7e1f3b755966"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -390,8 +412,10 @@ description: Operations executed sketch_on_face_after_fillets_referencing_face.k
             "value": 0.25,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -402,7 +426,7 @@ description: Operations executed sketch_on_face_after_fillets_referencing_face.k
             "value": [
               {
                 "type": "Uuid",
-                "value": "9eee21ba-6c99-5df4-a742-d43a03ad5000"
+                "value": "[uuid]"
               }
             ]
           },
@@ -436,7 +460,7 @@ description: Operations executed sketch_on_face_after_fillets_referencing_face.k
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "fc1035ae-3877-5cf6-9e94-7e1f3b755966"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -448,8 +472,10 @@ description: Operations executed sketch_on_face_after_fillets_referencing_face.k
             "value": 0.5707134902949093,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -460,7 +486,7 @@ description: Operations executed sketch_on_face_after_fillets_referencing_face.k
             "value": [
               {
                 "type": "Uuid",
-                "value": "47ff4dac-32f2-5e48-962f-6870d4f8f118"
+                "value": "[uuid]"
               }
             ]
           },
@@ -494,7 +520,7 @@ description: Operations executed sketch_on_face_after_fillets_referencing_face.k
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "fc1035ae-3877-5cf6-9e94-7e1f3b755966"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -504,7 +530,7 @@ description: Operations executed sketch_on_face_after_fillets_referencing_face.k
           "value": {
             "type": "TagIdentifier",
             "value": "seg01",
-            "artifact_id": "89316223-2ea1-5731-9c72-0492bc30fbe2"
+            "artifact_id": "[uuid]"
           },
           "sourceRange": []
         }
@@ -536,7 +562,7 @@ description: Operations executed sketch_on_face_after_fillets_referencing_face.k
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "c6c38d17-92b3-5556-b0a7-5be52ccdd1ec"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -548,8 +574,10 @@ description: Operations executed sketch_on_face_after_fillets_referencing_face.k
             "value": 10.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -612,7 +640,9 @@ description: Operations executed sketch_on_face_after_fillets_referencing_face.k
         "value": 2.718281828459045,
         "ty": {
           "type": "Known",
-          "type": "Count"
+          "value": {
+            "type": "Count"
+          }
         }
       },
       "visibility": "export",
@@ -640,7 +670,9 @@ description: Operations executed sketch_on_face_after_fillets_referencing_face.k
         "value": 6.283185307179586,
         "ty": {
           "type": "Known",
-          "type": "Count"
+          "value": {
+            "type": "Count"
+          }
         }
       },
       "visibility": "export",
@@ -674,7 +706,7 @@ description: Operations executed sketch_on_face_after_fillets_referencing_face.k
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 23
+            "index": 24
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -698,7 +730,7 @@ description: Operations executed sketch_on_face_after_fillets_referencing_face.k
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 24
+            "index": 25
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -722,7 +754,7 @@ description: Operations executed sketch_on_face_after_fillets_referencing_face.k
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 25
+            "index": 26
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -746,7 +778,7 @@ description: Operations executed sketch_on_face_after_fillets_referencing_face.k
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 26
+            "index": 27
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -770,7 +802,7 @@ description: Operations executed sketch_on_face_after_fillets_referencing_face.k
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 27
+            "index": 28
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -794,7 +826,7 @@ description: Operations executed sketch_on_face_after_fillets_referencing_face.k
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 28
+            "index": 29
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -818,7 +850,7 @@ description: Operations executed sketch_on_face_after_fillets_referencing_face.k
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 29
+            "index": 30
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -842,7 +874,7 @@ description: Operations executed sketch_on_face_after_fillets_referencing_face.k
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 30
+            "index": 31
           },
           {
             "type": "VariableDeclarationDeclaration"

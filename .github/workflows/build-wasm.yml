@@ -18,62 +18,20 @@ jobs:
         with:
           repository: kittycad/modeling-app # required for 'workflow_call'
 
-      - id: filter
-        name: Check for Rust changes
-        uses: dorny/paths-filter@v4.0.3
-        continue-on-error: true # this step fails when invoked as 'workflow_call'
-        with:
-          filters: |
-            rust:
-              - 'rust/**'
-              - '.github/workflows/build-wasm.yml'
-
       - uses: actions/setup-node@v7.0.0
         with:
           node-version-file: .nvmrc
           cache: npm
 
       - name: Install dependencies
-        run: npm install
-
-      - name: Download Wasm cache
-        id: download-wasm
-        if: ${{ (steps.filter.outputs.rust || 'false') == 'false' }}
-        uses: dawidd6/action-download-artifact@v24
-        continue-on-error: true
-        with:
-          name: prepared-wasm
-          # `build-wasm.yml` is `workflow_call` only, so its artifacts are
-          # attributed to the caller's parent run. Using `e2e-tests.yml` works
-          # as the canonical caller since this runs every hour on main.
-          workflow: e2e-tests.yml
-          branch: main
-          path: rust/kcl-wasm-lib/pkg
-
-      - name: Determine Wasm rebuild
-        id: wasm
-        env:
-          BASE_REF: ${{ github.event.pull_request.base.ref }}
-          DOWNLOAD_OUTCOME: ${{ steps.download-wasm.outcome }}
-          RUST_CHANGES: ${{ steps.filter.outputs.rust || 'false' }}
-        run: |
-          # Build Wasm with Rust changes, cache misses, or for stacked PRs
-          if [[ "${RUST_CHANGES}" == 'true' || \
-                "${DOWNLOAD_OUTCOME}" == 'failure' || \
-                ( -n "${BASE_REF}" && "${BASE_REF}" != 'main' ) ]]; then
-            echo "should-build-wasm=true" >> $GITHUB_OUTPUT
-          else
-            echo "should-build-wasm=false" >> $GITHUB_OUTPUT
-          fi
+        run: npm ci
 
       - name: Use correct Rust toolchain
-        if: ${{ steps.wasm.outputs.should-build-wasm == 'true' }}
         shell: bash
         run: |
           [ -e rust-toolchain.toml ] || cp rust/rust-toolchain.toml ./
 
       - name: Install Rust
-        if: ${{ steps.wasm.outputs.should-build-wasm == 'true' }}
         uses: actions-rust-lang/setup-rust-toolchain@v1.17.0
         with:
           cache: false # configured below
@@ -81,12 +39,10 @@ jobs:
 
       - name: Install Wasm pack
         uses: taiki-e/install-action@c30ba1cbe2face7f695d394a2c95af204d417b29
-        if: ${{ steps.wasm.outputs.should-build-wasm == 'true' }}
         with:
           tool: wasm-pack
 
       - name: Cache Rust artifacts
-        if: ${{ steps.wasm.outputs.should-build-wasm == 'true' }}
         uses: namespacelabs/nscloud-cache-action@v1
         with:
           path: |
@@ -95,16 +51,13 @@ jobs:
             ~/.cargo/git
 
       - name: Verify Rust cache is writable
-        if: ${{ steps.wasm.outputs.should-build-wasm == 'true' }}
         run: .github/ci-cd-scripts/verify-rust-cache-writable.sh
 
       - name: Build Wasm
-        if: ${{ steps.wasm.outputs.should-build-wasm == 'true' }}
         shell: bash
         run: npm run build:wasm
 
       - name: Use committed TypeScript bindings
-        if: ${{ steps.wasm.outputs.should-build-wasm != 'true' }}
         shell: bash
         run: |
           cp -R rust/kcl-lib/expected-bindings/ts-rs rust/kcl-lib/bindings

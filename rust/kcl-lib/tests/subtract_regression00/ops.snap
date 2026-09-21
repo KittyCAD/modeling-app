@@ -10,7 +10,7 @@ description: Operations executed subtract_regression00.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "400a2ed4-52ae-5786-967d-7fdba1bd0850"
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       },
@@ -38,7 +38,7 @@ description: Operations executed subtract_regression00.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -50,8 +50,10 @@ description: Operations executed subtract_regression00.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -62,8 +64,10 @@ description: Operations executed subtract_regression00.kcl
             "value": 50.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -91,7 +95,7 @@ description: Operations executed subtract_regression00.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "400a2ed4-52ae-5786-967d-7fdba1bd0850"
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       },
@@ -102,8 +106,10 @@ description: Operations executed subtract_regression00.kcl
             "value": 55.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -134,7 +140,7 @@ description: Operations executed subtract_regression00.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9"
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       },
@@ -162,7 +168,7 @@ description: Operations executed subtract_regression00.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "e00e9caf-6e9e-5221-8545-b199546c367f"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -174,8 +180,10 @@ description: Operations executed subtract_regression00.kcl
             "value": -60.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -204,7 +212,7 @@ description: Operations executed subtract_regression00.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -214,7 +222,7 @@ description: Operations executed subtract_regression00.kcl
           "value": {
             "type": "Solid",
             "value": {
-              "artifactId": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3"
+              "artifactId": "[uuid]"
             }
           },
           "sourceRange": []
@@ -273,7 +281,9 @@ description: Operations executed subtract_regression00.kcl
         "value": 2.718281828459045,
         "ty": {
           "type": "Known",
-          "type": "Count"
+          "value": {
+            "type": "Count"
+          }
         }
       },
       "visibility": "export",
@@ -301,7 +311,9 @@ description: Operations executed subtract_regression00.kcl
         "value": 6.283185307179586,
         "ty": {
           "type": "Known",
-          "type": "Count"
+          "value": {
+            "type": "Count"
+          }
         }
       },
       "visibility": "export",
@@ -335,7 +347,7 @@ description: Operations executed subtract_regression00.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 23
+            "index": 24
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -359,7 +371,7 @@ description: Operations executed subtract_regression00.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 24
+            "index": 25
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -383,7 +395,7 @@ description: Operations executed subtract_regression00.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 25
+            "index": 26
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -407,7 +419,7 @@ description: Operations executed subtract_regression00.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 26
+            "index": 27
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -431,7 +443,7 @@ description: Operations executed subtract_regression00.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 27
+            "index": 28
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -455,7 +467,7 @@ description: Operations executed subtract_regression00.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 28
+            "index": 29
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -479,7 +491,7 @@ description: Operations executed subtract_regression00.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 29
+            "index": 30
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -503,7 +515,7 @@ description: Operations executed subtract_regression00.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 30
+            "index": 31
           },
           {
             "type": "VariableDeclarationDeclaration"

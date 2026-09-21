@@ -12,8 +12,10 @@ description: Operations executed stylized-car.kcl
         "value": 3.5,
         "ty": {
           "type": "Default",
-          "len": "m",
-          "angle": "degrees"
+          "value": {
+            "len": "m",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -41,8 +43,10 @@ description: Operations executed stylized-car.kcl
         "value": 1.8,
         "ty": {
           "type": "Default",
-          "len": "m",
-          "angle": "degrees"
+          "value": {
+            "len": "m",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -70,8 +74,10 @@ description: Operations executed stylized-car.kcl
         "value": 0.4,
         "ty": {
           "type": "Default",
-          "len": "m",
-          "angle": "degrees"
+          "value": {
+            "len": "m",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -99,8 +105,10 @@ description: Operations executed stylized-car.kcl
         "value": 2.3,
         "ty": {
           "type": "Default",
-          "len": "m",
-          "angle": "degrees"
+          "value": {
+            "len": "m",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -128,8 +136,10 @@ description: Operations executed stylized-car.kcl
         "value": 0.7,
         "ty": {
           "type": "Default",
-          "len": "m",
-          "angle": "degrees"
+          "value": {
+            "len": "m",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -157,8 +167,10 @@ description: Operations executed stylized-car.kcl
         "value": 0.35,
         "ty": {
           "type": "Default",
-          "len": "m",
-          "angle": "degrees"
+          "value": {
+            "len": "m",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -186,8 +198,10 @@ description: Operations executed stylized-car.kcl
         "value": 0.27,
         "ty": {
           "type": "Default",
-          "len": "m",
-          "angle": "degrees"
+          "value": {
+            "len": "m",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -215,8 +229,10 @@ description: Operations executed stylized-car.kcl
         "value": 0.1,
         "ty": {
           "type": "Default",
-          "len": "m",
-          "angle": "degrees"
+          "value": {
+            "len": "m",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -244,8 +260,10 @@ description: Operations executed stylized-car.kcl
         "value": 3.7,
         "ty": {
           "type": "Default",
-          "len": "m",
-          "angle": "degrees"
+          "value": {
+            "len": "m",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -273,8 +291,10 @@ description: Operations executed stylized-car.kcl
         "value": 2.0,
         "ty": {
           "type": "Default",
-          "len": "m",
-          "angle": "degrees"
+          "value": {
+            "len": "m",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -302,8 +322,10 @@ description: Operations executed stylized-car.kcl
         "value": 0.35,
         "ty": {
           "type": "Default",
-          "len": "m",
-          "angle": "degrees"
+          "value": {
+            "len": "m",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -331,8 +353,10 @@ description: Operations executed stylized-car.kcl
         "value": 0.4,
         "ty": {
           "type": "Default",
-          "len": "m",
-          "angle": "degrees"
+          "value": {
+            "len": "m",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -360,8 +384,10 @@ description: Operations executed stylized-car.kcl
         "value": 0.75,
         "ty": {
           "type": "Default",
-          "len": "m",
-          "angle": "degrees"
+          "value": {
+            "len": "m",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -389,8 +415,10 @@ description: Operations executed stylized-car.kcl
         "value": 0.77,
         "ty": {
           "type": "Default",
-          "len": "m",
-          "angle": "degrees"
+          "value": {
+            "len": "m",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -418,8 +446,10 @@ description: Operations executed stylized-car.kcl
         "value": 1.15,
         "ty": {
           "type": "Default",
-          "len": "m",
-          "angle": "degrees"
+          "value": {
+            "len": "m",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -447,8 +477,10 @@ description: Operations executed stylized-car.kcl
         "value": 0.8,
         "ty": {
           "type": "Default",
-          "len": "m",
-          "angle": "degrees"
+          "value": {
+            "len": "m",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -476,8 +508,10 @@ description: Operations executed stylized-car.kcl
         "value": 1.4000000000000001,
         "ty": {
           "type": "Default",
-          "len": "m",
-          "angle": "degrees"
+          "value": {
+            "len": "m",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -505,8 +539,10 @@ description: Operations executed stylized-car.kcl
         "value": 0.5,
         "ty": {
           "type": "Default",
-          "len": "m",
-          "angle": "degrees"
+          "value": {
+            "len": "m",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -534,8 +570,10 @@ description: Operations executed stylized-car.kcl
         "value": 0.3,
         "ty": {
           "type": "Default",
-          "len": "m",
-          "angle": "degrees"
+          "value": {
+            "len": "m",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -563,8 +601,10 @@ description: Operations executed stylized-car.kcl
         "value": 0.95,
         "ty": {
           "type": "Default",
-          "len": "m",
-          "angle": "degrees"
+          "value": {
+            "len": "m",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -592,8 +632,10 @@ description: Operations executed stylized-car.kcl
         "value": 1.35,
         "ty": {
           "type": "Default",
-          "len": "m",
-          "angle": "degrees"
+          "value": {
+            "len": "m",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -621,8 +663,10 @@ description: Operations executed stylized-car.kcl
         "value": 0.32000000000000006,
         "ty": {
           "type": "Default",
-          "len": "m",
-          "angle": "degrees"
+          "value": {
+            "len": "m",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -650,8 +694,10 @@ description: Operations executed stylized-car.kcl
         "value": 0.05,
         "ty": {
           "type": "Default",
-          "len": "m",
-          "angle": "degrees"
+          "value": {
+            "len": "m",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -679,8 +725,10 @@ description: Operations executed stylized-car.kcl
         "value": 0.08000000000000002,
         "ty": {
           "type": "Default",
-          "len": "m",
-          "angle": "degrees"
+          "value": {
+            "len": "m",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -708,8 +756,10 @@ description: Operations executed stylized-car.kcl
         "value": 0.24,
         "ty": {
           "type": "Default",
-          "len": "m",
-          "angle": "degrees"
+          "value": {
+            "len": "m",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -737,8 +787,10 @@ description: Operations executed stylized-car.kcl
         "value": 0.36,
         "ty": {
           "type": "Default",
-          "len": "m",
-          "angle": "degrees"
+          "value": {
+            "len": "m",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -766,8 +818,10 @@ description: Operations executed stylized-car.kcl
         "value": 0.8300000000000001,
         "ty": {
           "type": "Default",
-          "len": "m",
-          "angle": "degrees"
+          "value": {
+            "len": "m",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -795,8 +849,10 @@ description: Operations executed stylized-car.kcl
         "value": 1.2800000000000002,
         "ty": {
           "type": "Default",
-          "len": "m",
-          "angle": "degrees"
+          "value": {
+            "len": "m",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -824,8 +880,10 @@ description: Operations executed stylized-car.kcl
         "value": 0.32000000000000006,
         "ty": {
           "type": "Default",
-          "len": "m",
-          "angle": "degrees"
+          "value": {
+            "len": "m",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -853,8 +911,10 @@ description: Operations executed stylized-car.kcl
         "value": 1.95,
         "ty": {
           "type": "Default",
-          "len": "m",
-          "angle": "degrees"
+          "value": {
+            "len": "m",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -882,8 +942,10 @@ description: Operations executed stylized-car.kcl
         "value": 0.1,
         "ty": {
           "type": "Default",
-          "len": "m",
-          "angle": "degrees"
+          "value": {
+            "len": "m",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -938,18 +1000,22 @@ description: Operations executed stylized-car.kcl
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -964,18 +1030,22 @@ description: Operations executed stylized-car.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -1025,18 +1095,22 @@ description: Operations executed stylized-car.kcl
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -1051,18 +1125,22 @@ description: Operations executed stylized-car.kcl
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -1112,18 +1190,22 @@ description: Operations executed stylized-car.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -1138,18 +1220,22 @@ description: Operations executed stylized-car.kcl
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -1199,18 +1285,22 @@ description: Operations executed stylized-car.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -1225,18 +1315,22 @@ description: Operations executed stylized-car.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -1611,8 +1705,10 @@ description: Operations executed stylized-car.kcl
                   "value": -1.85,
                   "ty": {
                     "type": "Default",
-                    "len": "m",
-                    "angle": "degrees"
+                    "value": {
+                      "len": "m",
+                      "angle": "degrees"
+                    }
                   }
                 },
                 {
@@ -1620,8 +1716,10 @@ description: Operations executed stylized-car.kcl
                   "value": 0.4,
                   "ty": {
                     "type": "Default",
-                    "len": "m",
-                    "angle": "degrees"
+                    "value": {
+                      "len": "m",
+                      "angle": "degrees"
+                    }
                   }
                 }
               ]
@@ -1765,7 +1863,7 @@ description: Operations executed stylized-car.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
+                "artifact_id": "[uuid]"
               }
             ]
           },
@@ -1795,7 +1893,7 @@ description: Operations executed stylized-car.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "b680fe3e-a804-583c-99d9-1693b2432aeb"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -1807,8 +1905,10 @@ description: Operations executed stylized-car.kcl
             "value": -2.0,
             "ty": {
               "type": "Default",
-              "len": "m",
-              "angle": "degrees"
+              "value": {
+                "len": "m",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -1848,7 +1948,7 @@ description: Operations executed stylized-car.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "2c522d90-5fef-5750-b489-b008732bd2c3"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -1889,7 +1989,7 @@ description: Operations executed stylized-car.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -1943,18 +2043,22 @@ description: Operations executed stylized-car.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.35,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -1976,18 +2080,22 @@ description: Operations executed stylized-car.kcl
                 "type": "SketchVar",
                 "value": 0.5,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.35,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -2037,18 +2145,22 @@ description: Operations executed stylized-car.kcl
                 "type": "SketchVar",
                 "value": -0.25,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.8,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -2063,18 +2175,22 @@ description: Operations executed stylized-car.kcl
                 "type": "SketchVar",
                 "value": -0.5,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.35,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -2124,18 +2240,22 @@ description: Operations executed stylized-car.kcl
                 "type": "SketchVar",
                 "value": 0.25,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.8,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -2150,18 +2270,22 @@ description: Operations executed stylized-car.kcl
                 "type": "SketchVar",
                 "value": -0.25,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.8,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -2255,18 +2379,22 @@ description: Operations executed stylized-car.kcl
                 "type": "SketchVar",
                 "value": 0.5,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.35,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -2281,18 +2409,22 @@ description: Operations executed stylized-car.kcl
                 "type": "SketchVar",
                 "value": 0.25,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.8,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -2430,18 +2562,22 @@ description: Operations executed stylized-car.kcl
                 "type": "SketchVar",
                 "value": 0.25,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -0.1,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -2456,18 +2592,22 @@ description: Operations executed stylized-car.kcl
                 "type": "SketchVar",
                 "value": 0.5,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.35,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -2561,18 +2701,22 @@ description: Operations executed stylized-car.kcl
                 "type": "SketchVar",
                 "value": -0.25,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -0.1,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -2587,18 +2731,22 @@ description: Operations executed stylized-car.kcl
                 "type": "SketchVar",
                 "value": 0.25,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -0.1,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -2692,18 +2840,22 @@ description: Operations executed stylized-car.kcl
                 "type": "SketchVar",
                 "value": -0.5,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.35,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -2718,18 +2870,22 @@ description: Operations executed stylized-car.kcl
                 "type": "SketchVar",
                 "value": -0.25,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -0.1,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -3150,18 +3306,22 @@ description: Operations executed stylized-car.kcl
                 "type": "SketchVar",
                 "value": 0.5,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.35,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -3176,18 +3336,22 @@ description: Operations executed stylized-car.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.35,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -3366,8 +3530,10 @@ description: Operations executed stylized-car.kcl
                   "value": 0.0,
                   "ty": {
                     "type": "Default",
-                    "len": "m",
-                    "angle": "degrees"
+                    "value": {
+                      "len": "m",
+                      "angle": "degrees"
+                    }
                   }
                 },
                 {
@@ -3375,8 +3541,10 @@ description: Operations executed stylized-car.kcl
                   "value": 0.35,
                   "ty": {
                     "type": "Default",
-                    "len": "m",
-                    "angle": "degrees"
+                    "value": {
+                      "len": "m",
+                      "angle": "degrees"
+                    }
                   }
                 }
               ]
@@ -3473,7 +3641,7 @@ description: Operations executed stylized-car.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "72dddee3-1330-5c4f-b767-659f762ad674"
+                "artifact_id": "[uuid]"
               }
             ]
           },
@@ -3503,7 +3671,7 @@ description: Operations executed stylized-car.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "0f805c0b-b523-5978-a0dd-c17f7ac70690"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -3515,8 +3683,10 @@ description: Operations executed stylized-car.kcl
             "value": 0.81,
             "ty": {
               "type": "Default",
-              "len": "m",
-              "angle": "degrees"
+              "value": {
+                "len": "m",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -3552,7 +3722,7 @@ description: Operations executed stylized-car.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "bc4183c3-53a3-5213-a2cc-6fc8ca38dc19"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -3578,7 +3748,7 @@ description: Operations executed stylized-car.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "5288de96-84bb-518a-848b-5092b5d33e48"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -3597,8 +3767,10 @@ description: Operations executed stylized-car.kcl
             "value": -1.15,
             "ty": {
               "type": "Default",
-              "len": "m",
-              "angle": "degrees"
+              "value": {
+                "len": "m",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -3609,8 +3781,10 @@ description: Operations executed stylized-car.kcl
             "value": -1.0,
             "ty": {
               "type": "Default",
-              "len": "m",
-              "angle": "degrees"
+              "value": {
+                "len": "m",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -3621,8 +3795,10 @@ description: Operations executed stylized-car.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": "m",
-              "angle": "degrees"
+              "value": {
+                "len": "m",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -3655,7 +3831,7 @@ description: Operations executed stylized-car.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "5288de96-84bb-518a-848b-5092b5d33e48"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -3673,8 +3849,10 @@ description: Operations executed stylized-car.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   },
                   {
@@ -3682,8 +3860,10 @@ description: Operations executed stylized-car.kcl
                     "value": 1.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   },
                   {
@@ -3691,8 +3871,10 @@ description: Operations executed stylized-car.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   }
                 ]
@@ -3705,8 +3887,10 @@ description: Operations executed stylized-car.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   },
                   {
@@ -3714,8 +3898,10 @@ description: Operations executed stylized-car.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   },
                   {
@@ -3723,8 +3909,10 @@ description: Operations executed stylized-car.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   }
                 ]
@@ -3739,8 +3927,10 @@ description: Operations executed stylized-car.kcl
             "value": 2.0,
             "ty": {
               "type": "Default",
-              "len": "m",
-              "angle": "degrees"
+              "value": {
+                "len": "m",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -3751,7 +3941,9 @@ description: Operations executed stylized-car.kcl
             "value": 2.0,
             "ty": {
               "type": "Known",
-              "type": "Count"
+              "value": {
+                "type": "Count"
+              }
             }
           },
           "sourceRange": []
@@ -3783,13 +3975,13 @@ description: Operations executed stylized-car.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "5288de96-84bb-518a-848b-5092b5d33e48"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "3a7a0e7b-7ad0-5e7b-b0b7-56b34083d08c"
+                "artifactId": "[uuid]"
               }
             }
           ]
@@ -3809,8 +4001,10 @@ description: Operations executed stylized-car.kcl
                     "value": 1.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   },
                   {
@@ -3818,8 +4012,10 @@ description: Operations executed stylized-car.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   },
                   {
@@ -3827,8 +4023,10 @@ description: Operations executed stylized-car.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   }
                 ]
@@ -3841,8 +4039,10 @@ description: Operations executed stylized-car.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   },
                   {
@@ -3850,8 +4050,10 @@ description: Operations executed stylized-car.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   },
                   {
@@ -3859,8 +4061,10 @@ description: Operations executed stylized-car.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   }
                 ]
@@ -3875,8 +4079,10 @@ description: Operations executed stylized-car.kcl
             "value": 2.3,
             "ty": {
               "type": "Default",
-              "len": "m",
-              "angle": "degrees"
+              "value": {
+                "len": "m",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -3887,7 +4093,9 @@ description: Operations executed stylized-car.kcl
             "value": 2.0,
             "ty": {
               "type": "Known",
-              "type": "Count"
+              "value": {
+                "type": "Count"
+              }
             }
           },
           "sourceRange": []
@@ -3916,7 +4124,7 @@ description: Operations executed stylized-car.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "2c522d90-5fef-5750-b489-b008732bd2c3"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -3929,25 +4137,25 @@ description: Operations executed stylized-car.kcl
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "5288de96-84bb-518a-848b-5092b5d33e48"
+                  "artifactId": "[uuid]"
                 }
               },
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "2febc3e0-e362-5a22-921a-27594c8a4aa7"
+                  "artifactId": "[uuid]"
                 }
               },
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "3a7a0e7b-7ad0-5e7b-b0b7-56b34083d08c"
+                  "artifactId": "[uuid]"
                 }
               },
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "66c2c253-d4a4-5428-8762-35d91a712f51"
+                  "artifactId": "[uuid]"
                 }
               }
             ]
@@ -3982,7 +4190,7 @@ description: Operations executed stylized-car.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "c7e54a2d-6c3f-5b6d-b6b4-ecca6249a1d3"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -4051,18 +4259,22 @@ description: Operations executed stylized-car.kcl
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -4077,18 +4289,22 @@ description: Operations executed stylized-car.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -4138,18 +4354,22 @@ description: Operations executed stylized-car.kcl
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -4164,18 +4384,22 @@ description: Operations executed stylized-car.kcl
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -4225,18 +4449,22 @@ description: Operations executed stylized-car.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -4251,18 +4479,22 @@ description: Operations executed stylized-car.kcl
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -4312,18 +4544,22 @@ description: Operations executed stylized-car.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -4338,18 +4574,22 @@ description: Operations executed stylized-car.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -4724,8 +4964,10 @@ description: Operations executed stylized-car.kcl
                   "value": -1.75,
                   "ty": {
                     "type": "Default",
-                    "len": "m",
-                    "angle": "degrees"
+                    "value": {
+                      "len": "m",
+                      "angle": "degrees"
+                    }
                   }
                 },
                 {
@@ -4733,8 +4975,10 @@ description: Operations executed stylized-car.kcl
                   "value": 0.75,
                   "ty": {
                     "type": "Default",
-                    "len": "m",
-                    "angle": "degrees"
+                    "value": {
+                      "len": "m",
+                      "angle": "degrees"
+                    }
                   }
                 }
               ]
@@ -4878,7 +5122,7 @@ description: Operations executed stylized-car.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "724b87fd-c709-5232-b7a1-547c15affb9b"
+                "artifact_id": "[uuid]"
               }
             ]
           },
@@ -4908,7 +5152,7 @@ description: Operations executed stylized-car.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "f4e71cbc-068a-5ab6-8914-ad9db323a7b6"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -4920,8 +5164,10 @@ description: Operations executed stylized-car.kcl
             "value": -1.8,
             "ty": {
               "type": "Default",
-              "len": "m",
-              "angle": "degrees"
+              "value": {
+                "len": "m",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -4961,7 +5207,7 @@ description: Operations executed stylized-car.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "d7299f54-f2ed-5b6b-a2c6-d6da0a86fdfa"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -5002,7 +5248,7 @@ description: Operations executed stylized-car.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "1c78fa6a-a102-5dd7-82bb-60d7ccea8fa1"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -5056,18 +5302,22 @@ description: Operations executed stylized-car.kcl
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -5082,18 +5332,22 @@ description: Operations executed stylized-car.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -5143,18 +5397,22 @@ description: Operations executed stylized-car.kcl
                 "type": "SketchVar",
                 "value": 2.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -5169,18 +5427,22 @@ description: Operations executed stylized-car.kcl
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -5230,18 +5492,22 @@ description: Operations executed stylized-car.kcl
                 "type": "SketchVar",
                 "value": 3.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -5256,18 +5522,22 @@ description: Operations executed stylized-car.kcl
                 "type": "SketchVar",
                 "value": 2.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -5317,18 +5587,22 @@ description: Operations executed stylized-car.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -5343,18 +5617,22 @@ description: Operations executed stylized-car.kcl
                 "type": "SketchVar",
                 "value": 3.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -5657,8 +5935,10 @@ description: Operations executed stylized-car.kcl
                   "value": -0.98,
                   "ty": {
                     "type": "Default",
-                    "len": "m",
-                    "angle": "degrees"
+                    "value": {
+                      "len": "m",
+                      "angle": "degrees"
+                    }
                   }
                 },
                 {
@@ -5666,8 +5946,10 @@ description: Operations executed stylized-car.kcl
                   "value": 1.15,
                   "ty": {
                     "type": "Default",
-                    "len": "m",
-                    "angle": "degrees"
+                    "value": {
+                      "len": "m",
+                      "angle": "degrees"
+                    }
                   }
                 }
               ]
@@ -5952,7 +6234,7 @@ description: Operations executed stylized-car.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "9ee924c8-9a14-5ca4-9014-20f9b1039bef"
+                "artifact_id": "[uuid]"
               }
             ]
           },
@@ -5982,7 +6264,7 @@ description: Operations executed stylized-car.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "e80fd4da-2562-5d4d-be7f-42b434d6e397"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -5994,8 +6276,10 @@ description: Operations executed stylized-car.kcl
             "value": -1.8,
             "ty": {
               "type": "Default",
-              "len": "m",
-              "angle": "degrees"
+              "value": {
+                "len": "m",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -6035,7 +6319,7 @@ description: Operations executed stylized-car.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "a0df0eb6-009b-594d-815d-31646979be80"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -6076,7 +6360,7 @@ description: Operations executed stylized-car.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "0a18ec1a-aedf-58b1-9e55-29a2b2e3ecf6"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -6130,18 +6414,22 @@ description: Operations executed stylized-car.kcl
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -6156,18 +6444,22 @@ description: Operations executed stylized-car.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -6217,18 +6509,22 @@ description: Operations executed stylized-car.kcl
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -6243,18 +6539,22 @@ description: Operations executed stylized-car.kcl
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -6304,18 +6604,22 @@ description: Operations executed stylized-car.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -6330,18 +6634,22 @@ description: Operations executed stylized-car.kcl
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -6391,18 +6699,22 @@ description: Operations executed stylized-car.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -6417,18 +6729,22 @@ description: Operations executed stylized-car.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -6803,8 +7119,10 @@ description: Operations executed stylized-car.kcl
                   "value": -0.48,
                   "ty": {
                     "type": "Default",
-                    "len": "m",
-                    "angle": "degrees"
+                    "value": {
+                      "len": "m",
+                      "angle": "degrees"
+                    }
                   }
                 },
                 {
@@ -6812,8 +7130,10 @@ description: Operations executed stylized-car.kcl
                   "value": 1.95,
                   "ty": {
                     "type": "Default",
-                    "len": "m",
-                    "angle": "degrees"
+                    "value": {
+                      "len": "m",
+                      "angle": "degrees"
+                    }
                   }
                 }
               ]
@@ -6957,7 +7277,7 @@ description: Operations executed stylized-car.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "16e09773-2c0d-5da9-bdec-993f8a9ed856"
+                "artifact_id": "[uuid]"
               }
             ]
           },
@@ -6987,7 +7307,7 @@ description: Operations executed stylized-car.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "d4559fd3-915b-52c0-aaa4-3c74444e5f37"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -6999,8 +7319,10 @@ description: Operations executed stylized-car.kcl
             "value": -1.8,
             "ty": {
               "type": "Default",
-              "len": "m",
-              "angle": "degrees"
+              "value": {
+                "len": "m",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -7040,7 +7362,7 @@ description: Operations executed stylized-car.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "ae192af4-cbf2-5f1b-a2e5-767390f86588"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -7081,7 +7403,7 @@ description: Operations executed stylized-car.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "035728b5-01db-5e9b-b285-181bc5693d5a"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -7135,18 +7457,22 @@ description: Operations executed stylized-car.kcl
                 "type": "SketchVar",
                 "value": -0.01,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.35,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -7161,18 +7487,22 @@ description: Operations executed stylized-car.kcl
                 "type": "SketchVar",
                 "value": 0.32,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.21,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -7222,18 +7552,22 @@ description: Operations executed stylized-car.kcl
                 "type": "SketchVar",
                 "value": -0.01,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.35,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -7248,18 +7582,22 @@ description: Operations executed stylized-car.kcl
                 "type": "SketchVar",
                 "value": 0.18,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.45,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -7360,18 +7698,22 @@ description: Operations executed stylized-car.kcl
                 "type": "SketchVar",
                 "value": -0.01,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.35,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -7386,18 +7728,22 @@ description: Operations executed stylized-car.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -7451,18 +7797,22 @@ description: Operations executed stylized-car.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -7681,7 +8031,7 @@ description: Operations executed stylized-car.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "e5f7766f-25a6-52cd-9cbf-632be25dd038"
+                "artifact_id": "[uuid]"
               }
             ]
           },
@@ -7715,7 +8065,7 @@ description: Operations executed stylized-car.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "b8cc464b-6248-5cb4-8c70-30f634da184c"
+                "artifact_id": "[uuid]"
               }
             ]
           },
@@ -7745,7 +8095,7 @@ description: Operations executed stylized-car.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "9209892e-e35e-575e-b305-9935eac5ab33"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -7757,8 +8107,10 @@ description: Operations executed stylized-car.kcl
             "value": -0.27,
             "ty": {
               "type": "Default",
-              "len": "m",
-              "angle": "degrees"
+              "value": {
+                "len": "m",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -7791,7 +8143,7 @@ description: Operations executed stylized-car.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "44d94cee-dac7-5b9f-829d-112d277b8975"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -7832,7 +8184,7 @@ description: Operations executed stylized-car.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "bb771349-7de5-54b4-b74b-b946bb9dbc58"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -7844,8 +8196,10 @@ description: Operations executed stylized-car.kcl
             "value": -0.27,
             "ty": {
               "type": "Default",
-              "len": "m",
-              "angle": "degrees"
+              "value": {
+                "len": "m",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -7878,7 +8232,7 @@ description: Operations executed stylized-car.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "33bbd8bc-5a6b-54a8-9fab-10db26810cb4"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -7919,7 +8273,7 @@ description: Operations executed stylized-car.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "6dc9e0c0-84d4-5f0c-af6a-4eb8bcc4f6fc"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -7948,13 +8302,13 @@ description: Operations executed stylized-car.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "44d94cee-dac7-5b9f-829d-112d277b8975"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "33bbd8bc-5a6b-54a8-9fab-10db26810cb4"
+                "artifactId": "[uuid]"
               }
             }
           ]
@@ -7992,13 +8346,13 @@ description: Operations executed stylized-car.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "43582f56-4d15-5082-9796-67d8e5ee6e44"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "1583b450-a578-582f-8d23-686bccf95d8b"
+                "artifactId": "[uuid]"
               }
             }
           ]
@@ -8019,8 +8373,10 @@ description: Operations executed stylized-car.kcl
             "value": -1.15,
             "ty": {
               "type": "Default",
-              "len": "m",
-              "angle": "degrees"
+              "value": {
+                "len": "m",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -8031,8 +8387,10 @@ description: Operations executed stylized-car.kcl
             "value": -1.0,
             "ty": {
               "type": "Default",
-              "len": "m",
-              "angle": "degrees"
+              "value": {
+                "len": "m",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -8043,8 +8401,10 @@ description: Operations executed stylized-car.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": "m",
-              "angle": "degrees"
+              "value": {
+                "len": "m",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -8080,13 +8440,13 @@ description: Operations executed stylized-car.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "44d94cee-dac7-5b9f-829d-112d277b8975"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "33bbd8bc-5a6b-54a8-9fab-10db26810cb4"
+                "artifactId": "[uuid]"
               }
             }
           ]
@@ -8124,13 +8484,13 @@ description: Operations executed stylized-car.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "f0a7732a-2f75-5407-b203-7382d01c3918"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "ff7ee7c9-c639-51f1-8d87-df7f7aaf95ec"
+                "artifactId": "[uuid]"
               }
             }
           ]
@@ -8151,8 +8511,10 @@ description: Operations executed stylized-car.kcl
             "value": 1.15,
             "ty": {
               "type": "Default",
-              "len": "m",
-              "angle": "degrees"
+              "value": {
+                "len": "m",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -8163,8 +8525,10 @@ description: Operations executed stylized-car.kcl
             "value": -1.0,
             "ty": {
               "type": "Default",
-              "len": "m",
-              "angle": "degrees"
+              "value": {
+                "len": "m",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -8175,8 +8539,10 @@ description: Operations executed stylized-car.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": "m",
-              "angle": "degrees"
+              "value": {
+                "len": "m",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -8212,13 +8578,13 @@ description: Operations executed stylized-car.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "44d94cee-dac7-5b9f-829d-112d277b8975"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "33bbd8bc-5a6b-54a8-9fab-10db26810cb4"
+                "artifactId": "[uuid]"
               }
             }
           ]
@@ -8256,13 +8622,13 @@ description: Operations executed stylized-car.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "28c981cc-7131-50cd-b5b9-f2a7f868c0bf"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "b6f946ca-ccd6-5fa9-942d-14331e8fb26e"
+                "artifactId": "[uuid]"
               }
             }
           ]
@@ -8283,8 +8649,10 @@ description: Operations executed stylized-car.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": "m",
-              "angle": "degrees"
+              "value": {
+                "len": "m",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -8295,8 +8663,10 @@ description: Operations executed stylized-car.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": "m",
-              "angle": "degrees"
+              "value": {
+                "len": "m",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -8307,8 +8677,10 @@ description: Operations executed stylized-car.kcl
             "value": 180.0,
             "ty": {
               "type": "Default",
-              "len": "m",
-              "angle": "degrees"
+              "value": {
+                "len": "m",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -8344,13 +8716,13 @@ description: Operations executed stylized-car.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "28c981cc-7131-50cd-b5b9-f2a7f868c0bf"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "b6f946ca-ccd6-5fa9-942d-14331e8fb26e"
+                "artifactId": "[uuid]"
               }
             }
           ]
@@ -8371,8 +8743,10 @@ description: Operations executed stylized-car.kcl
             "value": 1.15,
             "ty": {
               "type": "Default",
-              "len": "m",
-              "angle": "degrees"
+              "value": {
+                "len": "m",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -8383,8 +8757,10 @@ description: Operations executed stylized-car.kcl
             "value": -1.0,
             "ty": {
               "type": "Default",
-              "len": "m",
-              "angle": "degrees"
+              "value": {
+                "len": "m",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -8395,8 +8771,10 @@ description: Operations executed stylized-car.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": "m",
-              "angle": "degrees"
+              "value": {
+                "len": "m",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -8432,13 +8810,13 @@ description: Operations executed stylized-car.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "44d94cee-dac7-5b9f-829d-112d277b8975"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "33bbd8bc-5a6b-54a8-9fab-10db26810cb4"
+                "artifactId": "[uuid]"
               }
             }
           ]
@@ -8459,8 +8837,10 @@ description: Operations executed stylized-car.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": "m",
-              "angle": "degrees"
+              "value": {
+                "len": "m",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -8471,8 +8851,10 @@ description: Operations executed stylized-car.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": "m",
-              "angle": "degrees"
+              "value": {
+                "len": "m",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -8483,8 +8865,10 @@ description: Operations executed stylized-car.kcl
             "value": 180.0,
             "ty": {
               "type": "Default",
-              "len": "m",
-              "angle": "degrees"
+              "value": {
+                "len": "m",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -8520,13 +8904,13 @@ description: Operations executed stylized-car.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "44d94cee-dac7-5b9f-829d-112d277b8975"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "33bbd8bc-5a6b-54a8-9fab-10db26810cb4"
+                "artifactId": "[uuid]"
               }
             }
           ]
@@ -8547,8 +8931,10 @@ description: Operations executed stylized-car.kcl
             "value": -1.15,
             "ty": {
               "type": "Default",
-              "len": "m",
-              "angle": "degrees"
+              "value": {
+                "len": "m",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -8559,8 +8945,10 @@ description: Operations executed stylized-car.kcl
             "value": -1.0,
             "ty": {
               "type": "Default",
-              "len": "m",
-              "angle": "degrees"
+              "value": {
+                "len": "m",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -8571,8 +8959,10 @@ description: Operations executed stylized-car.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": "m",
-              "angle": "degrees"
+              "value": {
+                "len": "m",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -8604,7 +8994,7 @@ description: Operations executed stylized-car.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "7c4571e0-7b14-576f-a82e-22280b05874d"
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       },
@@ -8615,8 +9005,10 @@ description: Operations executed stylized-car.kcl
             "value": -1.75,
             "ty": {
               "type": "Default",
-              "len": "m",
-              "angle": "degrees"
+              "value": {
+                "len": "m",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -8673,18 +9065,22 @@ description: Operations executed stylized-car.kcl
                 "type": "SketchVar",
                 "value": 0.1,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.95,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -8699,18 +9095,22 @@ description: Operations executed stylized-car.kcl
                 "type": "SketchVar",
                 "value": 0.2,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.95,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -8765,8 +9165,10 @@ description: Operations executed stylized-car.kcl
                   "value": 0.675,
                   "ty": {
                     "type": "Default",
-                    "len": "m",
-                    "angle": "degrees"
+                    "value": {
+                      "len": "m",
+                      "angle": "degrees"
+                    }
                   }
                 },
                 {
@@ -8774,8 +9176,10 @@ description: Operations executed stylized-car.kcl
                   "value": 0.95,
                   "ty": {
                     "type": "Default",
-                    "len": "m",
-                    "angle": "degrees"
+                    "value": {
+                      "len": "m",
+                      "angle": "degrees"
+                    }
                   }
                 }
               ]
@@ -8919,7 +9323,7 @@ description: Operations executed stylized-car.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "c42bee5e-b2b1-5cbc-8ff1-ab224da718f1"
+                "artifact_id": "[uuid]"
               }
             ]
           },
@@ -8956,13 +9360,13 @@ description: Operations executed stylized-car.kcl
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "60f59271-6b58-59b1-94ae-dad793e5c6cd"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "96e5ace8-415b-51ce-8652-d51c295540fb"
+                "artifactId": "[uuid]"
               }
             }
           ]
@@ -8976,8 +9380,10 @@ description: Operations executed stylized-car.kcl
             "value": -0.05,
             "ty": {
               "type": "Default",
-              "len": "m",
-              "angle": "degrees"
+              "value": {
+                "len": "m",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -9013,13 +9419,13 @@ description: Operations executed stylized-car.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "9bc907a5-bec7-5f87-9105-27ffee0da4e4"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "5d2a2786-5258-5364-b1b2-b28334229017"
+                "artifactId": "[uuid]"
               }
             }
           ]
@@ -9062,7 +9468,7 @@ description: Operations executed stylized-car.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "c9e17bd3-c74a-55cb-86c0-84f065310bc3"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -9087,7 +9493,7 @@ description: Operations executed stylized-car.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "7c4571e0-7b14-576f-a82e-22280b05874d"
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       },
@@ -9098,8 +9504,10 @@ description: Operations executed stylized-car.kcl
             "value": 1.75,
             "ty": {
               "type": "Default",
-              "len": "m",
-              "angle": "degrees"
+              "value": {
+                "len": "m",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -9156,18 +9564,22 @@ description: Operations executed stylized-car.kcl
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -9182,18 +9594,22 @@ description: Operations executed stylized-car.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -9243,18 +9659,22 @@ description: Operations executed stylized-car.kcl
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -9269,18 +9689,22 @@ description: Operations executed stylized-car.kcl
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -9330,18 +9754,22 @@ description: Operations executed stylized-car.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -9356,18 +9784,22 @@ description: Operations executed stylized-car.kcl
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -9417,18 +9849,22 @@ description: Operations executed stylized-car.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -9443,18 +9879,22 @@ description: Operations executed stylized-car.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -9829,8 +10269,10 @@ description: Operations executed stylized-car.kcl
                   "value": -0.8200000000000001,
                   "ty": {
                     "type": "Default",
-                    "len": "m",
-                    "angle": "degrees"
+                    "value": {
+                      "len": "m",
+                      "angle": "degrees"
+                    }
                   }
                 },
                 {
@@ -9838,8 +10280,10 @@ description: Operations executed stylized-car.kcl
                   "value": 0.8300000000000001,
                   "ty": {
                     "type": "Default",
-                    "len": "m",
-                    "angle": "degrees"
+                    "value": {
+                      "len": "m",
+                      "angle": "degrees"
+                    }
                   }
                 }
               ]
@@ -9983,7 +10427,7 @@ description: Operations executed stylized-car.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "f129c320-ce75-58e1-b5e8-ff4a5bae64dc"
+                "artifact_id": "[uuid]"
               }
             ]
           },
@@ -10020,13 +10464,13 @@ description: Operations executed stylized-car.kcl
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "5906c65e-a86e-5e74-ad3b-71b0fd95ea81"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "d0ed5254-8c0d-5be9-91d0-14921d694a7a"
+                "artifactId": "[uuid]"
               }
             }
           ]
@@ -10040,8 +10484,10 @@ description: Operations executed stylized-car.kcl
             "value": 0.05,
             "ty": {
               "type": "Default",
-              "len": "m",
-              "angle": "degrees"
+              "value": {
+                "len": "m",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -10077,13 +10523,13 @@ description: Operations executed stylized-car.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "cb96bce2-64b3-5697-9ac4-41978548d779"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "cdfcbbd0-d34e-5191-8ac3-35754fd4e366"
+                "artifactId": "[uuid]"
               }
             }
           ]
@@ -10126,7 +10572,7 @@ description: Operations executed stylized-car.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "97510544-69da-5bcc-ae16-ec102d607510"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -10182,7 +10628,9 @@ description: Operations executed stylized-car.kcl
         "value": 2.718281828459045,
         "ty": {
           "type": "Known",
-          "type": "Count"
+          "value": {
+            "type": "Count"
+          }
         }
       },
       "visibility": "export",
@@ -10210,7 +10658,9 @@ description: Operations executed stylized-car.kcl
         "value": 6.283185307179586,
         "ty": {
           "type": "Known",
-          "type": "Count"
+          "value": {
+            "type": "Count"
+          }
         }
       },
       "visibility": "export",
@@ -10244,7 +10694,7 @@ description: Operations executed stylized-car.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 23
+            "index": 24
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -10268,7 +10718,7 @@ description: Operations executed stylized-car.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 24
+            "index": 25
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -10292,7 +10742,7 @@ description: Operations executed stylized-car.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 25
+            "index": 26
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -10316,7 +10766,7 @@ description: Operations executed stylized-car.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 26
+            "index": 27
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -10340,7 +10790,7 @@ description: Operations executed stylized-car.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 27
+            "index": 28
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -10364,7 +10814,7 @@ description: Operations executed stylized-car.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 28
+            "index": 29
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -10388,7 +10838,7 @@ description: Operations executed stylized-car.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 29
+            "index": 30
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -10412,7 +10862,7 @@ description: Operations executed stylized-car.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 30
+            "index": 31
           },
           {
             "type": "VariableDeclarationDeclaration"

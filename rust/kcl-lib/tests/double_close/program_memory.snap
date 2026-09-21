@@ -7,11 +7,11 @@ description: Variables in memory after executing double_close.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
+      "id": "[uuid]",
       "paths": [
         {
           "__geoMeta": {
-            "id": "41c630c9-9d44-581b-98af-caee575bea48",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -28,7 +28,7 @@ description: Variables in memory after executing double_close.kcl
         },
         {
           "__geoMeta": {
-            "id": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -45,7 +45,7 @@ description: Variables in memory after executing double_close.kcl
         },
         {
           "__geoMeta": {
-            "id": "fc1035ae-3877-5cf6-9e94-7e1f3b755966",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -62,7 +62,7 @@ description: Variables in memory after executing double_close.kcl
         },
         {
           "__geoMeta": {
-            "id": "f5cca6d8-813c-5e62-81d9-e4e8e17ede93",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -80,8 +80,8 @@ description: Variables in memory after executing double_close.kcl
       ],
       "on": {
         "type": "plane",
-        "artifactId": "3c085bb9-a401-55d5-8042-5a9095193d55",
-        "id": "3c085bb9-a401-55d5-8042-5a9095193d55",
+        "artifactId": "[uuid]",
+        "id": "[uuid]",
         "objectId": 0,
         "kind": "XY",
         "origin": {
@@ -121,12 +121,12 @@ description: Variables in memory after executing double_close.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b",
+          "id": "[uuid]",
           "sourceRange": []
         }
       },
-      "artifactId": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
-      "originalId": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
+      "artifactId": "[uuid]",
+      "originalId": "[uuid]",
       "units": "mm",
       "isClosed": "explicitly"
     }

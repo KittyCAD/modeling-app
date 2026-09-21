@@ -39,18 +39,22 @@ description: Operations executed surface_extrude_edge_to.kcl
                 "type": "SketchVar",
                 "value": -1.32,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -65,18 +69,22 @@ description: Operations executed surface_extrude_edge_to.kcl
                 "type": "SketchVar",
                 "value": 1.84,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -0.32,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -130,18 +138,22 @@ description: Operations executed surface_extrude_edge_to.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -190,18 +202,22 @@ description: Operations executed surface_extrude_edge_to.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.52,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -216,18 +232,22 @@ description: Operations executed surface_extrude_edge_to.kcl
                 "type": "SketchVar",
                 "value": 3.37,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 2.21,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -281,18 +301,22 @@ description: Operations executed surface_extrude_edge_to.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -341,18 +365,22 @@ description: Operations executed surface_extrude_edge_to.kcl
                 "type": "SketchVar",
                 "value": 3.61,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 6.24,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -367,18 +395,22 @@ description: Operations executed surface_extrude_edge_to.kcl
                 "type": "SketchVar",
                 "value": -6.36,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -3.01,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -425,7 +457,7 @@ description: Operations executed surface_extrude_edge_to.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "89316223-2ea1-5731-9c72-0492bc30fbe2"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -460,18 +492,22 @@ description: Operations executed surface_extrude_edge_to.kcl
                 "type": "Number",
                 "value": 1.6952577,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": -0.9901244,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -484,15 +520,15 @@ description: Operations executed surface_extrude_edge_to.kcl
             "value": {
               "circle1": {
                 "type": "Segment",
-                "artifact_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
+                "artifact_id": "[uuid]"
               },
               "circle2": {
                 "type": "Segment",
-                "artifact_id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53"
+                "artifact_id": "[uuid]"
               },
               "line1": {
                 "type": "Segment",
-                "artifact_id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4"
+                "artifact_id": "[uuid]"
               },
               "meta": {
                 "type": "Object",
@@ -500,7 +536,7 @@ description: Operations executed surface_extrude_edge_to.kcl
                   "sketch": {
                     "type": "Sketch",
                     "value": {
-                      "artifactId": "89316223-2ea1-5731-9c72-0492bc30fbe2"
+                      "artifactId": "[uuid]"
                     }
                   }
                 }
@@ -533,7 +569,7 @@ description: Operations executed surface_extrude_edge_to.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "9370af21-6a1d-5f9a-b1d3-83351b2043e6"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -552,8 +588,10 @@ description: Operations executed surface_extrude_edge_to.kcl
             "value": 5.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -581,7 +619,7 @@ description: Operations executed surface_extrude_edge_to.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "400a2ed4-52ae-5786-967d-7fdba1bd0850"
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       },
@@ -592,8 +630,10 @@ description: Operations executed surface_extrude_edge_to.kcl
             "value": 10.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -625,7 +665,7 @@ description: Operations executed surface_extrude_edge_to.kcl
       "unlabeledArg": {
         "value": {
           "type": "Uuid",
-          "value": "5b010224-2823-5bc8-b783-67a1d63cd2d0"
+          "value": "[uuid]"
         },
         "sourceRange": []
       },
@@ -647,7 +687,7 @@ description: Operations executed surface_extrude_edge_to.kcl
         "to": {
           "value": {
             "type": "Plane",
-            "artifact_id": "eb15cf8e-a943-5fe0-8d78-046893de64b7"
+            "artifact_id": "[uuid]"
           },
           "sourceRange": []
         }
@@ -705,7 +745,9 @@ description: Operations executed surface_extrude_edge_to.kcl
         "value": 2.718281828459045,
         "ty": {
           "type": "Known",
-          "type": "Count"
+          "value": {
+            "type": "Count"
+          }
         }
       },
       "visibility": "export",
@@ -733,7 +775,9 @@ description: Operations executed surface_extrude_edge_to.kcl
         "value": 6.283185307179586,
         "ty": {
           "type": "Known",
-          "type": "Count"
+          "value": {
+            "type": "Count"
+          }
         }
       },
       "visibility": "export",
@@ -767,7 +811,7 @@ description: Operations executed surface_extrude_edge_to.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 23
+            "index": 24
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -791,7 +835,7 @@ description: Operations executed surface_extrude_edge_to.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 24
+            "index": 25
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -815,7 +859,7 @@ description: Operations executed surface_extrude_edge_to.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 25
+            "index": 26
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -839,7 +883,7 @@ description: Operations executed surface_extrude_edge_to.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 26
+            "index": 27
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -863,7 +907,7 @@ description: Operations executed surface_extrude_edge_to.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 27
+            "index": 28
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -887,7 +931,7 @@ description: Operations executed surface_extrude_edge_to.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 28
+            "index": 29
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -911,7 +955,7 @@ description: Operations executed surface_extrude_edge_to.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 29
+            "index": 30
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -935,7 +979,7 @@ description: Operations executed surface_extrude_edge_to.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 30
+            "index": 31
           },
           {
             "type": "VariableDeclarationDeclaration"

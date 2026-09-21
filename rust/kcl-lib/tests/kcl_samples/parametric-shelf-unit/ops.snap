@@ -12,8 +12,10 @@ description: Operations executed parametric-shelf-unit.kcl
         "value": 1.0,
         "ty": {
           "type": "Default",
-          "len": "m",
-          "angle": "degrees"
+          "value": {
+            "len": "m",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -41,8 +43,10 @@ description: Operations executed parametric-shelf-unit.kcl
         "value": 2.0,
         "ty": {
           "type": "Default",
-          "len": "m",
-          "angle": "degrees"
+          "value": {
+            "len": "m",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -70,8 +74,10 @@ description: Operations executed parametric-shelf-unit.kcl
         "value": 0.4,
         "ty": {
           "type": "Default",
-          "len": "m",
-          "angle": "degrees"
+          "value": {
+            "len": "m",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -99,8 +105,10 @@ description: Operations executed parametric-shelf-unit.kcl
         "value": 5.0,
         "ty": {
           "type": "Default",
-          "len": "m",
-          "angle": "degrees"
+          "value": {
+            "len": "m",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -128,8 +136,10 @@ description: Operations executed parametric-shelf-unit.kcl
         "value": 0.02,
         "ty": {
           "type": "Default",
-          "len": "m",
-          "angle": "degrees"
+          "value": {
+            "len": "m",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -157,8 +167,10 @@ description: Operations executed parametric-shelf-unit.kcl
         "value": 0.98,
         "ty": {
           "type": "Default",
-          "len": "m",
-          "angle": "degrees"
+          "value": {
+            "len": "m",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -186,8 +198,10 @@ description: Operations executed parametric-shelf-unit.kcl
         "value": 0.05,
         "ty": {
           "type": "Default",
-          "len": "m",
-          "angle": "degrees"
+          "value": {
+            "len": "m",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -215,8 +229,10 @@ description: Operations executed parametric-shelf-unit.kcl
         "value": 0.03,
         "ty": {
           "type": "Default",
-          "len": "m",
-          "angle": "degrees"
+          "value": {
+            "len": "m",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -244,8 +260,10 @@ description: Operations executed parametric-shelf-unit.kcl
         "value": 0.96,
         "ty": {
           "type": "Default",
-          "len": "m",
-          "angle": "degrees"
+          "value": {
+            "len": "m",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -273,8 +291,10 @@ description: Operations executed parametric-shelf-unit.kcl
         "value": 0.37,
         "ty": {
           "type": "Default",
-          "len": "m",
-          "angle": "degrees"
+          "value": {
+            "len": "m",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -302,8 +322,10 @@ description: Operations executed parametric-shelf-unit.kcl
         "value": 0.05,
         "ty": {
           "type": "Default",
-          "len": "m",
-          "angle": "degrees"
+          "value": {
+            "len": "m",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -331,8 +353,10 @@ description: Operations executed parametric-shelf-unit.kcl
         "value": 0.02,
         "ty": {
           "type": "Default",
-          "len": "m",
-          "angle": "degrees"
+          "value": {
+            "len": "m",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -360,8 +384,10 @@ description: Operations executed parametric-shelf-unit.kcl
         "value": 0.96,
         "ty": {
           "type": "Default",
-          "len": "m",
-          "angle": "degrees"
+          "value": {
+            "len": "m",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -389,8 +415,10 @@ description: Operations executed parametric-shelf-unit.kcl
         "value": 0.4,
         "ty": {
           "type": "Default",
-          "len": "m",
-          "angle": "degrees"
+          "value": {
+            "len": "m",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -418,8 +446,10 @@ description: Operations executed parametric-shelf-unit.kcl
         "value": 6.0,
         "ty": {
           "type": "Default",
-          "len": "m",
-          "angle": "degrees"
+          "value": {
+            "len": "m",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -447,8 +477,10 @@ description: Operations executed parametric-shelf-unit.kcl
         "value": 1.93,
         "ty": {
           "type": "Default",
-          "len": "m",
-          "angle": "degrees"
+          "value": {
+            "len": "m",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -476,8 +508,10 @@ description: Operations executed parametric-shelf-unit.kcl
         "value": 0.386,
         "ty": {
           "type": "Default",
-          "len": "m",
-          "angle": "degrees"
+          "value": {
+            "len": "m",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -532,18 +566,22 @@ description: Operations executed parametric-shelf-unit.kcl
                 "type": "SketchVar",
                 "value": -0.48,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -0.4,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -558,18 +596,22 @@ description: Operations executed parametric-shelf-unit.kcl
                 "type": "SketchVar",
                 "value": -0.5,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -0.4,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -619,18 +661,22 @@ description: Operations executed parametric-shelf-unit.kcl
                 "type": "SketchVar",
                 "value": -0.48,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -645,18 +691,22 @@ description: Operations executed parametric-shelf-unit.kcl
                 "type": "SketchVar",
                 "value": -0.48,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -0.4,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -706,18 +756,22 @@ description: Operations executed parametric-shelf-unit.kcl
                 "type": "SketchVar",
                 "value": -0.5,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -732,18 +786,22 @@ description: Operations executed parametric-shelf-unit.kcl
                 "type": "SketchVar",
                 "value": -0.48,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -793,18 +851,22 @@ description: Operations executed parametric-shelf-unit.kcl
                 "type": "SketchVar",
                 "value": -0.5,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -0.4,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -819,18 +881,22 @@ description: Operations executed parametric-shelf-unit.kcl
                 "type": "SketchVar",
                 "value": -0.5,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -1231,18 +1297,22 @@ description: Operations executed parametric-shelf-unit.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -1257,18 +1327,22 @@ description: Operations executed parametric-shelf-unit.kcl
                 "type": "SketchVar",
                 "value": -0.48,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -1366,18 +1440,22 @@ description: Operations executed parametric-shelf-unit.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -1604,7 +1682,7 @@ description: Operations executed parametric-shelf-unit.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
+                "artifact_id": "[uuid]"
               }
             ]
           },
@@ -1634,7 +1712,7 @@ description: Operations executed parametric-shelf-unit.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "8accf664-7097-5b74-b4cf-22cfff115a4f"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -1646,8 +1724,10 @@ description: Operations executed parametric-shelf-unit.kcl
             "value": 2.0,
             "ty": {
               "type": "Default",
-              "len": "m",
-              "angle": "degrees"
+              "value": {
+                "len": "m",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -1676,7 +1756,7 @@ description: Operations executed parametric-shelf-unit.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "6023bee8-3980-5182-88ac-ac06420ce00f"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -1691,8 +1771,10 @@ description: Operations executed parametric-shelf-unit.kcl
                 "value": 1.0,
                 "ty": {
                   "type": "Default",
-                  "len": "m",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "m",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -1700,8 +1782,10 @@ description: Operations executed parametric-shelf-unit.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": "m",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "m",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -1709,8 +1793,10 @@ description: Operations executed parametric-shelf-unit.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": "m",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "m",
+                    "angle": "degrees"
+                  }
                 }
               }
             ]
@@ -1723,8 +1809,10 @@ description: Operations executed parametric-shelf-unit.kcl
             "value": 0.98,
             "ty": {
               "type": "Default",
-              "len": "m",
-              "angle": "degrees"
+              "value": {
+                "len": "m",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -1735,7 +1823,9 @@ description: Operations executed parametric-shelf-unit.kcl
             "value": 2.0,
             "ty": {
               "type": "Known",
-              "type": "Count"
+              "value": {
+                "type": "Count"
+              }
             }
           },
           "sourceRange": []
@@ -1792,18 +1882,22 @@ description: Operations executed parametric-shelf-unit.kcl
                 "type": "SketchVar",
                 "value": -0.48,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -0.37,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -1818,18 +1912,22 @@ description: Operations executed parametric-shelf-unit.kcl
                 "type": "SketchVar",
                 "value": -0.48,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -1879,18 +1977,22 @@ description: Operations executed parametric-shelf-unit.kcl
                 "type": "SketchVar",
                 "value": 0.48,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -0.37,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -1905,18 +2007,22 @@ description: Operations executed parametric-shelf-unit.kcl
                 "type": "SketchVar",
                 "value": -0.48,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -0.37,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -2010,18 +2116,22 @@ description: Operations executed parametric-shelf-unit.kcl
                 "type": "SketchVar",
                 "value": 0.48,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -2036,18 +2146,22 @@ description: Operations executed parametric-shelf-unit.kcl
                 "type": "SketchVar",
                 "value": 0.48,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -0.37,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -2141,18 +2255,22 @@ description: Operations executed parametric-shelf-unit.kcl
                 "type": "SketchVar",
                 "value": -0.48,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -2167,18 +2285,22 @@ description: Operations executed parametric-shelf-unit.kcl
                 "type": "SketchVar",
                 "value": 0.48,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -2381,11 +2503,11 @@ description: Operations executed parametric-shelf-unit.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "c4fac378-d3df-5505-98c1-308b81b0fd96"
+                "artifact_id": "[uuid]"
               },
               {
                 "type": "Segment",
-                "artifact_id": "149e62f8-f213-51a7-9a7f-ea3dc117615d"
+                "artifact_id": "[uuid]"
               }
             ]
           },
@@ -2415,7 +2537,7 @@ description: Operations executed parametric-shelf-unit.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "0917d07d-5996-5994-8a06-602d43e2b6f3"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -2427,8 +2549,10 @@ description: Operations executed parametric-shelf-unit.kcl
             "value": 0.05,
             "ty": {
               "type": "Default",
-              "len": "m",
-              "angle": "degrees"
+              "value": {
+                "len": "m",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -2456,7 +2580,7 @@ description: Operations executed parametric-shelf-unit.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "400a2ed4-52ae-5786-967d-7fdba1bd0850"
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       },
@@ -2467,8 +2591,10 @@ description: Operations executed parametric-shelf-unit.kcl
             "value": 0.05,
             "ty": {
               "type": "Default",
-              "len": "m",
-              "angle": "degrees"
+              "value": {
+                "len": "m",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -2525,18 +2651,22 @@ description: Operations executed parametric-shelf-unit.kcl
                 "type": "SketchVar",
                 "value": -0.48,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -0.4,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -2551,18 +2681,22 @@ description: Operations executed parametric-shelf-unit.kcl
                 "type": "SketchVar",
                 "value": -0.48,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -2612,18 +2746,22 @@ description: Operations executed parametric-shelf-unit.kcl
                 "type": "SketchVar",
                 "value": 0.48,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -0.4,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -2638,18 +2776,22 @@ description: Operations executed parametric-shelf-unit.kcl
                 "type": "SketchVar",
                 "value": -0.48,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -0.4,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -2743,18 +2885,22 @@ description: Operations executed parametric-shelf-unit.kcl
                 "type": "SketchVar",
                 "value": 0.48,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -2769,18 +2915,22 @@ description: Operations executed parametric-shelf-unit.kcl
                 "type": "SketchVar",
                 "value": 0.48,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -0.4,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -2874,18 +3024,22 @@ description: Operations executed parametric-shelf-unit.kcl
                 "type": "SketchVar",
                 "value": -0.48,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -2900,18 +3054,22 @@ description: Operations executed parametric-shelf-unit.kcl
                 "type": "SketchVar",
                 "value": 0.48,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -3114,11 +3272,11 @@ description: Operations executed parametric-shelf-unit.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "82295fd4-30e7-52f8-bbfa-45b71b8986dd"
+                "artifact_id": "[uuid]"
               },
               {
                 "type": "Segment",
-                "artifact_id": "20dfacb2-a19d-5f06-80d9-1dae939bbd58"
+                "artifact_id": "[uuid]"
               }
             ]
           },
@@ -3148,7 +3306,7 @@ description: Operations executed parametric-shelf-unit.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "c7e54a2d-6c3f-5b6d-b6b4-ecca6249a1d3"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -3160,8 +3318,10 @@ description: Operations executed parametric-shelf-unit.kcl
             "value": 0.02,
             "ty": {
               "type": "Default",
-              "len": "m",
-              "angle": "degrees"
+              "value": {
+                "len": "m",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -3190,7 +3350,7 @@ description: Operations executed parametric-shelf-unit.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "9d54d724-527e-5b4f-96a3-d09d0f4fca8a"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -3205,8 +3365,10 @@ description: Operations executed parametric-shelf-unit.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": "m",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "m",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -3214,8 +3376,10 @@ description: Operations executed parametric-shelf-unit.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": "m",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "m",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -3223,8 +3387,10 @@ description: Operations executed parametric-shelf-unit.kcl
                 "value": 1.0,
                 "ty": {
                   "type": "Default",
-                  "len": "m",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "m",
+                    "angle": "degrees"
+                  }
                 }
               }
             ]
@@ -3237,8 +3403,10 @@ description: Operations executed parametric-shelf-unit.kcl
             "value": 0.386,
             "ty": {
               "type": "Default",
-              "len": "m",
-              "angle": "degrees"
+              "value": {
+                "len": "m",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -3249,7 +3417,9 @@ description: Operations executed parametric-shelf-unit.kcl
             "value": 6.0,
             "ty": {
               "type": "Known",
-              "type": "Count"
+              "value": {
+                "type": "Count"
+              }
             }
           },
           "sourceRange": []
@@ -3278,7 +3448,7 @@ description: Operations executed parametric-shelf-unit.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "50f5fd52-8c8c-5c1d-9c20-c4ac7d39a153"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -3307,7 +3477,7 @@ description: Operations executed parametric-shelf-unit.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "d5eaf678-0440-563f-ac19-e473850b9270"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -3336,7 +3506,7 @@ description: Operations executed parametric-shelf-unit.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -3395,7 +3565,9 @@ description: Operations executed parametric-shelf-unit.kcl
         "value": 2.718281828459045,
         "ty": {
           "type": "Known",
-          "type": "Count"
+          "value": {
+            "type": "Count"
+          }
         }
       },
       "visibility": "export",
@@ -3423,7 +3595,9 @@ description: Operations executed parametric-shelf-unit.kcl
         "value": 6.283185307179586,
         "ty": {
           "type": "Known",
-          "type": "Count"
+          "value": {
+            "type": "Count"
+          }
         }
       },
       "visibility": "export",
@@ -3457,7 +3631,7 @@ description: Operations executed parametric-shelf-unit.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 23
+            "index": 24
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3481,7 +3655,7 @@ description: Operations executed parametric-shelf-unit.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 24
+            "index": 25
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3505,7 +3679,7 @@ description: Operations executed parametric-shelf-unit.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 25
+            "index": 26
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3529,7 +3703,7 @@ description: Operations executed parametric-shelf-unit.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 26
+            "index": 27
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3553,7 +3727,7 @@ description: Operations executed parametric-shelf-unit.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 27
+            "index": 28
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3577,7 +3751,7 @@ description: Operations executed parametric-shelf-unit.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 28
+            "index": 29
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3601,7 +3775,7 @@ description: Operations executed parametric-shelf-unit.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 29
+            "index": 30
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3625,7 +3799,7 @@ description: Operations executed parametric-shelf-unit.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 30
+            "index": 31
           },
           {
             "type": "VariableDeclarationDeclaration"

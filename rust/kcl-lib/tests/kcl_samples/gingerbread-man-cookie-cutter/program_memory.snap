@@ -6,8 +6,8 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
   "__sketch_1_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
-      "id": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
+      "artifactId": "[uuid]",
+      "id": "[uuid]",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -37,21 +37,17 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
   },
   "arc10": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "arc10"
   },
   "arc2": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "arc2"
   },
   "arc6": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "arc6"
   },
   "arc8": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "arc8"
   },
@@ -64,7 +60,7 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
           "repr": {
             "Solved": {
               "segment": {
-                "id": "19fe8534-2bed-5e2a-afe9-63f57b621004",
+                "id": "[uuid]",
                 "objectId": 43,
                 "kind": {
                   "arc": {
@@ -72,17 +68,21 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
                       {
                         "n": 0.000002660896662901046,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 548.9994886639428,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -90,17 +90,21 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
                       {
                         "n": -59.000015141044926,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 334.9997811364389,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -108,17 +112,21 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
                       {
                         "n": 0.6002616609015986,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 433.7009490632447,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -170,8 +178,8 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -200,7 +208,7 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
                     "units": null
                   }
                 },
-                "sketchId": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "arc10"
@@ -216,7 +224,7 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
           "repr": {
             "Solved": {
               "segment": {
-                "id": "91226189-7e64-5690-9203-67ee33a6eb03",
+                "id": "[uuid]",
                 "objectId": 8,
                 "kind": {
                   "arc": {
@@ -224,17 +232,21 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
                       {
                         "n": -169.99928821253525,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": -53.00046784210689,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -242,17 +254,21 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
                       {
                         "n": -87.99933021779096,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": -112.00052622224077,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -260,17 +276,21 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
                       {
                         "n": -127.75276314235624,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": -80.7680118717353,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -322,8 +342,8 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -352,7 +372,7 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
                     "units": null
                   }
                 },
-                "sketchId": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "arc2"
@@ -368,7 +388,7 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
           "repr": {
             "Solved": {
               "segment": {
-                "id": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
+                "id": "[uuid]",
                 "objectId": 25,
                 "kind": {
                   "arc": {
@@ -376,17 +396,21 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
                       {
                         "n": -232.00006772237364,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 195.00010690988384,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -394,17 +418,21 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
                       {
                         "n": -187.00007622924323,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 130.00010102057345,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -412,17 +440,21 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
                       {
                         "n": -210.82971209674997,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 161.5795841389201,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -474,8 +506,8 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -504,7 +536,7 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
                     "units": null
                   }
                 },
-                "sketchId": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "arc6"
@@ -520,7 +552,7 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
           "repr": {
             "Solved": {
               "segment": {
-                "id": "38f0111a-8034-5e85-9ec1-07dbc9646b06",
+                "id": "[uuid]",
                 "objectId": 34,
                 "kind": {
                   "arc": {
@@ -528,17 +560,21 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
                       {
                         "n": -59.00001514104422,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 311.9994709300523,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -546,17 +582,21 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
                       {
                         "n": -108.00032766575106,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 290.0004277025982,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -564,17 +604,21 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
                       {
                         "n": -36.88954842629934,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 197.18020273476037,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -626,8 +670,8 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -656,7 +700,7 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
                     "units": null
                   }
                 },
-                "sketchId": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "arc8"
@@ -672,7 +716,7 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
           "repr": {
             "Solved": {
               "segment": {
-                "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+                "id": "[uuid]",
                 "objectId": 4,
                 "kind": {
                   "line": {
@@ -680,17 +724,21 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -698,17 +746,21 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
                       {
                         "n": -87.99933021779162,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": -112.00052622224024,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -746,8 +798,8 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -776,7 +828,7 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
                     "units": null
                   }
                 },
-                "sketchId": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -792,7 +844,7 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
           "repr": {
             "Solved": {
               "segment": {
-                "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
+                "id": "[uuid]",
                 "objectId": 12,
                 "kind": {
                   "line": {
@@ -800,17 +852,21 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
                       {
                         "n": -169.99928821253596,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": -53.000467842106424,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -818,17 +874,21 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
                       {
                         "n": -77.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 57.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -866,8 +926,8 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -896,7 +956,7 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
                     "units": null
                   }
                 },
-                "sketchId": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line3"
@@ -912,7 +972,7 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
           "repr": {
             "Solved": {
               "segment": {
-                "id": "89316223-2ea1-5731-9c72-0492bc30fbe2",
+                "id": "[uuid]",
                 "objectId": 16,
                 "kind": {
                   "line": {
@@ -920,17 +980,21 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
                       {
                         "n": -77.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 57.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -938,17 +1002,21 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
                       {
                         "n": -77.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 213.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -986,8 +1054,8 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1016,7 +1084,7 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
                     "units": null
                   }
                 },
-                "sketchId": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line4"
@@ -1032,7 +1100,7 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
           "repr": {
             "Solved": {
               "segment": {
-                "id": "523b9fc1-d681-5ef3-b407-128525533bfe",
+                "id": "[uuid]",
                 "objectId": 20,
                 "kind": {
                   "line": {
@@ -1040,17 +1108,21 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
                       {
                         "n": -77.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 213.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -1058,17 +1130,21 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
                       {
                         "n": -187.00007622924315,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 130.00010102057337,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -1106,8 +1182,8 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1136,7 +1212,7 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
                     "units": null
                   }
                 },
-                "sketchId": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line5"
@@ -1152,7 +1228,7 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
           "repr": {
             "Solved": {
               "segment": {
-                "id": "f5cca6d8-813c-5e62-81d9-e4e8e17ede93",
+                "id": "[uuid]",
                 "objectId": 29,
                 "kind": {
                   "line": {
@@ -1160,17 +1236,21 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
                       {
                         "n": -232.0000677223736,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 195.00010690988375,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -1178,17 +1258,21 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
                       {
                         "n": -108.00032766575073,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 290.00042770259773,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -1226,8 +1310,8 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1256,7 +1340,7 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
                     "units": null
                   }
                 },
-                "sketchId": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line7"
@@ -1272,7 +1356,7 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
           "repr": {
             "Solved": {
               "segment": {
-                "id": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
+                "id": "[uuid]",
                 "objectId": 38,
                 "kind": {
                   "line": {
@@ -1280,17 +1364,21 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
                       {
                         "n": -59.00001514104444,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 311.9994709300529,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -1298,17 +1386,21 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
                       {
                         "n": -59.00001514104468,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 334.99978113643914,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -1346,8 +1438,8 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1376,7 +1468,7 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
                     "units": null
                   }
                 },
-                "sketchId": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line9"
@@ -1393,11 +1485,11 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
+              "id": "[uuid]",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -1421,7 +1513,7 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
                 },
                 {
                   "__geoMeta": {
-                    "id": "91226189-7e64-5690-9203-67ee33a6eb03",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "ccw": false,
@@ -1451,7 +1543,7 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
                 },
                 {
                   "__geoMeta": {
-                    "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -1475,7 +1567,7 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
                 },
                 {
                   "__geoMeta": {
-                    "id": "89316223-2ea1-5731-9c72-0492bc30fbe2",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -1499,7 +1591,7 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
                 },
                 {
                   "__geoMeta": {
-                    "id": "523b9fc1-d681-5ef3-b407-128525533bfe",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -1523,7 +1615,7 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
                 },
                 {
                   "__geoMeta": {
-                    "id": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "ccw": false,
@@ -1553,7 +1645,7 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
                 },
                 {
                   "__geoMeta": {
-                    "id": "f5cca6d8-813c-5e62-81d9-e4e8e17ede93",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -1577,7 +1669,7 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
                 },
                 {
                   "__geoMeta": {
-                    "id": "38f0111a-8034-5e85-9ec1-07dbc9646b06",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "ccw": false,
@@ -1607,7 +1699,7 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
                 },
                 {
                   "__geoMeta": {
-                    "id": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -1631,7 +1723,7 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
                 },
                 {
                   "__geoMeta": {
-                    "id": "19fe8534-2bed-5e2a-afe9-63f57b621004",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "ccw": false,
@@ -1662,8 +1754,8 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
               ],
               "on": {
                 "type": "plane",
-                "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                "artifactId": "[uuid]",
+                "id": "[uuid]",
                 "objectId": 0,
                 "kind": "Custom",
                 "origin": {
@@ -1703,7 +1795,7 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "ad4b4be8-b535-5c5c-bc14-07fc0c74a448",
+                  "id": "[uuid]",
                   "sourceRange": []
                 }
               },
@@ -1749,8 +1841,8 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
                   "value": "line9"
                 }
               },
-              "artifactId": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
-              "originalId": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
+              "artifactId": "[uuid]",
+              "originalId": "[uuid]",
               "units": "mm",
               "isClosed": "no"
             }
@@ -1765,11 +1857,11 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
+      "id": "[uuid]",
       "paths": [
         {
           "__geoMeta": {
-            "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -1793,7 +1885,7 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
         },
         {
           "__geoMeta": {
-            "id": "91226189-7e64-5690-9203-67ee33a6eb03",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "ccw": false,
@@ -1823,7 +1915,7 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
         },
         {
           "__geoMeta": {
-            "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -1847,7 +1939,7 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
         },
         {
           "__geoMeta": {
-            "id": "89316223-2ea1-5731-9c72-0492bc30fbe2",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -1871,7 +1963,7 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
         },
         {
           "__geoMeta": {
-            "id": "523b9fc1-d681-5ef3-b407-128525533bfe",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -1895,7 +1987,7 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
         },
         {
           "__geoMeta": {
-            "id": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "ccw": false,
@@ -1925,7 +2017,7 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
         },
         {
           "__geoMeta": {
-            "id": "f5cca6d8-813c-5e62-81d9-e4e8e17ede93",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -1949,7 +2041,7 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
         },
         {
           "__geoMeta": {
-            "id": "38f0111a-8034-5e85-9ec1-07dbc9646b06",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "ccw": false,
@@ -1979,7 +2071,7 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
         },
         {
           "__geoMeta": {
-            "id": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -2003,7 +2095,7 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
         },
         {
           "__geoMeta": {
-            "id": "19fe8534-2bed-5e2a-afe9-63f57b621004",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "ccw": false,
@@ -2034,8 +2126,8 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
       ],
       "on": {
         "type": "plane",
-        "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-        "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+        "artifactId": "[uuid]",
+        "id": "[uuid]",
         "objectId": 0,
         "kind": "Custom",
         "origin": {
@@ -2075,7 +2167,7 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "ad4b4be8-b535-5c5c-bc14-07fc0c74a448",
+          "id": "[uuid]",
           "sourceRange": []
         }
       },
@@ -2121,8 +2213,8 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
           "value": "line9"
         }
       },
-      "artifactId": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
-      "originalId": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
+      "artifactId": "[uuid]",
+      "originalId": "[uuid]",
       "units": "mm",
       "isClosed": "maybe"
     }
@@ -2131,11 +2223,11 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "c1954abb-c80b-5092-851b-2b15c2dcba25",
+      "id": "[uuid]",
       "paths": [
         {
           "__geoMeta": {
-            "id": "245e94e9-dead-58c1-b997-17191922a7c5",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -2159,7 +2251,7 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
         },
         {
           "__geoMeta": {
-            "id": "ecbff008-b319-54c6-88cc-c210250c307f",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "ccw": false,
@@ -2189,7 +2281,7 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
         },
         {
           "__geoMeta": {
-            "id": "fbda49d6-5626-589f-86e0-a03e762bf4a8",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -2213,7 +2305,7 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
         },
         {
           "__geoMeta": {
-            "id": "f07f6565-3a08-54b4-85a2-d5a5588ec011",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -2237,7 +2329,7 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
         },
         {
           "__geoMeta": {
-            "id": "87387f1f-8159-5da2-abb6-d044596e4909",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -2261,7 +2353,7 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
         },
         {
           "__geoMeta": {
-            "id": "7e711b6a-4c37-523e-a8cf-04d951186d84",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "ccw": false,
@@ -2291,7 +2383,7 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
         },
         {
           "__geoMeta": {
-            "id": "c365e282-38bb-54b5-b47b-cb2f86e69500",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -2315,7 +2407,7 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
         },
         {
           "__geoMeta": {
-            "id": "2a1221fa-4043-50c1-b448-4b16e8300ef3",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "ccw": false,
@@ -2345,7 +2437,7 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
         },
         {
           "__geoMeta": {
-            "id": "fccef08e-1ed2-51b1-bb97-ea7390ba4fe0",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -2369,7 +2461,7 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
         },
         {
           "__geoMeta": {
-            "id": "237e2f5a-4961-58f4-8d70-dfdfacf1aecf",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "ccw": false,
@@ -2400,8 +2492,8 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
       ],
       "on": {
         "type": "plane",
-        "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-        "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+        "artifactId": "[uuid]",
+        "id": "[uuid]",
         "objectId": 0,
         "kind": "Custom",
         "origin": {
@@ -2441,7 +2533,7 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "ad4b4be8-b535-5c5c-bc14-07fc0c74a448",
+          "id": "[uuid]",
           "sourceRange": []
         }
       },
@@ -2487,8 +2579,8 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
           "value": "line9"
         }
       },
-      "artifactId": "c1954abb-c80b-5092-851b-2b15c2dcba25",
-      "originalId": "c1954abb-c80b-5092-851b-2b15c2dcba25",
+      "artifactId": "[uuid]",
+      "originalId": "[uuid]",
       "units": "mm",
       "isClosed": "explicitly"
     }
@@ -2497,14 +2589,14 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "c1954abb-c80b-5092-851b-2b15c2dcba25",
-      "originalId": "c1954abb-c80b-5092-851b-2b15c2dcba25",
-      "topologyId": "c1954abb-c80b-5092-851b-2b15c2dcba25",
-      "artifactId": "e5c6bfe7-79f7-55b4-bc63-41e6c32606ec",
+      "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
+      "artifactId": "[uuid]",
       "value": [
         {
-          "faceId": "b0afda65-5f71-5fa3-93bc-79708ab8ee28",
-          "id": "245e94e9-dead-58c1-b997-17191922a7c5",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 752,
@@ -2517,8 +2609,8 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
           "type": "extrudePlane"
         },
         {
-          "faceId": "f0deda09-d928-5304-bd83-b113fb02a50d",
-          "id": "ecbff008-b319-54c6-88cc-c210250c307f",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 826,
@@ -2531,8 +2623,8 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
           "type": "extrudeArc"
         },
         {
-          "faceId": "0f75f42c-6719-596d-b094-a2e0d10f643a",
-          "id": "fbda49d6-5626-589f-86e0-a03e762bf4a8",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 979,
@@ -2545,8 +2637,8 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
           "type": "extrudePlane"
         },
         {
-          "faceId": "f78df02a-e2b3-58f6-8ce5-09ce54ada8f3",
-          "id": "f07f6565-3a08-54b4-85a2-d5a5588ec011",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 1096,
@@ -2559,8 +2651,8 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
           "type": "extrudePlane"
         },
         {
-          "faceId": "6e0b688b-f1ca-5243-abd4-26207b563a8e",
-          "id": "87387f1f-8159-5da2-abb6-d044596e4909",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 1211,
@@ -2573,8 +2665,8 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
           "type": "extrudePlane"
         },
         {
-          "faceId": "3e94eca8-041c-5023-8177-e65436911a15",
-          "id": "7e711b6a-4c37-523e-a8cf-04d951186d84",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 1328,
@@ -2587,8 +2679,8 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
           "type": "extrudeArc"
         },
         {
-          "faceId": "3fead528-744f-5c3e-8f3f-17ba69693a14",
-          "id": "c365e282-38bb-54b5-b47b-cb2f86e69500",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 1481,
@@ -2601,8 +2693,8 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
           "type": "extrudePlane"
         },
         {
-          "faceId": "7a961432-b074-515d-9fee-f17c98220906",
-          "id": "2a1221fa-4043-50c1-b448-4b16e8300ef3",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 1600,
@@ -2615,8 +2707,8 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
           "type": "extrudeArc"
         },
         {
-          "faceId": "0a2568f9-51d2-553c-92a4-b31009f73bbe",
-          "id": "fccef08e-1ed2-51b1-bb97-ea7390ba4fe0",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 1751,
@@ -2629,8 +2721,8 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
           "type": "extrudePlane"
         },
         {
-          "faceId": "581789c4-5f39-55f8-8452-296f4f15d13d",
-          "id": "237e2f5a-4961-58f4-8d70-dfdfacf1aecf",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 1868,
@@ -2646,11 +2738,11 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "c1954abb-c80b-5092-851b-2b15c2dcba25",
+        "id": "[uuid]",
         "paths": [
           {
             "__geoMeta": {
-              "id": "245e94e9-dead-58c1-b997-17191922a7c5",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -2674,7 +2766,7 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
           },
           {
             "__geoMeta": {
-              "id": "ecbff008-b319-54c6-88cc-c210250c307f",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": false,
@@ -2704,7 +2796,7 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
           },
           {
             "__geoMeta": {
-              "id": "fbda49d6-5626-589f-86e0-a03e762bf4a8",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -2728,7 +2820,7 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
           },
           {
             "__geoMeta": {
-              "id": "f07f6565-3a08-54b4-85a2-d5a5588ec011",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -2752,7 +2844,7 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
           },
           {
             "__geoMeta": {
-              "id": "87387f1f-8159-5da2-abb6-d044596e4909",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -2776,7 +2868,7 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
           },
           {
             "__geoMeta": {
-              "id": "7e711b6a-4c37-523e-a8cf-04d951186d84",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": false,
@@ -2806,7 +2898,7 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
           },
           {
             "__geoMeta": {
-              "id": "c365e282-38bb-54b5-b47b-cb2f86e69500",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -2830,7 +2922,7 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
           },
           {
             "__geoMeta": {
-              "id": "2a1221fa-4043-50c1-b448-4b16e8300ef3",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": false,
@@ -2860,7 +2952,7 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
           },
           {
             "__geoMeta": {
-              "id": "fccef08e-1ed2-51b1-bb97-ea7390ba4fe0",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -2884,7 +2976,7 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
           },
           {
             "__geoMeta": {
-              "id": "237e2f5a-4961-58f4-8d70-dfdfacf1aecf",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": false,
@@ -2915,8 +3007,8 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
         ],
         "on": {
           "type": "plane",
-          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "artifactId": "[uuid]",
+          "id": "[uuid]",
           "objectId": 0,
           "kind": "Custom",
           "origin": {
@@ -2956,7 +3048,7 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "ad4b4be8-b535-5c5c-bc14-07fc0c74a448",
+            "id": "[uuid]",
             "sourceRange": []
           }
         },
@@ -3002,44 +3094,38 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
             "value": "line9"
           }
         },
-        "artifactId": "c1954abb-c80b-5092-851b-2b15c2dcba25",
-        "originalId": "c1954abb-c80b-5092-851b-2b15c2dcba25",
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
         "units": "mm",
         "isClosed": "explicitly"
       },
-      "startCapId": "c7bfbcc2-d435-57c0-90e3-b2ab2b00ba06",
-      "endCapId": "94d3ba3a-357d-573d-b676-504d26a4f43f",
+      "startCapId": "[uuid]",
+      "endCapId": "[uuid]",
       "units": "mm",
       "sectional": false
     }
   },
   "line1": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "line1"
   },
   "line3": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "line3"
   },
   "line4": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "line4"
   },
   "line5": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "line5"
   },
   "line7": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "line7"
   },
   "line9": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "line9"
   },
@@ -3048,8 +3134,10 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
     "value": 1.2,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "thickness": {
@@ -3057,8 +3145,10 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
     "value": 100.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "wallThickness": {
@@ -3066,8 +3156,10 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
     "value": 10.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   }
 }

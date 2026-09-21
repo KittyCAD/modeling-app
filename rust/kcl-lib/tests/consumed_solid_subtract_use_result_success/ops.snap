@@ -40,8 +40,10 @@ description: Operations executed consumed_solid_subtract_use_result_success.kcl
                 "value": 10.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -49,8 +51,10 @@ description: Operations executed consumed_solid_subtract_use_result_success.kcl
                 "value": -10.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               }
             ]
@@ -66,8 +70,10 @@ description: Operations executed consumed_solid_subtract_use_result_success.kcl
                 "value": -10.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -75,8 +81,10 @@ description: Operations executed consumed_solid_subtract_use_result_success.kcl
                 "value": -10.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               }
             ]
@@ -127,8 +135,10 @@ description: Operations executed consumed_solid_subtract_use_result_success.kcl
                 "value": 10.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -136,8 +146,10 @@ description: Operations executed consumed_solid_subtract_use_result_success.kcl
                 "value": 10.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               }
             ]
@@ -153,8 +165,10 @@ description: Operations executed consumed_solid_subtract_use_result_success.kcl
                 "value": 10.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -162,8 +176,10 @@ description: Operations executed consumed_solid_subtract_use_result_success.kcl
                 "value": -10.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               }
             ]
@@ -214,8 +230,10 @@ description: Operations executed consumed_solid_subtract_use_result_success.kcl
                 "value": -10.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -223,8 +241,10 @@ description: Operations executed consumed_solid_subtract_use_result_success.kcl
                 "value": 10.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               }
             ]
@@ -240,8 +260,10 @@ description: Operations executed consumed_solid_subtract_use_result_success.kcl
                 "value": 10.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -249,8 +271,10 @@ description: Operations executed consumed_solid_subtract_use_result_success.kcl
                 "value": 10.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               }
             ]
@@ -301,8 +325,10 @@ description: Operations executed consumed_solid_subtract_use_result_success.kcl
                 "value": -10.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -310,8 +336,10 @@ description: Operations executed consumed_solid_subtract_use_result_success.kcl
                 "value": -10.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               }
             ]
@@ -327,8 +355,10 @@ description: Operations executed consumed_solid_subtract_use_result_success.kcl
                 "value": -10.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -336,8 +366,10 @@ description: Operations executed consumed_solid_subtract_use_result_success.kcl
                 "value": 10.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               }
             ]
@@ -617,8 +649,10 @@ description: Operations executed consumed_solid_subtract_use_result_success.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -626,8 +660,10 @@ description: Operations executed consumed_solid_subtract_use_result_success.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               }
             ]
@@ -640,19 +676,19 @@ description: Operations executed consumed_solid_subtract_use_result_success.kcl
             "value": {
               "line1": {
                 "type": "Segment",
-                "artifact_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
+                "artifact_id": "[uuid]"
               },
               "line2": {
                 "type": "Segment",
-                "artifact_id": "91226189-7e64-5690-9203-67ee33a6eb03"
+                "artifact_id": "[uuid]"
               },
               "line3": {
                 "type": "Segment",
-                "artifact_id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53"
+                "artifact_id": "[uuid]"
               },
               "line4": {
                 "type": "Segment",
-                "artifact_id": "efd1e3b2-5268-50fd-858e-26540f8146e5"
+                "artifact_id": "[uuid]"
               },
               "meta": {
                 "type": "Object",
@@ -660,7 +696,7 @@ description: Operations executed consumed_solid_subtract_use_result_success.kcl
                   "sketch": {
                     "type": "Sketch",
                     "value": {
-                      "artifactId": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79"
+                      "artifactId": "[uuid]"
                     }
                   }
                 }
@@ -696,7 +732,7 @@ description: Operations executed consumed_solid_subtract_use_result_success.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "6f9536f6-0229-5cbb-bd5f-d3e20949d527"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -708,8 +744,10 @@ description: Operations executed consumed_solid_subtract_use_result_success.kcl
             "value": 20.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -767,8 +805,10 @@ description: Operations executed consumed_solid_subtract_use_result_success.kcl
                 "value": -7.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -776,8 +816,10 @@ description: Operations executed consumed_solid_subtract_use_result_success.kcl
                 "value": -11.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               }
             ]
@@ -793,8 +835,10 @@ description: Operations executed consumed_solid_subtract_use_result_success.kcl
                 "value": -11.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -802,8 +846,10 @@ description: Operations executed consumed_solid_subtract_use_result_success.kcl
                 "value": -11.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               }
             ]
@@ -854,8 +900,10 @@ description: Operations executed consumed_solid_subtract_use_result_success.kcl
                 "value": -7.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -863,8 +911,10 @@ description: Operations executed consumed_solid_subtract_use_result_success.kcl
                 "value": -7.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               }
             ]
@@ -880,8 +930,10 @@ description: Operations executed consumed_solid_subtract_use_result_success.kcl
                 "value": -7.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -889,8 +941,10 @@ description: Operations executed consumed_solid_subtract_use_result_success.kcl
                 "value": -11.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               }
             ]
@@ -941,8 +995,10 @@ description: Operations executed consumed_solid_subtract_use_result_success.kcl
                 "value": -11.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -950,8 +1006,10 @@ description: Operations executed consumed_solid_subtract_use_result_success.kcl
                 "value": -7.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               }
             ]
@@ -967,8 +1025,10 @@ description: Operations executed consumed_solid_subtract_use_result_success.kcl
                 "value": -7.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -976,8 +1036,10 @@ description: Operations executed consumed_solid_subtract_use_result_success.kcl
                 "value": -7.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               }
             ]
@@ -1028,8 +1090,10 @@ description: Operations executed consumed_solid_subtract_use_result_success.kcl
                 "value": -11.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -1037,8 +1101,10 @@ description: Operations executed consumed_solid_subtract_use_result_success.kcl
                 "value": -11.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               }
             ]
@@ -1054,8 +1120,10 @@ description: Operations executed consumed_solid_subtract_use_result_success.kcl
                 "value": -11.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -1063,8 +1131,10 @@ description: Operations executed consumed_solid_subtract_use_result_success.kcl
                 "value": -7.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               }
             ]
@@ -1344,8 +1414,10 @@ description: Operations executed consumed_solid_subtract_use_result_success.kcl
                 "value": -9.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -1353,8 +1425,10 @@ description: Operations executed consumed_solid_subtract_use_result_success.kcl
                 "value": -9.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               }
             ]
@@ -1367,19 +1441,19 @@ description: Operations executed consumed_solid_subtract_use_result_success.kcl
             "value": {
               "line1": {
                 "type": "Segment",
-                "artifact_id": "b680fe3e-a804-583c-99d9-1693b2432aeb"
+                "artifact_id": "[uuid]"
               },
               "line2": {
                 "type": "Segment",
-                "artifact_id": "2c522d90-5fef-5750-b489-b008732bd2c3"
+                "artifact_id": "[uuid]"
               },
               "line3": {
                 "type": "Segment",
-                "artifact_id": "cc87388f-5797-5adb-95fb-8f68e65f73c1"
+                "artifact_id": "[uuid]"
               },
               "line4": {
                 "type": "Segment",
-                "artifact_id": "deb86259-17a0-5782-a352-d25992246cc0"
+                "artifact_id": "[uuid]"
               },
               "meta": {
                 "type": "Object",
@@ -1387,7 +1461,7 @@ description: Operations executed consumed_solid_subtract_use_result_success.kcl
                   "sketch": {
                     "type": "Sketch",
                     "value": {
-                      "artifactId": "2f481fd4-203e-57d7-b5d6-b16289577621"
+                      "artifactId": "[uuid]"
                     }
                   }
                 }
@@ -1423,7 +1497,7 @@ description: Operations executed consumed_solid_subtract_use_result_success.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "cc312d38-2fa6-5583-a605-44880f646499"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -1435,8 +1509,10 @@ description: Operations executed consumed_solid_subtract_use_result_success.kcl
             "value": 4.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -1494,8 +1570,10 @@ description: Operations executed consumed_solid_subtract_use_result_success.kcl
                 "value": 11.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -1503,8 +1581,10 @@ description: Operations executed consumed_solid_subtract_use_result_success.kcl
                 "value": 7.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               }
             ]
@@ -1520,8 +1600,10 @@ description: Operations executed consumed_solid_subtract_use_result_success.kcl
                 "value": 7.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -1529,8 +1611,10 @@ description: Operations executed consumed_solid_subtract_use_result_success.kcl
                 "value": 7.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               }
             ]
@@ -1581,8 +1665,10 @@ description: Operations executed consumed_solid_subtract_use_result_success.kcl
                 "value": 11.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -1590,8 +1676,10 @@ description: Operations executed consumed_solid_subtract_use_result_success.kcl
                 "value": 11.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               }
             ]
@@ -1607,8 +1695,10 @@ description: Operations executed consumed_solid_subtract_use_result_success.kcl
                 "value": 11.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -1616,8 +1706,10 @@ description: Operations executed consumed_solid_subtract_use_result_success.kcl
                 "value": 7.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               }
             ]
@@ -1668,8 +1760,10 @@ description: Operations executed consumed_solid_subtract_use_result_success.kcl
                 "value": 7.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -1677,8 +1771,10 @@ description: Operations executed consumed_solid_subtract_use_result_success.kcl
                 "value": 11.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               }
             ]
@@ -1694,8 +1790,10 @@ description: Operations executed consumed_solid_subtract_use_result_success.kcl
                 "value": 11.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -1703,8 +1801,10 @@ description: Operations executed consumed_solid_subtract_use_result_success.kcl
                 "value": 11.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               }
             ]
@@ -1755,8 +1855,10 @@ description: Operations executed consumed_solid_subtract_use_result_success.kcl
                 "value": 7.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -1764,8 +1866,10 @@ description: Operations executed consumed_solid_subtract_use_result_success.kcl
                 "value": 7.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               }
             ]
@@ -1781,8 +1885,10 @@ description: Operations executed consumed_solid_subtract_use_result_success.kcl
                 "value": 7.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -1790,8 +1896,10 @@ description: Operations executed consumed_solid_subtract_use_result_success.kcl
                 "value": 11.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               }
             ]
@@ -2071,8 +2179,10 @@ description: Operations executed consumed_solid_subtract_use_result_success.kcl
                 "value": 9.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -2080,8 +2190,10 @@ description: Operations executed consumed_solid_subtract_use_result_success.kcl
                 "value": 9.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               }
             ]
@@ -2094,19 +2206,19 @@ description: Operations executed consumed_solid_subtract_use_result_success.kcl
             "value": {
               "line1": {
                 "type": "Segment",
-                "artifact_id": "01e801cc-22ef-5071-814b-847d3fcf22d5"
+                "artifact_id": "[uuid]"
               },
               "line2": {
                 "type": "Segment",
-                "artifact_id": "7b3604da-cb7d-56b0-8f93-648a91817ee2"
+                "artifact_id": "[uuid]"
               },
               "line3": {
                 "type": "Segment",
-                "artifact_id": "bc4183c3-53a3-5213-a2cc-6fc8ca38dc19"
+                "artifact_id": "[uuid]"
               },
               "line4": {
                 "type": "Segment",
-                "artifact_id": "c5b43f3a-de89-5e69-93ff-c926dbe3c139"
+                "artifact_id": "[uuid]"
               },
               "meta": {
                 "type": "Object",
@@ -2114,7 +2226,7 @@ description: Operations executed consumed_solid_subtract_use_result_success.kcl
                   "sketch": {
                     "type": "Sketch",
                     "value": {
-                      "artifactId": "468f6520-a683-5392-9492-de009fdcddef"
+                      "artifactId": "[uuid]"
                     }
                   }
                 }
@@ -2150,7 +2262,7 @@ description: Operations executed consumed_solid_subtract_use_result_success.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "d5eaf678-0440-563f-ac19-e473850b9270"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -2162,8 +2274,10 @@ description: Operations executed consumed_solid_subtract_use_result_success.kcl
             "value": 4.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -2192,7 +2306,7 @@ description: Operations executed consumed_solid_subtract_use_result_success.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "5173c024-ac32-59f6-acbe-69ddbf68893d"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -2205,7 +2319,7 @@ description: Operations executed consumed_solid_subtract_use_result_success.kcl
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "c1954abb-c80b-5092-851b-2b15c2dcba25"
+                  "artifactId": "[uuid]"
                 }
               }
             ]
@@ -2236,7 +2350,7 @@ description: Operations executed consumed_solid_subtract_use_result_success.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "9be00e59-09ca-5d92-b815-256daf9fc98e"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -2249,7 +2363,7 @@ description: Operations executed consumed_solid_subtract_use_result_success.kcl
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "4af1ad3f-3b75-5b4f-bc50-687a353931be"
+                  "artifactId": "[uuid]"
                 }
               }
             ]
@@ -2310,7 +2424,9 @@ description: Operations executed consumed_solid_subtract_use_result_success.kcl
         "value": 2.718281828459045,
         "ty": {
           "type": "Known",
-          "type": "Count"
+          "value": {
+            "type": "Count"
+          }
         }
       },
       "visibility": "export",
@@ -2338,7 +2454,9 @@ description: Operations executed consumed_solid_subtract_use_result_success.kcl
         "value": 6.283185307179586,
         "ty": {
           "type": "Known",
-          "type": "Count"
+          "value": {
+            "type": "Count"
+          }
         }
       },
       "visibility": "export",
@@ -2372,7 +2490,7 @@ description: Operations executed consumed_solid_subtract_use_result_success.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 23
+            "index": 24
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2396,7 +2514,7 @@ description: Operations executed consumed_solid_subtract_use_result_success.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 24
+            "index": 25
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2420,7 +2538,7 @@ description: Operations executed consumed_solid_subtract_use_result_success.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 25
+            "index": 26
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2444,7 +2562,7 @@ description: Operations executed consumed_solid_subtract_use_result_success.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 26
+            "index": 27
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2468,7 +2586,7 @@ description: Operations executed consumed_solid_subtract_use_result_success.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 27
+            "index": 28
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2492,7 +2610,7 @@ description: Operations executed consumed_solid_subtract_use_result_success.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 28
+            "index": 29
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2516,7 +2634,7 @@ description: Operations executed consumed_solid_subtract_use_result_success.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 29
+            "index": 30
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2540,7 +2658,7 @@ description: Operations executed consumed_solid_subtract_use_result_success.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 30
+            "index": 31
           },
           {
             "type": "VariableDeclarationDeclaration"

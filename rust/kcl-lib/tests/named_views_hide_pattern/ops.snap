@@ -40,8 +40,10 @@ description: Operations executed named_views_hide_pattern.kcl
                 "value": 5.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -49,8 +51,10 @@ description: Operations executed named_views_hide_pattern.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               }
             ]
@@ -66,8 +70,10 @@ description: Operations executed named_views_hide_pattern.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -75,8 +81,10 @@ description: Operations executed named_views_hide_pattern.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               }
             ]
@@ -127,8 +135,10 @@ description: Operations executed named_views_hide_pattern.kcl
                 "value": 5.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -136,8 +146,10 @@ description: Operations executed named_views_hide_pattern.kcl
                 "value": 5.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               }
             ]
@@ -153,8 +165,10 @@ description: Operations executed named_views_hide_pattern.kcl
                 "value": 5.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -162,8 +176,10 @@ description: Operations executed named_views_hide_pattern.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               }
             ]
@@ -214,8 +230,10 @@ description: Operations executed named_views_hide_pattern.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -223,8 +241,10 @@ description: Operations executed named_views_hide_pattern.kcl
                 "value": 5.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               }
             ]
@@ -240,8 +260,10 @@ description: Operations executed named_views_hide_pattern.kcl
                 "value": 5.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -249,8 +271,10 @@ description: Operations executed named_views_hide_pattern.kcl
                 "value": 5.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               }
             ]
@@ -301,8 +325,10 @@ description: Operations executed named_views_hide_pattern.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -310,8 +336,10 @@ description: Operations executed named_views_hide_pattern.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               }
             ]
@@ -327,8 +355,10 @@ description: Operations executed named_views_hide_pattern.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -336,8 +366,10 @@ description: Operations executed named_views_hide_pattern.kcl
                 "value": 5.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               }
             ]
@@ -567,8 +599,10 @@ description: Operations executed named_views_hide_pattern.kcl
                 "value": 2.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -576,8 +610,10 @@ description: Operations executed named_views_hide_pattern.kcl
                 "value": 2.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               }
             ]
@@ -590,19 +626,19 @@ description: Operations executed named_views_hide_pattern.kcl
             "value": {
               "line1": {
                 "type": "Segment",
-                "artifact_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
+                "artifact_id": "[uuid]"
               },
               "line2": {
                 "type": "Segment",
-                "artifact_id": "91226189-7e64-5690-9203-67ee33a6eb03"
+                "artifact_id": "[uuid]"
               },
               "line3": {
                 "type": "Segment",
-                "artifact_id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53"
+                "artifact_id": "[uuid]"
               },
               "line4": {
                 "type": "Segment",
-                "artifact_id": "efd1e3b2-5268-50fd-858e-26540f8146e5"
+                "artifact_id": "[uuid]"
               },
               "meta": {
                 "type": "Object",
@@ -610,7 +646,7 @@ description: Operations executed named_views_hide_pattern.kcl
                   "sketch": {
                     "type": "Sketch",
                     "value": {
-                      "artifactId": "41c630c9-9d44-581b-98af-caee575bea48"
+                      "artifactId": "[uuid]"
                     }
                   }
                 }
@@ -650,7 +686,7 @@ description: Operations executed named_views_hide_pattern.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "90a5d279-3b15-5070-b2fd-a30474df87a6"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -662,8 +698,10 @@ description: Operations executed named_views_hide_pattern.kcl
             "value": 5.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -696,7 +734,7 @@ description: Operations executed named_views_hide_pattern.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "6f9536f6-0229-5cbb-bd5f-d3e20949d527"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -711,8 +749,10 @@ description: Operations executed named_views_hide_pattern.kcl
                 "value": 1.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -720,8 +760,10 @@ description: Operations executed named_views_hide_pattern.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -729,8 +771,10 @@ description: Operations executed named_views_hide_pattern.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               }
             ]
@@ -743,8 +787,10 @@ description: Operations executed named_views_hide_pattern.kcl
             "value": 15.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -755,7 +801,9 @@ description: Operations executed named_views_hide_pattern.kcl
             "value": 3.0,
             "ty": {
               "type": "Known",
-              "type": "Count"
+              "value": {
+                "type": "Count"
+              }
             }
           },
           "sourceRange": []
@@ -817,8 +865,10 @@ description: Operations executed named_views_hide_pattern.kcl
                 "value": 10.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -826,8 +876,10 @@ description: Operations executed named_views_hide_pattern.kcl
                 "value": 30.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               }
             ]
@@ -843,8 +895,10 @@ description: Operations executed named_views_hide_pattern.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -852,8 +906,10 @@ description: Operations executed named_views_hide_pattern.kcl
                 "value": 30.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               }
             ]
@@ -904,8 +960,10 @@ description: Operations executed named_views_hide_pattern.kcl
                 "value": 10.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -913,8 +971,10 @@ description: Operations executed named_views_hide_pattern.kcl
                 "value": 40.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               }
             ]
@@ -930,8 +990,10 @@ description: Operations executed named_views_hide_pattern.kcl
                 "value": 10.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -939,8 +1001,10 @@ description: Operations executed named_views_hide_pattern.kcl
                 "value": 30.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               }
             ]
@@ -991,8 +1055,10 @@ description: Operations executed named_views_hide_pattern.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -1000,8 +1066,10 @@ description: Operations executed named_views_hide_pattern.kcl
                 "value": 40.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               }
             ]
@@ -1017,8 +1085,10 @@ description: Operations executed named_views_hide_pattern.kcl
                 "value": 10.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -1026,8 +1096,10 @@ description: Operations executed named_views_hide_pattern.kcl
                 "value": 40.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               }
             ]
@@ -1078,8 +1150,10 @@ description: Operations executed named_views_hide_pattern.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -1087,8 +1161,10 @@ description: Operations executed named_views_hide_pattern.kcl
                 "value": 30.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               }
             ]
@@ -1104,8 +1180,10 @@ description: Operations executed named_views_hide_pattern.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -1113,8 +1191,10 @@ description: Operations executed named_views_hide_pattern.kcl
                 "value": 40.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               }
             ]
@@ -1344,8 +1424,10 @@ description: Operations executed named_views_hide_pattern.kcl
                 "value": 5.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -1353,8 +1435,10 @@ description: Operations executed named_views_hide_pattern.kcl
                 "value": 35.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               }
             ]
@@ -1367,19 +1451,19 @@ description: Operations executed named_views_hide_pattern.kcl
             "value": {
               "line1": {
                 "type": "Segment",
-                "artifact_id": "b680fe3e-a804-583c-99d9-1693b2432aeb"
+                "artifact_id": "[uuid]"
               },
               "line2": {
                 "type": "Segment",
-                "artifact_id": "2c522d90-5fef-5750-b489-b008732bd2c3"
+                "artifact_id": "[uuid]"
               },
               "line3": {
                 "type": "Segment",
-                "artifact_id": "cc87388f-5797-5adb-95fb-8f68e65f73c1"
+                "artifact_id": "[uuid]"
               },
               "line4": {
                 "type": "Segment",
-                "artifact_id": "deb86259-17a0-5782-a352-d25992246cc0"
+                "artifact_id": "[uuid]"
               },
               "meta": {
                 "type": "Object",
@@ -1387,7 +1471,7 @@ description: Operations executed named_views_hide_pattern.kcl
                   "sketch": {
                     "type": "Sketch",
                     "value": {
-                      "artifactId": "faa6bc39-f12d-53bf-bb63-4db4813c0f44"
+                      "artifactId": "[uuid]"
                     }
                   }
                 }
@@ -1423,7 +1507,7 @@ description: Operations executed named_views_hide_pattern.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "bbcacf2c-f132-502a-87e1-0b0ffa846931"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -1435,8 +1519,10 @@ description: Operations executed named_views_hide_pattern.kcl
             "value": 10.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -1468,19 +1554,19 @@ description: Operations executed named_views_hide_pattern.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "6f9536f6-0229-5cbb-bd5f-d3e20949d527"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "58521071-ebef-572d-8b0c-72ca92ea5777"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "d59ec16f-90d6-5a98-ace0-5bcfd7be8afe"
+                "artifactId": "[uuid]"
               }
             }
           ]
@@ -1538,7 +1624,9 @@ description: Operations executed named_views_hide_pattern.kcl
         "value": 2.718281828459045,
         "ty": {
           "type": "Known",
-          "type": "Count"
+          "value": {
+            "type": "Count"
+          }
         }
       },
       "visibility": "export",
@@ -1566,7 +1654,9 @@ description: Operations executed named_views_hide_pattern.kcl
         "value": 6.283185307179586,
         "ty": {
           "type": "Known",
-          "type": "Count"
+          "value": {
+            "type": "Count"
+          }
         }
       },
       "visibility": "export",
@@ -1600,7 +1690,7 @@ description: Operations executed named_views_hide_pattern.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 23
+            "index": 24
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1624,7 +1714,7 @@ description: Operations executed named_views_hide_pattern.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 24
+            "index": 25
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1648,7 +1738,7 @@ description: Operations executed named_views_hide_pattern.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 25
+            "index": 26
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1672,7 +1762,7 @@ description: Operations executed named_views_hide_pattern.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 26
+            "index": 27
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1696,7 +1786,7 @@ description: Operations executed named_views_hide_pattern.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 27
+            "index": 28
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1720,7 +1810,7 @@ description: Operations executed named_views_hide_pattern.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 28
+            "index": 29
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1744,7 +1834,7 @@ description: Operations executed named_views_hide_pattern.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 29
+            "index": 30
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1768,7 +1858,7 @@ description: Operations executed named_views_hide_pattern.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 30
+            "index": 31
           },
           {
             "type": "VariableDeclarationDeclaration"

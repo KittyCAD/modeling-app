@@ -33,7 +33,6 @@ import {
 import { APP_VERSION, getReleaseUrl } from '@src/routes/utils'
 import type { ForwardedRef } from 'react'
 import { forwardRef, useMemo } from 'react'
-import toast from 'react-hot-toast'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { Fragment } from 'react/jsx-runtime'
 
@@ -215,9 +214,6 @@ export const AllSettingsFields = forwardRef(
                     type: 'Reset settings',
                     level: searchParamTab,
                   })
-                  toast.success(
-                    `Your ${searchParamTab}-level settings were reset.`
-                  )
                 }}
                 iconStart={{
                   icon: 'refresh',

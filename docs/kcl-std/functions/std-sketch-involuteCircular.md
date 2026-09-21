@@ -25,6 +25,9 @@ involuteCircular(
 This is part of sketch v1 and is deprecated in favor of
 [sketch-solve](/docs/kcl-std/modules/std-solver) and the
 [gear module](/docs/kcl-std/modules/std-gear).
+Legacy sketch functions cannot be used with constraints; strongly prefer
+the gear module when it applies. No constraint-based involute is available
+yet; first try approximating the shape with one or more constrained arcs.
 
 ### Arguments
 
@@ -114,7 +117,7 @@ gearSketch = startSketchOn(XY)
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the involuteCircular function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-involuteCircular1_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-involuteCircular1_output.glb"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-involuteCircular1.png"

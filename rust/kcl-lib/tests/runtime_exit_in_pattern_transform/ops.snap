@@ -10,7 +10,7 @@ description: Operations executed runtime_exit_in_pattern_transform.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "400a2ed4-52ae-5786-967d-7fdba1bd0850"
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       },
@@ -39,7 +39,7 @@ description: Operations executed runtime_exit_in_pattern_transform.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "8a662fcd-9569-5482-8c42-aafff7b3f8d4"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -51,8 +51,10 @@ description: Operations executed runtime_exit_in_pattern_transform.kcl
             "value": 4.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -87,7 +89,9 @@ description: Operations executed runtime_exit_in_pattern_transform.kcl
             "value": 1.0,
             "ty": {
               "type": "Known",
-              "type": "Count"
+              "value": {
+                "type": "Count"
+              }
             }
           },
           "sourceRange": []
@@ -119,8 +123,10 @@ description: Operations executed runtime_exit_in_pattern_transform.kcl
         "value": 30.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -168,7 +174,9 @@ description: Operations executed runtime_exit_in_pattern_transform.kcl
             "value": 2.0,
             "ty": {
               "type": "Known",
-              "type": "Count"
+              "value": {
+                "type": "Count"
+              }
             }
           },
           "sourceRange": []
@@ -246,7 +254,7 @@ description: Operations executed runtime_exit_in_pattern_transform.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "38f0111a-8034-5e85-9ec1-07dbc9646b06"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -258,7 +266,9 @@ description: Operations executed runtime_exit_in_pattern_transform.kcl
             "value": 3.0,
             "ty": {
               "type": "Known",
-              "type": "Count"
+              "value": {
+                "type": "Count"
+              }
             }
           },
           "sourceRange": []
@@ -324,7 +334,9 @@ description: Operations executed runtime_exit_in_pattern_transform.kcl
         "value": 2.718281828459045,
         "ty": {
           "type": "Known",
-          "type": "Count"
+          "value": {
+            "type": "Count"
+          }
         }
       },
       "visibility": "export",
@@ -352,7 +364,9 @@ description: Operations executed runtime_exit_in_pattern_transform.kcl
         "value": 6.283185307179586,
         "ty": {
           "type": "Known",
-          "type": "Count"
+          "value": {
+            "type": "Count"
+          }
         }
       },
       "visibility": "export",
@@ -386,7 +400,7 @@ description: Operations executed runtime_exit_in_pattern_transform.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 23
+            "index": 24
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -410,7 +424,7 @@ description: Operations executed runtime_exit_in_pattern_transform.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 24
+            "index": 25
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -434,7 +448,7 @@ description: Operations executed runtime_exit_in_pattern_transform.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 25
+            "index": 26
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -458,7 +472,7 @@ description: Operations executed runtime_exit_in_pattern_transform.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 26
+            "index": 27
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -482,7 +496,7 @@ description: Operations executed runtime_exit_in_pattern_transform.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 27
+            "index": 28
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -506,7 +520,7 @@ description: Operations executed runtime_exit_in_pattern_transform.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 28
+            "index": 29
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -530,7 +544,7 @@ description: Operations executed runtime_exit_in_pattern_transform.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 29
+            "index": 30
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -554,7 +568,7 @@ description: Operations executed runtime_exit_in_pattern_transform.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 30
+            "index": 31
           },
           {
             "type": "VariableDeclarationDeclaration"

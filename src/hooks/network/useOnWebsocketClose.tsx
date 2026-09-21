@@ -4,17 +4,21 @@ import type {
   EngineConnectionError,
   EngineDisconnectEventDetail,
 } from '@src/lib/engineConnection/utils'
-import { EngineConnectionManagerEvents } from '@src/lib/engineConnection/utils'
+import {
+  EngineConnectionManagerEvents,
+  WebSocketCloseCode,
+} from '@src/lib/engineConnection/utils'
 import { useEffect } from 'react'
 
 export interface IUseOnWebsocketClose {
-  callback: (code: string | undefined) => void
+  callback: (code: string | undefined, reconnectRequested: boolean) => void
   infiniteDetectionLoopCallback: (code: string | undefined) => void
   terminalErrorCallback?: (
     error: EngineConnectionError,
     code: string | undefined
   ) => void
   engineCommandManager: ConnectionManager
+  abnormalCloseRetries: React.RefObject<number>
 }
 
 /**
@@ -27,6 +31,7 @@ export function useOnWebsocketClose({
   infiniteDetectionLoopCallback,
   terminalErrorCallback,
   engineCommandManager,
+  abnormalCloseRetries,
 }: IUseOnWebsocketClose) {
   useEffect(() => {
     const onWebsocketClose = (
@@ -45,22 +50,24 @@ export function useOnWebsocketClose({
         return
       }
 
-      if (event?.detail?.code === '1006') {
-        // Most likely your internet is out. Do not try to auto reconnect
-        // This will result in an infinite loop
+      const code = event.detail?.code
+      const reconnectRequested = event.detail?.reconnectRequested ?? false
+      if (
+        code === WebSocketCloseCode.AbnormalClosure.toString() &&
+        !reconnectRequested &&
+        ++abnormalCloseRetries.current > 3
+      ) {
         EngineDebugger.addLog({
           label: 'useOnWebsocketClose',
-          message: 'detected infinite loop',
-          metadata: {
-            code: event?.detail?.code,
-          },
+          message: 'abnormal close recovery budget exhausted',
+          metadata: { code },
         })
 
-        infiniteDetectionLoopCallback(event.detail.code)
+        infiniteDetectionLoopCallback(code)
         return
       }
 
-      callback(event?.detail?.code)
+      callback(code, reconnectRequested)
     }
 
     engineCommandManager.addEventListener(
@@ -79,5 +86,6 @@ export function useOnWebsocketClose({
     infiniteDetectionLoopCallback,
     terminalErrorCallback,
     engineCommandManager,
+    abnormalCloseRetries,
   ])
 }

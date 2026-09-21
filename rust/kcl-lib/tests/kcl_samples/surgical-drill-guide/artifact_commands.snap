@@ -5,7 +5,7 @@ description: Artifact commands surgical-drill-guide.kcl
 {
   "public/kcl-samples/surgical-drill-guide/main.kcl": [
     {
-      "cmdId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -30,20 +30,20 @@ description: Artifact commands surgical-drill-guide.kcl
       }
     },
     {
-      "cmdId": "01e801cc-22ef-5071-814b-847d3fcf22d5",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+        "object_id": "[uuid]",
         "hidden": true
       }
     },
     {
-      "cmdId": "7b3604da-cb7d-56b0-8f93-648a91817ee2",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+        "entity_id": "[uuid]",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -55,18 +55,18 @@ description: Artifact commands surgical-drill-guide.kcl
       }
     },
     {
-      "cmdId": "6023bee8-3980-5182-88ac-ac06420ce00f",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "bc4183c3-53a3-5213-a2cc-6fc8ca38dc19",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "6023bee8-3980-5182-88ac-ac06420ce00f",
+        "path": "[uuid]",
         "to": {
           "x": -0.0000000000000000004270914531676395,
           "y": -0.00000000000000000037082637292001084,
@@ -75,18 +75,18 @@ description: Artifact commands surgical-drill-guide.kcl
       }
     },
     {
-      "cmdId": "c5b43f3a-de89-5e69-93ff-c926dbe3c139",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "6023bee8-3980-5182-88ac-ac06420ce00f",
+        "path": "[uuid]",
         "segment": {
           "type": "line",
           "end": {
@@ -99,11 +99,11 @@ description: Artifact commands surgical-drill-guide.kcl
       }
     },
     {
-      "cmdId": "91226189-7e64-5690-9203-67ee33a6eb03",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "6023bee8-3980-5182-88ac-ac06420ce00f",
+        "path": "[uuid]",
         "segment": {
           "type": "line",
           "end": {
@@ -116,11 +116,11 @@ description: Artifact commands surgical-drill-guide.kcl
       }
     },
     {
-      "cmdId": "efd1e3b2-5268-50fd-858e-26540f8146e5",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "6023bee8-3980-5182-88ac-ac06420ce00f",
+        "path": "[uuid]",
         "segment": {
           "type": "line",
           "end": {
@@ -133,11 +133,11 @@ description: Artifact commands surgical-drill-guide.kcl
       }
     },
     {
-      "cmdId": "89316223-2ea1-5731-9c72-0492bc30fbe2",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "6023bee8-3980-5182-88ac-ac06420ce00f",
+        "path": "[uuid]",
         "segment": {
           "type": "arc",
           "center": {
@@ -158,11 +158,11 @@ description: Artifact commands surgical-drill-guide.kcl
       }
     },
     {
-      "cmdId": "523b9fc1-d681-5ef3-b407-128525533bfe",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "6023bee8-3980-5182-88ac-ac06420ce00f",
+        "path": "[uuid]",
         "segment": {
           "type": "line",
           "end": {
@@ -175,11 +175,11 @@ description: Artifact commands surgical-drill-guide.kcl
       }
     },
     {
-      "cmdId": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "6023bee8-3980-5182-88ac-ac06420ce00f",
+        "path": "[uuid]",
         "segment": {
           "type": "line",
           "end": {
@@ -192,11 +192,11 @@ description: Artifact commands surgical-drill-guide.kcl
       }
     },
     {
-      "cmdId": "f5cca6d8-813c-5e62-81d9-e4e8e17ede93",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "6023bee8-3980-5182-88ac-ac06420ce00f",
+        "path": "[uuid]",
         "segment": {
           "type": "line",
           "end": {
@@ -209,11 +209,11 @@ description: Artifact commands surgical-drill-guide.kcl
       }
     },
     {
-      "cmdId": "38f0111a-8034-5e85-9ec1-07dbc9646b06",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "6023bee8-3980-5182-88ac-ac06420ce00f",
+        "path": "[uuid]",
         "segment": {
           "type": "arc",
           "center": {
@@ -234,33 +234,33 @@ description: Artifact commands surgical-drill-guide.kcl
       }
     },
     {
-      "cmdId": "da6695c0-7255-5538-b0f4-c4ea3977fe7d",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "6023bee8-3980-5182-88ac-ac06420ce00f",
-        "segment": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
-        "intersection_segment": "91226189-7e64-5690-9203-67ee33a6eb03",
+        "object_id": "[uuid]",
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "fc8b23af-e276-5b5c-a7c2-b40c2f8d3f71",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "6023bee8-3980-5182-88ac-ac06420ce00f",
+        "object_id": "[uuid]",
         "hidden": true
       }
     },
     {
-      "cmdId": "0d2fa0a7-0d7c-5dcf-b9b9-f7010642f7b0",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+        "entity_id": "[uuid]",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -272,11 +272,11 @@ description: Artifact commands surgical-drill-guide.kcl
       }
     },
     {
-      "cmdId": "0917d07d-5996-5994-8a06-602d43e2b6f3",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "da6695c0-7255-5538-b0f4-c4ea3977fe7d",
+        "target": "[uuid]",
         "distance": 30.0,
         "faces": null,
         "opposite": "Symmetric",
@@ -285,40 +285,40 @@ description: Artifact commands surgical-drill-guide.kcl
       }
     },
     {
-      "cmdId": "1144ecbd-366d-5a7a-bb6c-2e169ba3c205",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "468f6520-a683-5392-9492-de009fdcddef",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "da6695c0-7255-5538-b0f4-c4ea3977fe7d"
+        "object_id": "[uuid]"
       }
     },
     {
-      "cmdId": "4482cd0e-0ba6-5706-bd3a-a7e479e352c8",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "da6695c0-7255-5538-b0f4-c4ea3977fe7d",
-        "edge_id": "f10c331a-4b27-5b97-a0ea-19a91c7930d1"
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
       }
     },
     {
-      "cmdId": "3eb4eacd-aa5c-58ee-841d-0c851c6c7c6b",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "da6695c0-7255-5538-b0f4-c4ea3977fe7d",
-        "edge_id": "f10c331a-4b27-5b97-a0ea-19a91c7930d1"
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
       }
     },
     {
-      "cmdId": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -343,20 +343,20 @@ description: Artifact commands surgical-drill-guide.kcl
       }
     },
     {
-      "cmdId": "e7a8a6a2-61b2-5306-be83-76bb37bcaecf",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
+        "object_id": "[uuid]",
         "hidden": true
       }
     },
     {
-      "cmdId": "7d8da150-b7c1-5e35-95ff-877c868e6b01",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
+        "entity_id": "[uuid]",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -368,18 +368,18 @@ description: Artifact commands surgical-drill-guide.kcl
       }
     },
     {
-      "cmdId": "5f65350e-7a7d-5c6d-8c8c-58382da58899",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "0f805c0b-b523-5978-a0dd-c17f7ac70690",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "5f65350e-7a7d-5c6d-8c8c-58382da58899",
+        "path": "[uuid]",
         "to": {
           "x": 15.789473685052632,
           "y": 53.151270187860504,
@@ -388,18 +388,18 @@ description: Artifact commands surgical-drill-guide.kcl
       }
     },
     {
-      "cmdId": "5288de96-84bb-518a-848b-5092b5d33e48",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "6c096663-896a-5f49-b4a0-b5621e2f3b74",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "5f65350e-7a7d-5c6d-8c8c-58382da58899",
+        "path": "[uuid]",
         "segment": {
           "type": "arc",
           "center": {
@@ -420,33 +420,33 @@ description: Artifact commands surgical-drill-guide.kcl
       }
     },
     {
-      "cmdId": "9be00e59-09ca-5d92-b815-256daf9fc98e",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "5f65350e-7a7d-5c6d-8c8c-58382da58899",
-        "segment": "6c096663-896a-5f49-b4a0-b5621e2f3b74",
-        "intersection_segment": "6c096663-896a-5f49-b4a0-b5621e2f3b74",
+        "object_id": "[uuid]",
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "1da187cf-4f25-596d-a170-2007a75f41c6",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "5f65350e-7a7d-5c6d-8c8c-58382da58899",
+        "object_id": "[uuid]",
         "hidden": true
       }
     },
     {
-      "cmdId": "f88ee97f-bd8d-58c2-8a13-430790ee61a8",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
+        "entity_id": "[uuid]",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -458,11 +458,11 @@ description: Artifact commands surgical-drill-guide.kcl
       }
     },
     {
-      "cmdId": "4e2356a5-d19d-5536-bce9-94192c5d96fb",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "9be00e59-09ca-5d92-b815-256daf9fc98e",
+        "target": "[uuid]",
         "distance": 100.0,
         "faces": null,
         "opposite": "None",
@@ -471,40 +471,40 @@ description: Artifact commands surgical-drill-guide.kcl
       }
     },
     {
-      "cmdId": "e8637a6d-00c2-5b87-831e-2db8c2223948",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "0919e597-7112-50da-97bb-e5ba198e1dcd",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "9be00e59-09ca-5d92-b815-256daf9fc98e"
+        "object_id": "[uuid]"
       }
     },
     {
-      "cmdId": "e442b4e0-3e58-50e0-9ed6-85e63a7afccf",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "9be00e59-09ca-5d92-b815-256daf9fc98e",
-        "edge_id": "cfa8de4e-e7f4-5768-abc8-9fed336c272f"
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
       }
     },
     {
-      "cmdId": "b1c16b58-be5f-5c43-aab8-81b97df08cbc",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "9be00e59-09ca-5d92-b815-256daf9fc98e",
-        "edge_id": "cfa8de4e-e7f4-5768-abc8-9fed336c272f"
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
       }
     },
     {
-      "cmdId": "abebac7f-994f-53ad-bdfb-5f1e6cb19596",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -529,11 +529,11 @@ description: Artifact commands surgical-drill-guide.kcl
       }
     },
     {
-      "cmdId": "1233ad6c-ef2a-5cf0-a663-cc9dd7ccebcd",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "plane_set_color",
-        "plane_id": "abebac7f-994f-53ad-bdfb-5f1e6cb19596",
+        "plane_id": "[uuid]",
         "color": {
           "r": 0.6,
           "g": 0.6,
@@ -543,20 +543,20 @@ description: Artifact commands surgical-drill-guide.kcl
       }
     },
     {
-      "cmdId": "5f95e913-96e4-58df-abe6-125bedd61cad",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "abebac7f-994f-53ad-bdfb-5f1e6cb19596",
+        "object_id": "[uuid]",
         "hidden": true
       }
     },
     {
-      "cmdId": "3bcd28fd-2b1b-5bfe-a9ba-ee907292b41f",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "abebac7f-994f-53ad-bdfb-5f1e6cb19596",
+        "entity_id": "[uuid]",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -568,18 +568,18 @@ description: Artifact commands surgical-drill-guide.kcl
       }
     },
     {
-      "cmdId": "ae5c05bc-b83d-501f-ba06-b7f12cf8cc2d",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "b5a5f9c1-90db-5435-9bb1-97963b81c501",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "ae5c05bc-b83d-501f-ba06-b7f12cf8cc2d",
+        "path": "[uuid]",
         "to": {
           "x": 15.789473685052632,
           "y": 150.0,
@@ -588,18 +588,18 @@ description: Artifact commands surgical-drill-guide.kcl
       }
     },
     {
-      "cmdId": "1c78fa6a-a102-5dd7-82bb-60d7ccea8fa1",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "c83dae2b-a4af-5f0a-ad34-f4e867b193ba",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "ae5c05bc-b83d-501f-ba06-b7f12cf8cc2d",
+        "path": "[uuid]",
         "segment": {
           "type": "arc",
           "center": {
@@ -620,33 +620,33 @@ description: Artifact commands surgical-drill-guide.kcl
       }
     },
     {
-      "cmdId": "c2ac0614-6028-5f8f-a889-66b05d4aa1c7",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "ae5c05bc-b83d-501f-ba06-b7f12cf8cc2d",
-        "segment": "c83dae2b-a4af-5f0a-ad34-f4e867b193ba",
-        "intersection_segment": "c83dae2b-a4af-5f0a-ad34-f4e867b193ba",
+        "object_id": "[uuid]",
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "9805aa95-ef4b-534e-9b73-76cd3f91a6fc",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "ae5c05bc-b83d-501f-ba06-b7f12cf8cc2d",
+        "object_id": "[uuid]",
         "hidden": true
       }
     },
     {
-      "cmdId": "9d7fbae6-97b8-5b45-94f9-3c60e7ae1b62",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "abebac7f-994f-53ad-bdfb-5f1e6cb19596",
+        "entity_id": "[uuid]",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -658,11 +658,11 @@ description: Artifact commands surgical-drill-guide.kcl
       }
     },
     {
-      "cmdId": "40d8c462-7810-5666-bb09-1db7308cf666",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "c2ac0614-6028-5f8f-a889-66b05d4aa1c7",
+        "target": "[uuid]",
         "distance": -100.0,
         "faces": null,
         "opposite": "None",
@@ -671,56 +671,56 @@ description: Artifact commands surgical-drill-guide.kcl
       }
     },
     {
-      "cmdId": "a8570d66-ad9e-5a33-ad3b-ebb30322f5b5",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "11dbfa4f-00f1-575c-a710-d8f3f81fc976",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "c2ac0614-6028-5f8f-a889-66b05d4aa1c7"
+        "object_id": "[uuid]"
       }
     },
     {
-      "cmdId": "f65c8713-a1f8-5ea9-a702-cab0411afc85",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "c2ac0614-6028-5f8f-a889-66b05d4aa1c7",
-        "edge_id": "aba2b817-9542-59d2-a93b-3f3227630fd3"
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
       }
     },
     {
-      "cmdId": "0030d44a-e936-52d0-b5b6-efd80f2f6770",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "c2ac0614-6028-5f8f-a889-66b05d4aa1c7",
-        "edge_id": "aba2b817-9542-59d2-a93b-3f3227630fd3"
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
       }
     },
     {
-      "cmdId": "bb0f6270-9c1c-51e3-923b-b25b8a1a44ab",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "boolean_subtract",
         "target_ids": [
-          "da6695c0-7255-5538-b0f4-c4ea3977fe7d"
+          "[uuid]"
         ],
         "tool_ids": [
-          "9be00e59-09ca-5d92-b815-256daf9fc98e",
-          "c2ac0614-6028-5f8f-a889-66b05d4aa1c7"
+          "[uuid]",
+          "[uuid]"
         ],
         "separate_bodies": false,
         "tolerance": 0.0000001
       }
     },
     {
-      "cmdId": "f9290fd4-5c3f-5c2e-8173-812972a413d9",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -745,11 +745,11 @@ description: Artifact commands surgical-drill-guide.kcl
       }
     },
     {
-      "cmdId": "c3c8712b-a8b4-5375-b311-6de9fe3f4ee3",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "plane_set_color",
-        "plane_id": "f9290fd4-5c3f-5c2e-8173-812972a413d9",
+        "plane_id": "[uuid]",
         "color": {
           "r": 0.6,
           "g": 0.6,
@@ -759,20 +759,20 @@ description: Artifact commands surgical-drill-guide.kcl
       }
     },
     {
-      "cmdId": "7cba4b1e-0ab8-5276-a74e-b8b435085d01",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "f9290fd4-5c3f-5c2e-8173-812972a413d9",
+        "object_id": "[uuid]",
         "hidden": true
       }
     },
     {
-      "cmdId": "4e30dd66-e64d-5d2d-92d4-2d15c2237140",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "f9290fd4-5c3f-5c2e-8173-812972a413d9",
+        "entity_id": "[uuid]",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -784,18 +784,18 @@ description: Artifact commands surgical-drill-guide.kcl
       }
     },
     {
-      "cmdId": "d7299f54-f2ed-5b6b-a2c6-d6da0a86fdfa",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "19107e89-bf40-5541-88a5-5106b6de636d",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "d7299f54-f2ed-5b6b-a2c6-d6da0a86fdfa",
+        "path": "[uuid]",
         "to": {
           "x": 15.789473685052632,
           "y": 53.151270187860504,
@@ -804,18 +804,18 @@ description: Artifact commands surgical-drill-guide.kcl
       }
     },
     {
-      "cmdId": "9ee924c8-9a14-5ca4-9014-20f9b1039bef",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "4b789d9f-4de7-52cb-ab04-7565c5456f13",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "d7299f54-f2ed-5b6b-a2c6-d6da0a86fdfa",
+        "path": "[uuid]",
         "segment": {
           "type": "arc",
           "center": {
@@ -836,33 +836,33 @@ description: Artifact commands surgical-drill-guide.kcl
       }
     },
     {
-      "cmdId": "d6653835-b8aa-50b7-ae77-6895c7e055ab",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "d7299f54-f2ed-5b6b-a2c6-d6da0a86fdfa",
-        "segment": "4b789d9f-4de7-52cb-ab04-7565c5456f13",
-        "intersection_segment": "4b789d9f-4de7-52cb-ab04-7565c5456f13",
+        "object_id": "[uuid]",
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "020035cf-ab88-50f3-91b0-886b7f399647",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "d7299f54-f2ed-5b6b-a2c6-d6da0a86fdfa",
+        "object_id": "[uuid]",
         "hidden": true
       }
     },
     {
-      "cmdId": "bbc9bd1d-6402-59d1-a098-3cf2005cc1c2",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "f9290fd4-5c3f-5c2e-8173-812972a413d9",
+        "entity_id": "[uuid]",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -874,11 +874,11 @@ description: Artifact commands surgical-drill-guide.kcl
       }
     },
     {
-      "cmdId": "63f9b5f8-bdd0-5943-9b5e-46fa635aacbc",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "d6653835-b8aa-50b7-ae77-6895c7e055ab",
+        "target": "[uuid]",
         "distance": -15.0,
         "faces": null,
         "opposite": "Symmetric",
@@ -887,44 +887,44 @@ description: Artifact commands surgical-drill-guide.kcl
       }
     },
     {
-      "cmdId": "2489202c-0475-5b18-97c8-c3f239bd1947",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "e02115f0-d853-5684-82c8-298aa25e4541",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "d6653835-b8aa-50b7-ae77-6895c7e055ab"
+        "object_id": "[uuid]"
       }
     },
     {
-      "cmdId": "8c56779b-80ab-5d86-a257-cec4629e2413",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "d6653835-b8aa-50b7-ae77-6895c7e055ab",
-        "edge_id": "1b0cf99f-3e61-542c-b1aa-d69dbb359e4d"
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
       }
     },
     {
-      "cmdId": "1e1f4f78-e1b7-5008-9940-d59e53844df4",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "d6653835-b8aa-50b7-ae77-6895c7e055ab",
-        "edge_id": "1b0cf99f-3e61-542c-b1aa-d69dbb359e4d"
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
       }
     },
     {
-      "cmdId": "d7522563-c424-5aea-962e-3d6a85a0b99d",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "dbacbabd-ac68-548d-95dd-c708bf1ea9ca",
+        "entity_id": "[uuid]",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -932,18 +932,18 @@ description: Artifact commands surgical-drill-guide.kcl
       }
     },
     {
-      "cmdId": "0a3927a3-4dca-5e67-855f-5c8045a33997",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "f58fd62a-578c-542c-94f8-dd627caab5d0",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "0a3927a3-4dca-5e67-855f-5c8045a33997",
+        "path": "[uuid]",
         "to": {
           "x": 2.0,
           "y": 53.151270187860504,
@@ -952,18 +952,18 @@ description: Artifact commands surgical-drill-guide.kcl
       }
     },
     {
-      "cmdId": "c0c1140b-284f-50ff-b80d-615b8b938475",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "db5c3d30-91ae-5a67-ae73-8acbcb44a5a3",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "0a3927a3-4dca-5e67-855f-5c8045a33997",
+        "path": "[uuid]",
         "segment": {
           "type": "arc",
           "center": {
@@ -984,33 +984,33 @@ description: Artifact commands surgical-drill-guide.kcl
       }
     },
     {
-      "cmdId": "2be53470-95a0-52f3-9baa-988a35cbe7a5",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "0a3927a3-4dca-5e67-855f-5c8045a33997",
-        "segment": "db5c3d30-91ae-5a67-ae73-8acbcb44a5a3",
-        "intersection_segment": "db5c3d30-91ae-5a67-ae73-8acbcb44a5a3",
+        "object_id": "[uuid]",
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "d848303b-8f89-5fe5-9391-dbf9dbcbfed9",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "0a3927a3-4dca-5e67-855f-5c8045a33997",
+        "object_id": "[uuid]",
         "hidden": true
       }
     },
     {
-      "cmdId": "4ea8409b-834f-5214-b812-e276f2ff01f4",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "dbacbabd-ac68-548d-95dd-c708bf1ea9ca",
+        "entity_id": "[uuid]",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1018,11 +1018,11 @@ description: Artifact commands surgical-drill-guide.kcl
       }
     },
     {
-      "cmdId": "41f59362-6fb8-51a4-926e-41d2df55ba70",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "2be53470-95a0-52f3-9baa-988a35cbe7a5",
+        "target": "[uuid]",
         "distance": 45.0,
         "faces": null,
         "opposite": "None",
@@ -1031,68 +1031,68 @@ description: Artifact commands surgical-drill-guide.kcl
       }
     },
     {
-      "cmdId": "2b8704a7-15b4-5ef7-8498-4a0c612057d6",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "e80fd4da-2562-5d4d-be7f-42b434d6e397",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "2be53470-95a0-52f3-9baa-988a35cbe7a5"
+        "object_id": "[uuid]"
       }
     },
     {
-      "cmdId": "a0df0eb6-009b-594d-815d-31646979be80",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "d6653835-b8aa-50b7-ae77-6895c7e055ab",
-        "edge_id": "2ecc1a17-0b75-5724-aa3d-7996c04f4aa4"
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
       }
     },
     {
-      "cmdId": "20bbd6cb-7788-53e4-9ee1-fbf9938e772d",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "d6653835-b8aa-50b7-ae77-6895c7e055ab",
-        "edge_id": "2ecc1a17-0b75-5724-aa3d-7996c04f4aa4"
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
       }
     },
     {
-      "cmdId": "594993e6-1056-5d16-9f2e-5770c7b5e4e7",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "solid3d_get_common_edge",
-        "object_id": "d6653835-b8aa-50b7-ae77-6895c7e055ab",
+        "object_id": "[uuid]",
         "face_ids": [
-          "f6be86c0-14df-5d5c-87d9-5a2ccddf11d8",
-          "c009654a-3c89-5df7-bc27-9522262037af"
+          "[uuid]",
+          "[uuid]"
         ]
       }
     },
     {
-      "cmdId": "41b24a95-09ce-5f5c-a1cb-748e4f7a41b6",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "solid3d_get_all_edge_faces",
-        "object_id": "d6653835-b8aa-50b7-ae77-6895c7e055ab",
-        "edge_id": "0dac554c-8534-5249-b63d-86ddcc8218bb"
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
       },
       "omitFromGraph": true
     },
     {
-      "cmdId": "c444b134-67e1-507a-bb00-d4998ba97afb",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "solid3d_cut_edges",
-        "object_id": "d6653835-b8aa-50b7-ae77-6895c7e055ab",
+        "object_id": "[uuid]",
         "edge_ids": [
-          "0dac554c-8534-5249-b63d-86ddcc8218bb"
+          "[uuid]"
         ],
         "cut_type": {
           "chamfer": {
@@ -1108,11 +1108,11 @@ description: Artifact commands surgical-drill-guide.kcl
       }
     },
     {
-      "cmdId": "30efa5e2-105e-56b9-85d8-16e0935167b0",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "c009654a-3c89-5df7-bc27-9522262037af",
+        "entity_id": "[uuid]",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1120,18 +1120,18 @@ description: Artifact commands surgical-drill-guide.kcl
       }
     },
     {
-      "cmdId": "ee265ae4-d91c-58e8-93b9-3612710e3ae7",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "eeb336b4-adc7-580c-be25-5e81ad6a56ee",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "ee265ae4-d91c-58e8-93b9-3612710e3ae7",
+        "path": "[uuid]",
         "to": {
           "x": 1.0,
           "y": 53.151270187860504,
@@ -1140,18 +1140,18 @@ description: Artifact commands surgical-drill-guide.kcl
       }
     },
     {
-      "cmdId": "a4984af9-3fa9-53ec-9e9c-b8d013eb1511",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "16e09773-2c0d-5da9-bdec-993f8a9ed856",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "ee265ae4-d91c-58e8-93b9-3612710e3ae7",
+        "path": "[uuid]",
         "segment": {
           "type": "arc",
           "center": {
@@ -1172,33 +1172,33 @@ description: Artifact commands surgical-drill-guide.kcl
       }
     },
     {
-      "cmdId": "6f85cbad-5e6d-549c-850d-909283a25e83",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "ee265ae4-d91c-58e8-93b9-3612710e3ae7",
-        "segment": "16e09773-2c0d-5da9-bdec-993f8a9ed856",
-        "intersection_segment": "16e09773-2c0d-5da9-bdec-993f8a9ed856",
+        "object_id": "[uuid]",
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "035728b5-01db-5e9b-b285-181bc5693d5a",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "ee265ae4-d91c-58e8-93b9-3612710e3ae7",
+        "object_id": "[uuid]",
         "hidden": true
       }
     },
     {
-      "cmdId": "2b45af9b-6b90-5530-b9b7-b193031152d8",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "c009654a-3c89-5df7-bc27-9522262037af",
+        "entity_id": "[uuid]",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1206,11 +1206,11 @@ description: Artifact commands surgical-drill-guide.kcl
       }
     },
     {
-      "cmdId": "2f325d8b-adf2-5076-89e7-9a8b0cec3731",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "6f85cbad-5e6d-549c-850d-909283a25e83",
+        "target": "[uuid]",
         "distance": -60.0,
         "faces": null,
         "opposite": "None",
@@ -1219,40 +1219,40 @@ description: Artifact commands surgical-drill-guide.kcl
       }
     },
     {
-      "cmdId": "08138142-a558-56a4-a23f-2f334e02b011",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "7b8ae56e-c9b0-55b7-a0b6-d20f44780498",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "6f85cbad-5e6d-549c-850d-909283a25e83"
+        "object_id": "[uuid]"
       }
     },
     {
-      "cmdId": "e37f0c41-fa06-5331-9fe6-fafe466ea8fa",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "d6653835-b8aa-50b7-ae77-6895c7e055ab",
-        "edge_id": "e20a732b-3d99-544f-b66b-653823a2b0b8"
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
       }
     },
     {
-      "cmdId": "44b2dfb0-0721-57cd-a796-4401a664e194",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "d6653835-b8aa-50b7-ae77-6895c7e055ab",
-        "edge_id": "e20a732b-3d99-544f-b66b-653823a2b0b8"
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
       }
     },
     {
-      "cmdId": "906a1f18-6a62-5deb-b39b-61d540081804",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -1277,11 +1277,11 @@ description: Artifact commands surgical-drill-guide.kcl
       }
     },
     {
-      "cmdId": "c72a5b97-c42a-573c-bbdf-1ce176bd07cd",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "plane_set_color",
-        "plane_id": "906a1f18-6a62-5deb-b39b-61d540081804",
+        "plane_id": "[uuid]",
         "color": {
           "r": 0.6,
           "g": 0.6,
@@ -1291,20 +1291,20 @@ description: Artifact commands surgical-drill-guide.kcl
       }
     },
     {
-      "cmdId": "bd2c7879-5553-55c3-bc25-46df0c8081fc",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "906a1f18-6a62-5deb-b39b-61d540081804",
+        "object_id": "[uuid]",
         "hidden": true
       }
     },
     {
-      "cmdId": "93fe6743-e0aa-5d65-834b-87a82208c703",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "906a1f18-6a62-5deb-b39b-61d540081804",
+        "entity_id": "[uuid]",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1316,18 +1316,18 @@ description: Artifact commands surgical-drill-guide.kcl
       }
     },
     {
-      "cmdId": "e5f7766f-25a6-52cd-9cbf-632be25dd038",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "03314dc0-0005-55f9-bfa2-d4e07847c4b2",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "e5f7766f-25a6-52cd-9cbf-632be25dd038",
+        "path": "[uuid]",
         "to": {
           "x": 16.216216213837836,
           "y": 53.15127018438129,
@@ -1336,18 +1336,18 @@ description: Artifact commands surgical-drill-guide.kcl
       }
     },
     {
-      "cmdId": "880f0f46-f5a4-5d69-b352-2aabbd0c7ed4",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "9fd615c8-7274-5e8b-830b-8b3ce00ff1e5",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "e5f7766f-25a6-52cd-9cbf-632be25dd038",
+        "path": "[uuid]",
         "segment": {
           "type": "arc",
           "center": {
@@ -1368,11 +1368,11 @@ description: Artifact commands surgical-drill-guide.kcl
       }
     },
     {
-      "cmdId": "d4cbda13-cf30-51b5-adde-debccd5ae685",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "e5f7766f-25a6-52cd-9cbf-632be25dd038",
+        "path": "[uuid]",
         "to": {
           "x": 1.9999999987027026,
           "y": 53.151270183776205,
@@ -1381,11 +1381,11 @@ description: Artifact commands surgical-drill-guide.kcl
       }
     },
     {
-      "cmdId": "0807f469-38fd-5e01-a326-82a66aa0f1d0",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "e5f7766f-25a6-52cd-9cbf-632be25dd038",
+        "path": "[uuid]",
         "segment": {
           "type": "arc",
           "center": {
@@ -1406,33 +1406,33 @@ description: Artifact commands surgical-drill-guide.kcl
       }
     },
     {
-      "cmdId": "3e6c46b9-bbdd-5d47-a756-0be941ae8b98",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "e5f7766f-25a6-52cd-9cbf-632be25dd038",
-        "segment": "9fd615c8-7274-5e8b-830b-8b3ce00ff1e5",
-        "intersection_segment": "9fd615c8-7274-5e8b-830b-8b3ce00ff1e5",
+        "object_id": "[uuid]",
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "4608674b-5141-508f-8ee7-95c7819212bb",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "e5f7766f-25a6-52cd-9cbf-632be25dd038",
+        "object_id": "[uuid]",
         "hidden": true
       }
     },
     {
-      "cmdId": "9209892e-e35e-575e-b305-9935eac5ab33",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "906a1f18-6a62-5deb-b39b-61d540081804",
+        "entity_id": "[uuid]",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1444,11 +1444,11 @@ description: Artifact commands surgical-drill-guide.kcl
       }
     },
     {
-      "cmdId": "1a7ba310-a1b1-5111-b970-012df26c5aeb",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "3e6c46b9-bbdd-5d47-a756-0be941ae8b98",
+        "target": "[uuid]",
         "distance": -10.0,
         "faces": null,
         "opposite": "None",
@@ -1457,91 +1457,91 @@ description: Artifact commands surgical-drill-guide.kcl
       }
     },
     {
-      "cmdId": "bb771349-7de5-54b4-b74b-b946bb9dbc58",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "44d94cee-dac7-5b9f-829d-112d277b8975",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "3e6c46b9-bbdd-5d47-a756-0be941ae8b98"
+        "object_id": "[uuid]"
       }
     },
     {
-      "cmdId": "95d80984-dc84-541c-af31-df26752c9fd4",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "3e6c46b9-bbdd-5d47-a756-0be941ae8b98",
-        "edge_id": "004eb715-ee8c-5f99-b124-30de34181716"
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
       }
     },
     {
-      "cmdId": "a1a9edb1-e018-53ba-86b4-c8f4482cc27f",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "3e6c46b9-bbdd-5d47-a756-0be941ae8b98",
-        "edge_id": "004eb715-ee8c-5f99-b124-30de34181716"
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
       }
     },
     {
-      "cmdId": "7f18bf81-bc67-555b-bc5f-0a5fbcd2f487",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "solid3d_get_common_edge",
-        "object_id": "3e6c46b9-bbdd-5d47-a756-0be941ae8b98",
+        "object_id": "[uuid]",
         "face_ids": [
-          "b06e0aa7-c0e9-50d2-b15a-a4cf3e6f10ff",
-          "f08698c7-f4e3-5762-a9de-6326a39681f8"
+          "[uuid]",
+          "[uuid]"
         ]
       }
     },
     {
-      "cmdId": "0601c0a1-df6b-5d1b-be74-e551a56e758a",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "solid3d_get_common_edge",
-        "object_id": "3e6c46b9-bbdd-5d47-a756-0be941ae8b98",
+        "object_id": "[uuid]",
         "face_ids": [
-          "b06e0aa7-c0e9-50d2-b15a-a4cf3e6f10ff",
-          "61edf5c5-a068-58fe-b2a0-fd2eb95870b3"
+          "[uuid]",
+          "[uuid]"
         ]
       }
     },
     {
-      "cmdId": "55ffab66-c2ee-54fb-b1dc-3f6282f04664",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "solid3d_get_all_edge_faces",
-        "object_id": "3e6c46b9-bbdd-5d47-a756-0be941ae8b98",
-        "edge_id": "004eb715-ee8c-5f99-b124-30de34181716"
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
       },
       "omitFromGraph": true
     },
     {
-      "cmdId": "8f72543d-c84d-5018-865e-36a2fd66854c",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "solid3d_get_all_edge_faces",
-        "object_id": "3e6c46b9-bbdd-5d47-a756-0be941ae8b98",
-        "edge_id": "8e17a879-16a2-5baa-a821-4ecaa4051b7e"
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
       },
       "omitFromGraph": true
     },
     {
-      "cmdId": "33bbd8bc-5a6b-54a8-9fab-10db26810cb4",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "solid3d_cut_edges",
-        "object_id": "3e6c46b9-bbdd-5d47-a756-0be941ae8b98",
+        "object_id": "[uuid]",
         "edge_ids": [
-          "004eb715-ee8c-5f99-b124-30de34181716",
-          "8e17a879-16a2-5baa-a821-4ecaa4051b7e"
+          "[uuid]",
+          "[uuid]"
         ],
         "cut_type": {
           "fillet": {
@@ -1552,16 +1552,16 @@ description: Artifact commands surgical-drill-guide.kcl
         "tolerance": 0.0000001,
         "strategy": "automatic",
         "extra_face_ids": [
-          "96889f64-587b-51f2-b62f-b230408206cc"
+          "[uuid]"
         ]
       }
     },
     {
-      "cmdId": "eeec94d2-cb3d-5ff5-98df-ea40a7022f7f",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "3e6c46b9-bbdd-5d47-a756-0be941ae8b98",
+        "object_id": "[uuid]",
         "color": {
           "r": 0.6862745,
           "g": 0.48235294,
@@ -1574,7 +1574,7 @@ description: Artifact commands surgical-drill-guide.kcl
       }
     },
     {
-      "cmdId": "9afb6023-b93a-59ec-afe5-e351f8385d69",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -1599,11 +1599,11 @@ description: Artifact commands surgical-drill-guide.kcl
       }
     },
     {
-      "cmdId": "05ce46e4-9f5d-5320-8c0f-7d8e93e6940e",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "plane_set_color",
-        "plane_id": "9afb6023-b93a-59ec-afe5-e351f8385d69",
+        "plane_id": "[uuid]",
         "color": {
           "r": 0.6,
           "g": 0.6,
@@ -1613,20 +1613,20 @@ description: Artifact commands surgical-drill-guide.kcl
       }
     },
     {
-      "cmdId": "4dc144d3-9f54-5d45-b06a-a8410f6a5222",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "9afb6023-b93a-59ec-afe5-e351f8385d69",
+        "object_id": "[uuid]",
         "hidden": true
       }
     },
     {
-      "cmdId": "8166dfa8-fbe2-57c9-a383-b66e8c8b9070",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "9afb6023-b93a-59ec-afe5-e351f8385d69",
+        "entity_id": "[uuid]",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1638,18 +1638,18 @@ description: Artifact commands surgical-drill-guide.kcl
       }
     },
     {
-      "cmdId": "c47bdefb-e100-5d1c-a209-66adc3d957b5",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "f6528d6a-e531-5b37-a104-5e45fe757c9f",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "c47bdefb-e100-5d1c-a209-66adc3d957b5",
+        "path": "[uuid]",
         "to": {
           "x": 15.789473685052632,
           "y": 150.0,
@@ -1658,18 +1658,18 @@ description: Artifact commands surgical-drill-guide.kcl
       }
     },
     {
-      "cmdId": "c349d1a9-19a0-5db8-b19d-4e0dc473c583",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "c8fe1f51-8285-5882-9af3-7e3b8d0e3598",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "c47bdefb-e100-5d1c-a209-66adc3d957b5",
+        "path": "[uuid]",
         "segment": {
           "type": "arc",
           "center": {
@@ -1690,33 +1690,33 @@ description: Artifact commands surgical-drill-guide.kcl
       }
     },
     {
-      "cmdId": "f0a7732a-2f75-5407-b203-7382d01c3918",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "c47bdefb-e100-5d1c-a209-66adc3d957b5",
-        "segment": "c8fe1f51-8285-5882-9af3-7e3b8d0e3598",
-        "intersection_segment": "c8fe1f51-8285-5882-9af3-7e3b8d0e3598",
+        "object_id": "[uuid]",
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "e45a1872-b6f4-5ae2-9e86-803375beafa6",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "c47bdefb-e100-5d1c-a209-66adc3d957b5",
+        "object_id": "[uuid]",
         "hidden": true
       }
     },
     {
-      "cmdId": "065d6e6f-62af-500d-aae0-fe097d5f952b",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "9afb6023-b93a-59ec-afe5-e351f8385d69",
+        "entity_id": "[uuid]",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1728,11 +1728,11 @@ description: Artifact commands surgical-drill-guide.kcl
       }
     },
     {
-      "cmdId": "f41b64cc-a0bb-5a3a-a1a2-6bb37bda7c26",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "f0a7732a-2f75-5407-b203-7382d01c3918",
+        "target": "[uuid]",
         "distance": 15.0,
         "faces": null,
         "opposite": "None",
@@ -1741,44 +1741,44 @@ description: Artifact commands surgical-drill-guide.kcl
       }
     },
     {
-      "cmdId": "fed04fa9-172b-5dd7-8ef3-f2c390c0a3f4",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "fe6e67eb-7a61-566b-b101-f63111291cbc",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "f0a7732a-2f75-5407-b203-7382d01c3918"
+        "object_id": "[uuid]"
       }
     },
     {
-      "cmdId": "c91b9ebe-ef24-5090-8a15-d377717956bf",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "f0a7732a-2f75-5407-b203-7382d01c3918",
-        "edge_id": "f4374afc-3377-5cac-a59b-bab63def911a"
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
       }
     },
     {
-      "cmdId": "ff7ee7c9-c639-51f1-8d87-df7f7aaf95ec",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "f0a7732a-2f75-5407-b203-7382d01c3918",
-        "edge_id": "f4374afc-3377-5cac-a59b-bab63def911a"
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
       }
     },
     {
-      "cmdId": "e47f2e3b-0460-52b0-a07e-9a08403f5c49",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "9fcd094c-d6cd-5b22-8222-0efbe600f813",
+        "entity_id": "[uuid]",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1786,18 +1786,18 @@ description: Artifact commands surgical-drill-guide.kcl
       }
     },
     {
-      "cmdId": "33d4ddb8-e281-5429-897a-8b34342e4a06",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "ab87837d-7702-50ae-a973-1b474e1e48bf",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "33d4ddb8-e281-5429-897a-8b34342e4a06",
+        "path": "[uuid]",
         "to": {
           "x": 3.1999999992,
           "y": 150.0,
@@ -1806,18 +1806,18 @@ description: Artifact commands surgical-drill-guide.kcl
       }
     },
     {
-      "cmdId": "aaa2a6cb-5f04-5c7c-b55f-4a6996b316dd",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "cea75c17-0a18-5ab9-8495-1b1bb278e899",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "33d4ddb8-e281-5429-897a-8b34342e4a06",
+        "path": "[uuid]",
         "segment": {
           "type": "arc",
           "center": {
@@ -1838,33 +1838,33 @@ description: Artifact commands surgical-drill-guide.kcl
       }
     },
     {
-      "cmdId": "edad1eb5-5562-5615-b23f-ee6623df14ee",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "33d4ddb8-e281-5429-897a-8b34342e4a06",
-        "segment": "cea75c17-0a18-5ab9-8495-1b1bb278e899",
-        "intersection_segment": "cea75c17-0a18-5ab9-8495-1b1bb278e899",
+        "object_id": "[uuid]",
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "9e7bf977-5ef0-5034-a49f-a9e7744d4434",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "33d4ddb8-e281-5429-897a-8b34342e4a06",
+        "object_id": "[uuid]",
         "hidden": true
       }
     },
     {
-      "cmdId": "da427568-57f9-5fba-9ace-3a3e7be5bc36",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "9fcd094c-d6cd-5b22-8222-0efbe600f813",
+        "entity_id": "[uuid]",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1872,11 +1872,11 @@ description: Artifact commands surgical-drill-guide.kcl
       }
     },
     {
-      "cmdId": "92ead137-02a3-5a66-a3df-f1b87766c456",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "edad1eb5-5562-5615-b23f-ee6623df14ee",
+        "target": "[uuid]",
         "distance": 45.0,
         "faces": null,
         "opposite": "None",
@@ -1885,68 +1885,68 @@ description: Artifact commands surgical-drill-guide.kcl
       }
     },
     {
-      "cmdId": "887f8b95-6182-5637-a45b-e92f2860796c",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "63efd058-90a7-5449-bf0f-6d87ead9e7b4",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "edad1eb5-5562-5615-b23f-ee6623df14ee"
+        "object_id": "[uuid]"
       }
     },
     {
-      "cmdId": "75786bd7-c284-566d-b238-3f6b11158ab4",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "f0a7732a-2f75-5407-b203-7382d01c3918",
-        "edge_id": "b82b52f2-de2e-5db0-9c7f-fb84deb4f29f"
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
       }
     },
     {
-      "cmdId": "6ae8c147-090c-5277-8840-6daa34bb4685",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "f0a7732a-2f75-5407-b203-7382d01c3918",
-        "edge_id": "b82b52f2-de2e-5db0-9c7f-fb84deb4f29f"
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
       }
     },
     {
-      "cmdId": "28f6e85f-5537-5013-ac4d-1b88aa312db5",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "solid3d_get_common_edge",
-        "object_id": "f0a7732a-2f75-5407-b203-7382d01c3918",
+        "object_id": "[uuid]",
         "face_ids": [
-          "b8210d80-61fa-5a7d-9375-39e5120b3575",
-          "8e101a19-1049-5233-ace7-c1c03ed3ab41"
+          "[uuid]",
+          "[uuid]"
         ]
       }
     },
     {
-      "cmdId": "2f89f295-7088-5e46-8594-1b84a8601b0a",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "solid3d_get_all_edge_faces",
-        "object_id": "f0a7732a-2f75-5407-b203-7382d01c3918",
-        "edge_id": "02d0de8e-cb7a-5326-8135-c85b4635828f"
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
       },
       "omitFromGraph": true
     },
     {
-      "cmdId": "ca586750-6453-56e0-b4cf-8e561096e7ca",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "solid3d_cut_edges",
-        "object_id": "f0a7732a-2f75-5407-b203-7382d01c3918",
+        "object_id": "[uuid]",
         "edge_ids": [
-          "02d0de8e-cb7a-5326-8135-c85b4635828f"
+          "[uuid]"
         ],
         "cut_type": {
           "chamfer": {
@@ -1962,11 +1962,11 @@ description: Artifact commands surgical-drill-guide.kcl
       }
     },
     {
-      "cmdId": "9bc907a5-bec7-5f87-9105-27ffee0da4e4",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "8e101a19-1049-5233-ace7-c1c03ed3ab41",
+        "entity_id": "[uuid]",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1974,18 +1974,18 @@ description: Artifact commands surgical-drill-guide.kcl
       }
     },
     {
-      "cmdId": "e6ed3605-69e2-53c9-bebb-df82937c0962",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "84468ff1-4b26-5c88-8618-6cea09661aac",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "e6ed3605-69e2-53c9-bebb-df82937c0962",
+        "path": "[uuid]",
         "to": {
           "x": 1.6000000016000002,
           "y": 150.0,
@@ -1994,18 +1994,18 @@ description: Artifact commands surgical-drill-guide.kcl
       }
     },
     {
-      "cmdId": "cbd0a735-3417-50fd-a670-41b483234c04",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "72e4fb1c-adcb-54a7-99b3-2a3ed589227e",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "e6ed3605-69e2-53c9-bebb-df82937c0962",
+        "path": "[uuid]",
         "segment": {
           "type": "arc",
           "center": {
@@ -2026,33 +2026,33 @@ description: Artifact commands surgical-drill-guide.kcl
       }
     },
     {
-      "cmdId": "b744d7bf-2b88-5bbb-8649-bc2ee7b9a1f0",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "e6ed3605-69e2-53c9-bebb-df82937c0962",
-        "segment": "72e4fb1c-adcb-54a7-99b3-2a3ed589227e",
-        "intersection_segment": "72e4fb1c-adcb-54a7-99b3-2a3ed589227e",
+        "object_id": "[uuid]",
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "5e11c45c-4e86-5b88-8029-f0565bc2f6cc",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "e6ed3605-69e2-53c9-bebb-df82937c0962",
+        "object_id": "[uuid]",
         "hidden": true
       }
     },
     {
-      "cmdId": "5d2a2786-5258-5364-b1b2-b28334229017",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "8e101a19-1049-5233-ace7-c1c03ed3ab41",
+        "entity_id": "[uuid]",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -2060,11 +2060,11 @@ description: Artifact commands surgical-drill-guide.kcl
       }
     },
     {
-      "cmdId": "c9d8522f-60d2-513b-9c62-a4a3110e5970",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "b744d7bf-2b88-5bbb-8649-bc2ee7b9a1f0",
+        "target": "[uuid]",
         "distance": -60.0,
         "faces": null,
         "opposite": "None",
@@ -2073,40 +2073,40 @@ description: Artifact commands surgical-drill-guide.kcl
       }
     },
     {
-      "cmdId": "77ac15fd-2d5b-5522-8e03-3d29dfb3c1c7",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "5e1dab3c-521b-58cf-85c3-1a827d68f2b4",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "b744d7bf-2b88-5bbb-8649-bc2ee7b9a1f0"
+        "object_id": "[uuid]"
       }
     },
     {
-      "cmdId": "0e5111f2-33bb-50f3-812c-3fe7fe747c41",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "f0a7732a-2f75-5407-b203-7382d01c3918",
-        "edge_id": "34c1cbd3-bd91-5004-a662-f8ddde34e7cd"
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
       }
     },
     {
-      "cmdId": "77202593-ebf9-50c7-b715-41557309d9ab",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "f0a7732a-2f75-5407-b203-7382d01c3918",
-        "edge_id": "34c1cbd3-bd91-5004-a662-f8ddde34e7cd"
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
       }
     },
     {
-      "cmdId": "d1c03f64-0489-502b-bc48-3ba001cf2ed6",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -2131,11 +2131,11 @@ description: Artifact commands surgical-drill-guide.kcl
       }
     },
     {
-      "cmdId": "fc243886-5941-5a64-8a15-a0b50bb063cb",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "plane_set_color",
-        "plane_id": "d1c03f64-0489-502b-bc48-3ba001cf2ed6",
+        "plane_id": "[uuid]",
         "color": {
           "r": 0.6,
           "g": 0.6,
@@ -2145,20 +2145,20 @@ description: Artifact commands surgical-drill-guide.kcl
       }
     },
     {
-      "cmdId": "1eb67267-23ae-55ad-a211-5f61fb90442f",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "d1c03f64-0489-502b-bc48-3ba001cf2ed6",
+        "object_id": "[uuid]",
         "hidden": true
       }
     },
     {
-      "cmdId": "ce0f2476-67d7-5345-810e-e93bbaf612ef",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "d1c03f64-0489-502b-bc48-3ba001cf2ed6",
+        "entity_id": "[uuid]",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -2170,18 +2170,18 @@ description: Artifact commands surgical-drill-guide.kcl
       }
     },
     {
-      "cmdId": "a6e62985-97dc-5bc0-bf5d-67848762cf83",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "5e0ef8cd-86d0-539e-b5b7-45c22f6c2ecd",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "a6e62985-97dc-5bc0-bf5d-67848762cf83",
+        "path": "[uuid]",
         "to": {
           "x": 16.216216212637836,
           "y": 150.0,
@@ -2190,18 +2190,18 @@ description: Artifact commands surgical-drill-guide.kcl
       }
     },
     {
-      "cmdId": "3160ffad-2e46-5554-be76-1b632140926c",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "45dcafc5-d8d1-5e4a-95d8-e1fc36d780f1",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "a6e62985-97dc-5bc0-bf5d-67848762cf83",
+        "path": "[uuid]",
         "segment": {
           "type": "arc",
           "center": {
@@ -2222,11 +2222,11 @@ description: Artifact commands surgical-drill-guide.kcl
       }
     },
     {
-      "cmdId": "5e069ec3-b22a-5c34-ae73-15c55f4f871f",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "a6e62985-97dc-5bc0-bf5d-67848762cf83",
+        "path": "[uuid]",
         "to": {
           "x": 3.1999999961027026,
           "y": 150.0,
@@ -2235,11 +2235,11 @@ description: Artifact commands surgical-drill-guide.kcl
       }
     },
     {
-      "cmdId": "f129c320-ce75-58e1-b5e8-ff4a5bae64dc",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "a6e62985-97dc-5bc0-bf5d-67848762cf83",
+        "path": "[uuid]",
         "segment": {
           "type": "arc",
           "center": {
@@ -2260,33 +2260,33 @@ description: Artifact commands surgical-drill-guide.kcl
       }
     },
     {
-      "cmdId": "5906c65e-a86e-5e74-ad3b-71b0fd95ea81",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "a6e62985-97dc-5bc0-bf5d-67848762cf83",
-        "segment": "45dcafc5-d8d1-5e4a-95d8-e1fc36d780f1",
-        "intersection_segment": "45dcafc5-d8d1-5e4a-95d8-e1fc36d780f1",
+        "object_id": "[uuid]",
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "fccef8b5-45dc-52a0-be38-798ebf7b76e0",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "a6e62985-97dc-5bc0-bf5d-67848762cf83",
+        "object_id": "[uuid]",
         "hidden": true
       }
     },
     {
-      "cmdId": "f72a5f9c-40cd-5f21-ba89-b0c45afa0f22",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "d1c03f64-0489-502b-bc48-3ba001cf2ed6",
+        "entity_id": "[uuid]",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -2298,11 +2298,11 @@ description: Artifact commands surgical-drill-guide.kcl
       }
     },
     {
-      "cmdId": "cb96bce2-64b3-5697-9ac4-41978548d779",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "5906c65e-a86e-5e74-ad3b-71b0fd95ea81",
+        "target": "[uuid]",
         "distance": -10.0,
         "faces": null,
         "opposite": "None",
@@ -2311,91 +2311,91 @@ description: Artifact commands surgical-drill-guide.kcl
       }
     },
     {
-      "cmdId": "8dd6a1f9-f7dd-5a96-8f45-ee3180cbe380",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "27284bc1-5676-5b5a-baa2-003a7224d266",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "5906c65e-a86e-5e74-ad3b-71b0fd95ea81"
+        "object_id": "[uuid]"
       }
     },
     {
-      "cmdId": "47ae25d7-94a7-5b84-85ef-b0a4633920cd",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "5906c65e-a86e-5e74-ad3b-71b0fd95ea81",
-        "edge_id": "05b39b46-dac1-5cf0-bc8b-9df039b7323c"
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
       }
     },
     {
-      "cmdId": "10afce2b-40ff-5ee3-a44b-bd101e341780",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "5906c65e-a86e-5e74-ad3b-71b0fd95ea81",
-        "edge_id": "05b39b46-dac1-5cf0-bc8b-9df039b7323c"
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
       }
     },
     {
-      "cmdId": "cdfcbbd0-d34e-5191-8ac3-35754fd4e366",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "solid3d_get_common_edge",
-        "object_id": "5906c65e-a86e-5e74-ad3b-71b0fd95ea81",
+        "object_id": "[uuid]",
         "face_ids": [
-          "3c8bc266-c8de-5075-b1ac-a05a2e4d7607",
-          "1c82aba1-44ba-5f67-8290-d97e658165f0"
+          "[uuid]",
+          "[uuid]"
         ]
       }
     },
     {
-      "cmdId": "e3cc8eef-e3a7-5b23-a5f4-a282dde807f0",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "solid3d_get_common_edge",
-        "object_id": "5906c65e-a86e-5e74-ad3b-71b0fd95ea81",
+        "object_id": "[uuid]",
         "face_ids": [
-          "3c8bc266-c8de-5075-b1ac-a05a2e4d7607",
-          "ff08d2c6-5786-5e6d-b8a1-61a8af0924ae"
+          "[uuid]",
+          "[uuid]"
         ]
       }
     },
     {
-      "cmdId": "2a07d524-7e15-5219-bc4a-25285a826b63",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "solid3d_get_all_edge_faces",
-        "object_id": "5906c65e-a86e-5e74-ad3b-71b0fd95ea81",
-        "edge_id": "8fffa166-55db-5e29-a416-0e6886199142"
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
       },
       "omitFromGraph": true
     },
     {
-      "cmdId": "240add5c-354d-5058-85d4-743e9f3e98a1",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "solid3d_get_all_edge_faces",
-        "object_id": "5906c65e-a86e-5e74-ad3b-71b0fd95ea81",
-        "edge_id": "05b39b46-dac1-5cf0-bc8b-9df039b7323c"
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
       },
       "omitFromGraph": true
     },
     {
-      "cmdId": "93084d86-3fba-5437-851f-9a4bb9523e0c",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "solid3d_cut_edges",
-        "object_id": "5906c65e-a86e-5e74-ad3b-71b0fd95ea81",
+        "object_id": "[uuid]",
         "edge_ids": [
-          "8fffa166-55db-5e29-a416-0e6886199142",
-          "05b39b46-dac1-5cf0-bc8b-9df039b7323c"
+          "[uuid]",
+          "[uuid]"
         ],
         "cut_type": {
           "fillet": {
@@ -2406,16 +2406,16 @@ description: Artifact commands surgical-drill-guide.kcl
         "tolerance": 0.0000001,
         "strategy": "automatic",
         "extra_face_ids": [
-          "4636f241-62ef-5015-8685-79b861e20d6d"
+          "[uuid]"
         ]
       }
     },
     {
-      "cmdId": "f17f2574-657c-597f-b5c5-83541ffc9f7f",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "5906c65e-a86e-5e74-ad3b-71b0fd95ea81",
+        "object_id": "[uuid]",
         "color": {
           "r": 0.13725491,
           "g": 0.6862745,

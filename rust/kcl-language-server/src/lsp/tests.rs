@@ -5,6 +5,7 @@ use tower_lsp::LanguageServer;
 use tower_lsp::lsp_types::CodeActionKind;
 use tower_lsp::lsp_types::CodeActionOrCommand;
 use tower_lsp::lsp_types::Diagnostic;
+use tower_lsp::lsp_types::DiagnosticSeverity;
 use tower_lsp::lsp_types::PrepareRenameResponse;
 use tower_lsp::lsp_types::SemanticTokenModifier;
 use tower_lsp::lsp_types::SemanticTokenType;
@@ -16,6 +17,7 @@ use crate::errors::Suggestion;
 use crate::lsp::LspSuggestion;
 use crate::lsp::test_util::copilot_lsp_server;
 use crate::lsp::test_util::kcl_lsp_server;
+use crate::lsp::test_util::kcl_lsp_server_mock_execution;
 use crate::parsing::ast::types::Node;
 use crate::parsing::ast::types::Program;
 
@@ -4590,4 +4592,117 @@ async fn test_kcl_lsp_diagnostic_compilation_warnings() {
     } else {
         panic!("Expected diagnostics");
     }
+}
+
+fn did_open_params(text: &str) -> tower_lsp::lsp_types::DidOpenTextDocumentParams {
+    tower_lsp::lsp_types::DidOpenTextDocumentParams {
+        text_document: tower_lsp::lsp_types::TextDocumentItem {
+            uri: "file:///test.kcl".try_into().unwrap(),
+            language_id: "kcl".to_string(),
+            version: 1,
+            text: text.to_string(),
+        },
+    }
+}
+
+fn did_change_params(text: &str, version: i32) -> tower_lsp::lsp_types::DidChangeTextDocumentParams {
+    tower_lsp::lsp_types::DidChangeTextDocumentParams {
+        text_document: tower_lsp::lsp_types::VersionedTextDocumentIdentifier {
+            uri: "file:///test.kcl".try_into().unwrap(),
+            version,
+        },
+        content_changes: vec![tower_lsp::lsp_types::TextDocumentContentChangeEvent {
+            range: None,
+            range_length: None,
+            text: text.to_string(),
+        }],
+    }
+}
+
+#[track_caller]
+fn assert_single_error(diagnostics: &[Diagnostic], expected_message_fragment: &str) {
+    assert_eq!(diagnostics.len(), 1, "expected one diagnostic, got {diagnostics:#?}");
+    assert_eq!(diagnostics[0].severity, Some(DiagnosticSeverity::ERROR));
+    assert!(
+        diagnostics[0].message.contains(expected_message_fragment),
+        "expected a message containing {expected_message_fragment:?}, got {:?}",
+        diagnostics[0].message
+    );
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn exec_time_error_issue_reaches_diagnostics() {
+    // `Orientation` is a std enum, and using an enum without
+    // `@settings(experimentalFeatures = allow)` raises an Error-severity
+    // compilation issue while the program runs. The program parses cleanly and
+    // the run succeeds, so this covers the execution half of the plumbing on
+    // its own.
+    let server = kcl_lsp_server_mock_execution().await.unwrap();
+
+    server.did_open(did_open_params("o = view::Orientation::Front\n")).await;
+
+    let diagnostics = server
+        .diagnostics_map
+        .get("file:///test.kcl")
+        .expect("execution raised an issue but nothing was published");
+    assert_single_error(&diagnostics, "Use of the enum `Orientation` is experimental");
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn parse_time_error_issue_survives_execution() {
+    // An enum declaration is gated in the parser, so its Error-severity issue
+    // is published before the program runs. A run that raises nothing of its
+    // own must leave that issue in place.
+    let server = kcl_lsp_server_mock_execution().await.unwrap();
+
+    server.did_open(did_open_params("type Color { | Red }\n")).await;
+
+    let diagnostics = server
+        .diagnostics_map
+        .get("file:///test.kcl")
+        .expect("the parse issue was published and then lost");
+    assert_single_error(&diagnostics, "Use of enum declarations is experimental");
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn clean_document_has_no_diagnostics() {
+    // A pass over a document that raises nothing must leave no entry behind.
+    let server = kcl_lsp_server_mock_execution().await.unwrap();
+
+    server.did_open(did_open_params("x = 1\n")).await;
+
+    assert!(server.diagnostics_map.get("file:///test.kcl").is_none());
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn repeated_pass_settles_on_the_same_diagnostics() {
+    // Each pass clears the Error and Warning diagnostics and publishes them
+    // again. Re-sending identical text runs a whole pass, because a document
+    // that has diagnostics is never skipped as unchanged, so this is where a
+    // clearing mistake shows up: the set would come back empty or doubled.
+    let server = kcl_lsp_server_mock_execution().await.unwrap();
+
+    // Both halves at once. The declaration is gated in the parser and the use
+    // is gated at execution, so the settled set holds two errors that reach it
+    // by different routes.
+    let code = "type Color { | Red }\nc = Color::Red\n";
+
+    server.did_open(did_open_params(code)).await;
+    let settled = server
+        .diagnostics_map
+        .get("file:///test.kcl")
+        .expect("nothing was published")
+        .clone();
+    assert_eq!(settled.len(), 2, "settled on {settled:#?}");
+    assert!(settled.iter().all(|d| d.severity == Some(DiagnosticSeverity::ERROR)));
+
+    server.did_change(did_change_params(code, 2)).await;
+    assert_eq!(
+        *server
+            .diagnostics_map
+            .get("file:///test.kcl")
+            .expect("the second pass published nothing"),
+        settled,
+        "the second pass settled somewhere else"
+    );
 }

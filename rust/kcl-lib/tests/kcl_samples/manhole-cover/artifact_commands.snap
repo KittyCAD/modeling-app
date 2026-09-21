@@ -5,7 +5,7 @@ description: Artifact commands manhole-cover.kcl
 {
   "public/kcl-samples/manhole-cover/main.kcl": [
     {
-      "cmdId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -30,20 +30,20 @@ description: Artifact commands manhole-cover.kcl
       }
     },
     {
-      "cmdId": "bbc9bd1d-6402-59d1-a098-3cf2005cc1c2",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+        "object_id": "[uuid]",
         "hidden": true
       }
     },
     {
-      "cmdId": "2489202c-0475-5b18-97c8-c3f239bd1947",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+        "entity_id": "[uuid]",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -55,18 +55,18 @@ description: Artifact commands manhole-cover.kcl
       }
     },
     {
-      "cmdId": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "e02115f0-d853-5684-82c8-298aa25e4541",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
+        "path": "[uuid]",
         "to": {
           "x": 288.925,
           "y": 0.0,
@@ -75,18 +75,18 @@ description: Artifact commands manhole-cover.kcl
       }
     },
     {
-      "cmdId": "8c56779b-80ab-5d86-a257-cec4629e2413",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
+        "path": "[uuid]",
         "segment": {
           "type": "arc",
           "center": {
@@ -107,11 +107,11 @@ description: Artifact commands manhole-cover.kcl
       }
     },
     {
-      "cmdId": "1e1f4f78-e1b7-5008-9940-d59e53844df4",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
+        "path": "[uuid]",
         "to": {
           "x": 144.128998,
           "y": -216.90845619999996,
@@ -120,11 +120,11 @@ description: Artifact commands manhole-cover.kcl
       }
     },
     {
-      "cmdId": "91226189-7e64-5690-9203-67ee33a6eb03",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
+        "path": "[uuid]",
         "segment": {
           "type": "line",
           "end": {
@@ -137,11 +137,11 @@ description: Artifact commands manhole-cover.kcl
       }
     },
     {
-      "cmdId": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
+        "path": "[uuid]",
         "segment": {
           "type": "arc",
           "center": {
@@ -162,11 +162,11 @@ description: Artifact commands manhole-cover.kcl
       }
     },
     {
-      "cmdId": "efd1e3b2-5268-50fd-858e-26540f8146e5",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
+        "path": "[uuid]",
         "segment": {
           "type": "line",
           "end": {
@@ -179,11 +179,11 @@ description: Artifact commands manhole-cover.kcl
       }
     },
     {
-      "cmdId": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
+        "path": "[uuid]",
         "segment": {
           "type": "arc",
           "center": {
@@ -204,11 +204,11 @@ description: Artifact commands manhole-cover.kcl
       }
     },
     {
-      "cmdId": "ca431487-8e9a-59ce-a472-84fe45652fab",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
+        "path": "[uuid]",
         "to": {
           "x": 90.64970439999999,
           "y": -245.7055284,
@@ -217,11 +217,11 @@ description: Artifact commands manhole-cover.kcl
       }
     },
     {
-      "cmdId": "89316223-2ea1-5731-9c72-0492bc30fbe2",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
+        "path": "[uuid]",
         "segment": {
           "type": "line",
           "end": {
@@ -234,11 +234,11 @@ description: Artifact commands manhole-cover.kcl
       }
     },
     {
-      "cmdId": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
+        "path": "[uuid]",
         "segment": {
           "type": "arc",
           "center": {
@@ -259,11 +259,11 @@ description: Artifact commands manhole-cover.kcl
       }
     },
     {
-      "cmdId": "523b9fc1-d681-5ef3-b407-128525533bfe",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
+        "path": "[uuid]",
         "segment": {
           "type": "line",
           "end": {
@@ -276,11 +276,11 @@ description: Artifact commands manhole-cover.kcl
       }
     },
     {
-      "cmdId": "41c630c9-9d44-581b-98af-caee575bea48",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
+        "path": "[uuid]",
         "segment": {
           "type": "arc",
           "center": {
@@ -301,11 +301,11 @@ description: Artifact commands manhole-cover.kcl
       }
     },
     {
-      "cmdId": "93954f29-a246-54bd-ac2a-62572f26d508",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
+        "path": "[uuid]",
         "to": {
           "x": 28.2957524,
           "y": -261.82827999999995,
@@ -314,11 +314,11 @@ description: Artifact commands manhole-cover.kcl
       }
     },
     {
-      "cmdId": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
+        "path": "[uuid]",
         "segment": {
           "type": "line",
           "end": {
@@ -331,11 +331,11 @@ description: Artifact commands manhole-cover.kcl
       }
     },
     {
-      "cmdId": "fc1035ae-3877-5cf6-9e94-7e1f3b755966",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
+        "path": "[uuid]",
         "segment": {
           "type": "arc",
           "center": {
@@ -356,11 +356,11 @@ description: Artifact commands manhole-cover.kcl
       }
     },
     {
-      "cmdId": "f5cca6d8-813c-5e62-81d9-e4e8e17ede93",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
+        "path": "[uuid]",
         "segment": {
           "type": "line",
           "end": {
@@ -373,11 +373,11 @@ description: Artifact commands manhole-cover.kcl
       }
     },
     {
-      "cmdId": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
+        "path": "[uuid]",
         "segment": {
           "type": "arc",
           "center": {
@@ -398,11 +398,11 @@ description: Artifact commands manhole-cover.kcl
       }
     },
     {
-      "cmdId": "20f09319-bab0-5dd8-8c40-ce90cd688483",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
+        "path": "[uuid]",
         "to": {
           "x": -46.095081799999996,
           "y": -260.7605656,
@@ -411,11 +411,11 @@ description: Artifact commands manhole-cover.kcl
       }
     },
     {
-      "cmdId": "38f0111a-8034-5e85-9ec1-07dbc9646b06",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
+        "path": "[uuid]",
         "segment": {
           "type": "line",
           "end": {
@@ -428,11 +428,11 @@ description: Artifact commands manhole-cover.kcl
       }
     },
     {
-      "cmdId": "fe76cc2a-18a1-5937-82e8-b2572a7c2149",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
+        "path": "[uuid]",
         "segment": {
           "type": "arc",
           "center": {
@@ -453,11 +453,11 @@ description: Artifact commands manhole-cover.kcl
       }
     },
     {
-      "cmdId": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
+        "path": "[uuid]",
         "segment": {
           "type": "line",
           "end": {
@@ -470,11 +470,11 @@ description: Artifact commands manhole-cover.kcl
       }
     },
     {
-      "cmdId": "7b681387-29ea-57f1-8713-d63280827139",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
+        "path": "[uuid]",
         "segment": {
           "type": "arc",
           "center": {
@@ -495,11 +495,11 @@ description: Artifact commands manhole-cover.kcl
       }
     },
     {
-      "cmdId": "bee9909d-abbf-534c-b266-2c2c04133834",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
+        "path": "[uuid]",
         "to": {
           "x": 189.48399999999998,
           "y": -176.50459999999998,
@@ -508,11 +508,11 @@ description: Artifact commands manhole-cover.kcl
       }
     },
     {
-      "cmdId": "19fe8534-2bed-5e2a-afe9-63f57b621004",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
+        "path": "[uuid]",
         "segment": {
           "type": "line",
           "end": {
@@ -525,11 +525,11 @@ description: Artifact commands manhole-cover.kcl
       }
     },
     {
-      "cmdId": "e00e9caf-6e9e-5221-8545-b199546c367f",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
+        "path": "[uuid]",
         "segment": {
           "type": "arc",
           "center": {
@@ -550,11 +550,11 @@ description: Artifact commands manhole-cover.kcl
       }
     },
     {
-      "cmdId": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
+        "path": "[uuid]",
         "segment": {
           "type": "line",
           "end": {
@@ -567,11 +567,11 @@ description: Artifact commands manhole-cover.kcl
       }
     },
     {
-      "cmdId": "f084ad07-5777-5607-a544-c69f455c2aab",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
+        "path": "[uuid]",
         "segment": {
           "type": "arc",
           "center": {
@@ -592,11 +592,11 @@ description: Artifact commands manhole-cover.kcl
       }
     },
     {
-      "cmdId": "7207dcef-ae46-501c-bdb4-7d4d031bf641",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
+        "path": "[uuid]",
         "to": {
           "x": 225.9584,
           "y": -123.42368,
@@ -605,11 +605,11 @@ description: Artifact commands manhole-cover.kcl
       }
     },
     {
-      "cmdId": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
+        "path": "[uuid]",
         "segment": {
           "type": "line",
           "end": {
@@ -622,11 +622,11 @@ description: Artifact commands manhole-cover.kcl
       }
     },
     {
-      "cmdId": "9370af21-6a1d-5f9a-b1d3-83351b2043e6",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
+        "path": "[uuid]",
         "segment": {
           "type": "arc",
           "center": {
@@ -647,11 +647,11 @@ description: Artifact commands manhole-cover.kcl
       }
     },
     {
-      "cmdId": "c6c38d17-92b3-5556-b0a7-5be52ccdd1ec",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
+        "path": "[uuid]",
         "segment": {
           "type": "line",
           "end": {
@@ -664,11 +664,11 @@ description: Artifact commands manhole-cover.kcl
       }
     },
     {
-      "cmdId": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
+        "path": "[uuid]",
         "segment": {
           "type": "arc",
           "center": {
@@ -689,11 +689,11 @@ description: Artifact commands manhole-cover.kcl
       }
     },
     {
-      "cmdId": "db5c3d30-91ae-5a67-ae73-8acbcb44a5a3",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
+        "path": "[uuid]",
         "to": {
           "x": 250.39574,
           "y": -53.15457999999999,
@@ -702,11 +702,11 @@ description: Artifact commands manhole-cover.kcl
       }
     },
     {
-      "cmdId": "90a5d279-3b15-5070-b2fd-a30474df87a6",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
+        "path": "[uuid]",
         "segment": {
           "type": "line",
           "end": {
@@ -719,11 +719,11 @@ description: Artifact commands manhole-cover.kcl
       }
     },
     {
-      "cmdId": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
+        "path": "[uuid]",
         "segment": {
           "type": "arc",
           "center": {
@@ -744,11 +744,11 @@ description: Artifact commands manhole-cover.kcl
       }
     },
     {
-      "cmdId": "5173c024-ac32-59f6-acbe-69ddbf68893d",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
+        "path": "[uuid]",
         "segment": {
           "type": "line",
           "end": {
@@ -761,11 +761,11 @@ description: Artifact commands manhole-cover.kcl
       }
     },
     {
-      "cmdId": "59bc8baf-257f-5783-ad91-95db236aa6b0",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
+        "path": "[uuid]",
         "segment": {
           "type": "arc",
           "center": {
@@ -786,11 +786,11 @@ description: Artifact commands manhole-cover.kcl
       }
     },
     {
-      "cmdId": "89273a0b-b55b-5457-9b1c-de1d777240e8",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
+        "path": "[uuid]",
         "to": {
           "x": -146.79188319999997,
           "y": -222.12406679999998,
@@ -799,11 +799,11 @@ description: Artifact commands manhole-cover.kcl
       }
     },
     {
-      "cmdId": "037b0f2d-13ef-58af-b918-43b89e77393e",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
+        "path": "[uuid]",
         "segment": {
           "type": "line",
           "end": {
@@ -816,11 +816,11 @@ description: Artifact commands manhole-cover.kcl
       }
     },
     {
-      "cmdId": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
+        "path": "[uuid]",
         "segment": {
           "type": "arc",
           "center": {
@@ -841,11 +841,11 @@ description: Artifact commands manhole-cover.kcl
       }
     },
     {
-      "cmdId": "1173902c-36a4-51e4-ba62-e51739ec2a5c",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
+        "path": "[uuid]",
         "segment": {
           "type": "line",
           "end": {
@@ -858,11 +858,11 @@ description: Artifact commands manhole-cover.kcl
       }
     },
     {
-      "cmdId": "cc141785-f204-5d03-bdf3-aa7163368c30",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
+        "path": "[uuid]",
         "segment": {
           "type": "arc",
           "center": {
@@ -883,11 +883,11 @@ description: Artifact commands manhole-cover.kcl
       }
     },
     {
-      "cmdId": "0a18ec1a-aedf-58b1-9e55-29a2b2e3ecf6",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
+        "path": "[uuid]",
         "to": {
           "x": 248.53138,
           "y": 54.68365999999999,
@@ -896,11 +896,11 @@ description: Artifact commands manhole-cover.kcl
       }
     },
     {
-      "cmdId": "5b7e9cc5-005c-5005-bc98-32d1ba6bf697",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
+        "path": "[uuid]",
         "segment": {
           "type": "line",
           "end": {
@@ -913,11 +913,11 @@ description: Artifact commands manhole-cover.kcl
       }
     },
     {
-      "cmdId": "53a9149e-1246-5c44-9e3c-558201ff438c",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
+        "path": "[uuid]",
         "segment": {
           "type": "arc",
           "center": {
@@ -938,11 +938,11 @@ description: Artifact commands manhole-cover.kcl
       }
     },
     {
-      "cmdId": "b680fe3e-a804-583c-99d9-1693b2432aeb",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
+        "path": "[uuid]",
         "segment": {
           "type": "line",
           "end": {
@@ -955,11 +955,11 @@ description: Artifact commands manhole-cover.kcl
       }
     },
     {
-      "cmdId": "2c522d90-5fef-5750-b489-b008732bd2c3",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
+        "path": "[uuid]",
         "segment": {
           "type": "arc",
           "center": {
@@ -980,24 +980,24 @@ description: Artifact commands manhole-cover.kcl
       }
     },
     {
-      "cmdId": "29f44732-9f58-5550-8e28-aea348bd8ebb",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
-        "segment": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
-        "intersection_segment": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+        "object_id": "[uuid]",
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "f0956ec2-5f00-5b46-a52c-5d05d56e9a3b",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+        "entity_id": "[uuid]",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1009,11 +1009,11 @@ description: Artifact commands manhole-cover.kcl
       }
     },
     {
-      "cmdId": "0a3927a3-4dca-5e67-855f-5c8045a33997",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "29f44732-9f58-5550-8e28-aea348bd8ebb",
+        "target": "[uuid]",
         "distance": 44.449999999999996,
         "faces": null,
         "opposite": "Symmetric",
@@ -1022,40 +1022,40 @@ description: Artifact commands manhole-cover.kcl
       }
     },
     {
-      "cmdId": "d7d0ea25-9730-5767-b40a-0f2fd595f8fb",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "fa75438f-b2d0-5142-b452-608454e1806a",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "29f44732-9f58-5550-8e28-aea348bd8ebb"
+        "object_id": "[uuid]"
       }
     },
     {
-      "cmdId": "2e4398f0-3503-52f1-9fb1-caadee14f488",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "29f44732-9f58-5550-8e28-aea348bd8ebb",
-        "edge_id": "485a746b-cb46-544f-aaf3-7b44aeefae5f"
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
       }
     },
     {
-      "cmdId": "eb4a5516-04df-5d3c-a783-6699c67f971f",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "29f44732-9f58-5550-8e28-aea348bd8ebb",
-        "edge_id": "485a746b-cb46-544f-aaf3-7b44aeefae5f"
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
       }
     },
     {
-      "cmdId": "bb2ee501-11e8-5c4e-b7a4-cf4d0273f1d6",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -1080,11 +1080,11 @@ description: Artifact commands manhole-cover.kcl
       }
     },
     {
-      "cmdId": "d7522563-c424-5aea-962e-3d6a85a0b99d",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "plane_set_color",
-        "plane_id": "bb2ee501-11e8-5c4e-b7a4-cf4d0273f1d6",
+        "plane_id": "[uuid]",
         "color": {
           "r": 0.6,
           "g": 0.6,
@@ -1094,20 +1094,20 @@ description: Artifact commands manhole-cover.kcl
       }
     },
     {
-      "cmdId": "eeb336b4-adc7-580c-be25-5e81ad6a56ee",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "bb2ee501-11e8-5c4e-b7a4-cf4d0273f1d6",
+        "object_id": "[uuid]",
         "hidden": true
       }
     },
     {
-      "cmdId": "a4984af9-3fa9-53ec-9e9c-b8d013eb1511",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "bb2ee501-11e8-5c4e-b7a4-cf4d0273f1d6",
+        "entity_id": "[uuid]",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1119,18 +1119,18 @@ description: Artifact commands manhole-cover.kcl
       }
     },
     {
-      "cmdId": "c8da3189-2eee-5307-9477-076b12db84a5",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "6f85cbad-5e6d-549c-850d-909283a25e83",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "c8da3189-2eee-5307-9477-076b12db84a5",
+        "path": "[uuid]",
         "to": {
           "x": -25.4,
           "y": 24.764999999999997,
@@ -1139,18 +1139,18 @@ description: Artifact commands manhole-cover.kcl
       }
     },
     {
-      "cmdId": "035728b5-01db-5e9b-b285-181bc5693d5a",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "c0c1140b-284f-50ff-b80d-615b8b938475",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "c8da3189-2eee-5307-9477-076b12db84a5",
+        "path": "[uuid]",
         "segment": {
           "type": "line",
           "end": {
@@ -1163,11 +1163,11 @@ description: Artifact commands manhole-cover.kcl
       }
     },
     {
-      "cmdId": "2be53470-95a0-52f3-9baa-988a35cbe7a5",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "c8da3189-2eee-5307-9477-076b12db84a5",
+        "path": "[uuid]",
         "segment": {
           "type": "line",
           "end": {
@@ -1180,11 +1180,11 @@ description: Artifact commands manhole-cover.kcl
       }
     },
     {
-      "cmdId": "d848303b-8f89-5fe5-9391-dbf9dbcbfed9",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "c8da3189-2eee-5307-9477-076b12db84a5",
+        "path": "[uuid]",
         "segment": {
           "type": "line",
           "end": {
@@ -1197,11 +1197,11 @@ description: Artifact commands manhole-cover.kcl
       }
     },
     {
-      "cmdId": "41f59362-6fb8-51a4-926e-41d2df55ba70",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "c8da3189-2eee-5307-9477-076b12db84a5",
+        "path": "[uuid]",
         "segment": {
           "type": "line",
           "end": {
@@ -1214,24 +1214,24 @@ description: Artifact commands manhole-cover.kcl
       }
     },
     {
-      "cmdId": "2f325d8b-adf2-5076-89e7-9a8b0cec3731",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "c8da3189-2eee-5307-9477-076b12db84a5",
-        "segment": "c0c1140b-284f-50ff-b80d-615b8b938475",
-        "intersection_segment": "2be53470-95a0-52f3-9baa-988a35cbe7a5",
+        "object_id": "[uuid]",
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "08138142-a558-56a4-a23f-2f334e02b011",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "bb2ee501-11e8-5c4e-b7a4-cf4d0273f1d6",
+        "entity_id": "[uuid]",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1243,11 +1243,11 @@ description: Artifact commands manhole-cover.kcl
       }
     },
     {
-      "cmdId": "2b45af9b-6b90-5530-b9b7-b193031152d8",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "2f325d8b-adf2-5076-89e7-9a8b0cec3731",
+        "target": "[uuid]",
         "distance": -25.4,
         "faces": null,
         "opposite": "None",
@@ -1256,68 +1256,68 @@ description: Artifact commands manhole-cover.kcl
       }
     },
     {
-      "cmdId": "7b8ae56e-c9b0-55b7-a0b6-d20f44780498",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "e37f0c41-fa06-5331-9fe6-fafe466ea8fa",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "2f325d8b-adf2-5076-89e7-9a8b0cec3731"
+        "object_id": "[uuid]"
       }
     },
     {
-      "cmdId": "44b2dfb0-0721-57cd-a796-4401a664e194",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "2f325d8b-adf2-5076-89e7-9a8b0cec3731",
-        "edge_id": "6d425194-a9b4-5e68-b816-4e9f121e865f"
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
       }
     },
     {
-      "cmdId": "906a1f18-6a62-5deb-b39b-61d540081804",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "2f325d8b-adf2-5076-89e7-9a8b0cec3731",
-        "edge_id": "6d425194-a9b4-5e68-b816-4e9f121e865f"
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
       }
     },
     {
-      "cmdId": "c72a5b97-c42a-573c-bbdf-1ce176bd07cd",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "boolean_subtract",
         "target_ids": [
-          "29f44732-9f58-5550-8e28-aea348bd8ebb"
+          "[uuid]"
         ],
         "tool_ids": [
-          "2f325d8b-adf2-5076-89e7-9a8b0cec3731"
+          "[uuid]"
         ],
         "separate_bodies": false,
         "tolerance": 0.0000001
       }
     },
     {
-      "cmdId": "ba769d4c-3a67-5309-824d-fd59f263bb46",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
+        "object_id": "[uuid]",
         "hidden": true
       }
     },
     {
-      "cmdId": "ab10cb94-5e01-5790-97d1-ad4ca036a752",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "c8da3189-2eee-5307-9477-076b12db84a5",
+        "object_id": "[uuid]",
         "hidden": true
       }
     }

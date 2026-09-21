@@ -5,12 +5,12 @@ description: Physical properties named_views_hide_pattern.kcl
 {
   "bounding_box": {
     "center": {
-      "x": 17.5,
+      "x": 5.0,
       "y": 20.0,
       "z": 5.0
     },
     "dimensions": {
-      "x": 35.0,
+      "x": 10.0,
       "y": 40.0,
       "z": 10.0
     },

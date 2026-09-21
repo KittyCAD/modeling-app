@@ -5,8 +5,6 @@ excerpt: "Deletes something from the scene. Once it's deleted, you can't use it 
 layout: manual
 ---
 
-**WARNING:** This function is experimental and may change or be removed.
-
 Deletes something from the scene. Once it's deleted, you can't use it anymore. This means deleting something twice is an error, as is hiding something after you delete it.
 
 ```kcl
@@ -26,7 +24,7 @@ delete(@objects: [Solid; 1+] | [Sketch; 1+] | [Helix; 1+] | ImportedGeometry | [
 
 ```kcl
 // Basic example, showing deleting something.
-@settings(kclVersion = 2.0, experimentalFeatures = allow)
+@settings(kclVersion = 2.0)
 
 // Make a cylinder
 sketch001 = sketch(on = XY) {
@@ -39,22 +37,11 @@ delete(cylinder)
 ```
 
 
-<model-viewer
-  class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the delete function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-transform-delete0_output.gltf"
-  ar
-  environment-image="/moon_1k.hdr"
-  poster="/kcl-test-outputs/serial_test_example_fn_std-transform-delete0.png"
-  shadow-intensity="1"
-  camera-controls
-  touch-action="pan-y"
->
-</model-viewer>
+![Rendered example of delete 0](/kcl-test-outputs/serial_test_example_fn_std-transform-delete0.png)
 
 ```kcl
 // Example showing how to delete bodies after splitting them.
-@settings(kclVersion = 2.0, experimentalFeatures = allow)
+@settings(kclVersion = 2.0)
 
 // Make a cylinder.
 sketch001 = startSketchOn(XY)
@@ -88,7 +75,7 @@ delete([result[2], result[0]])
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the delete function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-transform-delete1_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-transform-delete1_output.glb"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-transform-delete1.png"

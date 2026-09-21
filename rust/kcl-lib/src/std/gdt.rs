@@ -214,6 +214,7 @@ fn add_gdt_annotation_artifact(exec_state: &mut ExecState, args: &Args, annotati
     exec_state.add_artifact(Artifact::GdtAnnotation(GdtAnnotationArtifact {
         id: ArtifactId::new(annotation_id),
         code_ref: CodeRef::placeholder(args.source_range),
+        consumed: false,
     }));
 }
 
@@ -2128,7 +2129,7 @@ gdt::flatness(
                 .dimension
                 .as_ref()
                 .expect("expected new_annotation command to have a dimension");
-            assert_close(dimension.dimension.tolerance, expected_tolerance);
+            assert_close(dimension.dimension.tolerance.unwrap(), expected_tolerance);
             assert_close(dimension.offset.x, expected_x);
             assert_close(dimension.offset.y, expected_y);
             assert_close(

@@ -12,8 +12,10 @@ description: Operations executed surgical-drill-guide.kcl
         "value": 150.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -41,8 +43,10 @@ description: Operations executed surgical-drill-guide.kcl
         "value": 30.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -70,8 +74,10 @@ description: Operations executed surgical-drill-guide.kcl
         "value": 6.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -99,8 +105,10 @@ description: Operations executed surgical-drill-guide.kcl
         "value": 7.5,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -128,8 +136,10 @@ description: Operations executed surgical-drill-guide.kcl
         "value": 2.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -157,8 +167,10 @@ description: Operations executed surgical-drill-guide.kcl
         "value": 3.2,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -186,8 +198,10 @@ description: Operations executed surgical-drill-guide.kcl
         "value": 45.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -215,8 +229,10 @@ description: Operations executed surgical-drill-guide.kcl
         "value": 53.15127018922193,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -244,8 +260,10 @@ description: Operations executed surgical-drill-guide.kcl
         "value": 31.49519052838329,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -273,8 +291,10 @@ description: Operations executed surgical-drill-guide.kcl
         "value": 15.789473684210527,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -302,8 +322,10 @@ description: Operations executed surgical-drill-guide.kcl
         "value": 16.216216216216214,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -358,18 +380,22 @@ description: Operations executed surgical-drill-guide.kcl
                 "type": "SketchVar",
                 "value": 150.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -384,18 +410,22 @@ description: Operations executed surgical-drill-guide.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -445,18 +475,22 @@ description: Operations executed surgical-drill-guide.kcl
                 "type": "SketchVar",
                 "value": 150.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 6.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -471,18 +505,22 @@ description: Operations executed surgical-drill-guide.kcl
                 "type": "SketchVar",
                 "value": 150.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -576,18 +614,22 @@ description: Operations executed surgical-drill-guide.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 6.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -602,18 +644,22 @@ description: Operations executed surgical-drill-guide.kcl
                 "type": "SketchVar",
                 "value": 150.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 6.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -707,18 +753,22 @@ description: Operations executed surgical-drill-guide.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 14.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -733,18 +783,22 @@ description: Operations executed surgical-drill-guide.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 6.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -759,18 +813,22 @@ description: Operations executed surgical-drill-guide.kcl
                 "type": "SketchVar",
                 "value": -6.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 10.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -864,18 +922,22 @@ description: Operations executed surgical-drill-guide.kcl
                 "type": "SketchVar",
                 "value": -32.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 53.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -890,18 +952,22 @@ description: Operations executed surgical-drill-guide.kcl
                 "type": "SketchVar",
                 "value": -6.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 10.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -995,18 +1061,22 @@ description: Operations executed surgical-drill-guide.kcl
                 "type": "SketchVar",
                 "value": -37.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 50.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -1021,18 +1091,22 @@ description: Operations executed surgical-drill-guide.kcl
                 "type": "SketchVar",
                 "value": -32.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 53.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -1126,18 +1200,22 @@ description: Operations executed surgical-drill-guide.kcl
                 "type": "SketchVar",
                 "value": -12.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 7.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -1152,18 +1230,22 @@ description: Operations executed surgical-drill-guide.kcl
                 "type": "SketchVar",
                 "value": -37.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 50.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -1257,18 +1339,22 @@ description: Operations executed surgical-drill-guide.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 14.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -1283,18 +1369,22 @@ description: Operations executed surgical-drill-guide.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -1309,18 +1399,22 @@ description: Operations executed surgical-drill-guide.kcl
                 "type": "SketchVar",
                 "value": -12.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 7.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -1465,18 +1559,22 @@ description: Operations executed surgical-drill-guide.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 14.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -1491,18 +1589,22 @@ description: Operations executed surgical-drill-guide.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -1556,18 +1658,22 @@ description: Operations executed surgical-drill-guide.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -2575,11 +2681,11 @@ description: Operations executed surgical-drill-guide.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
+                "artifact_id": "[uuid]"
               },
               {
                 "type": "Segment",
-                "artifact_id": "91226189-7e64-5690-9203-67ee33a6eb03"
+                "artifact_id": "[uuid]"
               }
             ]
           },
@@ -2609,7 +2715,7 @@ description: Operations executed surgical-drill-guide.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "6023bee8-3980-5182-88ac-ac06420ce00f"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -2635,7 +2741,7 @@ description: Operations executed surgical-drill-guide.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "da6695c0-7255-5538-b0f4-c4ea3977fe7d"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -2647,8 +2753,10 @@ description: Operations executed surgical-drill-guide.kcl
             "value": 30.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -2733,18 +2841,22 @@ description: Operations executed surgical-drill-guide.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 53.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -2759,18 +2871,22 @@ description: Operations executed surgical-drill-guide.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -2824,18 +2940,22 @@ description: Operations executed surgical-drill-guide.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -2967,18 +3087,22 @@ description: Operations executed surgical-drill-guide.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 53.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -2993,18 +3117,22 @@ description: Operations executed surgical-drill-guide.kcl
                 "type": "SketchVar",
                 "value": 16.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 53.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -3193,7 +3321,7 @@ description: Operations executed surgical-drill-guide.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "6c096663-896a-5f49-b4a0-b5621e2f3b74"
+                "artifact_id": "[uuid]"
               }
             ]
           },
@@ -3223,7 +3351,7 @@ description: Operations executed surgical-drill-guide.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "5f65350e-7a7d-5c6d-8c8c-58382da58899"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -3249,7 +3377,7 @@ description: Operations executed surgical-drill-guide.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "9be00e59-09ca-5d92-b815-256daf9fc98e"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -3261,8 +3389,10 @@ description: Operations executed surgical-drill-guide.kcl
             "value": 100.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -3290,7 +3420,7 @@ description: Operations executed surgical-drill-guide.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "400a2ed4-52ae-5786-967d-7fdba1bd0850"
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       },
@@ -3301,8 +3431,10 @@ description: Operations executed surgical-drill-guide.kcl
             "value": 35.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -3369,18 +3501,22 @@ description: Operations executed surgical-drill-guide.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 150.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -3395,18 +3531,22 @@ description: Operations executed surgical-drill-guide.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -3460,18 +3600,22 @@ description: Operations executed surgical-drill-guide.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -3603,18 +3747,22 @@ description: Operations executed surgical-drill-guide.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 150.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -3629,18 +3777,22 @@ description: Operations executed surgical-drill-guide.kcl
                 "type": "SketchVar",
                 "value": 16.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 150.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -3829,7 +3981,7 @@ description: Operations executed surgical-drill-guide.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "c83dae2b-a4af-5f0a-ad34-f4e867b193ba"
+                "artifact_id": "[uuid]"
               }
             ]
           },
@@ -3859,7 +4011,7 @@ description: Operations executed surgical-drill-guide.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "ae5c05bc-b83d-501f-ba06-b7f12cf8cc2d"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -3885,7 +4037,7 @@ description: Operations executed surgical-drill-guide.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "c2ac0614-6028-5f8f-a889-66b05d4aa1c7"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -3897,8 +4049,10 @@ description: Operations executed surgical-drill-guide.kcl
             "value": -100.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -3927,7 +4081,7 @@ description: Operations executed surgical-drill-guide.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "0917d07d-5996-5994-8a06-602d43e2b6f3"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -3940,13 +4094,13 @@ description: Operations executed surgical-drill-guide.kcl
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "4e2356a5-d19d-5536-bce9-94192c5d96fb"
+                  "artifactId": "[uuid]"
                 }
               },
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "40d8c462-7810-5666-bb09-1db7308cf666"
+                  "artifactId": "[uuid]"
                 }
               }
             ]
@@ -3976,7 +4130,7 @@ description: Operations executed surgical-drill-guide.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "3aeeb2db-cc07-5a1e-840d-baeb34ceb75a"
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       },
@@ -3987,8 +4141,10 @@ description: Operations executed surgical-drill-guide.kcl
             "value": 28.49519052838329,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -4055,18 +4211,22 @@ description: Operations executed surgical-drill-guide.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 53.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -4081,18 +4241,22 @@ description: Operations executed surgical-drill-guide.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -4146,18 +4310,22 @@ description: Operations executed surgical-drill-guide.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -4289,18 +4457,22 @@ description: Operations executed surgical-drill-guide.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 53.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -4315,18 +4487,22 @@ description: Operations executed surgical-drill-guide.kcl
                 "type": "SketchVar",
                 "value": 16.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 53.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -4515,7 +4691,7 @@ description: Operations executed surgical-drill-guide.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "4b789d9f-4de7-52cb-ab04-7565c5456f13"
+                "artifact_id": "[uuid]"
               }
             ]
           },
@@ -4545,7 +4721,7 @@ description: Operations executed surgical-drill-guide.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "d7299f54-f2ed-5b6b-a2c6-d6da0a86fdfa"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -4571,7 +4747,7 @@ description: Operations executed surgical-drill-guide.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "d6653835-b8aa-50b7-ae77-6895c7e055ab"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -4583,8 +4759,10 @@ description: Operations executed surgical-drill-guide.kcl
             "value": -15.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -4655,18 +4833,22 @@ description: Operations executed surgical-drill-guide.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 53.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -4681,18 +4863,22 @@ description: Operations executed surgical-drill-guide.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -4746,18 +4932,22 @@ description: Operations executed surgical-drill-guide.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -4889,18 +5079,22 @@ description: Operations executed surgical-drill-guide.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 53.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -4915,18 +5109,22 @@ description: Operations executed surgical-drill-guide.kcl
                 "type": "SketchVar",
                 "value": 2.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 53.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -5115,7 +5313,7 @@ description: Operations executed surgical-drill-guide.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "db5c3d30-91ae-5a67-ae73-8acbcb44a5a3"
+                "artifact_id": "[uuid]"
               }
             ]
           },
@@ -5145,7 +5343,7 @@ description: Operations executed surgical-drill-guide.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "0a3927a3-4dca-5e67-855f-5c8045a33997"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -5171,7 +5369,7 @@ description: Operations executed surgical-drill-guide.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "2be53470-95a0-52f3-9baa-988a35cbe7a5"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -5183,8 +5381,10 @@ description: Operations executed surgical-drill-guide.kcl
             "value": 45.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -5224,7 +5424,7 @@ description: Operations executed surgical-drill-guide.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "41f59362-6fb8-51a4-926e-41d2df55ba70"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -5236,8 +5436,10 @@ description: Operations executed surgical-drill-guide.kcl
             "value": 0.6666666666666666,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -5248,7 +5450,7 @@ description: Operations executed surgical-drill-guide.kcl
             "value": [
               {
                 "type": "Uuid",
-                "value": "0dac554c-8534-5249-b63d-86ddcc8218bb"
+                "value": "[uuid]"
               }
             ]
           },
@@ -5317,18 +5519,22 @@ description: Operations executed surgical-drill-guide.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 53.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -5343,18 +5549,22 @@ description: Operations executed surgical-drill-guide.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -5408,18 +5618,22 @@ description: Operations executed surgical-drill-guide.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -5551,18 +5765,22 @@ description: Operations executed surgical-drill-guide.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 53.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -5577,18 +5795,22 @@ description: Operations executed surgical-drill-guide.kcl
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 53.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -5777,7 +5999,7 @@ description: Operations executed surgical-drill-guide.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "16e09773-2c0d-5da9-bdec-993f8a9ed856"
+                "artifact_id": "[uuid]"
               }
             ]
           },
@@ -5807,7 +6029,7 @@ description: Operations executed surgical-drill-guide.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "ee265ae4-d91c-58e8-93b9-3612710e3ae7"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -5833,7 +6055,7 @@ description: Operations executed surgical-drill-guide.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "6f85cbad-5e6d-549c-850d-909283a25e83"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -5845,8 +6067,10 @@ description: Operations executed surgical-drill-guide.kcl
             "value": -60.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -5874,7 +6098,7 @@ description: Operations executed surgical-drill-guide.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "3aeeb2db-cc07-5a1e-840d-baeb34ceb75a"
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       },
@@ -5885,8 +6109,10 @@ description: Operations executed surgical-drill-guide.kcl
             "value": 47.49519052838329,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -5953,18 +6179,22 @@ description: Operations executed surgical-drill-guide.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 53.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -5979,18 +6209,22 @@ description: Operations executed surgical-drill-guide.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -6047,18 +6281,22 @@ description: Operations executed surgical-drill-guide.kcl
                 "type": "SketchVar",
                 "value": 16.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 53.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -6073,18 +6311,22 @@ description: Operations executed surgical-drill-guide.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 53.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -6141,18 +6383,22 @@ description: Operations executed surgical-drill-guide.kcl
                 "type": "SketchVar",
                 "value": 2.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 53.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -6167,18 +6413,22 @@ description: Operations executed surgical-drill-guide.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 53.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -6228,18 +6478,22 @@ description: Operations executed surgical-drill-guide.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 53.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -6254,18 +6508,22 @@ description: Operations executed surgical-drill-guide.kcl
                 "type": "SketchVar",
                 "value": 16.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 53.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -6315,18 +6573,22 @@ description: Operations executed surgical-drill-guide.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 53.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -6341,18 +6603,22 @@ description: Operations executed surgical-drill-guide.kcl
                 "type": "SketchVar",
                 "value": 2.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 53.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -6406,18 +6672,22 @@ description: Operations executed surgical-drill-guide.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -6980,7 +7250,7 @@ description: Operations executed surgical-drill-guide.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "9fd615c8-7274-5e8b-830b-8b3ce00ff1e5"
+                "artifact_id": "[uuid]"
               }
             ]
           },
@@ -7010,7 +7280,7 @@ description: Operations executed surgical-drill-guide.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "e5f7766f-25a6-52cd-9cbf-632be25dd038"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -7036,7 +7306,7 @@ description: Operations executed surgical-drill-guide.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "3e6c46b9-bbdd-5d47-a756-0be941ae8b98"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -7048,8 +7318,10 @@ description: Operations executed surgical-drill-guide.kcl
             "value": -10.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -7096,7 +7368,7 @@ description: Operations executed surgical-drill-guide.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "1a7ba310-a1b1-5111-b970-012df26c5aeb"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -7108,8 +7380,10 @@ description: Operations executed surgical-drill-guide.kcl
             "value": 1.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -7120,11 +7394,11 @@ description: Operations executed surgical-drill-guide.kcl
             "value": [
               {
                 "type": "Uuid",
-                "value": "004eb715-ee8c-5f99-b124-30de34181716"
+                "value": "[uuid]"
               },
               {
                 "type": "Uuid",
-                "value": "8e17a879-16a2-5baa-a821-4ecaa4051b7e"
+                "value": "[uuid]"
               }
             ]
           },
@@ -7158,7 +7432,7 @@ description: Operations executed surgical-drill-guide.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "1a7ba310-a1b1-5111-b970-012df26c5aeb"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -7198,7 +7472,7 @@ description: Operations executed surgical-drill-guide.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "400a2ed4-52ae-5786-967d-7fdba1bd0850"
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       },
@@ -7209,8 +7483,10 @@ description: Operations executed surgical-drill-guide.kcl
             "value": -2.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -7277,18 +7553,22 @@ description: Operations executed surgical-drill-guide.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 150.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -7303,18 +7583,22 @@ description: Operations executed surgical-drill-guide.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -7368,18 +7652,22 @@ description: Operations executed surgical-drill-guide.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -7511,18 +7799,22 @@ description: Operations executed surgical-drill-guide.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 150.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -7537,18 +7829,22 @@ description: Operations executed surgical-drill-guide.kcl
                 "type": "SketchVar",
                 "value": 16.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 150.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -7737,7 +8033,7 @@ description: Operations executed surgical-drill-guide.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "c8fe1f51-8285-5882-9af3-7e3b8d0e3598"
+                "artifact_id": "[uuid]"
               }
             ]
           },
@@ -7767,7 +8063,7 @@ description: Operations executed surgical-drill-guide.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "c47bdefb-e100-5d1c-a209-66adc3d957b5"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -7793,7 +8089,7 @@ description: Operations executed surgical-drill-guide.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "f0a7732a-2f75-5407-b203-7382d01c3918"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -7805,8 +8101,10 @@ description: Operations executed surgical-drill-guide.kcl
             "value": 15.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -7870,18 +8168,22 @@ description: Operations executed surgical-drill-guide.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 150.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -7896,18 +8198,22 @@ description: Operations executed surgical-drill-guide.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -7961,18 +8267,22 @@ description: Operations executed surgical-drill-guide.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -8104,18 +8414,22 @@ description: Operations executed surgical-drill-guide.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 150.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -8130,18 +8444,22 @@ description: Operations executed surgical-drill-guide.kcl
                 "type": "SketchVar",
                 "value": 3.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 150.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -8330,7 +8648,7 @@ description: Operations executed surgical-drill-guide.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "cea75c17-0a18-5ab9-8495-1b1bb278e899"
+                "artifact_id": "[uuid]"
               }
             ]
           },
@@ -8360,7 +8678,7 @@ description: Operations executed surgical-drill-guide.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "33d4ddb8-e281-5429-897a-8b34342e4a06"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -8386,7 +8704,7 @@ description: Operations executed surgical-drill-guide.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "edad1eb5-5562-5615-b23f-ee6623df14ee"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -8398,8 +8716,10 @@ description: Operations executed surgical-drill-guide.kcl
             "value": 45.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -8439,7 +8759,7 @@ description: Operations executed surgical-drill-guide.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "92ead137-02a3-5a66-a3df-f1b87766c456"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -8451,8 +8771,10 @@ description: Operations executed surgical-drill-guide.kcl
             "value": 1.0666666666666667,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -8463,7 +8785,7 @@ description: Operations executed surgical-drill-guide.kcl
             "value": [
               {
                 "type": "Uuid",
-                "value": "02d0de8e-cb7a-5326-8135-c85b4635828f"
+                "value": "[uuid]"
               }
             ]
           },
@@ -8532,18 +8854,22 @@ description: Operations executed surgical-drill-guide.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 150.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -8558,18 +8884,22 @@ description: Operations executed surgical-drill-guide.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -8623,18 +8953,22 @@ description: Operations executed surgical-drill-guide.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -8766,18 +9100,22 @@ description: Operations executed surgical-drill-guide.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 150.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -8792,18 +9130,22 @@ description: Operations executed surgical-drill-guide.kcl
                 "type": "SketchVar",
                 "value": 2.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 150.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -8992,7 +9334,7 @@ description: Operations executed surgical-drill-guide.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "72e4fb1c-adcb-54a7-99b3-2a3ed589227e"
+                "artifact_id": "[uuid]"
               }
             ]
           },
@@ -9022,7 +9364,7 @@ description: Operations executed surgical-drill-guide.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "e6ed3605-69e2-53c9-bebb-df82937c0962"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -9048,7 +9390,7 @@ description: Operations executed surgical-drill-guide.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "b744d7bf-2b88-5bbb-8649-bc2ee7b9a1f0"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -9060,8 +9402,10 @@ description: Operations executed surgical-drill-guide.kcl
             "value": -60.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -9089,7 +9433,7 @@ description: Operations executed surgical-drill-guide.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "400a2ed4-52ae-5786-967d-7fdba1bd0850"
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       },
@@ -9100,8 +9444,10 @@ description: Operations executed surgical-drill-guide.kcl
             "value": -3.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -9168,18 +9514,22 @@ description: Operations executed surgical-drill-guide.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 150.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -9194,18 +9544,22 @@ description: Operations executed surgical-drill-guide.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -9262,18 +9616,22 @@ description: Operations executed surgical-drill-guide.kcl
                 "type": "SketchVar",
                 "value": 16.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 150.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -9288,18 +9646,22 @@ description: Operations executed surgical-drill-guide.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 150.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -9356,18 +9718,22 @@ description: Operations executed surgical-drill-guide.kcl
                 "type": "SketchVar",
                 "value": 3.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 150.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -9382,18 +9748,22 @@ description: Operations executed surgical-drill-guide.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 150.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -9443,18 +9813,22 @@ description: Operations executed surgical-drill-guide.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 150.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -9469,18 +9843,22 @@ description: Operations executed surgical-drill-guide.kcl
                 "type": "SketchVar",
                 "value": 16.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 150.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -9530,18 +9908,22 @@ description: Operations executed surgical-drill-guide.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 150.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -9556,18 +9938,22 @@ description: Operations executed surgical-drill-guide.kcl
                 "type": "SketchVar",
                 "value": 3.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 150.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -9621,18 +10007,22 @@ description: Operations executed surgical-drill-guide.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -10195,7 +10585,7 @@ description: Operations executed surgical-drill-guide.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "45dcafc5-d8d1-5e4a-95d8-e1fc36d780f1"
+                "artifact_id": "[uuid]"
               }
             ]
           },
@@ -10225,7 +10615,7 @@ description: Operations executed surgical-drill-guide.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "a6e62985-97dc-5bc0-bf5d-67848762cf83"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -10251,7 +10641,7 @@ description: Operations executed surgical-drill-guide.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "5906c65e-a86e-5e74-ad3b-71b0fd95ea81"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -10263,8 +10653,10 @@ description: Operations executed surgical-drill-guide.kcl
             "value": -10.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -10311,7 +10703,7 @@ description: Operations executed surgical-drill-guide.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "cb96bce2-64b3-5697-9ac4-41978548d779"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -10323,8 +10715,10 @@ description: Operations executed surgical-drill-guide.kcl
             "value": 1.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -10335,11 +10729,11 @@ description: Operations executed surgical-drill-guide.kcl
             "value": [
               {
                 "type": "Uuid",
-                "value": "8fffa166-55db-5e29-a416-0e6886199142"
+                "value": "[uuid]"
               },
               {
                 "type": "Uuid",
-                "value": "05b39b46-dac1-5cf0-bc8b-9df039b7323c"
+                "value": "[uuid]"
               }
             ]
           },
@@ -10373,7 +10767,7 @@ description: Operations executed surgical-drill-guide.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "cb96bce2-64b3-5697-9ac4-41978548d779"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -10444,7 +10838,9 @@ description: Operations executed surgical-drill-guide.kcl
         "value": 2.718281828459045,
         "ty": {
           "type": "Known",
-          "type": "Count"
+          "value": {
+            "type": "Count"
+          }
         }
       },
       "visibility": "export",
@@ -10472,7 +10868,9 @@ description: Operations executed surgical-drill-guide.kcl
         "value": 6.283185307179586,
         "ty": {
           "type": "Known",
-          "type": "Count"
+          "value": {
+            "type": "Count"
+          }
         }
       },
       "visibility": "export",
@@ -10506,7 +10904,7 @@ description: Operations executed surgical-drill-guide.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 23
+            "index": 24
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -10530,7 +10928,7 @@ description: Operations executed surgical-drill-guide.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 24
+            "index": 25
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -10554,7 +10952,7 @@ description: Operations executed surgical-drill-guide.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 25
+            "index": 26
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -10578,7 +10976,7 @@ description: Operations executed surgical-drill-guide.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 26
+            "index": 27
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -10602,7 +11000,7 @@ description: Operations executed surgical-drill-guide.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 27
+            "index": 28
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -10626,7 +11024,7 @@ description: Operations executed surgical-drill-guide.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 28
+            "index": 29
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -10650,7 +11048,7 @@ description: Operations executed surgical-drill-guide.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 29
+            "index": 30
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -10674,7 +11072,7 @@ description: Operations executed surgical-drill-guide.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 30
+            "index": 31
           },
           {
             "type": "VariableDeclarationDeclaration"

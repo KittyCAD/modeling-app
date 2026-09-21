@@ -10,7 +10,7 @@ description: Operations executed named_views_hide_plane.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "400a2ed4-52ae-5786-967d-7fdba1bd0850"
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       },
@@ -21,8 +21,10 @@ description: Operations executed named_views_hide_plane.kcl
             "value": 20.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -50,7 +52,7 @@ description: Operations executed named_views_hide_plane.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "400a2ed4-52ae-5786-967d-7fdba1bd0850"
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       },
@@ -61,8 +63,10 @@ description: Operations executed named_views_hide_plane.kcl
             "value": 40.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -120,8 +124,10 @@ description: Operations executed named_views_hide_plane.kcl
                 "value": 30.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -129,8 +135,10 @@ description: Operations executed named_views_hide_plane.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               }
             ]
@@ -146,8 +154,10 @@ description: Operations executed named_views_hide_plane.kcl
                 "value": 20.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -155,8 +165,10 @@ description: Operations executed named_views_hide_plane.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               }
             ]
@@ -207,8 +219,10 @@ description: Operations executed named_views_hide_plane.kcl
                 "value": 30.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -216,8 +230,10 @@ description: Operations executed named_views_hide_plane.kcl
                 "value": 10.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               }
             ]
@@ -233,8 +249,10 @@ description: Operations executed named_views_hide_plane.kcl
                 "value": 30.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -242,8 +260,10 @@ description: Operations executed named_views_hide_plane.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               }
             ]
@@ -294,8 +314,10 @@ description: Operations executed named_views_hide_plane.kcl
                 "value": 20.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -303,8 +325,10 @@ description: Operations executed named_views_hide_plane.kcl
                 "value": 10.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               }
             ]
@@ -320,8 +344,10 @@ description: Operations executed named_views_hide_plane.kcl
                 "value": 30.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -329,8 +355,10 @@ description: Operations executed named_views_hide_plane.kcl
                 "value": 10.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               }
             ]
@@ -381,8 +409,10 @@ description: Operations executed named_views_hide_plane.kcl
                 "value": 20.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -390,8 +420,10 @@ description: Operations executed named_views_hide_plane.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               }
             ]
@@ -407,8 +439,10 @@ description: Operations executed named_views_hide_plane.kcl
                 "value": 20.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -416,8 +450,10 @@ description: Operations executed named_views_hide_plane.kcl
                 "value": 10.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               }
             ]
@@ -647,8 +683,10 @@ description: Operations executed named_views_hide_plane.kcl
                 "value": 25.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -656,8 +694,10 @@ description: Operations executed named_views_hide_plane.kcl
                 "value": 5.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               }
             ]
@@ -670,19 +710,19 @@ description: Operations executed named_views_hide_plane.kcl
             "value": {
               "line1": {
                 "type": "Segment",
-                "artifact_id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4"
+                "artifact_id": "[uuid]"
               },
               "line2": {
                 "type": "Segment",
-                "artifact_id": "89316223-2ea1-5731-9c72-0492bc30fbe2"
+                "artifact_id": "[uuid]"
               },
               "line3": {
                 "type": "Segment",
-                "artifact_id": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b"
+                "artifact_id": "[uuid]"
               },
               "line4": {
                 "type": "Segment",
-                "artifact_id": "523b9fc1-d681-5ef3-b407-128525533bfe"
+                "artifact_id": "[uuid]"
               },
               "meta": {
                 "type": "Object",
@@ -690,7 +730,7 @@ description: Operations executed named_views_hide_plane.kcl
                   "sketch": {
                     "type": "Sketch",
                     "value": {
-                      "artifactId": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7"
+                      "artifactId": "[uuid]"
                     }
                   }
                 }
@@ -726,7 +766,7 @@ description: Operations executed named_views_hide_plane.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "037b0f2d-13ef-58af-b918-43b89e77393e"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -738,8 +778,10 @@ description: Operations executed named_views_hide_plane.kcl
             "value": 10.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -767,7 +809,7 @@ description: Operations executed named_views_hide_plane.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       },
@@ -780,6 +822,60 @@ description: Operations executed named_views_hide_plane.kcl
           },
           {
             "type": "ExpressionStatementExpr"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "view::named",
+      "unlabeledArg": {
+        "value": {
+          "type": "String",
+          "value": "Near plane"
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {
+        "baseline": {
+          "value": {
+            "type": "Enum",
+            "enum_name": "Visibility",
+            "variant": "Show"
+          },
+          "sourceRange": []
+        },
+        "camera": {
+          "value": {
+            "type": "CameraView"
+          },
+          "sourceRange": []
+        },
+        "except": {
+          "value": {
+            "type": "Array",
+            "value": [
+              {
+                "type": "Plane",
+                "artifact_id": "[uuid]"
+              }
+            ]
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 5
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
           }
         ]
       },
@@ -822,7 +918,9 @@ description: Operations executed named_views_hide_plane.kcl
         "value": 2.718281828459045,
         "ty": {
           "type": "Known",
-          "type": "Count"
+          "value": {
+            "type": "Count"
+          }
         }
       },
       "visibility": "export",
@@ -850,7 +948,9 @@ description: Operations executed named_views_hide_plane.kcl
         "value": 6.283185307179586,
         "ty": {
           "type": "Known",
-          "type": "Count"
+          "value": {
+            "type": "Count"
+          }
         }
       },
       "visibility": "export",
@@ -884,7 +984,7 @@ description: Operations executed named_views_hide_plane.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 23
+            "index": 24
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -908,7 +1008,7 @@ description: Operations executed named_views_hide_plane.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 24
+            "index": 25
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -932,7 +1032,7 @@ description: Operations executed named_views_hide_plane.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 25
+            "index": 26
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -956,7 +1056,7 @@ description: Operations executed named_views_hide_plane.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 26
+            "index": 27
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -980,7 +1080,7 @@ description: Operations executed named_views_hide_plane.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 27
+            "index": 28
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1004,7 +1104,7 @@ description: Operations executed named_views_hide_plane.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 28
+            "index": 29
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1028,7 +1128,7 @@ description: Operations executed named_views_hide_plane.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 29
+            "index": 30
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1052,7 +1152,7 @@ description: Operations executed named_views_hide_plane.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 30
+            "index": 31
           },
           {
             "type": "VariableDeclarationDeclaration"

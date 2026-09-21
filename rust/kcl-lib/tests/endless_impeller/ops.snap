@@ -11,9 +11,11 @@ description: Operations executed endless_impeller.kcl
         "type": "Number",
         "value": 1.0,
         "ty": {
-          "mm": null,
           "type": "Known",
-          "type": "Length"
+          "value": {
+            "type": "Length",
+            "value": "mm"
+          }
         }
       },
       "visibility": "default",
@@ -44,7 +46,7 @@ description: Operations executed endless_impeller.kcl
           "onSurface": {
             "value": {
               "type": "Plane",
-              "artifact_id": "400a2ed4-52ae-5786-967d-7fdba1bd0850"
+              "artifact_id": "[uuid]"
             },
             "sourceRange": []
           }
@@ -114,18 +116,22 @@ description: Operations executed endless_impeller.kcl
                 "type": "Number",
                 "value": 0.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -140,18 +146,22 @@ description: Operations executed endless_impeller.kcl
                 "type": "Number",
                 "value": 0.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": -0.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -214,18 +224,22 @@ description: Operations executed endless_impeller.kcl
                 "type": "Number",
                 "value": -0.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -240,18 +254,22 @@ description: Operations executed endless_impeller.kcl
                 "type": "Number",
                 "value": 0.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -314,18 +332,22 @@ description: Operations executed endless_impeller.kcl
                 "type": "Number",
                 "value": -0.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": -0.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -340,18 +362,22 @@ description: Operations executed endless_impeller.kcl
                 "type": "Number",
                 "value": -0.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -414,18 +440,22 @@ description: Operations executed endless_impeller.kcl
                 "type": "Number",
                 "value": 0.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": -0.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -440,18 +470,22 @@ description: Operations executed endless_impeller.kcl
                 "type": "Number",
                 "value": -0.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": -0.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -517,18 +551,22 @@ description: Operations executed endless_impeller.kcl
                 "type": "Number",
                 "value": 0.49,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -541,19 +579,19 @@ description: Operations executed endless_impeller.kcl
             "value": {
               "line1": {
                 "type": "Segment",
-                "artifact_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
+                "artifact_id": "[uuid]"
               },
               "line2": {
                 "type": "Segment",
-                "artifact_id": "91226189-7e64-5690-9203-67ee33a6eb03"
+                "artifact_id": "[uuid]"
               },
               "line3": {
                 "type": "Segment",
-                "artifact_id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53"
+                "artifact_id": "[uuid]"
               },
               "line4": {
                 "type": "Segment",
-                "artifact_id": "efd1e3b2-5268-50fd-858e-26540f8146e5"
+                "artifact_id": "[uuid]"
               },
               "meta": {
                 "type": "Object",
@@ -561,7 +599,7 @@ description: Operations executed endless_impeller.kcl
                   "sketch": {
                     "type": "Sketch",
                     "value": {
-                      "artifactId": "8a662fcd-9569-5482-8c42-aafff7b3f8d4"
+                      "artifactId": "[uuid]"
                     }
                   }
                 }
@@ -607,7 +645,7 @@ description: Operations executed endless_impeller.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "186e6756-e0a9-5df7-a3d1-f5f025d153e3"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -618,9 +656,11 @@ description: Operations executed endless_impeller.kcl
             "type": "Number",
             "value": 1.0,
             "ty": {
-              "mm": null,
               "type": "Known",
-              "type": "Length"
+              "value": {
+                "type": "Length",
+                "value": "mm"
+              }
             }
           },
           "sourceRange": []
@@ -653,7 +693,7 @@ description: Operations executed endless_impeller.kcl
           "onSurface": {
             "value": {
               "type": "Face",
-              "artifact_id": "092755e4-e002-58b9-a194-69b526ae6929"
+              "artifact_id": "[uuid]"
             },
             "sourceRange": []
           }
@@ -723,18 +763,22 @@ description: Operations executed endless_impeller.kcl
                 "type": "Number",
                 "value": 0.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -749,18 +793,22 @@ description: Operations executed endless_impeller.kcl
                 "type": "Number",
                 "value": 0.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": -0.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -823,18 +871,22 @@ description: Operations executed endless_impeller.kcl
                 "type": "Number",
                 "value": -0.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -849,18 +901,22 @@ description: Operations executed endless_impeller.kcl
                 "type": "Number",
                 "value": 0.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -923,18 +979,22 @@ description: Operations executed endless_impeller.kcl
                 "type": "Number",
                 "value": -0.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": -0.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -949,18 +1009,22 @@ description: Operations executed endless_impeller.kcl
                 "type": "Number",
                 "value": -0.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -1023,18 +1087,22 @@ description: Operations executed endless_impeller.kcl
                 "type": "Number",
                 "value": 0.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": -0.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -1049,18 +1117,22 @@ description: Operations executed endless_impeller.kcl
                 "type": "Number",
                 "value": -0.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": -0.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -1126,18 +1198,22 @@ description: Operations executed endless_impeller.kcl
                 "type": "Number",
                 "value": 0.49,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -1150,19 +1226,19 @@ description: Operations executed endless_impeller.kcl
             "value": {
               "line1": {
                 "type": "Segment",
-                "artifact_id": "037b0f2d-13ef-58af-b918-43b89e77393e"
+                "artifact_id": "[uuid]"
               },
               "line2": {
                 "type": "Segment",
-                "artifact_id": "eb15cf8e-a943-5fe0-8d78-046893de64b7"
+                "artifact_id": "[uuid]"
               },
               "line3": {
                 "type": "Segment",
-                "artifact_id": "1173902c-36a4-51e4-ba62-e51739ec2a5c"
+                "artifact_id": "[uuid]"
               },
               "line4": {
                 "type": "Segment",
-                "artifact_id": "cc141785-f204-5d03-bdf3-aa7163368c30"
+                "artifact_id": "[uuid]"
               },
               "meta": {
                 "type": "Object",
@@ -1170,7 +1246,7 @@ description: Operations executed endless_impeller.kcl
                   "sketch": {
                     "type": "Sketch",
                     "value": {
-                      "artifactId": "5b7e9cc5-005c-5005-bc98-32d1ba6bf697"
+                      "artifactId": "[uuid]"
                     }
                   }
                 }
@@ -1216,7 +1292,7 @@ description: Operations executed endless_impeller.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "c4fac378-d3df-5505-98c1-308b81b0fd96"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -1227,9 +1303,11 @@ description: Operations executed endless_impeller.kcl
             "type": "Number",
             "value": 1.0,
             "ty": {
-              "mm": null,
               "type": "Known",
-              "type": "Length"
+              "value": {
+                "type": "Length",
+                "value": "mm"
+              }
             }
           },
           "sourceRange": []
@@ -1262,7 +1340,7 @@ description: Operations executed endless_impeller.kcl
           "onSurface": {
             "value": {
               "type": "Face",
-              "artifact_id": "b5dc18e1-9cda-5dfd-8ad6-311e0721ff70"
+              "artifact_id": "[uuid]"
             },
             "sourceRange": []
           }
@@ -1332,18 +1410,22 @@ description: Operations executed endless_impeller.kcl
                 "type": "Number",
                 "value": 0.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -1358,18 +1440,22 @@ description: Operations executed endless_impeller.kcl
                 "type": "Number",
                 "value": 0.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": -0.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -1432,18 +1518,22 @@ description: Operations executed endless_impeller.kcl
                 "type": "Number",
                 "value": -0.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -1458,18 +1548,22 @@ description: Operations executed endless_impeller.kcl
                 "type": "Number",
                 "value": 0.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -1532,18 +1626,22 @@ description: Operations executed endless_impeller.kcl
                 "type": "Number",
                 "value": -0.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": -0.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -1558,18 +1656,22 @@ description: Operations executed endless_impeller.kcl
                 "type": "Number",
                 "value": -0.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -1632,18 +1734,22 @@ description: Operations executed endless_impeller.kcl
                 "type": "Number",
                 "value": 0.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": -0.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -1658,18 +1764,22 @@ description: Operations executed endless_impeller.kcl
                 "type": "Number",
                 "value": -0.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": -0.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -1735,18 +1845,22 @@ description: Operations executed endless_impeller.kcl
                 "type": "Number",
                 "value": 0.49,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -1759,19 +1873,19 @@ description: Operations executed endless_impeller.kcl
             "value": {
               "line1": {
                 "type": "Segment",
-                "artifact_id": "7d4c814d-f292-503d-a012-68ab58c77524"
+                "artifact_id": "[uuid]"
               },
               "line2": {
                 "type": "Segment",
-                "artifact_id": "ad4b4be8-b535-5c5c-bc14-07fc0c74a448"
+                "artifact_id": "[uuid]"
               },
               "line3": {
                 "type": "Segment",
-                "artifact_id": "50f5fd52-8c8c-5c1d-9c20-c4ac7d39a153"
+                "artifact_id": "[uuid]"
               },
               "line4": {
                 "type": "Segment",
-                "artifact_id": "bbcacf2c-f132-502a-87e1-0b0ffa846931"
+                "artifact_id": "[uuid]"
               },
               "meta": {
                 "type": "Object",
@@ -1779,7 +1893,7 @@ description: Operations executed endless_impeller.kcl
                   "sketch": {
                     "type": "Sketch",
                     "value": {
-                      "artifactId": "cc312d38-2fa6-5583-a605-44880f646499"
+                      "artifactId": "[uuid]"
                     }
                   }
                 }
@@ -1825,7 +1939,7 @@ description: Operations executed endless_impeller.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "0d2fa0a7-0d7c-5dcf-b9b9-f7010642f7b0"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -1836,9 +1950,11 @@ description: Operations executed endless_impeller.kcl
             "type": "Number",
             "value": 1.0,
             "ty": {
-              "mm": null,
               "type": "Known",
-              "type": "Length"
+              "value": {
+                "type": "Length",
+                "value": "mm"
+              }
             }
           },
           "sourceRange": []
@@ -1871,7 +1987,7 @@ description: Operations executed endless_impeller.kcl
           "onSurface": {
             "value": {
               "type": "Face",
-              "artifact_id": "d02dfd29-5703-523e-8855-60e0a84d23fb"
+              "artifact_id": "[uuid]"
             },
             "sourceRange": []
           }
@@ -1941,18 +2057,22 @@ description: Operations executed endless_impeller.kcl
                 "type": "Number",
                 "value": 0.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -1967,18 +2087,22 @@ description: Operations executed endless_impeller.kcl
                 "type": "Number",
                 "value": 0.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": -0.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -2041,18 +2165,22 @@ description: Operations executed endless_impeller.kcl
                 "type": "Number",
                 "value": -0.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -2067,18 +2195,22 @@ description: Operations executed endless_impeller.kcl
                 "type": "Number",
                 "value": 0.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -2141,18 +2273,22 @@ description: Operations executed endless_impeller.kcl
                 "type": "Number",
                 "value": -0.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": -0.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -2167,18 +2303,22 @@ description: Operations executed endless_impeller.kcl
                 "type": "Number",
                 "value": -0.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -2241,18 +2381,22 @@ description: Operations executed endless_impeller.kcl
                 "type": "Number",
                 "value": 0.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": -0.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -2267,18 +2411,22 @@ description: Operations executed endless_impeller.kcl
                 "type": "Number",
                 "value": -0.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": -0.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -2344,18 +2492,22 @@ description: Operations executed endless_impeller.kcl
                 "type": "Number",
                 "value": 0.49,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -2368,19 +2520,19 @@ description: Operations executed endless_impeller.kcl
             "value": {
               "line1": {
                 "type": "Segment",
-                "artifact_id": "62f92a38-07e6-5321-9e56-be9dd50f1d7b"
+                "artifact_id": "[uuid]"
               },
               "line2": {
                 "type": "Segment",
-                "artifact_id": "82295fd4-30e7-52f8-bbfa-45b71b8986dd"
+                "artifact_id": "[uuid]"
               },
               "line3": {
                 "type": "Segment",
-                "artifact_id": "20dfacb2-a19d-5f06-80d9-1dae939bbd58"
+                "artifact_id": "[uuid]"
               },
               "line4": {
                 "type": "Segment",
-                "artifact_id": "6c096663-896a-5f49-b4a0-b5621e2f3b74"
+                "artifact_id": "[uuid]"
               },
               "meta": {
                 "type": "Object",
@@ -2388,7 +2540,7 @@ description: Operations executed endless_impeller.kcl
                   "sketch": {
                     "type": "Sketch",
                     "value": {
-                      "artifactId": "ec50dfc5-8660-5f82-906a-6429c34099eb"
+                      "artifactId": "[uuid]"
                     }
                   }
                 }
@@ -2434,7 +2586,7 @@ description: Operations executed endless_impeller.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "4e2356a5-d19d-5536-bce9-94192c5d96fb"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -2445,9 +2597,11 @@ description: Operations executed endless_impeller.kcl
             "type": "Number",
             "value": 1.0,
             "ty": {
-              "mm": null,
               "type": "Known",
-              "type": "Length"
+              "value": {
+                "type": "Length",
+                "value": "mm"
+              }
             }
           },
           "sourceRange": []
@@ -2480,7 +2634,7 @@ description: Operations executed endless_impeller.kcl
           "onSurface": {
             "value": {
               "type": "Face",
-              "artifact_id": "3644bf53-226b-5476-97a2-89784e77c0ce"
+              "artifact_id": "[uuid]"
             },
             "sourceRange": []
           }
@@ -2550,18 +2704,22 @@ description: Operations executed endless_impeller.kcl
                 "type": "Number",
                 "value": 0.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -2576,18 +2734,22 @@ description: Operations executed endless_impeller.kcl
                 "type": "Number",
                 "value": 0.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": -0.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -2650,18 +2812,22 @@ description: Operations executed endless_impeller.kcl
                 "type": "Number",
                 "value": -0.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -2676,18 +2842,22 @@ description: Operations executed endless_impeller.kcl
                 "type": "Number",
                 "value": 0.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -2750,18 +2920,22 @@ description: Operations executed endless_impeller.kcl
                 "type": "Number",
                 "value": -0.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": -0.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -2776,18 +2950,22 @@ description: Operations executed endless_impeller.kcl
                 "type": "Number",
                 "value": -0.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -2850,18 +3028,22 @@ description: Operations executed endless_impeller.kcl
                 "type": "Number",
                 "value": 0.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": -0.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -2876,18 +3058,22 @@ description: Operations executed endless_impeller.kcl
                 "type": "Number",
                 "value": -0.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": -0.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -2953,18 +3139,22 @@ description: Operations executed endless_impeller.kcl
                 "type": "Number",
                 "value": 0.49,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -2977,19 +3167,19 @@ description: Operations executed endless_impeller.kcl
             "value": {
               "line1": {
                 "type": "Segment",
-                "artifact_id": "c7e54a2d-6c3f-5b6d-b6b4-ecca6249a1d3"
+                "artifact_id": "[uuid]"
               },
               "line2": {
                 "type": "Segment",
-                "artifact_id": "9d54d724-527e-5b4f-96a3-d09d0f4fca8a"
+                "artifact_id": "[uuid]"
               },
               "line3": {
                 "type": "Segment",
-                "artifact_id": "94e50507-a449-5f71-8fce-fd2931e7c6c9"
+                "artifact_id": "[uuid]"
               },
               "line4": {
                 "type": "Segment",
-                "artifact_id": "a54ad82c-be8d-599a-9764-c6498922dd5c"
+                "artifact_id": "[uuid]"
               },
               "meta": {
                 "type": "Object",
@@ -2997,7 +3187,7 @@ description: Operations executed endless_impeller.kcl
                   "sketch": {
                     "type": "Sketch",
                     "value": {
-                      "artifactId": "724b87fd-c709-5232-b7a1-547c15affb9b"
+                      "artifactId": "[uuid]"
                     }
                   }
                 }
@@ -3043,7 +3233,7 @@ description: Operations executed endless_impeller.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "c2ac0614-6028-5f8f-a889-66b05d4aa1c7"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -3054,9 +3244,11 @@ description: Operations executed endless_impeller.kcl
             "type": "Number",
             "value": 1.0,
             "ty": {
-              "mm": null,
               "type": "Known",
-              "type": "Length"
+              "value": {
+                "type": "Length",
+                "value": "mm"
+              }
             }
           },
           "sourceRange": []
@@ -3089,7 +3281,7 @@ description: Operations executed endless_impeller.kcl
           "onSurface": {
             "value": {
               "type": "Face",
-              "artifact_id": "72ccb3f5-ee3d-5a2e-aded-60d97c4e1562"
+              "artifact_id": "[uuid]"
             },
             "sourceRange": []
           }
@@ -3159,18 +3351,22 @@ description: Operations executed endless_impeller.kcl
                 "type": "Number",
                 "value": 0.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -3185,18 +3381,22 @@ description: Operations executed endless_impeller.kcl
                 "type": "Number",
                 "value": 0.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": -0.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -3259,18 +3459,22 @@ description: Operations executed endless_impeller.kcl
                 "type": "Number",
                 "value": -0.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -3285,18 +3489,22 @@ description: Operations executed endless_impeller.kcl
                 "type": "Number",
                 "value": 0.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -3359,18 +3567,22 @@ description: Operations executed endless_impeller.kcl
                 "type": "Number",
                 "value": -0.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": -0.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -3385,18 +3597,22 @@ description: Operations executed endless_impeller.kcl
                 "type": "Number",
                 "value": -0.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -3459,18 +3675,22 @@ description: Operations executed endless_impeller.kcl
                 "type": "Number",
                 "value": 0.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": -0.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -3485,18 +3705,22 @@ description: Operations executed endless_impeller.kcl
                 "type": "Number",
                 "value": -0.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": -0.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -3562,18 +3786,22 @@ description: Operations executed endless_impeller.kcl
                 "type": "Number",
                 "value": 0.49,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -3586,19 +3814,19 @@ description: Operations executed endless_impeller.kcl
             "value": {
               "line1": {
                 "type": "Segment",
-                "artifact_id": "bb0f6270-9c1c-51e3-923b-b25b8a1a44ab"
+                "artifact_id": "[uuid]"
               },
               "line2": {
                 "type": "Segment",
-                "artifact_id": "f9290fd4-5c3f-5c2e-8173-812972a413d9"
+                "artifact_id": "[uuid]"
               },
               "line3": {
                 "type": "Segment",
-                "artifact_id": "c3c8712b-a8b4-5375-b311-6de9fe3f4ee3"
+                "artifact_id": "[uuid]"
               },
               "line4": {
                 "type": "Segment",
-                "artifact_id": "50fc9cbf-14b4-5cbe-9167-a6636695394d"
+                "artifact_id": "[uuid]"
               },
               "meta": {
                 "type": "Object",
@@ -3606,7 +3834,7 @@ description: Operations executed endless_impeller.kcl
                   "sketch": {
                     "type": "Sketch",
                     "value": {
-                      "artifactId": "ca502980-7bdd-5694-85c5-3eb8ffa8242b"
+                      "artifactId": "[uuid]"
                     }
                   }
                 }
@@ -3652,7 +3880,7 @@ description: Operations executed endless_impeller.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "4e30dd66-e64d-5d2d-92d4-2d15c2237140"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -3663,9 +3891,11 @@ description: Operations executed endless_impeller.kcl
             "type": "Number",
             "value": 1.0,
             "ty": {
-              "mm": null,
               "type": "Known",
-              "type": "Length"
+              "value": {
+                "type": "Length",
+                "value": "mm"
+              }
             }
           },
           "sourceRange": []
@@ -3698,7 +3928,7 @@ description: Operations executed endless_impeller.kcl
           "onSurface": {
             "value": {
               "type": "Face",
-              "artifact_id": "582e9cae-b924-5f94-a673-a416ed71e256"
+              "artifact_id": "[uuid]"
             },
             "sourceRange": []
           }
@@ -3768,18 +3998,22 @@ description: Operations executed endless_impeller.kcl
                 "type": "Number",
                 "value": 0.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -3794,18 +4028,22 @@ description: Operations executed endless_impeller.kcl
                 "type": "Number",
                 "value": 0.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": -0.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -3868,18 +4106,22 @@ description: Operations executed endless_impeller.kcl
                 "type": "Number",
                 "value": -0.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -3894,18 +4136,22 @@ description: Operations executed endless_impeller.kcl
                 "type": "Number",
                 "value": 0.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -3968,18 +4214,22 @@ description: Operations executed endless_impeller.kcl
                 "type": "Number",
                 "value": -0.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": -0.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -3994,18 +4244,22 @@ description: Operations executed endless_impeller.kcl
                 "type": "Number",
                 "value": -0.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -4068,18 +4322,22 @@ description: Operations executed endless_impeller.kcl
                 "type": "Number",
                 "value": 0.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": -0.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -4094,18 +4352,22 @@ description: Operations executed endless_impeller.kcl
                 "type": "Number",
                 "value": -0.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": -0.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -4171,18 +4433,22 @@ description: Operations executed endless_impeller.kcl
                 "type": "Number",
                 "value": 0.49,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -4195,19 +4461,19 @@ description: Operations executed endless_impeller.kcl
             "value": {
               "line1": {
                 "type": "Segment",
-                "artifact_id": "e02115f0-d853-5684-82c8-298aa25e4541"
+                "artifact_id": "[uuid]"
               },
               "line2": {
                 "type": "Segment",
-                "artifact_id": "8c56779b-80ab-5d86-a257-cec4629e2413"
+                "artifact_id": "[uuid]"
               },
               "line3": {
                 "type": "Segment",
-                "artifact_id": "1e1f4f78-e1b7-5008-9940-d59e53844df4"
+                "artifact_id": "[uuid]"
               },
               "line4": {
                 "type": "Segment",
-                "artifact_id": "ca431487-8e9a-59ce-a472-84fe45652fab"
+                "artifact_id": "[uuid]"
               },
               "meta": {
                 "type": "Object",
@@ -4215,7 +4481,7 @@ description: Operations executed endless_impeller.kcl
                   "sketch": {
                     "type": "Sketch",
                     "value": {
-                      "artifactId": "93954f29-a246-54bd-ac2a-62572f26d508"
+                      "artifactId": "[uuid]"
                     }
                   }
                 }
@@ -4261,7 +4527,7 @@ description: Operations executed endless_impeller.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "f58fd62a-578c-542c-94f8-dd627caab5d0"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -4272,9 +4538,11 @@ description: Operations executed endless_impeller.kcl
             "type": "Number",
             "value": 1.0,
             "ty": {
-              "mm": null,
               "type": "Known",
-              "type": "Length"
+              "value": {
+                "type": "Length",
+                "value": "mm"
+              }
             }
           },
           "sourceRange": []
@@ -4333,7 +4601,9 @@ description: Operations executed endless_impeller.kcl
         "value": 2.718281828459045,
         "ty": {
           "type": "Known",
-          "type": "Count"
+          "value": {
+            "type": "Count"
+          }
         }
       },
       "visibility": "export",
@@ -4361,7 +4631,9 @@ description: Operations executed endless_impeller.kcl
         "value": 6.283185307179586,
         "ty": {
           "type": "Known",
-          "type": "Count"
+          "value": {
+            "type": "Count"
+          }
         }
       },
       "visibility": "export",
@@ -4395,7 +4667,7 @@ description: Operations executed endless_impeller.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 23
+            "index": 24
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -4419,7 +4691,7 @@ description: Operations executed endless_impeller.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 24
+            "index": 25
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -4443,7 +4715,7 @@ description: Operations executed endless_impeller.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 25
+            "index": 26
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -4467,7 +4739,7 @@ description: Operations executed endless_impeller.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 26
+            "index": 27
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -4491,7 +4763,7 @@ description: Operations executed endless_impeller.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 27
+            "index": 28
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -4515,7 +4787,7 @@ description: Operations executed endless_impeller.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 28
+            "index": 29
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -4539,7 +4811,7 @@ description: Operations executed endless_impeller.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 29
+            "index": 30
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -4563,7 +4835,7 @@ description: Operations executed endless_impeller.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 30
+            "index": 31
           },
           {
             "type": "VariableDeclarationDeclaration"

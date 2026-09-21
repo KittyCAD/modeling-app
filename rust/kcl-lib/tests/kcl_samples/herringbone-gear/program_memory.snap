@@ -37,7 +37,6 @@ description: Variables in memory after executing herringbone-gear.kcl
   },
   "bore": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "bore"
   },
   "boreBody": {
@@ -181,17 +180,21 @@ description: Variables in memory after executing herringbone-gear.kcl
                       {
                         "n": 4.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -199,17 +202,21 @@ description: Variables in memory after executing herringbone-gear.kcl
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -408,7 +415,7 @@ description: Variables in memory after executing herringbone-gear.kcl
           "tag": {
             "commentStart": 1163,
             "end": 1169,
-            "moduleId": 16,
+            "moduleId": 17,
             "start": 1163,
             "type": "TagDeclarator",
             "value": "seg01"
@@ -454,7 +461,7 @@ description: Variables in memory after executing herringbone-gear.kcl
             "tag": {
               "commentStart": 1163,
               "end": 1169,
-              "moduleId": 16,
+              "moduleId": 17,
               "start": 1163,
               "type": "TagDeclarator",
               "value": "seg01"
@@ -604,8 +611,10 @@ description: Variables in memory after executing herringbone-gear.kcl
     "value": 8.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "herringboneGear": {
@@ -624,7 +633,7 @@ description: Variables in memory after executing herringbone-gear.kcl
           "tag": {
             "commentStart": 1163,
             "end": 1169,
-            "moduleId": 16,
+            "moduleId": 17,
             "start": 1163,
             "type": "TagDeclarator",
             "value": "seg01"
@@ -670,7 +679,7 @@ description: Variables in memory after executing herringbone-gear.kcl
             "tag": {
               "commentStart": 1163,
               "end": 1169,
-              "moduleId": 16,
+              "moduleId": 17,
               "start": 1163,
               "type": "TagDeclarator",
               "value": "seg01"
@@ -816,7 +825,6 @@ description: Variables in memory after executing herringbone-gear.kcl
     }
   },
   "seg01": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "seg01"
   }

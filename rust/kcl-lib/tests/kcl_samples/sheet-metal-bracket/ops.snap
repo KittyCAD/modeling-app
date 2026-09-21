@@ -12,8 +12,10 @@ description: Operations executed sheet-metal-bracket.kcl
         "value": 0.25,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -41,8 +43,10 @@ description: Operations executed sheet-metal-bracket.kcl
         "value": 7.0,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -70,8 +74,10 @@ description: Operations executed sheet-metal-bracket.kcl
         "value": 4.0,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -99,8 +105,10 @@ description: Operations executed sheet-metal-bracket.kcl
         "value": 0.1875,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -128,8 +136,10 @@ description: Operations executed sheet-metal-bracket.kcl
         "value": 2.0,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -157,8 +167,10 @@ description: Operations executed sheet-metal-bracket.kcl
         "value": 3.0,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -186,8 +198,10 @@ description: Operations executed sheet-metal-bracket.kcl
         "value": 2.5,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -214,9 +228,11 @@ description: Operations executed sheet-metal-bracket.kcl
         "type": "Number",
         "value": 75.0,
         "ty": {
-          "degrees": null,
           "type": "Known",
-          "type": "Angle"
+          "value": {
+            "type": "Angle",
+            "value": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -244,8 +260,10 @@ description: Operations executed sheet-metal-bracket.kcl
         "value": 0.125,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -273,8 +291,10 @@ description: Operations executed sheet-metal-bracket.kcl
         "value": 0.125,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -302,8 +322,10 @@ description: Operations executed sheet-metal-bracket.kcl
         "value": 1.1,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -331,8 +353,10 @@ description: Operations executed sheet-metal-bracket.kcl
         "value": 0.25,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -360,8 +384,10 @@ description: Operations executed sheet-metal-bracket.kcl
         "value": 0.75,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -389,8 +415,10 @@ description: Operations executed sheet-metal-bracket.kcl
         "value": 1.5,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -418,8 +446,10 @@ description: Operations executed sheet-metal-bracket.kcl
         "value": 5.5,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -474,18 +504,22 @@ description: Operations executed sheet-metal-bracket.kcl
                 "type": "SketchVar",
                 "value": -2.75,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -500,18 +534,22 @@ description: Operations executed sheet-metal-bracket.kcl
                 "type": "SketchVar",
                 "value": -4.25,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -561,18 +599,22 @@ description: Operations executed sheet-metal-bracket.kcl
                 "type": "SketchVar",
                 "value": -2.75,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.25,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -587,18 +629,22 @@ description: Operations executed sheet-metal-bracket.kcl
                 "type": "SketchVar",
                 "value": -2.51,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.19,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -613,18 +659,22 @@ description: Operations executed sheet-metal-bracket.kcl
                 "type": "SketchVar",
                 "value": -2.75,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -718,18 +768,22 @@ description: Operations executed sheet-metal-bracket.kcl
                 "type": "SketchVar",
                 "value": -1.92,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 2.38,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -744,18 +798,22 @@ description: Operations executed sheet-metal-bracket.kcl
                 "type": "SketchVar",
                 "value": -2.51,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.19,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -849,18 +907,22 @@ description: Operations executed sheet-metal-bracket.kcl
                 "type": "SketchVar",
                 "value": -1.8,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 2.35,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -875,18 +937,22 @@ description: Operations executed sheet-metal-bracket.kcl
                 "type": "SketchVar",
                 "value": -1.92,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 2.38,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -901,18 +967,22 @@ description: Operations executed sheet-metal-bracket.kcl
                 "type": "SketchVar",
                 "value": -1.8,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 2.47,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -1006,18 +1076,22 @@ description: Operations executed sheet-metal-bracket.kcl
                 "type": "SketchVar",
                 "value": 1.8,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 2.47,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -1032,18 +1106,22 @@ description: Operations executed sheet-metal-bracket.kcl
                 "type": "SketchVar",
                 "value": -1.8,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 2.47,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -1137,18 +1215,22 @@ description: Operations executed sheet-metal-bracket.kcl
                 "type": "SketchVar",
                 "value": 1.8,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 2.35,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -1163,18 +1245,22 @@ description: Operations executed sheet-metal-bracket.kcl
                 "type": "SketchVar",
                 "value": 1.8,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 2.47,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -1189,18 +1275,22 @@ description: Operations executed sheet-metal-bracket.kcl
                 "type": "SketchVar",
                 "value": 1.92,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 2.38,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -1294,18 +1384,22 @@ description: Operations executed sheet-metal-bracket.kcl
                 "type": "SketchVar",
                 "value": 2.51,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.19,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -1320,18 +1414,22 @@ description: Operations executed sheet-metal-bracket.kcl
                 "type": "SketchVar",
                 "value": 1.92,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 2.38,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -1425,18 +1523,22 @@ description: Operations executed sheet-metal-bracket.kcl
                 "type": "SketchVar",
                 "value": 2.75,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.25,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -1451,18 +1553,22 @@ description: Operations executed sheet-metal-bracket.kcl
                 "type": "SketchVar",
                 "value": 2.75,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -1477,18 +1583,22 @@ description: Operations executed sheet-metal-bracket.kcl
                 "type": "SketchVar",
                 "value": 2.51,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.19,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -1582,18 +1692,22 @@ description: Operations executed sheet-metal-bracket.kcl
                 "type": "SketchVar",
                 "value": 4.25,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -1608,18 +1722,22 @@ description: Operations executed sheet-metal-bracket.kcl
                 "type": "SketchVar",
                 "value": 2.75,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -1713,18 +1831,22 @@ description: Operations executed sheet-metal-bracket.kcl
                 "type": "SketchVar",
                 "value": 4.25,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.12,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -1739,18 +1861,22 @@ description: Operations executed sheet-metal-bracket.kcl
                 "type": "SketchVar",
                 "value": 4.25,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -1844,18 +1970,22 @@ description: Operations executed sheet-metal-bracket.kcl
                 "type": "SketchVar",
                 "value": 2.75,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.12,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -1870,18 +2000,22 @@ description: Operations executed sheet-metal-bracket.kcl
                 "type": "SketchVar",
                 "value": 4.25,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.12,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -1975,18 +2109,22 @@ description: Operations executed sheet-metal-bracket.kcl
                 "type": "SketchVar",
                 "value": 2.75,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.25,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -2001,18 +2139,22 @@ description: Operations executed sheet-metal-bracket.kcl
                 "type": "SketchVar",
                 "value": 2.75,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.12,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -2027,18 +2169,22 @@ description: Operations executed sheet-metal-bracket.kcl
                 "type": "SketchVar",
                 "value": 2.63,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.21,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -2132,18 +2278,22 @@ description: Operations executed sheet-metal-bracket.kcl
                 "type": "SketchVar",
                 "value": 2.04,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 2.41,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -2158,18 +2308,22 @@ description: Operations executed sheet-metal-bracket.kcl
                 "type": "SketchVar",
                 "value": 2.63,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.21,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -2263,18 +2417,22 @@ description: Operations executed sheet-metal-bracket.kcl
                 "type": "SketchVar",
                 "value": 1.8,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 2.34,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -2289,18 +2447,22 @@ description: Operations executed sheet-metal-bracket.kcl
                 "type": "SketchVar",
                 "value": 1.8,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 2.59,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -2315,18 +2477,22 @@ description: Operations executed sheet-metal-bracket.kcl
                 "type": "SketchVar",
                 "value": 2.04,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 2.41,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -2420,18 +2586,22 @@ description: Operations executed sheet-metal-bracket.kcl
                 "type": "SketchVar",
                 "value": -1.8,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 2.59,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -2446,18 +2616,22 @@ description: Operations executed sheet-metal-bracket.kcl
                 "type": "SketchVar",
                 "value": 1.8,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 2.59,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -2551,18 +2725,22 @@ description: Operations executed sheet-metal-bracket.kcl
                 "type": "SketchVar",
                 "value": -1.8,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 2.34,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -2577,18 +2755,22 @@ description: Operations executed sheet-metal-bracket.kcl
                 "type": "SketchVar",
                 "value": -2.05,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 2.4,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -2603,18 +2785,22 @@ description: Operations executed sheet-metal-bracket.kcl
                 "type": "SketchVar",
                 "value": -1.8,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 2.59,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -2708,18 +2894,22 @@ description: Operations executed sheet-metal-bracket.kcl
                 "type": "SketchVar",
                 "value": -2.63,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.21,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -2734,18 +2924,22 @@ description: Operations executed sheet-metal-bracket.kcl
                 "type": "SketchVar",
                 "value": -2.05,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 2.4,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -2839,18 +3033,22 @@ description: Operations executed sheet-metal-bracket.kcl
                 "type": "SketchVar",
                 "value": -2.75,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.24,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -2865,18 +3063,22 @@ description: Operations executed sheet-metal-bracket.kcl
                 "type": "SketchVar",
                 "value": -2.63,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.21,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -2891,18 +3093,22 @@ description: Operations executed sheet-metal-bracket.kcl
                 "type": "SketchVar",
                 "value": -2.75,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.11,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -2996,18 +3202,22 @@ description: Operations executed sheet-metal-bracket.kcl
                 "type": "SketchVar",
                 "value": -4.25,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.11,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -3022,18 +3232,22 @@ description: Operations executed sheet-metal-bracket.kcl
                 "type": "SketchVar",
                 "value": -2.75,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.11,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -3127,18 +3341,22 @@ description: Operations executed sheet-metal-bracket.kcl
                 "type": "SketchVar",
                 "value": -4.25,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.11,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -3153,18 +3371,22 @@ description: Operations executed sheet-metal-bracket.kcl
                 "type": "SketchVar",
                 "value": -4.25,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.11,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -3258,18 +3480,22 @@ description: Operations executed sheet-metal-bracket.kcl
                 "type": "SketchVar",
                 "value": -4.25,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -3284,18 +3510,22 @@ description: Operations executed sheet-metal-bracket.kcl
                 "type": "SketchVar",
                 "value": -4.25,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.11,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -4548,18 +4778,22 @@ description: Operations executed sheet-metal-bracket.kcl
                 "type": "SketchVar",
                 "value": 4.25,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -4574,18 +4808,22 @@ description: Operations executed sheet-metal-bracket.kcl
                 "type": "SketchVar",
                 "value": -4.25,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -4931,11 +5169,11 @@ description: Operations executed sheet-metal-bracket.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
+                "artifact_id": "[uuid]"
               },
               {
                 "type": "Segment",
-                "artifact_id": "91226189-7e64-5690-9203-67ee33a6eb03"
+                "artifact_id": "[uuid]"
               }
             ]
           },
@@ -4965,7 +5203,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "19107e89-bf40-5541-88a5-5106b6de636d"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -4977,8 +5215,10 @@ description: Operations executed sheet-metal-bracket.kcl
             "value": 5.5,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -5028,7 +5268,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "0917d07d-5996-5994-8a06-602d43e2b6f3"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -5092,18 +5332,22 @@ description: Operations executed sheet-metal-bracket.kcl
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -1.5,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -5118,18 +5362,22 @@ description: Operations executed sheet-metal-bracket.kcl
                 "type": "SketchVar",
                 "value": -1.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -1.5,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -5186,18 +5434,22 @@ description: Operations executed sheet-metal-bracket.kcl
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.5,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -5212,18 +5464,22 @@ description: Operations executed sheet-metal-bracket.kcl
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -1.5,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -5280,18 +5536,22 @@ description: Operations executed sheet-metal-bracket.kcl
                 "type": "SketchVar",
                 "value": -1.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.5,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -5306,18 +5566,22 @@ description: Operations executed sheet-metal-bracket.kcl
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.5,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -5374,18 +5638,22 @@ description: Operations executed sheet-metal-bracket.kcl
                 "type": "SketchVar",
                 "value": -1.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -1.5,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -5400,18 +5668,22 @@ description: Operations executed sheet-metal-bracket.kcl
                 "type": "SketchVar",
                 "value": -1.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.5,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -5812,18 +6084,22 @@ description: Operations executed sheet-metal-bracket.kcl
                 "type": "SketchVar",
                 "value": 3.5,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -2.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -5838,18 +6114,22 @@ description: Operations executed sheet-metal-bracket.kcl
                 "type": "SketchVar",
                 "value": -3.5,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -2.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -5906,18 +6186,22 @@ description: Operations executed sheet-metal-bracket.kcl
                 "type": "SketchVar",
                 "value": 3.5,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 2.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -5932,18 +6216,22 @@ description: Operations executed sheet-metal-bracket.kcl
                 "type": "SketchVar",
                 "value": 3.5,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -2.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -6000,18 +6288,22 @@ description: Operations executed sheet-metal-bracket.kcl
                 "type": "SketchVar",
                 "value": -3.5,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 2.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -6026,18 +6318,22 @@ description: Operations executed sheet-metal-bracket.kcl
                 "type": "SketchVar",
                 "value": 3.5,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 2.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -6094,18 +6390,22 @@ description: Operations executed sheet-metal-bracket.kcl
                 "type": "SketchVar",
                 "value": -3.5,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -2.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -6120,18 +6420,22 @@ description: Operations executed sheet-metal-bracket.kcl
                 "type": "SketchVar",
                 "value": -3.5,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 2.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -6532,18 +6836,22 @@ description: Operations executed sheet-metal-bracket.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -6558,18 +6866,22 @@ description: Operations executed sheet-metal-bracket.kcl
                 "type": "SketchVar",
                 "value": -3.5,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 2.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -6667,18 +6979,22 @@ description: Operations executed sheet-metal-bracket.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -6734,18 +7050,22 @@ description: Operations executed sheet-metal-bracket.kcl
                 "type": "SketchVar",
                 "value": 3.5,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -2.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -6760,18 +7080,22 @@ description: Operations executed sheet-metal-bracket.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -6916,18 +7240,22 @@ description: Operations executed sheet-metal-bracket.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -6942,18 +7270,22 @@ description: Operations executed sheet-metal-bracket.kcl
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.5,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -7098,18 +7430,22 @@ description: Operations executed sheet-metal-bracket.kcl
                 "type": "SketchVar",
                 "value": -1.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -1.5,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -7124,18 +7460,22 @@ description: Operations executed sheet-metal-bracket.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -7637,18 +7977,22 @@ description: Operations executed sheet-metal-bracket.kcl
                 "type": "SketchVar",
                 "value": -3.5,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 2.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -7663,18 +8007,22 @@ description: Operations executed sheet-metal-bracket.kcl
                 "type": "SketchVar",
                 "value": -3.25,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 2.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -7812,18 +8160,22 @@ description: Operations executed sheet-metal-bracket.kcl
                 "type": "SketchVar",
                 "value": -3.5,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -2.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -7838,18 +8190,22 @@ description: Operations executed sheet-metal-bracket.kcl
                 "type": "SketchVar",
                 "value": -3.25,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -2.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -7987,18 +8343,22 @@ description: Operations executed sheet-metal-bracket.kcl
                 "type": "SketchVar",
                 "value": 3.5,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -2.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -8013,18 +8373,22 @@ description: Operations executed sheet-metal-bracket.kcl
                 "type": "SketchVar",
                 "value": 3.75,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -2.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -8162,18 +8526,22 @@ description: Operations executed sheet-metal-bracket.kcl
                 "type": "SketchVar",
                 "value": 3.5,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 2.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -8188,18 +8556,22 @@ description: Operations executed sheet-metal-bracket.kcl
                 "type": "SketchVar",
                 "value": 3.75,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 2.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -8337,18 +8709,22 @@ description: Operations executed sheet-metal-bracket.kcl
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.5,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -8363,18 +8739,22 @@ description: Operations executed sheet-metal-bracket.kcl
                 "type": "SketchVar",
                 "value": 1.1875,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.5,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -8512,18 +8892,22 @@ description: Operations executed sheet-metal-bracket.kcl
                 "type": "SketchVar",
                 "value": -1.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.5,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -8538,18 +8922,22 @@ description: Operations executed sheet-metal-bracket.kcl
                 "type": "SketchVar",
                 "value": -0.8125,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.5,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -8687,18 +9075,22 @@ description: Operations executed sheet-metal-bracket.kcl
                 "type": "SketchVar",
                 "value": -1.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -1.5,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -8713,18 +9105,22 @@ description: Operations executed sheet-metal-bracket.kcl
                 "type": "SketchVar",
                 "value": -0.8125,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -1.5,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -8862,18 +9258,22 @@ description: Operations executed sheet-metal-bracket.kcl
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -1.5,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -8888,18 +9288,22 @@ description: Operations executed sheet-metal-bracket.kcl
                 "type": "SketchVar",
                 "value": 1.1875,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -1.5,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -9349,18 +9753,22 @@ description: Operations executed sheet-metal-bracket.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -9375,18 +9783,22 @@ description: Operations executed sheet-metal-bracket.kcl
                 "type": "SketchVar",
                 "value": 1.1,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -9566,18 +9978,22 @@ description: Operations executed sheet-metal-bracket.kcl
                 "type": "Number",
                 "value": -83.5119,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": -54.1555,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -9590,87 +10006,87 @@ description: Operations executed sheet-metal-bracket.kcl
             "value": {
               "circle1": {
                 "type": "Segment",
-                "artifact_id": "d5e2f4d6-228a-502b-94db-3100e57ccc81"
+                "artifact_id": "[uuid]"
               },
               "circle2": {
                 "type": "Segment",
-                "artifact_id": "eeb336b4-adc7-580c-be25-5e81ad6a56ee"
+                "artifact_id": "[uuid]"
               },
               "circle3": {
                 "type": "Segment",
-                "artifact_id": "035728b5-01db-5e9b-b285-181bc5693d5a"
+                "artifact_id": "[uuid]"
               },
               "circle4": {
                 "type": "Segment",
-                "artifact_id": "08138142-a558-56a4-a23f-2f334e02b011"
+                "artifact_id": "[uuid]"
               },
               "circle5": {
                 "type": "Segment",
-                "artifact_id": "44b2dfb0-0721-57cd-a796-4401a664e194"
+                "artifact_id": "[uuid]"
               },
               "circle6": {
                 "type": "Segment",
-                "artifact_id": "ba769d4c-3a67-5309-824d-fd59f263bb46"
+                "artifact_id": "[uuid]"
               },
               "circle7": {
                 "type": "Segment",
-                "artifact_id": "8b2b0b37-868e-50d3-badd-0213fb4b5d6a"
+                "artifact_id": "[uuid]"
               },
               "circle8": {
                 "type": "Segment",
-                "artifact_id": "0616b09c-75f9-545b-bd98-b7fbaf5b3587"
+                "artifact_id": "[uuid]"
               },
               "circle9": {
                 "type": "Segment",
-                "artifact_id": "2ab8a671-6218-5516-901a-d1a83480ded7"
+                "artifact_id": "[uuid]"
               },
               "line1": {
                 "type": "Segment",
-                "artifact_id": "ca431487-8e9a-59ce-a472-84fe45652fab"
+                "artifact_id": "[uuid]"
               },
               "line10": {
                 "type": "Segment",
-                "artifact_id": "594993e6-1056-5d16-9f2e-5770c7b5e4e7"
+                "artifact_id": "[uuid]"
               },
               "line11": {
                 "type": "Segment",
-                "artifact_id": "88600ae1-c4f2-5277-8c4e-117866e83f6e"
+                "artifact_id": "[uuid]"
               },
               "line12": {
                 "type": "Segment",
-                "artifact_id": "1f5ca073-184d-543b-9da6-2db6719123a8"
+                "artifact_id": "[uuid]"
               },
               "line2": {
                 "type": "Segment",
-                "artifact_id": "93954f29-a246-54bd-ac2a-62572f26d508"
+                "artifact_id": "[uuid]"
               },
               "line3": {
                 "type": "Segment",
-                "artifact_id": "20f09319-bab0-5dd8-8c40-ce90cd688483"
+                "artifact_id": "[uuid]"
               },
               "line4": {
                 "type": "Segment",
-                "artifact_id": "bee9909d-abbf-534c-b266-2c2c04133834"
+                "artifact_id": "[uuid]"
               },
               "line5": {
                 "type": "Segment",
-                "artifact_id": "fa75438f-b2d0-5142-b452-608454e1806a"
+                "artifact_id": "[uuid]"
               },
               "line6": {
                 "type": "Segment",
-                "artifact_id": "2e4398f0-3503-52f1-9fb1-caadee14f488"
+                "artifact_id": "[uuid]"
               },
               "line7": {
                 "type": "Segment",
-                "artifact_id": "eb4a5516-04df-5d3c-a783-6699c67f971f"
+                "artifact_id": "[uuid]"
               },
               "line8": {
                 "type": "Segment",
-                "artifact_id": "bb2ee501-11e8-5c4e-b7a4-cf4d0273f1d6"
+                "artifact_id": "[uuid]"
               },
               "line9": {
                 "type": "Segment",
-                "artifact_id": "e80fd4da-2562-5d4d-be7f-42b434d6e397"
+                "artifact_id": "[uuid]"
               },
               "meta": {
                 "type": "Object",
@@ -9678,7 +10094,7 @@ description: Operations executed sheet-metal-bracket.kcl
                   "sketch": {
                     "type": "Sketch",
                     "value": {
-                      "artifactId": "6c14e37a-ccab-5c55-98a0-a4f5e1bd6620"
+                      "artifactId": "[uuid]"
                     }
                   }
                 }
@@ -9717,18 +10133,22 @@ description: Operations executed sheet-metal-bracket.kcl
                 "type": "Number",
                 "value": -91.277,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 44.9144,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -9741,87 +10161,87 @@ description: Operations executed sheet-metal-bracket.kcl
             "value": {
               "circle1": {
                 "type": "Segment",
-                "artifact_id": "d5e2f4d6-228a-502b-94db-3100e57ccc81"
+                "artifact_id": "[uuid]"
               },
               "circle2": {
                 "type": "Segment",
-                "artifact_id": "eeb336b4-adc7-580c-be25-5e81ad6a56ee"
+                "artifact_id": "[uuid]"
               },
               "circle3": {
                 "type": "Segment",
-                "artifact_id": "035728b5-01db-5e9b-b285-181bc5693d5a"
+                "artifact_id": "[uuid]"
               },
               "circle4": {
                 "type": "Segment",
-                "artifact_id": "08138142-a558-56a4-a23f-2f334e02b011"
+                "artifact_id": "[uuid]"
               },
               "circle5": {
                 "type": "Segment",
-                "artifact_id": "44b2dfb0-0721-57cd-a796-4401a664e194"
+                "artifact_id": "[uuid]"
               },
               "circle6": {
                 "type": "Segment",
-                "artifact_id": "ba769d4c-3a67-5309-824d-fd59f263bb46"
+                "artifact_id": "[uuid]"
               },
               "circle7": {
                 "type": "Segment",
-                "artifact_id": "8b2b0b37-868e-50d3-badd-0213fb4b5d6a"
+                "artifact_id": "[uuid]"
               },
               "circle8": {
                 "type": "Segment",
-                "artifact_id": "0616b09c-75f9-545b-bd98-b7fbaf5b3587"
+                "artifact_id": "[uuid]"
               },
               "circle9": {
                 "type": "Segment",
-                "artifact_id": "2ab8a671-6218-5516-901a-d1a83480ded7"
+                "artifact_id": "[uuid]"
               },
               "line1": {
                 "type": "Segment",
-                "artifact_id": "ca431487-8e9a-59ce-a472-84fe45652fab"
+                "artifact_id": "[uuid]"
               },
               "line10": {
                 "type": "Segment",
-                "artifact_id": "594993e6-1056-5d16-9f2e-5770c7b5e4e7"
+                "artifact_id": "[uuid]"
               },
               "line11": {
                 "type": "Segment",
-                "artifact_id": "88600ae1-c4f2-5277-8c4e-117866e83f6e"
+                "artifact_id": "[uuid]"
               },
               "line12": {
                 "type": "Segment",
-                "artifact_id": "1f5ca073-184d-543b-9da6-2db6719123a8"
+                "artifact_id": "[uuid]"
               },
               "line2": {
                 "type": "Segment",
-                "artifact_id": "93954f29-a246-54bd-ac2a-62572f26d508"
+                "artifact_id": "[uuid]"
               },
               "line3": {
                 "type": "Segment",
-                "artifact_id": "20f09319-bab0-5dd8-8c40-ce90cd688483"
+                "artifact_id": "[uuid]"
               },
               "line4": {
                 "type": "Segment",
-                "artifact_id": "bee9909d-abbf-534c-b266-2c2c04133834"
+                "artifact_id": "[uuid]"
               },
               "line5": {
                 "type": "Segment",
-                "artifact_id": "fa75438f-b2d0-5142-b452-608454e1806a"
+                "artifact_id": "[uuid]"
               },
               "line6": {
                 "type": "Segment",
-                "artifact_id": "2e4398f0-3503-52f1-9fb1-caadee14f488"
+                "artifact_id": "[uuid]"
               },
               "line7": {
                 "type": "Segment",
-                "artifact_id": "eb4a5516-04df-5d3c-a783-6699c67f971f"
+                "artifact_id": "[uuid]"
               },
               "line8": {
                 "type": "Segment",
-                "artifact_id": "bb2ee501-11e8-5c4e-b7a4-cf4d0273f1d6"
+                "artifact_id": "[uuid]"
               },
               "line9": {
                 "type": "Segment",
-                "artifact_id": "e80fd4da-2562-5d4d-be7f-42b434d6e397"
+                "artifact_id": "[uuid]"
               },
               "meta": {
                 "type": "Object",
@@ -9829,7 +10249,7 @@ description: Operations executed sheet-metal-bracket.kcl
                   "sketch": {
                     "type": "Sketch",
                     "value": {
-                      "artifactId": "6c14e37a-ccab-5c55-98a0-a4f5e1bd6620"
+                      "artifactId": "[uuid]"
                     }
                   }
                 }
@@ -9868,18 +10288,22 @@ description: Operations executed sheet-metal-bracket.kcl
                 "type": "Number",
                 "value": -21.77,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 35.021,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -9892,87 +10316,87 @@ description: Operations executed sheet-metal-bracket.kcl
             "value": {
               "circle1": {
                 "type": "Segment",
-                "artifact_id": "d5e2f4d6-228a-502b-94db-3100e57ccc81"
+                "artifact_id": "[uuid]"
               },
               "circle2": {
                 "type": "Segment",
-                "artifact_id": "eeb336b4-adc7-580c-be25-5e81ad6a56ee"
+                "artifact_id": "[uuid]"
               },
               "circle3": {
                 "type": "Segment",
-                "artifact_id": "035728b5-01db-5e9b-b285-181bc5693d5a"
+                "artifact_id": "[uuid]"
               },
               "circle4": {
                 "type": "Segment",
-                "artifact_id": "08138142-a558-56a4-a23f-2f334e02b011"
+                "artifact_id": "[uuid]"
               },
               "circle5": {
                 "type": "Segment",
-                "artifact_id": "44b2dfb0-0721-57cd-a796-4401a664e194"
+                "artifact_id": "[uuid]"
               },
               "circle6": {
                 "type": "Segment",
-                "artifact_id": "ba769d4c-3a67-5309-824d-fd59f263bb46"
+                "artifact_id": "[uuid]"
               },
               "circle7": {
                 "type": "Segment",
-                "artifact_id": "8b2b0b37-868e-50d3-badd-0213fb4b5d6a"
+                "artifact_id": "[uuid]"
               },
               "circle8": {
                 "type": "Segment",
-                "artifact_id": "0616b09c-75f9-545b-bd98-b7fbaf5b3587"
+                "artifact_id": "[uuid]"
               },
               "circle9": {
                 "type": "Segment",
-                "artifact_id": "2ab8a671-6218-5516-901a-d1a83480ded7"
+                "artifact_id": "[uuid]"
               },
               "line1": {
                 "type": "Segment",
-                "artifact_id": "ca431487-8e9a-59ce-a472-84fe45652fab"
+                "artifact_id": "[uuid]"
               },
               "line10": {
                 "type": "Segment",
-                "artifact_id": "594993e6-1056-5d16-9f2e-5770c7b5e4e7"
+                "artifact_id": "[uuid]"
               },
               "line11": {
                 "type": "Segment",
-                "artifact_id": "88600ae1-c4f2-5277-8c4e-117866e83f6e"
+                "artifact_id": "[uuid]"
               },
               "line12": {
                 "type": "Segment",
-                "artifact_id": "1f5ca073-184d-543b-9da6-2db6719123a8"
+                "artifact_id": "[uuid]"
               },
               "line2": {
                 "type": "Segment",
-                "artifact_id": "93954f29-a246-54bd-ac2a-62572f26d508"
+                "artifact_id": "[uuid]"
               },
               "line3": {
                 "type": "Segment",
-                "artifact_id": "20f09319-bab0-5dd8-8c40-ce90cd688483"
+                "artifact_id": "[uuid]"
               },
               "line4": {
                 "type": "Segment",
-                "artifact_id": "bee9909d-abbf-534c-b266-2c2c04133834"
+                "artifact_id": "[uuid]"
               },
               "line5": {
                 "type": "Segment",
-                "artifact_id": "fa75438f-b2d0-5142-b452-608454e1806a"
+                "artifact_id": "[uuid]"
               },
               "line6": {
                 "type": "Segment",
-                "artifact_id": "2e4398f0-3503-52f1-9fb1-caadee14f488"
+                "artifact_id": "[uuid]"
               },
               "line7": {
                 "type": "Segment",
-                "artifact_id": "eb4a5516-04df-5d3c-a783-6699c67f971f"
+                "artifact_id": "[uuid]"
               },
               "line8": {
                 "type": "Segment",
-                "artifact_id": "bb2ee501-11e8-5c4e-b7a4-cf4d0273f1d6"
+                "artifact_id": "[uuid]"
               },
               "line9": {
                 "type": "Segment",
-                "artifact_id": "e80fd4da-2562-5d4d-be7f-42b434d6e397"
+                "artifact_id": "[uuid]"
               },
               "meta": {
                 "type": "Object",
@@ -9980,7 +10404,7 @@ description: Operations executed sheet-metal-bracket.kcl
                   "sketch": {
                     "type": "Sketch",
                     "value": {
-                      "artifactId": "6c14e37a-ccab-5c55-98a0-a4f5e1bd6620"
+                      "artifactId": "[uuid]"
                     }
                   }
                 }
@@ -10019,18 +10443,22 @@ description: Operations executed sheet-metal-bracket.kcl
                 "type": "Number",
                 "value": -21.3146,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": -35.6573,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -10043,87 +10471,87 @@ description: Operations executed sheet-metal-bracket.kcl
             "value": {
               "circle1": {
                 "type": "Segment",
-                "artifact_id": "d5e2f4d6-228a-502b-94db-3100e57ccc81"
+                "artifact_id": "[uuid]"
               },
               "circle2": {
                 "type": "Segment",
-                "artifact_id": "eeb336b4-adc7-580c-be25-5e81ad6a56ee"
+                "artifact_id": "[uuid]"
               },
               "circle3": {
                 "type": "Segment",
-                "artifact_id": "035728b5-01db-5e9b-b285-181bc5693d5a"
+                "artifact_id": "[uuid]"
               },
               "circle4": {
                 "type": "Segment",
-                "artifact_id": "08138142-a558-56a4-a23f-2f334e02b011"
+                "artifact_id": "[uuid]"
               },
               "circle5": {
                 "type": "Segment",
-                "artifact_id": "44b2dfb0-0721-57cd-a796-4401a664e194"
+                "artifact_id": "[uuid]"
               },
               "circle6": {
                 "type": "Segment",
-                "artifact_id": "ba769d4c-3a67-5309-824d-fd59f263bb46"
+                "artifact_id": "[uuid]"
               },
               "circle7": {
                 "type": "Segment",
-                "artifact_id": "8b2b0b37-868e-50d3-badd-0213fb4b5d6a"
+                "artifact_id": "[uuid]"
               },
               "circle8": {
                 "type": "Segment",
-                "artifact_id": "0616b09c-75f9-545b-bd98-b7fbaf5b3587"
+                "artifact_id": "[uuid]"
               },
               "circle9": {
                 "type": "Segment",
-                "artifact_id": "2ab8a671-6218-5516-901a-d1a83480ded7"
+                "artifact_id": "[uuid]"
               },
               "line1": {
                 "type": "Segment",
-                "artifact_id": "ca431487-8e9a-59ce-a472-84fe45652fab"
+                "artifact_id": "[uuid]"
               },
               "line10": {
                 "type": "Segment",
-                "artifact_id": "594993e6-1056-5d16-9f2e-5770c7b5e4e7"
+                "artifact_id": "[uuid]"
               },
               "line11": {
                 "type": "Segment",
-                "artifact_id": "88600ae1-c4f2-5277-8c4e-117866e83f6e"
+                "artifact_id": "[uuid]"
               },
               "line12": {
                 "type": "Segment",
-                "artifact_id": "1f5ca073-184d-543b-9da6-2db6719123a8"
+                "artifact_id": "[uuid]"
               },
               "line2": {
                 "type": "Segment",
-                "artifact_id": "93954f29-a246-54bd-ac2a-62572f26d508"
+                "artifact_id": "[uuid]"
               },
               "line3": {
                 "type": "Segment",
-                "artifact_id": "20f09319-bab0-5dd8-8c40-ce90cd688483"
+                "artifact_id": "[uuid]"
               },
               "line4": {
                 "type": "Segment",
-                "artifact_id": "bee9909d-abbf-534c-b266-2c2c04133834"
+                "artifact_id": "[uuid]"
               },
               "line5": {
                 "type": "Segment",
-                "artifact_id": "fa75438f-b2d0-5142-b452-608454e1806a"
+                "artifact_id": "[uuid]"
               },
               "line6": {
                 "type": "Segment",
-                "artifact_id": "2e4398f0-3503-52f1-9fb1-caadee14f488"
+                "artifact_id": "[uuid]"
               },
               "line7": {
                 "type": "Segment",
-                "artifact_id": "eb4a5516-04df-5d3c-a783-6699c67f971f"
+                "artifact_id": "[uuid]"
               },
               "line8": {
                 "type": "Segment",
-                "artifact_id": "bb2ee501-11e8-5c4e-b7a4-cf4d0273f1d6"
+                "artifact_id": "[uuid]"
               },
               "line9": {
                 "type": "Segment",
-                "artifact_id": "e80fd4da-2562-5d4d-be7f-42b434d6e397"
+                "artifact_id": "[uuid]"
               },
               "meta": {
                 "type": "Object",
@@ -10131,7 +10559,7 @@ description: Operations executed sheet-metal-bracket.kcl
                   "sketch": {
                     "type": "Sketch",
                     "value": {
-                      "artifactId": "6c14e37a-ccab-5c55-98a0-a4f5e1bd6620"
+                      "artifactId": "[uuid]"
                     }
                   }
                 }
@@ -10170,18 +10598,22 @@ description: Operations executed sheet-metal-bracket.kcl
                 "type": "Number",
                 "value": 20.724,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": -37.2099,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -10194,87 +10626,87 @@ description: Operations executed sheet-metal-bracket.kcl
             "value": {
               "circle1": {
                 "type": "Segment",
-                "artifact_id": "d5e2f4d6-228a-502b-94db-3100e57ccc81"
+                "artifact_id": "[uuid]"
               },
               "circle2": {
                 "type": "Segment",
-                "artifact_id": "eeb336b4-adc7-580c-be25-5e81ad6a56ee"
+                "artifact_id": "[uuid]"
               },
               "circle3": {
                 "type": "Segment",
-                "artifact_id": "035728b5-01db-5e9b-b285-181bc5693d5a"
+                "artifact_id": "[uuid]"
               },
               "circle4": {
                 "type": "Segment",
-                "artifact_id": "08138142-a558-56a4-a23f-2f334e02b011"
+                "artifact_id": "[uuid]"
               },
               "circle5": {
                 "type": "Segment",
-                "artifact_id": "44b2dfb0-0721-57cd-a796-4401a664e194"
+                "artifact_id": "[uuid]"
               },
               "circle6": {
                 "type": "Segment",
-                "artifact_id": "ba769d4c-3a67-5309-824d-fd59f263bb46"
+                "artifact_id": "[uuid]"
               },
               "circle7": {
                 "type": "Segment",
-                "artifact_id": "8b2b0b37-868e-50d3-badd-0213fb4b5d6a"
+                "artifact_id": "[uuid]"
               },
               "circle8": {
                 "type": "Segment",
-                "artifact_id": "0616b09c-75f9-545b-bd98-b7fbaf5b3587"
+                "artifact_id": "[uuid]"
               },
               "circle9": {
                 "type": "Segment",
-                "artifact_id": "2ab8a671-6218-5516-901a-d1a83480ded7"
+                "artifact_id": "[uuid]"
               },
               "line1": {
                 "type": "Segment",
-                "artifact_id": "ca431487-8e9a-59ce-a472-84fe45652fab"
+                "artifact_id": "[uuid]"
               },
               "line10": {
                 "type": "Segment",
-                "artifact_id": "594993e6-1056-5d16-9f2e-5770c7b5e4e7"
+                "artifact_id": "[uuid]"
               },
               "line11": {
                 "type": "Segment",
-                "artifact_id": "88600ae1-c4f2-5277-8c4e-117866e83f6e"
+                "artifact_id": "[uuid]"
               },
               "line12": {
                 "type": "Segment",
-                "artifact_id": "1f5ca073-184d-543b-9da6-2db6719123a8"
+                "artifact_id": "[uuid]"
               },
               "line2": {
                 "type": "Segment",
-                "artifact_id": "93954f29-a246-54bd-ac2a-62572f26d508"
+                "artifact_id": "[uuid]"
               },
               "line3": {
                 "type": "Segment",
-                "artifact_id": "20f09319-bab0-5dd8-8c40-ce90cd688483"
+                "artifact_id": "[uuid]"
               },
               "line4": {
                 "type": "Segment",
-                "artifact_id": "bee9909d-abbf-534c-b266-2c2c04133834"
+                "artifact_id": "[uuid]"
               },
               "line5": {
                 "type": "Segment",
-                "artifact_id": "fa75438f-b2d0-5142-b452-608454e1806a"
+                "artifact_id": "[uuid]"
               },
               "line6": {
                 "type": "Segment",
-                "artifact_id": "2e4398f0-3503-52f1-9fb1-caadee14f488"
+                "artifact_id": "[uuid]"
               },
               "line7": {
                 "type": "Segment",
-                "artifact_id": "eb4a5516-04df-5d3c-a783-6699c67f971f"
+                "artifact_id": "[uuid]"
               },
               "line8": {
                 "type": "Segment",
-                "artifact_id": "bb2ee501-11e8-5c4e-b7a4-cf4d0273f1d6"
+                "artifact_id": "[uuid]"
               },
               "line9": {
                 "type": "Segment",
-                "artifact_id": "e80fd4da-2562-5d4d-be7f-42b434d6e397"
+                "artifact_id": "[uuid]"
               },
               "meta": {
                 "type": "Object",
@@ -10282,7 +10714,7 @@ description: Operations executed sheet-metal-bracket.kcl
                   "sketch": {
                     "type": "Sketch",
                     "value": {
-                      "artifactId": "6c14e37a-ccab-5c55-98a0-a4f5e1bd6620"
+                      "artifactId": "[uuid]"
                     }
                   }
                 }
@@ -10321,18 +10753,22 @@ description: Operations executed sheet-metal-bracket.kcl
                 "type": "Number",
                 "value": 22.5716,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 34.2714,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -10345,87 +10781,87 @@ description: Operations executed sheet-metal-bracket.kcl
             "value": {
               "circle1": {
                 "type": "Segment",
-                "artifact_id": "d5e2f4d6-228a-502b-94db-3100e57ccc81"
+                "artifact_id": "[uuid]"
               },
               "circle2": {
                 "type": "Segment",
-                "artifact_id": "eeb336b4-adc7-580c-be25-5e81ad6a56ee"
+                "artifact_id": "[uuid]"
               },
               "circle3": {
                 "type": "Segment",
-                "artifact_id": "035728b5-01db-5e9b-b285-181bc5693d5a"
+                "artifact_id": "[uuid]"
               },
               "circle4": {
                 "type": "Segment",
-                "artifact_id": "08138142-a558-56a4-a23f-2f334e02b011"
+                "artifact_id": "[uuid]"
               },
               "circle5": {
                 "type": "Segment",
-                "artifact_id": "44b2dfb0-0721-57cd-a796-4401a664e194"
+                "artifact_id": "[uuid]"
               },
               "circle6": {
                 "type": "Segment",
-                "artifact_id": "ba769d4c-3a67-5309-824d-fd59f263bb46"
+                "artifact_id": "[uuid]"
               },
               "circle7": {
                 "type": "Segment",
-                "artifact_id": "8b2b0b37-868e-50d3-badd-0213fb4b5d6a"
+                "artifact_id": "[uuid]"
               },
               "circle8": {
                 "type": "Segment",
-                "artifact_id": "0616b09c-75f9-545b-bd98-b7fbaf5b3587"
+                "artifact_id": "[uuid]"
               },
               "circle9": {
                 "type": "Segment",
-                "artifact_id": "2ab8a671-6218-5516-901a-d1a83480ded7"
+                "artifact_id": "[uuid]"
               },
               "line1": {
                 "type": "Segment",
-                "artifact_id": "ca431487-8e9a-59ce-a472-84fe45652fab"
+                "artifact_id": "[uuid]"
               },
               "line10": {
                 "type": "Segment",
-                "artifact_id": "594993e6-1056-5d16-9f2e-5770c7b5e4e7"
+                "artifact_id": "[uuid]"
               },
               "line11": {
                 "type": "Segment",
-                "artifact_id": "88600ae1-c4f2-5277-8c4e-117866e83f6e"
+                "artifact_id": "[uuid]"
               },
               "line12": {
                 "type": "Segment",
-                "artifact_id": "1f5ca073-184d-543b-9da6-2db6719123a8"
+                "artifact_id": "[uuid]"
               },
               "line2": {
                 "type": "Segment",
-                "artifact_id": "93954f29-a246-54bd-ac2a-62572f26d508"
+                "artifact_id": "[uuid]"
               },
               "line3": {
                 "type": "Segment",
-                "artifact_id": "20f09319-bab0-5dd8-8c40-ce90cd688483"
+                "artifact_id": "[uuid]"
               },
               "line4": {
                 "type": "Segment",
-                "artifact_id": "bee9909d-abbf-534c-b266-2c2c04133834"
+                "artifact_id": "[uuid]"
               },
               "line5": {
                 "type": "Segment",
-                "artifact_id": "fa75438f-b2d0-5142-b452-608454e1806a"
+                "artifact_id": "[uuid]"
               },
               "line6": {
                 "type": "Segment",
-                "artifact_id": "2e4398f0-3503-52f1-9fb1-caadee14f488"
+                "artifact_id": "[uuid]"
               },
               "line7": {
                 "type": "Segment",
-                "artifact_id": "eb4a5516-04df-5d3c-a783-6699c67f971f"
+                "artifact_id": "[uuid]"
               },
               "line8": {
                 "type": "Segment",
-                "artifact_id": "bb2ee501-11e8-5c4e-b7a4-cf4d0273f1d6"
+                "artifact_id": "[uuid]"
               },
               "line9": {
                 "type": "Segment",
-                "artifact_id": "e80fd4da-2562-5d4d-be7f-42b434d6e397"
+                "artifact_id": "[uuid]"
               },
               "meta": {
                 "type": "Object",
@@ -10433,7 +10869,7 @@ description: Operations executed sheet-metal-bracket.kcl
                   "sketch": {
                     "type": "Sketch",
                     "value": {
-                      "artifactId": "6c14e37a-ccab-5c55-98a0-a4f5e1bd6620"
+                      "artifactId": "[uuid]"
                     }
                   }
                 }
@@ -10472,18 +10908,22 @@ description: Operations executed sheet-metal-bracket.kcl
                 "type": "Number",
                 "value": 85.2549,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 45.6035,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -10496,87 +10936,87 @@ description: Operations executed sheet-metal-bracket.kcl
             "value": {
               "circle1": {
                 "type": "Segment",
-                "artifact_id": "d5e2f4d6-228a-502b-94db-3100e57ccc81"
+                "artifact_id": "[uuid]"
               },
               "circle2": {
                 "type": "Segment",
-                "artifact_id": "eeb336b4-adc7-580c-be25-5e81ad6a56ee"
+                "artifact_id": "[uuid]"
               },
               "circle3": {
                 "type": "Segment",
-                "artifact_id": "035728b5-01db-5e9b-b285-181bc5693d5a"
+                "artifact_id": "[uuid]"
               },
               "circle4": {
                 "type": "Segment",
-                "artifact_id": "08138142-a558-56a4-a23f-2f334e02b011"
+                "artifact_id": "[uuid]"
               },
               "circle5": {
                 "type": "Segment",
-                "artifact_id": "44b2dfb0-0721-57cd-a796-4401a664e194"
+                "artifact_id": "[uuid]"
               },
               "circle6": {
                 "type": "Segment",
-                "artifact_id": "ba769d4c-3a67-5309-824d-fd59f263bb46"
+                "artifact_id": "[uuid]"
               },
               "circle7": {
                 "type": "Segment",
-                "artifact_id": "8b2b0b37-868e-50d3-badd-0213fb4b5d6a"
+                "artifact_id": "[uuid]"
               },
               "circle8": {
                 "type": "Segment",
-                "artifact_id": "0616b09c-75f9-545b-bd98-b7fbaf5b3587"
+                "artifact_id": "[uuid]"
               },
               "circle9": {
                 "type": "Segment",
-                "artifact_id": "2ab8a671-6218-5516-901a-d1a83480ded7"
+                "artifact_id": "[uuid]"
               },
               "line1": {
                 "type": "Segment",
-                "artifact_id": "ca431487-8e9a-59ce-a472-84fe45652fab"
+                "artifact_id": "[uuid]"
               },
               "line10": {
                 "type": "Segment",
-                "artifact_id": "594993e6-1056-5d16-9f2e-5770c7b5e4e7"
+                "artifact_id": "[uuid]"
               },
               "line11": {
                 "type": "Segment",
-                "artifact_id": "88600ae1-c4f2-5277-8c4e-117866e83f6e"
+                "artifact_id": "[uuid]"
               },
               "line12": {
                 "type": "Segment",
-                "artifact_id": "1f5ca073-184d-543b-9da6-2db6719123a8"
+                "artifact_id": "[uuid]"
               },
               "line2": {
                 "type": "Segment",
-                "artifact_id": "93954f29-a246-54bd-ac2a-62572f26d508"
+                "artifact_id": "[uuid]"
               },
               "line3": {
                 "type": "Segment",
-                "artifact_id": "20f09319-bab0-5dd8-8c40-ce90cd688483"
+                "artifact_id": "[uuid]"
               },
               "line4": {
                 "type": "Segment",
-                "artifact_id": "bee9909d-abbf-534c-b266-2c2c04133834"
+                "artifact_id": "[uuid]"
               },
               "line5": {
                 "type": "Segment",
-                "artifact_id": "fa75438f-b2d0-5142-b452-608454e1806a"
+                "artifact_id": "[uuid]"
               },
               "line6": {
                 "type": "Segment",
-                "artifact_id": "2e4398f0-3503-52f1-9fb1-caadee14f488"
+                "artifact_id": "[uuid]"
               },
               "line7": {
                 "type": "Segment",
-                "artifact_id": "eb4a5516-04df-5d3c-a783-6699c67f971f"
+                "artifact_id": "[uuid]"
               },
               "line8": {
                 "type": "Segment",
-                "artifact_id": "bb2ee501-11e8-5c4e-b7a4-cf4d0273f1d6"
+                "artifact_id": "[uuid]"
               },
               "line9": {
                 "type": "Segment",
-                "artifact_id": "e80fd4da-2562-5d4d-be7f-42b434d6e397"
+                "artifact_id": "[uuid]"
               },
               "meta": {
                 "type": "Object",
@@ -10584,7 +11024,7 @@ description: Operations executed sheet-metal-bracket.kcl
                   "sketch": {
                     "type": "Sketch",
                     "value": {
-                      "artifactId": "6c14e37a-ccab-5c55-98a0-a4f5e1bd6620"
+                      "artifactId": "[uuid]"
                     }
                   }
                 }
@@ -10623,18 +11063,22 @@ description: Operations executed sheet-metal-bracket.kcl
                 "type": "Number",
                 "value": 82.8907,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": -52.8442,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -10647,87 +11091,87 @@ description: Operations executed sheet-metal-bracket.kcl
             "value": {
               "circle1": {
                 "type": "Segment",
-                "artifact_id": "d5e2f4d6-228a-502b-94db-3100e57ccc81"
+                "artifact_id": "[uuid]"
               },
               "circle2": {
                 "type": "Segment",
-                "artifact_id": "eeb336b4-adc7-580c-be25-5e81ad6a56ee"
+                "artifact_id": "[uuid]"
               },
               "circle3": {
                 "type": "Segment",
-                "artifact_id": "035728b5-01db-5e9b-b285-181bc5693d5a"
+                "artifact_id": "[uuid]"
               },
               "circle4": {
                 "type": "Segment",
-                "artifact_id": "08138142-a558-56a4-a23f-2f334e02b011"
+                "artifact_id": "[uuid]"
               },
               "circle5": {
                 "type": "Segment",
-                "artifact_id": "44b2dfb0-0721-57cd-a796-4401a664e194"
+                "artifact_id": "[uuid]"
               },
               "circle6": {
                 "type": "Segment",
-                "artifact_id": "ba769d4c-3a67-5309-824d-fd59f263bb46"
+                "artifact_id": "[uuid]"
               },
               "circle7": {
                 "type": "Segment",
-                "artifact_id": "8b2b0b37-868e-50d3-badd-0213fb4b5d6a"
+                "artifact_id": "[uuid]"
               },
               "circle8": {
                 "type": "Segment",
-                "artifact_id": "0616b09c-75f9-545b-bd98-b7fbaf5b3587"
+                "artifact_id": "[uuid]"
               },
               "circle9": {
                 "type": "Segment",
-                "artifact_id": "2ab8a671-6218-5516-901a-d1a83480ded7"
+                "artifact_id": "[uuid]"
               },
               "line1": {
                 "type": "Segment",
-                "artifact_id": "ca431487-8e9a-59ce-a472-84fe45652fab"
+                "artifact_id": "[uuid]"
               },
               "line10": {
                 "type": "Segment",
-                "artifact_id": "594993e6-1056-5d16-9f2e-5770c7b5e4e7"
+                "artifact_id": "[uuid]"
               },
               "line11": {
                 "type": "Segment",
-                "artifact_id": "88600ae1-c4f2-5277-8c4e-117866e83f6e"
+                "artifact_id": "[uuid]"
               },
               "line12": {
                 "type": "Segment",
-                "artifact_id": "1f5ca073-184d-543b-9da6-2db6719123a8"
+                "artifact_id": "[uuid]"
               },
               "line2": {
                 "type": "Segment",
-                "artifact_id": "93954f29-a246-54bd-ac2a-62572f26d508"
+                "artifact_id": "[uuid]"
               },
               "line3": {
                 "type": "Segment",
-                "artifact_id": "20f09319-bab0-5dd8-8c40-ce90cd688483"
+                "artifact_id": "[uuid]"
               },
               "line4": {
                 "type": "Segment",
-                "artifact_id": "bee9909d-abbf-534c-b266-2c2c04133834"
+                "artifact_id": "[uuid]"
               },
               "line5": {
                 "type": "Segment",
-                "artifact_id": "fa75438f-b2d0-5142-b452-608454e1806a"
+                "artifact_id": "[uuid]"
               },
               "line6": {
                 "type": "Segment",
-                "artifact_id": "2e4398f0-3503-52f1-9fb1-caadee14f488"
+                "artifact_id": "[uuid]"
               },
               "line7": {
                 "type": "Segment",
-                "artifact_id": "eb4a5516-04df-5d3c-a783-6699c67f971f"
+                "artifact_id": "[uuid]"
               },
               "line8": {
                 "type": "Segment",
-                "artifact_id": "bb2ee501-11e8-5c4e-b7a4-cf4d0273f1d6"
+                "artifact_id": "[uuid]"
               },
               "line9": {
                 "type": "Segment",
-                "artifact_id": "e80fd4da-2562-5d4d-be7f-42b434d6e397"
+                "artifact_id": "[uuid]"
               },
               "meta": {
                 "type": "Object",
@@ -10735,7 +11179,7 @@ description: Operations executed sheet-metal-bracket.kcl
                   "sketch": {
                     "type": "Sketch",
                     "value": {
-                      "artifactId": "6c14e37a-ccab-5c55-98a0-a4f5e1bd6620"
+                      "artifactId": "[uuid]"
                     }
                   }
                 }
@@ -10774,18 +11218,22 @@ description: Operations executed sheet-metal-bracket.kcl
                 "type": "Number",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -10798,87 +11246,87 @@ description: Operations executed sheet-metal-bracket.kcl
             "value": {
               "circle1": {
                 "type": "Segment",
-                "artifact_id": "d5e2f4d6-228a-502b-94db-3100e57ccc81"
+                "artifact_id": "[uuid]"
               },
               "circle2": {
                 "type": "Segment",
-                "artifact_id": "eeb336b4-adc7-580c-be25-5e81ad6a56ee"
+                "artifact_id": "[uuid]"
               },
               "circle3": {
                 "type": "Segment",
-                "artifact_id": "035728b5-01db-5e9b-b285-181bc5693d5a"
+                "artifact_id": "[uuid]"
               },
               "circle4": {
                 "type": "Segment",
-                "artifact_id": "08138142-a558-56a4-a23f-2f334e02b011"
+                "artifact_id": "[uuid]"
               },
               "circle5": {
                 "type": "Segment",
-                "artifact_id": "44b2dfb0-0721-57cd-a796-4401a664e194"
+                "artifact_id": "[uuid]"
               },
               "circle6": {
                 "type": "Segment",
-                "artifact_id": "ba769d4c-3a67-5309-824d-fd59f263bb46"
+                "artifact_id": "[uuid]"
               },
               "circle7": {
                 "type": "Segment",
-                "artifact_id": "8b2b0b37-868e-50d3-badd-0213fb4b5d6a"
+                "artifact_id": "[uuid]"
               },
               "circle8": {
                 "type": "Segment",
-                "artifact_id": "0616b09c-75f9-545b-bd98-b7fbaf5b3587"
+                "artifact_id": "[uuid]"
               },
               "circle9": {
                 "type": "Segment",
-                "artifact_id": "2ab8a671-6218-5516-901a-d1a83480ded7"
+                "artifact_id": "[uuid]"
               },
               "line1": {
                 "type": "Segment",
-                "artifact_id": "ca431487-8e9a-59ce-a472-84fe45652fab"
+                "artifact_id": "[uuid]"
               },
               "line10": {
                 "type": "Segment",
-                "artifact_id": "594993e6-1056-5d16-9f2e-5770c7b5e4e7"
+                "artifact_id": "[uuid]"
               },
               "line11": {
                 "type": "Segment",
-                "artifact_id": "88600ae1-c4f2-5277-8c4e-117866e83f6e"
+                "artifact_id": "[uuid]"
               },
               "line12": {
                 "type": "Segment",
-                "artifact_id": "1f5ca073-184d-543b-9da6-2db6719123a8"
+                "artifact_id": "[uuid]"
               },
               "line2": {
                 "type": "Segment",
-                "artifact_id": "93954f29-a246-54bd-ac2a-62572f26d508"
+                "artifact_id": "[uuid]"
               },
               "line3": {
                 "type": "Segment",
-                "artifact_id": "20f09319-bab0-5dd8-8c40-ce90cd688483"
+                "artifact_id": "[uuid]"
               },
               "line4": {
                 "type": "Segment",
-                "artifact_id": "bee9909d-abbf-534c-b266-2c2c04133834"
+                "artifact_id": "[uuid]"
               },
               "line5": {
                 "type": "Segment",
-                "artifact_id": "fa75438f-b2d0-5142-b452-608454e1806a"
+                "artifact_id": "[uuid]"
               },
               "line6": {
                 "type": "Segment",
-                "artifact_id": "2e4398f0-3503-52f1-9fb1-caadee14f488"
+                "artifact_id": "[uuid]"
               },
               "line7": {
                 "type": "Segment",
-                "artifact_id": "eb4a5516-04df-5d3c-a783-6699c67f971f"
+                "artifact_id": "[uuid]"
               },
               "line8": {
                 "type": "Segment",
-                "artifact_id": "bb2ee501-11e8-5c4e-b7a4-cf4d0273f1d6"
+                "artifact_id": "[uuid]"
               },
               "line9": {
                 "type": "Segment",
-                "artifact_id": "e80fd4da-2562-5d4d-be7f-42b434d6e397"
+                "artifact_id": "[uuid]"
               },
               "meta": {
                 "type": "Object",
@@ -10886,7 +11334,7 @@ description: Operations executed sheet-metal-bracket.kcl
                   "sketch": {
                     "type": "Sketch",
                     "value": {
-                      "artifactId": "6c14e37a-ccab-5c55-98a0-a4f5e1bd6620"
+                      "artifactId": "[uuid]"
                     }
                   }
                 }
@@ -10922,55 +11370,55 @@ description: Operations executed sheet-metal-bracket.kcl
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "c4aa09ae-7e71-562f-b6c8-079aeb535be9"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "2d6c2537-3784-5667-8614-4423d6c6f752"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "67d03316-0deb-5224-a7ce-b3394ba08db9"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "b6f946ca-ccd6-5fa9-942d-14331e8fb26e"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "e47f2e3b-0460-52b0-a07e-9a08403f5c49"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "ab87837d-7702-50ae-a973-1b474e1e48bf"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "aaa2a6cb-5f04-5c7c-b55f-4a6996b316dd"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "edad1eb5-5562-5615-b23f-ee6623df14ee"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "9e7bf977-5ef0-5034-a49f-a9e7744d4434"
+                "artifactId": "[uuid]"
               }
             }
           ]
@@ -10984,8 +11432,10 @@ description: Operations executed sheet-metal-bracket.kcl
             "value": 7.5,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -11021,7 +11471,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "6c14e37a-ccab-5c55-98a0-a4f5e1bd6620"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -11050,7 +11500,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "9ee924c8-9a14-5ca4-9014-20f9b1039bef"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -11063,55 +11513,55 @@ description: Operations executed sheet-metal-bracket.kcl
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "92ead137-02a3-5a66-a3df-f1b87766c456"
+                  "artifactId": "[uuid]"
                 }
               },
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "28f6e85f-5537-5013-ac4d-1b88aa312db5"
+                  "artifactId": "[uuid]"
                 }
               },
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "c93c1163-3f23-5d1e-bca1-1a555fc8ee8b"
+                  "artifactId": "[uuid]"
                 }
               },
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "e6ed3605-69e2-53c9-bebb-df82937c0962"
+                  "artifactId": "[uuid]"
                 }
               },
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "349ba77a-8183-57f6-8580-b06227eac5bd"
+                  "artifactId": "[uuid]"
                 }
               },
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "c9d8522f-60d2-513b-9c62-a4a3110e5970"
+                  "artifactId": "[uuid]"
                 }
               },
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "d1c03f64-0489-502b-bc48-3ba001cf2ed6"
+                  "artifactId": "[uuid]"
                 }
               },
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "45dcafc5-d8d1-5e4a-95d8-e1fc36d780f1"
+                  "artifactId": "[uuid]"
                 }
               },
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "12a33a9d-38b6-56fb-af56-29ce1e09b1cb"
+                  "artifactId": "[uuid]"
                 }
               }
             ]
@@ -11146,7 +11596,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "12b93b5e-f5fc-5dc1-b2d9-7321b6a5279d"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -11158,8 +11608,10 @@ description: Operations executed sheet-metal-bracket.kcl
             "value": 0.5,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -11170,19 +11622,19 @@ description: Operations executed sheet-metal-bracket.kcl
             "value": [
               {
                 "type": "Uuid",
-                "value": "8583fc63-fdea-56c5-a2f4-d09328163f25"
+                "value": "[uuid]"
               },
               {
                 "type": "Uuid",
-                "value": "3052eaca-e4f2-52f2-92f3-87303d16406d"
+                "value": "[uuid]"
               },
               {
                 "type": "Uuid",
-                "value": "aa0b39ac-e5f9-5b59-9008-8e0d2997d1b5"
+                "value": "[uuid]"
               },
               {
                 "type": "Uuid",
-                "value": "a4dd9c86-029b-5670-a54b-0ce4677e5a8d"
+                "value": "[uuid]"
               }
             ]
           },
@@ -11246,7 +11698,9 @@ description: Operations executed sheet-metal-bracket.kcl
         "value": 2.718281828459045,
         "ty": {
           "type": "Known",
-          "type": "Count"
+          "value": {
+            "type": "Count"
+          }
         }
       },
       "visibility": "export",
@@ -11274,7 +11728,9 @@ description: Operations executed sheet-metal-bracket.kcl
         "value": 6.283185307179586,
         "ty": {
           "type": "Known",
-          "type": "Count"
+          "value": {
+            "type": "Count"
+          }
         }
       },
       "visibility": "export",
@@ -11308,7 +11764,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 23
+            "index": 24
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -11332,7 +11788,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 24
+            "index": 25
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -11356,7 +11812,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 25
+            "index": 26
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -11380,7 +11836,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 26
+            "index": 27
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -11404,7 +11860,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 27
+            "index": 28
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -11428,7 +11884,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 28
+            "index": 29
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -11452,7 +11908,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 29
+            "index": 30
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -11476,7 +11932,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 30
+            "index": 31
           },
           {
             "type": "VariableDeclarationDeclaration"

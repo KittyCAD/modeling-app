@@ -31,7 +31,10 @@ describe('FilesSnapshot', () => {
   let revokeObjectURLMock: ReturnType<typeof vi.fn>
 
   beforeEach(() => {
-    createObjectURLMock = vi.fn((blob: Blob) => `blob:mock-url-${blob.type}`)
+    let nextUrl = 0
+    createObjectURLMock = vi.fn(
+      (blob: Blob) => `blob:mock-url-${blob.type}-${++nextUrl}`
+    )
     revokeObjectURLMock = vi.fn()
 
     global.URL.createObjectURL =
@@ -134,6 +137,114 @@ describe('FilesSnapshot', () => {
 
     expect(screen.getByAltText('reference.png')).toBeInTheDocument()
     expect(createObjectURLMock).toHaveBeenCalledOnce()
+  })
+
+  test('preserves image URLs when the reasoning parent rerenders', () => {
+    const file: MlCopilotFile = {
+      name: 'snapshot.png',
+      mimetype: 'image/png',
+      data: MOCK_PNG_DATA,
+    }
+    const view = () => (
+      <Thinking
+        thoughts={[{ files: { files: [{ ...file, data: [...file.data] }] } }]}
+        isDone={true}
+        onlyShowImmediateThought={false}
+      />
+    )
+    const { rerender } = render(view())
+    const image = screen.getByAltText(file.name)
+    const url = image.getAttribute('src')
+
+    rerender(view())
+    rerender(view())
+
+    expect(screen.getByAltText(file.name)).toBe(image)
+    expect(image).toHaveAttribute('src', url)
+    expect(createObjectURLMock).toHaveBeenCalledOnce()
+    expect(revokeObjectURLMock).not.toHaveBeenCalled()
+  })
+
+  test('only recreates URLs when an attachment finishes loading', () => {
+    const firstRef = {
+      prompt_id: 'prompt',
+      seq: 1,
+      index: 0,
+      content_hash: 'sha256:' + '0'.repeat(64),
+    }
+    const secondRef = { ...firstRef, index: 1 }
+    const first: MlCopilotFile = {
+      name: 'first.png',
+      mimetype: 'image/png',
+      data: [],
+      attachment_ref: firstRef,
+    }
+    const second = { ...first, name: 'second.png', attachment_ref: secondRef }
+    const loadedFirst = { ...first, data: MOCK_PNG_DATA }
+    const loadedSecond = { ...second, data: MOCK_PNG_DATA }
+    const onFetchAttachment = vi.fn()
+    const { rerender, unmount } = render(
+      <FilesSnapshot
+        files={[first, second]}
+        attachmentFetches={{
+          'prompt:1:0': { status: 'loaded', file: loadedFirst },
+        }}
+        onFetchAttachment={onFetchAttachment}
+      />
+    )
+    const firstUrl = screen.getByAltText(first.name).getAttribute('src')
+
+    fireEvent.click(screen.getByRole('button', { name: /second.png: Load/ }))
+    expect(onFetchAttachment).toHaveBeenCalledExactlyOnceWith(secondRef)
+    rerender(
+      <FilesSnapshot
+        files={[first, second]}
+        attachmentFetches={{
+          'prompt:1:0': { status: 'loaded', file: loadedFirst },
+          'prompt:1:1': { status: 'loading' },
+        }}
+        onFetchAttachment={onFetchAttachment}
+      />
+    )
+    expect(screen.getByAltText(first.name)).toHaveAttribute('src', firstUrl)
+    expect(createObjectURLMock).toHaveBeenCalledOnce()
+    expect(revokeObjectURLMock).not.toHaveBeenCalled()
+
+    rerender(
+      <FilesSnapshot
+        files={[first, second]}
+        attachmentFetches={{
+          'prompt:1:0': { status: 'loaded', file: loadedFirst },
+          'prompt:1:1': { status: 'loaded', file: loadedSecond },
+        }}
+        onFetchAttachment={onFetchAttachment}
+      />
+    )
+    expect(screen.getByAltText(first.name)).not.toHaveAttribute('src', firstUrl)
+    expect(screen.getByAltText(second.name)).toBeInTheDocument()
+    expect(createObjectURLMock).toHaveBeenCalledTimes(3)
+    expect(revokeObjectURLMock).toHaveBeenCalledExactlyOnceWith(firstUrl)
+    unmount()
+    expect(revokeObjectURLMock).toHaveBeenCalledTimes(3)
+  })
+
+  test.each([
+    { label: 'inline bytes', data: [3, 2, 1], mimetype: 'image/png' },
+    { label: 'MIME type', data: [1, 2, 3], mimetype: 'image/jpeg' },
+  ])('updates the URL when $label changes', ({ data, mimetype }) => {
+    const file: MlCopilotFile = {
+      name: 'snapshot.png',
+      mimetype: 'image/png',
+      data: [1, 2, 3],
+    }
+    const { rerender } = render(<FilesSnapshot files={[file]} />)
+    const oldUrl = screen.getByAltText(file.name).getAttribute('src')
+
+    rerender(<FilesSnapshot files={[{ ...file, data, mimetype }]} />)
+
+    expect(screen.getByAltText(file.name)).not.toHaveAttribute('src', oldUrl)
+    expect(createObjectURLMock).toHaveBeenCalledTimes(2)
+    expect(revokeObjectURLMock).toHaveBeenCalledExactlyOnceWith(oldUrl)
   })
 
   test('renders a single image file with correct filename', () => {

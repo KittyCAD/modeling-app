@@ -12,8 +12,10 @@ description: Operations executed pattern_into_union.kcl
         "value": 20.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -41,8 +43,10 @@ description: Operations executed pattern_into_union.kcl
         "value": 0.03937007874015748,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -70,8 +74,10 @@ description: Operations executed pattern_into_union.kcl
         "value": 10.125,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -99,8 +105,10 @@ description: Operations executed pattern_into_union.kcl
         "value": 0.2,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -128,8 +136,10 @@ description: Operations executed pattern_into_union.kcl
         "value": 0.02,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -157,8 +167,10 @@ description: Operations executed pattern_into_union.kcl
         "value": 0.5,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -186,8 +198,10 @@ description: Operations executed pattern_into_union.kcl
         "value": 2.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -215,8 +229,10 @@ description: Operations executed pattern_into_union.kcl
         "value": 1.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -244,8 +260,10 @@ description: Operations executed pattern_into_union.kcl
         "value": 0.1,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -273,8 +291,10 @@ description: Operations executed pattern_into_union.kcl
         "value": 11.525,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -302,8 +322,10 @@ description: Operations executed pattern_into_union.kcl
         "value": 3.28740157480315,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -331,8 +353,10 @@ description: Operations executed pattern_into_union.kcl
         "value": 0.25,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -358,7 +382,7 @@ description: Operations executed pattern_into_union.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "3aeeb2db-cc07-5a1e-840d-baeb34ceb75a"
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       },
@@ -390,7 +414,7 @@ description: Operations executed pattern_into_union.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -402,8 +426,10 @@ description: Operations executed pattern_into_union.kcl
             "value": -3.28740157480315,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -435,7 +461,7 @@ description: Operations executed pattern_into_union.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "3aeeb2db-cc07-5a1e-840d-baeb34ceb75a"
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       },
@@ -467,7 +493,7 @@ description: Operations executed pattern_into_union.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "f084ad07-5777-5607-a544-c69f455c2aab"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -479,8 +505,10 @@ description: Operations executed pattern_into_union.kcl
             "value": -0.1,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -513,7 +541,7 @@ description: Operations executed pattern_into_union.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "59bc8baf-257f-5783-ad91-95db236aa6b0"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -525,8 +553,10 @@ description: Operations executed pattern_into_union.kcl
             "value": 0.1,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -537,7 +567,7 @@ description: Operations executed pattern_into_union.kcl
             "value": [
               {
                 "type": "Uuid",
-                "value": "73286db8-bb5d-50e0-ba02-1ba56fbed514"
+                "value": "[uuid]"
               }
             ]
           },
@@ -571,7 +601,7 @@ description: Operations executed pattern_into_union.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "59bc8baf-257f-5783-ad91-95db236aa6b0"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -586,8 +616,10 @@ description: Operations executed pattern_into_union.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -595,8 +627,10 @@ description: Operations executed pattern_into_union.kcl
                 "value": 1.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -604,8 +638,10 @@ description: Operations executed pattern_into_union.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               }
             ]
@@ -618,8 +654,10 @@ description: Operations executed pattern_into_union.kcl
             "value": 0.1593700787401575,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -630,7 +668,9 @@ description: Operations executed pattern_into_union.kcl
             "value": 21.0,
             "ty": {
               "type": "Known",
-              "type": "Count"
+              "value": {
+                "type": "Count"
+              }
             }
           },
           "sourceRange": []
@@ -662,7 +702,7 @@ description: Operations executed pattern_into_union.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "3aeeb2db-cc07-5a1e-840d-baeb34ceb75a"
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       },
@@ -694,7 +734,7 @@ description: Operations executed pattern_into_union.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "6023bee8-3980-5182-88ac-ac06420ce00f"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -706,8 +746,10 @@ description: Operations executed pattern_into_union.kcl
             "value": -0.1,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -740,7 +782,7 @@ description: Operations executed pattern_into_union.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "eedabccb-e42b-5224-a499-7c2981b239e5"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -752,8 +794,10 @@ description: Operations executed pattern_into_union.kcl
             "value": 0.1,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -764,7 +808,7 @@ description: Operations executed pattern_into_union.kcl
             "value": [
               {
                 "type": "Uuid",
-                "value": "9b9b468d-28a7-55a7-b7fd-a67014ea61fb"
+                "value": "[uuid]"
               }
             ]
           },
@@ -798,7 +842,7 @@ description: Operations executed pattern_into_union.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "eedabccb-e42b-5224-a499-7c2981b239e5"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -813,8 +857,10 @@ description: Operations executed pattern_into_union.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -822,8 +868,10 @@ description: Operations executed pattern_into_union.kcl
                 "value": 1.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -831,8 +879,10 @@ description: Operations executed pattern_into_union.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               }
             ]
@@ -845,8 +895,10 @@ description: Operations executed pattern_into_union.kcl
             "value": 0.1593700787401575,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -857,7 +909,9 @@ description: Operations executed pattern_into_union.kcl
             "value": 21.0,
             "ty": {
               "type": "Known",
-              "type": "Count"
+              "value": {
+                "type": "Count"
+              }
             }
           },
           "sourceRange": []
@@ -893,133 +947,133 @@ description: Operations executed pattern_into_union.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "59bc8baf-257f-5783-ad91-95db236aa6b0"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "018bd47f-1cec-5462-ae8c-6ada78e24bad"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "a499d777-836d-5164-9776-3f6ad5466a18"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "890abe10-bcd1-59e4-b0de-b8d2d786cb07"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "2f02cb97-213e-5eac-8637-3a4fbd54d7a4"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "7c657a88-ffc2-50fa-8a82-99b24f1c1316"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "b4385f8e-3c7f-5e4a-9018-b289515a1193"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "1375922e-170a-517a-9d54-043b37a7e825"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "75995cf7-c942-51ee-bb88-012e832a1f02"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "1d856b4a-8fd2-57df-95a6-eceda972e15b"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "871e3fd4-c123-556c-85db-64d85e88ed77"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "de350583-0d8d-5072-94e0-7e2a1e95c39c"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "b8d1ce61-0931-50ff-a345-e7aa9819180a"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "78e5702a-c704-5f04-a256-088b8c434dda"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "badf5ecf-afac-5d39-81fb-9444bea1d11a"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "ccf56b59-12b6-511d-9def-7f8f475eba15"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "e8d43647-d586-5b64-ac58-475e5a4fa713"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "97442895-ac60-5457-b0bf-d02c26ff6324"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "a8851bea-01f6-5ead-a330-e67087c7abf4"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "7f86e89a-d2e8-51f3-a1ee-29930c1f2d2b"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "284f6968-9526-59a3-ba07-9475c0a57c78"
+                "artifactId": "[uuid]"
               }
             }
           ]
@@ -1077,7 +1131,9 @@ description: Operations executed pattern_into_union.kcl
         "value": 2.718281828459045,
         "ty": {
           "type": "Known",
-          "type": "Count"
+          "value": {
+            "type": "Count"
+          }
         }
       },
       "visibility": "export",
@@ -1105,7 +1161,9 @@ description: Operations executed pattern_into_union.kcl
         "value": 6.283185307179586,
         "ty": {
           "type": "Known",
-          "type": "Count"
+          "value": {
+            "type": "Count"
+          }
         }
       },
       "visibility": "export",
@@ -1139,7 +1197,7 @@ description: Operations executed pattern_into_union.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 23
+            "index": 24
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1163,7 +1221,7 @@ description: Operations executed pattern_into_union.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 24
+            "index": 25
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1187,7 +1245,7 @@ description: Operations executed pattern_into_union.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 25
+            "index": 26
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1211,7 +1269,7 @@ description: Operations executed pattern_into_union.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 26
+            "index": 27
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1235,7 +1293,7 @@ description: Operations executed pattern_into_union.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 27
+            "index": 28
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1259,7 +1317,7 @@ description: Operations executed pattern_into_union.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 28
+            "index": 29
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1283,7 +1341,7 @@ description: Operations executed pattern_into_union.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 29
+            "index": 30
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1307,7 +1365,7 @@ description: Operations executed pattern_into_union.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 30
+            "index": 31
           },
           {
             "type": "VariableDeclarationDeclaration"

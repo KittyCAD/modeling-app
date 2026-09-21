@@ -45,6 +45,7 @@ describe('tryConnecting', () => {
 
     await expect(
       tryConnecting({
+        abnormalCloseRetries: { current: 0 },
         isConnecting: { current: false },
         numberOfConnectionAttempts,
         authToken: 'token',
@@ -65,7 +66,7 @@ describe('tryConnecting', () => {
     ).rejects.toEqual(connectionError)
 
     expect(manager.start).toHaveBeenCalledOnce()
-    expect(manager.tearDown).toHaveBeenCalledOnce()
+    expect(manager.tearDown).not.toHaveBeenCalled()
     expect(numberOfConnectionAttempts.current).toBe(0)
     expect(setShowManualConnect).toHaveBeenCalledWith(true)
   })

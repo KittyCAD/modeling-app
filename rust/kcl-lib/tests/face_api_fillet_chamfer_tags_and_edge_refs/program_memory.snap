@@ -6,8 +6,8 @@ description: Variables in memory after executing face_api_fillet_chamfer_tags_an
   "body": {
     "type": "Plane",
     "value": {
-      "artifactId": "3c085bb9-a401-55d5-8042-5a9095193d55",
-      "id": "3c085bb9-a401-55d5-8042-5a9095193d55",
+      "artifactId": "[uuid]",
+      "id": "[uuid]",
       "objectId": 0,
       "kind": "XY",
       "origin": {
@@ -38,11 +38,9 @@ description: Variables in memory after executing face_api_fillet_chamfer_tags_an
   },
   "capEnd001": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "capEnd001"
   },
   "e1": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "e1"
   }

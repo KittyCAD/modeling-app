@@ -6,8 +6,8 @@ description: Variables in memory after executing truss_bridge.kcl
   "__sketch_1_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "3aeeb2db-cc07-5a1e-840d-baeb34ceb75a",
-      "id": "3aeeb2db-cc07-5a1e-840d-baeb34ceb75a",
+      "artifactId": "[uuid]",
+      "id": "[uuid]",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -40,8 +40,10 @@ description: Variables in memory after executing truss_bridge.kcl
     "value": 4.0,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "flangeThickness": {
@@ -49,8 +51,10 @@ description: Variables in memory after executing truss_bridge.kcl
     "value": 0.293,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "flangeWidth": {
@@ -58,8 +62,10 @@ description: Variables in memory after executing truss_bridge.kcl
     "value": 2.663,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "makeIBeam": {
@@ -70,8 +76,10 @@ description: Variables in memory after executing truss_bridge.kcl
     "value": 0.457,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "sketch001": {
@@ -83,7 +91,7 @@ description: Variables in memory after executing truss_bridge.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+                "id": "[uuid]",
                 "objectId": 4,
                 "kind": {
                   "line": {
@@ -91,17 +99,21 @@ description: Variables in memory after executing truss_bridge.kcl
                       {
                         "n": 0.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -109,17 +121,21 @@ description: Variables in memory after executing truss_bridge.kcl
                       {
                         "n": 43.15,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 66.4,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -157,8 +173,8 @@ description: Variables in memory after executing truss_bridge.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -187,7 +203,7 @@ description: Variables in memory after executing truss_bridge.kcl
                     "units": null
                   }
                 },
-                "sketchId": "5b7e9cc5-005c-5005-bc98-32d1ba6bf697",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -203,7 +219,7 @@ description: Variables in memory after executing truss_bridge.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "38f0111a-8034-5e85-9ec1-07dbc9646b06",
+                "id": "[uuid]",
                 "objectId": 29,
                 "kind": {
                   "line": {
@@ -211,17 +227,21 @@ description: Variables in memory after executing truss_bridge.kcl
                       {
                         "n": 43.15,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 66.4,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -229,17 +249,21 @@ description: Variables in memory after executing truss_bridge.kcl
                       {
                         "n": 117.74,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 66.4,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -277,8 +301,8 @@ description: Variables in memory after executing truss_bridge.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -307,7 +331,7 @@ description: Variables in memory after executing truss_bridge.kcl
                     "units": null
                   }
                 },
-                "sketchId": "5b7e9cc5-005c-5005-bc98-32d1ba6bf697",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line10"
@@ -323,7 +347,7 @@ description: Variables in memory after executing truss_bridge.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
+                "id": "[uuid]",
                 "objectId": 33,
                 "kind": {
                   "line": {
@@ -331,17 +355,21 @@ description: Variables in memory after executing truss_bridge.kcl
                       {
                         "n": 117.74,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 66.4,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -349,17 +377,21 @@ description: Variables in memory after executing truss_bridge.kcl
                       {
                         "n": 175.28,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 66.4,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -397,8 +429,8 @@ description: Variables in memory after executing truss_bridge.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -427,7 +459,7 @@ description: Variables in memory after executing truss_bridge.kcl
                     "units": null
                   }
                 },
-                "sketchId": "5b7e9cc5-005c-5005-bc98-32d1ba6bf697",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line11"
@@ -443,7 +475,7 @@ description: Variables in memory after executing truss_bridge.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "9370af21-6a1d-5f9a-b1d3-83351b2043e6",
+                "id": "[uuid]",
                 "objectId": 42,
                 "kind": {
                   "line": {
@@ -451,17 +483,21 @@ description: Variables in memory after executing truss_bridge.kcl
                       {
                         "n": 43.15,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 66.4,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -469,17 +505,21 @@ description: Variables in memory after executing truss_bridge.kcl
                       {
                         "n": 82.1,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -517,8 +557,8 @@ description: Variables in memory after executing truss_bridge.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -547,7 +587,7 @@ description: Variables in memory after executing truss_bridge.kcl
                     "units": null
                   }
                 },
-                "sketchId": "5b7e9cc5-005c-5005-bc98-32d1ba6bf697",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line2"
@@ -563,7 +603,7 @@ description: Variables in memory after executing truss_bridge.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
+                "id": "[uuid]",
                 "objectId": 54,
                 "kind": {
                   "line": {
@@ -571,17 +611,21 @@ description: Variables in memory after executing truss_bridge.kcl
                       {
                         "n": 117.74,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 66.4,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -589,17 +633,21 @@ description: Variables in memory after executing truss_bridge.kcl
                       {
                         "n": 82.1,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -637,8 +685,8 @@ description: Variables in memory after executing truss_bridge.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -667,7 +715,7 @@ description: Variables in memory after executing truss_bridge.kcl
                     "units": null
                   }
                 },
-                "sketchId": "5b7e9cc5-005c-5005-bc98-32d1ba6bf697",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line3"
@@ -683,7 +731,7 @@ description: Variables in memory after executing truss_bridge.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
+                "id": "[uuid]",
                 "objectId": 8,
                 "kind": {
                   "line": {
@@ -691,17 +739,21 @@ description: Variables in memory after executing truss_bridge.kcl
                       {
                         "n": 117.74,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 66.4,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -709,17 +761,21 @@ description: Variables in memory after executing truss_bridge.kcl
                       {
                         "n": 167.3,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -757,8 +813,8 @@ description: Variables in memory after executing truss_bridge.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -787,7 +843,7 @@ description: Variables in memory after executing truss_bridge.kcl
                     "units": null
                   }
                 },
-                "sketchId": "5b7e9cc5-005c-5005-bc98-32d1ba6bf697",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line4"
@@ -803,7 +859,7 @@ description: Variables in memory after executing truss_bridge.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "90a5d279-3b15-5070-b2fd-a30474df87a6",
+                "id": "[uuid]",
                 "objectId": 47,
                 "kind": {
                   "line": {
@@ -811,17 +867,21 @@ description: Variables in memory after executing truss_bridge.kcl
                       {
                         "n": 167.3,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -829,17 +889,21 @@ description: Variables in memory after executing truss_bridge.kcl
                       {
                         "n": 175.28,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 66.4,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -877,8 +941,8 @@ description: Variables in memory after executing truss_bridge.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -907,7 +971,7 @@ description: Variables in memory after executing truss_bridge.kcl
                     "units": null
                   }
                 },
-                "sketchId": "5b7e9cc5-005c-5005-bc98-32d1ba6bf697",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line5"
@@ -923,7 +987,7 @@ description: Variables in memory after executing truss_bridge.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
+                "id": "[uuid]",
                 "objectId": 12,
                 "kind": {
                   "line": {
@@ -931,17 +995,21 @@ description: Variables in memory after executing truss_bridge.kcl
                       {
                         "n": 175.28,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 66.4,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -949,17 +1017,21 @@ description: Variables in memory after executing truss_bridge.kcl
                       {
                         "n": 212.38,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -997,8 +1069,8 @@ description: Variables in memory after executing truss_bridge.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1027,7 +1099,7 @@ description: Variables in memory after executing truss_bridge.kcl
                     "units": null
                   }
                 },
-                "sketchId": "5b7e9cc5-005c-5005-bc98-32d1ba6bf697",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line6"
@@ -1043,7 +1115,7 @@ description: Variables in memory after executing truss_bridge.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b",
+                "id": "[uuid]",
                 "objectId": 16,
                 "kind": {
                   "line": {
@@ -1051,17 +1123,21 @@ description: Variables in memory after executing truss_bridge.kcl
                       {
                         "n": 212.38,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -1069,17 +1145,21 @@ description: Variables in memory after executing truss_bridge.kcl
                       {
                         "n": 167.3,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -1117,8 +1197,8 @@ description: Variables in memory after executing truss_bridge.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1147,7 +1227,7 @@ description: Variables in memory after executing truss_bridge.kcl
                     "units": null
                   }
                 },
-                "sketchId": "5b7e9cc5-005c-5005-bc98-32d1ba6bf697",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line7"
@@ -1163,7 +1243,7 @@ description: Variables in memory after executing truss_bridge.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "41c630c9-9d44-581b-98af-caee575bea48",
+                "id": "[uuid]",
                 "objectId": 20,
                 "kind": {
                   "line": {
@@ -1171,17 +1251,21 @@ description: Variables in memory after executing truss_bridge.kcl
                       {
                         "n": 82.1,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -1189,17 +1273,21 @@ description: Variables in memory after executing truss_bridge.kcl
                       {
                         "n": 167.3,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -1237,8 +1325,8 @@ description: Variables in memory after executing truss_bridge.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1267,7 +1355,7 @@ description: Variables in memory after executing truss_bridge.kcl
                     "units": null
                   }
                 },
-                "sketchId": "5b7e9cc5-005c-5005-bc98-32d1ba6bf697",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line8"
@@ -1283,7 +1371,7 @@ description: Variables in memory after executing truss_bridge.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "fc1035ae-3877-5cf6-9e94-7e1f3b755966",
+                "id": "[uuid]",
                 "objectId": 24,
                 "kind": {
                   "line": {
@@ -1291,17 +1379,21 @@ description: Variables in memory after executing truss_bridge.kcl
                       {
                         "n": 0.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -1309,17 +1401,21 @@ description: Variables in memory after executing truss_bridge.kcl
                       {
                         "n": 82.1,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -1357,8 +1453,8 @@ description: Variables in memory after executing truss_bridge.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1387,7 +1483,7 @@ description: Variables in memory after executing truss_bridge.kcl
                     "units": null
                   }
                 },
-                "sketchId": "5b7e9cc5-005c-5005-bc98-32d1ba6bf697",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line9"
@@ -1404,11 +1500,11 @@ description: Variables in memory after executing truss_bridge.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "5b7e9cc5-005c-5005-bc98-32d1ba6bf697",
+              "id": "[uuid]",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -1432,7 +1528,7 @@ description: Variables in memory after executing truss_bridge.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "7b3604da-cb7d-56b0-8f93-648a91817ee2",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -1449,7 +1545,7 @@ description: Variables in memory after executing truss_bridge.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -1473,7 +1569,7 @@ description: Variables in memory after executing truss_bridge.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "bc4183c3-53a3-5213-a2cc-6fc8ca38dc19",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -1490,7 +1586,7 @@ description: Variables in memory after executing truss_bridge.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -1514,7 +1610,7 @@ description: Variables in memory after executing truss_bridge.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -1538,7 +1634,7 @@ description: Variables in memory after executing truss_bridge.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "41c630c9-9d44-581b-98af-caee575bea48",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -1562,7 +1658,7 @@ description: Variables in memory after executing truss_bridge.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "fc1035ae-3877-5cf6-9e94-7e1f3b755966",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -1586,7 +1682,7 @@ description: Variables in memory after executing truss_bridge.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "c5b43f3a-de89-5e69-93ff-c926dbe3c139",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -1603,7 +1699,7 @@ description: Variables in memory after executing truss_bridge.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "38f0111a-8034-5e85-9ec1-07dbc9646b06",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -1627,7 +1723,7 @@ description: Variables in memory after executing truss_bridge.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -1651,7 +1747,7 @@ description: Variables in memory after executing truss_bridge.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "da6695c0-7255-5538-b0f4-c4ea3977fe7d",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -1668,7 +1764,7 @@ description: Variables in memory after executing truss_bridge.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "9370af21-6a1d-5f9a-b1d3-83351b2043e6",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -1692,7 +1788,7 @@ description: Variables in memory after executing truss_bridge.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "fc8b23af-e276-5b5c-a7c2-b40c2f8d3f71",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -1709,7 +1805,7 @@ description: Variables in memory after executing truss_bridge.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "90a5d279-3b15-5070-b2fd-a30474df87a6",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -1733,7 +1829,7 @@ description: Variables in memory after executing truss_bridge.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "0917d07d-5996-5994-8a06-602d43e2b6f3",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -1750,7 +1846,7 @@ description: Variables in memory after executing truss_bridge.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -1775,8 +1871,8 @@ description: Variables in memory after executing truss_bridge.kcl
               ],
               "on": {
                 "type": "plane",
-                "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                "artifactId": "[uuid]",
+                "id": "[uuid]",
                 "objectId": 0,
                 "kind": "Custom",
                 "origin": {
@@ -1816,7 +1912,7 @@ description: Variables in memory after executing truss_bridge.kcl
                 "units": "in",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "2f87eb95-71f2-5911-bdbf-6255b335334d",
+                  "id": "[uuid]",
                   "sourceRange": []
                 }
               },
@@ -1866,8 +1962,8 @@ description: Variables in memory after executing truss_bridge.kcl
                   "value": "line9"
                 }
               },
-              "artifactId": "5b7e9cc5-005c-5005-bc98-32d1ba6bf697",
-              "originalId": "5b7e9cc5-005c-5005-bc98-32d1ba6bf697",
+              "artifactId": "[uuid]",
+              "originalId": "[uuid]",
               "units": "in",
               "isClosed": "implicitly"
             }
@@ -1883,8 +1979,10 @@ description: Variables in memory after executing truss_bridge.kcl
     "value": 0.193,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   }
 }

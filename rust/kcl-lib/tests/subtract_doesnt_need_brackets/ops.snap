@@ -21,8 +21,10 @@ description: Operations executed subtract_doesnt_need_brackets.kcl
                   "value": 0.0,
                   "ty": {
                     "type": "Default",
-                    "len": "mm",
-                    "angle": "degrees"
+                    "value": {
+                      "len": "mm",
+                      "angle": "degrees"
+                    }
                   }
                 },
                 {
@@ -30,8 +32,10 @@ description: Operations executed subtract_doesnt_need_brackets.kcl
                   "value": 0.0,
                   "ty": {
                     "type": "Default",
-                    "len": "mm",
-                    "angle": "degrees"
+                    "value": {
+                      "len": "mm",
+                      "angle": "degrees"
+                    }
                   }
                 }
               ]
@@ -44,8 +48,10 @@ description: Operations executed subtract_doesnt_need_brackets.kcl
               "value": 10.0,
               "ty": {
                 "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
+                "value": {
+                  "len": "mm",
+                  "angle": "degrees"
+                }
               }
             },
             "sourceRange": []
@@ -74,7 +80,7 @@ description: Operations executed subtract_doesnt_need_brackets.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "400a2ed4-52ae-5786-967d-7fdba1bd0850"
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       },
@@ -116,7 +122,7 @@ description: Operations executed subtract_doesnt_need_brackets.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -128,8 +134,10 @@ description: Operations executed subtract_doesnt_need_brackets.kcl
             "value": 10.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -185,8 +193,10 @@ description: Operations executed subtract_doesnt_need_brackets.kcl
                   "value": 7.0,
                   "ty": {
                     "type": "Default",
-                    "len": "mm",
-                    "angle": "degrees"
+                    "value": {
+                      "len": "mm",
+                      "angle": "degrees"
+                    }
                   }
                 },
                 {
@@ -194,8 +204,10 @@ description: Operations executed subtract_doesnt_need_brackets.kcl
                   "value": 3.0,
                   "ty": {
                     "type": "Default",
-                    "len": "mm",
-                    "angle": "degrees"
+                    "value": {
+                      "len": "mm",
+                      "angle": "degrees"
+                    }
                   }
                 }
               ]
@@ -208,8 +220,10 @@ description: Operations executed subtract_doesnt_need_brackets.kcl
               "value": 5.0,
               "ty": {
                 "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
+                "value": {
+                  "len": "mm",
+                  "angle": "degrees"
+                }
               }
             },
             "sourceRange": []
@@ -242,7 +256,7 @@ description: Operations executed subtract_doesnt_need_brackets.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "400a2ed4-52ae-5786-967d-7fdba1bd0850"
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       },
@@ -284,7 +298,7 @@ description: Operations executed subtract_doesnt_need_brackets.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "7b681387-29ea-57f1-8713-d63280827139"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -296,8 +310,10 @@ description: Operations executed subtract_doesnt_need_brackets.kcl
             "value": 10.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -343,7 +359,7 @@ description: Operations executed subtract_doesnt_need_brackets.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -355,8 +371,10 @@ description: Operations executed subtract_doesnt_need_brackets.kcl
             "value": 1.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -389,7 +407,7 @@ description: Operations executed subtract_doesnt_need_brackets.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "41c630c9-9d44-581b-98af-caee575bea48"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -399,7 +417,7 @@ description: Operations executed subtract_doesnt_need_brackets.kcl
           "value": {
             "type": "Solid",
             "value": {
-              "artifactId": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3"
+              "artifactId": "[uuid]"
             }
           },
           "sourceRange": []
@@ -458,7 +476,9 @@ description: Operations executed subtract_doesnt_need_brackets.kcl
         "value": 2.718281828459045,
         "ty": {
           "type": "Known",
-          "type": "Count"
+          "value": {
+            "type": "Count"
+          }
         }
       },
       "visibility": "export",
@@ -486,7 +506,9 @@ description: Operations executed subtract_doesnt_need_brackets.kcl
         "value": 6.283185307179586,
         "ty": {
           "type": "Known",
-          "type": "Count"
+          "value": {
+            "type": "Count"
+          }
         }
       },
       "visibility": "export",
@@ -520,7 +542,7 @@ description: Operations executed subtract_doesnt_need_brackets.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 23
+            "index": 24
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -544,7 +566,7 @@ description: Operations executed subtract_doesnt_need_brackets.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 24
+            "index": 25
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -568,7 +590,7 @@ description: Operations executed subtract_doesnt_need_brackets.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 25
+            "index": 26
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -592,7 +614,7 @@ description: Operations executed subtract_doesnt_need_brackets.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 26
+            "index": 27
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -616,7 +638,7 @@ description: Operations executed subtract_doesnt_need_brackets.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 27
+            "index": 28
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -640,7 +662,7 @@ description: Operations executed subtract_doesnt_need_brackets.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 28
+            "index": 29
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -664,7 +686,7 @@ description: Operations executed subtract_doesnt_need_brackets.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 29
+            "index": 30
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -688,7 +710,7 @@ description: Operations executed subtract_doesnt_need_brackets.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 30
+            "index": 31
           },
           {
             "type": "VariableDeclarationDeclaration"

@@ -32,8 +32,10 @@ description: Operations executed import_async.kcl
               "value": 7.0,
               "ty": {
                 "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
+                "value": {
+                  "len": "mm",
+                  "angle": "degrees"
+                }
               }
             },
             "sourceRange": []
@@ -43,9 +45,11 @@ description: Operations executed import_async.kcl
               "type": "Number",
               "value": 35.0,
               "ty": {
-                "degrees": null,
                 "type": "Known",
-                "type": "Angle"
+                "value": {
+                  "type": "Angle",
+                  "value": "degrees"
+                }
               }
             },
             "sourceRange": []
@@ -56,8 +60,10 @@ description: Operations executed import_async.kcl
               "value": 2.0,
               "ty": {
                 "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
+                "value": {
+                  "len": "mm",
+                  "angle": "degrees"
+                }
               }
             },
             "sourceRange": []
@@ -68,8 +74,10 @@ description: Operations executed import_async.kcl
               "value": 21.0,
               "ty": {
                 "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
+                "value": {
+                  "len": "mm",
+                  "angle": "degrees"
+                }
               }
             },
             "sourceRange": []
@@ -79,9 +87,11 @@ description: Operations executed import_async.kcl
               "type": "Number",
               "value": 20.0,
               "ty": {
-                "degrees": null,
                 "type": "Known",
-                "type": "Angle"
+                "value": {
+                  "type": "Angle",
+                  "value": "degrees"
+                }
               }
             },
             "sourceRange": []
@@ -109,8 +119,10 @@ description: Operations executed import_async.kcl
         "value": 42.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -151,8 +163,10 @@ description: Operations executed import_async.kcl
         "value": 2.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -193,8 +207,10 @@ description: Operations executed import_async.kcl
         "value": 2.5,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -235,8 +251,10 @@ description: Operations executed import_async.kcl
         "value": 39.46709007300815,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -277,8 +295,10 @@ description: Operations executed import_async.kcl
         "value": 46.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -319,8 +339,10 @@ description: Operations executed import_async.kcl
         "value": 2.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -361,8 +383,10 @@ description: Operations executed import_async.kcl
         "value": 1.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -403,8 +427,10 @@ description: Operations executed import_async.kcl
         "value": 7.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -445,8 +471,10 @@ description: Operations executed import_async.kcl
         "value": 3.5,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -486,9 +514,11 @@ description: Operations executed import_async.kcl
         "type": "Number",
         "value": 0.28975170143604745,
         "ty": {
-          "radians": null,
           "type": "Known",
-          "type": "Angle"
+          "value": {
+            "type": "Angle",
+            "value": "radians"
+          }
         }
       },
       "visibility": "default",
@@ -527,7 +557,7 @@ description: Operations executed import_async.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "d928222f-569e-5fdf-97dd-1103ab13b0aa"
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       },
@@ -579,8 +609,10 @@ description: Operations executed import_async.kcl
               "value": 0.0,
               "ty": {
                 "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
+                "value": {
+                  "len": "mm",
+                  "angle": "degrees"
+                }
               }
             },
             "sourceRange": []
@@ -623,9 +655,11 @@ description: Operations executed import_async.kcl
         "type": "Number",
         "value": 1.5707963267948966,
         "ty": {
-          "radians": null,
           "type": "Known",
-          "type": "Angle"
+          "value": {
+            "type": "Angle",
+            "value": "radians"
+          }
         }
       },
       "visibility": "default",
@@ -677,7 +711,7 @@ description: Operations executed import_async.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "d928222f-569e-5fdf-97dd-1103ab13b0aa"
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       },
@@ -688,8 +722,10 @@ description: Operations executed import_async.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -750,7 +786,7 @@ description: Operations executed import_async.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "fc1035ae-3877-5cf6-9e94-7e1f3b755966"
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       },
@@ -808,7 +844,7 @@ description: Operations executed import_async.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "38f0111a-8034-5e85-9ec1-07dbc9646b06"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -818,7 +854,7 @@ description: Operations executed import_async.kcl
           "value": {
             "type": "Sketch",
             "value": {
-              "artifactId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
+              "artifactId": "[uuid]"
             }
           },
           "sourceRange": []
@@ -887,8 +923,10 @@ description: Operations executed import_async.kcl
               "value": 3.5,
               "ty": {
                 "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
+                "value": {
+                  "len": "mm",
+                  "angle": "degrees"
+                }
               }
             },
             "sourceRange": []
@@ -931,9 +969,11 @@ description: Operations executed import_async.kcl
         "type": "Number",
         "value": 1.4640403411278755,
         "ty": {
-          "radians": null,
           "type": "Known",
-          "type": "Angle"
+          "value": {
+            "type": "Angle",
+            "value": "radians"
+          }
         }
       },
       "visibility": "default",
@@ -985,7 +1025,7 @@ description: Operations executed import_async.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "d928222f-569e-5fdf-97dd-1103ab13b0aa"
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       },
@@ -996,8 +1036,10 @@ description: Operations executed import_async.kcl
             "value": 3.5,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -1058,7 +1100,7 @@ description: Operations executed import_async.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "6f9536f6-0229-5cbb-bd5f-d3e20949d527"
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       },
@@ -1116,7 +1158,7 @@ description: Operations executed import_async.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "037b0f2d-13ef-58af-b918-43b89e77393e"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -1126,7 +1168,7 @@ description: Operations executed import_async.kcl
           "value": {
             "type": "Sketch",
             "value": {
-              "artifactId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
+              "artifactId": "[uuid]"
             }
           },
           "sourceRange": []
@@ -1195,8 +1237,10 @@ description: Operations executed import_async.kcl
               "value": 7.0,
               "ty": {
                 "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
+                "value": {
+                  "len": "mm",
+                  "angle": "degrees"
+                }
               }
             },
             "sourceRange": []
@@ -1239,9 +1283,11 @@ description: Operations executed import_async.kcl
         "type": "Number",
         "value": 1.3560427808151838,
         "ty": {
-          "radians": null,
           "type": "Known",
-          "type": "Angle"
+          "value": {
+            "type": "Angle",
+            "value": "radians"
+          }
         }
       },
       "visibility": "default",
@@ -1293,7 +1339,7 @@ description: Operations executed import_async.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "d928222f-569e-5fdf-97dd-1103ab13b0aa"
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       },
@@ -1304,8 +1350,10 @@ description: Operations executed import_async.kcl
             "value": 7.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -1366,7 +1414,7 @@ description: Operations executed import_async.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "e342814e-d7c1-537b-959c-f7fd92c90294"
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       },
@@ -1424,7 +1472,7 @@ description: Operations executed import_async.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "e383621f-755a-5f2e-ada3-608aff393dab"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -1434,7 +1482,7 @@ description: Operations executed import_async.kcl
           "value": {
             "type": "Sketch",
             "value": {
-              "artifactId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
+              "artifactId": "[uuid]"
             }
           },
           "sourceRange": []
@@ -1499,19 +1547,19 @@ description: Operations executed import_async.kcl
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "38f0111a-8034-5e85-9ec1-07dbc9646b06"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "037b0f2d-13ef-58af-b918-43b89e77393e"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "e383621f-755a-5f2e-ada3-608aff393dab"
+                "artifactId": "[uuid]"
               }
             }
           ]
@@ -1557,7 +1605,7 @@ description: Operations executed import_async.kcl
       "unlabeledArg": {
         "value": {
           "type": "ImportedGeometry",
-          "artifact_id": "3b9b7e44-df88-5f85-82a2-d6c192b9ae40"
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       },
@@ -1568,8 +1616,10 @@ description: Operations executed import_async.kcl
             "value": 10.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -1629,7 +1679,9 @@ description: Operations executed import_async.kcl
         "value": 2.718281828459045,
         "ty": {
           "type": "Known",
-          "type": "Count"
+          "value": {
+            "type": "Count"
+          }
         }
       },
       "visibility": "export",
@@ -1657,7 +1709,9 @@ description: Operations executed import_async.kcl
         "value": 6.283185307179586,
         "ty": {
           "type": "Known",
-          "type": "Count"
+          "value": {
+            "type": "Count"
+          }
         }
       },
       "visibility": "export",
@@ -1691,7 +1745,7 @@ description: Operations executed import_async.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 23
+            "index": 24
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1715,7 +1769,7 @@ description: Operations executed import_async.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 24
+            "index": 25
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1739,7 +1793,7 @@ description: Operations executed import_async.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 25
+            "index": 26
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1763,7 +1817,7 @@ description: Operations executed import_async.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 26
+            "index": 27
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1787,7 +1841,7 @@ description: Operations executed import_async.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 27
+            "index": 28
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1811,7 +1865,7 @@ description: Operations executed import_async.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 28
+            "index": 29
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1835,7 +1889,7 @@ description: Operations executed import_async.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 29
+            "index": 30
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1859,7 +1913,7 @@ description: Operations executed import_async.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 30
+            "index": 31
           },
           {
             "type": "VariableDeclarationDeclaration"

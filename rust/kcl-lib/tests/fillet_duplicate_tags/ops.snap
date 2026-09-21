@@ -10,7 +10,7 @@ description: Operations executed fillet_duplicate_tags.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "400a2ed4-52ae-5786-967d-7fdba1bd0850"
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       },
@@ -42,7 +42,7 @@ description: Operations executed fillet_duplicate_tags.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -54,8 +54,10 @@ description: Operations executed fillet_duplicate_tags.kcl
             "value": 10.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -85,7 +87,7 @@ description: Operations executed fillet_duplicate_tags.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "41c630c9-9d44-581b-98af-caee575bea48"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -97,8 +99,10 @@ description: Operations executed fillet_duplicate_tags.kcl
             "value": 1.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -110,15 +114,15 @@ description: Operations executed fillet_duplicate_tags.kcl
               {
                 "type": "TagIdentifier",
                 "value": "line003",
-                "artifact_id": "523b9fc1-d681-5ef3-b407-128525533bfe"
+                "artifact_id": "[uuid]"
               },
               {
                 "type": "Uuid",
-                "value": "d47408cc-330b-59ea-9675-89b8fd0b97f5"
+                "value": "[uuid]"
               },
               {
                 "type": "Uuid",
-                "value": "d47408cc-330b-59ea-9675-89b8fd0b97f5"
+                "value": "[uuid]"
               }
             ]
           },
@@ -180,7 +184,9 @@ description: Operations executed fillet_duplicate_tags.kcl
         "value": 2.718281828459045,
         "ty": {
           "type": "Known",
-          "type": "Count"
+          "value": {
+            "type": "Count"
+          }
         }
       },
       "visibility": "export",
@@ -208,7 +214,9 @@ description: Operations executed fillet_duplicate_tags.kcl
         "value": 6.283185307179586,
         "ty": {
           "type": "Known",
-          "type": "Count"
+          "value": {
+            "type": "Count"
+          }
         }
       },
       "visibility": "export",
@@ -242,7 +250,7 @@ description: Operations executed fillet_duplicate_tags.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 23
+            "index": 24
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -266,7 +274,7 @@ description: Operations executed fillet_duplicate_tags.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 24
+            "index": 25
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -290,7 +298,7 @@ description: Operations executed fillet_duplicate_tags.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 25
+            "index": 26
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -314,7 +322,7 @@ description: Operations executed fillet_duplicate_tags.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 26
+            "index": 27
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -338,7 +346,7 @@ description: Operations executed fillet_duplicate_tags.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 27
+            "index": 28
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -362,7 +370,7 @@ description: Operations executed fillet_duplicate_tags.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 28
+            "index": 29
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -386,7 +394,7 @@ description: Operations executed fillet_duplicate_tags.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 29
+            "index": 30
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -410,7 +418,7 @@ description: Operations executed fillet_duplicate_tags.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 30
+            "index": 31
           },
           {
             "type": "VariableDeclarationDeclaration"

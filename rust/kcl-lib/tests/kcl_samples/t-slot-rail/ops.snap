@@ -17,9 +17,11 @@ description: Operations executed t-slot-rail.kcl
               "type": "Number",
               "value": 2.0,
               "ty": {
-                "ft": null,
                 "type": "Known",
-                "type": "Length"
+                "value": {
+                  "type": "Length",
+                  "value": "ft"
+                }
               }
             },
             "sourceRange": []
@@ -30,8 +32,10 @@ description: Operations executed t-slot-rail.kcl
               "value": 1.5,
               "ty": {
                 "type": "Default",
-                "len": "in",
-                "angle": "degrees"
+                "value": {
+                  "len": "in",
+                  "angle": "degrees"
+                }
               }
             },
             "sourceRange": []
@@ -59,8 +63,10 @@ description: Operations executed t-slot-rail.kcl
         "value": 0.262,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -141,18 +147,22 @@ description: Operations executed t-slot-rail.kcl
                 "type": "SketchVar",
                 "value": 0.42,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.322,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -167,18 +177,22 @@ description: Operations executed t-slot-rail.kcl
                 "type": "SketchVar",
                 "value": 0.5,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.322,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -241,18 +255,22 @@ description: Operations executed t-slot-rail.kcl
                 "type": "SketchVar",
                 "value": 0.42,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.232,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -267,18 +285,22 @@ description: Operations executed t-slot-rail.kcl
                 "type": "SketchVar",
                 "value": 0.3563603896932107,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.2956396103067893,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -293,18 +315,22 @@ description: Operations executed t-slot-rail.kcl
                 "type": "SketchVar",
                 "value": 0.42,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.322,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -424,18 +450,22 @@ description: Operations executed t-slot-rail.kcl
                 "type": "SketchVar",
                 "value": 0.17372077938642136,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.113,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -450,18 +480,22 @@ description: Operations executed t-slot-rail.kcl
                 "type": "SketchVar",
                 "value": 0.3563603896932107,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.2956396103067893,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -581,18 +615,22 @@ description: Operations executed t-slot-rail.kcl
                 "type": "SketchVar",
                 "value": 0.18079184719828684,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.10592893218813453,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -607,18 +645,22 @@ description: Operations executed t-slot-rail.kcl
                 "type": "SketchVar",
                 "value": 0.18079184719828684,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.09592893218813453,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -633,18 +675,22 @@ description: Operations executed t-slot-rail.kcl
                 "type": "SketchVar",
                 "value": 0.17372077938642136,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.113,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -764,18 +810,22 @@ description: Operations executed t-slot-rail.kcl
                 "type": "SketchVar",
                 "value": 0.33,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.09592893218813453,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -790,18 +840,22 @@ description: Operations executed t-slot-rail.kcl
                 "type": "SketchVar",
                 "value": 0.18079184719828684,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.09592893218813453,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -921,18 +975,22 @@ description: Operations executed t-slot-rail.kcl
                 "type": "SketchVar",
                 "value": 0.33,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.08592893218813454,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -947,18 +1005,22 @@ description: Operations executed t-slot-rail.kcl
                 "type": "SketchVar",
                 "value": 0.33,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.09592893218813453,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -973,18 +1035,22 @@ description: Operations executed t-slot-rail.kcl
                 "type": "SketchVar",
                 "value": 0.34,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.08592893218813454,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -1104,18 +1170,22 @@ description: Operations executed t-slot-rail.kcl
                 "type": "SketchVar",
                 "value": 0.34,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.01,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -1130,18 +1200,22 @@ description: Operations executed t-slot-rail.kcl
                 "type": "SketchVar",
                 "value": 0.34,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.08592893218813454,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -1261,18 +1335,22 @@ description: Operations executed t-slot-rail.kcl
                 "type": "SketchVar",
                 "value": 0.33,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.01,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -1287,18 +1365,22 @@ description: Operations executed t-slot-rail.kcl
                 "type": "SketchVar",
                 "value": 0.34,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.01,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -1313,18 +1395,22 @@ description: Operations executed t-slot-rail.kcl
                 "type": "SketchVar",
                 "value": 0.33,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -1444,18 +1530,22 @@ description: Operations executed t-slot-rail.kcl
                 "type": "SketchVar",
                 "value": 0.3,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -1470,18 +1560,22 @@ description: Operations executed t-slot-rail.kcl
                 "type": "SketchVar",
                 "value": 0.33,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -1601,18 +1695,22 @@ description: Operations executed t-slot-rail.kcl
                 "type": "SketchVar",
                 "value": 0.282,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -1627,18 +1725,22 @@ description: Operations executed t-slot-rail.kcl
                 "type": "SketchVar",
                 "value": 0.264,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -1653,18 +1755,22 @@ description: Operations executed t-slot-rail.kcl
                 "type": "SketchVar",
                 "value": 0.3,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -1784,18 +1890,22 @@ description: Operations executed t-slot-rail.kcl
                 "type": "SketchVar",
                 "value": 0.164,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -1810,18 +1920,22 @@ description: Operations executed t-slot-rail.kcl
                 "type": "SketchVar",
                 "value": 0.264,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -1941,18 +2055,22 @@ description: Operations executed t-slot-rail.kcl
                 "type": "SketchVar",
                 "value": 0.146,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -1967,18 +2085,22 @@ description: Operations executed t-slot-rail.kcl
                 "type": "SketchVar",
                 "value": 0.128,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -1993,18 +2115,22 @@ description: Operations executed t-slot-rail.kcl
                 "type": "SketchVar",
                 "value": 0.164,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -2124,18 +2250,22 @@ description: Operations executed t-slot-rail.kcl
                 "type": "SketchVar",
                 "value": 0.098,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -2150,18 +2280,22 @@ description: Operations executed t-slot-rail.kcl
                 "type": "SketchVar",
                 "value": 0.128,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -2281,18 +2415,22 @@ description: Operations executed t-slot-rail.kcl
                 "type": "SketchVar",
                 "value": 0.098,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.10411818181818162,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -2307,18 +2445,22 @@ description: Operations executed t-slot-rail.kcl
                 "type": "SketchVar",
                 "value": 0.098,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -2333,18 +2475,22 @@ description: Operations executed t-slot-rail.kcl
                 "type": "SketchVar",
                 "value": 0.0275,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0275,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -2463,59 +2609,59 @@ description: Operations executed t-slot-rail.kcl
           "value": {
             "arc10": {
               "type": "Segment",
-              "artifact_id": "e00e9caf-6e9e-5221-8545-b199546c367f"
+              "artifact_id": "[uuid]"
             },
             "arc12": {
               "type": "Segment",
-              "artifact_id": "9370af21-6a1d-5f9a-b1d3-83351b2043e6"
+              "artifact_id": "[uuid]"
             },
             "arc14": {
               "type": "Segment",
-              "artifact_id": "6f9536f6-0229-5cbb-bd5f-d3e20949d527"
+              "artifact_id": "[uuid]"
             },
             "arc2": {
               "type": "Segment",
-              "artifact_id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53"
+              "artifact_id": "[uuid]"
             },
             "arc4": {
               "type": "Segment",
-              "artifact_id": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b"
+              "artifact_id": "[uuid]"
             },
             "arc6": {
               "type": "Segment",
-              "artifact_id": "fc1035ae-3877-5cf6-9e94-7e1f3b755966"
+              "artifact_id": "[uuid]"
             },
             "arc8": {
               "type": "Segment",
-              "artifact_id": "fe76cc2a-18a1-5937-82e8-b2572a7c2149"
+              "artifact_id": "[uuid]"
             },
             "line1": {
               "type": "Segment",
-              "artifact_id": "91226189-7e64-5690-9203-67ee33a6eb03"
+              "artifact_id": "[uuid]"
             },
             "line11": {
               "type": "Segment",
-              "artifact_id": "f084ad07-5777-5607-a544-c69f455c2aab"
+              "artifact_id": "[uuid]"
             },
             "line13": {
               "type": "Segment",
-              "artifact_id": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3"
+              "artifact_id": "[uuid]"
             },
             "line3": {
               "type": "Segment",
-              "artifact_id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4"
+              "artifact_id": "[uuid]"
             },
             "line5": {
               "type": "Segment",
-              "artifact_id": "41c630c9-9d44-581b-98af-caee575bea48"
+              "artifact_id": "[uuid]"
             },
             "line7": {
               "type": "Segment",
-              "artifact_id": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7"
+              "artifact_id": "[uuid]"
             },
             "line9": {
               "type": "Segment",
-              "artifact_id": "7b681387-29ea-57f1-8713-d63280827139"
+              "artifact_id": "[uuid]"
             },
             "meta": {
               "type": "Object",
@@ -2523,7 +2669,7 @@ description: Operations executed t-slot-rail.kcl
                 "sketch": {
                   "type": "Sketch",
                   "value": {
-                    "artifactId": "59bc8baf-257f-5783-ad91-95db236aa6b0"
+                    "artifactId": "[uuid]"
                   }
                 }
               }
@@ -2545,8 +2691,10 @@ description: Operations executed t-slot-rail.kcl
                     "value": 1.0,
                     "ty": {
                       "type": "Default",
-                      "len": "in",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "in",
+                        "angle": "degrees"
+                      }
                     }
                   },
                   {
@@ -2554,8 +2702,10 @@ description: Operations executed t-slot-rail.kcl
                     "value": 1.0,
                     "ty": {
                       "type": "Default",
-                      "len": "in",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "in",
+                        "angle": "degrees"
+                      }
                     }
                   }
                 ]
@@ -2568,8 +2718,10 @@ description: Operations executed t-slot-rail.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "in",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "in",
+                        "angle": "degrees"
+                      }
                     }
                   },
                   {
@@ -2577,8 +2729,10 @@ description: Operations executed t-slot-rail.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "in",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "in",
+                        "angle": "degrees"
+                      }
                     }
                   }
                 ]
@@ -2628,7 +2782,7 @@ description: Operations executed t-slot-rail.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "59bc8baf-257f-5783-ad91-95db236aa6b0"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -2646,8 +2800,10 @@ description: Operations executed t-slot-rail.kcl
                     "value": 1.0,
                     "ty": {
                       "type": "Default",
-                      "len": "in",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "in",
+                        "angle": "degrees"
+                      }
                     }
                   },
                   {
@@ -2655,8 +2811,10 @@ description: Operations executed t-slot-rail.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "in",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "in",
+                        "angle": "degrees"
+                      }
                     }
                   }
                 ]
@@ -2669,8 +2827,10 @@ description: Operations executed t-slot-rail.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "in",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "in",
+                        "angle": "degrees"
+                      }
                     }
                   },
                   {
@@ -2678,8 +2838,10 @@ description: Operations executed t-slot-rail.kcl
                     "value": 0.5,
                     "ty": {
                       "type": "Default",
-                      "len": "in",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "in",
+                        "angle": "degrees"
+                      }
                     }
                   }
                 ]
@@ -2729,7 +2891,7 @@ description: Operations executed t-slot-rail.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "59bc8baf-257f-5783-ad91-95db236aa6b0"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -2747,8 +2909,10 @@ description: Operations executed t-slot-rail.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "in",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "in",
+                        "angle": "degrees"
+                      }
                     }
                   },
                   {
@@ -2756,8 +2920,10 @@ description: Operations executed t-slot-rail.kcl
                     "value": 1.0,
                     "ty": {
                       "type": "Default",
-                      "len": "in",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "in",
+                        "angle": "degrees"
+                      }
                     }
                   }
                 ]
@@ -2770,8 +2936,10 @@ description: Operations executed t-slot-rail.kcl
                     "value": 0.5,
                     "ty": {
                       "type": "Default",
-                      "len": "in",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "in",
+                        "angle": "degrees"
+                      }
                     }
                   },
                   {
@@ -2779,8 +2947,10 @@ description: Operations executed t-slot-rail.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "in",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "in",
+                        "angle": "degrees"
+                      }
                     }
                   }
                 ]
@@ -2834,11 +3004,11 @@ description: Operations executed t-slot-rail.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "91226189-7e64-5690-9203-67ee33a6eb03"
+                "artifact_id": "[uuid]"
               },
               {
                 "type": "Segment",
-                "artifact_id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53"
+                "artifact_id": "[uuid]"
               }
             ]
           },
@@ -2885,7 +3055,7 @@ description: Operations executed t-slot-rail.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "62f92a38-07e6-5321-9e56-be9dd50f1d7b"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -2897,7 +3067,9 @@ description: Operations executed t-slot-rail.kcl
             "value": 1.5,
             "ty": {
               "type": "Known",
-              "type": "Count"
+              "value": {
+                "type": "Count"
+              }
             }
           },
           "sourceRange": []
@@ -2908,7 +3080,9 @@ description: Operations executed t-slot-rail.kcl
             "value": 1.5,
             "ty": {
               "type": "Known",
-              "type": "Count"
+              "value": {
+                "type": "Count"
+              }
             }
           },
           "sourceRange": []
@@ -2919,7 +3093,9 @@ description: Operations executed t-slot-rail.kcl
             "value": 1.5,
             "ty": {
               "type": "Known",
-              "type": "Count"
+              "value": {
+                "type": "Count"
+              }
             }
           },
           "sourceRange": []
@@ -2965,7 +3141,7 @@ description: Operations executed t-slot-rail.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "62f92a38-07e6-5321-9e56-be9dd50f1d7b"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -2976,9 +3152,11 @@ description: Operations executed t-slot-rail.kcl
             "type": "Number",
             "value": 2.0,
             "ty": {
-              "ft": null,
               "type": "Known",
-              "type": "Length"
+              "value": {
+                "type": "Length",
+                "value": "ft"
+              }
             }
           },
           "sourceRange": []
@@ -3061,18 +3239,22 @@ description: Operations executed t-slot-rail.kcl
                 "type": "SketchVar",
                 "value": 0.75,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.75,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -3087,18 +3269,22 @@ description: Operations executed t-slot-rail.kcl
                 "type": "SketchVar",
                 "value": 0.88,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.75,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -3162,18 +3348,22 @@ description: Operations executed t-slot-rail.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -3242,18 +3432,22 @@ description: Operations executed t-slot-rail.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -3374,7 +3568,7 @@ description: Operations executed t-slot-rail.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "d5eaf678-0440-563f-ac19-e473850b9270"
+                "artifact_id": "[uuid]"
               }
             ]
           },
@@ -3417,7 +3611,7 @@ description: Operations executed t-slot-rail.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "0919e597-7112-50da-97bb-e5ba198e1dcd"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -3428,9 +3622,11 @@ description: Operations executed t-slot-rail.kcl
             "type": "Number",
             "value": 2.0,
             "ty": {
-              "ft": null,
               "type": "Known",
-              "type": "Length"
+              "value": {
+                "type": "Length",
+                "value": "ft"
+              }
             }
           },
           "sourceRange": []
@@ -3472,7 +3668,7 @@ description: Operations executed t-slot-rail.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "20dfacb2-a19d-5f06-80d9-1dae939bbd58"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -3485,7 +3681,7 @@ description: Operations executed t-slot-rail.kcl
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "e442b4e0-3e58-50e0-9ed6-85e63a7afccf"
+                  "artifactId": "[uuid]"
                 }
               }
             ]
@@ -3532,19 +3728,19 @@ description: Operations executed t-slot-rail.kcl
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "59bc8baf-257f-5783-ad91-95db236aa6b0"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "59bc8baf-257f-5783-ad91-95db236aa6b0"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "7d8da150-b7c1-5e35-95ff-877c868e6b01"
+                "artifactId": "[uuid]"
               }
             }
           ]
@@ -3618,7 +3814,9 @@ description: Operations executed t-slot-rail.kcl
         "value": 2.718281828459045,
         "ty": {
           "type": "Known",
-          "type": "Count"
+          "value": {
+            "type": "Count"
+          }
         }
       },
       "visibility": "export",
@@ -3646,7 +3844,9 @@ description: Operations executed t-slot-rail.kcl
         "value": 6.283185307179586,
         "ty": {
           "type": "Known",
-          "type": "Count"
+          "value": {
+            "type": "Count"
+          }
         }
       },
       "visibility": "export",
@@ -3680,7 +3880,7 @@ description: Operations executed t-slot-rail.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 23
+            "index": 24
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3704,7 +3904,7 @@ description: Operations executed t-slot-rail.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 24
+            "index": 25
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3728,7 +3928,7 @@ description: Operations executed t-slot-rail.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 25
+            "index": 26
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3752,7 +3952,7 @@ description: Operations executed t-slot-rail.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 26
+            "index": 27
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3776,7 +3976,7 @@ description: Operations executed t-slot-rail.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 27
+            "index": 28
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3800,7 +4000,7 @@ description: Operations executed t-slot-rail.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 28
+            "index": 29
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3824,7 +4024,7 @@ description: Operations executed t-slot-rail.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 29
+            "index": 30
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3848,7 +4048,7 @@ description: Operations executed t-slot-rail.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 30
+            "index": 31
           },
           {
             "type": "VariableDeclarationDeclaration"

@@ -60,8 +60,10 @@ description: Operations executed lattice-cubic.kcl
         "value": 3.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -89,8 +91,10 @@ description: Operations executed lattice-cubic.kcl
         "value": 20.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -118,8 +122,10 @@ description: Operations executed lattice-cubic.kcl
         "value": 5.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -147,8 +153,10 @@ description: Operations executed lattice-cubic.kcl
         "value": 0.5,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -176,8 +184,10 @@ description: Operations executed lattice-cubic.kcl
         "value": 40.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -280,18 +290,22 @@ description: Operations executed lattice-cubic.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 5.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -306,18 +320,22 @@ description: Operations executed lattice-cubic.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -5.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -367,18 +385,22 @@ description: Operations executed lattice-cubic.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -393,18 +415,22 @@ description: Operations executed lattice-cubic.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -5.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -419,18 +445,22 @@ description: Operations executed lattice-cubic.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 5.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -572,18 +602,22 @@ description: Operations executed lattice-cubic.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -799,7 +833,7 @@ description: Operations executed lattice-cubic.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
+                "artifact_id": "[uuid]"
               }
             ]
           },
@@ -829,7 +863,7 @@ description: Operations executed lattice-cubic.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "186e6756-e0a9-5df7-a3d1-f5f025d153e3"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -840,9 +874,11 @@ description: Operations executed lattice-cubic.kcl
             "type": "Number",
             "value": 360.0,
             "ty": {
-              "degrees": null,
               "type": "Known",
-              "type": "Angle"
+              "value": {
+                "type": "Angle",
+                "value": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -859,8 +895,10 @@ description: Operations executed lattice-cubic.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   },
                   {
@@ -868,8 +906,10 @@ description: Operations executed lattice-cubic.kcl
                     "value": 1.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   }
                 ]
@@ -882,8 +922,10 @@ description: Operations executed lattice-cubic.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   },
                   {
@@ -891,8 +933,10 @@ description: Operations executed lattice-cubic.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   }
                 ]
@@ -925,7 +969,7 @@ description: Operations executed lattice-cubic.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -951,7 +995,7 @@ description: Operations executed lattice-cubic.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "9370af21-6a1d-5f9a-b1d3-83351b2043e6"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -985,7 +1029,7 @@ description: Operations executed lattice-cubic.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "9370af21-6a1d-5f9a-b1d3-83351b2043e6"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -1003,8 +1047,10 @@ description: Operations executed lattice-cubic.kcl
                     "value": 1.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   },
                   {
@@ -1012,8 +1058,10 @@ description: Operations executed lattice-cubic.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   },
                   {
@@ -1021,8 +1069,10 @@ description: Operations executed lattice-cubic.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   }
                 ]
@@ -1035,8 +1085,10 @@ description: Operations executed lattice-cubic.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   },
                   {
@@ -1044,8 +1096,10 @@ description: Operations executed lattice-cubic.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   },
                   {
@@ -1053,8 +1107,10 @@ description: Operations executed lattice-cubic.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   }
                 ]
@@ -1069,8 +1125,10 @@ description: Operations executed lattice-cubic.kcl
             "value": 20.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -1081,7 +1139,9 @@ description: Operations executed lattice-cubic.kcl
             "value": 3.0,
             "ty": {
               "type": "Known",
-              "type": "Count"
+              "value": {
+                "type": "Count"
+              }
             }
           },
           "sourceRange": []
@@ -1113,19 +1173,19 @@ description: Operations executed lattice-cubic.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "9370af21-6a1d-5f9a-b1d3-83351b2043e6"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "1b0b0c60-a447-579e-b1b3-c921dfddeafc"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "c34209f0-8881-53da-b534-19b7c3937d6e"
+                "artifactId": "[uuid]"
               }
             }
           ]
@@ -1145,8 +1205,10 @@ description: Operations executed lattice-cubic.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   },
                   {
@@ -1154,8 +1216,10 @@ description: Operations executed lattice-cubic.kcl
                     "value": 1.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   },
                   {
@@ -1163,8 +1227,10 @@ description: Operations executed lattice-cubic.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   }
                 ]
@@ -1177,8 +1243,10 @@ description: Operations executed lattice-cubic.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   },
                   {
@@ -1186,8 +1254,10 @@ description: Operations executed lattice-cubic.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   },
                   {
@@ -1195,8 +1265,10 @@ description: Operations executed lattice-cubic.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   }
                 ]
@@ -1211,8 +1283,10 @@ description: Operations executed lattice-cubic.kcl
             "value": 20.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -1223,7 +1297,9 @@ description: Operations executed lattice-cubic.kcl
             "value": 3.0,
             "ty": {
               "type": "Known",
-              "type": "Count"
+              "value": {
+                "type": "Count"
+              }
             }
           },
           "sourceRange": []
@@ -1255,55 +1331,55 @@ description: Operations executed lattice-cubic.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "9370af21-6a1d-5f9a-b1d3-83351b2043e6"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "9f5b043b-5dec-5fbe-b0df-bc3afad40d8f"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "33aa9496-5ecf-5157-ab0b-51ae219ee4df"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "1b0b0c60-a447-579e-b1b3-c921dfddeafc"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "e9732a7f-13dd-57b9-ac68-6205d9543084"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "46781404-ca48-5e2f-815f-819b6959e96b"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "c34209f0-8881-53da-b534-19b7c3937d6e"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "af0d1b83-c69d-5750-97d2-6152b91de821"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "a9521f68-97ee-5d4b-8bdc-3e3f26483ee9"
+                "artifactId": "[uuid]"
               }
             }
           ]
@@ -1323,8 +1399,10 @@ description: Operations executed lattice-cubic.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   },
                   {
@@ -1332,8 +1410,10 @@ description: Operations executed lattice-cubic.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   },
                   {
@@ -1341,8 +1421,10 @@ description: Operations executed lattice-cubic.kcl
                     "value": 1.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   }
                 ]
@@ -1355,8 +1437,10 @@ description: Operations executed lattice-cubic.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   },
                   {
@@ -1364,8 +1448,10 @@ description: Operations executed lattice-cubic.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   },
                   {
@@ -1373,8 +1459,10 @@ description: Operations executed lattice-cubic.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   }
                 ]
@@ -1389,8 +1477,10 @@ description: Operations executed lattice-cubic.kcl
             "value": 20.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -1401,7 +1491,9 @@ description: Operations executed lattice-cubic.kcl
             "value": 3.0,
             "ty": {
               "type": "Known",
-              "type": "Count"
+              "value": {
+                "type": "Count"
+              }
             }
           },
           "sourceRange": []
@@ -1430,9 +1522,11 @@ description: Operations executed lattice-cubic.kcl
         "type": "Number",
         "value": 0.001,
         "ty": {
-          "mm": null,
           "type": "Known",
-          "type": "Length"
+          "value": {
+            "type": "Length",
+            "value": "mm"
+          }
         }
       },
       "visibility": "default",
@@ -1458,7 +1552,7 @@ description: Operations executed lattice-cubic.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "3aeeb2db-cc07-5a1e-840d-baeb34ceb75a"
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       },
@@ -1468,9 +1562,11 @@ description: Operations executed lattice-cubic.kcl
             "type": "Number",
             "value": 0.001,
             "ty": {
-              "mm": null,
               "type": "Known",
-              "type": "Length"
+              "value": {
+                "type": "Length",
+                "value": "mm"
+              }
             }
           },
           "sourceRange": []
@@ -1527,18 +1623,22 @@ description: Operations executed lattice-cubic.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -1553,18 +1653,22 @@ description: Operations executed lattice-cubic.kcl
                 "type": "SketchVar",
                 "value": 0.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -1618,18 +1722,22 @@ description: Operations executed lattice-cubic.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -1726,7 +1834,7 @@ description: Operations executed lattice-cubic.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "2f481fd4-203e-57d7-b5d6-b16289577621"
+                "artifact_id": "[uuid]"
               }
             ]
           },
@@ -1756,7 +1864,7 @@ description: Operations executed lattice-cubic.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "cf3baf1a-5582-5a3b-97c6-f5beb1dcc1a7"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -1768,8 +1876,10 @@ description: Operations executed lattice-cubic.kcl
             "value": -40.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -1802,7 +1912,7 @@ description: Operations executed lattice-cubic.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "f0c740f1-5055-5cce-95b9-6f1fba47290d"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -1820,9 +1930,11 @@ description: Operations executed lattice-cubic.kcl
             "type": "Number",
             "value": -0.001,
             "ty": {
-              "mm": null,
               "type": "Known",
-              "type": "Length"
+              "value": {
+                "type": "Length",
+                "value": "mm"
+              }
             }
           },
           "sourceRange": []
@@ -1855,7 +1967,7 @@ description: Operations executed lattice-cubic.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "72dddee3-1330-5c4f-b767-659f762ad674"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -1881,7 +1993,7 @@ description: Operations executed lattice-cubic.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "f0c740f1-5055-5cce-95b9-6f1fba47290d"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -1915,7 +2027,7 @@ description: Operations executed lattice-cubic.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "f0c740f1-5055-5cce-95b9-6f1fba47290d"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -1933,8 +2045,10 @@ description: Operations executed lattice-cubic.kcl
                     "value": 1.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   },
                   {
@@ -1942,8 +2056,10 @@ description: Operations executed lattice-cubic.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   },
                   {
@@ -1951,8 +2067,10 @@ description: Operations executed lattice-cubic.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   }
                 ]
@@ -1965,8 +2083,10 @@ description: Operations executed lattice-cubic.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   },
                   {
@@ -1974,8 +2094,10 @@ description: Operations executed lattice-cubic.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   },
                   {
@@ -1983,8 +2105,10 @@ description: Operations executed lattice-cubic.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   }
                 ]
@@ -1999,8 +2123,10 @@ description: Operations executed lattice-cubic.kcl
             "value": 20.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -2011,7 +2137,9 @@ description: Operations executed lattice-cubic.kcl
             "value": 3.0,
             "ty": {
               "type": "Known",
-              "type": "Count"
+              "value": {
+                "type": "Count"
+              }
             }
           },
           "sourceRange": []
@@ -2043,19 +2171,19 @@ description: Operations executed lattice-cubic.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "f0c740f1-5055-5cce-95b9-6f1fba47290d"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "01b5817a-95ba-559a-a207-ea6e6693a367"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "9a397f2a-9e8a-53e5-8c19-5cdb08492c95"
+                "artifactId": "[uuid]"
               }
             }
           ]
@@ -2075,8 +2203,10 @@ description: Operations executed lattice-cubic.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   },
                   {
@@ -2084,8 +2214,10 @@ description: Operations executed lattice-cubic.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   },
                   {
@@ -2093,8 +2225,10 @@ description: Operations executed lattice-cubic.kcl
                     "value": 1.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   }
                 ]
@@ -2107,8 +2241,10 @@ description: Operations executed lattice-cubic.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   },
                   {
@@ -2116,8 +2252,10 @@ description: Operations executed lattice-cubic.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   },
                   {
@@ -2125,8 +2263,10 @@ description: Operations executed lattice-cubic.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   }
                 ]
@@ -2141,8 +2281,10 @@ description: Operations executed lattice-cubic.kcl
             "value": 20.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -2153,7 +2295,9 @@ description: Operations executed lattice-cubic.kcl
             "value": 3.0,
             "ty": {
               "type": "Known",
-              "type": "Count"
+              "value": {
+                "type": "Count"
+              }
             }
           },
           "sourceRange": []
@@ -2182,7 +2326,7 @@ description: Operations executed lattice-cubic.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "f0c740f1-5055-5cce-95b9-6f1fba47290d"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -2215,7 +2359,7 @@ description: Operations executed lattice-cubic.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "01e801cc-22ef-5071-814b-847d3fcf22d5"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -2227,8 +2371,10 @@ description: Operations executed lattice-cubic.kcl
             "value": 90.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -2245,8 +2391,10 @@ description: Operations executed lattice-cubic.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   },
                   {
@@ -2254,8 +2402,10 @@ description: Operations executed lattice-cubic.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   },
                   {
@@ -2263,8 +2413,10 @@ description: Operations executed lattice-cubic.kcl
                     "value": 1.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   }
                 ]
@@ -2277,8 +2429,10 @@ description: Operations executed lattice-cubic.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   },
                   {
@@ -2286,8 +2440,10 @@ description: Operations executed lattice-cubic.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   },
                   {
@@ -2295,8 +2451,10 @@ description: Operations executed lattice-cubic.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   }
                 ]
@@ -2333,7 +2491,7 @@ description: Operations executed lattice-cubic.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "01e801cc-22ef-5071-814b-847d3fcf22d5"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -2352,8 +2510,10 @@ description: Operations executed lattice-cubic.kcl
             "value": 40.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -2386,7 +2546,7 @@ description: Operations executed lattice-cubic.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "01e801cc-22ef-5071-814b-847d3fcf22d5"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -2404,8 +2564,10 @@ description: Operations executed lattice-cubic.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   },
                   {
@@ -2413,8 +2575,10 @@ description: Operations executed lattice-cubic.kcl
                     "value": 1.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   },
                   {
@@ -2422,8 +2586,10 @@ description: Operations executed lattice-cubic.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   }
                 ]
@@ -2436,8 +2602,10 @@ description: Operations executed lattice-cubic.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   },
                   {
@@ -2445,8 +2613,10 @@ description: Operations executed lattice-cubic.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   },
                   {
@@ -2454,8 +2624,10 @@ description: Operations executed lattice-cubic.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   }
                 ]
@@ -2470,8 +2642,10 @@ description: Operations executed lattice-cubic.kcl
             "value": 20.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -2482,7 +2656,9 @@ description: Operations executed lattice-cubic.kcl
             "value": 3.0,
             "ty": {
               "type": "Known",
-              "type": "Count"
+              "value": {
+                "type": "Count"
+              }
             }
           },
           "sourceRange": []
@@ -2514,19 +2690,19 @@ description: Operations executed lattice-cubic.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "01e801cc-22ef-5071-814b-847d3fcf22d5"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "333112bb-4a0c-5c5e-90f4-f1bd428c0211"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "8c6f97e9-3bd7-5c17-80e6-fe637f7b9347"
+                "artifactId": "[uuid]"
               }
             }
           ]
@@ -2546,8 +2722,10 @@ description: Operations executed lattice-cubic.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   },
                   {
@@ -2555,8 +2733,10 @@ description: Operations executed lattice-cubic.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   },
                   {
@@ -2564,8 +2744,10 @@ description: Operations executed lattice-cubic.kcl
                     "value": 1.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   }
                 ]
@@ -2578,8 +2760,10 @@ description: Operations executed lattice-cubic.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   },
                   {
@@ -2587,8 +2771,10 @@ description: Operations executed lattice-cubic.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   },
                   {
@@ -2596,8 +2782,10 @@ description: Operations executed lattice-cubic.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   }
                 ]
@@ -2612,8 +2800,10 @@ description: Operations executed lattice-cubic.kcl
             "value": 20.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -2624,7 +2814,9 @@ description: Operations executed lattice-cubic.kcl
             "value": 3.0,
             "ty": {
               "type": "Known",
-              "type": "Count"
+              "value": {
+                "type": "Count"
+              }
             }
           },
           "sourceRange": []
@@ -2653,7 +2845,7 @@ description: Operations executed lattice-cubic.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "f0c740f1-5055-5cce-95b9-6f1fba47290d"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -2686,7 +2878,7 @@ description: Operations executed lattice-cubic.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "226ae769-fcaa-56af-ac65-5807ed297dad"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -2698,8 +2890,10 @@ description: Operations executed lattice-cubic.kcl
             "value": 90.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -2716,8 +2910,10 @@ description: Operations executed lattice-cubic.kcl
                     "value": 1.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   },
                   {
@@ -2725,8 +2921,10 @@ description: Operations executed lattice-cubic.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   },
                   {
@@ -2734,8 +2932,10 @@ description: Operations executed lattice-cubic.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   }
                 ]
@@ -2748,8 +2948,10 @@ description: Operations executed lattice-cubic.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   },
                   {
@@ -2757,8 +2959,10 @@ description: Operations executed lattice-cubic.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   },
                   {
@@ -2766,8 +2970,10 @@ description: Operations executed lattice-cubic.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   }
                 ]
@@ -2811,7 +3017,7 @@ description: Operations executed lattice-cubic.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "226ae769-fcaa-56af-ac65-5807ed297dad"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -2830,8 +3036,10 @@ description: Operations executed lattice-cubic.kcl
             "value": 40.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -2864,7 +3072,7 @@ description: Operations executed lattice-cubic.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "226ae769-fcaa-56af-ac65-5807ed297dad"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -2882,8 +3090,10 @@ description: Operations executed lattice-cubic.kcl
                     "value": 1.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   },
                   {
@@ -2891,8 +3101,10 @@ description: Operations executed lattice-cubic.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   },
                   {
@@ -2900,8 +3112,10 @@ description: Operations executed lattice-cubic.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   }
                 ]
@@ -2914,8 +3128,10 @@ description: Operations executed lattice-cubic.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   },
                   {
@@ -2923,8 +3139,10 @@ description: Operations executed lattice-cubic.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   },
                   {
@@ -2932,8 +3150,10 @@ description: Operations executed lattice-cubic.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   }
                 ]
@@ -2948,8 +3168,10 @@ description: Operations executed lattice-cubic.kcl
             "value": 20.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -2960,7 +3182,9 @@ description: Operations executed lattice-cubic.kcl
             "value": 3.0,
             "ty": {
               "type": "Known",
-              "type": "Count"
+              "value": {
+                "type": "Count"
+              }
             }
           },
           "sourceRange": []
@@ -2992,19 +3216,19 @@ description: Operations executed lattice-cubic.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "226ae769-fcaa-56af-ac65-5807ed297dad"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "ba4d3870-e78f-5720-8d12-e815392abae6"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "51236f2f-6829-520a-a0ab-48922f881682"
+                "artifactId": "[uuid]"
               }
             }
           ]
@@ -3021,8 +3245,10 @@ description: Operations executed lattice-cubic.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -3030,8 +3256,10 @@ description: Operations executed lattice-cubic.kcl
                 "value": -1.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -3039,8 +3267,10 @@ description: Operations executed lattice-cubic.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               }
             ]
@@ -3053,8 +3283,10 @@ description: Operations executed lattice-cubic.kcl
             "value": 20.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -3065,7 +3297,9 @@ description: Operations executed lattice-cubic.kcl
             "value": 3.0,
             "ty": {
               "type": "Known",
-              "type": "Count"
+              "value": {
+                "type": "Count"
+              }
             }
           },
           "sourceRange": []
@@ -3124,7 +3358,9 @@ description: Operations executed lattice-cubic.kcl
         "value": 2.718281828459045,
         "ty": {
           "type": "Known",
-          "type": "Count"
+          "value": {
+            "type": "Count"
+          }
         }
       },
       "visibility": "export",
@@ -3152,7 +3388,9 @@ description: Operations executed lattice-cubic.kcl
         "value": 6.283185307179586,
         "ty": {
           "type": "Known",
-          "type": "Count"
+          "value": {
+            "type": "Count"
+          }
         }
       },
       "visibility": "export",
@@ -3186,7 +3424,7 @@ description: Operations executed lattice-cubic.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 23
+            "index": 24
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3210,7 +3448,7 @@ description: Operations executed lattice-cubic.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 24
+            "index": 25
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3234,7 +3472,7 @@ description: Operations executed lattice-cubic.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 25
+            "index": 26
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3258,7 +3496,7 @@ description: Operations executed lattice-cubic.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 26
+            "index": 27
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3282,7 +3520,7 @@ description: Operations executed lattice-cubic.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 27
+            "index": 28
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3306,7 +3544,7 @@ description: Operations executed lattice-cubic.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 28
+            "index": 29
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3330,7 +3568,7 @@ description: Operations executed lattice-cubic.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 29
+            "index": 30
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3354,7 +3592,7 @@ description: Operations executed lattice-cubic.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 30
+            "index": 31
           },
           {
             "type": "VariableDeclarationDeclaration"

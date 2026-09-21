@@ -8,13 +8,14 @@ import {
 } from '@kittycad/registry'
 import { effect, type Signal, signal } from '@preact/signals-core'
 import { buildFSHistoryExtension } from '@src/editor/plugins/fs'
-import { KclManager, ZDSProject } from '@src/lang/KclManager'
+import { File, KclManager, ZDSProject } from '@src/lang/KclManager'
 import { lspService } from '@src/lang/lsp/registry/contract'
 import { type BillingRegistryService, billingService } from '@src/lib/billing'
 import { createAuthCommands } from '@src/lib/commandBarConfigs/authCommandConfig'
 import { createProjectCommands } from '@src/lib/commandBarConfigs/projectsCommandConfig'
 import { OPFS_CLOUD_FEATURE_FLAG } from '@src/lib/constants'
 import type { Debugger } from '@src/lib/debugger'
+import { isPlaywright } from '@src/lib/isPlaywright'
 import { EngineDebugger } from '@src/lib/debugger'
 import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 import { setKclRuntimeFlagsOnWasm } from '@src/lib/kclRuntimeFlags'
@@ -22,8 +23,8 @@ import { layoutService } from '@src/lib/layout/registry/contract'
 import type { LayoutService } from '@src/lib/layout/types'
 import type { MachineManager } from '@src/lib/MachineManager'
 import type { Project } from '@src/lib/project'
-import { projectWithLibraryOwnership } from '@src/lib/projectLibraryOwnership'
 import { projectLibrariesFromSettings } from '@src/lib/projectLibraries'
+import { projectWithLibraryOwnership } from '@src/lib/projectLibraryOwnership'
 import type RustContext from '@src/lib/rustContext'
 import { rustContextService } from '@src/lib/rustContext/registry/contract'
 import type { SaveSettingsPayload } from '@src/lib/settings/settingsTypes'
@@ -39,7 +40,6 @@ import {
   buildZookeeperHistoryExtension,
   type PreparedZookeeperPatchFileReplay,
 } from '@src/lib/zookeeper/editorPlugin'
-import type { ZookeeperManagerActor } from '@src/lib/zookeeper/zookeeperManagerMachine'
 import { getOnlySettingsFromContext } from '@src/machines/settingsMachine'
 import { systemIOMachineImpl } from '@src/machines/systemIO/systemIOMachineImpl'
 import {
@@ -64,6 +64,10 @@ import { engineConnectionService } from '@src/registry/contracts/engineConnectio
 import { engineSceneRuntimeExtensionsSlot } from '@src/registry/contracts/engineScene'
 import { executingEditorService } from '@src/registry/contracts/executingEditor'
 import {
+  type FileOperationsRegistryService,
+  fileOperationsService,
+} from '@src/registry/contracts/fileOperations'
+import {
   homeProjectActionsService,
   homeProjectEntriesValueSpec,
 } from '@src/registry/contracts/homeProjects'
@@ -74,8 +78,8 @@ import {
   projectLibraryTypesValueSpec,
 } from '@src/registry/contracts/projectLibraries'
 import {
-  projectSession,
   type ProjectSessionService,
+  projectSession,
 } from '@src/registry/contracts/projectSession'
 import {
   type SettingsRegistryService,
@@ -157,10 +161,6 @@ export type AppLayoutSystem = LayoutService
 
 export type AppRegistrySystem = Registry
 
-export type AppDebug = {
-  zookeeperManagerActor?: ZookeeperManagerActor
-}
-
 /** All of the subsystems needed to run the ZDS app */
 export interface AppSubsystems {
   wasmPromise: Promise<ModuleType>
@@ -177,6 +177,9 @@ export interface AppSubsystems {
 }
 
 export class App implements AppSubsystems {
+  public get fileOperations(): FileOperationsRegistryService {
+    return this.registry.get(fileOperationsService)
+  }
   private get projectSession(): ProjectSessionService {
     return this.registry.get(projectSession)
   }
@@ -186,7 +189,6 @@ export class App implements AppSubsystems {
   public get currentProjectLibraryIdSignal(): Signal<string | undefined> {
     return this.projectSession.currentProjectLibraryId
   }
-  public debug: AppDebug = {}
   get project() {
     return this.projectSession.getProject()
   }
@@ -403,6 +405,7 @@ export class App implements AppSubsystems {
         executingEditor
       )
       const disposeZookeeperHistory = buildZookeeperHistoryExtension({
+        fileOperations: this.fileOperations,
         kclManager: executingEditor,
         onCurrentFileDelete: async (deletedPaths) => {
           const fallbackPath = getZookeeperReplayFallbackFilePath(
@@ -684,7 +687,8 @@ export class App implements AppSubsystems {
 
       const forceEnabled =
         platform !== undefined &&
-        featurePolicy.forceEnabledOnPlatform === platform
+        featurePolicy.forceEnabledOnPlatform === platform &&
+        !isPlaywright()
       if (!forceEnabled && settingValue.user !== undefined) {
         continue
       }
@@ -776,6 +780,11 @@ export class App implements AppSubsystems {
    * Build the world!
    */
   buildSingletons() {
+    File.ioImplementations.read = async (path) =>
+      new TextDecoder().decode(await this.fileOperations.readFile(path))
+    File.ioImplementations.write = (path, content) =>
+      this.fileOperations.writeFile(path, content)
+
     // TODO: Remove this and make the app handle no executing editor,
     // so we don't need to stub with empty strings
     const kclManager = new KclManager('', '', {
@@ -788,6 +797,7 @@ export class App implements AppSubsystems {
       userFeatures: this.userFeatures,
       keymap: this.registry.get(keymapService),
     })
+    kclManager.fileOperations = this.fileOperations
 
     this.registry.reconfigure(appRegistryServicesSlot, [
       defineRegistryItem({

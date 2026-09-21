@@ -6,8 +6,8 @@ description: Variables in memory after executing golf-tee.kcl
   "__sketch_1_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "7c4571e0-7b14-576f-a82e-22280b05874d",
-      "id": "7c4571e0-7b14-576f-a82e-22280b05874d",
+      "artifactId": "[uuid]",
+      "id": "[uuid]",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -37,7 +37,6 @@ description: Variables in memory after executing golf-tee.kcl
   },
   "axisEdge": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "axisEdge"
   },
   "cupDepth": {
@@ -45,8 +44,10 @@ description: Variables in memory after executing golf-tee.kcl
     "value": 2.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "cupDiameter": {
@@ -54,8 +55,10 @@ description: Variables in memory after executing golf-tee.kcl
     "value": 14.6,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "cupHeight": {
@@ -63,12 +66,13 @@ description: Variables in memory after executing golf-tee.kcl
     "value": 14.6,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "cupLipArc": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "cupLipArc"
   },
@@ -77,12 +81,13 @@ description: Variables in memory after executing golf-tee.kcl
     "value": 7.3,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "flareEdge": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "flareEdge"
   },
@@ -90,14 +95,14 @@ description: Variables in memory after executing golf-tee.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "72dddee3-1330-5c4f-b767-659f762ad674",
-      "originalId": "72dddee3-1330-5c4f-b767-659f762ad674",
-      "topologyId": "72dddee3-1330-5c4f-b767-659f762ad674",
-      "artifactId": "c4fac378-d3df-5505-98c1-308b81b0fd96",
+      "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
+      "artifactId": "[uuid]",
       "value": [
         {
-          "faceId": "91c30026-e3e4-53ca-a404-77c90d45c725",
-          "id": "749d3e98-3061-5730-90b9-784607aeecf4",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 623,
@@ -110,8 +115,8 @@ description: Variables in memory after executing golf-tee.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "8d0f250a-af2c-5d44-91b3-0fa55acccbff",
-          "id": "e2519722-c4a6-5a76-b0ab-8c108bce687d",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 737,
@@ -124,8 +129,8 @@ description: Variables in memory after executing golf-tee.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "59b35597-a3bb-5ed3-947f-8c3f366e9491",
-          "id": "33346c34-105a-5565-bd45-e6c0c90963ba",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 866,
@@ -138,8 +143,8 @@ description: Variables in memory after executing golf-tee.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "bd305f8c-79b5-5b00-8996-32d99826fed2",
-          "id": "af1277f8-50f3-5277-8c02-10cc8a86ae47",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 996,
@@ -155,11 +160,11 @@ description: Variables in memory after executing golf-tee.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "72dddee3-1330-5c4f-b767-659f762ad674",
+        "id": "[uuid]",
         "paths": [
           {
             "__geoMeta": {
-              "id": "749d3e98-3061-5730-90b9-784607aeecf4",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -183,7 +188,7 @@ description: Variables in memory after executing golf-tee.kcl
           },
           {
             "__geoMeta": {
-              "id": "e2519722-c4a6-5a76-b0ab-8c108bce687d",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -207,7 +212,7 @@ description: Variables in memory after executing golf-tee.kcl
           },
           {
             "__geoMeta": {
-              "id": "33346c34-105a-5565-bd45-e6c0c90963ba",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -231,7 +236,7 @@ description: Variables in memory after executing golf-tee.kcl
           },
           {
             "__geoMeta": {
-              "id": "af1277f8-50f3-5277-8c02-10cc8a86ae47",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": false,
@@ -261,7 +266,7 @@ description: Variables in memory after executing golf-tee.kcl
           },
           {
             "__geoMeta": {
-              "id": "bc2d79c7-ab42-5ba0-a809-65d14ac7dd6d",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -286,8 +291,8 @@ description: Variables in memory after executing golf-tee.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "artifactId": "[uuid]",
+          "id": "[uuid]",
           "objectId": 0,
           "kind": "Custom",
           "origin": {
@@ -327,7 +332,7 @@ description: Variables in memory after executing golf-tee.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "e383621f-755a-5f2e-ada3-608aff393dab",
+            "id": "[uuid]",
             "sourceRange": []
           }
         },
@@ -353,8 +358,8 @@ description: Variables in memory after executing golf-tee.kcl
             "value": "tipEdge"
           }
         },
-        "artifactId": "72dddee3-1330-5c4f-b767-659f762ad674",
-        "originalId": "72dddee3-1330-5c4f-b767-659f762ad674",
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
         "units": "mm",
         "isClosed": "explicitly"
       },
@@ -369,12 +374,13 @@ description: Variables in memory after executing golf-tee.kcl
     "value": 4.5,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "shaftEdge": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "shaftEdge"
   },
@@ -383,8 +389,10 @@ description: Variables in memory after executing golf-tee.kcl
     "value": 2.25,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "teeHeight": {
@@ -392,8 +400,10 @@ description: Variables in memory after executing golf-tee.kcl
     "value": 70.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "teeProfile": {
@@ -405,7 +415,7 @@ description: Variables in memory after executing golf-tee.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "41c630c9-9d44-581b-98af-caee575bea48",
+                "id": "[uuid]",
                 "objectId": 21,
                 "kind": {
                   "line": {
@@ -413,17 +423,21 @@ description: Variables in memory after executing golf-tee.kcl
                       {
                         "n": 0.000000000000000000005455259571673045,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 67.99999999999999,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -431,17 +445,21 @@ description: Variables in memory after executing golf-tee.kcl
                       {
                         "n": 0.000000000000000000003636839697167271,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": -0.00000000000000016292313617582649,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -479,8 +497,8 @@ description: Variables in memory after executing golf-tee.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -509,7 +527,7 @@ description: Variables in memory after executing golf-tee.kcl
                     "units": null
                   }
                 },
-                "sketchId": "c6c38d17-92b3-5556-b0a7-5be52ccdd1ec",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "axisEdge"
@@ -525,7 +543,7 @@ description: Variables in memory after executing golf-tee.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "f5cca6d8-813c-5e62-81d9-e4e8e17ede93",
+                "id": "[uuid]",
                 "objectId": 26,
                 "kind": {
                   "line": {
@@ -533,17 +551,21 @@ description: Variables in memory after executing golf-tee.kcl
                       {
                         "n": 0.000000000000000000007273682310089934,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 68.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -551,17 +573,21 @@ description: Variables in memory after executing golf-tee.kcl
                       {
                         "n": 0.00000000000000029722437374624574,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 82.32249999999995,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -600,8 +626,8 @@ description: Variables in memory after executing golf-tee.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -630,7 +656,7 @@ description: Variables in memory after executing golf-tee.kcl
                     "units": null
                   }
                 },
-                "sketchId": "c6c38d17-92b3-5556-b0a7-5be52ccdd1ec",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "cupDepthGuide"
@@ -646,7 +672,7 @@ description: Variables in memory after executing golf-tee.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b",
+                "id": "[uuid]",
                 "objectId": 17,
                 "kind": {
                   "arc": {
@@ -654,17 +680,21 @@ description: Variables in memory after executing golf-tee.kcl
                       {
                         "n": 0.0000000000000000000054552567151682616,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 67.99999999999999,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -672,17 +702,21 @@ description: Variables in memory after executing golf-tee.kcl
                       {
                         "n": 7.3,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 70.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -690,17 +724,21 @@ description: Variables in memory after executing golf-tee.kcl
                       {
                         "n": 0.0000000000000005944396494492563,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 82.32249999999995,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -752,8 +790,8 @@ description: Variables in memory after executing golf-tee.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -782,7 +820,7 @@ description: Variables in memory after executing golf-tee.kcl
                     "units": null
                   }
                 },
-                "sketchId": "c6c38d17-92b3-5556-b0a7-5be52ccdd1ec",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "cupLipArc"
@@ -798,7 +836,7 @@ description: Variables in memory after executing golf-tee.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
+                "id": "[uuid]",
                 "objectId": 12,
                 "kind": {
                   "line": {
@@ -806,17 +844,21 @@ description: Variables in memory after executing golf-tee.kcl
                       {
                         "n": 2.25,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 55.39999999999999,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -824,17 +866,21 @@ description: Variables in memory after executing golf-tee.kcl
                       {
                         "n": 7.3,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 70.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -872,8 +918,8 @@ description: Variables in memory after executing golf-tee.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -902,7 +948,7 @@ description: Variables in memory after executing golf-tee.kcl
                     "units": null
                   }
                 },
-                "sketchId": "c6c38d17-92b3-5556-b0a7-5be52ccdd1ec",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "flareEdge"
@@ -919,11 +965,11 @@ description: Variables in memory after executing golf-tee.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "c6c38d17-92b3-5556-b0a7-5be52ccdd1ec",
+              "id": "[uuid]",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -947,7 +993,7 @@ description: Variables in memory after executing golf-tee.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -971,7 +1017,7 @@ description: Variables in memory after executing golf-tee.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -995,7 +1041,7 @@ description: Variables in memory after executing golf-tee.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "ccw": false,
@@ -1025,7 +1071,7 @@ description: Variables in memory after executing golf-tee.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "41c630c9-9d44-581b-98af-caee575bea48",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -1050,8 +1096,8 @@ description: Variables in memory after executing golf-tee.kcl
               ],
               "on": {
                 "type": "plane",
-                "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                "artifactId": "[uuid]",
+                "id": "[uuid]",
                 "objectId": 0,
                 "kind": "Custom",
                 "origin": {
@@ -1091,7 +1137,7 @@ description: Variables in memory after executing golf-tee.kcl
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "e383621f-755a-5f2e-ada3-608aff393dab",
+                  "id": "[uuid]",
                   "sourceRange": []
                 }
               },
@@ -1117,8 +1163,8 @@ description: Variables in memory after executing golf-tee.kcl
                   "value": "tipEdge"
                 }
               },
-              "artifactId": "c6c38d17-92b3-5556-b0a7-5be52ccdd1ec",
-              "originalId": "c6c38d17-92b3-5556-b0a7-5be52ccdd1ec",
+              "artifactId": "[uuid]",
+              "originalId": "[uuid]",
               "units": "mm",
               "isClosed": "implicitly"
             }
@@ -1132,7 +1178,7 @@ description: Variables in memory after executing golf-tee.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
+                "id": "[uuid]",
                 "objectId": 8,
                 "kind": {
                   "line": {
@@ -1140,17 +1186,21 @@ description: Variables in memory after executing golf-tee.kcl
                       {
                         "n": 2.25,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 10.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -1158,17 +1208,21 @@ description: Variables in memory after executing golf-tee.kcl
                       {
                         "n": 2.25,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 55.39999999999999,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -1206,8 +1260,8 @@ description: Variables in memory after executing golf-tee.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1236,7 +1290,7 @@ description: Variables in memory after executing golf-tee.kcl
                     "units": null
                   }
                 },
-                "sketchId": "c6c38d17-92b3-5556-b0a7-5be52ccdd1ec",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "shaftEdge"
@@ -1252,7 +1306,7 @@ description: Variables in memory after executing golf-tee.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+                "id": "[uuid]",
                 "objectId": 4,
                 "kind": {
                   "line": {
@@ -1260,17 +1314,21 @@ description: Variables in memory after executing golf-tee.kcl
                       {
                         "n": 0.00000000000000000000181841984734925,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": -0.00000000000000008146231795298792,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -1278,17 +1336,21 @@ description: Variables in memory after executing golf-tee.kcl
                       {
                         "n": 2.25,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 10.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -1326,8 +1388,8 @@ description: Variables in memory after executing golf-tee.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1356,7 +1418,7 @@ description: Variables in memory after executing golf-tee.kcl
                     "units": null
                   }
                 },
-                "sketchId": "c6c38d17-92b3-5556-b0a7-5be52ccdd1ec",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "tipEdge"
@@ -1373,11 +1435,11 @@ description: Variables in memory after executing golf-tee.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "72dddee3-1330-5c4f-b767-659f762ad674",
+      "id": "[uuid]",
       "paths": [
         {
           "__geoMeta": {
-            "id": "749d3e98-3061-5730-90b9-784607aeecf4",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -1401,7 +1463,7 @@ description: Variables in memory after executing golf-tee.kcl
         },
         {
           "__geoMeta": {
-            "id": "e2519722-c4a6-5a76-b0ab-8c108bce687d",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -1425,7 +1487,7 @@ description: Variables in memory after executing golf-tee.kcl
         },
         {
           "__geoMeta": {
-            "id": "33346c34-105a-5565-bd45-e6c0c90963ba",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -1449,7 +1511,7 @@ description: Variables in memory after executing golf-tee.kcl
         },
         {
           "__geoMeta": {
-            "id": "af1277f8-50f3-5277-8c02-10cc8a86ae47",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "ccw": false,
@@ -1479,7 +1541,7 @@ description: Variables in memory after executing golf-tee.kcl
         },
         {
           "__geoMeta": {
-            "id": "bc2d79c7-ab42-5ba0-a809-65d14ac7dd6d",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -1504,8 +1566,8 @@ description: Variables in memory after executing golf-tee.kcl
       ],
       "on": {
         "type": "plane",
-        "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-        "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+        "artifactId": "[uuid]",
+        "id": "[uuid]",
         "objectId": 0,
         "kind": "Custom",
         "origin": {
@@ -1545,7 +1607,7 @@ description: Variables in memory after executing golf-tee.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "e383621f-755a-5f2e-ada3-608aff393dab",
+          "id": "[uuid]",
           "sourceRange": []
         }
       },
@@ -1571,14 +1633,13 @@ description: Variables in memory after executing golf-tee.kcl
           "value": "tipEdge"
         }
       },
-      "artifactId": "72dddee3-1330-5c4f-b767-659f762ad674",
-      "originalId": "72dddee3-1330-5c4f-b767-659f762ad674",
+      "artifactId": "[uuid]",
+      "originalId": "[uuid]",
       "units": "mm",
       "isClosed": "explicitly"
     }
   },
   "tipEdge": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "tipEdge"
   },
@@ -1587,8 +1648,10 @@ description: Variables in memory after executing golf-tee.kcl
     "value": 10.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   }
 }

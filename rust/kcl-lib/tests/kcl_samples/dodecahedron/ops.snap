@@ -12,8 +12,10 @@ description: Operations executed dodecahedron.kcl
         "value": 116.565,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -41,8 +43,10 @@ description: Operations executed dodecahedron.kcl
         "value": 1000.0,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -70,8 +74,10 @@ description: Operations executed dodecahedron.kcl
         "value": 2000.0,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -99,8 +105,10 @@ description: Operations executed dodecahedron.kcl
         "value": 2000.0,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -128,8 +136,10 @@ description: Operations executed dodecahedron.kcl
         "value": -260.0,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -157,8 +167,10 @@ description: Operations executed dodecahedron.kcl
         "value": 1740.0,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -213,18 +225,22 @@ description: Operations executed dodecahedron.kcl
                 "type": "SketchVar",
                 "value": -1000.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1000.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -239,18 +255,22 @@ description: Operations executed dodecahedron.kcl
                 "type": "SketchVar",
                 "value": -1000.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -1000.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -300,18 +320,22 @@ description: Operations executed dodecahedron.kcl
                 "type": "SketchVar",
                 "value": 1000.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1000.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -326,18 +350,22 @@ description: Operations executed dodecahedron.kcl
                 "type": "SketchVar",
                 "value": -1000.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1000.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -431,18 +459,22 @@ description: Operations executed dodecahedron.kcl
                 "type": "SketchVar",
                 "value": 1000.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -1000.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -457,18 +489,22 @@ description: Operations executed dodecahedron.kcl
                 "type": "SketchVar",
                 "value": 1000.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1000.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -562,18 +598,22 @@ description: Operations executed dodecahedron.kcl
                 "type": "SketchVar",
                 "value": -1000.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -1000.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -588,18 +628,22 @@ description: Operations executed dodecahedron.kcl
                 "type": "SketchVar",
                 "value": 1000.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -1000.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -885,18 +929,22 @@ description: Operations executed dodecahedron.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -952,18 +1000,22 @@ description: Operations executed dodecahedron.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -1110,11 +1162,11 @@ description: Operations executed dodecahedron.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
+                "artifact_id": "[uuid]"
               },
               {
                 "type": "Segment",
-                "artifact_id": "91226189-7e64-5690-9203-67ee33a6eb03"
+                "artifact_id": "[uuid]"
               }
             ]
           },
@@ -1144,7 +1196,7 @@ description: Operations executed dodecahedron.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "7b681387-29ea-57f1-8713-d63280827139"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -1173,7 +1225,7 @@ description: Operations executed dodecahedron.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "5b7e9cc5-005c-5005-bc98-32d1ba6bf697"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -1185,8 +1237,10 @@ description: Operations executed dodecahedron.kcl
             "value": 2000.0,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -1219,7 +1273,7 @@ description: Operations executed dodecahedron.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "b680fe3e-a804-583c-99d9-1693b2432aeb"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -1231,8 +1285,10 @@ description: Operations executed dodecahedron.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -1243,8 +1299,10 @@ description: Operations executed dodecahedron.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -1255,8 +1313,10 @@ description: Operations executed dodecahedron.kcl
             "value": -260.0,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -1289,7 +1349,7 @@ description: Operations executed dodecahedron.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "b680fe3e-a804-583c-99d9-1693b2432aeb"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -1322,7 +1382,7 @@ description: Operations executed dodecahedron.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "faa6bc39-f12d-53bf-bb63-4db4813c0f44"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -1334,7 +1394,9 @@ description: Operations executed dodecahedron.kcl
             "value": 1.0,
             "ty": {
               "type": "Known",
-              "type": "Count"
+              "value": {
+                "type": "Count"
+              }
             }
           },
           "sourceRange": []
@@ -1345,7 +1407,9 @@ description: Operations executed dodecahedron.kcl
             "value": 1.0,
             "ty": {
               "type": "Known",
-              "type": "Count"
+              "value": {
+                "type": "Count"
+              }
             }
           },
           "sourceRange": []
@@ -1356,7 +1420,9 @@ description: Operations executed dodecahedron.kcl
             "value": 1.0,
             "ty": {
               "type": "Known",
-              "type": "Count"
+              "value": {
+                "type": "Count"
+              }
             }
           },
           "sourceRange": []
@@ -1389,7 +1455,7 @@ description: Operations executed dodecahedron.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "faa6bc39-f12d-53bf-bb63-4db4813c0f44"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -1401,8 +1467,10 @@ description: Operations executed dodecahedron.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -1435,7 +1503,7 @@ description: Operations executed dodecahedron.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "faa6bc39-f12d-53bf-bb63-4db4813c0f44"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -1454,8 +1522,10 @@ description: Operations executed dodecahedron.kcl
             "value": 116.565,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -1466,8 +1536,10 @@ description: Operations executed dodecahedron.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -1478,8 +1550,10 @@ description: Operations executed dodecahedron.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -1512,7 +1586,7 @@ description: Operations executed dodecahedron.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "b680fe3e-a804-583c-99d9-1693b2432aeb"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -1545,7 +1619,7 @@ description: Operations executed dodecahedron.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "25999981-b7b8-57e2-8ac5-655907dfffdc"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -1557,7 +1631,9 @@ description: Operations executed dodecahedron.kcl
             "value": 1.0,
             "ty": {
               "type": "Known",
-              "type": "Count"
+              "value": {
+                "type": "Count"
+              }
             }
           },
           "sourceRange": []
@@ -1568,7 +1644,9 @@ description: Operations executed dodecahedron.kcl
             "value": 1.0,
             "ty": {
               "type": "Known",
-              "type": "Count"
+              "value": {
+                "type": "Count"
+              }
             }
           },
           "sourceRange": []
@@ -1579,7 +1657,9 @@ description: Operations executed dodecahedron.kcl
             "value": 1.001,
             "ty": {
               "type": "Known",
-              "type": "Count"
+              "value": {
+                "type": "Count"
+              }
             }
           },
           "sourceRange": []
@@ -1612,7 +1692,7 @@ description: Operations executed dodecahedron.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "25999981-b7b8-57e2-8ac5-655907dfffdc"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -1631,8 +1711,10 @@ description: Operations executed dodecahedron.kcl
             "value": 116.565,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -1643,8 +1725,10 @@ description: Operations executed dodecahedron.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -1655,8 +1739,10 @@ description: Operations executed dodecahedron.kcl
             "value": 72.0,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -1689,7 +1775,7 @@ description: Operations executed dodecahedron.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "b680fe3e-a804-583c-99d9-1693b2432aeb"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -1722,7 +1808,7 @@ description: Operations executed dodecahedron.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "c1954abb-c80b-5092-851b-2b15c2dcba25"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -1734,7 +1820,9 @@ description: Operations executed dodecahedron.kcl
             "value": 1.0,
             "ty": {
               "type": "Known",
-              "type": "Count"
+              "value": {
+                "type": "Count"
+              }
             }
           },
           "sourceRange": []
@@ -1745,7 +1833,9 @@ description: Operations executed dodecahedron.kcl
             "value": 1.001,
             "ty": {
               "type": "Known",
-              "type": "Count"
+              "value": {
+                "type": "Count"
+              }
             }
           },
           "sourceRange": []
@@ -1756,7 +1846,9 @@ description: Operations executed dodecahedron.kcl
             "value": 1.0,
             "ty": {
               "type": "Known",
-              "type": "Count"
+              "value": {
+                "type": "Count"
+              }
             }
           },
           "sourceRange": []
@@ -1789,7 +1881,7 @@ description: Operations executed dodecahedron.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "c1954abb-c80b-5092-851b-2b15c2dcba25"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -1808,8 +1900,10 @@ description: Operations executed dodecahedron.kcl
             "value": 116.565,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -1820,8 +1914,10 @@ description: Operations executed dodecahedron.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -1832,8 +1928,10 @@ description: Operations executed dodecahedron.kcl
             "value": 144.0,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -1866,7 +1964,7 @@ description: Operations executed dodecahedron.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "b680fe3e-a804-583c-99d9-1693b2432aeb"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -1899,7 +1997,7 @@ description: Operations executed dodecahedron.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "7b3604da-cb7d-56b0-8f93-648a91817ee2"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -1911,7 +2009,9 @@ description: Operations executed dodecahedron.kcl
             "value": 1.0,
             "ty": {
               "type": "Known",
-              "type": "Count"
+              "value": {
+                "type": "Count"
+              }
             }
           },
           "sourceRange": []
@@ -1922,7 +2022,9 @@ description: Operations executed dodecahedron.kcl
             "value": 1.0,
             "ty": {
               "type": "Known",
-              "type": "Count"
+              "value": {
+                "type": "Count"
+              }
             }
           },
           "sourceRange": []
@@ -1933,7 +2035,9 @@ description: Operations executed dodecahedron.kcl
             "value": 1.0,
             "ty": {
               "type": "Known",
-              "type": "Count"
+              "value": {
+                "type": "Count"
+              }
             }
           },
           "sourceRange": []
@@ -1966,7 +2070,7 @@ description: Operations executed dodecahedron.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "7b3604da-cb7d-56b0-8f93-648a91817ee2"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -1985,8 +2089,10 @@ description: Operations executed dodecahedron.kcl
             "value": 116.565,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -1997,8 +2103,10 @@ description: Operations executed dodecahedron.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -2009,8 +2117,10 @@ description: Operations executed dodecahedron.kcl
             "value": 216.0,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -2043,7 +2153,7 @@ description: Operations executed dodecahedron.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "b680fe3e-a804-583c-99d9-1693b2432aeb"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -2076,7 +2186,7 @@ description: Operations executed dodecahedron.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "4482cd0e-0ba6-5706-bd3a-a7e479e352c8"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -2088,7 +2198,9 @@ description: Operations executed dodecahedron.kcl
             "value": 1.0,
             "ty": {
               "type": "Known",
-              "type": "Count"
+              "value": {
+                "type": "Count"
+              }
             }
           },
           "sourceRange": []
@@ -2099,7 +2211,9 @@ description: Operations executed dodecahedron.kcl
             "value": 1.0,
             "ty": {
               "type": "Known",
-              "type": "Count"
+              "value": {
+                "type": "Count"
+              }
             }
           },
           "sourceRange": []
@@ -2110,7 +2224,9 @@ description: Operations executed dodecahedron.kcl
             "value": 1.001,
             "ty": {
               "type": "Known",
-              "type": "Count"
+              "value": {
+                "type": "Count"
+              }
             }
           },
           "sourceRange": []
@@ -2143,7 +2259,7 @@ description: Operations executed dodecahedron.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "4482cd0e-0ba6-5706-bd3a-a7e479e352c8"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -2162,8 +2278,10 @@ description: Operations executed dodecahedron.kcl
             "value": 116.565,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -2174,8 +2292,10 @@ description: Operations executed dodecahedron.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -2186,8 +2306,10 @@ description: Operations executed dodecahedron.kcl
             "value": 288.0,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -2220,7 +2342,7 @@ description: Operations executed dodecahedron.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "b680fe3e-a804-583c-99d9-1693b2432aeb"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -2253,7 +2375,7 @@ description: Operations executed dodecahedron.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "ec50dfc5-8660-5f82-906a-6429c34099eb"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -2265,7 +2387,9 @@ description: Operations executed dodecahedron.kcl
             "value": 1.0,
             "ty": {
               "type": "Known",
-              "type": "Count"
+              "value": {
+                "type": "Count"
+              }
             }
           },
           "sourceRange": []
@@ -2276,7 +2400,9 @@ description: Operations executed dodecahedron.kcl
             "value": 1.0,
             "ty": {
               "type": "Known",
-              "type": "Count"
+              "value": {
+                "type": "Count"
+              }
             }
           },
           "sourceRange": []
@@ -2287,7 +2413,9 @@ description: Operations executed dodecahedron.kcl
             "value": 1.0,
             "ty": {
               "type": "Known",
-              "type": "Count"
+              "value": {
+                "type": "Count"
+              }
             }
           },
           "sourceRange": []
@@ -2320,7 +2448,7 @@ description: Operations executed dodecahedron.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "ec50dfc5-8660-5f82-906a-6429c34099eb"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -2339,8 +2467,10 @@ description: Operations executed dodecahedron.kcl
             "value": 180.0,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -2351,8 +2481,10 @@ description: Operations executed dodecahedron.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -2363,8 +2495,10 @@ description: Operations executed dodecahedron.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -2397,7 +2531,7 @@ description: Operations executed dodecahedron.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "b680fe3e-a804-583c-99d9-1693b2432aeb"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -2430,7 +2564,7 @@ description: Operations executed dodecahedron.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "d005938d-7477-557a-bef2-28dfc45d0fce"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -2442,7 +2576,9 @@ description: Operations executed dodecahedron.kcl
             "value": 1.0,
             "ty": {
               "type": "Known",
-              "type": "Count"
+              "value": {
+                "type": "Count"
+              }
             }
           },
           "sourceRange": []
@@ -2453,7 +2589,9 @@ description: Operations executed dodecahedron.kcl
             "value": 1.0,
             "ty": {
               "type": "Known",
-              "type": "Count"
+              "value": {
+                "type": "Count"
+              }
             }
           },
           "sourceRange": []
@@ -2464,7 +2602,9 @@ description: Operations executed dodecahedron.kcl
             "value": 1.0,
             "ty": {
               "type": "Known",
-              "type": "Count"
+              "value": {
+                "type": "Count"
+              }
             }
           },
           "sourceRange": []
@@ -2497,7 +2637,7 @@ description: Operations executed dodecahedron.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "d005938d-7477-557a-bef2-28dfc45d0fce"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -2516,8 +2656,10 @@ description: Operations executed dodecahedron.kcl
             "value": 63.435,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -2528,8 +2670,10 @@ description: Operations executed dodecahedron.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -2540,8 +2684,10 @@ description: Operations executed dodecahedron.kcl
             "value": 36.0,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -2574,7 +2720,7 @@ description: Operations executed dodecahedron.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "b680fe3e-a804-583c-99d9-1693b2432aeb"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -2607,7 +2753,7 @@ description: Operations executed dodecahedron.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "e8637a6d-00c2-5b87-831e-2db8c2223948"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -2619,7 +2765,9 @@ description: Operations executed dodecahedron.kcl
             "value": 1.0,
             "ty": {
               "type": "Known",
-              "type": "Count"
+              "value": {
+                "type": "Count"
+              }
             }
           },
           "sourceRange": []
@@ -2630,7 +2778,9 @@ description: Operations executed dodecahedron.kcl
             "value": 1.0,
             "ty": {
               "type": "Known",
-              "type": "Count"
+              "value": {
+                "type": "Count"
+              }
             }
           },
           "sourceRange": []
@@ -2641,7 +2791,9 @@ description: Operations executed dodecahedron.kcl
             "value": 1.001,
             "ty": {
               "type": "Known",
-              "type": "Count"
+              "value": {
+                "type": "Count"
+              }
             }
           },
           "sourceRange": []
@@ -2674,7 +2826,7 @@ description: Operations executed dodecahedron.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "e8637a6d-00c2-5b87-831e-2db8c2223948"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -2693,8 +2845,10 @@ description: Operations executed dodecahedron.kcl
             "value": 63.435,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -2705,8 +2859,10 @@ description: Operations executed dodecahedron.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -2717,8 +2873,10 @@ description: Operations executed dodecahedron.kcl
             "value": 108.0,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -2751,7 +2909,7 @@ description: Operations executed dodecahedron.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "b680fe3e-a804-583c-99d9-1693b2432aeb"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -2784,7 +2942,7 @@ description: Operations executed dodecahedron.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "a54ad82c-be8d-599a-9764-c6498922dd5c"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -2796,7 +2954,9 @@ description: Operations executed dodecahedron.kcl
             "value": 1.0,
             "ty": {
               "type": "Known",
-              "type": "Count"
+              "value": {
+                "type": "Count"
+              }
             }
           },
           "sourceRange": []
@@ -2807,7 +2967,9 @@ description: Operations executed dodecahedron.kcl
             "value": 1.0,
             "ty": {
               "type": "Known",
-              "type": "Count"
+              "value": {
+                "type": "Count"
+              }
             }
           },
           "sourceRange": []
@@ -2818,7 +2980,9 @@ description: Operations executed dodecahedron.kcl
             "value": 0.999,
             "ty": {
               "type": "Known",
-              "type": "Count"
+              "value": {
+                "type": "Count"
+              }
             }
           },
           "sourceRange": []
@@ -2851,7 +3015,7 @@ description: Operations executed dodecahedron.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "a54ad82c-be8d-599a-9764-c6498922dd5c"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -2870,8 +3034,10 @@ description: Operations executed dodecahedron.kcl
             "value": 63.435,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -2882,8 +3048,10 @@ description: Operations executed dodecahedron.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -2894,8 +3062,10 @@ description: Operations executed dodecahedron.kcl
             "value": 180.0,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -2928,7 +3098,7 @@ description: Operations executed dodecahedron.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "b680fe3e-a804-583c-99d9-1693b2432aeb"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -2961,7 +3131,7 @@ description: Operations executed dodecahedron.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "6be94036-fce8-50e0-a9cd-4631846bb4fc"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -2973,7 +3143,9 @@ description: Operations executed dodecahedron.kcl
             "value": 1.0,
             "ty": {
               "type": "Known",
-              "type": "Count"
+              "value": {
+                "type": "Count"
+              }
             }
           },
           "sourceRange": []
@@ -2984,7 +3156,9 @@ description: Operations executed dodecahedron.kcl
             "value": 1.0,
             "ty": {
               "type": "Known",
-              "type": "Count"
+              "value": {
+                "type": "Count"
+              }
             }
           },
           "sourceRange": []
@@ -2995,7 +3169,9 @@ description: Operations executed dodecahedron.kcl
             "value": 1.0,
             "ty": {
               "type": "Known",
-              "type": "Count"
+              "value": {
+                "type": "Count"
+              }
             }
           },
           "sourceRange": []
@@ -3028,7 +3204,7 @@ description: Operations executed dodecahedron.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "6be94036-fce8-50e0-a9cd-4631846bb4fc"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -3047,8 +3223,10 @@ description: Operations executed dodecahedron.kcl
             "value": 63.435,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -3059,8 +3237,10 @@ description: Operations executed dodecahedron.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -3071,8 +3251,10 @@ description: Operations executed dodecahedron.kcl
             "value": 252.0,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -3105,7 +3287,7 @@ description: Operations executed dodecahedron.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "b680fe3e-a804-583c-99d9-1693b2432aeb"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -3138,7 +3320,7 @@ description: Operations executed dodecahedron.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "9805aa95-ef4b-534e-9b73-76cd3f91a6fc"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -3150,7 +3332,9 @@ description: Operations executed dodecahedron.kcl
             "value": 1.0,
             "ty": {
               "type": "Known",
-              "type": "Count"
+              "value": {
+                "type": "Count"
+              }
             }
           },
           "sourceRange": []
@@ -3161,7 +3345,9 @@ description: Operations executed dodecahedron.kcl
             "value": 1.0,
             "ty": {
               "type": "Known",
-              "type": "Count"
+              "value": {
+                "type": "Count"
+              }
             }
           },
           "sourceRange": []
@@ -3172,7 +3358,9 @@ description: Operations executed dodecahedron.kcl
             "value": 1.0,
             "ty": {
               "type": "Known",
-              "type": "Count"
+              "value": {
+                "type": "Count"
+              }
             }
           },
           "sourceRange": []
@@ -3205,7 +3393,7 @@ description: Operations executed dodecahedron.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "9805aa95-ef4b-534e-9b73-76cd3f91a6fc"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -3224,8 +3412,10 @@ description: Operations executed dodecahedron.kcl
             "value": 63.435,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -3236,8 +3426,10 @@ description: Operations executed dodecahedron.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -3248,8 +3440,10 @@ description: Operations executed dodecahedron.kcl
             "value": 324.0,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -3285,13 +3479,13 @@ description: Operations executed dodecahedron.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "b680fe3e-a804-583c-99d9-1693b2432aeb"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "9805aa95-ef4b-534e-9b73-76cd3f91a6fc"
+                "artifactId": "[uuid]"
               }
             }
           ]
@@ -3325,13 +3519,13 @@ description: Operations executed dodecahedron.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "faa6bc39-f12d-53bf-bb63-4db4813c0f44"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "f9290fd4-5c3f-5c2e-8173-812972a413d9"
+                "artifactId": "[uuid]"
               }
             }
           ]
@@ -3365,13 +3559,13 @@ description: Operations executed dodecahedron.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "25999981-b7b8-57e2-8ac5-655907dfffdc"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "c3c8712b-a8b4-5375-b311-6de9fe3f4ee3"
+                "artifactId": "[uuid]"
               }
             }
           ]
@@ -3405,13 +3599,13 @@ description: Operations executed dodecahedron.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "c1954abb-c80b-5092-851b-2b15c2dcba25"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "50fc9cbf-14b4-5cbe-9167-a6636695394d"
+                "artifactId": "[uuid]"
               }
             }
           ]
@@ -3445,13 +3639,13 @@ description: Operations executed dodecahedron.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "7b3604da-cb7d-56b0-8f93-648a91817ee2"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "ca502980-7bdd-5694-85c5-3eb8ffa8242b"
+                "artifactId": "[uuid]"
               }
             }
           ]
@@ -3485,13 +3679,13 @@ description: Operations executed dodecahedron.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "4482cd0e-0ba6-5706-bd3a-a7e479e352c8"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "b111fba8-8876-56ff-b0a2-c225f35bfbdc"
+                "artifactId": "[uuid]"
               }
             }
           ]
@@ -3525,13 +3719,13 @@ description: Operations executed dodecahedron.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "ec50dfc5-8660-5f82-906a-6429c34099eb"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "379ff142-2e45-5f2a-b984-2aa6871ea1bd"
+                "artifactId": "[uuid]"
               }
             }
           ]
@@ -3565,13 +3759,13 @@ description: Operations executed dodecahedron.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "d005938d-7477-557a-bef2-28dfc45d0fce"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "ab037e81-c147-56cd-af6f-0e6bab7fa4e6"
+                "artifactId": "[uuid]"
               }
             }
           ]
@@ -3605,13 +3799,13 @@ description: Operations executed dodecahedron.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "e8637a6d-00c2-5b87-831e-2db8c2223948"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "4b789d9f-4de7-52cb-ab04-7565c5456f13"
+                "artifactId": "[uuid]"
               }
             }
           ]
@@ -3645,13 +3839,13 @@ description: Operations executed dodecahedron.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "a54ad82c-be8d-599a-9764-c6498922dd5c"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "44621ebd-5856-5dfd-9426-dda5d969f375"
+                "artifactId": "[uuid]"
               }
             }
           ]
@@ -3685,13 +3879,13 @@ description: Operations executed dodecahedron.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "6be94036-fce8-50e0-a9cd-4631846bb4fc"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "dd55e140-6df1-5fb8-9388-bd59c5c7ddde"
+                "artifactId": "[uuid]"
               }
             }
           ]
@@ -3752,7 +3946,9 @@ description: Operations executed dodecahedron.kcl
         "value": 2.718281828459045,
         "ty": {
           "type": "Known",
-          "type": "Count"
+          "value": {
+            "type": "Count"
+          }
         }
       },
       "visibility": "export",
@@ -3780,7 +3976,9 @@ description: Operations executed dodecahedron.kcl
         "value": 6.283185307179586,
         "ty": {
           "type": "Known",
-          "type": "Count"
+          "value": {
+            "type": "Count"
+          }
         }
       },
       "visibility": "export",
@@ -3814,7 +4012,7 @@ description: Operations executed dodecahedron.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 23
+            "index": 24
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3838,7 +4036,7 @@ description: Operations executed dodecahedron.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 24
+            "index": 25
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3862,7 +4060,7 @@ description: Operations executed dodecahedron.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 25
+            "index": 26
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3886,7 +4084,7 @@ description: Operations executed dodecahedron.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 26
+            "index": 27
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3910,7 +4108,7 @@ description: Operations executed dodecahedron.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 27
+            "index": 28
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3934,7 +4132,7 @@ description: Operations executed dodecahedron.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 28
+            "index": 29
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3958,7 +4156,7 @@ description: Operations executed dodecahedron.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 29
+            "index": 30
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3982,7 +4180,7 @@ description: Operations executed dodecahedron.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 30
+            "index": 31
           },
           {
             "type": "VariableDeclarationDeclaration"
