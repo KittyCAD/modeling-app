@@ -143,6 +143,10 @@ export interface Fixtures {
 }
 
 export class ElectronZoo {
+  private disposed = false
+  private disposal: Promise<void> | undefined
+  private launching: Promise<ElectronApplication> | undefined
+  public rendererCrashed = false
   public available: boolean = true
   public electron!: ElectronApplication
   public firstUrl = ''
@@ -153,6 +157,30 @@ export class ElectronZoo {
   public context!: BrowserContext
 
   constructor() {}
+
+  async dispose(testInfo: TestInfo) {
+    this.disposed = true
+    this.available = false
+    if (!this.electron && this.launching) {
+      try {
+        this.electron = await this.launching
+      } catch {
+        return
+      }
+    }
+    if (!this.electron) return
+    this.disposal ??= (async () => {
+      await attachRendererCrashDiagnostics(this.electron, testInfo)
+      // Bypass unload handlers in an unresponsive renderer before quitting.
+      await Promise.all(
+        this.electron
+          .windows()
+          .map((page) => page.close({ runBeforeUnload: false }))
+      )
+      await this.electron.close()
+    })()
+    await this.disposal
+  }
 
   // Help remote end by signaling we're done with the connection.
   // If it takes longer than 10s to stop, just resolve.
@@ -205,8 +233,12 @@ export class ElectronZoo {
 
   async createInstanceIfMissing(
     testInfo: TestInfo,
-    userFeatures: readonly Feature[] = []
+    userFeatures: readonly Feature[] = [],
+    setupTimeout = 120_000
   ) {
+    if (this.disposed) {
+      throw new Error('Electron fixture has been disposed')
+    }
     // Create or otherwise clear the folder.
     this.projectDirName = testInfo.outputPath('electron-test-projects-dir')
 
@@ -217,6 +249,7 @@ export class ElectronZoo {
 
     const options = {
       args: ['.', '--no-sandbox'],
+      timeout: setupTimeout,
       env: {
         ...process.env,
         NODE_ENV: 'test',
@@ -239,16 +272,25 @@ export class ElectronZoo {
 
     // Do this once and then reuse window on subsequent calls.
     if (!this.electron) {
-      this.electron = await electron.launch(options)
+      this.launching = electron.launch(options)
+      this.electron = await this.launching
+      if (this.disposed) {
+        await this.dispose(testInfo)
+        throw new Error('Electron fixture setup was cancelled')
+      }
 
       // Mac takes quite a long time to create the first window in CI.
       // Turns out we can't trust firstWindow() either. So loop.
       let timeoutId: ReturnType<typeof setTimeout>
       const tryToGetWindowPage = () =>
-        new Promise((resolve) => {
+        new Promise((resolve, reject) => {
           const fn = () => {
             this.page = this.electron.windows()[0]
             timeoutId = setTimeout(() => {
+              if (this.disposed) {
+                reject(new Error('Electron fixture setup was cancelled'))
+                return
+              }
               if (this.page) {
                 clearTimeout(timeoutId)
                 return resolve(undefined)
@@ -305,6 +347,7 @@ export class ElectronZoo {
 
     // THIS IS ABSOLUTELY NECESSARY TO CHANGE THE PROJECT DIRECTORY BETWEEN
     // TESTS BECAUSE OF THE ELECTRON INSTANCE REUSE.
+    await this.stopSettingsWrites()
     await this.electron?.evaluate(({ app }, projectDirName) => {
       // @ts-ignore can't declaration merge see main.ts
       app.testProperty['TEST_SETTINGS_FILE_KEY'] = projectDirName
@@ -367,6 +410,8 @@ export class ElectronZoo {
   }
 
   async cleanProjectDir(appSettings?: DeepPartial<Settings>) {
+    await this.stopSettingsWrites()
+
     try {
       if (fs.existsSync(this.projectDirName)) {
         await fsp.rm(this.projectDirName, { recursive: true })
@@ -419,6 +464,18 @@ export class ElectronZoo {
       },
     })
     await fsp.writeFile(tempSettingsFilePath, settingsOverridesToml)
+    await this.page.reload()
+  }
+
+  private async stopSettingsWrites() {
+    // Drain the current save and stop future layout saves before replacing
+    // the settings file or changing its destination. Reload restarts the actor.
+    await this.page.waitForFunction(() => {
+      const actor = window.app?.settings.actor
+      if (!actor?.getSnapshot().matches('idle')) return false
+      actor.stop()
+      return true
+    })
   }
 }
 
@@ -431,7 +488,16 @@ const fixturesForElectron = {
     use: FnUse,
     testInfo: TestInfo
   ) => {
-    await use(tronApp.page)
+    tronApp.rendererCrashed = false
+    const onCrash = () => {
+      tronApp.rendererCrashed = true
+    }
+    tronApp.page.on('crash', onCrash)
+    try {
+      await use(tronApp.page)
+    } finally {
+      tronApp.page.off('crash', onCrash)
+    }
   },
   context: async (
     { tronApp }: { tronApp: ElectronZoo },
@@ -569,6 +635,14 @@ const fixturesBasedOnProcessEnvPlatform = {
       testInfo: TestInfo
     ) => {
       await use() // <-- runs the actual test
+
+      if (
+        tronApp &&
+        (testInfo.status === 'timedOut' || tronApp.rendererCrashed)
+      ) {
+        await tronApp.dispose(testInfo)
+        return
+      }
 
       await attachRendererCrashDiagnostics(tronApp?.electron, testInfo)
 
