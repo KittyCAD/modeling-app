@@ -6,6 +6,7 @@ import type {
 import { isModelingResponse } from '@src/lib/kcSdkGuards'
 import { isArray } from '@src/lib/utils'
 import { getSketchCameraFrame } from '@src/clientSideScene/sketchCamera'
+import { getLocalCameraSceneScale } from '@src/clientSideScene/cameraSceneScale'
 
 import * as TWEEN from '@tweenjs/tween.js'
 import Hammer from 'hammerjs'
@@ -1937,18 +1938,6 @@ export class CameraControls {
 }
 
 // Pure function helpers
-
-// Match the engine's distance-based clipping scale.
-// Camera-to-target distance is in mm; this scale sets clipping, not geometry size.
-function getLocalCameraSceneScale(distance: number) {
-  if (distance > 20000) return 1000
-  if (distance > 2000) return 100
-  if (distance > 200) return 10
-  if (distance > 20) return 1
-  if (distance > 2) return 0.1
-  if (distance > 0.2) return 0.01
-  return 0.001
-}
 
 function calculateNearFarFromFOV(fov: number) {
   // const nearFarRatio = (fov - 3) / (45 - 3)

@@ -4,6 +4,7 @@ import {
   LOCAL_WEBGPU_GTAO_USE_NORMAL_MRT,
 } from '@src/clientSideScene/localRenderer/config'
 import { EdgeRenderer } from '@src/clientSideScene/localRenderer/EdgeRenderer'
+import { DefaultPlaneRenderer } from '@src/clientSideScene/localRenderer/DefaultPlaneRenderer'
 import { EnvMapLoader } from '@src/clientSideScene/localRenderer/EnvMapLoader'
 import { IntegerIdPicker } from '@src/clientSideScene/localRenderer/IntegerIdPicker'
 import { HDR_ENV_MAP_URL } from '@src/clientSideScene/localRenderer/maps'
@@ -65,6 +66,7 @@ export interface LocalRendererProps {
   backgroundColor: string
   enableSSAO: boolean
   highlightEdges: boolean
+  fixedSizeGrid: boolean
   onVisibilityChange: (isVisible: boolean) => void
   onModelLoadSettled?: () => void
   forceHide?: boolean
@@ -76,6 +78,7 @@ export class LocalRenderer {
   private backgroundColor: string
   private enableSSAO: boolean
   private highlightEdges: boolean
+  private fixedSizeGrid: boolean
   private forceHide: boolean
   private onVisibilityChange: LocalRendererProps['onVisibilityChange']
   private onModelLoadSettled: LocalRendererProps['onModelLoadSettled']
@@ -85,6 +88,7 @@ export class LocalRenderer {
   private scene: Scene | null = null
   private envMapLoader: EnvMapLoader | null = null
   private edgeRenderer: EdgeRenderer | null = null
+  private defaultPlaneRenderer: DefaultPlaneRenderer | null = null
   private integerIdPicker: IntegerIdPicker | null = null
   private selectionHighlightRenderer: SelectionHighlightRenderer | null = null
   private performanceMonitor: LocalRendererPerformanceMonitor | null = null
@@ -104,6 +108,7 @@ export class LocalRenderer {
   private readonly convertedSharedUp = new Vector3()
   private readonly performanceDrawingBufferSize = new Vector2()
   private unregisterSharedCameraListener: (() => void) | null = null
+  private readonly unregisterBaseUnitListener: () => void
   private ambientOcclusionRadius = 0.01
   private ambientOcclusionPipeline: AmbientOcclusionPipeline | null = null
   private modelLoadSettledAfterRender = false
@@ -120,6 +125,7 @@ export class LocalRenderer {
     this.backgroundColor = props.backgroundColor
     this.enableSSAO = props.enableSSAO
     this.highlightEdges = props.highlightEdges
+    this.fixedSizeGrid = props.fixedSizeGrid
     this.forceHide = props.forceHide ?? false
     this.onVisibilityChange = props.onVisibilityChange
     this.onModelLoadSettled = props.onModelLoadSettled
@@ -139,7 +145,16 @@ export class LocalRenderer {
         }
       }
     )
+    this.unregisterBaseUnitListener = kclManager.sceneInfra.baseUnitChange.add(
+      this.syncDefaultPlaneScale
+    )
     void this.initialize().catch(this.handleInitializationError)
+  }
+
+  setFixedSizeGrid(fixedSizeGrid: boolean) {
+    if (this.fixedSizeGrid === fixedSizeGrid) return
+    this.fixedSizeGrid = fixedSizeGrid
+    this.syncDefaultPlaneScale()
   }
 
   setBackgroundColor(backgroundColor: string) {
@@ -151,6 +166,7 @@ export class LocalRenderer {
     if (this.scene) {
       this.selectionHighlightRenderer?.setBackgroundColor(backgroundColor)
       this.edgeRenderer?.setBackgroundColor(backgroundColor)
+      this.defaultPlaneRenderer?.setBackgroundColor(backgroundColor)
       this.invalidateBaseRender()
     }
   }
@@ -207,7 +223,10 @@ export class LocalRenderer {
     this.isVisible = false
     this.unregisterSharedCameraListener?.()
     this.unregisterSharedCameraListener = null
+    this.unregisterBaseUnitListener()
     this.clearModel()
+    this.defaultPlaneRenderer?.dispose()
+    this.defaultPlaneRenderer = null
     this.edgeRenderer?.dispose()
     this.edgeRenderer = null
     this.integerIdPicker?.dispose()
@@ -244,10 +263,25 @@ export class LocalRenderer {
     this.scheduleRender()
   }
 
+  private readonly syncDefaultPlaneScale = () => {
+    const { camControls, baseUnitMultiplier } = this.kclManager.sceneInfra
+    // Match the engine's fixed grid: ten file units, expressed in decimeters.
+    // baseUnitMultiplier converts one file unit to mm; 100 mm = one dm.
+    const fixedGridScale = this.fixedSizeGrid
+      ? (10 * baseUnitMultiplier) / 100
+      : undefined
+    this.defaultPlaneRenderer?.updateScale(
+      camControls.camera.position.distanceTo(camControls.target),
+      fixedGridScale
+    )
+    this.invalidateBaseRender()
+  }
+
   private readonly syncPreviewCameraFromShared = () => {
     const cameraControls = this.kclManager.sceneInfra.camControls
     const sharedCamera = cameraControls.camera
     const sharedTarget = cameraControls.target
+    this.syncDefaultPlaneScale()
     if (!this.previewCamera) {
       return
     }
@@ -673,6 +707,9 @@ export class LocalRenderer {
       this.highlightEdges
     )
     this.edgeRenderer = edgeRenderer
+    // Keep reference planes separate from the GLB and its fit-to-model bounds.
+    this.defaultPlaneRenderer = new DefaultPlaneRenderer(this.backgroundColor)
+    this.defaultPlaneRenderer.addTo(scene)
     this.integerIdPicker = new IntegerIdPicker(renderer)
     this.integerIdPicker.setEdgesVisible(this.highlightEdges)
     this.selectionHighlightRenderer = new SelectionHighlightRenderer(

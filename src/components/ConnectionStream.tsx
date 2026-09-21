@@ -695,6 +695,7 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
           backgroundColor={style.backgroundColor}
           enableSSAO={settingsValues.modeling.enableSSAO.current}
           highlightEdges={settingsValues.modeling.highlightEdges.current}
+          fixedSizeGrid={settingsValues.modeling.fixedSizeGrid.current}
           onVisibilityChange={handleLocalVisibilityChange}
           forceHide={!shouldShowLocalWebGpuScene}
         />

@@ -1,11 +1,13 @@
 import { signal } from '@preact/signals-core'
 import type { KclManager } from '@src/lang/KclManager'
 import type ModelingAppFile from '@src/lib/modelingAppFile'
+import { Signal } from '@src/lib/signal'
 import {
   type Group,
   Mesh,
   MeshStandardMaterial,
   OrthographicCamera,
+  PlaneGeometry,
   PerspectiveCamera,
   Scene,
   Vector3,
@@ -35,6 +37,10 @@ type RendererInternals = {
   modelLoadSettledAfterRender: boolean
   previewCamera: PerspectiveCamera | OrthographicCamera | null
   syncPreviewCameraFromShared(): void
+  defaultPlaneRenderer: {
+    updateScale: ReturnType<typeof vi.fn>
+    dispose: ReturnType<typeof vi.fn>
+  } | null
 }
 
 function fixture(
@@ -57,6 +63,8 @@ function fixture(
         .mockResolvedValue([triangleGlb()]),
     },
     sceneInfra: {
+      baseUnitMultiplier: 1,
+      baseUnitChange: new Signal(),
       camControls: {
         camera,
         target: new Vector3(),
@@ -73,6 +81,7 @@ function fixture(
       backgroundColor: '#fff',
       enableSSAO: false,
       highlightEdges: false,
+      fixedSizeGrid: true,
       onVisibilityChange: vi.fn(),
       onModelLoadSettled,
     }
@@ -101,6 +110,32 @@ describe('local GLB loading', () => {
     vi.spyOn(prototype, 'scheduleRender').mockImplementation(() => {})
   })
   afterEach(() => vi.restoreAllMocks())
+
+  it('updates plane scale on camera, fixed-grid setting, and file-unit changes', () => {
+    const f = fixture()
+    const updateScale = vi.fn()
+    f.state.defaultPlaneRenderer = { updateScale, dispose: vi.fn() }
+    const controls = f.manager.sceneInfra.camControls
+    controls.camera.position.set(100, 0, 0)
+    f.state.syncPreviewCameraFromShared()
+    expect(updateScale).toHaveBeenLastCalledWith(100, 0.1)
+    controls.camera.position.set(1000, 0, 0)
+    f.state.syncPreviewCameraFromShared()
+    expect(updateScale).toHaveBeenLastCalledWith(1000, 0.1)
+
+    f.renderer.setFixedSizeGrid(false)
+    expect(updateScale).toHaveBeenLastCalledWith(1000, undefined)
+    f.renderer.setFixedSizeGrid(true)
+    expect(updateScale).toHaveBeenLastCalledWith(1000, 0.1)
+
+    f.manager.sceneInfra.baseUnitMultiplier = 25.4
+    f.manager.sceneInfra.baseUnitChange.dispatch()
+    expect(updateScale).toHaveBeenLastCalledWith(1000, 2.54)
+    f.renderer.dispose()
+    updateScale.mockClear()
+    f.manager.sceneInfra.baseUnitChange.dispatch()
+    expect(updateScale).not.toHaveBeenCalled()
+  })
 
   it('preserves orthographic negative near planes and tiny perspective near planes', () => {
     const f = fixture()
@@ -159,8 +194,20 @@ describe('local GLB loading', () => {
 
   it('replaces and disposes the old model without refitting the camera', async () => {
     const f = fixture()
+    // Reference geometry is not part of the export, its bounds, or its disposal.
+    const referencePlane = new Mesh(
+      new PlaneGeometry(1000, 1000),
+      new MeshStandardMaterial()
+    )
+    referencePlane.name = 'default-planes'
+    referencePlane.position.set(1000, 0, 0)
+    f.state.scene?.add(referencePlane)
+    const disposeReference = vi.spyOn(referencePlane.geometry, 'dispose')
     f.done()
     await vi.waitFor(() => expect(f.state.currentModel).not.toBeNull())
+    expect(f.manager.sceneInfra.camControls.target.toArray()).toEqual([
+      500, -0, 500,
+    ])
     const old = f.state.currentModel
     const mesh = old?.children[0]
     if (!(mesh instanceof Mesh)) throw new Error('Missing mesh')
@@ -171,11 +218,15 @@ describe('local GLB loading', () => {
     await vi.waitFor(() => expect(f.state.currentModel).not.toBe(old))
     expect(disposeGeometry).toHaveBeenCalledOnce()
     expect(disposeMaterial).toHaveBeenCalledOnce()
-    expect(f.state.scene?.children).toHaveLength(1)
+    expect(f.state.scene?.children).toHaveLength(2)
+    expect(f.state.scene?.children).toContain(referencePlane)
+    expect(disposeReference).not.toHaveBeenCalled()
     expect(
       f.manager.sceneInfra.camControls.onCameraChange
     ).toHaveBeenCalledOnce()
     f.renderer.dispose()
+    referencePlane.geometry.dispose()
+    referencePlane.material.dispose()
   })
 
   it('discards an export if a newer execution starts before it arrives', async () => {

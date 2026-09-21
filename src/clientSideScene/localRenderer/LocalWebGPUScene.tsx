@@ -11,6 +11,7 @@ export const LocalWebGPUScene = (props: LocalRendererProps) => {
     backgroundColor,
     enableSSAO,
     highlightEdges,
+    fixedSizeGrid,
     onVisibilityChange,
     forceHide = false,
   } = props
@@ -67,6 +68,10 @@ export const LocalWebGPUScene = (props: LocalRendererProps) => {
   useEffect(() => {
     rendererRef.current?.setHighlightEdges(highlightEdges)
   }, [highlightEdges])
+
+  useEffect(() => {
+    rendererRef.current?.setFixedSizeGrid(fixedSizeGrid)
+  }, [fixedSizeGrid])
 
   useEffect(() => {
     rendererRef.current?.setForceHide(forceHide)
