@@ -55,11 +55,6 @@ export interface OpenProjectRequest {
   target: string
   /** Parsed URL-owned state, present only while restoring cold startup. */
   startup?: AppUrlState
-  /**
-   * Transitional React Router loader cancellation. Once startup is no longer
-   * loader-owned, appNavigation keeps latest-intent cancellation private.
-   */
-  signal?: AbortSignal
 }
 
 export type OpenProjectOutcome = { kind: 'opened'; data: IndexLoaderData }
@@ -82,11 +77,6 @@ export interface AppNavigationService {
     input: Input
   ) => Promise<Output>
   showHome: () => Promise<void>
-  /**
-   * Transitional escape hatch for a legacy file route that returns before it
-   * can call openProject. Remove it with the effectful loader integration.
-   */
-  supersedeProjectOpen: (signal?: AbortSignal) => void
 }
 
 export const appNavigationContract = defineContract({

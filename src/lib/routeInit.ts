@@ -50,18 +50,15 @@ export async function initFileRoute(
   {
     id,
     startup,
-    requestSignal = new AbortController().signal,
   }: {
     id: string
     startup: AppUrlState
-    requestSignal?: AbortSignal
   }
 ): Promise<RouteInitResult<FileLoaderData>> {
   // Before multi-file web projects, the editor used
   // `/file/%2Fbrowser%2Fmain.kcl` for its virtual browser project. Send those
   // legacy entry URLs Home. Remove when support for pre-OPFS URLs ends.
   if (id.startsWith('/browser')) {
-    app.registry.get(appNavigationService).supersedeProjectOpen(requestSignal)
     return {
       kind: 'transition',
       destination: { type: 'home' },
@@ -74,7 +71,6 @@ export async function initFileRoute(
     .dispatch(openProjectIntent, {
       target: id,
       startup,
-      signal: requestSignal,
     })
   return { kind: 'ready', data: outcome.data }
 }
