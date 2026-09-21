@@ -41,7 +41,7 @@ import { err, reportRejection, trap } from '@src/lib/trap'
 import type { commandBarMachine } from '@src/machines/commandBarMachine'
 import type { SettingsActorType } from '@src/machines/settingsMachine'
 import { appNavigationService } from '@src/registry/contracts/appNavigation'
-import { useCallback, useEffect, useState, useSyncExternalStore } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import {
   type NavigateFunction,
