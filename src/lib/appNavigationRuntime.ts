@@ -18,6 +18,12 @@ import { fileOperationsService } from '@src/registry/contracts/fileOperations'
 import { projectSession } from '@src/registry/contracts/projectSession'
 import { waitFor } from 'xstate'
 
+/**
+ * Transitional App-backed implementation of opening a resolved project.
+ *
+ * Move these effects behind projectSession as ZDSProject, KclManager, settings,
+ * and project I/O ownership leave the legacy App runtime.
+ */
 async function openResolvedProject(
   app: App,
   resolution: ResolvedProjectOpen,
@@ -92,6 +98,13 @@ async function openResolvedProject(
   }
 }
 
+/**
+ * Adapt the legacy App runtime to appNavigation's narrow dependency boundary.
+ *
+ * This is transitional strangler infrastructure. Replace the App parameter
+ * with registry-owned capabilities as project opening and home navigation are
+ * decoupled, then compose appNavigation directly from those capabilities.
+ */
 export function createAppNavigationDependencies(
   app: App
 ): AppNavigationDependencies {
