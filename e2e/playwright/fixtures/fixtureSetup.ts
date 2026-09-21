@@ -347,6 +347,7 @@ export class ElectronZoo {
 
     // THIS IS ABSOLUTELY NECESSARY TO CHANGE THE PROJECT DIRECTORY BETWEEN
     // TESTS BECAUSE OF THE ELECTRON INSTANCE REUSE.
+    await this.stopSettingsWrites()
     await this.electron?.evaluate(({ app }, projectDirName) => {
       // @ts-ignore can't declaration merge see main.ts
       app.testProperty['TEST_SETTINGS_FILE_KEY'] = projectDirName
@@ -409,6 +410,8 @@ export class ElectronZoo {
   }
 
   async cleanProjectDir(appSettings?: DeepPartial<Settings>) {
+    await this.stopSettingsWrites()
+
     try {
       if (fs.existsSync(this.projectDirName)) {
         await fsp.rm(this.projectDirName, { recursive: true })
@@ -461,6 +464,18 @@ export class ElectronZoo {
       },
     })
     await fsp.writeFile(tempSettingsFilePath, settingsOverridesToml)
+    await this.page.reload()
+  }
+
+  private async stopSettingsWrites() {
+    // Drain the current save and stop future layout saves before replacing
+    // the settings file or changing its destination. Reload restarts the actor.
+    await this.page.waitForFunction(() => {
+      const actor = window.app?.settings.actor
+      if (!actor?.getSnapshot().matches('idle')) return false
+      actor.stop()
+      return true
+    })
   }
 }
 
