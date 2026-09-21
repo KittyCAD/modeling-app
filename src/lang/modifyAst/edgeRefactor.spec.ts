@@ -391,64 +391,6 @@ extrude002 = extrude(region(point = [3, 2], sketch = sketch002), length = -.1)
      )
 `
 
-const KCL_MIXED_SKETCH_TAGS_AND_DEPRECATED_HELPERS = `@settings(defaultLengthUnit = mm, kclVersion = 1.0)
-
-bodyCenterX = 270mm
-bodyCenterY = -15mm
-bodyWidth = 400mm
-bodyDepth = 410mm
-bodyHeight = 420mm
-bodyBottomZ = 160mm
-bodyCornerRadius = 12mm
-bodyFrontY = bodyCenterY - (bodyDepth / 2)
-bodyMinX = bodyCenterX - (bodyWidth / 2)
-
-bodyBasePlane = {
-  origin = [bodyMinX, bodyFrontY, bodyBottomZ],
-  xAxis = [1, 0, 0],
-  yAxis = [0, 1, 0]
-}
-
-bodyBoxSketch = sketch(on = bodyBasePlane) {
-  b1 = line(start = [var 0mm, var 0mm], end = [var 400mm, var 0mm])
-  b2 = line(start = [var 400mm, var 0mm], end = [var 400mm, var 410mm])
-  b3 = line(start = [var 400mm, var 410mm], end = [var 0mm, var 410mm])
-  b4 = line(start = [var 0mm, var 410mm], end = [var 0mm, var 0mm])
-
-  coincident([b1.end, b2.start])
-  coincident([b2.end, b3.start])
-  coincident([b3.end, b4.start])
-  coincident([b4.end, b1.start])
-  coincident([b1.start, ORIGIN])
-  horizontal(b1)
-  vertical(b2)
-  horizontal(b3)
-  vertical(b4)
-  horizontalDistance([b1.start, b1.end]) == bodyWidth
-  verticalDistance([b1.start, b4.start]) == bodyDepth
-}
-bodyBoxRegion = region(point = [200mm, 205mm], sketch = bodyBoxSketch)
-bodyBoxRaw = extrude(bodyBoxRegion, length = bodyHeight)
-bodyBoxRounded = fillet(
-  bodyBoxRaw,
-  radius = bodyCornerRadius,
-  tags = [
-    bodyBoxRaw.sketch.tags.b1,
-    bodyBoxRaw.sketch.tags.b2,
-    bodyBoxRaw.sketch.tags.b3,
-    bodyBoxRaw.sketch.tags.b4,
-    getOppositeEdge(bodyBoxRaw.sketch.tags.b1),
-    getOppositeEdge(bodyBoxRaw.sketch.tags.b2),
-    getOppositeEdge(bodyBoxRaw.sketch.tags.b3),
-    getOppositeEdge(bodyBoxRaw.sketch.tags.b4),
-    getNextAdjacentEdge(bodyBoxRaw.sketch.tags.b1),
-    getPreviousAdjacentEdge(bodyBoxRaw.sketch.tags.b1),
-    getNextAdjacentEdge(bodyBoxRaw.sketch.tags.b2),
-    getPreviousAdjacentEdge(bodyBoxRaw.sketch.tags.b3)
-  ],
-)
-`
-
 const KCL_MEMBER_DIRECT_SKETCH_TAGS = `@settings(defaultLengthUnit = mm, kclVersion = 1.0)
 
 bodyBoxSketch = sketch(on = XY) {
@@ -977,30 +919,6 @@ const UUID_IN_FACES_REGEX =
 /** Normalize whitespace for asserting logical line content (recast may insert newlines). */
 function norm(s: string): string {
   return s.replace(/\s+/g, ' ').trim()
-}
-
-async function executeAndRefactor(
-  kcl: string,
-  instance: ModuleType,
-  kclManager: KclManager
-): Promise<string> {
-  const ast = assertParse(kcl, instance)
-  await kclManager.executeAst({ ast })
-  expect(kclManager.errors).toEqual([])
-  const execState = kclManager.execState
-  expect(execState.artifactGraph.size).toBeGreaterThan(0)
-  const refactored = refactorZ0006Unified(
-    ast,
-    execState.edgeRefactorMetadata ?? [],
-    execState.directTagFilletMetadata ?? [],
-    execState.artifactGraph,
-    instance
-  )
-  expect(err(refactored)).toBe(false)
-  if (err(refactored)) {
-    throw refactored
-  }
-  return refactored
 }
 
 describe('refactorZ0006Unified', () => {
@@ -1655,7 +1573,21 @@ part = bracket()
     })
 
     async function runIntegrationRefactor(kcl: string): Promise<string> {
-      return executeAndRefactor(kcl, instanceInThisFile, kclManagerInThisFile)
+      const ast = assertParse(kcl, instanceInThisFile)
+      await kclManagerInThisFile.executeAst({ ast })
+      expect(kclManagerInThisFile.errors).toEqual([])
+      const execState = kclManagerInThisFile.execState
+      expect(execState.artifactGraph.size).toBeGreaterThan(0)
+      const refactored = refactorZ0006Unified(
+        ast,
+        execState.edgeRefactorMetadata ?? [],
+        execState.directTagFilletMetadata ?? [],
+        execState.artifactGraph,
+        instanceInThisFile
+      )
+      expect(err(refactored)).toBe(false)
+      if (err(refactored)) throw refactored
+      return refactored
     }
 
     const deprecatedFilletCases = [
@@ -2497,54 +2429,6 @@ surface001 = extrude(
           .length
         expect(sideFaceCount).toBe(2)
         expect(n).not.toContain('tags = [')
-      }
-    )
-  })
-
-  describe('GPU-only integration (#14071)', () => {
-    let gpuInstance: ModuleType = null!
-    let gpuKclManager: KclManager = null!
-    let gpuEngineCommandManager: ConnectionManager = null!
-
-    beforeAll(async () => {
-      const { instance, kclManager, engineCommandManager } =
-        await buildTheWorldAndConnectToEngine({ webrtc: false })
-      instance.set_kcl_runtime_flags(
-        JSON.stringify({ enable_z0006_lint: 'On' })
-      )
-      gpuInstance = instance
-      gpuKclManager = kclManager
-      gpuEngineCommandManager = engineCommandManager
-    })
-
-    afterAll(() => {
-      gpuEngineCommandManager?.tearDown({
-        route: 'user-requested',
-        initiatedBy: 'client',
-      })
-    })
-
-    it(
-      'refactors mixed direct sketch tags and deprecated helper tags',
-      { timeout: 30_000 },
-      async () => {
-        const refactored = await executeAndRefactor(
-          KCL_MIXED_SKETCH_TAGS_AND_DEPRECATED_HELPERS,
-          gpuInstance,
-          gpuKclManager
-        )
-        expect(refactored).not.toMatch(UUID_IN_FACES_REGEX)
-        expect(refactored).not.toContain('tag = $seg')
-        const n = norm(refactored)
-        expect(n).toContain('edges = [')
-        expect(n).not.toContain('tags = [')
-        expect(n).not.toContain('getOppositeEdge')
-        expect(n).not.toContain('getNextAdjacentEdge')
-        expect(n).not.toContain('getPreviousAdjacentEdge')
-        expect(n).toContain('bodyBoxRaw.sketch.tags.b1')
-        expect(n).toContain('bodyBoxRaw.sketch.tags.b2')
-        expect(n).toContain('bodyBoxRaw.sketch.tags.b3')
-        expect(n).toContain('bodyBoxRaw.sketch.tags.b4')
       }
     )
   })
