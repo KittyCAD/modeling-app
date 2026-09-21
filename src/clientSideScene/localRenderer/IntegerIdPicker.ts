@@ -1,17 +1,22 @@
 import {
-  BufferGeometry,
+  type BufferGeometry,
   Color,
+  DoubleSide,
   type Material,
+  Mesh,
   NearestFilter,
+  NoBlending,
   type Object3D,
   RedIntegerFormat,
   Scene,
   UnsignedIntType,
   Vector2,
 } from 'three'
-import { LineSegments2 } from 'three/examples/jsm/lines/webgpu/LineSegments2.js'
+import { outputStruct, uint } from 'three/tsl'
+import type { LineSegments2 } from 'three/examples/jsm/lines/webgpu/LineSegments2.js'
 import {
   Line2NodeMaterial,
+  NodeMaterial,
   RenderTarget,
   type WebGPURenderer,
 } from 'three/webgpu'
@@ -66,6 +71,7 @@ export class IntegerIdPicker {
   private readonly drawingBufferSize = new Vector2()
   private readonly geometries: BufferGeometry[] = []
   private readonly materials = new Set<Material>()
+  private readonly sourceByProxy = new Map<Mesh, Mesh>()
   private targetById: Array<IntegerIdPickTarget | null> = [null]
   private renderTarget: RenderTarget | null = null
   private edgeObject: LineSegments2 | null = null
@@ -77,6 +83,60 @@ export class IntegerIdPicker {
   constructor(renderer: WebGPURenderer) {
     this.renderer = renderer
     this.scene.background = new Color(0)
+  }
+
+  // Share geometry; only the small ID materials and scene nodes are owned here.
+  setTargets(targets: IntegerIdPickTarget[], occluder: Object3D | null) {
+    this.clearModel()
+    const startedAt = performance.now()
+    const stats: IntegerIdPickerGeometryStats = {
+      vertexCount: 0,
+      faceCount: targets.length,
+      faceTriangleCount: 0,
+      surfaceMeshCount: 0,
+      edgeCount: 0,
+      edgeSegmentCount: 0,
+      sketchCount: 0,
+      sketchSegmentCount: 0,
+      regionCount: 0,
+      regionTriangleCount: 0,
+      vertexBufferBytes: 0,
+      indexBufferBytes: 0,
+      edgeSegmentBufferBytes: 0,
+    }
+    const createMaterial = (id: number) => {
+      const material = new NodeMaterial()
+      // Preserve integer output instead of NodeMaterial's default vec4 conversion.
+      material.fragmentNode = outputStruct(uint(id))
+      material.side = DoubleSide
+      material.blending = NoBlending
+      material.toneMapped = false
+      this.materials.add(material)
+      return material
+    }
+    const addMesh = (source: Mesh, material: NodeMaterial) => {
+      const proxy = source.clone(false)
+      proxy.material = material
+      proxy.matrixAutoUpdate = false
+      this.sourceByProxy.set(proxy, source)
+      this.scene.add(proxy)
+      stats.surfaceMeshCount++
+      const positions = source.geometry.getAttribute('position')
+      stats.vertexCount += positions?.count ?? 0
+      stats.faceTriangleCount +=
+        (source.geometry.index?.count ?? positions?.count ?? 0) / 3
+    }
+    const occluderMaterial = createMaterial(0)
+    occluder?.traverseVisible((object) => {
+      if (object instanceof Mesh) addMesh(object, occluderMaterial)
+    })
+    for (const target of targets) {
+      if (!(target.object instanceof Mesh)) continue
+      const id = this.targetById.push(target) - 1
+      addMesh(target.object, createMaterial(id))
+    }
+    this.geometryStats = stats
+    this.idSceneBuildDurationMs = performance.now() - startedAt
   }
 
   setEdgesVisible(visible: boolean) {
@@ -168,6 +228,7 @@ export class IntegerIdPicker {
   }
 
   clearModel() {
+    this.sourceByProxy.clear()
     this.scene.clear()
     this.edgeObject = null
     this.targetById = [null]
@@ -222,6 +283,16 @@ export class IntegerIdPicker {
     camera: Parameters<WebGPURenderer['render']>[1],
     viewportWidth: number
   ) {
+    for (const [proxy, source] of this.sourceByProxy) {
+      source.updateWorldMatrix(true, false)
+      proxy.matrix.copy(source.matrixWorld)
+      proxy.layers.mask = source.layers.mask
+      proxy.visible = true
+      source.traverseAncestors((parent) => {
+        if (!parent.visible) proxy.visible = false
+      })
+      proxy.visible &&= source.visible
+    }
     const previousTarget = this.renderer.getRenderTarget()
     const previousAutoClear = this.renderer.autoClear
     const selectionLineWidth =

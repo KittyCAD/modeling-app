@@ -1,5 +1,8 @@
 import { signal } from '@preact/signals-core'
 import type { KclManager } from '@src/lang/KclManager'
+import type { DefaultPlanes } from '@rust/kcl-lib/bindings/DefaultPlanes'
+import type { IntegerIdPickTarget } from '@src/clientSideScene/localRenderer/IntegerIdPicker'
+import type { LocalSelectionCommandProvider } from '@src/clientSideScene/localSelectionCommandProxy'
 import type ModelingAppFile from '@src/lib/modelingAppFile'
 import { Signal } from '@src/lib/signal'
 import { Themes } from '@src/lib/theme'
@@ -38,7 +41,30 @@ type RendererInternals = {
   modelLoadSettledAfterRender: boolean
   previewCamera: PerspectiveCamera | OrthographicCamera | null
   syncPreviewCameraFromShared(): void
+  handleLocalSelectionCommand: LocalSelectionCommandProvider['handleCommand']
+  clearPlaneHover(): void
+  pointerOverCanvas: boolean
+  integerIdPicker: {
+    pick: ReturnType<
+      typeof vi.fn<
+        () => Promise<{
+          target: IntegerIdPickTarget | null
+          diagnostics: { stale: boolean }
+        }>
+      >
+    >
+    invalidate: ReturnType<typeof vi.fn>
+    clearModel: ReturnType<typeof vi.fn>
+    dispose: ReturnType<typeof vi.fn>
+  } | null
+  selectionHighlightRenderer: {
+    setHover: ReturnType<typeof vi.fn>
+    setSelection: ReturnType<typeof vi.fn>
+    clearModel: ReturnType<typeof vi.fn>
+    dispose: ReturnType<typeof vi.fn>
+  } | null
   defaultPlaneRenderer: {
+    fills?: Map<keyof DefaultPlanes, Mesh>
     updateScale: ReturnType<typeof vi.fn>
     dispose: ReturnType<typeof vi.fn>
   } | null
@@ -59,6 +85,7 @@ function fixture(
     },
     systemDeps: { settings: {} },
     rustContext: {
+      defaultPlanes: { xy: 'plane-xy', yz: 'plane-yz', xz: 'plane-xz' },
       export: vi
         .fn<() => Promise<ModelingAppFile[] | undefined>>()
         .mockResolvedValue([triangleGlb()]),
@@ -68,6 +95,9 @@ function fixture(
       baseUnitChange: new Signal(),
       camControls: {
         camera,
+        isDragging: false,
+        wasDragging: false,
+        hoverPickingDisabled: false,
         target: new Vector3(),
         onCameraChange: vi.fn(),
       },
@@ -111,6 +141,137 @@ describe('local GLB loading', () => {
     vi.spyOn(prototype, 'scheduleRender').mockImplementation(() => {})
   })
   afterEach(() => vi.restoreAllMocks())
+
+  function planeFixture() {
+    const f = fixture()
+    const object = new Mesh(new PlaneGeometry())
+    const target = { object }
+    const picker = {
+      pick: vi
+        .fn()
+        .mockResolvedValue({ target, diagnostics: { stale: false } }),
+      invalidate: vi.fn(),
+      clearModel: vi.fn(),
+      dispose: vi.fn(),
+    }
+    const highlights = {
+      setHover: vi.fn(),
+      setSelection: vi.fn(),
+      clearModel: vi.fn(),
+      dispose: vi.fn(),
+    }
+    f.state.defaultPlaneRenderer = {
+      fills: new Map([['xy', object]]),
+      updateScale: vi.fn(),
+      dispose: vi.fn(),
+    }
+    f.state.integerIdPicker = picker
+    f.state.selectionHighlightRenderer = highlights
+    f.state.previewCamera = new PerspectiveCamera()
+    f.state.pointerOverCanvas = true
+    f.renderer.setPlaneInteractionEnabled(true)
+    const pick = (click = false) =>
+      f.state.handleLocalSelectionCommand(
+        {
+          type: 'modeling_cmd_req',
+          cmd_id: 'pick-request',
+          cmd: click
+            ? {
+                type: 'select_with_point',
+                selected_at_window: { x: 10, y: 20 },
+                selection_type: 'add',
+              }
+            : {
+                type: 'highlight_set_entity',
+                selected_at_window: { x: 10, y: 20 },
+              },
+        },
+        { streamDimensions: { width: 800, height: 600 } }
+      )
+    return { ...f, target, picker, highlights, pick }
+  }
+
+  it('maps local plane hits to engine UUIDs for existing hover and click subscribers', async () => {
+    const f = planeFixture()
+    expect((await f.pick())?.unreliableModelingResponse).toEqual({
+      type: 'highlight_set_entity',
+      data: { entity_id: 'plane-xy' },
+    })
+    expect(f.highlights.setHover).toHaveBeenLastCalledWith(f.target)
+    const result = await f.pick(true)
+    expect(result?.modelingResponse).toEqual({
+      type: 'select_with_point',
+      data: { entity_id: 'plane-xy' },
+    })
+    expect(result?.websocketResponse).toMatchObject({
+      success: true,
+      request_id: 'pick-request',
+    })
+    f.renderer.setSelectedDefaultPlane('plane-xy')
+    expect(f.highlights.setSelection).toHaveBeenLastCalledWith([f.target])
+    f.renderer.setSelectedDefaultPlane(null)
+    expect(f.highlights.setSelection).toHaveBeenLastCalledWith([])
+    f.renderer.dispose()
+  })
+
+  it('does not pick while dragging, in sketch editing, or outside the canvas', async () => {
+    const f = planeFixture()
+    f.manager.sceneInfra.camControls.isDragging = true
+    await f.pick()
+    await f.pick(true)
+    f.manager.sceneInfra.camControls.isDragging = false
+    f.manager.sceneInfra.camControls.wasDragging = true
+    await f.pick(true)
+    f.renderer.setPlaneInteractionEnabled(false)
+    await f.pick()
+    f.renderer.setPlaneInteractionEnabled(true)
+    f.state.pointerOverCanvas = false
+    await f.pick()
+    expect(f.picker.pick).not.toHaveBeenCalled()
+    f.renderer.dispose()
+  })
+
+  it('does not apply a GPU hover result after the pointer leaves or execution starts', async () => {
+    const f = planeFixture()
+    let resolvePick = () => {}
+    f.picker.pick.mockImplementation(
+      () =>
+        new Promise((resolve) => {
+          resolvePick = () =>
+            resolve({ target: f.target, diagnostics: { stale: false } })
+        })
+    )
+    const pending = f.pick()
+    f.state.clearPlaneHover()
+    resolvePick()
+    expect(await pending).toEqual({})
+    expect(f.highlights.setHover).toHaveBeenLastCalledWith(null)
+
+    const next = f.pick()
+    f.manager.isExecutingSignal.value = true
+    resolvePick()
+    expect(await next).toEqual({})
+    expect(f.highlights.setHover).toHaveBeenLastCalledWith(null)
+    f.renderer.dispose()
+  })
+
+  it('ignores stale GPU results and returns an empty selection for a miss', async () => {
+    const f = planeFixture()
+    f.picker.pick.mockResolvedValueOnce({
+      target: f.target,
+      diagnostics: { stale: true },
+    })
+    expect(await f.pick()).toEqual({})
+    f.picker.pick.mockResolvedValueOnce({
+      target: null,
+      diagnostics: { stale: false },
+    })
+    expect((await f.pick(true))?.modelingResponse).toEqual({
+      type: 'select_with_point',
+      data: { entity_id: undefined },
+    })
+    f.renderer.dispose()
+  })
 
   it('updates plane scale on camera, fixed-grid setting, and file-unit changes', () => {
     const f = fixture()

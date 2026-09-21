@@ -4,10 +4,12 @@ import {
   SKETCH_SELECTION_COLOR,
 } from '@src/lib/constants'
 import {
-  BufferGeometry,
+  type BufferGeometry,
   Color,
+  DoubleSide,
   LinearSRGBColorSpace,
   type Material,
+  Mesh,
   NearestFilter,
   NoBlending,
   NoColorSpace,
@@ -32,6 +34,7 @@ import {
 } from 'three/tsl'
 import {
   Line2NodeMaterial,
+  MeshBasicNodeMaterial,
   NodeMaterial,
   QuadMesh,
   RenderPipeline,
@@ -81,6 +84,7 @@ export class SelectionHighlightRenderer {
   private readonly selectionLineMaterial: Line2NodeMaterial
   private readonly compositeQuad = new QuadMesh()
   private readonly overlayByKey = new Map<string, Object3D>()
+  private readonly sourceByOverlay = new Map<Mesh, Object3D>()
   private readonly lineKeys = new Set<string>()
   private readonly geometries: BufferGeometry[] = []
   private readonly maskMaterials = new Set<Material>()
@@ -208,6 +212,23 @@ export class SelectionHighlightRenderer {
     this.updateSceneMembership()
   }
 
+  setTargets(targets: IntegerIdPickTarget[]) {
+    this.clearModel()
+    const material = new MeshBasicNodeMaterial({
+      color: 0xffffff,
+      side: DoubleSide,
+      toneMapped: false,
+    })
+    this.maskMaterials.add(material)
+    for (const { object } of targets) {
+      if (!(object instanceof Mesh)) continue
+      const overlay = new Mesh(object.geometry, material)
+      overlay.matrixAutoUpdate = false
+      this.overlayByKey.set(object.uuid, overlay)
+      this.sourceByOverlay.set(overlay, object)
+    }
+  }
+
   setSelection(targets: Iterable<IntegerIdPickTarget>) {
     this.selectedKeys = new Set(
       Array.from(targets, (target) => getTargetKey(target))
@@ -216,6 +237,10 @@ export class SelectionHighlightRenderer {
   }
 
   render(camera: Parameters<WebGPURenderer['render']>[1]) {
+    for (const [overlay, source] of this.sourceByOverlay) {
+      source.updateWorldMatrix(true, false)
+      overlay.matrix.copy(source.matrixWorld)
+    }
     this.ensureTargetSize()
     this.renderer.setRenderTarget(this.frameTarget)
     this.renderer.autoClear = true
@@ -277,6 +302,7 @@ export class SelectionHighlightRenderer {
   }
 
   clearModel() {
+    this.sourceByOverlay.clear()
     this.hoverMaskScene.clear()
     this.selectionMaskScene.clear()
     this.hoverLineScene.clear()
@@ -464,6 +490,7 @@ function createCompositeMaterial(
   const boundary = highest.sub(lowest).greaterThan(0.01)
   const alpha = boundary.select(1, center.mul(HIGHLIGHT_INTERIOR_OPACITY))
   const material = new NodeMaterial()
+  // Color decodes the sRGB hex palette; renderOutput converts back for display.
   material.fragmentNode = renderOutput(
     vec4(uniform(new Color(color)), alpha),
     NoToneMapping,

@@ -1,5 +1,6 @@
 import { getLocalCameraSceneScale } from '@src/clientSideScene/cameraSceneScale'
 import { type ResolvedTheme, Themes } from '@src/lib/theme'
+import type { DefaultPlanes } from '@rust/kcl-lib/bindings/DefaultPlanes'
 import {
   CanvasTexture,
   Color,
@@ -21,12 +22,17 @@ const LABEL_FONT = '24px "Source Code VF", monospace'
 const LABEL_TEXTURE_SCALE = 2
 const LABEL_MM_PER_PIXEL = 0.12
 
-// Match the default-plane fill colors and opacity sent to the engine.
+// sRGB palette matching the engine; convert to linear when assigning materials.
 const PLANES = [
-  { name: 'XY', label: 'Top', color: new Color(0.7, 0.28, 0.28) },
-  { name: 'YZ', label: 'Side', color: new Color(0.28, 0.7, 0.28) },
-  { name: 'XZ', label: 'Front', color: new Color(0.28, 0.28, 0.7) },
-]
+  { key: 'xy', name: 'XY', label: 'Top', color: new Color(0.7, 0.28, 0.28) },
+  { key: 'yz', name: 'YZ', label: 'Side', color: new Color(0.28, 0.7, 0.28) },
+  { key: 'xz', name: 'XZ', label: 'Front', color: new Color(0.28, 0.28, 0.7) },
+] satisfies {
+  key: keyof DefaultPlanes
+  name: string
+  label: string
+  color: Color
+}[]
 
 type PlaneLabel = {
   context: CanvasRenderingContext2D
@@ -37,6 +43,7 @@ type PlaneLabel = {
 
 /** Reference geometry, independent of the exported model and its lifetime. */
 export class DefaultPlaneRenderer {
+  readonly fills = new Map<keyof DefaultPlanes, Mesh>()
   private readonly group = new Group()
   private readonly planeGeometry = new PlaneGeometry(
     PLANE_SIZE_MM,
@@ -56,14 +63,14 @@ export class DefaultPlaneRenderer {
     this.borderGeometry.fromEdgesGeometry(edges)
     edges.dispose()
 
-    for (const { name, label, color } of PLANES) {
+    for (const { key, name, label, color } of PLANES) {
       const plane = new Group()
       plane.name = name
       if (name === 'YZ') plane.rotation.set(Math.PI / 2, Math.PI / 2, 0)
       if (name === 'XZ') plane.rotation.x = Math.PI / 2
 
       const fillMaterial = new MeshBasicNodeMaterial({
-        color,
+        color: color.clone().convertSRGBToLinear(),
         opacity: 0.1,
         transparent: true,
         side: DoubleSide,
@@ -76,11 +83,15 @@ export class DefaultPlaneRenderer {
       })
       const fill = new Mesh(this.planeGeometry, fillMaterial)
       fill.name = `${name}-fill`
+      this.fills.set(key, fill)
       this.materials.push(fillMaterial)
       plane.add(fill)
 
-      // Same HSV value, 0.2 less saturation, and opaque (unlike the fill).
-      const borderColor = color.clone().lerp(new Color(0.7, 0.7, 0.7), 1 / 3)
+      // Reduce saturation in sRGB before converting to linear for the material.
+      const borderColor = color
+        .clone()
+        .lerp(new Color(0.7, 0.7, 0.7), 1 / 3)
+        .convertSRGBToLinear()
       const borderMaterial = new Line2NodeMaterial({
         color: borderColor,
         linewidth: 2,
@@ -124,6 +135,7 @@ export class DefaultPlaneRenderer {
   }
 
   dispose() {
+    this.fills.clear()
     this.group.removeFromParent()
     this.group.clear()
     this.planeGeometry.dispose()

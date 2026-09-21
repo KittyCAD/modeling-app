@@ -1,6 +1,6 @@
 import { DefaultPlaneRenderer } from '@src/clientSideScene/localRenderer/DefaultPlaneRenderer'
 import { Themes } from '@src/lib/theme'
-import { Color, Material, Mesh, Scene, Vector3 } from 'three'
+import { Color, Material, Mesh, Scene, SRGBColorSpace, Vector3 } from 'three'
 import { LineSegments2 } from 'three/examples/jsm/lines/webgpu/LineSegments2.js'
 import { MeshBasicNodeMaterial } from 'three/webgpu'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
@@ -59,9 +59,14 @@ describe('DefaultPlaneRenderer', () => {
   it('uses translucent fills and depth-writing opaque borders and labels', () => {
     const { root, planes } = fixture()
     const colors = [
-      new Color(0.7, 0.28, 0.28),
-      new Color(0.28, 0.7, 0.28),
-      new Color(0.28, 0.28, 0.7),
+      new Color().setRGB(0.7, 0.28, 0.28, SRGBColorSpace),
+      new Color().setRGB(0.28, 0.7, 0.28, SRGBColorSpace),
+      new Color().setRGB(0.28, 0.28, 0.7, SRGBColorSpace),
+    ]
+    const borderColors = [
+      new Color().setRGB(0.7, 0.42, 0.42, SRGBColorSpace),
+      new Color().setRGB(0.42, 0.7, 0.42, SRGBColorSpace),
+      new Color().setRGB(0.42, 0.42, 0.7, SRGBColorSpace),
     ]
     root.children.forEach((plane, index) => {
       const fill = plane.children[0]
@@ -81,6 +86,9 @@ describe('DefaultPlaneRenderer', () => {
       expect(fill.material.depthWrite).toBe(false)
       expect(fill.material.forceSinglePass).toBe(true)
       expect(fill.material.toneMapped).toBe(false)
+      border.material.color.toArray().forEach((channel, i) => {
+        expect(channel).toBeCloseTo(borderColors[index].toArray()[i], 12)
+      })
       expect(border.material.linewidth).toBe(2)
       expect(border.material.transparent).toBe(false)
       expect(border.material.depthTest).toBe(true)

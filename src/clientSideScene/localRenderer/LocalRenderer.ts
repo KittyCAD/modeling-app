@@ -1,3 +1,8 @@
+import type { OkModelingCmdResponse } from '@kittycad/lib'
+import {
+  registerLocalSelectionCommandProvider,
+  type LocalSelectionCommandProvider,
+} from '@src/clientSideScene/localSelectionCommandProxy'
 import {
   LOCAL_WEBGPU_GTAO_SAMPLES,
   LOCAL_WEBGPU_GTAO_USE_DENOISE,
@@ -6,7 +11,10 @@ import {
 import { EdgeRenderer } from '@src/clientSideScene/localRenderer/EdgeRenderer'
 import { DefaultPlaneRenderer } from '@src/clientSideScene/localRenderer/DefaultPlaneRenderer'
 import { EnvMapLoader } from '@src/clientSideScene/localRenderer/EnvMapLoader'
-import { IntegerIdPicker } from '@src/clientSideScene/localRenderer/IntegerIdPicker'
+import {
+  IntegerIdPicker,
+  type IntegerIdPickTarget,
+} from '@src/clientSideScene/localRenderer/IntegerIdPicker'
 import { HDR_ENV_MAP_URL } from '@src/clientSideScene/localRenderer/maps'
 import {
   type LocalRendererFrameMetrics,
@@ -115,6 +123,12 @@ export class LocalRenderer {
   private modelLoadSettledAfterRender = false
   private baseRenderDirty = true
   private disposed = false
+  private planeInteractionEnabled = false
+  private selectedPlaneId: string | null = null
+  private hoveredPlane: IntegerIdPickTarget | null = null
+  private hoverRequestVersion = 0
+  private pointerOverCanvas = false
+  private unregisterPlanePicking: (() => void) | null = null
 
   constructor(
     container: HTMLDivElement,
@@ -143,6 +157,7 @@ export class LocalRenderer {
           this.modelLoadGeneration += 1
           this.pendingModelRefresh = false
           this.modelLoadSettledAfterRender = false
+          this.clearPlaneHover()
         }
       }
     )
@@ -157,6 +172,131 @@ export class LocalRenderer {
     this.fixedSizeGrid = fixedSizeGrid
     this.syncDefaultPlaneScale()
   }
+
+  setPlaneInteractionEnabled(enabled: boolean) {
+    this.planeInteractionEnabled = enabled
+    this.integerIdPicker?.invalidate()
+    if (!enabled) this.clearPlaneHover()
+  }
+
+  setSelectedDefaultPlane(id: string | null) {
+    this.selectedPlaneId = id
+    this.updatePlaneSelection()
+  }
+
+  private getPlaneTarget(id: string | null): IntegerIdPickTarget | null {
+    if (!id) return null
+    const planes = this.kclManager.rustContext.defaultPlanes
+    for (const [key, object] of this.defaultPlaneRenderer?.fills ?? []) {
+      if (planes?.[key] === id) return { object }
+    }
+    return null
+  }
+
+  private updatePlaneSelection() {
+    const target = this.getPlaneTarget(this.selectedPlaneId)
+    this.selectionHighlightRenderer?.setSelection(target ? [target] : [])
+    this.scheduleRender()
+  }
+
+  private readonly clearPlaneHover = () => {
+    this.hoverRequestVersion++
+    this.hoveredPlane = null
+    this.selectionHighlightRenderer?.setHover(null)
+    this.scheduleRender()
+  }
+
+  private rebuildPlaneTargets() {
+    const fills = this.defaultPlaneRenderer?.fills
+    if (!fills) return
+    const targets = Array.from(fills.values(), (object) => ({ object }))
+    this.integerIdPicker?.setTargets(targets, this.currentModel)
+    this.selectionHighlightRenderer?.setTargets(targets)
+    this.clearPlaneHover()
+    this.updatePlaneSelection()
+  }
+
+  private readonly handleLocalSelectionCommand: LocalSelectionCommandProvider['handleCommand'] =
+    async (command, { streamDimensions }) => {
+      if (command.type !== 'modeling_cmd_req') return null
+      const { cmd } = command
+      if (
+        cmd.type === 'select_add' ||
+        cmd.type === 'select_remove' ||
+        cmd.type === 'select_clear'
+      ) {
+        // The modeling-machine selection is supplied by LocalWebGPUScene.
+        return {}
+      }
+      if (
+        cmd.type !== 'highlight_set_entity' &&
+        cmd.type !== 'select_with_point'
+      )
+        return null
+      const isHover = cmd.type === 'highlight_set_entity'
+      const controls = this.kclManager.sceneInfra.camControls
+      if (
+        !this.planeInteractionEnabled ||
+        this.kclManager.isExecuting ||
+        controls.isDragging ||
+        (isHover &&
+          (!this.pointerOverCanvas || controls.hoverPickingDisabled)) ||
+        (!isHover && controls.wasDragging) ||
+        !this.previewCamera
+      )
+        return {}
+      const requestVersion = isHover
+        ? ++this.hoverRequestVersion
+        : this.hoverRequestVersion
+      const generation = this.modelLoadGeneration
+      const result = await this.integerIdPicker?.pick({
+        ...cmd.selected_at_window,
+        streamWidth: streamDimensions.width,
+        streamHeight: streamDimensions.height,
+        camera: this.previewCamera,
+      })
+      if (
+        this.disposed ||
+        this.forceHide ||
+        !this.planeInteractionEnabled ||
+        this.kclManager.isExecuting ||
+        generation !== this.modelLoadGeneration ||
+        result?.diagnostics.stale ||
+        (isHover && requestVersion !== this.hoverRequestVersion)
+      )
+        return {}
+      const target = result?.target ?? null
+      let entityId: string | null = null
+      const planes = this.kclManager.rustContext.defaultPlanes
+      for (const [key, object] of this.defaultPlaneRenderer?.fills ?? []) {
+        if (object === target?.object) entityId = planes?.[key] ?? null
+      }
+      if (isHover) {
+        if (this.hoveredPlane?.object !== target?.object) {
+          this.hoveredPlane = target
+          this.selectionHighlightRenderer?.setHover(target)
+          this.scheduleRender()
+        }
+        return {
+          unreliableModelingResponse: {
+            type: 'highlight_set_entity',
+            data: { entity_id: entityId },
+          },
+        }
+      }
+      const response = {
+        type: 'select_with_point',
+        data: { entity_id: entityId ?? undefined },
+      } satisfies Extract<OkModelingCmdResponse, { type: 'select_with_point' }>
+      return {
+        modelingResponse: response,
+        websocketResponse: {
+          success: true,
+          request_id: command.cmd_id,
+          resp: { type: 'modeling', data: { modeling_response: response } },
+        },
+      }
+    }
 
   private get backgroundColor() {
     return getThemeBackgroundColor(this.theme)
@@ -197,6 +337,7 @@ export class LocalRenderer {
     }
 
     this.forceHide = forceHide
+    if (forceHide) this.clearPlaneHover()
     this.container.style.opacity = this.isVisible && !this.forceHide ? '1' : '0'
     this.invalidateBaseRender()
   }
@@ -213,6 +354,8 @@ export class LocalRenderer {
     }
 
     this.disposed = true
+    this.unregisterPlanePicking?.()
+    this.unregisterPlanePicking = null
     this.unregisterExecutionListener?.()
     this.unregisterExecutionListener = null
     this.kclManager.removeEventListener(
@@ -274,10 +417,12 @@ export class LocalRenderer {
       camControls.camera.position.distanceTo(camControls.target),
       fixedGridScale
     )
+    this.integerIdPicker?.invalidate()
     this.invalidateBaseRender()
   }
 
   private readonly syncPreviewCameraFromShared = () => {
+    this.clearPlaneHover()
     const cameraControls = this.kclManager.sceneInfra.camControls
     const sharedCamera = cameraControls.camera
     const sharedTarget = cameraControls.target
@@ -538,8 +683,8 @@ export class LocalRenderer {
       pixelRatio: renderer.getPixelRatio(),
       ssaoEnabled: this.enableSSAO && !this.forceHide,
       baseRendered,
-      hoverActive: false,
-      selectionCount: 0,
+      hoverActive: this.hoveredPlane !== null,
+      selectionCount: this.selectedPlaneId ? 1 : 0,
     } satisfies LocalRendererFrameMetrics)
 
     if (this.modelLoadSettledAfterRender) {
@@ -740,6 +885,29 @@ export class LocalRenderer {
     this.device = device
     this.envMapLoader = envMapLoader
 
+    this.rebuildPlaneTargets()
+    const unregisterProvider = registerLocalSelectionCommandProvider({
+      isActive: () =>
+        !this.disposed && !this.forceHide && this.planeInteractionEnabled,
+      handleCommand: this.handleLocalSelectionCommand,
+    })
+    const inputCanvas = kclManager.sceneInfra.camControls.domElement
+    this.pointerOverCanvas = inputCanvas.matches(':hover')
+    const onEnter = () => {
+      this.pointerOverCanvas = true
+    }
+    const onLeave = () => {
+      this.pointerOverCanvas = false
+      this.clearPlaneHover()
+    }
+    inputCanvas.addEventListener('pointerenter', onEnter)
+    inputCanvas.addEventListener('pointerleave', onLeave)
+    this.unregisterPlanePicking = () => {
+      unregisterProvider()
+      inputCanvas.removeEventListener('pointerenter', onEnter)
+      inputCanvas.removeEventListener('pointerleave', onLeave)
+    }
+
     this.resize()
     this.syncPreviewCameraFromShared()
     this.resizeObserver = new ResizeObserver(this.resize)
@@ -813,6 +981,7 @@ export class LocalRenderer {
       this.clearModel()
       this.currentModel = gltf.scene
       this.scene?.add(gltf.scene)
+      this.rebuildPlaneTargets()
       const bounds = new Box3().setFromObject(gltf.scene)
       this.updateAmbientOcclusionScale(bounds)
       if (!this.hasFittedModel && !bounds.isEmpty()) {
