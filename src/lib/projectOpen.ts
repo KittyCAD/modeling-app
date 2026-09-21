@@ -1,9 +1,9 @@
 /**
  * Resolve the legacy `/file/*` input into application-level project state.
  *
- * `requestUrl` is present only during URL restoration. A project root or
- * unusable file still resolves to project state immediately; `canonicalUrl`
- * records the corrected URL that should be projected after that state opens.
+ * Cold startup carries already-parsed URL state separately from `target`, so
+ * project identity has one source of truth. `canonicalTarget` records the
+ * normalized application destination to project after the project opens.
  *
  * The ordering here is load-bearing: the project root is resolved before
  * project settings are loaded because loading settings writes missing files.
@@ -11,16 +11,9 @@
 
 import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
 import { PROJECT_ENTRYPOINT } from '@src/lib/constants'
-import {
-  getRouterSearchFromRequestUrl,
-  getStringAfterLastSeparator,
-  PATHS,
-  parseProjectRoute,
-  safeEncodeForRouterPaths,
-} from '@src/lib/paths'
+import { getStringAfterLastSeparator, parseProjectRoute } from '@src/lib/paths'
 import type { Project } from '@src/lib/project'
 import type { ProjectLibrarySetting } from '@src/lib/projectLibraries'
-import { getOnboardingChildRoute } from '@src/lib/routeLoaderNavigation'
 import type { DeepPartial } from '@src/lib/types'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { OpenProjectRequest } from '@src/registry/contracts/appNavigation'
@@ -36,8 +29,7 @@ export interface ResolvedProjectOpen {
     name: string
     path: string
   }
-  /** A cold-start URL correction to project after this state is opened. */
-  canonicalUrl?: string
+  canonicalTarget: string
 }
 
 export interface ProjectOpenResolutionSettings {
@@ -70,12 +62,11 @@ export interface ProjectOpenResolverDependencies {
   stat: FileOperationsRegistryService['stat']
   isPathNotFoundError: (error: unknown) => boolean
   setProjectDirectory: (projectPath: string) => void
-  isDesktop: () => boolean
 }
 
 export async function resolveProjectOpenRequest(
   dependencies: ProjectOpenResolverDependencies,
-  { target, requestUrl }: OpenProjectRequest,
+  { target, startup }: OpenProjectRequest,
   throwIfSuperseded: () => void
 ): Promise<ResolvedProjectOpen> {
   const wasmInstance = await dependencies.wasmInstancePromise
@@ -83,41 +74,27 @@ export async function resolveProjectOpenRequest(
 
   const appSettings = await dependencies.loadSettings(wasmInstance)
   throwIfSuperseded()
-  const targetLibraryPath = target
-    ? (
-        await dependencies.getProjectLibraryOwnership(
-          appSettings.settings.app.libraries?.current ?? [],
-          target
-        )
-      )?.libraryPath
-    : undefined
-  throwIfSuperseded()
-  const projectPathData = target
-    ? parseProjectRoute(appSettings.configuration, target, {
-        activeProjectPath: dependencies.getCurrentProjectPath(),
-        candidateProjectDirectories: targetLibraryPath
-          ? [targetLibraryPath]
-          : [],
-      })
-    : undefined
-
-  if (!projectPathData) {
-    return Promise.reject(
-      new Error('bug: projectPathData undefined, early return')
+  const targetLibraryPath = (
+    await dependencies.getProjectLibraryOwnership(
+      appSettings.settings.app.libraries?.current ?? [],
+      target
     )
-  }
+  )?.libraryPath
+  throwIfSuperseded()
+  const projectPathData = parseProjectRoute(appSettings.configuration, target, {
+    activeProjectPath: dependencies.getCurrentProjectPath(),
+    candidateProjectDirectories: targetLibraryPath ? [targetLibraryPath] : [],
+  })
 
   await dependencies.loadSettings(wasmInstance, projectPathData.projectPath)
   throwIfSuperseded()
 
   const { projectName, projectPath } = projectPathData
   let { currentFileName, currentFilePath } = projectPathData
-  let canonicalUrl: string | undefined
-  const isSettingsUrl = requestUrl
-    ? new URL(requestUrl).pathname.endsWith('/settings')
-    : false
+  let canonicalTarget = target
+  const isSettingsOverlay = startup?.overlay?.contributionId === 'settings'
 
-  if (!isSettingsUrl) {
+  if (!isSettingsOverlay) {
     const fallbackFile = (
       await dependencies.getProjectInfo(projectPath, wasmInstance)
     ).default_file
@@ -135,32 +112,16 @@ export async function resolveProjectOpenRequest(
     }
 
     const wantsProjectDefault =
-      Boolean(projectPath) && !currentFileName && fileExists && Boolean(target)
+      Boolean(projectPath) && !currentFileName && fileExists
     const targetUnusable =
       !fileExists || !currentFileName || !currentFilePath || !projectName
 
     if (wantsProjectDefault) {
-      if (requestUrl && target) {
-        canonicalUrl = requestUrl.replace(
-          safeEncodeForRouterPaths(target),
-          safeEncodeForRouterPaths(fallbackFile)
-        )
-      }
+      canonicalTarget = fallbackFile
       currentFilePath = fallbackFile
       currentFileName = getStringAfterLastSeparator(fallbackFile)
     } else if (targetUnusable) {
-      if (requestUrl) {
-        const routerSearch = getRouterSearchFromRequestUrl(
-          requestUrl,
-          dependencies.isDesktop()
-        )
-        const onboardingChildRoute = target
-          ? getOnboardingChildRoute(requestUrl, target)
-          : ''
-        canonicalUrl = `${PATHS.FILE}/${encodeURIComponent(
-          fallbackFile
-        )}${onboardingChildRoute}${routerSearch}`
-      }
+      canonicalTarget = fallbackFile
       currentFilePath = fallbackFile
       currentFileName = getStringAfterLastSeparator(fallbackFile)
     }
@@ -194,6 +155,6 @@ export async function resolveProjectOpenRequest(
       name: currentFileName || '',
       path: currentFilePath || '',
     },
-    ...(canonicalUrl ? { canonicalUrl } : {}),
+    canonicalTarget,
   }
 }

@@ -3,6 +3,7 @@ import type {
   AppDestination,
   AppDestinationKind,
   AppOverlayContribution,
+  AppUrlProjection,
   InitialUrlIntent,
 } from '@src/registry/contracts/appUrl'
 
@@ -35,6 +36,50 @@ function decodeSegment(segment: string): string | undefined {
   } catch {
     return undefined
   }
+}
+
+function formatDestination(destination: AppDestination): string {
+  switch (destination.type) {
+    case 'index':
+      return PATHS.INDEX
+    case 'home':
+      return destination.libraryId
+        ? joinRouterPaths(
+            PATHS.LIBRARY,
+            encodeURIComponent(destination.libraryId)
+          )
+        : PATHS.HOME
+    case 'project':
+      return joinRouterPaths(PATHS.FILE, encodeURIComponent(destination.target))
+    case 'sign-in':
+      return PATHS.SIGN_IN
+  }
+}
+
+/** Format application state through the capability contributions that own it. */
+export function formatAppUrl(
+  projection: AppUrlProjection,
+  overlays: readonly AppOverlayContribution[]
+): string {
+  const destinationPath = formatDestination(projection.destination)
+  if (!projection.overlay) {
+    return `${destinationPath}${projection.search}${projection.hash}`
+  }
+
+  const contribution = overlays.find(
+    ({ id }) => id === projection.overlay?.contributionId
+  )
+  if (!contribution) {
+    // eslint-disable-next-line suggest-no-throw/suggest-no-throw
+    throw new Error(
+      `Missing application overlay contribution: ${projection.overlay.contributionId}`
+    )
+  }
+
+  const overlay = contribution.format(projection.overlay.state)
+  return `${joinRouterPaths(destinationPath, overlay.path)}${
+    overlay.search ?? projection.search
+  }${overlay.hash ?? projection.hash}`
 }
 
 function parseDestination(pathname: string):

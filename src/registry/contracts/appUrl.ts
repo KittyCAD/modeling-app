@@ -49,15 +49,23 @@ export interface ParsedAppOverlay {
   state: unknown
 }
 
+/** URL-owned state that accompanies one application destination at startup. */
+export interface AppUrlState {
+  overlay?: ParsedAppOverlay
+  search: string
+  hash: string
+}
+
+export type AppUrlProjection = AppUrlState & {
+  destination: AppDestination
+}
+
 /** The application intent represented by the URL at cold startup. */
 export type InitialUrlIntent =
-  | {
+  | (AppUrlState & {
       type: 'launch'
       destination: AppDestination
-      overlay?: ParsedAppOverlay
-      search: string
-      hash: string
-    }
+    })
   | {
       type: 'unrecognized'
       pathname: string
@@ -94,6 +102,7 @@ export type AppUrlService = {
     requestUrl?: string
     usesHashRouter?: boolean
   }) => InitialUrlIntent
+  formatUrl: (projection: AppUrlProjection) => string
   getLocation: () => Location
   setLocation: (location: Location) => void
   setNavigate: (navigate: NavigateFunction) => () => void

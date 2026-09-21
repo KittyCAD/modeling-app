@@ -21,6 +21,7 @@ const resolvedProject: ResolvedProjectOpen = {
     readWriteAccess: true,
   },
   file: { name: 'main.kcl', path: '/projects/bracket/main.kcl' },
+  canonicalTarget: '/projects/bracket/main.kcl',
 }
 
 function navigationHarness(overrides: Partial<AppNavigationDependencies> = {}) {

@@ -23,11 +23,6 @@ import { projectSession } from '@src/registry/contracts/projectSession'
 import { appUrlService } from '@src/registry/contracts/appUrl'
 import { waitFor } from 'xstate'
 
-function applicationPathFromUrl(to: string) {
-  const url = new URL(to, window.location.href)
-  return `${url.pathname}${url.search}${url.hash}`
-}
-
 /**
  * Transitional App-backed implementation of opening a resolved project.
  *
@@ -137,7 +132,6 @@ export function createAppNavigationDependencies(
           setProjectDirectory: (projectPath) => {
             projectFsManager.dir = projectPath
           },
-          isDesktop: () => Boolean(window.electron),
         },
         request,
         throwIfSuperseded
@@ -146,15 +140,22 @@ export function createAppNavigationDependencies(
       openResolvedProject(app, resolution, throwIfSuperseded),
     projectOpened: (outcome, resolution, request) => {
       const appUrl = app.registry.get(appUrlService)
-      if (resolution.canonicalUrl) {
-        void appUrl.navigate(applicationPathFromUrl(resolution.canonicalUrl), {
-          replace: true,
-        })
+      if (request.startup) {
+        void appUrl.navigate(
+          appUrl.formatUrl({
+            destination: {
+              type: 'project',
+              target: resolution.canonicalTarget,
+            },
+            ...request.startup,
+          }),
+          { replace: true }
+        )
         return
       }
 
       const openedFilePath = outcome.data.file?.path
-      if (openedFilePath && !request.requestUrl) {
+      if (openedFilePath) {
         void appUrl.navigate(
           `${PATHS.FILE}/${encodeURIComponent(openedFilePath)}`
         )
@@ -164,7 +165,7 @@ export function createAppNavigationDependencies(
       if (!window.electron && !(await webHomeRouteEnabled(app))) {
         const { initIndexRoute } = await import('@src/lib/routeInit')
         const result = await initIndexRoute(app, {
-          requestUrl: new URL(PATHS.INDEX, window.location.href).href,
+          urlState: { search: '', hash: '' },
         })
         if (
           result.kind === 'transition' &&

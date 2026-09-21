@@ -15,7 +15,6 @@ import {
 } from '@src/lib/constants'
 import { getInitialDefaultDir, getProjectInfo } from '@src/lib/desktop'
 import fsZds from '@src/lib/fs-zds'
-import { getRouterSearchFromRequestUrl, PATHS } from '@src/lib/paths'
 import {
   DEFAULT_PROJECT_LIBRARY_TITLE,
   DIRECTORY_PROJECT_LIBRARY_TYPE,
@@ -30,22 +29,25 @@ import { loadRouteSettings } from '@src/lib/routeSettings'
 import type { AppSettings } from '@src/lib/settings/settingsUtils'
 import type { FileLoaderData, HomeLoaderData } from '@src/lib/types'
 import { appNavigationService } from '@src/registry/contracts/appNavigation'
-import type { AppDestination } from '@src/registry/contracts/appUrl'
+import type {
+  AppDestination,
+  AppUrlState,
+} from '@src/registry/contracts/appUrl'
 import { fileOperationsService } from '@src/registry/contracts/fileOperations'
 
 export const DEFAULT_WEB_PROJECT_NAME = 'demo-project'
 
 /**
  * A startup step either establishes its state or selects the next typed
- * application destination. `canonicalPath` is projected only after that
- * destination has been established.
+ * application destination. URL-owned state remains structured until the
+ * resulting destination has been established.
  */
 export type RouteInitResult<T> =
   | { kind: 'ready'; data: T }
   | {
       kind: 'transition'
       destination: AppDestination
-      canonicalPath: string
+      urlState: AppUrlState
     }
 
 type CanonicalWebProjectLibrary = {
@@ -104,10 +106,6 @@ async function fileExists(app: App, filePath: string) {
   return app.registry.get(fileOperationsService).exists(filePath)
 }
 
-function fileRoutePath(filePath: string, routerSearch: string) {
-  return `${PATHS.FILE}/${encodeURIComponent(filePath)}${routerSearch}`
-}
-
 /**
  * Initialization for `/`, which is a funnel: it never renders anything, it
  * decides where the app should actually be.
@@ -117,25 +115,19 @@ function fileRoutePath(filePath: string, routerSearch: string) {
  */
 export async function initIndexRoute(
   app: App,
-  { requestUrl }: { requestUrl: string }
+  { urlState }: { urlState: AppUrlState }
 ): Promise<RouteInitResult<undefined>> {
-  const url = new URL(requestUrl)
-  const routerSearch = getRouterSearchFromRequestUrl(
-    requestUrl,
-    Boolean(window.electron)
-  )
-
   // Desktop starts at Home.
   if (window.electron) {
     return {
       kind: 'transition',
       destination: { type: 'home' },
-      canonicalPath: PATHS.HOME + routerSearch,
+      urlState: { search: urlState.search, hash: '' },
     }
   }
 
   // Let another part of the system handle the "open with web/desktop"...
-  if (url.searchParams.has('ask-open-desktop')) {
+  if (new URLSearchParams(urlState.search).has('ask-open-desktop')) {
     return { kind: 'ready', data: undefined }
   }
 
@@ -143,7 +135,7 @@ export async function initIndexRoute(
     return {
       kind: 'transition',
       destination: { type: 'home' },
-      canonicalPath: PATHS.HOME + routerSearch,
+      urlState: { search: urlState.search, hash: '' },
     }
   }
 
@@ -172,7 +164,7 @@ export async function initIndexRoute(
   return {
     kind: 'transition',
     destination: { type: 'project', target: defaultFilePath },
-    canonicalPath: fileRoutePath(defaultFilePath, routerSearch),
+    urlState: { search: urlState.search, hash: '' },
   }
 }
 
@@ -188,11 +180,11 @@ export async function initFileRoute(
   app: App,
   {
     id,
-    requestUrl,
+    startup,
     requestSignal = new AbortController().signal,
   }: {
-    id: string | undefined
-    requestUrl: string
+    id: string
+    startup: AppUrlState
     requestSignal?: AbortSignal
   }
 ): Promise<RouteInitResult<FileLoaderData>> {
@@ -209,13 +201,13 @@ export async function initFileRoute(
     return {
       kind: 'transition',
       destination: { type: 'home' },
-      canonicalPath: PATHS.HOME,
+      urlState: { search: '', hash: '' },
     }
   }
 
   const outcome = await app.registry.get(appNavigationService).openProject({
     target: id,
-    requestUrl,
+    startup,
     signal: requestSignal,
   })
   return { kind: 'ready', data: outcome.data }
@@ -236,7 +228,7 @@ export async function initHomeRoute(
     return {
       kind: 'transition',
       destination: { type: 'index' },
-      canonicalPath: PATHS.INDEX,
+      urlState: { search: '', hash: '' },
     }
   }
 
