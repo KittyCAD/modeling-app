@@ -535,17 +535,21 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
                       {
                         "n": -30.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": -10.5,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -553,17 +557,21 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
                       {
                         "n": 30.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": -10.5,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -655,17 +663,21 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
                       {
                         "n": 30.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": -10.5,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -673,17 +685,21 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
                       {
                         "n": 30.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 10.5,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -775,17 +791,21 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
                       {
                         "n": 30.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 10.5,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -793,17 +813,21 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
                       {
                         "n": -30.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 10.5,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -895,17 +919,21 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
                       {
                         "n": -30.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 10.5,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -913,17 +941,21 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
                       {
                         "n": -30.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": -10.5,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -1436,8 +1468,10 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
             "n": 5.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "edgeId": "[uuid]",
@@ -1450,8 +1484,10 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
             "n": 5.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "edgeId": "[uuid]",
@@ -1464,8 +1500,10 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
             "n": 5.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "edgeId": "[uuid]",
@@ -1478,8 +1516,10 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
             "n": 5.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "edgeId": "[uuid]",
@@ -1645,8 +1685,10 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
                 "n": 2.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               "edgeId": "[uuid]",
@@ -1809,8 +1851,10 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
                 "n": 2.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               "edgeId": "[uuid]",
@@ -1828,8 +1872,10 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
     "value": 6.2,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "magnetRegion": {
@@ -1945,17 +1991,21 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
                       {
                         "n": 15.396313466227804,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": -2.6526521522376236,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -1963,17 +2013,21 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
                       {
                         "n": 17.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0003064835769238815,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -2065,17 +2119,21 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
                       {
                         "n": 0.000000000000000000012760230031337801,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": -0.000000000000000000017250014904350297,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -2083,17 +2141,21 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
                       {
                         "n": 17.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.00030648357692388147,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -2282,8 +2344,10 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
     "value": 3.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "magnets": {
@@ -2656,17 +2720,21 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
                       {
                         "n": 24.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -2674,17 +2742,21 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
                       {
                         "n": 17.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -2776,17 +2848,21 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -2794,17 +2870,21 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
                       {
                         "n": 17.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -2993,8 +3073,10 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
     "value": 100.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "spongeEyeCenter2Center": {
@@ -3002,8 +3084,10 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
     "value": 34.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "spongeEyeDiameter": {
@@ -3011,8 +3095,10 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
     "value": 14.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "spongeThickness": {
@@ -3020,8 +3106,10 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
     "value": 40.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   }
 }

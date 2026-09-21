@@ -39,18 +39,22 @@ description: Operations executed sketch_on_face_loft_subtract.kcl
                 "type": "SketchVar",
                 "value": 3.21,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.59,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -65,18 +69,22 @@ description: Operations executed sketch_on_face_loft_subtract.kcl
                 "type": "SketchVar",
                 "value": 0.29,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.59,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -126,18 +134,22 @@ description: Operations executed sketch_on_face_loft_subtract.kcl
                 "type": "SketchVar",
                 "value": 3.21,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 3.49,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -152,18 +164,22 @@ description: Operations executed sketch_on_face_loft_subtract.kcl
                 "type": "SketchVar",
                 "value": 3.21,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.59,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -213,18 +229,22 @@ description: Operations executed sketch_on_face_loft_subtract.kcl
                 "type": "SketchVar",
                 "value": 0.29,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 3.49,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -239,18 +259,22 @@ description: Operations executed sketch_on_face_loft_subtract.kcl
                 "type": "SketchVar",
                 "value": 3.21,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 3.49,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -300,18 +324,22 @@ description: Operations executed sketch_on_face_loft_subtract.kcl
                 "type": "SketchVar",
                 "value": 0.29,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.59,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -326,18 +354,22 @@ description: Operations executed sketch_on_face_loft_subtract.kcl
                 "type": "SketchVar",
                 "value": 0.29,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 3.49,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -734,18 +766,22 @@ description: Operations executed sketch_on_face_loft_subtract.kcl
                 "type": "Number",
                 "value": 1.75,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.5925,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -823,8 +859,10 @@ description: Operations executed sketch_on_face_loft_subtract.kcl
             "value": 5.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -881,18 +919,22 @@ description: Operations executed sketch_on_face_loft_subtract.kcl
                 "type": "SketchVar",
                 "value": 6.33,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -2.89,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -907,18 +949,22 @@ description: Operations executed sketch_on_face_loft_subtract.kcl
                 "type": "SketchVar",
                 "value": -5.74,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -2.89,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -968,18 +1014,22 @@ description: Operations executed sketch_on_face_loft_subtract.kcl
                 "type": "SketchVar",
                 "value": 6.33,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 5.16,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -994,18 +1044,22 @@ description: Operations executed sketch_on_face_loft_subtract.kcl
                 "type": "SketchVar",
                 "value": 6.33,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -2.89,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -1055,18 +1109,22 @@ description: Operations executed sketch_on_face_loft_subtract.kcl
                 "type": "SketchVar",
                 "value": -5.74,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 5.16,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -1081,18 +1139,22 @@ description: Operations executed sketch_on_face_loft_subtract.kcl
                 "type": "SketchVar",
                 "value": 6.33,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 5.16,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -1142,18 +1204,22 @@ description: Operations executed sketch_on_face_loft_subtract.kcl
                 "type": "SketchVar",
                 "value": -5.74,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -2.89,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -1168,18 +1234,22 @@ description: Operations executed sketch_on_face_loft_subtract.kcl
                 "type": "SketchVar",
                 "value": -5.74,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 5.16,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -1576,18 +1646,22 @@ description: Operations executed sketch_on_face_loft_subtract.kcl
                 "type": "Number",
                 "value": 0.295,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": -2.8875,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -1665,8 +1739,10 @@ description: Operations executed sketch_on_face_loft_subtract.kcl
             "value": 0.5,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -1730,18 +1806,22 @@ description: Operations executed sketch_on_face_loft_subtract.kcl
                 "type": "SketchVar",
                 "value": 5.52,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -1.53,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -1756,18 +1836,22 @@ description: Operations executed sketch_on_face_loft_subtract.kcl
                 "type": "SketchVar",
                 "value": -3.9,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -1.53,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -1817,18 +1901,22 @@ description: Operations executed sketch_on_face_loft_subtract.kcl
                 "type": "SketchVar",
                 "value": 5.52,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 4.62,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -1843,18 +1931,22 @@ description: Operations executed sketch_on_face_loft_subtract.kcl
                 "type": "SketchVar",
                 "value": 5.52,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -1.53,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -1904,18 +1996,22 @@ description: Operations executed sketch_on_face_loft_subtract.kcl
                 "type": "SketchVar",
                 "value": -3.9,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 4.62,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -1930,18 +2026,22 @@ description: Operations executed sketch_on_face_loft_subtract.kcl
                 "type": "SketchVar",
                 "value": 5.52,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 4.62,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -1991,18 +2091,22 @@ description: Operations executed sketch_on_face_loft_subtract.kcl
                 "type": "SketchVar",
                 "value": -3.9,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -1.53,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -2017,18 +2121,22 @@ description: Operations executed sketch_on_face_loft_subtract.kcl
                 "type": "SketchVar",
                 "value": -3.9,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 4.62,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -2429,8 +2537,10 @@ description: Operations executed sketch_on_face_loft_subtract.kcl
             "value": 2.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -2487,18 +2597,22 @@ description: Operations executed sketch_on_face_loft_subtract.kcl
                 "type": "SketchVar",
                 "value": 4.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -0.17,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -2513,18 +2627,22 @@ description: Operations executed sketch_on_face_loft_subtract.kcl
                 "type": "SketchVar",
                 "value": -2.7,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -0.17,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -2574,18 +2692,22 @@ description: Operations executed sketch_on_face_loft_subtract.kcl
                 "type": "SketchVar",
                 "value": 4.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 4.04,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -2600,18 +2722,22 @@ description: Operations executed sketch_on_face_loft_subtract.kcl
                 "type": "SketchVar",
                 "value": 4.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -0.17,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -2661,18 +2787,22 @@ description: Operations executed sketch_on_face_loft_subtract.kcl
                 "type": "SketchVar",
                 "value": -2.7,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 4.04,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -2687,18 +2817,22 @@ description: Operations executed sketch_on_face_loft_subtract.kcl
                 "type": "SketchVar",
                 "value": 4.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 4.04,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -2748,18 +2882,22 @@ description: Operations executed sketch_on_face_loft_subtract.kcl
                 "type": "SketchVar",
                 "value": -2.7,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -0.17,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -2774,18 +2912,22 @@ description: Operations executed sketch_on_face_loft_subtract.kcl
                 "type": "SketchVar",
                 "value": -2.7,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 4.04,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -3182,18 +3324,22 @@ description: Operations executed sketch_on_face_loft_subtract.kcl
                 "type": "Number",
                 "value": 0.81,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": -1.5275,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -3265,18 +3411,22 @@ description: Operations executed sketch_on_face_loft_subtract.kcl
                 "type": "Number",
                 "value": 0.65,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": -0.1675,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -3451,7 +3601,9 @@ description: Operations executed sketch_on_face_loft_subtract.kcl
         "value": 2.718281828459045,
         "ty": {
           "type": "Known",
-          "type": "Count"
+          "value": {
+            "type": "Count"
+          }
         }
       },
       "visibility": "export",
@@ -3479,7 +3631,9 @@ description: Operations executed sketch_on_face_loft_subtract.kcl
         "value": 6.283185307179586,
         "ty": {
           "type": "Known",
-          "type": "Count"
+          "value": {
+            "type": "Count"
+          }
         }
       },
       "visibility": "export",

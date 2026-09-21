@@ -1942,7 +1942,7 @@ export default {
       {
         "name": "method",
         "ty": "string",
-        "docs": "The method used during extrusion, either `NEW` or `MERGE`. `NEW` creates a new object. `MERGE` merges the extruded objects together. The default is `MERGE`.",
+        "docs": "The method used during extrusion, either `NEW` or `MERGE`. `NEW` creates a new body. `MERGE` updates the parent body when extruding a face or a sketch on a face; it does not combine separate plane-based sketches. The default is `MERGE`.",
         "required": false,
         "special": false,
         "experimental": false,
@@ -9909,7 +9909,7 @@ export default {
       {
         "name": "translateProfileToPath",
         "ty": "bool",
-        "docs": "If true, the profile being swept will be moved to the path being swept along, before the sweep starts. If false, the profile stays where it is, and the sweep starts from there. Defaults to false.",
+        "docs": "If true, the profile being swept will be moved to the path being swept along, before the sweep starts. If false, the profile stays where it is, and the sweep starts from there. Defaults to false. On KCL 2.0 and earlier, explicitly setting this option, even to false, requires `version = 2`.",
         "required": false,
         "special": false,
         "experimental": false,
@@ -9921,7 +9921,7 @@ export default {
       {
         "name": "orientProfilePerpendicular",
         "ty": "bool",
-        "docs": "If true, before the sweep starts, the profile will be re-oriented so that it is perpendicular to the path being swept along. If false, the profile is left in its current orientation. On KCL 2.0 and earlier, defaults to false. On KCL 3.0 and later, defaults to the value of `translateProfileToPath`, so a profile that is moved to the path is also oriented perpendicular to it unless you say otherwise.",
+        "docs": "If true, before the sweep starts, the profile will be re-oriented so that it is perpendicular to the path being swept along. If false, the profile is left in its current orientation. On KCL 2.0 and earlier, defaults to false. On KCL 3.0 and later, defaults to the value of `translateProfileToPath`, so a profile that is moved to the path is also oriented perpendicular to it unless you say otherwise. On KCL 2.0 and earlier, explicitly setting this option, even to false, requires `version = 2`.",
         "required": false,
         "special": false,
         "experimental": false,

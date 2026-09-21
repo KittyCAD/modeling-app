@@ -2139,17 +2139,21 @@ description: Variables in memory after executing ball-bearing.kcl
                       {
                         "n": 0.12500000000000533,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.0000000000011072069910217364,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -2157,17 +2161,21 @@ description: Variables in memory after executing ball-bearing.kcl
                       {
                         "n": -0.12500000000001113,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.0000000000011072072078621709,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -2175,17 +2183,21 @@ description: Variables in memory after executing ball-bearing.kcl
                       {
                         "n": -0.0000000000000000001594982581821819,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.0000000000004920922557284542,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -2291,17 +2303,21 @@ description: Variables in memory after executing ball-bearing.kcl
                       {
                         "n": -0.12500000000000702,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.0000000000009841840883928477,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -2309,17 +2325,21 @@ description: Variables in memory after executing ball-bearing.kcl
                       {
                         "n": 0.12500000000000122,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.0000000000009841836547119787,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -5732,17 +5752,21 @@ description: Variables in memory after executing ball-bearing.kcl
                       {
                         "n": 0.06249999999980007,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.10825317749616126,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -5750,17 +5774,21 @@ description: Variables in memory after executing ball-bearing.kcl
                       {
                         "n": -0.06250000000013227,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.10825317749615289,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -5768,17 +5796,21 @@ description: Variables in memory after executing ball-bearing.kcl
                       {
                         "n": 0.0000000000000000005362371511815755,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.00000000000003349471792255139,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -5884,17 +5916,21 @@ description: Variables in memory after executing ball-bearing.kcl
                       {
                         "n": -0.06250000000014194,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.10825317749616545,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -5902,17 +5938,21 @@ description: Variables in memory after executing ball-bearing.kcl
                       {
                         "n": -0.0625000000001516,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.13950317749619057,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -6004,17 +6044,21 @@ description: Variables in memory after executing ball-bearing.kcl
                       {
                         "n": -0.06250000000016127,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.13950317749619476,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -6022,17 +6066,21 @@ description: Variables in memory after executing ball-bearing.kcl
                       {
                         "n": 0.06249999999982907,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.13950317749619476,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -6124,17 +6172,21 @@ description: Variables in memory after executing ball-bearing.kcl
                       {
                         "n": 0.0624999999998194,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.13950317749619057,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -6142,17 +6194,21 @@ description: Variables in memory after executing ball-bearing.kcl
                       {
                         "n": 0.062499999999809736,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.10825317749617382,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -6424,8 +6480,10 @@ description: Variables in memory after executing ball-bearing.kcl
     "value": 0.03125,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "chainWidth": {
@@ -6433,8 +6491,10 @@ description: Variables in memory after executing ball-bearing.kcl
     "value": 0.125,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "insideWall": {
@@ -6756,17 +6816,21 @@ description: Variables in memory after executing ball-bearing.kcl
                       {
                         "n": 0.47500000001,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -6774,17 +6838,21 @@ description: Variables in memory after executing ball-bearing.kcl
                       {
                         "n": 0.000000000005000000403701854,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -6876,17 +6944,21 @@ description: Variables in memory after executing ball-bearing.kcl
                       {
                         "n": 0.37499999985,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -6894,17 +6966,21 @@ description: Variables in memory after executing ball-bearing.kcl
                       {
                         "n": -0.0000000000750000060555278,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -7155,8 +7231,10 @@ description: Variables in memory after executing ball-bearing.kcl
     "value": 0.0625,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "linkPrerotated": {
@@ -7520,17 +7598,21 @@ description: Variables in memory after executing ball-bearing.kcl
                       {
                         "n": 0.63124999998875,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -7538,17 +7620,21 @@ description: Variables in memory after executing ball-bearing.kcl
                       {
                         "n": 0.599999999995,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -7640,17 +7726,21 @@ description: Variables in memory after executing ball-bearing.kcl
                       {
                         "n": -0.000000000002500000151972465,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -7658,17 +7748,21 @@ description: Variables in memory after executing ball-bearing.kcl
                       {
                         "n": 0.599999999995,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -7761,17 +7855,21 @@ description: Variables in memory after executing ball-bearing.kcl
                       {
                         "n": 0.5999999999925,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -7779,17 +7877,21 @@ description: Variables in memory after executing ball-bearing.kcl
                       {
                         "n": 0.63124999999,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -9223,8 +9325,10 @@ description: Variables in memory after executing ball-bearing.kcl
     "value": 10.0,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "outsideDiameter": {
@@ -9232,8 +9336,10 @@ description: Variables in memory after executing ball-bearing.kcl
     "value": 1.625,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "outsideRegion": {
@@ -9555,17 +9661,21 @@ description: Variables in memory after executing ball-bearing.kcl
                       {
                         "n": 0.812499999995,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -9573,17 +9683,21 @@ description: Variables in memory after executing ball-bearing.kcl
                       {
                         "n": -0.000000000002500000201850927,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -9675,17 +9789,21 @@ description: Variables in memory after executing ball-bearing.kcl
                       {
                         "n": 0.72499999997,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -9693,17 +9811,21 @@ description: Variables in memory after executing ball-bearing.kcl
                       {
                         "n": -0.00000000001500000121110556,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -9942,8 +10064,10 @@ description: Variables in memory after executing ball-bearing.kcl
     "value": 0.3,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "overallThickness": {
@@ -9951,8 +10075,10 @@ description: Variables in memory after executing ball-bearing.kcl
     "value": 0.313,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "shaftDia": {
@@ -9960,8 +10086,10 @@ description: Variables in memory after executing ball-bearing.kcl
     "value": 0.75,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "sphereDia": {
@@ -9969,8 +10097,10 @@ description: Variables in memory after executing ball-bearing.kcl
     "value": 0.25,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "wallThickness": {
@@ -9978,8 +10108,10 @@ description: Variables in memory after executing ball-bearing.kcl
     "value": 0.1,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   }
 }

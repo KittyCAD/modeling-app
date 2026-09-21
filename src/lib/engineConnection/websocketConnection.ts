@@ -128,7 +128,7 @@ export const createOnWebSocketMessage = ({
     connectionId: string
     modelingApiCallId: string | null
   }
-  tearDownManager: (options?: ManagerTearDown) => void
+  tearDownManager: (options: ManagerTearDown) => void
   requestReconnect: () => void
 }) => {
   const onWebSocketMessage = (event: MessageEvent<any>) => {
@@ -157,7 +157,11 @@ export const createOnWebSocketMessage = ({
           terminal: true,
         }
         const connectionContext = getConnectionContext()
-        tearDownManager({ websocketClosed: true, connectionError })
+        tearDownManager({
+          route: 'backend-shutdown',
+          initiatedBy: 'unknown',
+          connectionError,
+        })
         const cloudProjectId = getCloudProjectId()
         void reportClientError({
           code: ClientErrorCode.EngineBackendDisconnect,
@@ -461,11 +465,12 @@ export const createOnWebSocketClose = ({
   onWebSocketOpen: (event: Event) => void
   onWebSocketError: (event: Event) => void
   onWebSocketMessage: (event: MessageEvent<any>) => void
-  tearDownManager: (options?: ManagerTearDown) => void
+  tearDownManager: (options: ManagerTearDown) => void
   dispatchEvent: (event: Event) => boolean
   getReconnectRequested: () => boolean
 }) => {
   const onDataChannelClose = (event: CloseEvent) => {
+    const reconnectRequested = getReconnectRequested()
     websocket.removeEventListener('open', onWebSocketOpen)
     websocket.removeEventListener('error', onWebSocketError)
     websocket.removeEventListener('message', onWebSocketMessage)
@@ -475,9 +480,11 @@ export const createOnWebSocketClose = ({
       })
     )
     tearDownManager({
-      websocketClosed: true,
+      route: 'websocket-closed',
+      initiatedBy: reconnectRequested ? 'api' : 'unknown',
       code: event.code.toString(),
-      reconnectRequested: getReconnectRequested(),
+      reason: event.reason,
+      reconnectRequested,
     })
   }
   return onDataChannelClose

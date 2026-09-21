@@ -32,8 +32,10 @@ description: Operations executed import_async.kcl
               "value": 7.0,
               "ty": {
                 "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
+                "value": {
+                  "len": "mm",
+                  "angle": "degrees"
+                }
               }
             },
             "sourceRange": []
@@ -43,9 +45,11 @@ description: Operations executed import_async.kcl
               "type": "Number",
               "value": 35.0,
               "ty": {
-                "degrees": null,
                 "type": "Known",
-                "type": "Angle"
+                "value": {
+                  "type": "Angle",
+                  "value": "degrees"
+                }
               }
             },
             "sourceRange": []
@@ -56,8 +60,10 @@ description: Operations executed import_async.kcl
               "value": 2.0,
               "ty": {
                 "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
+                "value": {
+                  "len": "mm",
+                  "angle": "degrees"
+                }
               }
             },
             "sourceRange": []
@@ -68,8 +74,10 @@ description: Operations executed import_async.kcl
               "value": 21.0,
               "ty": {
                 "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
+                "value": {
+                  "len": "mm",
+                  "angle": "degrees"
+                }
               }
             },
             "sourceRange": []
@@ -79,9 +87,11 @@ description: Operations executed import_async.kcl
               "type": "Number",
               "value": 20.0,
               "ty": {
-                "degrees": null,
                 "type": "Known",
-                "type": "Angle"
+                "value": {
+                  "type": "Angle",
+                  "value": "degrees"
+                }
               }
             },
             "sourceRange": []
@@ -109,8 +119,10 @@ description: Operations executed import_async.kcl
         "value": 42.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -151,8 +163,10 @@ description: Operations executed import_async.kcl
         "value": 2.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -193,8 +207,10 @@ description: Operations executed import_async.kcl
         "value": 2.5,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -235,8 +251,10 @@ description: Operations executed import_async.kcl
         "value": 39.46709007300815,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -277,8 +295,10 @@ description: Operations executed import_async.kcl
         "value": 46.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -319,8 +339,10 @@ description: Operations executed import_async.kcl
         "value": 2.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -361,8 +383,10 @@ description: Operations executed import_async.kcl
         "value": 1.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -403,8 +427,10 @@ description: Operations executed import_async.kcl
         "value": 7.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -445,8 +471,10 @@ description: Operations executed import_async.kcl
         "value": 3.5,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -486,9 +514,11 @@ description: Operations executed import_async.kcl
         "type": "Number",
         "value": 0.28975170143604745,
         "ty": {
-          "radians": null,
           "type": "Known",
-          "type": "Angle"
+          "value": {
+            "type": "Angle",
+            "value": "radians"
+          }
         }
       },
       "visibility": "default",
@@ -579,8 +609,10 @@ description: Operations executed import_async.kcl
               "value": 0.0,
               "ty": {
                 "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
+                "value": {
+                  "len": "mm",
+                  "angle": "degrees"
+                }
               }
             },
             "sourceRange": []
@@ -623,9 +655,11 @@ description: Operations executed import_async.kcl
         "type": "Number",
         "value": 1.5707963267948966,
         "ty": {
-          "radians": null,
           "type": "Known",
-          "type": "Angle"
+          "value": {
+            "type": "Angle",
+            "value": "radians"
+          }
         }
       },
       "visibility": "default",
@@ -688,8 +722,10 @@ description: Operations executed import_async.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -887,8 +923,10 @@ description: Operations executed import_async.kcl
               "value": 3.5,
               "ty": {
                 "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
+                "value": {
+                  "len": "mm",
+                  "angle": "degrees"
+                }
               }
             },
             "sourceRange": []
@@ -931,9 +969,11 @@ description: Operations executed import_async.kcl
         "type": "Number",
         "value": 1.4640403411278755,
         "ty": {
-          "radians": null,
           "type": "Known",
-          "type": "Angle"
+          "value": {
+            "type": "Angle",
+            "value": "radians"
+          }
         }
       },
       "visibility": "default",
@@ -996,8 +1036,10 @@ description: Operations executed import_async.kcl
             "value": 3.5,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -1195,8 +1237,10 @@ description: Operations executed import_async.kcl
               "value": 7.0,
               "ty": {
                 "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
+                "value": {
+                  "len": "mm",
+                  "angle": "degrees"
+                }
               }
             },
             "sourceRange": []
@@ -1239,9 +1283,11 @@ description: Operations executed import_async.kcl
         "type": "Number",
         "value": 1.3560427808151838,
         "ty": {
-          "radians": null,
           "type": "Known",
-          "type": "Angle"
+          "value": {
+            "type": "Angle",
+            "value": "radians"
+          }
         }
       },
       "visibility": "default",
@@ -1304,8 +1350,10 @@ description: Operations executed import_async.kcl
             "value": 7.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -1568,8 +1616,10 @@ description: Operations executed import_async.kcl
             "value": 10.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -1629,7 +1679,9 @@ description: Operations executed import_async.kcl
         "value": 2.718281828459045,
         "ty": {
           "type": "Known",
-          "type": "Count"
+          "value": {
+            "type": "Count"
+          }
         }
       },
       "visibility": "export",
@@ -1657,7 +1709,9 @@ description: Operations executed import_async.kcl
         "value": 6.283185307179586,
         "ty": {
           "type": "Known",
-          "type": "Count"
+          "value": {
+            "type": "Count"
+          }
         }
       },
       "visibility": "export",

@@ -259,18 +259,22 @@ description: Variables in memory after executing wheel-hub.kcl
     "type": "Number",
     "value": 14.14095766465162,
     "ty": {
-      "mm": null,
       "type": "Known",
-      "type": "Length"
+      "value": {
+        "type": "Length",
+        "value": "mm"
+      }
     }
   },
   "baseArcRadius": {
     "type": "Number",
     "value": 16.32857142857143,
     "ty": {
-      "mm": null,
       "type": "Known",
-      "type": "Length"
+      "value": {
+        "type": "Length",
+        "value": "mm"
+      }
     }
   },
   "boltHead": {
@@ -616,17 +620,21 @@ description: Variables in memory after executing wheel-hub.kcl
                       {
                         "n": -1.818053993250767,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -0.0000000000000016222075832883324,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -634,17 +642,21 @@ description: Variables in memory after executing wheel-hub.kcl
                       {
                         "n": -2.25,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.00000000000000000009103532878779016,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -735,17 +747,21 @@ description: Variables in memory after executing wheel-hub.kcl
                       {
                         "n": -2.2499999999999716,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -0.0000000000000008110581136331515,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -753,17 +769,21 @@ description: Variables in memory after executing wheel-hub.kcl
                       {
                         "n": -1.8180539932507864,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -0.0000000000000016222073691030798,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -854,17 +874,21 @@ description: Variables in memory after executing wheel-hub.kcl
                       {
                         "n": -0.00000000000000000006670688997802354,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.00000000000000000003034510921562347,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -872,17 +896,21 @@ description: Variables in memory after executing wheel-hub.kcl
                       {
                         "n": -2.25,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.00000000000000000006069021871647794,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -973,17 +1001,21 @@ description: Variables in memory after executing wheel-hub.kcl
                       {
                         "n": -2.6819460067492313,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.000000000000005146797671053602,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -991,17 +1023,21 @@ description: Variables in memory after executing wheel-hub.kcl
                       {
                         "n": -2.465973003177312,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.37407621519321277,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -1091,17 +1127,21 @@ description: Variables in memory after executing wheel-hub.kcl
                       {
                         "n": -2.465973003177311,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.3740762151932102,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -1109,17 +1149,21 @@ description: Variables in memory after executing wheel-hub.kcl
                       {
                         "n": -2.034026996822686,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.37407621519321127,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -1209,17 +1253,21 @@ description: Variables in memory after executing wheel-hub.kcl
                       {
                         "n": -2.034026996822689,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.37407621519320866,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -1227,17 +1275,21 @@ description: Variables in memory after executing wheel-hub.kcl
                       {
                         "n": -1.818053993250777,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -0.0000000000000024141541293807955,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -1327,17 +1379,21 @@ description: Variables in memory after executing wheel-hub.kcl
                       {
                         "n": -1.818053993250777,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -0.000000000000002433356623402717,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -1345,17 +1401,21 @@ description: Variables in memory after executing wheel-hub.kcl
                       {
                         "n": -2.0340269968226914,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -0.37407621519321355,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -1445,17 +1505,21 @@ description: Variables in memory after executing wheel-hub.kcl
                       {
                         "n": -2.0340269968226927,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -0.3740762151932107,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -1463,17 +1527,21 @@ description: Variables in memory after executing wheel-hub.kcl
                       {
                         "n": -2.465973003177318,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -0.37407621519321044,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -1563,17 +1631,21 @@ description: Variables in memory after executing wheel-hub.kcl
                       {
                         "n": -2.4659730031773157,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -0.37407621519320655,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -1581,17 +1653,21 @@ description: Variables in memory after executing wheel-hub.kcl
                       {
                         "n": -2.681946006749231,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.0000000000000040625099847599644,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -2744,17 +2820,21 @@ description: Variables in memory after executing wheel-hub.kcl
                       {
                         "n": 0.00000000000006749157759860963,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -2762,17 +2842,21 @@ description: Variables in memory after executing wheel-hub.kcl
                       {
                         "n": 2.250000000000135,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -2859,17 +2943,21 @@ description: Variables in memory after executing wheel-hub.kcl
                       {
                         "n": 2.519966254218513,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -2877,17 +2965,21 @@ description: Variables in memory after executing wheel-hub.kcl
                       {
                         "n": 2.2500000000002025,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -3069,17 +3161,21 @@ description: Variables in memory after executing wheel-hub.kcl
                       {
                         "n": 2.250000000000243,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -3087,17 +3183,21 @@ description: Variables in memory after executing wheel-hub.kcl
                       {
                         "n": 2.5199662542185064,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -3496,9 +3596,11 @@ description: Variables in memory after executing wheel-hub.kcl
           "length": {
             "n": 3.81,
             "ty": {
-              "mm": null,
               "type": "Known",
-              "type": "Length"
+              "value": {
+                "type": "Length",
+                "value": "mm"
+              }
             }
           },
           "edgeId": "[uuid]",
@@ -3730,9 +3832,11 @@ description: Variables in memory after executing wheel-hub.kcl
           "length": {
             "n": 3.81,
             "ty": {
-              "mm": null,
               "type": "Known",
-              "type": "Length"
+              "value": {
+                "type": "Length",
+                "value": "mm"
+              }
             }
           },
           "edgeId": "[uuid]",
@@ -3744,9 +3848,11 @@ description: Variables in memory after executing wheel-hub.kcl
           "length": {
             "n": 5.715,
             "ty": {
-              "mm": null,
               "type": "Known",
-              "type": "Length"
+              "value": {
+                "type": "Length",
+                "value": "mm"
+              }
             }
           },
           "edgeId": "[uuid]",
@@ -3766,8 +3872,10 @@ description: Variables in memory after executing wheel-hub.kcl
     "value": 1.5,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "flangeHoleCutter": {
@@ -5156,17 +5264,21 @@ description: Variables in memory after executing wheel-hub.kcl
                       {
                         "n": 0.00000000000006749157759860963,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -5174,17 +5286,21 @@ description: Variables in memory after executing wheel-hub.kcl
                       {
                         "n": 2.250000000000135,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -5277,17 +5393,21 @@ description: Variables in memory after executing wheel-hub.kcl
                       {
                         "n": 2.519966254218513,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -5295,17 +5415,21 @@ description: Variables in memory after executing wheel-hub.kcl
                       {
                         "n": 2.2500000000002025,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -5499,17 +5623,21 @@ description: Variables in memory after executing wheel-hub.kcl
                       {
                         "n": 2.250000000000243,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -5517,17 +5645,21 @@ description: Variables in memory after executing wheel-hub.kcl
                       {
                         "n": 2.5199662542185064,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -5709,9 +5841,11 @@ description: Variables in memory after executing wheel-hub.kcl
     "type": "Number",
     "value": 76.2,
     "ty": {
-      "mm": null,
       "type": "Known",
-      "type": "Length"
+      "value": {
+        "type": "Length",
+        "value": "mm"
+      }
     }
   },
   "flangePlane": {
@@ -5751,9 +5885,11 @@ description: Variables in memory after executing wheel-hub.kcl
     "type": "Number",
     "value": 2.5,
     "ty": {
-      "in": null,
       "type": "Known",
-      "type": "Length"
+      "value": {
+        "type": "Length",
+        "value": "in"
+      }
     }
   },
   "hubBoreCutter": {
@@ -5897,17 +6033,21 @@ description: Variables in memory after executing wheel-hub.kcl
                       {
                         "n": 1.25,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -5915,17 +6055,21 @@ description: Variables in memory after executing wheel-hub.kcl
                       {
                         "n": 0.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -6119,17 +6263,21 @@ description: Variables in memory after executing wheel-hub.kcl
                       {
                         "n": 0.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -6137,17 +6285,21 @@ description: Variables in memory after executing wheel-hub.kcl
                       {
                         "n": 1.25,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -6329,18 +6481,22 @@ description: Variables in memory after executing wheel-hub.kcl
     "type": "Number",
     "value": 3.0,
     "ty": {
-      "in": null,
       "type": "Known",
-      "type": "Length"
+      "value": {
+        "type": "Length",
+        "value": "in"
+      }
     }
   },
   "leftArcCenterX": {
     "type": "Number",
     "value": -28.411102635420068,
     "ty": {
-      "mm": null,
       "type": "Known",
-      "type": "Length"
+      "value": {
+        "type": "Length",
+        "value": "mm"
+      }
     }
   },
   "leftWall": {
@@ -6351,18 +6507,22 @@ description: Variables in memory after executing wheel-hub.kcl
     "type": "Number",
     "value": 48.22031249999999,
     "ty": {
-      "mm": null,
       "type": "Known",
-      "type": "Length"
+      "value": {
+        "type": "Length",
+        "value": "mm"
+      }
     }
   },
   "leftWallX": {
     "type": "Number",
     "value": -44.7396740639915,
     "ty": {
-      "mm": null,
       "type": "Known",
-      "type": "Length"
+      "value": {
+        "type": "Length",
+        "value": "mm"
+      }
     }
   },
   "line1": {
@@ -6401,9 +6561,11 @@ description: Variables in memory after executing wheel-hub.kcl
     "type": "Number",
     "value": 57.15,
     "ty": {
-      "mm": null,
       "type": "Known",
-      "type": "Length"
+      "value": {
+        "type": "Length",
+        "value": "mm"
+      }
     }
   },
   "lugCount": {
@@ -6411,17 +6573,21 @@ description: Variables in memory after executing wheel-hub.kcl
     "value": 5.0,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "lugDiameter": {
     "type": "Number",
     "value": 24.0,
     "ty": {
-      "mm": null,
       "type": "Known",
-      "type": "Length"
+      "value": {
+        "type": "Length",
+        "value": "mm"
+      }
     }
   },
   "lugHoleCutter": {
@@ -6942,17 +7108,21 @@ description: Variables in memory after executing wheel-hub.kcl
                       {
                         "n": 0.00000000000006749157759860963,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -6960,17 +7130,21 @@ description: Variables in memory after executing wheel-hub.kcl
                       {
                         "n": 2.250000000000135,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -7063,17 +7237,21 @@ description: Variables in memory after executing wheel-hub.kcl
                       {
                         "n": 2.519966254218513,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -7081,17 +7259,21 @@ description: Variables in memory after executing wheel-hub.kcl
                       {
                         "n": 2.2500000000002025,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -7285,17 +7467,21 @@ description: Variables in memory after executing wheel-hub.kcl
                       {
                         "n": 2.250000000000243,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -7303,17 +7489,21 @@ description: Variables in memory after executing wheel-hub.kcl
                       {
                         "n": 2.5199662542185064,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -7496,26 +7686,32 @@ description: Variables in memory after executing wheel-hub.kcl
     "value": 0.625,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "lugSpacing": {
     "type": "Number",
     "value": 114.3,
     "ty": {
-      "mm": null,
       "type": "Known",
-      "type": "Length"
+      "value": {
+        "type": "Length",
+        "value": "mm"
+      }
     }
   },
   "lugThreadDiameter": {
     "type": "Number",
     "value": 13.714285714285714,
     "ty": {
-      "mm": null,
       "type": "Known",
-      "type": "Length"
+      "value": {
+        "type": "Length",
+        "value": "mm"
+      }
     }
   },
   "mountingFlange": {
@@ -7739,9 +7935,11 @@ description: Variables in memory after executing wheel-hub.kcl
           "length": {
             "n": 3.81,
             "ty": {
-              "mm": null,
               "type": "Known",
-              "type": "Length"
+              "value": {
+                "type": "Length",
+                "value": "mm"
+              }
             }
           },
           "edgeId": "[uuid]",
@@ -7753,9 +7951,11 @@ description: Variables in memory after executing wheel-hub.kcl
           "length": {
             "n": 5.715,
             "ty": {
-              "mm": null,
               "type": "Known",
-              "type": "Length"
+              "value": {
+                "type": "Length",
+                "value": "mm"
+              }
             }
           },
           "edgeId": "[uuid]",
@@ -8001,17 +8201,21 @@ description: Variables in memory after executing wheel-hub.kcl
                       {
                         "n": 1.5,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -8019,17 +8223,21 @@ description: Variables in memory after executing wheel-hub.kcl
                       {
                         "n": 0.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -8121,17 +8329,21 @@ description: Variables in memory after executing wheel-hub.kcl
                       {
                         "n": 0.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -8139,17 +8351,21 @@ description: Variables in memory after executing wheel-hub.kcl
                       {
                         "n": 1.5,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -8395,17 +8611,21 @@ description: Variables in memory after executing wheel-hub.kcl
                       {
                         "n": 3.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -8413,17 +8633,21 @@ description: Variables in memory after executing wheel-hub.kcl
                       {
                         "n": 0.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -8515,17 +8739,21 @@ description: Variables in memory after executing wheel-hub.kcl
                       {
                         "n": 0.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -8533,17 +8761,21 @@ description: Variables in memory after executing wheel-hub.kcl
                       {
                         "n": 3.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -9809,9 +10041,11 @@ description: Variables in memory after executing wheel-hub.kcl
     "type": "Number",
     "value": 71.4375,
     "ty": {
-      "mm": null,
       "type": "Known",
-      "type": "Length"
+      "value": {
+        "type": "Length",
+        "value": "mm"
+      }
     }
   },
   "rearHubProfile": {
@@ -9831,17 +10065,21 @@ description: Variables in memory after executing wheel-hub.kcl
                       {
                         "n": -1.7614044907088129,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 1.8984374999999998,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -9849,17 +10087,21 @@ description: Variables in memory after executing wheel-hub.kcl
                       {
                         "n": -1.7614044907088129,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -1.8984374999999998,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -9951,17 +10193,21 @@ description: Variables in memory after executing wheel-hub.kcl
                       {
                         "n": -1.7614044907092987,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -1.8984374999999998,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -9969,17 +10215,21 @@ description: Variables in memory after executing wheel-hub.kcl
                       {
                         "n": -0.7971187764225884,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -2.455168116718609,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -9987,17 +10237,21 @@ description: Variables in memory after executing wheel-hub.kcl
                       {
                         "n": -1.1185473478507098,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -1.8984374999999793,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -10103,17 +10357,21 @@ description: Variables in memory after executing wheel-hub.kcl
                       {
                         "n": -0.7971187764226004,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -2.4551681167185886,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -10121,17 +10379,21 @@ description: Variables in memory after executing wheel-hub.kcl
                       {
                         "n": 2.4910714285721722,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -0.5567306167198555,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -10477,17 +10739,21 @@ description: Variables in memory after executing wheel-hub.kcl
                       {
                         "n": 2.4910714285721722,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -0.5567306167198552,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -10495,17 +10761,21 @@ description: Variables in memory after executing wheel-hub.kcl
                       {
                         "n": 2.4910714285721722,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.5567306167198552,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -10513,17 +10783,21 @@ description: Variables in memory after executing wheel-hub.kcl
                       {
                         "n": 2.169642857141371,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.00000000000000000005702600987915226,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -10629,17 +10903,21 @@ description: Variables in memory after executing wheel-hub.kcl
                       {
                         "n": -0.7971187764225884,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 2.455168116718609,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -10647,17 +10925,21 @@ description: Variables in memory after executing wheel-hub.kcl
                       {
                         "n": -1.7614044907092987,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 1.8984374999999998,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -10665,17 +10947,21 @@ description: Variables in memory after executing wheel-hub.kcl
                       {
                         "n": -1.1185473478507098,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 1.8984374999999793,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -10781,17 +11067,21 @@ description: Variables in memory after executing wheel-hub.kcl
                       {
                         "n": 2.4910714285721722,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.5567306167198555,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -10799,17 +11089,21 @@ description: Variables in memory after executing wheel-hub.kcl
                       {
                         "n": -0.7971187764226004,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 2.4551681167185886,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -11390,9 +11684,11 @@ description: Variables in memory after executing wheel-hub.kcl
     "type": "Number",
     "value": 63.27321428571429,
     "ty": {
-      "mm": null,
       "type": "Known",
-      "type": "Length"
+      "value": {
+        "type": "Length",
+        "value": "mm"
+      }
     }
   },
   "rotorBore": {
@@ -11400,8 +11696,10 @@ description: Variables in memory after executing wheel-hub.kcl
     "value": 3.0,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "trimProfile": {
@@ -11421,17 +11719,21 @@ description: Variables in memory after executing wheel-hub.kcl
                       {
                         "n": 1.5000000000000002,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -0.7499999999999968,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -11439,17 +11741,21 @@ description: Variables in memory after executing wheel-hub.kcl
                       {
                         "n": 2.977211629518559,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -0.4895277334996407,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -11541,17 +11847,21 @@ description: Variables in memory after executing wheel-hub.kcl
                       {
                         "n": 2.977211629518559,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -0.48952773349964024,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -11559,17 +11869,21 @@ description: Variables in memory after executing wheel-hub.kcl
                       {
                         "n": 2.977211629518559,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -4.98952773349964,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -11661,17 +11975,21 @@ description: Variables in memory after executing wheel-hub.kcl
                       {
                         "n": 2.977211629518559,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -4.9895277334996395,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -11679,17 +11997,21 @@ description: Variables in memory after executing wheel-hub.kcl
                       {
                         "n": 1.5000000000000002,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -4.9895277334996395,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -11781,17 +12103,21 @@ description: Variables in memory after executing wheel-hub.kcl
                       {
                         "n": 1.5000000000000002,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -4.9895277334996395,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -11799,17 +12125,21 @@ description: Variables in memory after executing wheel-hub.kcl
                       {
                         "n": 1.5000000000000002,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -0.7499999999999968,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -12081,17 +12411,21 @@ description: Variables in memory after executing wheel-hub.kcl
                       {
                         "n": 0.00000000000000005979581267662307,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.0000000000000005279595710687977,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -12099,17 +12433,21 @@ description: Variables in memory after executing wheel-hub.kcl
                       {
                         "n": 0.00000000000000011959051007144234,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -0.7499999999999989,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -12202,17 +12540,21 @@ description: Variables in memory after executing wheel-hub.kcl
                       {
                         "n": 0.0000000000000001793829769075008,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -0.7499999999999983,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -12220,17 +12562,21 @@ description: Variables in memory after executing wheel-hub.kcl
                       {
                         "n": 1.5000000000000002,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -0.7499999999999973,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -12498,27 +12844,33 @@ description: Variables in memory after executing wheel-hub.kcl
     "type": "Number",
     "value": -20.246816921134354,
     "ty": {
-      "mm": null,
       "type": "Known",
-      "type": "Length"
+      "value": {
+        "type": "Length",
+        "value": "mm"
+      }
     }
   },
   "upperSlopeEndY": {
     "type": "Number",
     "value": 62.361270164651614,
     "ty": {
-      "mm": null,
       "type": "Known",
-      "type": "Length"
+      "value": {
+        "type": "Length",
+        "value": "mm"
+      }
     }
   },
   "upperSlopeLength": {
     "type": "Number",
     "value": 96.44062500000001,
     "ty": {
-      "mm": null,
       "type": "Known",
-      "type": "Length"
+      "value": {
+        "type": "Length",
+        "value": "mm"
+      }
     }
   }
 }

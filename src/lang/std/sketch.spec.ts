@@ -42,7 +42,10 @@ beforeEach(async () => {
 })
 
 afterAll(() => {
-  engineCommandManagerInThisFile.tearDown()
+  engineCommandManagerInThisFile.tearDown({
+    route: 'user-requested',
+    initiatedBy: 'client',
+  })
 })
 
 const eachQuad: [number, [number, number]][] = [

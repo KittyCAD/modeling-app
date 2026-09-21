@@ -244,8 +244,10 @@ description: Variables in memory after executing sketch_on_face_union.kcl
     "value": 120.0,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "leg001": {
@@ -1872,8 +1874,10 @@ description: Variables in memory after executing sketch_on_face_union.kcl
     "value": 4.0,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "trussSupportAngle": {
@@ -1881,8 +1885,10 @@ description: Variables in memory after executing sketch_on_face_union.kcl
     "value": 15.0,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   }
 }

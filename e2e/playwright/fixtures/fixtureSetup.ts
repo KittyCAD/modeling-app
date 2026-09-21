@@ -160,15 +160,18 @@ export class ElectronZoo {
     await this.page.evaluate(async () => {
       return new Promise((resolve) => {
         if (
-          window.engineCommandManager.connection &&
-          window.engineCommandManager.started &&
-          window.engineCommandManager.connection.websocket?.readyState ===
+          !window.engineCommandManager.connection ||
+          !window.engineCommandManager.started ||
+          window.engineCommandManager.connection.websocket?.readyState !==
             WebSocket.OPEN
         ) {
           return resolve(undefined)
         }
 
-        window.engineCommandManager.tearDown()
+        window.engineCommandManager.tearDown({
+          route: 'user-requested',
+          initiatedBy: 'client',
+        })
 
         // Keep polling (per js event tick) until state is Disconnected.
         const timeA = Date.now()

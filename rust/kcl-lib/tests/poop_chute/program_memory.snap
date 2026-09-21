@@ -8,8 +8,10 @@ description: Variables in memory after executing poop_chute.kcl
     "value": 0.5,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "Fy": {
@@ -17,8 +19,10 @@ description: Variables in memory after executing poop_chute.kcl
     "value": 0.5,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "back_length": {
@@ -26,8 +30,10 @@ description: Variables in memory after executing poop_chute.kcl
     "value": 7.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "back_walls_width": {
@@ -35,8 +41,10 @@ description: Variables in memory after executing poop_chute.kcl
     "value": 2.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "exit_height": {
@@ -44,8 +52,10 @@ description: Variables in memory after executing poop_chute.kcl
     "value": 1.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "filletRadius": {
@@ -53,8 +63,10 @@ description: Variables in memory after executing poop_chute.kcl
     "value": 0.05,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "front_length": {
@@ -62,8 +74,10 @@ description: Variables in memory after executing poop_chute.kcl
     "value": 6.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "front_walls_width": {
@@ -71,8 +85,10 @@ description: Variables in memory after executing poop_chute.kcl
     "value": 2.5,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "height": {
@@ -80,8 +96,10 @@ description: Variables in memory after executing poop_chute.kcl
     "value": 5.5,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "part001": {
@@ -1203,8 +1221,10 @@ description: Variables in memory after executing poop_chute.kcl
     "value": 0.125,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   }
 }

@@ -77,6 +77,7 @@ After reviewing, tell the human what should be smoke tested and whether the PR's
 - Vitest picks the suite from the filename: `*.test.ts(x)` is unit (`npm run test:unit`); `*.spec.ts(x)` is integration (`npm run test:integration`).
 - Unit tests must not import or need `wasm-lib`. To verify, remove `rust/kcl-wasm-lib/pkg/kcl_wasm_lib_bg.wasm` before `npm run test:unit`.
 - Prefer targeted Vitest runs while iterating, for example `npm run test:unit -- src/path/to/file.test.ts`.
+- Use property-based testing with `fast-check` for unit-testable logic with many possible permutations.
 - Component tests should prefer user-visible queries (`screen.getByRole`, `screen.getByText`) when practical. `data-testid` is fine for controls or generated content without a stable accessible label.
 - Keep mocks narrow and reset state in `beforeEach` or `afterEach` when tests touch localStorage, timers, singleton modules, or machine actors.
 

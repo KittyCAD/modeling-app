@@ -8,8 +8,10 @@ description: Variables in memory after executing spheres.kcl
     "value": 10.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   }
 }

@@ -99,7 +99,8 @@ export class Connection extends EventTarget {
 
   // callback functions
   handleOnDataChannelMessage: (event: MessageEvent<any>) => void
-  tearDownManager: (options?: ManagerTearDown) => void
+  recordShutdownTrigger: (options: ManagerTearDown) => boolean
+  tearDownManager: (options: ManagerTearDown) => void
   rejectPendingCommand: ({ cmdId }: { cmdId: string }) => void
   handleMessage: ((event: MessageEvent<any>) => void) | null
   private readonly getCloudProjectId: () => string | undefined
@@ -109,6 +110,7 @@ export class Connection extends EventTarget {
     url,
     token,
     handleOnDataChannelMessage,
+    recordShutdownTrigger,
     tearDownManager,
     rejectPendingCommand,
     callbackOnUnitTestingConnection,
@@ -120,7 +122,8 @@ export class Connection extends EventTarget {
     url: string
     token: string
     handleOnDataChannelMessage: (event: MessageEvent<any>) => void
-    tearDownManager: (options?: ManagerTearDown) => void
+    recordShutdownTrigger: (options: ManagerTearDown) => boolean
+    tearDownManager: (options: ManagerTearDown) => void
     rejectPendingCommand: ({ cmdId }: { cmdId: string }) => void
     callbackOnUnitTestingConnection?: (message: string) => void
     unitTestWebrtc?: boolean
@@ -139,6 +142,7 @@ export class Connection extends EventTarget {
     this.url = url
     this._token = token
     this.handleOnDataChannelMessage = handleOnDataChannelMessage
+    this.recordShutdownTrigger = recordShutdownTrigger
     this.tearDownManager = tearDownManager
     this.rejectPendingCommand = rejectPendingCommand
     this.handleMessage = handleMessage
@@ -177,8 +181,9 @@ export class Connection extends EventTarget {
     const webrtcQuery = webrtc ? '' : '&webrtc=false'
     // The API derives the engine's geometry_only setting from the CPU pool.
     const poolQuery = pool ? `&pool=${pool}` : ''
+    const postEffectQuery = pool ? '' : '&post_effect=ssao'
     const url = withKittycadWebSocketURL(
-      `?video_res_width=${256}&video_res_height=${256}&post_effect=ssao${webrtcQuery}${poolQuery}`
+      `?video_res_width=${256}&video_res_height=${256}${postEffectQuery}${webrtcQuery}${poolQuery}`
     )
     this.websocket = new WebSocket(url, [])
     this.websocket.binaryType = 'arraybuffer'
@@ -205,6 +210,13 @@ export class Connection extends EventTarget {
             callback('auth_token_invalid')
           }
         }
+
+        if (!this.handleMessage) {
+          console.warn('unable to process message, handleMessage is missing')
+          return
+        }
+        this.handleMessage(event)
+        return
       }
 
       if (!('resp' in message)) return
@@ -517,6 +529,8 @@ export class Connection extends EventTarget {
 
     // Has a callback workflow that will create a unreliabledatachannel
     const onDataChannel = createOnDataChannel({
+      connection: this,
+      peerConnection: this.peerConnection,
       setUnreliableDataChannel: this.setUnreliableDataChannel.bind(this),
       dispatchEvent: this.dispatchEvent.bind(this),
       trackListener: this.trackListener.bind(this),
@@ -669,6 +683,13 @@ export class Connection extends EventTarget {
         }
 
         this.reconnectRequested = true
+        this.recordShutdownTrigger({
+          route: 'websocket-closed',
+          initiatedBy: 'api',
+          code: WebSocketCloseCode.NormalClosure.toString(),
+          reason: 'reconnect requested',
+          reconnectRequested: true,
+        })
         this.websocket.close(
           WebSocketCloseCode.NormalClosure,
           'reconnect requested'

@@ -1,7 +1,7 @@
 import type { EditorState } from '@codemirror/state'
 import type { KclManager } from '@src/lang/KclManager'
 import { isCodeTheSame } from '@src/lib/codeEditor'
-import { isPathNotFoundError } from '@src/lib/desktop'
+import { FileNotFound } from '@src/lib/fileSystem/fileOperations'
 import fsZds from '@src/lib/fs-zds'
 import {
   type ZookeeperSnapshotFileReplay,
@@ -18,6 +18,7 @@ import {
   type ZookeeperManagerActor,
 } from '@src/lib/zookeeper/zookeeperManagerMachine'
 import { normalizeKCLFileDeletePath } from '@src/machines/systemIO/utils'
+import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
 import { applyPatch, parsePatch, reversePatch } from 'diff'
 
 type BeginZookeeperHistoryWriteProps = {
@@ -60,7 +61,13 @@ export class ZookeeperEditPatchHistory {
   private lastMessageId: number | undefined
   private disposed = false
 
-  constructor(private readonly kclManager: KclManager) {}
+  constructor(
+    private readonly kclManager: KclManager,
+    private readonly fileOperations: Pick<
+      FileOperationsRegistryService,
+      'readFile'
+    >
+  ) {}
 
   reserve({
     activeFilePath,
@@ -110,6 +117,7 @@ export class ZookeeperEditPatchHistory {
 
       try {
         await captureZookeeperSnapshotPreviousContents({
+          fileOperations: this.fileOperations,
           kclManager: this.kclManager,
           patch,
           pending,
@@ -175,6 +183,7 @@ export class ZookeeperEditPatchHistory {
     if (!pending.snapshotCaptureFailed) {
       try {
         await captureZookeeperSnapshotNextContents({
+          fileOperations: this.fileOperations,
           patch,
           pending,
           projectPath,
@@ -503,11 +512,13 @@ function getZookeeperSnapshotPreviousCode(
 }
 
 async function captureZookeeperSnapshotPreviousContents({
+  fileOperations,
   kclManager,
   patch,
   pending,
   projectPath,
 }: {
+  fileOperations: Pick<FileOperationsRegistryService, 'readFile'>
   kclManager: KclManager
   patch: ZookeeperEditPatch
   pending: PendingZookeeperHistory
@@ -525,7 +536,10 @@ async function captureZookeeperSnapshotPreviousContents({
     const previousContent =
       snapshotPath.absolutePath === kclManager.path
         ? kclManager.code
-        : await readZookeeperSnapshotFileIfExists(snapshotPath.absolutePath)
+        : await readZookeeperSnapshotFileIfExists(
+            fileOperations,
+            snapshotPath.absolutePath
+          )
     pending.snapshotFilesByRelativePath.set(snapshotPath.relativePath, {
       ...snapshotPath,
       previousContent,
@@ -534,10 +548,12 @@ async function captureZookeeperSnapshotPreviousContents({
 }
 
 async function captureZookeeperSnapshotNextContents({
+  fileOperations,
   patch,
   pending,
   projectPath,
 }: {
+  fileOperations: Pick<FileOperationsRegistryService, 'readFile'>
   patch: ZookeeperEditPatch
   pending: PendingZookeeperHistory
   projectPath: string
@@ -555,6 +571,7 @@ async function captureZookeeperSnapshotNextContents({
     }
 
     snapshotFile.nextContent = await readZookeeperSnapshotFileIfExists(
+      fileOperations,
       snapshotPath.absolutePath
     )
     pending.snapshotFilesByRelativePath.set(
@@ -614,11 +631,14 @@ function getZookeeperSnapshotPath(projectPath: string, relativePath: string) {
   }
 }
 
-async function readZookeeperSnapshotFileIfExists(path: string) {
+async function readZookeeperSnapshotFileIfExists(
+  fileOperations: Pick<FileOperationsRegistryService, 'readFile'>,
+  path: string
+) {
   try {
-    return await fsZds.readFile(path, 'utf8')
+    return new TextDecoder().decode(await fileOperations.readFile(path))
   } catch (error: unknown) {
-    if (isPathNotFoundError(error)) {
+    if (error instanceof FileNotFound) {
       return null
     }
     return Promise.reject(error)

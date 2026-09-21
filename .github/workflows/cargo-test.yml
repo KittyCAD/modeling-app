@@ -234,11 +234,19 @@ jobs:
           ZOO_API_TOKEN: ${{secrets.ZOO_API_TOKEN}}
           ZOO_HOST: https://api.dev.zoo.dev
           RUST_MIN_STACK: 10485760000
+          TWENTY_TWENTY: store-artifact-on-mismatch
           TAB_API_URL: ${{ vars.TAB_API_URL }}
           TAB_API_KEY: ${{ secrets.TAB_API_KEY }}
           CI_COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
           CI_PR_NUMBER: ${{ github.event.pull_request.number }}
           CI_SUITE: e2e:kcl
+      - name: Upload snapshot mismatches
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: kcl-snapshot-mismatches-${{ matrix.partitionIndex }}-${{ github.run_attempt }}
+          path: rust/**/artifacts/**/*.png
+          if-no-files-found: ignore
       - name: Track teardown
         if: always()
         run: .github/ci-cd-scripts/track-step.sh
