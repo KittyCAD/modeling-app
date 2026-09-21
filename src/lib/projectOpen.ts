@@ -76,13 +76,13 @@ export interface ProjectOpenResolverDependencies {
 export async function resolveProjectOpenRequest(
   dependencies: ProjectOpenResolverDependencies,
   { target, requestUrl }: OpenProjectRequest,
-  assertCurrent: () => void
+  throwIfSuperseded: () => void
 ): Promise<{ kind: 'redirect'; to: string } | ResolvedProjectOpen> {
   const wasmInstance = await dependencies.wasmInstancePromise
-  assertCurrent()
+  throwIfSuperseded()
 
   const appSettings = await dependencies.loadSettings(wasmInstance)
-  assertCurrent()
+  throwIfSuperseded()
   const targetLibraryPath = target
     ? (
         await dependencies.getProjectLibraryOwnership(
@@ -91,7 +91,7 @@ export async function resolveProjectOpenRequest(
         )
       )?.libraryPath
     : undefined
-  assertCurrent()
+  throwIfSuperseded()
   const projectPathData = target
     ? parseProjectRoute(appSettings.configuration, target, {
         activeProjectPath: dependencies.getCurrentProjectPath(),
@@ -108,7 +108,7 @@ export async function resolveProjectOpenRequest(
   }
 
   await dependencies.loadSettings(wasmInstance, projectPathData.projectPath)
-  assertCurrent()
+  throwIfSuperseded()
 
   const { projectName, projectPath } = projectPathData
   let { currentFileName, currentFilePath } = projectPathData
@@ -120,12 +120,12 @@ export async function resolveProjectOpenRequest(
     const fallbackFile = (
       await dependencies.getProjectInfo(projectPath, wasmInstance)
     ).default_file
-    assertCurrent()
+    throwIfSuperseded()
     let fileExists = true
     if (currentFilePath) {
       try {
         await dependencies.stat(currentFilePath)
-        assertCurrent()
+        throwIfSuperseded()
       } catch (error) {
         if (dependencies.isPathNotFoundError(error)) {
           fileExists = false
@@ -187,7 +187,7 @@ export async function resolveProjectOpenRequest(
   const project =
     (await dependencies.getProjectInfo(projectPath, wasmInstance)) ??
     defaultProject
-  assertCurrent()
+  throwIfSuperseded()
 
   return {
     kind: 'resolved',

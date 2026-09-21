@@ -295,8 +295,8 @@ export class App implements AppSubsystems {
     // while App still supplies the ZDSProject runtime until that implementation
     // and KclManager move behind the projectSession capability.
     this.unbindProjectSessionRuntime = this.projectSession.bindRuntime({
-      openProject: (project, assertCurrent) =>
-        this.openProjectRuntime(project, assertCurrent),
+      openProject: (project, throwIfSuperseded) =>
+        this.openProjectRuntime(project, throwIfSuperseded),
       closeProject: this.closeProjectRuntime,
     })
     this.lastSettings = getAllCurrentSettings(
@@ -396,17 +396,17 @@ export class App implements AppSubsystems {
    */
   private async openProjectRuntime(
     projectIORef: Project,
-    assertCurrent: () => void = () => {}
+    throwIfSuperseded: () => void = () => {}
   ) {
     const ownedProject = await projectWithLibraryOwnership(
       projectIORef,
       this.settings.get().app.libraries.current
     )
-    assertCurrent()
+    throwIfSuperseded()
 
     const projectIORefSignal = signal(ownedProject)
     const nextProject = await ZDSProject.open(projectIORefSignal, this)
-    assertCurrent()
+    throwIfSuperseded()
 
     this.disposeProjectHistoryExtensions?.()
     this.project = nextProject
