@@ -218,7 +218,14 @@ export const createOnWebSocketMessage = ({
       }
 
       if (!retryable) {
-        tearDownManager({ websocketClosed: true, connectionError })
+        tearDownManager({
+          route:
+            code === 'backend_disconnected'
+              ? 'backend-shutdown'
+              : 'websocket-closed',
+          initiatedBy: code === 'backend_disconnected' ? 'unknown' : 'api',
+          connectionError,
+        })
       }
       return
     }

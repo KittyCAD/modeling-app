@@ -254,7 +254,8 @@ describe('createOnWebSocketMessage', () => {
       },
     })
     expect(tearDownManager).toHaveBeenCalledWith({
-      websocketClosed: true,
+      route: 'backend-shutdown',
+      initiatedBy: 'unknown',
       connectionError,
     })
   })
@@ -264,7 +265,8 @@ describe('createOnWebSocketMessage', () => {
 
     expect(notifySessionExpired).toHaveBeenCalledWith('engine-websocket')
     expect(tearDownManager).toHaveBeenCalledWith({
-      websocketClosed: true,
+      route: 'websocket-closed',
+      initiatedBy: 'api',
       connectionError: {
         kind: EngineConnectionErrorKind.AuthTokenInvalid,
         message: 'connection denied',
