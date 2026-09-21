@@ -37,7 +37,7 @@ describe('initializeApplication', () => {
       type: 'launch',
       destination: { type: 'project', target: '/projects/bracket/main.kcl' },
     })
-    mocks.initFileRoute.mockResolvedValue({ kind: 'ok', data: {} })
+    mocks.initFileRoute.mockResolvedValue({ kind: 'ready', data: {} })
 
     const app = fakeApp()
     await initializeApplication(app, {
@@ -51,21 +51,20 @@ describe('initializeApplication', () => {
     })
   })
 
-  it('writes a canonical redirect and dispatches the resulting intent', async () => {
-    mocks.readInitialUrl
-      .mockReturnValueOnce({
-        type: 'launch',
-        destination: { type: 'index' },
-      })
-      .mockReturnValueOnce({
-        type: 'launch',
-        destination: { type: 'project', target: '/projects/demo/main.kcl' },
-      })
-    mocks.initIndexRoute.mockResolvedValue({
-      kind: 'redirect',
-      to: '/file/%2Fprojects%2Fdemo%2Fmain.kcl?pool=alpha',
+  it('follows a typed transition and projects its URL after state is ready', async () => {
+    mocks.readInitialUrl.mockReturnValue({
+      type: 'launch',
+      destination: { type: 'index' },
     })
-    mocks.initFileRoute.mockResolvedValue({ kind: 'ok', data: {} })
+    mocks.initIndexRoute.mockResolvedValue({
+      kind: 'transition',
+      destination: {
+        type: 'project',
+        target: '/projects/demo/main.kcl',
+      },
+      canonicalPath: '/file/%2Fprojects%2Fdemo%2Fmain.kcl?pool=alpha',
+    })
+    mocks.initFileRoute.mockResolvedValue({ kind: 'ready', data: {} })
 
     await initializeApplication(fakeApp(), {
       requestUrl: 'https://app.zoo.dev/',
@@ -76,11 +75,13 @@ describe('initializeApplication', () => {
       '/file/%2Fprojects%2Fdemo%2Fmain.kcl?pool=alpha',
       { replace: true }
     )
+    expect(mocks.readInitialUrl).toHaveBeenCalledTimes(1)
     expect(mocks.initFileRoute).toHaveBeenCalledWith(expect.anything(), {
       id: '/projects/demo/main.kcl',
       requestUrl:
         'https://app.zoo.dev/file/%2Fprojects%2Fdemo%2Fmain.kcl?pool=alpha',
     })
+    expect(mocks.initFileRoute).toHaveBeenCalledBefore(mocks.navigate)
   })
 
   it('leaves an unrecognized URL to the render-only routing shell', async () => {

@@ -120,24 +120,6 @@ describe('appNavigation', () => {
       'Multiple application navigation intents handle duplicate.intent.'
     )
   })
-
-  test('returns a canonical redirect without opening a project', async () => {
-    const { dependencies, navigation } = navigationHarness({
-      resolveProjectOpen: vi.fn<
-        AppNavigationDependencies['resolveProjectOpen']
-      >(async () => ({
-        kind: 'redirect',
-        to: '/file/canonical',
-      })),
-    })
-
-    await expect(
-      navigation.dispatch(openProjectIntent, { target: '/projects/bracket' })
-    ).resolves.toEqual({ kind: 'redirect', to: '/file/canonical' })
-    expect(dependencies.openResolvedProject).not.toHaveBeenCalled()
-    expect(dependencies.projectOpened).not.toHaveBeenCalled()
-  })
-
   test('opens a project before projecting its location', async () => {
     const { dependencies, navigation } = navigationHarness()
     const request = { target: '/projects/bracket' }
@@ -151,6 +133,7 @@ describe('appNavigation', () => {
     )
     expect(dependencies.projectOpened).toHaveBeenCalledWith(
       expect.objectContaining({ kind: 'opened' }),
+      resolvedProject,
       request
     )
     expect(dependencies.openResolvedProject).toHaveBeenCalledBefore(
@@ -163,7 +146,7 @@ describe('appNavigation', () => {
 
     await navigation.showHome()
 
-    expect(dependencies.showHome).toHaveBeenCalledWith(navigation.openProject)
+    expect(dependencies.showHome).toHaveBeenCalledWith(expect.any(Function))
   })
 
   test('a newer project open aborts the in-flight open', async () => {

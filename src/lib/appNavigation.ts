@@ -12,24 +12,22 @@ import {
 } from '@src/registry/contracts/appNavigation'
 
 export interface AppNavigationDependencies {
-  /**
-   * The redirect alternative is transitional while route loaders remain.
-   * Once startup dispatches application intents directly, resolution always
-   * produces project state and URL canonicalization becomes a later effect.
-   */
   resolveProjectOpen: (
     request: OpenProjectRequest,
     throwIfSuperseded: () => void
-  ) => Promise<{ kind: 'redirect'; to: string } | ResolvedProjectOpen>
+  ) => Promise<ResolvedProjectOpen>
   openResolvedProject: (
     resolution: ResolvedProjectOpen,
     throwIfSuperseded: () => void
-  ) => Promise<Extract<OpenProjectOutcome, { kind: 'opened' }>>
+  ) => Promise<OpenProjectOutcome>
   projectOpened: (
-    outcome: Extract<OpenProjectOutcome, { kind: 'opened' }>,
+    outcome: OpenProjectOutcome,
+    resolution: ResolvedProjectOpen,
     request: OpenProjectRequest
   ) => void
-  showHome: (openProject: AppNavigationService['openProject']) => Promise<void>
+  showHome: (
+    openProject: (request: OpenProjectRequest) => Promise<OpenProjectOutcome>
+  ) => Promise<void>
 }
 
 /**
@@ -78,15 +76,11 @@ export function createOpenProjectIntentContribution(
       )
       projectOpen.throwIfSuperseded()
 
-      if (resolution.kind === 'redirect') {
-        return resolution
-      }
-
       const outcome = await dependencies.openResolvedProject(
         resolution,
         projectOpen.throwIfSuperseded
       )
-      dependencies.projectOpened(outcome, request)
+      dependencies.projectOpened(outcome, resolution, request)
       return outcome
     } finally {
       projectOpen.finish()
@@ -104,7 +98,6 @@ export function createOpenProjectIntentContribution(
       signal?.throwIfAborted()
     },
   }
-
 }
 
 /**

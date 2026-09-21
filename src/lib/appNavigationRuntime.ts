@@ -23,6 +23,11 @@ import { projectSession } from '@src/registry/contracts/projectSession'
 import { appUrlService } from '@src/registry/contracts/appUrl'
 import { waitFor } from 'xstate'
 
+function applicationPathFromUrl(to: string) {
+  const url = new URL(to, window.location.href)
+  return `${url.pathname}${url.search}${url.hash}`
+}
+
 /**
  * Transitional App-backed implementation of opening a resolved project.
  *
@@ -139,33 +144,33 @@ export function createAppNavigationDependencies(
       ),
     openResolvedProject: (resolution, throwIfSuperseded) =>
       openResolvedProject(app, resolution, throwIfSuperseded),
-    projectOpened: (outcome, request) => {
+    projectOpened: (outcome, resolution, request) => {
+      const appUrl = app.registry.get(appUrlService)
+      if (resolution.canonicalUrl) {
+        void appUrl.navigate(applicationPathFromUrl(resolution.canonicalUrl), {
+          replace: true,
+        })
+        return
+      }
+
       const openedFilePath = outcome.data.file?.path
       if (openedFilePath && !request.requestUrl) {
-        void app.registry
-          .get(appUrlService)
-          .navigate(`${PATHS.FILE}/${encodeURIComponent(openedFilePath)}`)
+        void appUrl.navigate(
+          `${PATHS.FILE}/${encodeURIComponent(openedFilePath)}`
+        )
       }
     },
     showHome: async (openProject) => {
       if (!window.electron && !(await webHomeRouteEnabled(app))) {
-        const appUrl = app.registry.get(appUrlService)
         const { initIndexRoute } = await import('@src/lib/routeInit')
         const result = await initIndexRoute(app, {
           requestUrl: new URL(PATHS.INDEX, window.location.href).href,
         })
-        if (result.kind === 'redirect') {
-          const requestUrl = new URL(result.to, window.location.href).href
-          const intent = appUrl.readInitialUrl({
-            requestUrl,
-            usesHashRouter: false,
-          })
-          if (
-            intent.type === 'launch' &&
-            intent.destination.type === 'project'
-          ) {
-            await openProject({ target: intent.destination.target })
-          }
+        if (
+          result.kind === 'transition' &&
+          result.destination.type === 'project'
+        ) {
+          await openProject({ target: result.destination.target })
         }
         return
       }

@@ -56,7 +56,7 @@ beforeEach(() => {
 })
 
 describe('resolveProjectOpenRequest', () => {
-  test('canonicalizes a project URL to its default file', async () => {
+  test('resolves a project URL to its default file and canonical URL', async () => {
     const dependencies = resolverHarness()
 
     const result = await resolveProjectOpenRequest(
@@ -68,14 +68,20 @@ describe('resolveProjectOpenRequest', () => {
       throwIfSuperseded
     )
 
-    expect(result).toEqual({
-      kind: 'redirect',
-      to: `http://localhost${PATHS.FILE}/%2Flibrary%2Fproj%2Fmain.kcl?pool=alpha`,
+    expect(result).toMatchObject({
+      kind: 'resolved',
+      file: {
+        name: 'main.kcl',
+        path: '/library/proj/main.kcl',
+      },
+      canonicalUrl: `http://localhost${PATHS.FILE}/%2Flibrary%2Fproj%2Fmain.kcl?pool=alpha`,
     })
-    expect(dependencies.setProjectDirectory).not.toHaveBeenCalled()
+    expect(dependencies.setProjectDirectory).toHaveBeenCalledWith(
+      '/library/proj'
+    )
   })
 
-  test('redirects a missing file while preserving the query string', async () => {
+  test('resolves a missing file to the default and preserves URL state', async () => {
     const dependencies = resolverHarness({
       stat: vi.fn(() => Promise.reject(new Error('ENOENT'))),
     })
@@ -89,9 +95,15 @@ describe('resolveProjectOpenRequest', () => {
       throwIfSuperseded
     )
 
-    expect(result).toEqual({
-      kind: 'redirect',
-      to: `${PATHS.FILE}/${encodeURIComponent('/library/proj/main.kcl')}?pool=alpha`,
+    expect(result).toMatchObject({
+      kind: 'resolved',
+      file: {
+        name: 'main.kcl',
+        path: '/library/proj/main.kcl',
+      },
+      canonicalUrl: `${PATHS.FILE}/${encodeURIComponent(
+        '/library/proj/main.kcl'
+      )}?pool=alpha`,
     })
   })
 
