@@ -1630,6 +1630,7 @@ part = bracket()
     async function runIntegrationRefactor(kcl: string): Promise<string> {
       const ast = assertParse(kcl, instanceInThisFile)
       await kclManagerInThisFile.executeAst({ ast })
+      expect(kclManagerInThisFile.errors).toEqual([])
       const execState = kclManagerInThisFile.execState
       expect(execState.artifactGraph.size).toBeGreaterThan(0)
       const refactored = refactorZ0006Unified(
