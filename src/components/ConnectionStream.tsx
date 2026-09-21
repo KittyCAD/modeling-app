@@ -42,7 +42,7 @@ import {
   getEngineRegionSelectionFromEntity,
   sendSelectEventToEngine,
 } from '@src/lib/selections'
-import { getResolvedTheme, Themes } from '@src/lib/theme'
+import { getResolvedTheme, getThemeBackgroundColor } from '@src/lib/theme'
 import { err, reportRejection } from '@src/lib/trap'
 import type {
   EngineSceneExtensionContext,
@@ -98,6 +98,7 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
   const [isSceneReady, setIsSceneReady] = useState(false)
   const [isLocalRenderVisible, setIsLocalRenderVisible] = useState(false)
   const settingsValues = settings.useSettings()
+  const theme = getResolvedTheme(settingsValues.app.theme.current)
   const { setAppState } = useAppState()
   const { overallState } = useNetworkContext()
   const { state: modelingMachineState, send: modelingSend } =
@@ -607,17 +608,9 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
   )
   useOnOfflineToExitSketchMode(onOfflineToExitSketchModeParams)
 
-  // Hardcoded engine background color based on theme
-  const style = useMemo(
-    () => ({
-      backgroundColor:
-        getResolvedTheme(settingsValues.app.theme.current) === Themes.Light
-          ? 'rgb(250, 250, 250)'
-          : 'rgb(30, 30, 30)',
-    }),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [settingsValues.app.theme.current]
-  )
+  const style = {
+    backgroundColor: getThemeBackgroundColor(theme),
+  }
 
   const viewControlContextMenuGuard: (e: MouseEvent) => boolean = useCallback(
     (e: MouseEvent) =>
@@ -692,7 +685,7 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
       </canvas>
       {LOCAL_WEBGPU_RENDERING_ENABLED && (
         <LocalWebGPUScene
-          backgroundColor={style.backgroundColor}
+          theme={theme}
           enableSSAO={settingsValues.modeling.enableSSAO.current}
           highlightEdges={settingsValues.modeling.highlightEdges.current}
           fixedSizeGrid={settingsValues.modeling.fixedSizeGrid.current}

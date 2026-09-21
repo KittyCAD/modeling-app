@@ -2,6 +2,7 @@ import { signal } from '@preact/signals-core'
 import type { KclManager } from '@src/lang/KclManager'
 import type ModelingAppFile from '@src/lib/modelingAppFile'
 import { Signal } from '@src/lib/signal'
+import { Themes } from '@src/lib/theme'
 import {
   type Group,
   Mesh,
@@ -78,7 +79,7 @@ function fixture(
     document.createElement('div'),
     manager as unknown as KclManager,
     {
-      backgroundColor: '#fff',
+      theme: Themes.Light,
       enableSSAO: false,
       highlightEdges: false,
       fixedSizeGrid: true,

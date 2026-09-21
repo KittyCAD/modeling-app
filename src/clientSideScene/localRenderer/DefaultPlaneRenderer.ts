@@ -1,4 +1,5 @@
 import { getLocalCameraSceneScale } from '@src/clientSideScene/cameraSceneScale'
+import { type ResolvedTheme, Themes } from '@src/lib/theme'
 import {
   CanvasTexture,
   Color,
@@ -46,7 +47,7 @@ export class DefaultPlaneRenderer {
   private readonly labels: PlaneLabel[] = []
   private readonly labelGeometries: PlaneGeometry[] = []
 
-  constructor(backgroundColor: string) {
+  constructor(theme: ResolvedTheme) {
     this.group.name = 'default-planes'
     // Author in engine coordinates (Z-up, mm), then match glTF (Y-up, meters).
     this.group.rotation.x = -Math.PI / 2
@@ -96,7 +97,7 @@ export class DefaultPlaneRenderer {
       plane.add(this.createLabel(label, borderColor, false))
       this.group.add(plane)
     }
-    this.setBackgroundColor(backgroundColor)
+    this.setTheme(theme)
   }
 
   addTo(parent: Object3D) {
@@ -110,17 +111,14 @@ export class DefaultPlaneRenderer {
     )
   }
 
-  setBackgroundColor(backgroundColor: string) {
-    const background = new Color(backgroundColor)
-    const luminance =
-      background.r * 0.2126 + background.g * 0.7152 + background.b * 0.0722
+  setTheme(theme: ResolvedTheme) {
     for (const { context, texture, text, background: labelBackground } of this
       .labels) {
       const width = context.canvas.width / LABEL_TEXTURE_SCALE
       const height = context.canvas.height / LABEL_TEXTURE_SCALE
       context.fillStyle = labelBackground.getStyle()
       context.fillRect(0, 0, width, height)
-      context.fillStyle = luminance > 0.5 ? '#000000' : '#ffffff'
+      context.fillStyle = theme === Themes.Light ? '#000000' : '#ffffff'
       context.fillText(text, width / 2, height / 2)
       texture.needsUpdate = true
     }

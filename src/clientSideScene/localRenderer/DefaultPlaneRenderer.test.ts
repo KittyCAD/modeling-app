@@ -1,4 +1,5 @@
 import { DefaultPlaneRenderer } from '@src/clientSideScene/localRenderer/DefaultPlaneRenderer'
+import { Themes } from '@src/lib/theme'
 import { Color, Material, Mesh, Scene, Vector3 } from 'three'
 import { LineSegments2 } from 'three/examples/jsm/lines/webgpu/LineSegments2.js'
 import { MeshBasicNodeMaterial } from 'three/webgpu'
@@ -22,7 +23,7 @@ describe('DefaultPlaneRenderer', () => {
 
   function fixture() {
     const scene = new Scene()
-    const planes = new DefaultPlaneRenderer('#ffffff')
+    const planes = new DefaultPlaneRenderer(Themes.Light)
     planes.addTo(scene)
     return { scene, planes, root: scene.children[0] }
   }

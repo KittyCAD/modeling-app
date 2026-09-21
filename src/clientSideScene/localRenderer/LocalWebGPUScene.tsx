@@ -8,7 +8,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 
 export const LocalWebGPUScene = (props: LocalRendererProps) => {
   const {
-    backgroundColor,
+    theme,
     enableSSAO,
     highlightEdges,
     fixedSizeGrid,
@@ -58,8 +58,8 @@ export const LocalWebGPUScene = (props: LocalRendererProps) => {
   }, [handleModelLoadSettled, kclManager])
 
   useEffect(() => {
-    rendererRef.current?.setBackgroundColor(backgroundColor)
-  }, [backgroundColor])
+    rendererRef.current?.setTheme(theme)
+  }, [theme])
 
   useEffect(() => {
     rendererRef.current?.setEnableSSAO(enableSSAO)

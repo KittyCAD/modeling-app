@@ -17,6 +17,7 @@ import type { KclExecutionDoneDetail, KclManager } from '@src/lang/KclManager'
 import { KclManagerEvents } from '@src/lang/KclManager'
 import { EngineDebugger } from '@src/lib/debugger'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
+import { type ResolvedTheme, getThemeBackgroundColor } from '@src/lib/theme'
 import { reportRejection } from '@src/lib/trap'
 import { isArray } from '@src/lib/utils'
 import {
@@ -63,7 +64,7 @@ type DisposableGpuDevice = {
   destroy: () => void
 }
 export interface LocalRendererProps {
-  backgroundColor: string
+  theme: ResolvedTheme
   enableSSAO: boolean
   highlightEdges: boolean
   fixedSizeGrid: boolean
@@ -75,7 +76,7 @@ export interface LocalRendererProps {
 export class LocalRenderer {
   private readonly container: HTMLDivElement
   private readonly kclManager: KclManager
-  private backgroundColor: string
+  private theme: ResolvedTheme
   private enableSSAO: boolean
   private highlightEdges: boolean
   private fixedSizeGrid: boolean
@@ -122,7 +123,7 @@ export class LocalRenderer {
   ) {
     this.container = container
     this.kclManager = kclManager
-    this.backgroundColor = props.backgroundColor
+    this.theme = props.theme
     this.enableSSAO = props.enableSSAO
     this.highlightEdges = props.highlightEdges
     this.fixedSizeGrid = props.fixedSizeGrid
@@ -157,18 +158,17 @@ export class LocalRenderer {
     this.syncDefaultPlaneScale()
   }
 
-  setBackgroundColor(backgroundColor: string) {
-    if (this.backgroundColor === backgroundColor) {
-      return
-    }
+  private get backgroundColor() {
+    return getThemeBackgroundColor(this.theme)
+  }
 
-    this.backgroundColor = backgroundColor
-    if (this.scene) {
-      this.selectionHighlightRenderer?.setBackgroundColor(backgroundColor)
-      this.edgeRenderer?.setBackgroundColor(backgroundColor)
-      this.defaultPlaneRenderer?.setBackgroundColor(backgroundColor)
-      this.invalidateBaseRender()
-    }
+  setTheme(theme: ResolvedTheme) {
+    if (this.theme === theme) return
+    this.theme = theme
+    this.selectionHighlightRenderer?.setBackgroundColor(this.backgroundColor)
+    this.edgeRenderer?.setBackgroundColor(this.backgroundColor)
+    this.defaultPlaneRenderer?.setTheme(theme)
+    this.invalidateBaseRender()
   }
 
   setEnableSSAO(enableSSAO: boolean) {
@@ -708,7 +708,7 @@ export class LocalRenderer {
     )
     this.edgeRenderer = edgeRenderer
     // Keep reference planes separate from the GLB and its fit-to-model bounds.
-    this.defaultPlaneRenderer = new DefaultPlaneRenderer(this.backgroundColor)
+    this.defaultPlaneRenderer = new DefaultPlaneRenderer(this.theme)
     this.defaultPlaneRenderer.addTo(scene)
     this.integerIdPicker = new IntegerIdPicker(renderer)
     this.integerIdPicker.setEdgesVisible(this.highlightEdges)
