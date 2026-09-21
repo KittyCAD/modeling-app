@@ -54,27 +54,29 @@ flowchart LR
   28["SweepEdge Adjacent"]
   29["SweepEdge Opposite"]
   30["SweepEdge Adjacent"]
-  31["SketchBlock<br>[69, 637, 0]"]
+  31["EdgeCut Fillet<br>[926, 1041, 0]"]
+    %% [ProgramBodyItem { index: 4 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  32["SketchBlock<br>[69, 637, 0]"]
     %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  32["SketchBlockConstraint Coincident<br>[266, 304, 0]"]
+  33["SketchBlockConstraint Coincident<br>[266, 304, 0]"]
     %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlockBody, SketchBlockBodyItem { index: 2 }, ExpressionStatementExpr]
-  33["SketchBlockConstraint Coincident<br>[307, 343, 0]"]
+  34["SketchBlockConstraint Coincident<br>[307, 343, 0]"]
     %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlockBody, SketchBlockBodyItem { index: 3 }, ExpressionStatementExpr]
-  34["SketchBlockConstraint Coincident<br>[435, 474, 0]"]
+  35["SketchBlockConstraint Coincident<br>[435, 474, 0]"]
     %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlockBody, SketchBlockBodyItem { index: 5 }, ExpressionStatementExpr]
-  35["SketchBlockConstraint Coincident<br>[559, 600, 0]"]
+  36["SketchBlockConstraint Coincident<br>[559, 600, 0]"]
     %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlockBody, SketchBlockBodyItem { index: 7 }, ExpressionStatementExpr]
-  36["SketchBlockConstraint Coincident<br>[603, 635, 0]"]
+  37["SketchBlockConstraint Coincident<br>[603, 635, 0]"]
     %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlockBody, SketchBlockBodyItem { index: 8 }, ExpressionStatementExpr]
   1 --- 2
   1 <--x 7
-  1 <--x 31
+  1 <--x 32
   2 --- 3
   2 --- 4
   2 --- 5
   2 --- 6
   2 <--x 7
-  31 --- 2
+  32 --- 2
   3 <--x 8
   3 <--x 9
   4 <--x 10
