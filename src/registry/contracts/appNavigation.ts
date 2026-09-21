@@ -16,7 +16,11 @@ export interface OpenProjectRequest {
 
 export type OpenProjectOutcome =
   | { kind: 'opened'; data: IndexLoaderData }
-  /** Only returned when a request URL needs canonicalising. */
+  /**
+   * Transitional loader-compatible result used while React Router still
+   * initiates project opens. The final inversion replaces this with opening
+   * normalized project state and projecting its canonical URL afterward.
+   */
   | { kind: 'redirect'; to: string }
 
 /**
