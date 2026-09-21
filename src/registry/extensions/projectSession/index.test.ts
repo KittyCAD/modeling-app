@@ -66,7 +66,7 @@ describe('project session extension', () => {
     const openProject = vi.fn(async () => openedProject)
     const closeProject = vi.fn()
     session.bindRuntime({ openProject, closeProject })
-    const assertCurrent = vi.fn()
+    const throwIfSuperseded = vi.fn()
     const project = { name: 'bracket' } as never
     const providedEditor = {} as never
 
@@ -76,16 +76,16 @@ describe('project session extension', () => {
         path: '/projects/bracket/part.kcl',
         providedEditor,
       },
-      assertCurrent,
+      throwIfSuperseded,
     })
 
-    expect(openProject).toHaveBeenCalledWith(project, assertCurrent)
+    expect(openProject).toHaveBeenCalledWith(project, throwIfSuperseded)
     expect(openEditor).toHaveBeenCalledWith(
       '/projects/bracket/part.kcl',
       providedEditor,
       undefined,
       true,
-      assertCurrent
+      throwIfSuperseded
     )
     expect(result).toEqual({ project: openedProject, editor })
     session.closeProject()
