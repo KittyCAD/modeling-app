@@ -1,2 +1,1 @@
-redact_uuids = true
 kcl_versions = ["2.0"]
