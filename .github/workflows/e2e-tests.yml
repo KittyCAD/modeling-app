@@ -407,6 +407,8 @@ jobs:
       - name: Build app
         id: build
         run: npm run tronb:vite:dev
+        env:
+          NODE_OPTIONS: ${{ runner.os == 'macOS' && '--max-old-space-size=4096' || '' }}
 
       - name: Download test results from a previous workflow attempt
         if: ${{ github.run_attempt > 1 && !cancelled() && (success() || failure()) }}
