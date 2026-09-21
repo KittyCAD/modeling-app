@@ -114,6 +114,39 @@ describe('DefaultPlaneRenderer', () => {
     planes.dispose()
   })
 
+  it('hides each entire plane, including its border and labels, without rebuilding it', () => {
+    const { root, planes } = fixture()
+    const originalPlanes = [...root.children]
+    const visibleNames = () => {
+      const names: string[] = []
+      root.traverseVisible((object) => names.push(object.name))
+      return names
+    }
+
+    planes.setVisibility({ xy: false, yz: true, xz: false })
+    expect(visibleNames()).toEqual([
+      'default-planes',
+      'YZ',
+      'YZ-fill',
+      'YZ-border',
+      'YZ',
+      'Side',
+    ])
+    planes.setVisibility({ xy: false, yz: false, xz: false })
+    expect(visibleNames()).toEqual(['default-planes'])
+    planes.setVisibility({ xy: true, yz: false, xz: true })
+    expect(root.children.map((plane) => plane.visible)).toEqual([
+      true,
+      false,
+      true,
+    ])
+    expect(visibleNames()).toContain('Top')
+    expect(visibleNames()).toContain('Front')
+    expect(visibleNames()).not.toContain('Side')
+    expect(root.children).toEqual(originalPlanes)
+    planes.dispose()
+  })
+
   it.each([
     [0.1, 0.000001],
     [1, 0.00001],

@@ -26,6 +26,7 @@ export const LocalWebGPUScene = (props: LocalRendererProps) => {
     state.matches('idle') || state.matches('Sketch no face')
   const selectedPlaneId =
     getSelectedDefaultPlane(state.context.selectionRanges)?.id ?? null
+  const defaultPlaneVisibility = state.context.defaultPlaneVisibility
   const isExecuting = kclManager.isExecutingSignal.value
   const [isAwaitingModel, setIsAwaitingModel] = useState(false)
   const isLoadingModel = isExecuting || isAwaitingModel
@@ -75,6 +76,10 @@ export const LocalWebGPUScene = (props: LocalRendererProps) => {
   useEffect(() => {
     rendererRef.current?.setSelectedDefaultPlane(selectedPlaneId)
   }, [selectedPlaneId, kclManager])
+
+  useEffect(() => {
+    rendererRef.current?.setDefaultPlaneVisibility(defaultPlaneVisibility)
+  }, [defaultPlaneVisibility, kclManager])
 
   useEffect(() => {
     rendererRef.current?.setEnableSSAO(enableSSAO)

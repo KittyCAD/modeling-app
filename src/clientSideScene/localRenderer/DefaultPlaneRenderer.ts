@@ -1,6 +1,6 @@
 import { getLocalCameraSceneScale } from '@src/clientSideScene/cameraSceneScale'
 import { type ResolvedTheme, Themes } from '@src/lib/theme'
-import type { DefaultPlanes } from '@rust/kcl-lib/bindings/DefaultPlanes'
+import type { PlaneVisibilityMap } from '@src/machines/modelingSharedTypes'
 import {
   CanvasTexture,
   Color,
@@ -28,7 +28,7 @@ const PLANES = [
   { key: 'yz', name: 'YZ', label: 'Side', color: new Color(0.28, 0.7, 0.28) },
   { key: 'xz', name: 'XZ', label: 'Front', color: new Color(0.28, 0.28, 0.7) },
 ] satisfies {
-  key: keyof DefaultPlanes
+  key: keyof PlaneVisibilityMap
   name: string
   label: string
   color: Color
@@ -43,7 +43,10 @@ type PlaneLabel = {
 
 /** Reference geometry, independent of the exported model and its lifetime. */
 export class DefaultPlaneRenderer {
-  readonly fills = new Map<keyof DefaultPlanes, Mesh>()
+  readonly planes = new Map<
+    keyof PlaneVisibilityMap,
+    { group: Group; fill: Mesh }
+  >()
   private readonly group = new Group()
   private readonly planeGeometry = new PlaneGeometry(
     PLANE_SIZE_MM,
@@ -83,7 +86,6 @@ export class DefaultPlaneRenderer {
       })
       const fill = new Mesh(this.planeGeometry, fillMaterial)
       fill.name = `${name}-fill`
-      this.fills.set(key, fill)
       this.materials.push(fillMaterial)
       plane.add(fill)
 
@@ -105,6 +107,7 @@ export class DefaultPlaneRenderer {
 
       plane.add(this.createLabel(name, borderColor, true))
       plane.add(this.createLabel(label, borderColor, false))
+      this.planes.set(key, { group: plane, fill })
       this.group.add(plane)
     }
     this.setTheme(theme)
@@ -112,6 +115,12 @@ export class DefaultPlaneRenderer {
 
   addTo(parent: Object3D) {
     parent.add(this.group)
+  }
+
+  setVisibility(visibility: PlaneVisibilityMap) {
+    for (const [key, { group }] of this.planes) {
+      group.visible = visibility[key]
+    }
   }
 
   updateScale(cameraDistanceMm: number, fixedGridScale?: number) {
@@ -135,7 +144,7 @@ export class DefaultPlaneRenderer {
   }
 
   dispose() {
-    this.fills.clear()
+    this.planes.clear()
     this.group.removeFromParent()
     this.group.clear()
     this.planeGeometry.dispose()

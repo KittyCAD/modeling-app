@@ -1,13 +1,13 @@
 import { signal } from '@preact/signals-core'
 import type { KclManager } from '@src/lang/KclManager'
-import type { DefaultPlanes } from '@rust/kcl-lib/bindings/DefaultPlanes'
+import type { PlaneVisibilityMap } from '@src/machines/modelingSharedTypes'
 import type { IntegerIdPickTarget } from '@src/clientSideScene/localRenderer/IntegerIdPicker'
 import type { LocalSelectionCommandProvider } from '@src/clientSideScene/localSelectionCommandProxy'
 import type ModelingAppFile from '@src/lib/modelingAppFile'
 import { Signal } from '@src/lib/signal'
 import { Themes } from '@src/lib/theme'
 import {
-  type Group,
+  Group,
   Mesh,
   MeshStandardMaterial,
   OrthographicCamera,
@@ -43,6 +43,8 @@ type RendererInternals = {
   syncPreviewCameraFromShared(): void
   handleLocalSelectionCommand: LocalSelectionCommandProvider['handleCommand']
   clearPlaneHover(): void
+  rebuildPlaneTargets(): void
+  baseRenderDirty: boolean
   pointerOverCanvas: boolean
   integerIdPicker: {
     pick: ReturnType<
@@ -54,17 +56,20 @@ type RendererInternals = {
       >
     >
     invalidate: ReturnType<typeof vi.fn>
+    setTargets: ReturnType<typeof vi.fn>
     clearModel: ReturnType<typeof vi.fn>
     dispose: ReturnType<typeof vi.fn>
   } | null
   selectionHighlightRenderer: {
+    setTargets: ReturnType<typeof vi.fn>
     setHover: ReturnType<typeof vi.fn>
     setSelection: ReturnType<typeof vi.fn>
     clearModel: ReturnType<typeof vi.fn>
     dispose: ReturnType<typeof vi.fn>
   } | null
   defaultPlaneRenderer: {
-    fills?: Map<keyof DefaultPlanes, Mesh>
+    planes?: Map<keyof PlaneVisibilityMap, { group: Group; fill: Mesh }>
+    setVisibility: ReturnType<typeof vi.fn>
     updateScale: ReturnType<typeof vi.fn>
     dispose: ReturnType<typeof vi.fn>
   } | null
@@ -151,17 +156,22 @@ describe('local GLB loading', () => {
         .fn()
         .mockResolvedValue({ target, diagnostics: { stale: false } }),
       invalidate: vi.fn(),
+      setTargets: vi.fn(),
       clearModel: vi.fn(),
       dispose: vi.fn(),
     }
     const highlights = {
+      setTargets: vi.fn(),
       setHover: vi.fn(),
       setSelection: vi.fn(),
       clearModel: vi.fn(),
       dispose: vi.fn(),
     }
     f.state.defaultPlaneRenderer = {
-      fills: new Map([['xy', object]]),
+      planes: new Map([
+        ['xy', { group: new Group().add(object), fill: object }],
+      ]),
+      setVisibility: vi.fn(),
       updateScale: vi.fn(),
       dispose: vi.fn(),
     }
@@ -231,6 +241,71 @@ describe('local GLB loading', () => {
     f.renderer.dispose()
   })
 
+  it('applies visibility, invalidates picking, and hides highlights until the plane is shown again', async () => {
+    const f = planeFixture()
+    await f.pick()
+    f.renderer.setSelectedDefaultPlane('plane-xy')
+    f.picker.invalidate.mockClear()
+    f.state.baseRenderDirty = false
+
+    f.renderer.setDefaultPlaneVisibility({ xy: false, xz: true, yz: true })
+    expect(
+      f.state.defaultPlaneRenderer?.setVisibility
+    ).toHaveBeenLastCalledWith({
+      xy: false,
+      xz: true,
+      yz: true,
+    })
+    expect(f.picker.invalidate).toHaveBeenCalledOnce()
+    expect(f.state.baseRenderDirty).toBe(true)
+    expect(f.highlights.setHover).toHaveBeenLastCalledWith(null)
+    expect(f.highlights.setSelection).toHaveBeenLastCalledWith([])
+
+    f.renderer.setDefaultPlaneVisibility({ xy: true, xz: false, yz: false })
+    expect(f.highlights.setSelection).toHaveBeenLastCalledWith([f.target])
+    expect(f.picker.setTargets).not.toHaveBeenCalled()
+    f.renderer.dispose()
+  })
+
+  it('retains visibility set before initialization and when model targets are rebuilt', () => {
+    const f = planeFixture()
+    const { defaultPlaneRenderer } = f.state
+    f.state.defaultPlaneRenderer = null
+    const visibility = { xy: false, xz: true, yz: false }
+    f.renderer.setDefaultPlaneVisibility(visibility)
+    f.renderer.setSelectedDefaultPlane('plane-xy')
+
+    f.state.defaultPlaneRenderer = defaultPlaneRenderer
+    f.state.rebuildPlaneTargets()
+    expect(defaultPlaneRenderer?.setVisibility).toHaveBeenLastCalledWith(
+      visibility
+    )
+    expect(f.highlights.setSelection).toHaveBeenLastCalledWith([])
+    f.state.rebuildPlaneTargets()
+    expect(defaultPlaneRenderer?.setVisibility).toHaveBeenLastCalledWith(
+      visibility
+    )
+    f.renderer.dispose()
+  })
+
+  it('discards pending hover readbacks when plane visibility changes', async () => {
+    const f = planeFixture()
+    let resolvePick = () => {}
+    f.picker.pick.mockImplementation(
+      () =>
+        new Promise((resolve) => {
+          resolvePick = () =>
+            resolve({ target: f.target, diagnostics: { stale: false } })
+        })
+    )
+    const pending = f.pick()
+    f.renderer.setDefaultPlaneVisibility({ xy: false, xz: true, yz: true })
+    resolvePick()
+    expect(await pending).toEqual({})
+    expect(f.highlights.setHover).toHaveBeenLastCalledWith(null)
+    f.renderer.dispose()
+  })
+
   it('does not apply a GPU hover result after the pointer leaves or execution starts', async () => {
     const f = planeFixture()
     let resolvePick = () => {}
@@ -276,7 +351,11 @@ describe('local GLB loading', () => {
   it('updates plane scale on camera, fixed-grid setting, and file-unit changes', () => {
     const f = fixture()
     const updateScale = vi.fn()
-    f.state.defaultPlaneRenderer = { updateScale, dispose: vi.fn() }
+    f.state.defaultPlaneRenderer = {
+      updateScale,
+      setVisibility: vi.fn(),
+      dispose: vi.fn(),
+    }
     const controls = f.manager.sceneInfra.camControls
     controls.camera.position.set(100, 0, 0)
     f.state.syncPreviewCameraFromShared()

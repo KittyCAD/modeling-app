@@ -28,6 +28,7 @@ import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import { type ResolvedTheme, getThemeBackgroundColor } from '@src/lib/theme'
 import { reportRejection } from '@src/lib/trap'
 import { isArray } from '@src/lib/utils'
+import type { PlaneVisibilityMap } from '@src/machines/modelingSharedTypes'
 import {
   Box3,
   BufferGeometry,
@@ -124,6 +125,11 @@ export class LocalRenderer {
   private baseRenderDirty = true
   private disposed = false
   private planeInteractionEnabled = false
+  private defaultPlaneVisibility: PlaneVisibilityMap = {
+    xy: true,
+    xz: true,
+    yz: true,
+  }
   private selectedPlaneId: string | null = null
   private hoveredPlane: IntegerIdPickTarget | null = null
   private hoverRequestVersion = 0
@@ -184,11 +190,21 @@ export class LocalRenderer {
     this.updatePlaneSelection()
   }
 
+  setDefaultPlaneVisibility(visibility: PlaneVisibilityMap) {
+    this.defaultPlaneVisibility = { ...visibility }
+    this.defaultPlaneRenderer?.setVisibility(visibility)
+    this.integerIdPicker?.invalidate()
+    this.clearPlaneHover()
+    this.updatePlaneSelection()
+    this.invalidateBaseRender()
+  }
+
   private getPlaneTarget(id: string | null): IntegerIdPickTarget | null {
     if (!id) return null
     const planes = this.kclManager.rustContext.defaultPlanes
-    for (const [key, object] of this.defaultPlaneRenderer?.fills ?? []) {
-      if (planes?.[key] === id) return { object }
+    for (const [key, { fill }] of this.defaultPlaneRenderer?.planes ?? []) {
+      if (planes?.[key] === id && this.defaultPlaneVisibility[key])
+        return { object: fill }
     }
     return null
   }
@@ -207,9 +223,12 @@ export class LocalRenderer {
   }
 
   private rebuildPlaneTargets() {
-    const fills = this.defaultPlaneRenderer?.fills
-    if (!fills) return
-    const targets = Array.from(fills.values(), (object) => ({ object }))
+    const planes = this.defaultPlaneRenderer?.planes
+    if (!planes) return
+    this.defaultPlaneRenderer?.setVisibility(this.defaultPlaneVisibility)
+    const targets = Array.from(planes.values(), ({ fill }) => ({
+      object: fill,
+    }))
     this.integerIdPicker?.setTargets(targets, this.currentModel)
     this.selectionHighlightRenderer?.setTargets(targets)
     this.clearPlaneHover()
@@ -268,8 +287,10 @@ export class LocalRenderer {
       const target = result?.target ?? null
       let entityId: string | null = null
       const planes = this.kclManager.rustContext.defaultPlanes
-      for (const [key, object] of this.defaultPlaneRenderer?.fills ?? []) {
-        if (object === target?.object) entityId = planes?.[key] ?? null
+      for (const [key, { fill }] of this.defaultPlaneRenderer?.planes ?? []) {
+        if (fill === target?.object) {
+          entityId = planes?.[key] ?? null
+        }
       }
       if (isHover) {
         if (this.hoveredPlane?.object !== target?.object) {
