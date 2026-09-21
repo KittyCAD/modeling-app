@@ -870,12 +870,12 @@ export class App implements AppSubsystems {
               navigation = createAppNavigationService(
                 preloadedNavigationIntents,
                 {
-                  supersedeProjectOpen:
-                    openProjectNavigation.supersedeProjectOpen,
-                  showHome: () =>
-                    navigationDependencies.showHome((request) =>
+                  showHome: () => {
+                    openProjectNavigation.cancelProjectOpen()
+                    return navigationDependencies.showHome((request) =>
                       navigation.dispatch(openProjectIntent, request)
-                    ),
+                    )
+                  },
                 }
               )
               return navigation

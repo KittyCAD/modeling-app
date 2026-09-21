@@ -51,11 +51,12 @@ function navigationHarness(overrides: Partial<AppNavigationDependencies> = {}) {
   const projectOpen = createOpenProjectIntentContribution(dependencies)
   let navigation: ReturnType<typeof createAppNavigationService>
   navigation = createAppNavigationService([projectOpen.contribution], {
-    supersedeProjectOpen: projectOpen.supersedeProjectOpen,
-    showHome: () =>
-      dependencies.showHome((request) =>
+    showHome: () => {
+      projectOpen.cancelProjectOpen()
+      return dependencies.showHome((request) =>
         navigation.dispatch(openProjectIntent, request)
-      ),
+      )
+    },
   })
   return {
     dependencies,
@@ -91,10 +92,10 @@ describe('appNavigation', () => {
         },
       })),
     })
-    const navigation = createAppNavigationService(
-      [projectOpen.contribution, settingsContribution],
-      { supersedeProjectOpen: projectOpen.supersedeProjectOpen }
-    )
+    const navigation = createAppNavigationService([
+      projectOpen.contribution,
+      settingsContribution,
+    ])
 
     await navigation.dispatch(openSettingsIntent, { tab: 'project' })
 
@@ -176,7 +177,7 @@ describe('appNavigation', () => {
     await expect(firstOpen).rejects.toMatchObject({ name: 'AbortError' })
   })
 
-  test('explicit supersession aborts the in-flight project open', async () => {
+  test('showing Home aborts the in-flight project open', async () => {
     let finishResolution: () => void = () => undefined
     const resolutionStarted = new Promise<void>((resolve) => {
       finishResolution = resolve
@@ -191,32 +192,9 @@ describe('appNavigation', () => {
     const firstOpen = navigation.dispatch(openProjectIntent, {
       target: '/projects/bracket',
     })
-    navigation.supersedeProjectOpen()
+    await navigation.showHome()
     finishResolution()
 
     await expect(firstOpen).rejects.toMatchObject({ name: 'AbortError' })
-  })
-
-  test('a caller abort signal aborts the project open', async () => {
-    let finishResolution: () => void = () => undefined
-    const resolutionStarted = new Promise<void>((resolve) => {
-      finishResolution = resolve
-    })
-    const { navigation } = navigationHarness({
-      resolveProjectOpen: vi.fn(async () => {
-        await resolutionStarted
-        return resolvedProject
-      }),
-    })
-    const controller = new AbortController()
-
-    const open = navigation.dispatch(openProjectIntent, {
-      target: '/projects/bracket',
-      signal: controller.signal,
-    })
-    controller.abort()
-    finishResolution()
-
-    await expect(open).rejects.toMatchObject({ name: 'AbortError' })
   })
 })
