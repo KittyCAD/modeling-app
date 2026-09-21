@@ -65,6 +65,7 @@ beforeEach(async () => {
 
   worldInThisFile = await buildTheWorldAndConnectToEngine({
     webrtc: false,
+    pool: 'cpu',
   })
   const { instance, kclManager, engineCommandManager, rustContext } =
     worldInThisFile
