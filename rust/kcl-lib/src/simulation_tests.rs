@@ -804,7 +804,7 @@ async fn execute_once(test: &Test, kcl_version: Option<&str>) {
 
     // Run the program.
     let exec_res = execute_with_retries(&RetryConfig::default(), || {
-        crate::test_server::execute_and_snapshot_ast_no_close(
+        crate::test_server::execute_sim_test_no_close(
             ast.clone(),
             Some(test.entry_point.clone()),
             test.expected_deprecation_warnings

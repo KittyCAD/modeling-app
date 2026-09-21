@@ -190,6 +190,39 @@ impl TestGraphicsParams {
 }
 
 #[cfg(test)]
+async fn execute_from_graphics_params(
+    graphics: TestGraphicsParams,
+    program: Program,
+    deprecation_version_override: Option<&str>,
+    ctx: &ExecutorContext,
+) -> Result<(ExecState, EnvironmentRef, TestGraphicsArtifact), ExecErrorWithState> {
+    match graphics {
+        // maybe there's something we can do to pipe reason into test output,
+        // or maybe the main importance of the field is just that it must exist in config.toml files
+        TestGraphicsParams::EngineRender { reason: _r } => execute_locally_and_render_on_engine(&ctx, program, None)
+            .await
+            .map(|(state, env, image)| (state, env, TestGraphicsArtifact::Image(image))),
+        TestGraphicsParams::ExportAndRender => {
+            execute_export_and_render_locally(&ctx, program, deprecation_version_override)
+                .await
+                .map(|(state, env, snap_3d)| {
+                    (
+                        state,
+                        env,
+                        TestGraphicsArtifact::ImageAndGlb {
+                            image: snap_3d.image,
+                            glb: snap_3d.glb,
+                        },
+                    )
+                })
+        }
+        TestGraphicsParams::None => do_execute(&ctx, program, None)
+            .await
+            .map(|(state, env)| (state, env, TestGraphicsArtifact::None)),
+    }
+}
+
+#[cfg(test)]
 pub async fn kcl_doc_execute_and_snapshot(
     code: &str,
     current_file: Option<PathBuf>,
@@ -206,24 +239,11 @@ pub async fn kcl_doc_execute_and_snapshot(
         }
     };
 
-    let result: Result<TestGraphicsArtifact, ExecError> = match graphics {
-        // We could emit the reason that kcl doc sample is engine rendered. but for now, it's always the same reason - "no3d"
-        TestGraphicsParams::EngineRender { reason: _r } => execute_locally_and_render_on_engine(&ctx, program, None)
-            .await
-            .map(|(_, _, image)| TestGraphicsArtifact::Image(image))
-            .map_err(|err| err.error),
-        TestGraphicsParams::ExportAndRender => execute_export_and_render_locally(&ctx, program, None)
-            .await
-            .map(|(_, _, snap_3d)| TestGraphicsArtifact::ImageAndGlb {
-                image: snap_3d.image,
-                glb: snap_3d.glb,
-            })
-            .map_err(|err| err.error),
-        TestGraphicsParams::None => do_execute(&ctx, program, None)
-            .await
-            .map_err(|err| err.error)
-            .map(|_| TestGraphicsArtifact::None),
-    };
+    let result: Result<TestGraphicsArtifact, ExecError> = execute_from_graphics_params(graphics, program, None, &ctx)
+        .await
+        .map(|(_exec_state, _env, graphics)| graphics)
+        .map_err(|e| e.error);
+
     ctx.close().await;
     result
 }
@@ -248,47 +268,15 @@ pub async fn execute_and_snapshot_legacy_sim_test(
 /// connection. If OK, the caller must close the returned context.
 /// If Err, the context will already be closed within this function.
 #[cfg(test)]
-pub async fn execute_and_snapshot_ast_no_close(
+pub async fn execute_sim_test_no_close(
     ast: Program,
     current_file: Option<PathBuf>,
     deprecation_version_override: Option<&str>,
     graphics: TestGraphicsParams,
 ) -> Result<(ExecState, ExecutorContext, EnvironmentRef, TestGraphicsArtifact), ExecErrorWithState> {
-    execute_and_snapshot_ast_with_heartbeats(ast, current_file, deprecation_version_override, Some(5), graphics).await
-}
-
-#[cfg(test)]
-async fn execute_and_snapshot_ast_with_heartbeats(
-    ast: Program,
-    current_file: Option<PathBuf>,
-    deprecation_version_override: Option<&str>,
-    heartbeats: Option<u64>,
-    graphics: TestGraphicsParams,
-) -> Result<(ExecState, ExecutorContext, EnvironmentRef, TestGraphicsArtifact), ExecErrorWithState> {
+    let heartbeats = Some(5);
     let ctx = new_context_with_heartbeats(true, current_file, heartbeats, graphics.geometry_only()).await?;
-    let result: Result<(ExecState, EnvironmentRef, TestGraphicsArtifact), ExecErrorWithState> = match graphics {
-        // maybe there's something we can do to pipe reason into test output, or maybe the main importance is that it is forced to exist
-        TestGraphicsParams::EngineRender { reason: _r } => execute_locally_and_render_on_engine(&ctx, ast, None)
-            .await
-            .map(|(state, env, image)| (state, env, TestGraphicsArtifact::Image(image))),
-        TestGraphicsParams::ExportAndRender => {
-            execute_export_and_render_locally(&ctx, ast, deprecation_version_override)
-                .await
-                .map(|(state, env, snap_3d)| {
-                    (
-                        state,
-                        env,
-                        TestGraphicsArtifact::ImageAndGlb {
-                            image: snap_3d.image,
-                            glb: snap_3d.glb,
-                        },
-                    )
-                })
-        }
-        TestGraphicsParams::None => do_execute(&ctx, ast, None)
-            .await
-            .map(|(state, env)| (state, env, TestGraphicsArtifact::None)),
-    };
+    let result = execute_from_graphics_params(graphics, ast, deprecation_version_override, &ctx).await;
     // we shouldn't let the ctx leave this function without closing, but an open ctx is relied on downstream.
     // needs to be refactored.
     if result.is_err() {
