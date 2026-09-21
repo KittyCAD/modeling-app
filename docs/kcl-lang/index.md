@@ -23,5 +23,5 @@ things in a more tutorial fashion. See also our documentation of the [standard l
 * [Python-to-KCL Cheat Sheet](/docs/kcl-lang/python-cheat-sheet)
 * [Importing geometry from other CAD systems](/docs/kcl-lang/foreign-imports)
 * [Settings](/docs/kcl-lang/settings)
-* [Migrating from KCL 2.0 to 3.0](/docs/kcl-lang/migrating-to-kcl-3)
+* [Beta Testing KCL 3.0](/docs/kcl-lang/migrating-to-kcl-3)
 * [Known Issues](/docs/kcl-lang/known-issues)

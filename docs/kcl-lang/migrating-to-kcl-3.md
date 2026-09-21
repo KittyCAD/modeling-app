@@ -1,6 +1,6 @@
 ---
-title: "Migrating from KCL 2.0 to 3.0"
-excerpt: "How to update a KCL program written for KCL 2.0 so that it runs under KCL 3.0."
+title: "Beta Testing KCL 3.0"
+excerpt: "How to beta test KCL 3.0 and update a KCL program written for KCL 2.0 so that it runs under KCL 3.0."
 layout: manual
 ---
 
@@ -12,9 +12,14 @@ simplifies some standard library parameters. This page lists every change and
 shows how to update a program written for KCL 2.0. Each section has a "before"
 example that runs under KCL 2.0 and an "after" example that runs under KCL 3.0.
 
-KCL 3.0 is available as a preview. To use it, declare the version as the
-string `"3.0-preview"`, with the quotes, in the
-[settings attribute](/docs/kcl-lang/settings) at the top of the file you
+KCL 3.0 is available as a preview for testing. Behavior will change without
+notice before the final 3.0 release, including breaking changes that can make a
+model invalid or silently different. We do not recommend building real models
+with 3.0-preview. It's only intended to get a glimpse of what functionality is
+on its way.
+
+To use it, declare the version as the string `"3.0-preview"`, with the quotes,
+in the [settings attribute](/docs/kcl-lang/settings) at the top of the file you
 execute:
 
 ```kcl
@@ -24,14 +29,6 @@ execute:
 The version declared by the file you execute governs the whole program,
 including every file it imports. A program cannot run partly under KCL 2.0
 and partly under KCL 3.0, so migrate a project as a unit.
-
-## Preview
-
-The version is 3.0-preview, not 3.0, because it isn't stable yet. Behavior will
-still change without notice before the final 3.0 release, including breaking
-changes that can make a model invalid or silently different. We do not recommend
-building real models with 3.0-preview. It's only intended to get a glimpse of
-what functionality is on its way.
 
 ## Migration steps
 

@@ -47,7 +47,7 @@ Valid properties are:
   cause a warning), `deny` (the default, experimental features cause an error).
 - `kclVersion`: the version of the KCL language and standard libary to execute with.
   - Accepted values: `1.0`, `2.0`, `"3.0-preview"` (experimental).
-  - See [Migrating from KCL 2.0 to 3.0](/docs/kcl-lang/migrating-to-kcl-3) for how to
+  - See [Beta Testing KCL 3.0](/docs/kcl-lang/migrating-to-kcl-3) for how to
     update a program to the newest version.
   - When the file being executed declares `"3.0-preview"`, that version governs
     the whole execution, including any files it imports. From 3.0 going forward,
