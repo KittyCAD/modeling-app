@@ -11,6 +11,10 @@ import type { IndexLoaderData } from '@src/lib/types'
 export interface OpenProjectRequest {
   target?: string
   requestUrl?: string
+  /**
+   * Transitional React Router loader cancellation. Once startup is no longer
+   * loader-owned, appNavigation keeps latest-intent cancellation private.
+   */
   signal?: AbortSignal
 }
 
@@ -31,6 +35,10 @@ export type OpenProjectOutcome =
  */
 export interface AppNavigationService {
   openProject: (request: OpenProjectRequest) => Promise<OpenProjectOutcome>
+  /**
+   * Transitional escape hatch for a legacy file route that returns before it
+   * can call openProject. Remove it with the effectful loader integration.
+   */
   supersedeProjectOpen: (signal?: AbortSignal) => void
 }
 
