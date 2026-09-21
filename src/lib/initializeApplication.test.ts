@@ -7,6 +7,7 @@ const mocks = vi.hoisted(() => ({
   initHomeRoute: vi.fn(),
   initFileRoute: vi.fn(),
   readInitialUrl: vi.fn(),
+  formatUrl: vi.fn(),
   navigate: vi.fn(),
 }))
 
@@ -21,6 +22,7 @@ function fakeApp(): App {
     registry: {
       get: () => ({
         readInitialUrl: mocks.readInitialUrl,
+        formatUrl: mocks.formatUrl,
         navigate: mocks.navigate,
       }),
     },
@@ -36,6 +38,8 @@ describe('initializeApplication', () => {
     mocks.readInitialUrl.mockReturnValue({
       type: 'launch',
       destination: { type: 'project', target: '/projects/bracket/main.kcl' },
+      search: '?pool=alpha',
+      hash: '#section',
     })
     mocks.initFileRoute.mockResolvedValue({ kind: 'ready', data: {} })
 
@@ -47,14 +51,16 @@ describe('initializeApplication', () => {
 
     expect(mocks.initFileRoute).toHaveBeenCalledWith(app, {
       id: '/projects/bracket/main.kcl',
-      requestUrl: 'https://app.zoo.dev/file/%2Fprojects%2Fbracket%2Fmain.kcl',
+      startup: { search: '?pool=alpha', hash: '#section' },
     })
   })
 
-  it('follows a typed transition and projects its URL after state is ready', async () => {
+  it('follows a typed project transition with structured startup URL state', async () => {
     mocks.readInitialUrl.mockReturnValue({
       type: 'launch',
       destination: { type: 'index' },
+      search: '?pool=alpha',
+      hash: '',
     })
     mocks.initIndexRoute.mockResolvedValue({
       kind: 'transition',
@@ -62,7 +68,7 @@ describe('initializeApplication', () => {
         type: 'project',
         target: '/projects/demo/main.kcl',
       },
-      canonicalPath: '/file/%2Fprojects%2Fdemo%2Fmain.kcl?pool=alpha',
+      urlState: { search: '?pool=alpha', hash: '' },
     })
     mocks.initFileRoute.mockResolvedValue({ kind: 'ready', data: {} })
 
@@ -71,17 +77,42 @@ describe('initializeApplication', () => {
       usesHashRouter: false,
     })
 
-    expect(mocks.navigate).toHaveBeenCalledWith(
-      '/file/%2Fprojects%2Fdemo%2Fmain.kcl?pool=alpha',
-      { replace: true }
-    )
     expect(mocks.readInitialUrl).toHaveBeenCalledTimes(1)
     expect(mocks.initFileRoute).toHaveBeenCalledWith(expect.anything(), {
       id: '/projects/demo/main.kcl',
-      requestUrl:
-        'https://app.zoo.dev/file/%2Fprojects%2Fdemo%2Fmain.kcl?pool=alpha',
+      startup: { search: '?pool=alpha', hash: '' },
     })
-    expect(mocks.initFileRoute).toHaveBeenCalledBefore(mocks.navigate)
+  })
+
+  it('projects a typed home transition after home state is ready', async () => {
+    mocks.readInitialUrl.mockReturnValue({
+      type: 'launch',
+      destination: { type: 'index' },
+      search: '?pool=alpha',
+      hash: '',
+    })
+    mocks.initIndexRoute.mockResolvedValue({
+      kind: 'transition',
+      destination: { type: 'home' },
+      urlState: { search: '?pool=alpha', hash: '' },
+    })
+    mocks.initHomeRoute.mockResolvedValue({ kind: 'ready', data: {} })
+    mocks.formatUrl.mockReturnValue('/home?pool=alpha')
+
+    await initializeApplication(fakeApp(), {
+      requestUrl: 'https://app.zoo.dev/',
+      usesHashRouter: false,
+    })
+
+    expect(mocks.formatUrl).toHaveBeenCalledWith({
+      destination: { type: 'home' },
+      search: '?pool=alpha',
+      hash: '',
+    })
+    expect(mocks.navigate).toHaveBeenCalledWith('/home?pool=alpha', {
+      replace: true,
+    })
+    expect(mocks.initHomeRoute).toHaveBeenCalledBefore(mocks.navigate)
   })
 
   it('leaves an unrecognized URL to the render-only routing shell', async () => {

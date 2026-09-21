@@ -46,7 +46,6 @@ function resolverHarness(
     isPathNotFoundError: (error) =>
       error instanceof Error && error.message === 'ENOENT',
     setProjectDirectory: vi.fn(),
-    isDesktop: () => false,
     ...overrides,
   }
 
@@ -60,14 +59,14 @@ beforeEach(() => {
 })
 
 describe('resolveProjectOpenRequest', () => {
-  test('resolves a project URL to its default file and canonical URL', async () => {
+  test('resolves a project target to its default file and canonical target', async () => {
     const dependencies = resolverHarness()
 
     const result = await resolveProjectOpenRequest(
       dependencies,
       {
         target: '/library/proj',
-        requestUrl: `http://localhost${PATHS.FILE}/%2Flibrary%2Fproj?pool=alpha`,
+        startup: { search: '?pool=alpha', hash: '' },
       },
       throwIfSuperseded
     )
@@ -78,7 +77,7 @@ describe('resolveProjectOpenRequest', () => {
         name: 'main.kcl',
         path: '/library/proj/main.kcl',
       },
-      canonicalUrl: `http://localhost${PATHS.FILE}/%2Flibrary%2Fproj%2Fmain.kcl?pool=alpha`,
+      canonicalTarget: '/library/proj/main.kcl',
     })
     expect(dependencies.setProjectDirectory).toHaveBeenCalledWith(
       '/library/proj'
@@ -94,7 +93,7 @@ describe('resolveProjectOpenRequest', () => {
       dependencies,
       {
         target: '/library/proj/nope.kcl',
-        requestUrl: `http://localhost${PATHS.FILE}/%2Flibrary%2Fproj%2Fnope.kcl?pool=alpha`,
+        startup: { search: '?pool=alpha', hash: '' },
       },
       throwIfSuperseded
     )
@@ -105,9 +104,7 @@ describe('resolveProjectOpenRequest', () => {
         name: 'main.kcl',
         path: '/library/proj/main.kcl',
       },
-      canonicalUrl: `${PATHS.FILE}/${encodeURIComponent(
-        '/library/proj/main.kcl'
-      )}?pool=alpha`,
+      canonicalTarget: '/library/proj/main.kcl',
     })
   })
 
@@ -118,7 +115,16 @@ describe('resolveProjectOpenRequest', () => {
       dependencies,
       {
         target: '/library/proj',
-        requestUrl: `http://localhost${PATHS.FILE}/%2Flibrary%2Fproj/settings`,
+        startup: {
+          additionalIntents: [
+            {
+              intent: { id: 'settings.open' },
+              input: { tab: 'project' },
+            },
+          ],
+          search: '',
+          hash: '',
+        },
       },
       throwIfSuperseded
     )
@@ -126,19 +132,8 @@ describe('resolveProjectOpenRequest', () => {
     expect(result).toMatchObject({
       kind: 'resolved',
       projectPath: '/library/proj',
+      canonicalTarget: '/library/proj',
     })
-  })
-
-  test('rejects a missing target for the route error boundary', async () => {
-    const dependencies = resolverHarness()
-
-    await expect(
-      resolveProjectOpenRequest(
-        dependencies,
-        { target: undefined, requestUrl: 'http://localhost/file' },
-        throwIfSuperseded
-      )
-    ).rejects.toThrow('bug: projectPathData undefined')
   })
 
   test('resolves a warm project open to its default file', async () => {
@@ -153,6 +148,7 @@ describe('resolveProjectOpenRequest', () => {
     expect(result).toMatchObject({
       kind: 'resolved',
       file: { path: '/library/proj/main.kcl', name: 'main.kcl' },
+      canonicalTarget: '/library/proj/main.kcl',
     })
     expect(dependencies.setProjectDirectory).toHaveBeenCalledWith(
       '/library/proj'
@@ -171,6 +167,7 @@ describe('resolveProjectOpenRequest', () => {
     expect(result).toMatchObject({
       kind: 'resolved',
       file: { path: '/library/proj/part.kcl', name: 'part.kcl' },
+      canonicalTarget: '/library/proj/part.kcl',
     })
   })
 })
@@ -187,6 +184,7 @@ const resolvedProject = {
     default_file: '/projects/bracket/main.kcl',
   },
   file: { name: 'main.kcl', path: '/projects/bracket/main.kcl' },
+  canonicalTarget: '/projects/bracket/main.kcl',
 }
 
 function navigationHarness(

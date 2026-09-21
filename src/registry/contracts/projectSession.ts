@@ -4,6 +4,7 @@ import type { KclManager, ZDSProject } from '@src/lang/KclManager'
 import type { Project } from '@src/lib/project'
 import type { IndexLoaderData } from '@src/lib/types'
 import { defineAppNavigationIntent } from '@src/registry/contracts/appNavigation'
+import type { AppUrlState } from '@src/registry/contracts/appUrl'
 
 /**
  * An application-level request to enter a project.
@@ -13,8 +14,9 @@ import { defineAppNavigationIntent } from '@src/registry/contracts/appNavigation
  * target into a project and optional initial editor.
  */
 export interface OpenProjectRequest {
-  target?: string
-  requestUrl?: string
+  target: string
+  /** Parsed URL-owned state, present only while restoring cold startup. */
+  startup?: AppUrlState
   /**
    * Transitional React Router loader cancellation. Once startup is no longer
    * loader-owned, projectSession keeps latest-intent cancellation private.

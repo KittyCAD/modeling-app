@@ -1,5 +1,4 @@
 import type { App } from '@src/lib/app'
-import { PATHS } from '@src/lib/paths'
 import {
   initFileRoute,
   initHomeRoute,
@@ -8,9 +7,8 @@ import {
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
 
 /**
- * These pin the typed startup transitions and their canonical paths. The
- * Playwright suite asserts URLs literally, so byte-identical projections are
- * the safety net for this refactor.
+ * These pin typed startup transitions before the application URL capability
+ * projects them. The Playwright suite separately asserts the resulting URLs.
  *
  * This logic had no unit coverage at all while it lived inside React Router
  * loaders, because reaching it needed a mounted data router.
@@ -108,19 +106,19 @@ describe('initIndexRoute', () => {
   test('desktop goes home, carrying the query string', async () => {
     setDesktop(true)
     const result = await initIndexRoute(fakeApp(), {
-      requestUrl: 'http://localhost/?pool=alpha',
+      urlState: { search: '?pool=alpha', hash: '' },
     })
     expect(result).toEqual({
       kind: 'transition',
       destination: { type: 'home' },
-      canonicalPath: `${PATHS.HOME}?pool=alpha`,
+      urlState: { search: '?pool=alpha', hash: '' },
     })
   })
 
   test('defers to the open-in-desktop handler rather than continuing', async () => {
     setDesktop(false)
     const result = await initIndexRoute(fakeApp(), {
-      requestUrl: 'http://localhost/?ask-open-desktop=true',
+      urlState: { search: '?ask-open-desktop=true', hash: '' },
     })
     // Finishing here lets OpenInDesktopAppHandler show its modal; continuing
     // to another destination would dead-end that flow.
@@ -131,12 +129,12 @@ describe('initIndexRoute', () => {
   test('web goes home, carrying the query string', async () => {
     setDesktop(false)
     const result = await initIndexRoute(fakeApp(), {
-      requestUrl: 'http://localhost/?pool=alpha',
+      urlState: { search: '?pool=alpha', hash: '' },
     })
     expect(result).toEqual({
       kind: 'transition',
       destination: { type: 'home' },
-      canonicalPath: `${PATHS.HOME}?pool=alpha`,
+      urlState: { search: '?pool=alpha', hash: '' },
     })
   })
 })
@@ -146,14 +144,14 @@ describe('initFileRoute', () => {
     setDesktop(false)
     const result = await initFileRoute(fakeApp(), {
       id: '/browser/whatever.kcl',
-      requestUrl: 'http://localhost/file/%2Fbrowser%2Fwhatever.kcl',
+      startup: { search: '', hash: '' },
     })
     // The one genuinely routing-shaped case left here: a legacy URL shape with
     // no meaning as application state, so it never reaches `OpenProject`.
     expect(result).toEqual({
       kind: 'transition',
       destination: { type: 'home' },
-      canonicalPath: PATHS.HOME,
+      urlState: { search: '', hash: '' },
     })
     expect(mocks.supersedeProjectOpen).toHaveBeenCalledWith(expect.anything())
     expect(mocks.openProject).not.toHaveBeenCalled()
@@ -169,12 +167,12 @@ describe('initFileRoute', () => {
 
     const result = await initFileRoute(fakeApp(), {
       id: '/library/proj',
-      requestUrl: 'http://localhost/file/%2Flibrary%2Fproj',
+      startup: { search: '?pool=alpha', hash: '' },
     })
 
     expect(mocks.openProject).toHaveBeenCalledWith({
       target: '/library/proj',
-      requestUrl: 'http://localhost/file/%2Flibrary%2Fproj',
+      startup: { search: '?pool=alpha', hash: '' },
       signal: expect.anything(),
     })
     expect(result).toEqual({ kind: 'ready', data })
@@ -187,7 +185,7 @@ describe('initFileRoute', () => {
 
     const result = await initFileRoute(fakeApp(), {
       id: '/library/proj/main.kcl',
-      requestUrl: 'http://localhost/file/%2Flibrary%2Fproj%2Fmain.kcl',
+      startup: { search: '', hash: '' },
     })
 
     expect(result).toEqual({ kind: 'ready', data })

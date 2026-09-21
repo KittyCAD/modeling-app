@@ -8,6 +8,7 @@ import {
 import type { FileLoaderData, HomeLoaderData } from '@src/lib/types'
 import {
   type AppDestination,
+  type AppUrlState,
   appUrlService,
 } from '@src/registry/contracts/appUrl'
 
@@ -16,27 +17,6 @@ const MAX_INITIAL_TRANSITIONS = 8
 type InitialResult = RouteInitResult<
   undefined | FileLoaderData | HomeLoaderData
 >
-
-function requestUrlFromApplicationPath(
-  path: string,
-  baseUrl: string,
-  usesHashRouter: boolean
-) {
-  const url = new URL(baseUrl)
-  if (usesHashRouter) {
-    url.hash = `#${path}`
-    return url.href
-  }
-  return new URL(path, url).href
-}
-
-function effectRequestUrl(requestUrl: string, usesHashRouter: boolean) {
-  const url = new URL(requestUrl)
-  if (usesHashRouter && url.hash.startsWith('#/')) {
-    return new URL(url.hash.slice(1), 'http://application.local').href
-  }
-  return requestUrl
-}
 
 /**
  * Restore application state from the URL once, before React is mounted.
@@ -62,8 +42,14 @@ export async function initializeApplication(
   }
 
   let destination: AppDestination = intent.destination
-  let currentEffectRequestUrl = effectRequestUrl(requestUrl, usesHashRouter)
-  let canonicalPath: string | undefined
+  let urlState: AppUrlState = {
+    ...(intent.additionalIntents
+      ? { additionalIntents: intent.additionalIntents }
+      : {}),
+    search: intent.search,
+    hash: intent.hash,
+  }
+  let shouldProjectUrl = false
 
   for (
     let transitionCount = 0;
@@ -73,9 +59,7 @@ export async function initializeApplication(
     let result: InitialResult
     switch (destination.type) {
       case 'index':
-        result = await initIndexRoute(app, {
-          requestUrl: currentEffectRequestUrl,
-        })
+        result = await initIndexRoute(app, { urlState })
         break
       case 'home':
         result = await initHomeRoute(app)
@@ -83,7 +67,7 @@ export async function initializeApplication(
       case 'project':
         result = await initFileRoute(app, {
           id: destination.target,
-          requestUrl: currentEffectRequestUrl,
+          startup: urlState,
         })
         break
       case 'sign-in':
@@ -91,20 +75,17 @@ export async function initializeApplication(
     }
 
     if (result.kind === 'ready') {
-      if (canonicalPath) {
-        void appUrl.navigate(canonicalPath, { replace: true })
+      if (shouldProjectUrl && destination.type !== 'project') {
+        void appUrl.navigate(appUrl.formatUrl({ destination, ...urlState }), {
+          replace: true,
+        })
       }
       return
     }
 
     destination = result.destination
-    canonicalPath = result.canonicalPath
-    const nextRequestUrl = requestUrlFromApplicationPath(
-      canonicalPath,
-      currentEffectRequestUrl,
-      usesHashRouter
-    )
-    currentEffectRequestUrl = effectRequestUrl(nextRequestUrl, usesHashRouter)
+    urlState = result.urlState
+    shouldProjectUrl = true
   }
 
   return Promise.reject(
