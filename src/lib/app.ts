@@ -835,8 +835,9 @@ export class App implements AppSubsystems {
     kclManager.fileOperations = this.fileOperations
 
     const navigationDependencies = createAppNavigationDependencies(this)
-    const openProjectNavigation =
-      createOpenProjectIntentContribution(navigationDependencies)
+    const openProjectNavigation = createOpenProjectIntentContribution(
+      navigationDependencies
+    )
     const preloadedNavigationIntents = [
       ...this.registry.get(appNavigationIntentContributionsValueSpec),
       openProjectNavigation.contribution,
@@ -862,20 +863,24 @@ export class App implements AppSubsystems {
           // Transitional strangler adapter: appNavigation consumes narrow
           // operations, but App still assembles them until their implementations
           // are owned and composed by registry capabilities.
-          provideService(appNavigationService, (() => {
-            let navigation: ReturnType<typeof createAppNavigationService>
-            navigation = createAppNavigationService(
-              preloadedNavigationIntents,
-              {
-              supersedeProjectOpen: openProjectNavigation.supersedeProjectOpen,
-                showHome: () =>
-                  navigationDependencies.showHome((request) =>
-                    navigation.dispatch(openProjectIntent, request)
-                  ),
-              }
-            )
-            return navigation
-          })()),
+          provideService(
+            appNavigationService,
+            (() => {
+              let navigation: ReturnType<typeof createAppNavigationService>
+              navigation = createAppNavigationService(
+                preloadedNavigationIntents,
+                {
+                  supersedeProjectOpen:
+                    openProjectNavigation.supersedeProjectOpen,
+                  showHome: () =>
+                    navigationDependencies.showHome((request) =>
+                      navigation.dispatch(openProjectIntent, request)
+                    ),
+                }
+              )
+              return navigation
+            })()
+          ),
         ],
       }),
     ])
