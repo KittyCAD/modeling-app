@@ -196,8 +196,9 @@ export async function initFileRoute(
   // Must basically remain for all eternity, until the last person
   // who's ever used ZDS on web before this point has died.
   if (id?.startsWith('/browser')) {
-    // This request still supersedes any project already opening even though
-    // the legacy URL never reaches the normal application intent.
+    // Transitional loader cancellation: this legacy branch returns before it
+    // can call openProject, so the loader-era implementation must explicitly
+    // invalidate an earlier file loader. Startup inversion removes this call.
     app.registry.get(appNavigationService).supersedeProjectOpen(requestSignal)
     // Pop us back home, which will cause a default project to be
     // created.
