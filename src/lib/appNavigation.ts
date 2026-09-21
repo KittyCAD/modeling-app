@@ -34,17 +34,19 @@ export function createAppNavigationService(
 ): AppNavigationService {
   let activeProjectOpen: AbortController | undefined
 
-  const beginProjectOpen = (requestSignal?: AbortSignal) => {
+  const cancelActiveProjectOpen = () => {
     activeProjectOpen?.abort()
+    activeProjectOpen = undefined
+  }
+
+  const beginProjectOpen = () => {
+    cancelActiveProjectOpen()
 
     const controller = new AbortController()
     activeProjectOpen = controller
-    const signal = requestSignal
-      ? AbortSignal.any([requestSignal, controller.signal])
-      : controller.signal
 
     return {
-      throwIfSuperseded: () => signal.throwIfAborted(),
+      throwIfSuperseded: () => controller.signal.throwIfAborted(),
       finish: () => {
         if (activeProjectOpen === controller) {
           activeProjectOpen = undefined
@@ -54,7 +56,7 @@ export function createAppNavigationService(
   }
 
   const openProject: AppNavigationService['openProject'] = async (request) => {
-    const projectOpen = beginProjectOpen(request.signal)
+    const projectOpen = beginProjectOpen()
     try {
       projectOpen.throwIfSuperseded()
       const resolution = await dependencies.resolveProjectOpen(
@@ -76,11 +78,9 @@ export function createAppNavigationService(
 
   const service: AppNavigationService = {
     openProject,
-    showHome: () => dependencies.showHome(service.openProject),
-    supersedeProjectOpen: (signal) => {
-      activeProjectOpen?.abort()
-      activeProjectOpen = undefined
-      signal?.throwIfAborted()
+    showHome: async () => {
+      cancelActiveProjectOpen()
+      await dependencies.showHome(service.openProject)
     },
   }
 

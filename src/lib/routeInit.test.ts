@@ -23,7 +23,6 @@ const mocks = vi.hoisted(() => ({
   exists: vi.fn(),
   stat: vi.fn(),
   loadAndValidateSettings: vi.fn(),
-  supersedeProjectOpen: vi.fn(),
   openProject: vi.fn(),
 }))
 
@@ -67,7 +66,6 @@ function fakeApp(): App {
       get: () => ({
         exists: mocks.exists,
         stat: mocks.stat,
-        supersedeProjectOpen: mocks.supersedeProjectOpen,
         openProject: mocks.openProject,
       }),
     },
@@ -192,7 +190,6 @@ describe('initFileRoute', () => {
       destination: { type: 'home' },
       urlState: { search: '', hash: '' },
     })
-    expect(mocks.supersedeProjectOpen).toHaveBeenCalledWith(expect.anything())
     expect(mocks.openProject).not.toHaveBeenCalled()
   })
 
@@ -212,7 +209,6 @@ describe('initFileRoute', () => {
     expect(mocks.openProject).toHaveBeenCalledWith({
       target: '/library/proj',
       startup: { search: '?pool=alpha', hash: '' },
-      signal: expect.anything(),
     })
     expect(result).toEqual({ kind: 'ready', data })
   })

@@ -181,11 +181,9 @@ export async function initFileRoute(
   {
     id,
     startup,
-    requestSignal = new AbortController().signal,
   }: {
     id: string
     startup: AppUrlState
-    requestSignal?: AbortSignal
   }
 ): Promise<RouteInitResult<FileLoaderData>> {
   // Before multi-file web projects, the editor used
@@ -193,10 +191,6 @@ export async function initFileRoute(
   // legacy entry URLs Home, where startup selects the current default project.
   // Remove when support for pre-OPFS URLs ends.
   if (id?.startsWith('/browser')) {
-    // Transitional loader cancellation: this legacy branch returns before it
-    // can call openProject, so the loader-era implementation must explicitly
-    // invalidate an earlier file loader. Startup inversion removes this call.
-    app.registry.get(appNavigationService).supersedeProjectOpen(requestSignal)
     // Continue at Home, which may select the default web project.
     return {
       kind: 'transition',
@@ -208,7 +202,6 @@ export async function initFileRoute(
   const outcome = await app.registry.get(appNavigationService).openProject({
     target: id,
     startup,
-    signal: requestSignal,
   })
   return { kind: 'ready', data: outcome.data }
 }

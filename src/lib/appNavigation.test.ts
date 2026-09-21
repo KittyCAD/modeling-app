@@ -106,7 +106,7 @@ describe('appNavigation', () => {
     await expect(firstOpen).rejects.toMatchObject({ name: 'AbortError' })
   })
 
-  test('explicit supersession aborts the in-flight project open', async () => {
+  test('showing Home aborts the in-flight project open', async () => {
     let finishResolution: () => void = () => undefined
     const resolutionStarted = new Promise<void>((resolve) => {
       finishResolution = resolve
@@ -119,32 +119,9 @@ describe('appNavigation', () => {
     })
 
     const firstOpen = navigation.openProject({ target: '/projects/bracket' })
-    navigation.supersedeProjectOpen()
+    await navigation.showHome()
     finishResolution()
 
     await expect(firstOpen).rejects.toMatchObject({ name: 'AbortError' })
-  })
-
-  test('a caller abort signal aborts the project open', async () => {
-    let finishResolution: () => void = () => undefined
-    const resolutionStarted = new Promise<void>((resolve) => {
-      finishResolution = resolve
-    })
-    const { navigation } = navigationHarness({
-      resolveProjectOpen: vi.fn(async () => {
-        await resolutionStarted
-        return resolvedProject
-      }),
-    })
-    const controller = new AbortController()
-
-    const open = navigation.openProject({
-      target: '/projects/bracket',
-      signal: controller.signal,
-    })
-    controller.abort()
-    finishResolution()
-
-    await expect(open).rejects.toMatchObject({ name: 'AbortError' })
   })
 })
