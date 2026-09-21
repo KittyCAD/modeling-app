@@ -1,10 +1,7 @@
 import { type ClientErrorReport, users } from '@kittycad/lib'
+import type { ReadonlySignal } from '@preact/signals-core'
 import { EngineDebugger } from '@src/lib/debugger'
 import { createKCClient, kcCall } from '@src/lib/kcClient'
-import {
-  getAuthenticatedSession,
-  subscribeToAuthenticatedSession,
-} from '@src/lib/sessionExpired'
 
 type ReportClientErrorParams = {
   code?: string
@@ -50,12 +47,9 @@ export enum ClientErrorCode {
 }
 
 const reportedClientErrors = new Set<string>()
-type PendingReport = { body: ClientErrorReport; dedupeKey?: string }
-const pendingReports: PendingReport[] = []
-const MAX_PENDING_REPORTS = 100
-// Keep startup diagnostics, but never carry logout/expired-session errors into
-// a later account's session.
-let canQueueBeforeLogin = true
+const pendingReports: { body: ClientErrorReport; dedupeKey?: string }[] = []
+let authReady = false
+let hasAuthenticated = false
 const FALLBACK_APP_RELEASE = 'unknown'
 // Match the API's stack limit in Unicode characters.
 const MAX_STACK_LENGTH = 8192
@@ -86,6 +80,18 @@ const getCurrentRoute = () => {
   }
   const { pathname, search, hash } = window.location
   return `${pathname}${search}${hash}` || undefined
+}
+
+const getAuthToken = () => {
+  if (typeof window === 'undefined') {
+    return undefined
+  }
+
+  try {
+    return window.app?.auth.actor.getSnapshot().context.token
+  } catch {
+    return undefined
+  }
 }
 
 export const errorToMessage = (
@@ -181,8 +187,8 @@ const buildClientErrorReport = (
 }
 
 export const reportClientError = async (params: ReportClientErrorParams) => {
-  const session = getAuthenticatedSession()
-  if (!session && !canQueueBeforeLogin) return
+  // Buffer startup errors only, with a cap if authentication never succeeds.
+  if (!authReady && (hasAuthenticated || pendingReports.length >= 100)) return
 
   const dedupeKey = params.dedupeKey
   if (dedupeKey && reportedClientErrors.has(dedupeKey)) {
@@ -192,73 +198,52 @@ export const reportClientError = async (params: ReportClientErrorParams) => {
     reportedClientErrors.add(dedupeKey)
   }
 
-  // Capture the route and debugger logs now, not after authentication completes.
-  const report = { body: buildClientErrorReport(params), dedupeKey }
-  if (!session) {
-    if (pendingReports.length === MAX_PENDING_REPORTS) {
-      const dropped = pendingReports.shift()
-      if (dropped?.dedupeKey) reportedClientErrors.delete(dropped.dedupeKey)
-    }
-    pendingReports.push(report)
+  const body = buildClientErrorReport(params)
+  if (!authReady) {
+    pendingReports.push({ body, dedupeKey })
     return
   }
-  await sendReport(report, session)
+  await sendClientErrorReport(body, dedupeKey)
 }
 
-async function sendReport(
-  report: PendingReport,
-  session: NonNullable<ReturnType<typeof getAuthenticatedSession>>
+async function sendClientErrorReport(
+  body: ClientErrorReport,
+  dedupeKey?: string
 ) {
-  try {
-    const client = createKCClient(session.token, session.baseUrl)
-    const result = await kcCall(() =>
-      users.report_user_client_error({ client, body: report.body })
-    )
-    if (!(result instanceof Error)) return
-    reportFailure(result)
-  } catch (error) {
-    reportFailure(error)
-  }
+  const client = createKCClient(getAuthToken())
+  const result = await kcCall(() =>
+    users.report_user_client_error({
+      client,
+      body,
+    })
+  )
 
-  function reportFailure(error: unknown) {
-    if (report.dedupeKey && session === getAuthenticatedSession()) {
-      reportedClientErrors.delete(report.dedupeKey)
+  if (result instanceof Error) {
+    if (dedupeKey) {
+      reportedClientErrors.delete(dedupeKey)
     }
-    console.warn('Failed to report client error', error)
+    console.warn('Failed to report client error', result)
   }
 }
 
-export function initializeClientErrorReporting() {
-  let previousSession = getAuthenticatedSession()
-  const unsubscribe = subscribeToAuthenticatedSession((session) => {
-    if (previousSession && previousSession !== session) {
-      pendingReports.length = 0
-      reportedClientErrors.clear()
+export function initializeClientErrorReporting(
+  isLoggedIn: ReadonlySignal<boolean>
+) {
+  return isLoggedIn.subscribe((ready) => {
+    authReady = ready
+    if (!ready) return
+    hasAuthenticated = true
+    for (const { body, dedupeKey } of pendingReports.splice(0)) {
+      void sendClientErrorReport(body, dedupeKey).catch((error: unknown) => {
+        console.warn('Failed to report client error', error)
+      })
     }
-    previousSession = session
-    if (!session) return
-    canQueueBeforeLogin = false
-    // Each drain belongs to one session; an old response must not resume it.
-    void (async () => {
-      while (session === getAuthenticatedSession()) {
-        const report = pendingReports.shift()
-        if (!report) return
-        await sendReport(report, session)
-      }
-    })().catch((error: unknown) => {
-      console.warn('Failed to drain client error reports', error)
-    })
   })
-  return () => {
-    unsubscribe()
-    pendingReports.length = 0
-    reportedClientErrors.clear()
-    canQueueBeforeLogin = true
-  }
 }
 
 export const resetReportedClientErrorsForTests = () => {
   reportedClientErrors.clear()
   pendingReports.length = 0
-  canQueueBeforeLogin = true
+  authReady = false
+  hasAuthenticated = false
 }

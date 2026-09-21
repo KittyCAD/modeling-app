@@ -1,16 +1,14 @@
 import { defineRegistryItem, Registry } from '@kittycad/registry'
-import { signal } from '@preact/signals-core'
 import { SessionExpiredDialogHostContent } from '@src/components/SessionExpiredDialog'
 import { SESSION_EXPIRED_SIGN_IN_ROUTE_STATE_KEY } from '@src/lib/constants'
 import { PATHS } from '@src/lib/paths'
 import {
   clearSessionExpiredNotice,
   fetchWithSessionExpiration,
-  initializeAuthSessionTracking,
   sessionExpiredNotice,
 } from '@src/lib/sessionExpired'
 import { Themes } from '@src/lib/theme'
-import { withAPIBaseURL, withSiteBaseURL } from '@src/lib/withBaseURL'
+import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import {
   type AuthRegistryService,
   authService,
@@ -61,7 +59,6 @@ const sentAuthEvents: AuthEvent[] = []
 const originalElectron = window.electron
 let expireFakeAuthSession: (() => void) | undefined
 let registry: Registry | undefined
-let stopSessionTracking: (() => void) | undefined
 
 const fakeSettings = {
   useSettings: () => ({
@@ -139,8 +136,6 @@ function AuthShell() {
 }
 
 afterEach(() => {
-  stopSessionTracking?.()
-  stopSessionTracking = undefined
   registry?.[Symbol.dispose]()
   registry = undefined
   clearSessionExpiredNotice()
@@ -192,14 +187,7 @@ describe('SessionExpiredDialog', () => {
       }),
       authRegistryItem,
     ])
-    const registryAuth = registry.get(authService)
-    await waitFor(() =>
-      expect(registryAuth.state.value.matches('loggedOut')).toBe(true)
-    )
-    // This UI harness supplies its own auth state rather than signing in.
-    stopSessionTracking = initializeAuthSessionTracking(
-      signal(createAuthSnapshot('loggedIn'))
-    )
+    registry.get(authService)
 
     const router = createMemoryRouter(
       [
@@ -226,9 +214,7 @@ describe('SessionExpiredDialog', () => {
     render(<RouterProvider router={router} />)
 
     await act(async () => {
-      await fetchWithSessionExpiration(withAPIBaseURL('/user/projects'), {
-        headers: { Authorization: 'Bearer expired-token' },
-      })
+      await fetchWithSessionExpiration('/user/projects')
     })
 
     expect(

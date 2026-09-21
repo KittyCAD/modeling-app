@@ -1,5 +1,4 @@
 import { signal } from '@preact/signals-core'
-import type { AuthRegistryService } from '@src/registry/contracts/auth'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 const mockState = vi.hoisted(() => ({
@@ -30,24 +29,15 @@ import {
   resetReportedClientErrorsForTests,
 } from '@src/lib/clientErrors'
 import { EngineDebugger } from '@src/lib/debugger'
-import { initializeAuthSessionTracking } from '@src/lib/sessionExpired'
-
-type AuthState = AuthRegistryService['state']['value']
-function authSnapshot(loggedIn: boolean, token = 'token-123'): AuthState {
-  return {
-    matches: (value: string) =>
-      value === (loggedIn ? 'loggedIn' : 'checkIfLoggedIn'),
-    context: { token },
-  } as AuthState
-}
 
 describe('reportClientError', () => {
-  const authState = signal(authSnapshot(true))
-  let stopSessionTracking: () => void
+  const isLoggedIn = signal(true)
   let stopReporting: () => void
   beforeEach(() => {
     vi.clearAllMocks()
     resetReportedClientErrorsForTests()
+    isLoggedIn.value = true
+    stopReporting = initializeClientErrorReporting(isLoggedIn)
     EngineDebugger.logs = []
     Object.defineProperty(globalThis, '__APP_VERSION__', {
       configurable: true,
@@ -58,14 +48,61 @@ describe('reportClientError', () => {
       value: undefined,
     })
     window.history.replaceState({}, '', '/modeling?foo=1#editor')
-    authState.value = authSnapshot(true)
-    stopSessionTracking = initializeAuthSessionTracking(authState)
-    stopReporting = initializeClientErrorReporting()
+    ;(window as Window & { app?: any }).app = {
+      auth: {
+        actor: {
+          getSnapshot: () => ({
+            context: {
+              token: 'token-123',
+            },
+          }),
+        },
+      },
+    }
   })
 
-  afterEach(() => {
+  afterEach(() => stopReporting())
+
+  it('defers startup reports until auth is ready, preserving context and using the restored token', async () => {
     stopReporting()
-    stopSessionTracking()
+    resetReportedClientErrorsForTests()
+    isLoggedIn.value = false
+    const report = { message: 'startup error', dedupeKey: 'startup' }
+    await reportClientError(report)
+    stopReporting = initializeClientErrorReporting(isLoggedIn)
+    await reportClientError(report)
+    expect(mockState.createKCClient).not.toHaveBeenCalled()
+    expect(mockState.reportUserClientError).not.toHaveBeenCalled()
+
+    window.history.replaceState({}, '', '/after-login')
+    vi.spyOn(window.app.auth.actor, 'getSnapshot').mockReturnValue({
+      context: { token: 'restored-token' },
+    } as ReturnType<typeof window.app.auth.actor.getSnapshot>)
+    isLoggedIn.value = true
+    await vi.waitFor(() =>
+      expect(mockState.reportUserClientError).toHaveBeenCalledTimes(1)
+    )
+    expect(mockState.createKCClient).toHaveBeenCalledWith('restored-token')
+    expect(mockState.reportUserClientError.mock.calls[0][0].body).toMatchObject(
+      {
+        route: '/modeling?foo=1#editor',
+      }
+    )
+
+    isLoggedIn.value = false
+    await reportClientError({ message: 'logout error' })
+    isLoggedIn.value = true
+    expect(mockState.reportUserClientError).toHaveBeenCalledTimes(1)
+  })
+
+  it('bounds the startup queue if authentication never completes', async () => {
+    resetReportedClientErrorsForTests()
+    isLoggedIn.value = false
+    for (let i = 0; i < 101; i++)
+      await reportClientError({ message: String(i) })
+    expect(mockState.reportUserClientError).not.toHaveBeenCalled()
+    isLoggedIn.value = true
+    expect(mockState.reportUserClientError).toHaveBeenCalledTimes(100)
   })
 
   it('posts a normalized client error through the kittycad client', async () => {
@@ -78,10 +115,7 @@ describe('reportClientError', () => {
       },
     })
 
-    expect(mockState.createKCClient).toHaveBeenCalledWith(
-      'token-123',
-      expect.any(String)
-    )
+    expect(mockState.createKCClient).toHaveBeenCalledWith('token-123')
     expect(mockState.reportUserClientError).toHaveBeenCalledWith({
       client: { mocked: true },
       body: {
@@ -188,98 +222,6 @@ describe('reportClientError', () => {
     })
 
     expect(mockState.reportUserClientError).toHaveBeenCalledTimes(1)
-  })
-
-  function startBeforeLogin() {
-    stopReporting()
-    stopSessionTracking()
-    authState.value = authSnapshot(false, '')
-    stopSessionTracking = initializeAuthSessionTracking(authState)
-    stopReporting = initializeClientErrorReporting()
-  }
-
-  it('queues startup errors without blocking auth and preserves their original context', async () => {
-    startBeforeLogin()
-    EngineDebugger.addLog({ label: 'startup', message: 'Original log' })
-    const report = {
-      code: ClientErrorCode.EngineDisconnect,
-      dedupeKey: 'startup',
-    }
-    await reportClientError(report)
-    await reportClientError(report)
-    expect(mockState.reportUserClientError).not.toHaveBeenCalled()
-    expect(mockState.createKCClient).not.toHaveBeenCalled()
-
-    window.history.replaceState({}, '', '/after-login')
-    EngineDebugger.logs = []
-    authState.value = authSnapshot(true, 'restored-token')
-
-    await vi.waitFor(() =>
-      expect(mockState.reportUserClientError).toHaveBeenCalledTimes(1)
-    )
-    expect(mockState.createKCClient).toHaveBeenCalledWith(
-      'restored-token',
-      expect.any(String)
-    )
-    expect(mockState.reportUserClientError.mock.calls[0][0].body).toMatchObject(
-      {
-        route: '/modeling?foo=1#editor',
-        stack: expect.stringContaining('Original log'),
-      }
-    )
-  })
-
-  it('bounds startup reports and allows an evicted dedupe key to be queued again', async () => {
-    startBeforeLogin()
-    for (let i = 0; i < 101; i++) {
-      await reportClientError({ message: `error ${i}`, dedupeKey: String(i) })
-    }
-    await reportClientError({ message: 'error 0 again', dedupeKey: '0' })
-    authState.value = authSnapshot(true)
-    await vi.waitFor(() =>
-      expect(mockState.reportUserClientError).toHaveBeenCalledTimes(100)
-    )
-    expect(mockState.reportUserClientError.mock.calls[0][0].body).toMatchObject(
-      { message: 'error 2' }
-    )
-    expect(
-      mockState.reportUserClientError.mock.lastCall?.[0].body
-    ).toMatchObject({ message: 'error 0 again' })
-  })
-
-  it('stops a startup drain on logout and does not send old reports under a later login', async () => {
-    startBeforeLogin()
-    let finishReport!: () => void
-    mockState.reportUserClientError.mockImplementationOnce(
-      () =>
-        new Promise((resolve) => {
-          finishReport = () => resolve({ accepted: true })
-        })
-    )
-    await reportClientError({ message: 'first', dedupeKey: 'first' })
-    await reportClientError({ message: 'second', dedupeKey: 'second' })
-    authState.value = authSnapshot(true)
-    expect(mockState.reportUserClientError).toHaveBeenCalledTimes(1)
-    authState.value = authSnapshot(false)
-    await reportClientError({ message: 'logout error' })
-    authState.value = authSnapshot(true, 'other-user-token')
-    finishReport()
-    await reportClientError({ message: 'new session', dedupeKey: 'second' })
-    expect(mockState.reportUserClientError).toHaveBeenCalledTimes(2)
-    expect(
-      mockState.reportUserClientError.mock.lastCall?.[0].body
-    ).toMatchObject({ message: 'new session' })
-  })
-
-  it('releases a failed report dedupe key so a later occurrence can be sent', async () => {
-    const warning = vi.spyOn(console, 'warn').mockImplementation(() => {})
-    mockState.reportUserClientError.mockRejectedValueOnce(new Error('offline'))
-    const report = { message: 'retryable', dedupeKey: 'retryable' }
-    await reportClientError(report)
-    await reportClientError(report)
-    expect(mockState.reportUserClientError).toHaveBeenCalledTimes(2)
-    expect(warning).toHaveBeenCalledOnce()
-    warning.mockRestore()
   })
 
   it.each([
