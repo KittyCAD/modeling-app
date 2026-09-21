@@ -1,10 +1,11 @@
 /**
  * Resolve the legacy `/file/*` input into application-level project state.
  *
- * `requestUrl` is present only during URL restoration. In that case a project
- * root or unusable file produces a canonical redirect. A warm application
- * command has no URL to repair, so the same inputs resolve to the project's
- * default file instead.
+ * `requestUrl` is present only during URL restoration. The redirect result is
+ * transitional compatibility for the route-loader seam: a project root or
+ * unusable file asks the loader to retry at its canonical URL. Once startup is
+ * inverted fully, these cases resolve to project state immediately and the
+ * canonical URL is projected only after that state has opened.
  *
  * The ordering here is load-bearing: the project root is resolved before
  * project settings are loaded because loading settings writes missing files.

@@ -9,8 +9,10 @@
  *
  * So they say what they want instead of performing it — a `redirect` outcome
  * rather than a `Response` — and the adapters in `routeLoaders.ts` translate.
- * That leaves the URL-to-state work callable without a router, which is what
- * the navigation contract needs.
+ * This is a transitional characterization seam: it leaves the URL-to-state
+ * work callable without a router while loaders remain, and the final inversion
+ * replaces it with typed application transitions plus URL projection after
+ * state changes.
  */
 
 import { projectSkeletonCreate } from '@src/lang/project'
@@ -43,6 +45,7 @@ export const DEFAULT_WEB_PROJECT_NAME = 'demo-project'
 /**
  * What a route wants to happen, said rather than done.
  *
+ * The redirect alternative is transitional while loaders consume this result.
  * `to` is whatever the loader would have passed to `redirect()`, so it is
  * sometimes a path and sometimes a whole URL — preserved exactly, because the
  * URLs are the contract with the Playwright suite.

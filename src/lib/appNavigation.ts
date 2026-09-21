@@ -6,6 +6,11 @@ import type {
 } from '@src/registry/contracts/appNavigation'
 
 export interface AppNavigationDependencies {
+  /**
+   * The redirect alternative is transitional while route loaders remain.
+   * Once startup dispatches application intents directly, resolution always
+   * produces project state and URL canonicalization becomes a later effect.
+   */
   resolveProjectOpen: (
     request: OpenProjectRequest,
     assertCurrent: () => void
