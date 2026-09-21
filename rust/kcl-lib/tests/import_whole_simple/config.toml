@@ -1,2 +1,3 @@
 redact_uuids = true
-test_graphics = "None"
+[test_graphics.EngineRender]
+reason = "Bounding box differs in geometry-only mode"
