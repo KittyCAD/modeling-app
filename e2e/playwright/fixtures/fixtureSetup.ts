@@ -160,9 +160,9 @@ export class ElectronZoo {
     await this.page.evaluate(async () => {
       return new Promise((resolve) => {
         if (
-          window.engineCommandManager.connection &&
-          window.engineCommandManager.started &&
-          window.engineCommandManager.connection.websocket?.readyState ===
+          !window.engineCommandManager.connection ||
+          !window.engineCommandManager.started ||
+          window.engineCommandManager.connection.websocket?.readyState !==
             WebSocket.OPEN
         ) {
           return resolve(undefined)
