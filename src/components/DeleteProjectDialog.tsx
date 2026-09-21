@@ -8,12 +8,14 @@ type DeleteConfirmationDialogProps = React.PropsWithChildren<{
   title: string
   onConfirm: () => void
   onDismiss: () => void
+  confirmDisabled?: boolean
 }>
 
 export function DeleteConfirmationDialog({
   title,
   onConfirm,
   onDismiss,
+  confirmDisabled,
   children,
 }: DeleteConfirmationDialogProps) {
   useEffect(() => {
@@ -41,6 +43,7 @@ export function DeleteConfirmationDialog({
       key="confirm"
       Element="button"
       onClick={onConfirm}
+      disabled={confirmDisabled}
       iconStart={{
         icon: 'trash',
         bgClassName: 'bg-destroy-10 dark:bg-destroy-80',

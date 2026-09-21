@@ -6,7 +6,7 @@
 /// `view::named()`.
 
 @no_std
-@settings(defaultLengthUnit = mm, kclVersion = 2.0, experimentalFeatures = allow)
+@settings(defaultLengthUnit = mm, experimentalFeatures = allow)
 
 import GdtAnnotation, Helix, Plane, Point3d, Sketch, Solid from "std::types"
 

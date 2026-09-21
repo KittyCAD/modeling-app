@@ -8,8 +8,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
     "value": 1.7320508075688772,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "calculateArrayLength": {
@@ -26,8 +28,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
     "value": 116.565,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "dodecFaces": {
@@ -2086,8 +2090,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -2095,8 +2101,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -2104,8 +2112,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -2113,8 +2123,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           }
         ]
@@ -2127,8 +2139,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": 116.565,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -2136,8 +2150,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -2145,8 +2161,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -2154,8 +2172,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": 0.1,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           }
         ]
@@ -2168,8 +2188,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": 116.565,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -2177,8 +2199,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -2186,8 +2210,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": 72.0,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -2195,8 +2221,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": 0.2,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           }
         ]
@@ -2209,8 +2237,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": 116.565,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -2218,8 +2248,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -2227,8 +2259,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": 144.0,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -2236,8 +2270,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": 0.3,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           }
         ]
@@ -2250,8 +2286,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": 116.565,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -2259,8 +2297,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -2268,8 +2308,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": 216.0,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -2277,8 +2319,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": 0.4,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           }
         ]
@@ -2291,8 +2335,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": 116.565,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -2300,8 +2346,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -2309,8 +2357,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": 288.0,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -2318,8 +2368,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": 0.5,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           }
         ]
@@ -2332,8 +2384,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": 180.0,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -2341,8 +2395,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -2350,8 +2406,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -2359,8 +2417,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": 0.6,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           }
         ]
@@ -2373,8 +2433,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": 63.435,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -2382,8 +2444,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -2391,8 +2455,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": 36.0,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -2400,8 +2466,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": 0.7,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           }
         ]
@@ -2414,8 +2482,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": 63.435,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -2423,8 +2493,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -2432,8 +2504,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": 108.0,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -2441,8 +2515,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": 0.8,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           }
         ]
@@ -2455,8 +2531,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": 63.435,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -2464,8 +2542,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -2473,8 +2553,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": 180.0,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -2482,8 +2564,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": 0.9,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           }
         ]
@@ -2496,8 +2580,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": 63.435,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -2505,8 +2591,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -2514,8 +2602,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": 252.0,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -2523,8 +2613,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": 0.11,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           }
         ]
@@ -2537,8 +2629,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": 63.435,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -2546,8 +2640,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -2555,8 +2651,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": 324.0,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -2564,8 +2662,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": 0.12,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           }
         ]
@@ -2577,8 +2677,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
     "value": 0.6180339887498948,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "outerRadius": {
@@ -2586,8 +2688,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
     "value": 800.0,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "pattern": {
@@ -5420,8 +5524,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
     "value": 1.618033988749895,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "scaleToR": {
@@ -5429,8 +5535,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
     "value": 461.88021535170066,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "seed": {
@@ -5608,8 +5716,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
     "value": 0.25,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "seedSmall": {
@@ -5793,8 +5903,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": 461.88021535170066,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -5802,8 +5914,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": 461.88021535170066,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -5811,8 +5925,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": 461.88021535170066,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           }
         ]
@@ -5825,8 +5941,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": 461.88021535170066,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -5834,8 +5952,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": 461.88021535170066,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -5843,8 +5963,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": -461.88021535170066,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           }
         ]
@@ -5857,8 +5979,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": 461.88021535170066,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -5866,8 +5990,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": -461.88021535170066,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -5875,8 +6001,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": 461.88021535170066,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           }
         ]
@@ -5889,8 +6017,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": 461.88021535170066,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -5898,8 +6028,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": -461.88021535170066,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -5907,8 +6039,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": -461.88021535170066,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           }
         ]
@@ -5921,8 +6055,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": -461.88021535170066,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -5930,8 +6066,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": 461.88021535170066,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -5939,8 +6077,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": 461.88021535170066,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           }
         ]
@@ -5953,8 +6093,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": -461.88021535170066,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -5962,8 +6104,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": 461.88021535170066,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -5971,8 +6115,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": -461.88021535170066,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           }
         ]
@@ -5985,8 +6131,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": -461.88021535170066,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -5994,8 +6142,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": -461.88021535170066,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -6003,8 +6153,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": 461.88021535170066,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           }
         ]
@@ -6017,8 +6169,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": -461.88021535170066,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -6026,8 +6180,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": -461.88021535170066,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -6035,8 +6191,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": -461.88021535170066,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           }
         ]
@@ -6049,8 +6207,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -6058,8 +6218,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": 285.45767181847197,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -6067,8 +6229,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": 747.3378871701726,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           }
         ]
@@ -6081,8 +6245,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -6090,8 +6256,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": 285.45767181847197,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -6099,8 +6267,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": -747.3378871701726,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           }
         ]
@@ -6113,8 +6283,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -6122,8 +6294,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": -285.45767181847197,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -6131,8 +6305,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": 747.3378871701726,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           }
         ]
@@ -6145,8 +6321,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -6154,8 +6332,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": -285.45767181847197,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -6163,40 +6343,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": -747.3378871701726,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
-            }
-          }
-        ]
-      },
-      {
-        "type": "HomArray",
-        "value": [
-          {
-            "type": "Number",
-            "value": 285.45767181847197,
-            "ty": {
-              "type": "Default",
-              "len": "in",
-              "angle": "degrees"
-            }
-          },
-          {
-            "type": "Number",
-            "value": 747.3378871701726,
-            "ty": {
-              "type": "Default",
-              "len": "in",
-              "angle": "degrees"
-            }
-          },
-          {
-            "type": "Number",
-            "value": 0.0,
-            "ty": {
-              "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           }
         ]
@@ -6209,17 +6359,21 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": 285.45767181847197,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           {
             "type": "Number",
-            "value": -747.3378871701726,
+            "value": 747.3378871701726,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -6227,8 +6381,48 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "type": "HomArray",
+        "value": [
+          {
+            "type": "Number",
+            "value": 285.45767181847197,
+            "ty": {
+              "type": "Default",
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
+            }
+          },
+          {
+            "type": "Number",
+            "value": -747.3378871701726,
+            "ty": {
+              "type": "Default",
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
+            }
+          },
+          {
+            "type": "Number",
+            "value": 0.0,
+            "ty": {
+              "type": "Default",
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           }
         ]
@@ -6241,8 +6435,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": -285.45767181847197,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -6250,8 +6446,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": 747.3378871701726,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -6259,8 +6457,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           }
         ]
@@ -6273,8 +6473,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": -285.45767181847197,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -6282,8 +6484,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": -747.3378871701726,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -6291,8 +6495,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           }
         ]
@@ -6305,8 +6511,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": 747.3378871701726,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -6314,8 +6522,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -6323,8 +6533,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": 285.45767181847197,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           }
         ]
@@ -6337,8 +6549,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": 747.3378871701726,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -6346,8 +6560,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -6355,8 +6571,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": -285.45767181847197,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           }
         ]
@@ -6369,8 +6587,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": -747.3378871701726,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -6378,8 +6598,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -6387,8 +6609,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": 285.45767181847197,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           }
         ]
@@ -6401,8 +6625,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": -747.3378871701726,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -6410,8 +6636,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -6419,8 +6647,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": -285.45767181847197,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           }
         ]
@@ -6438,8 +6668,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": 1.0,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -6447,8 +6679,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": 1.0,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -6456,8 +6690,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": 1.0,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           }
         ]
@@ -6470,8 +6706,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": 1.0,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -6479,8 +6717,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": 1.0,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -6488,8 +6728,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": -1.0,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           }
         ]
@@ -6502,8 +6744,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": 1.0,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -6511,8 +6755,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": -1.0,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -6520,8 +6766,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": 1.0,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           }
         ]
@@ -6534,8 +6782,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": 1.0,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -6543,8 +6793,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": -1.0,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -6552,8 +6804,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": -1.0,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           }
         ]
@@ -6566,8 +6820,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": -1.0,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -6575,8 +6831,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": 1.0,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -6584,8 +6842,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": 1.0,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           }
         ]
@@ -6598,8 +6858,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": -1.0,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -6607,8 +6869,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": 1.0,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -6616,8 +6880,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": -1.0,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           }
         ]
@@ -6630,8 +6896,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": -1.0,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -6639,8 +6907,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": -1.0,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -6648,8 +6918,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": 1.0,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           }
         ]
@@ -6662,8 +6934,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": -1.0,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -6671,8 +6945,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": -1.0,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -6680,8 +6956,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": -1.0,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           }
         ]
@@ -6694,8 +6972,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -6703,8 +6983,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": 0.6180339887498948,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -6712,8 +6994,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": 1.618033988749895,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           }
         ]
@@ -6726,8 +7010,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -6735,8 +7021,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": 0.6180339887498948,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -6744,8 +7032,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": -1.618033988749895,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           }
         ]
@@ -6758,8 +7048,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -6767,8 +7059,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": -0.6180339887498948,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -6776,8 +7070,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": 1.618033988749895,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           }
         ]
@@ -6790,8 +7086,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -6799,8 +7097,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": -0.6180339887498948,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -6808,40 +7108,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": -1.618033988749895,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
-            }
-          }
-        ]
-      },
-      {
-        "type": "HomArray",
-        "value": [
-          {
-            "type": "Number",
-            "value": 0.6180339887498948,
-            "ty": {
-              "type": "Default",
-              "len": "in",
-              "angle": "degrees"
-            }
-          },
-          {
-            "type": "Number",
-            "value": 1.618033988749895,
-            "ty": {
-              "type": "Default",
-              "len": "in",
-              "angle": "degrees"
-            }
-          },
-          {
-            "type": "Number",
-            "value": 0.0,
-            "ty": {
-              "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           }
         ]
@@ -6854,17 +7124,21 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": 0.6180339887498948,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           {
             "type": "Number",
-            "value": -1.618033988749895,
+            "value": 1.618033988749895,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -6872,8 +7146,48 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "type": "HomArray",
+        "value": [
+          {
+            "type": "Number",
+            "value": 0.6180339887498948,
+            "ty": {
+              "type": "Default",
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
+            }
+          },
+          {
+            "type": "Number",
+            "value": -1.618033988749895,
+            "ty": {
+              "type": "Default",
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
+            }
+          },
+          {
+            "type": "Number",
+            "value": 0.0,
+            "ty": {
+              "type": "Default",
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           }
         ]
@@ -6886,8 +7200,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": -0.6180339887498948,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -6895,8 +7211,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": 1.618033988749895,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -6904,8 +7222,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           }
         ]
@@ -6918,8 +7238,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": -0.6180339887498948,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -6927,8 +7249,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": -1.618033988749895,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -6936,8 +7260,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           }
         ]
@@ -6950,8 +7276,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": 1.618033988749895,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -6959,8 +7287,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -6968,8 +7298,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": 0.6180339887498948,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           }
         ]
@@ -6982,8 +7314,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": 1.618033988749895,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -6991,8 +7325,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -7000,8 +7336,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": -0.6180339887498948,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           }
         ]
@@ -7014,8 +7352,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": -1.618033988749895,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -7023,8 +7363,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -7032,8 +7374,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": 0.6180339887498948,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           }
         ]
@@ -7046,8 +7390,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": -1.618033988749895,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -7055,8 +7401,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -7064,8 +7412,10 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             "value": -0.6180339887498948,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           }
         ]

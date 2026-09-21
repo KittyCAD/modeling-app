@@ -12,8 +12,10 @@ description: Operations executed scale_after_fillet.kcl
         "value": 0.625,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "export",
@@ -41,8 +43,10 @@ description: Operations executed scale_after_fillet.kcl
         "value": 2.5,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "export",
@@ -70,8 +74,10 @@ description: Operations executed scale_after_fillet.kcl
         "value": 0.625,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "export",
@@ -99,8 +105,10 @@ description: Operations executed scale_after_fillet.kcl
         "value": 0.938,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "export",
@@ -128,8 +136,10 @@ description: Operations executed scale_after_fillet.kcl
         "value": 0.5,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "export",
@@ -157,8 +167,10 @@ description: Operations executed scale_after_fillet.kcl
         "value": 0.28867513459481287,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "export",
@@ -186,8 +198,10 @@ description: Operations executed scale_after_fillet.kcl
         "value": 1.75,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "export",
@@ -296,8 +310,10 @@ description: Operations executed scale_after_fillet.kcl
             "value": -0.625,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -355,8 +371,10 @@ description: Operations executed scale_after_fillet.kcl
             "value": 0.02,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -485,8 +503,10 @@ description: Operations executed scale_after_fillet.kcl
             "value": -0.46875,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -598,8 +618,10 @@ description: Operations executed scale_after_fillet.kcl
             "value": 2.5,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -657,8 +679,10 @@ description: Operations executed scale_after_fillet.kcl
             "value": 0.02,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -735,7 +759,9 @@ description: Operations executed scale_after_fillet.kcl
             "value": 90.0,
             "ty": {
               "type": "Known",
-              "type": "Count"
+              "value": {
+                "type": "Count"
+              }
             }
           },
           "sourceRange": []
@@ -746,7 +772,9 @@ description: Operations executed scale_after_fillet.kcl
             "value": 90.0,
             "ty": {
               "type": "Known",
-              "type": "Count"
+              "value": {
+                "type": "Count"
+              }
             }
           },
           "sourceRange": []
@@ -807,7 +835,9 @@ description: Operations executed scale_after_fillet.kcl
             "value": 3.14,
             "ty": {
               "type": "Known",
-              "type": "Count"
+              "value": {
+                "type": "Count"
+              }
             }
           },
           "sourceRange": []
@@ -818,7 +848,9 @@ description: Operations executed scale_after_fillet.kcl
             "value": 3.14,
             "ty": {
               "type": "Known",
-              "type": "Count"
+              "value": {
+                "type": "Count"
+              }
             }
           },
           "sourceRange": []
@@ -829,7 +861,9 @@ description: Operations executed scale_after_fillet.kcl
             "value": 3.14,
             "ty": {
               "type": "Known",
-              "type": "Count"
+              "value": {
+                "type": "Count"
+              }
             }
           },
           "sourceRange": []
@@ -889,7 +923,9 @@ description: Operations executed scale_after_fillet.kcl
         "value": 2.718281828459045,
         "ty": {
           "type": "Known",
-          "type": "Count"
+          "value": {
+            "type": "Count"
+          }
         }
       },
       "visibility": "export",
@@ -917,7 +953,9 @@ description: Operations executed scale_after_fillet.kcl
         "value": 6.283185307179586,
         "ty": {
           "type": "Known",
-          "type": "Count"
+          "value": {
+            "type": "Count"
+          }
         }
       },
       "visibility": "export",

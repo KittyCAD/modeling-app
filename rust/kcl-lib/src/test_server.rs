@@ -25,7 +25,7 @@ pub struct RequestBody {
 
 /// Executes a KCL program. Only returns success or error.
 pub async fn execute(code: &str, current_file: Option<PathBuf>) -> Result<(), ExecError> {
-    let ctx = new_context_engine_graphics(true, current_file).await?;
+    let ctx = new_context(true, current_file, true).await?;
     let program = Program::parse_no_errs(code).map_err(KclErrorWithOutputs::no_outputs)?;
     let res = do_execute(&ctx, program, None)
         .await
@@ -35,6 +35,7 @@ pub async fn execute(code: &str, current_file: Option<PathBuf>) -> Result<(), Ex
     res
 }
 
+#[cfg(test)]
 pub struct Snapshot3d {
     /// Bytes of the snapshot.
     pub image: image::DynamicImage,
@@ -72,6 +73,7 @@ pub async fn execute_locally_and_render_on_engine(
 /// Execute the kcl then export the resulting glb and CPU render an image locally
 /// cheaper than engine render since we can use the engine in geometry-only mode.
 /// CTX should be closed by caller.
+#[cfg(test)]
 pub async fn execute_export_and_render_locally(
     ctx: &ExecutorContext,
     program: Program,
@@ -134,12 +136,14 @@ impl From<RawFile> for Glb {
     }
 }
 
+#[cfg(test)]
 pub enum TestGraphicsArtifact {
     Image(image::DynamicImage),
     ImageAndGlb { image: image::DynamicImage, glb: Glb },
     None,
 }
 
+#[cfg(test)]
 impl TestGraphicsArtifact {
     pub fn image(self) -> Option<image::DynamicImage> {
         match self {
@@ -150,6 +154,7 @@ impl TestGraphicsArtifact {
     }
 }
 
+#[cfg(test)]
 enum TestGraphicsParams {
     /// use the 3d engine scene to render an image
     EngineRender,
@@ -159,6 +164,7 @@ enum TestGraphicsParams {
     None,
 }
 
+#[cfg(test)]
 impl TestGraphicsParams {
     fn geometry_only(&self) -> bool {
         matches!(self, Self::ExportAndRender | Self::None)
@@ -175,6 +181,7 @@ impl TestGraphicsParams {
     }
 }
 
+#[cfg(test)]
 pub async fn kcl_doc_execute_and_snapshot(
     code: &str,
     current_file: Option<PathBuf>,
@@ -183,7 +190,13 @@ pub async fn kcl_doc_execute_and_snapshot(
 ) -> Result<TestGraphicsArtifact, ExecError> {
     let graphics = TestGraphicsParams::from_kcl_sample_spec(no_3d, no_run);
     let ctx = new_context(true, current_file, graphics.geometry_only()).await?;
-    let program = Program::parse_no_errs(code).map_err(KclErrorWithOutputs::no_outputs)?;
+    let program = match Program::parse_no_errs(code).map_err(KclErrorWithOutputs::no_outputs) {
+        Ok(program) => program,
+        Err(e) => {
+            ctx.close().await;
+            return Err(e.into());
+        }
+    };
 
     let result: Result<TestGraphicsArtifact, ExecError> = match graphics {
         TestGraphicsParams::EngineRender => execute_locally_and_render_on_engine(&ctx, program, None)
@@ -344,6 +357,9 @@ async fn new_context_with_heartbeats(
         skip_artifact_graph: false,
         heartbeats,
         default_backface_color: Some("#00D5FF".to_owned()),
+        pool: None,
+        video_res_width: None,
+        video_res_height: None,
         geometry_only,
     };
     if let Some(current_file) = current_file {
@@ -366,7 +382,7 @@ pub async fn execute_and_export_step(
     ),
     ExecErrorWithState,
 > {
-    let ctx = new_context_engine_graphics(true, current_file).await?;
+    let ctx = new_context(true, current_file, true).await?;
     let mut exec_state = ExecState::new(&ctx);
     let program = Program::parse_no_errs(code).map_err(|err| {
         ExecErrorWithState::new(KclErrorWithOutputs::no_outputs(err).into(), exec_state.clone(), None)

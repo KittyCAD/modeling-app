@@ -54,6 +54,18 @@ heartbeats?: bigint | null,
  */
 default_backface_color?: string | null, 
 /**
+ * If given, sets a custom engine pool.
+ */
+pool?: string | null, 
+/**
+ * If given, sets the Engine video width in pixels.
+ */
+video_res_width?: number | null, 
+/**
+ * If given, sets the Engine video height in pixels.
+ */
+video_res_height?: number | null, 
+/**
  * asks the engine for geometry only mode - no video stream
  */
 geometry_only: boolean, };

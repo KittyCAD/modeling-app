@@ -69,7 +69,14 @@ interface ConnectionStreamProps {
 }
 
 export const ConnectionStream = (props: ConnectionStreamProps) => {
-  const { settings, project, wasmPromise, commands, userFeatures } = useApp()
+  const {
+    settings,
+    project,
+    wasmPromise,
+    commands,
+    userFeatures,
+    fileOperations,
+  } = useApp()
   const hasLegacySketchMode = userFeatures.useHas(
     LEGACY_SKETCH_MODE_FEATURE_FLAG,
     false
@@ -323,6 +330,7 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
             // Take a screen shot after the page mounts and zoom to fit runs
             if (projectIORef && projectIORef.path) {
               createThumbnailPNGOnDesktop({
+                fileOperations,
                 projectDirectoryWithoutEndingSlash: projectIORef.path,
               })
             }
@@ -538,7 +546,10 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
           label: 'ConnectionStream.tsx',
           message: 'window offline, calling tearDown()',
         })
-        engineCommandManager.tearDown()
+        engineCommandManager.tearDown({
+          route: 'window-offline',
+          initiatedBy: 'client',
+        })
       },
       connect: () => {
         if (engineCommandManager.lastConnectionError?.terminal) return

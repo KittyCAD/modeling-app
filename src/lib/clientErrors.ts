@@ -31,6 +31,8 @@ export enum ClientErrorCode {
   EngineBackendDisconnect = 'engine_backend_disconnect',
   EngineDisconnect = 'engine_disconnect',
   EngineUnsupportedVideoCodec = 'engine_unsupported_video_codec',
+  EngineWebrtcDisconnect = 'engine_webrtc_disconnect',
+  FileOperationsError = 'file_operations_error',
   LegacySketchMode = 'legacy_sketch_mode',
   SystemIOError = 'system_io_error',
   ToolbarDropdownAnchorPositioningError = 'toolbar_dropdown_anchor_positioning_error',

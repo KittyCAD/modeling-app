@@ -134,6 +134,7 @@ test.describe('Testing loading external models', { tag: '@desktop' }, () => {
       ).toBeVisible()
       // The folder can appear before navigation closes the command bar.
       await expect(page).toHaveURL(/ball-bearing(?:%2F|%5C)main\.kcl$/)
+      await scene.settled()
     })
 
     await test.step('Load a KCL sample with the command palette', async () => {

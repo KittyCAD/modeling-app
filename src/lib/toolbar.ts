@@ -1321,7 +1321,7 @@ export function buildToolbarConfig(
                   type: 'Find and select command',
                   data: { name: 'Delete', groupId: 'modeling' },
                 }),
-              status: 'experimental',
+              status: 'available',
               title: 'Delete',
               icon: 'trash',
               description: 'Delete selected bodies from the scene.',

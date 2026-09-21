@@ -8,8 +8,10 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
     "value": 2.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "L": {
@@ -17,8 +19,10 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
     "value": 12.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "M": {
@@ -26,8 +30,10 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
     "value": 1800.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "bracket": {
@@ -308,8 +314,10 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
             "n": 0.25,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "edgeId": "[uuid]",
@@ -322,8 +330,10 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
             "n": 0.5707134902949093,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "edgeId": "[uuid]",
@@ -339,8 +349,10 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
     "value": 0.25,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "innerEdge": {
@@ -356,8 +368,10 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
     "value": 300.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "seg01": {
@@ -369,8 +383,10 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
     "value": 8.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "sigmaAllow": {
@@ -378,8 +394,10 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
     "value": 35000.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "sketch001": {
@@ -555,8 +573,10 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
     "value": 0.32071349029490925,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "wallMountL": {
@@ -564,8 +584,10 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
     "value": 6.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "width": {
@@ -573,8 +595,10 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
     "value": 6.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   }
 }

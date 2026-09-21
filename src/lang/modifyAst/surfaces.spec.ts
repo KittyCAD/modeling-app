@@ -25,7 +25,6 @@ import {
   getKclCommandValue,
 } from '@src/lib/testHelpers'
 import { err } from '@src/lib/trap'
-import { isRecord } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 import { modelingMachine } from '@src/machines/modelingMachine'
@@ -65,7 +64,7 @@ beforeEach(async () => {
   }
 
   worldInThisFile = await buildTheWorldAndConnectToEngine({
-    geometryOnly: true,
+    webrtc: false,
   })
   const { instance, kclManager, engineCommandManager, rustContext } =
     worldInThisFile
@@ -75,7 +74,10 @@ beforeEach(async () => {
   rustContextInThisFile = rustContext
 })
 afterAll(() => {
-  engineCommandManagerInThisFile.tearDown()
+  engineCommandManagerInThisFile.tearDown({
+    route: 'user-requested',
+    initiatedBy: 'client',
+  })
 })
 
 describe('surfaces', () => {
@@ -529,16 +531,6 @@ extrude001 = extrude(region001, length = 5mm, bodyType = SURFACE)`)
     // Preserve real engine geometry while exercising the viewport fallback for
     // an edge whose ID has no artifact mapping, as happens after edge treatments.
     artifactGraph.delete(edges[1].id)
-    // The lite test connection drops unsuccessful replies. Forward the expected
-    // region-query miss so viewport normalization can continue to edge lookup.
-    const websocket = engineCommandManagerInThisFile.connection?.websocket
-    if (!websocket) throw new Error('Missing test engine websocket')
-    const handleMessage = engineCommandManagerInThisFile.createMessageHandler()
-    const forwardEngineError = (event: MessageEvent) => {
-      const response: unknown = JSON.parse(event.data)
-      if (isRecord(response) && response.success === false) handleMessage(event)
-    }
-    websocket.addEventListener('message', forwardEngineError)
     const actor = createActor(modelingMachine, {
       input: generateModelingMachineDefaultContext({
         ...worldInThisFile,
@@ -610,7 +602,6 @@ extrude001 = extrude(region001, length = 5mm, bodyType = SURFACE)`)
       expect(kclManagerInThisFile.errors).toEqual([])
     } finally {
       actor.stop()
-      websocket.removeEventListener('message', forwardEngineError)
     }
   }, 10_000)
 
