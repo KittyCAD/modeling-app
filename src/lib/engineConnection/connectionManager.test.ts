@@ -6,6 +6,8 @@ vi.mock('@src/lib/clientErrors', async (importOriginal) => {
 })
 
 import type * as ClientErrorsModule from '@src/lib/clientErrors'
+import { EXECUTE_AST_INTERRUPT_ERROR_MESSAGE } from '@src/lib/constants'
+import { EngineDebugger } from '@src/lib/debugger'
 import { Connection } from '@src/lib/engineConnection/connection'
 import { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 import {
@@ -140,6 +142,51 @@ describe('ConnectionManager', () => {
       expect(sendSceneCommand).toHaveBeenCalledTimes(geometryOnly ? 0 : 5)
       expect(send).toHaveBeenCalledTimes(geometryOnly ? 0 : 1)
     }
+  })
+
+  it('warns when Engine rejects a modeling command', async () => {
+    const manager = createConnectionManager()
+    manager.connection = {} as Connection
+    const rejection = [
+      {
+        success: false,
+        errors: [
+          { error_code: 'internal_api', message: 'Engine queue is full' },
+        ],
+      },
+    ]
+    vi.spyOn(manager, 'sendCommand').mockRejectedValue(rejection)
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
+
+    await expect(
+      manager.sendModelingCommandFromWasm('command-1', '{}', '{}', '{}')
+    ).rejects.toBe(JSON.stringify(rejection[0]))
+
+    expect(warn).toHaveBeenCalledExactlyOnceWith(rejection)
+  })
+
+  it('logs one intentional interrupt without reporting pending commands', async () => {
+    const manager = createConnectionManager()
+    manager.connection = { send: vi.fn() } as unknown as Connection
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
+    const error = vi.spyOn(console, 'error').mockImplementation(() => {})
+    const addLog = vi.spyOn(EngineDebugger, 'addLog')
+
+    manager.fireModelingCommandFromWasm('command-1', '{}', '{}', '{}')
+    const rejection = expect(
+      manager.sendModelingCommandFromWasm('command-2', '{}', '{}', '{}')
+    ).rejects.toContain('executionIsStale')
+
+    manager.rejectAllModelingCommands(EXECUTE_AST_INTERRUPT_ERROR_MESSAGE)
+    await rejection
+
+    expect(warn).not.toHaveBeenCalled()
+    expect(error).not.toHaveBeenCalled()
+    expect(addLog).toHaveBeenCalledExactlyOnceWith({
+      label: 'connectionManager',
+      message: 'interrupting stale modeling execution',
+      metadata: { pendingCommandCount: 2 },
+    })
   })
 
   it.each([1000, 1006])(
