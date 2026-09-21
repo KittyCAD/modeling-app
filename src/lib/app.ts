@@ -237,6 +237,10 @@ export class App implements AppSubsystems {
   private lastSettings: SaveSettingsPayload
   private activeWasmInstance: ModuleType | undefined
   private unsubscribeFromActiveWasmInstance: (() => void) | undefined
+  /**
+   * Transitional bridge lifetime while projectSession still delegates project
+   * construction and teardown to the legacy App runtime.
+   */
   private unbindProjectSessionRuntime: (() => void) | undefined
 
   constructor(subsystems: AppSubsystems) {
@@ -276,6 +280,9 @@ export class App implements AppSubsystems {
     this.syncUserFeaturesFromAuth(this.auth.actor.getSnapshot())
 
     this.singletons = this.buildSingletons()
+    // Transitional strangler seam: projectSession owns the public lifecycle,
+    // while App still supplies the ZDSProject runtime until that implementation
+    // and KclManager move behind the projectSession capability.
     this.unbindProjectSessionRuntime = this.projectSession.bindRuntime({
       openProject: (project, assertCurrent) =>
         this.openProjectRuntime(project, assertCurrent),
@@ -370,6 +377,12 @@ export class App implements AppSubsystems {
     )
   }
 
+  /**
+   * Transitional implementation of projectSession project construction.
+   *
+   * Move this behavior behind projectSession when ZDSProject no longer needs
+   * the legacy App runtime, then remove the ProjectSessionRuntime binding.
+   */
   private async openProjectRuntime(
     projectIORef: Project,
     assertCurrent: () => void = () => {}
@@ -508,6 +521,10 @@ export class App implements AppSubsystems {
     this.projectSession.closeProject()
   }
 
+  /**
+   * Transitional implementation of projectSession teardown while project
+   * resources and history extensions are still owned by App.
+   */
   private closeProjectRuntime = () => {
     this.disposeProjectHistoryExtensions?.()
     this.disposeProjectHistoryExtensions = undefined
@@ -814,6 +831,9 @@ export class App implements AppSubsystems {
           provideService(systemIOService, {
             actor: this.systemIOActor,
           }),
+          // Transitional strangler adapter: appNavigation consumes narrow
+          // operations, but App still assembles them until their implementations
+          // are owned and composed by registry capabilities.
           provideService(
             appNavigationService,
             createAppNavigationService(createAppNavigationDependencies(this))
