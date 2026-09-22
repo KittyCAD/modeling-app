@@ -1144,6 +1144,40 @@ async def test_sketch_constraint_status_execution_error_returns_partial_report()
 
 
 @pytest.mark.asyncio
+async def test_session_forwards_caller_api_call_id(monkeypatch, tmp_path):
+    requests = []
+
+    async def reject_connection(reader, writer):
+        requests.append((await reader.readline()).decode())
+        while await reader.readline() not in (b"\r\n", b""):
+            pass
+        writer.write(b"HTTP/1.1 403 Forbidden\r\nContent-Length: 0\r\n\r\n")
+        await writer.drain()
+        writer.close()
+        await writer.wait_closed()
+
+    server = await asyncio.start_server(reject_connection, "127.0.0.1", 0)
+    port = server.sockets[0].getsockname()[1]
+    monkeypatch.setenv("ZOO_HOST", f"http://127.0.0.1:{port}")
+    monkeypatch.setenv("ZOO_API_TOKEN", "local-test-token")
+    path = tmp_path / "main.kcl"
+    code = "@settings(kclVersion = 2.0)\nx = 1"
+    api_call_id = "123e4567-e89b-12d3-a456-426614174000"
+    path.write_text(code)
+
+    async with server:
+        for create, source in (
+            (kcl.new_kcl_session_code, code),
+            (kcl.new_kcl_session, str(path)),
+        ):
+            with pytest.raises(Exception, match="403"):
+                await asyncio.wait_for(create(source, api_call_id=api_call_id), timeout=5)
+
+    assert len(requests) == 2
+    assert all(f"api_call_id={api_call_id}" in request for request in requests)
+
+
+@pytest.mark.asyncio
 async def test_primary_execution_error_carries_partial_constraint_report():
     with pytest.raises(kcl.KclError) as raised:
         await kcl.new_kcl_session_code(execution_error_after_sketch_code, mock=True)

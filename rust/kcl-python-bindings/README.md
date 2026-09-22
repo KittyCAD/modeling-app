@@ -30,6 +30,19 @@ Use `new_kcl_session_code(code)` for a source string. The context manager closes
 the connection on exit, including when the body raises an exception. When managing
 the session yourself, call `await session.close()` when finished.
 
+To correlate a KCL call with Zoo backend logs, provide an API call ID when
+creating the session. Generate the ID before the call so it remains available
+if connecting or executing fails. The same ID covers subsequent measurements,
+snapshots, and exports on that session:
+
+```python
+from uuid import uuid4
+
+api_call_id = str(uuid4())
+async with await kcl.new_kcl_session_code(code, api_call_id=api_call_id) as session:
+    properties = await session.measure(request)
+```
+
 `session.outcome` is an `ExecOutcome` with the same diagnostics, constraint reports,
 and sketch rendering methods returned by `execute()`. Accessing it shares the
 saved result without copying the execution state or running KCL again. Use

@@ -1173,11 +1173,22 @@ impl ExecutorContext {
     /// The version is fixed for the lifetime of this connection.
     #[cfg(not(target_arch = "wasm32"))]
     pub async fn new(client: &kittycad::Client, settings: ExecutorSettings, kcl_version: KclVersion) -> Result<Self> {
+        Self::new_with_api_call_id(client, settings, kcl_version, None).await
+    }
+
+    /// Open an engine session with a caller-provided ID for distributed tracing.
+    #[cfg(not(target_arch = "wasm32"))]
+    pub async fn new_with_api_call_id(
+        client: &kittycad::Client,
+        settings: ExecutorSettings,
+        kcl_version: KclVersion,
+        api_call_id: Option<String>,
+    ) -> Result<Self> {
         let pr = std::env::var("ZOO_ENGINE_PR").ok().and_then(|s| s.parse().ok());
         let (ws, headers) = client
             .modeling()
             .commands_ws(kittycad::modeling::CommandsWsParams {
-                api_call_id: None,
+                api_call_id,
                 fps: None,
                 order_independent_transparency: None,
                 post_effect: if settings.enable_ssao {
@@ -1297,10 +1308,22 @@ impl ExecutorContext {
         engine_addr: Option<String>,
         kcl_version: KclVersion,
     ) -> Result<Self> {
+        Self::new_with_client_and_api_call_id(settings, token, engine_addr, kcl_version, None).await
+    }
+
+    /// Open an engine session with a caller-provided ID for distributed tracing.
+    #[cfg(not(target_arch = "wasm32"))]
+    pub async fn new_with_client_and_api_call_id(
+        settings: ExecutorSettings,
+        token: Option<String>,
+        engine_addr: Option<String>,
+        kcl_version: KclVersion,
+        api_call_id: Option<String>,
+    ) -> Result<Self> {
         // Create the client.
         let client = crate::engine::new_zoo_client(token, engine_addr)?;
 
-        let ctx = Self::new(&client, settings, kcl_version).await?;
+        let ctx = Self::new_with_api_call_id(&client, settings, kcl_version, api_call_id).await?;
         Ok(ctx)
     }
 

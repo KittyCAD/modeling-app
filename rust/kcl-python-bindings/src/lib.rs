@@ -312,6 +312,7 @@ async fn new_context_state(
     video_res_width: Option<u32>,
     video_res_height: Option<u32>,
     kcl_version: kcl_lib::KclVersion,
+    api_call_id: Option<String>,
 ) -> Result<(ExecutorContext, kcl_lib::ExecState)> {
     let mut settings = executor_settings(current_file, highlight_edges, geometry_only);
     settings.video_res_width = video_res_width;
@@ -319,7 +320,7 @@ async fn new_context_state(
     let ctx = if mock {
         ExecutorContext::new_mock(Some(settings)).await
     } else {
-        ExecutorContext::new_with_client(settings, None, None, kcl_version).await?
+        ExecutorContext::new_with_client_and_api_call_id(settings, None, None, kcl_version, api_call_id).await?
     };
     let state = kcl_lib::ExecState::new(&ctx);
     Ok((ctx, state))
@@ -415,6 +416,7 @@ async fn run_kcl(
         None,
         None,
         program.language_version().map_err(to_py_exception)?,
+        None,
     )
     .await
     .map_err(to_py_exception)?;
@@ -485,6 +487,7 @@ async fn sketch_constraint_report_impl(input: KclInput) -> PyResult<SketchConstr
         None,
         None,
         program.language_version().map_err(to_py_exception)?,
+        None,
     )
     .await
     .map_err(to_py_exception)?;
@@ -762,6 +765,7 @@ async fn import_and_snapshot_views(
             None,
             None,
             kcl_lib::KclVersion::default(),
+            None,
         )
         .await
         .map_err(to_py_exception)?;
