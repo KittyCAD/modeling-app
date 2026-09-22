@@ -1493,6 +1493,7 @@ impl ExecutorContext {
         let constraint_state = exec_state.mod_local.constraint_state.clone();
         let scene_objects = exec_state.global.root_module_artifacts.scene_objects.clone();
         let std_not_yet_added = exec_state.global.std_not_yet_added.clone();
+        let significant_attrs = cache::significant_attrs(&program.ast);
         let outcome = exec_state
             .into_exec_outcome(main_ref, self)
             .await
@@ -1507,6 +1508,7 @@ impl ExecutorContext {
             constraint_state,
             scene_objects,
             std_not_yet_added,
+            significant_attrs,
         };
         cache::write_old_memory(state).await;
 
@@ -1536,8 +1538,13 @@ impl ExecutorContext {
             .map_err(KclErrorWithOutputs::no_outputs)?;
         if use_prev_memory {
             match cache::read_old_memory().await {
-                Some(mem) => Self::restore_mock_memory(&mut exec_state, mem, mock_config)?,
-                None => self.prepare_mem(&mut exec_state).await?,
+                Some(mem) if mem.reusable_for(&program.ast) => {
+                    Self::restore_mock_memory(&mut exec_state, mem, mock_config)?
+                }
+                // No memory, or memory from a program with other significant
+                // settings such as another kclVersion, whose bindings, module
+                // outcomes, and prelude this program must not see.
+                _ => self.prepare_mem(&mut exec_state).await?,
             }
         } else {
             self.prepare_mem(&mut exec_state).await?
@@ -2158,6 +2165,7 @@ impl ExecutorContext {
         /// execution.
         async fn write_old_memory(
             ctx: &ExecutorContext,
+            program: &crate::Program,
             exec_state: &ExecState,
             env_ref: EnvironmentRef,
         ) -> Result<(), KclError> {
@@ -2174,6 +2182,7 @@ impl ExecutorContext {
                 constraint_state: exec_state.mod_local.constraint_state.clone(),
                 scene_objects: exec_state.global.root_module_artifacts.scene_objects.clone(),
                 std_not_yet_added: exec_state.global.std_not_yet_added.clone(),
+                significant_attrs: cache::significant_attrs(&program.ast),
             };
             cache::write_old_memory(state).await;
             Ok(())
@@ -2185,7 +2194,7 @@ impl ExecutorContext {
                 // Preserve memory on execution failures so follow-up mock
                 // execution can still reuse stable IDs before the error.
                 if let Some(env_ref) = env_ref {
-                    write_old_memory(self, exec_state, env_ref)
+                    write_old_memory(self, program, exec_state, env_ref)
                         .await
                         .map_err(|err| exec_state.error_with_outputs(err, Some(env_ref), default_planes.clone()))?;
                 }
@@ -2193,7 +2202,7 @@ impl ExecutorContext {
             }
         };
 
-        write_old_memory(self, exec_state, env_ref)
+        write_old_memory(self, program, exec_state, env_ref)
             .await
             .map_err(|err| exec_state.error_with_outputs(err, Some(env_ref), default_planes.clone()))?;
 
@@ -9169,6 +9178,151 @@ x = [1, 2]: NewT
             restored.with_not_yet_added_hint(&["cube"], err).message(),
             "`cube` is not defined; it was added in KCL 3.0, but this program uses KCL 1.0"
         );
+        ctx.close().await;
+    }
+
+    // ---- mock memory reuse across settings changes ----
+
+    /// Runs `code` in mock execution reusing the previous memory, as the LSP
+    /// worker does for every execution.
+    async fn run_mock_reusing_memory(ctx: &ExecutorContext, code: &str) -> Result<ExecOutcome, KclErrorWithOutputs> {
+        let program = crate::Program::parse_no_errs(code).unwrap();
+        ctx.run_mock(
+            &program,
+            &MockConfig {
+                use_prev_memory: true,
+                ..Default::default()
+            },
+        )
+        .await
+    }
+
+    #[track_caller]
+    fn outcome_f64(outcome: &ExecOutcome, name: &str) -> f64 {
+        let Some(KclValueView::Number { value, .. }) = outcome.variables.get(name) else {
+            panic!(
+                "expected `{name}` to be a number, got {:?}",
+                outcome.variables.get(name)
+            );
+        };
+        *value
+    }
+
+    /// Memory written under one kclVersion still binds declarations the other
+    /// version skips, so a mock run reusing it must rebuild instead. Nothing
+    /// else invalidates the LSP worker's memory.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn mock_memory_is_rebuilt_on_a_kcl_version_downgrade() {
+        clear_mem_cache().await;
+        let ctx = ExecutorContext::new_mock(None).await;
+        let body = "@(added_in = \"3.0\")\nfn newFn() {\n  return 42\n}\n\nanswer = newFn()\n";
+
+        let outcome = run_mock_reusing_memory(&ctx, &format!("@settings(kclVersion = \"3.0-preview\")\n{body}"))
+            .await
+            .unwrap();
+        assert_eq!(outcome_f64(&outcome, "answer"), 42.0);
+
+        // Only the version changes; `newFn` is still bound in the cached memory.
+        let err = run_mock_reusing_memory(&ctx, &format!("@settings(kclVersion = 2.0)\n{body}"))
+            .await
+            .unwrap_err();
+        assert_eq!(err.error.message(), "`newFn` is not defined");
+
+        clear_mem_cache().await;
+        ctx.close().await;
+    }
+
+    /// A mock execution context whose project directory holds `modules`.
+    async fn mock_context_with_modules(modules: &[(&str, &str)]) -> (ExecutorContext, tempfile::TempDir) {
+        let tmpdir = tempfile::TempDir::with_prefix("zma_kcl_mock_memory").unwrap();
+        for (name, source) in modules {
+            tokio::fs::write(tmpdir.path().join(name), source).await.unwrap();
+        }
+        let ctx = ExecutorContext::new_mock(Some(ExecutorSettings {
+            project_directory: Some(crate::TypedPath(tmpdir.path().into())),
+            ..Default::default()
+        }))
+        .await;
+        (ctx, tmpdir)
+    }
+
+    const GATED_DEP: &str =
+        "@(added_in = \"3.0\")\nexport fn newFn() {\n  return 42\n}\nexport fn oldFn() {\n  return 1\n}\n";
+
+    /// A module's cached outcome keeps the exports of the version it ran
+    /// under, so an upgrade must rebuild to see newly available functions.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn mock_memory_is_rebuilt_on_a_kcl_version_upgrade_with_imports() {
+        clear_mem_cache().await;
+        let (ctx, _tmpdir) = mock_context_with_modules(&[("dep.kcl", GATED_DEP)]).await;
+
+        let outcome = run_mock_reusing_memory(
+            &ctx,
+            "@settings(kclVersion = 2.0)\nimport * from \"dep.kcl\"\nx = oldFn()\n",
+        )
+        .await
+        .unwrap();
+        assert_eq!(outcome_f64(&outcome, "x"), 1.0);
+
+        let outcome = run_mock_reusing_memory(
+            &ctx,
+            "@settings(kclVersion = \"3.0-preview\")\nimport * from \"dep.kcl\"\nanswer = newFn()\n",
+        )
+        .await
+        .unwrap();
+        assert_eq!(outcome_f64(&outcome, "answer"), 42.0);
+
+        clear_mem_cache().await;
+        ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn mock_memory_is_rebuilt_on_a_kcl_version_downgrade_with_imports() {
+        clear_mem_cache().await;
+        let (ctx, _tmpdir) = mock_context_with_modules(&[("dep.kcl", GATED_DEP)]).await;
+
+        let outcome = run_mock_reusing_memory(
+            &ctx,
+            "@settings(kclVersion = \"3.0-preview\")\nimport newFn from \"dep.kcl\"\nanswer = newFn()\n",
+        )
+        .await
+        .unwrap();
+        assert_eq!(outcome_f64(&outcome, "answer"), 42.0);
+
+        let err = run_mock_reusing_memory(
+            &ctx,
+            "@settings(kclVersion = 2.0)\nimport newFn from \"dep.kcl\"\nanswer = newFn()\n",
+        )
+        .await
+        .unwrap_err();
+        assert_eq!(err.error.message(), "newFn is not defined in module");
+
+        clear_mem_cache().await;
+        ctx.close().await;
+    }
+
+    /// Every significant annotation counts, not only the version, matching
+    /// what the engine cache re-executes for; unchanged ones keep reusing.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn mock_memory_is_reused_only_under_the_same_significant_settings() {
+        clear_mem_cache().await;
+        let ctx = ExecutorContext::new_mock(None).await;
+
+        run_mock_reusing_memory(&ctx, "@settings(kclVersion = 2.0)\nx = 2\n")
+            .await
+            .unwrap();
+        // Same settings: the previous run's `x` is visible.
+        let outcome = run_mock_reusing_memory(&ctx, "@settings(kclVersion = 2.0)\ny = x\n")
+            .await
+            .unwrap();
+        assert_eq!(outcome_f64(&outcome, "y"), 2.0);
+        // A changed setting: memory is rebuilt, so `x` is gone.
+        let err = run_mock_reusing_memory(&ctx, "@settings(kclVersion = 2.0, defaultLengthUnit = in)\nz = x\n")
+            .await
+            .unwrap_err();
+        assert_eq!(err.error.message(), "`x` is not defined");
+
+        clear_mem_cache().await;
         ctx.close().await;
     }
 }

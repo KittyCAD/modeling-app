@@ -157,6 +157,7 @@ impl GlobalState {
             constraint_state: self.main.exec_state.constraint_state.clone(),
             scene_objects: self.exec_state.root_module_artifacts.scene_objects.clone(),
             std_not_yet_added: self.exec_state.std_not_yet_added.clone(),
+            significant_attrs: significant_attrs(&self.main.ast),
         })
     }
 }
@@ -190,6 +191,20 @@ pub(crate) struct SketchModeState {
     /// See `GlobalState::std_not_yet_added`. Restored because a run reusing
     /// this memory skips the prelude.
     pub std_not_yet_added: IndexMap<String, NotYetAdded>,
+    /// The significant annotations of the program that wrote this memory; see
+    /// [`Self::reusable_for`].
+    pub significant_attrs: Vec<Node<Annotation>>,
+}
+
+impl SketchModeState {
+    /// Whether `ast` may reuse this memory: only when its significant
+    /// annotations match. Memory from another kclVersion or setting keeps
+    /// bindings, module outcomes, and a prelude this program must not see,
+    /// and the LSP worker reuses memory with no other invalidation.
+    pub(crate) fn reusable_for(&self, ast: &Node<Program>) -> bool {
+        let attrs = significant_attrs(ast);
+        significant_attrs_match(self.significant_attrs.iter(), attrs.iter())
+    }
 }
 
 /// Read a named value from the previous sketch-mode execution.
@@ -210,6 +225,7 @@ impl SketchModeState {
             constraint_state: Default::default(),
             scene_objects: Vec::new(),
             std_not_yet_added: Default::default(),
+            significant_attrs: Vec::new(),
         }
     }
 }
@@ -300,35 +316,10 @@ pub(super) async fn get_changed_program(old: CacheInformation<'_>, new: CacheInf
     }
 
     // Check if the block annotations like @settings() are different.
-    if !old_ast
-        .inner_attrs
-        .iter()
-        .filter(annotations::is_significant)
-        .zip_longest(new_ast.inner_attrs.iter().filter(annotations::is_significant))
-        .all(|pair| {
-            match pair {
-                EitherOrBoth::Both(old, new) => {
-                    // Compare annotations, ignoring source ranges.  Digests must
-                    // have been computed before this.
-                    let Annotation { name, properties, .. } = &old.inner;
-                    let Annotation {
-                        name: new_name,
-                        properties: new_properties,
-                        ..
-                    } = &new.inner;
-
-                    name.as_ref().map(|n| n.digest) == new_name.as_ref().map(|n| n.digest)
-                        && properties
-                            .as_ref()
-                            .map(|props| props.iter().map(|p| p.digest).collect::<Vec<_>>())
-                            == new_properties
-                                .as_ref()
-                                .map(|props| props.iter().map(|p| p.digest).collect::<Vec<_>>())
-                }
-                _ => false,
-            }
-        })
-    {
+    if !significant_attrs_match(
+        old_ast.inner_attrs.iter().filter(annotations::is_significant),
+        new_ast.inner_attrs.iter().filter(annotations::is_significant),
+    ) {
         // If any of the annotations are different at the beginning of the
         // program, it's likely the settings, and we have to bust the cache and
         // re-execute the whole thing.
@@ -341,6 +332,48 @@ pub(super) async fn get_changed_program(old: CacheInformation<'_>, new: CacheInf
 
     // Check if the changes were only to Non-code areas, like comments or whitespace.
     generate_changed_program(old_ast, new_ast, reapply_settings)
+}
+
+/// The program's significant top-level annotations (`@settings`, `@no_std`,
+/// `@warnings`, `@diagnostics`), with digests computed so that they compare
+/// independent of source positions.
+pub(crate) fn significant_attrs(ast: &Node<Program>) -> Vec<Node<Annotation>> {
+    ast.inner_attrs
+        .iter()
+        .filter(annotations::is_significant)
+        .map(|attr| {
+            let mut attr = attr.clone();
+            attr.compute_digest();
+            attr
+        })
+        .collect()
+}
+
+/// Whether two sequences of significant annotations agree, ignoring source
+/// ranges. Digests must have been computed before this.
+fn significant_attrs_match<'a, 'b>(
+    old: impl Iterator<Item = &'a Node<Annotation>>,
+    new: impl Iterator<Item = &'b Node<Annotation>>,
+) -> bool {
+    old.zip_longest(new).all(|pair| match pair {
+        EitherOrBoth::Both(old, new) => {
+            let Annotation { name, properties, .. } = &old.inner;
+            let Annotation {
+                name: new_name,
+                properties: new_properties,
+                ..
+            } = &new.inner;
+
+            name.as_ref().map(|n| n.digest) == new_name.as_ref().map(|n| n.digest)
+                && properties
+                    .as_ref()
+                    .map(|props| props.iter().map(|p| p.digest).collect::<Vec<_>>())
+                    == new_properties
+                        .as_ref()
+                        .map(|props| props.iter().map(|p| p.digest).collect::<Vec<_>>())
+        }
+        _ => false,
+    })
 }
 
 /// Force-generate a new CacheResult, even if one shouldn't be made. The
