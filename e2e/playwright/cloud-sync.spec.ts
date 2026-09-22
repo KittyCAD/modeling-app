@@ -22,7 +22,7 @@ import {
   setup,
   token,
 } from '@e2e/playwright/test-utils'
-import type { APIResponse, Page } from '@playwright/test'
+import type { Page, Response } from '@playwright/test'
 import type { CreatedRemoteProject } from '@src/lib/cloudSync/types'
 import { OPFS_CLOUD_FEATURE_FLAG } from '@src/lib/constants'
 import JSZip from 'jszip'
@@ -58,28 +58,39 @@ test(
     const headers = { Authorization: `Bearer ${token}` }
     const projectName = `cloud-sync-e2e-${randomUUID()}`
     const projectPath = `${PROJECT_DIR}/${projectName}`
-    const firstUpload = Promise.withResolvers<APIResponse>()
+    const firstUpload = Promise.withResolvers<Response>()
     const releaseUpload = Promise.withResolvers<undefined>()
     let createCount = 0
 
     await expect(await request.get(`${apiUrl}/user`, { headers })).toBeOK()
-    await context.route('**/user/projects**', async (route) => {
-      const url = new URL(route.request().url())
-      expect(url.origin).toBe(apiUrl)
+    await page.exposeFunction(
+      'holdCloudCreationResponse',
+      () => releaseUpload.promise
+    )
+    await page.addInitScript((createUrl) => {
+      const originalFetch = globalThis.fetch.bind(globalThis)
+      globalThis.fetch = async (input, init) => {
+        const response = await originalFetch(input, init)
+        if (response.url === createUrl && init?.method === 'POST') {
+          // WebKit's route.fetch() drops multipart file contents. Let the
+          // browser send the upload and only delay delivery of its response.
+          await (
+            globalThis as typeof globalThis & {
+              holdCloudCreationResponse: () => Promise<undefined>
+            }
+          ).holdCloudCreationResponse()
+        }
+        return response
+      }
+    }, `${apiUrl}/user/projects`)
+    page.on('response', (response) => {
       if (
-        url.pathname === '/user/projects' &&
-        route.request().method() === 'POST'
+        response.url() === `${apiUrl}/user/projects` &&
+        response.request().method() === 'POST'
       ) {
         createCount += 1
-        // Hold the real response so the editor change happens before the app
-        // receives its cloud ID. Forward the API's response without changing it.
-        const response = route.fetch({ timeout: CLOUD_SYNC_E2E_TIMEOUT })
         firstUpload.resolve(response)
-        await releaseUpload.promise
-        await route.fulfill({ response: await response })
-        return
       }
-      await route.continue()
     })
 
     try {
@@ -87,12 +98,15 @@ test(
         cloudSyncEnabled: true,
       })
       await expectCloudFeatureEnabled(page)
-      await page.getByText('Personal Cloud', { exact: true }).click()
+      // The shared CI account has thousands of projects. Filter their cards
+      // through the UI without replacing the real project-list response.
+      await page.getByPlaceholder(/^Search projects/).fill(projectName)
+      await expect(page.getByTestId('project-link')).toHaveCount(0)
       await createProject({ name: projectName, page })
       await expectProjectFileRoute(page)
 
       const response = await firstUpload.promise
-      await expect(response).toBeOK()
+      expect(response.ok()).toBe(true)
       const created: CreatedRemoteProject = await response.json()
       expect(created.id).toBeTruthy()
       expect(created.revision).toBeTruthy()
@@ -163,7 +177,6 @@ test(
       await expect(page.getByTestId('cloud-conflict-dialog')).toHaveCount(0)
     } finally {
       releaseUpload.resolve(undefined)
-      await context.unrouteAll({ behavior: 'wait' })
       await page.close()
       // A failed run may have created duplicates. Delete only this run's
       // uniquely named projects, after stopping the app's sync loop.
