@@ -34,10 +34,12 @@ export const createOnWebSocketOpen = ({
   send,
   token,
   dispatchEvent,
+  onOpen,
 }: {
   send: (message: WebSocketRequest) => void
   token: string | undefined
   dispatchEvent: (event: Event) => boolean
+  onOpen?: () => void
 }) => {
   const onWebSocketOpen = (event: Event) => {
     // This is required for when the app is running stand-alone / within desktop app.
@@ -58,6 +60,8 @@ export const createOnWebSocketOpen = ({
         },
       })
 
+      onOpen?.()
+
       dispatchEvent(
         new CustomEvent(EngineConnectionEvents.ConnectionStateChanged, {
           detail: {
@@ -68,6 +72,8 @@ export const createOnWebSocketOpen = ({
           },
         })
       )
+    } else {
+      onOpen?.()
     }
   }
   return onWebSocketOpen

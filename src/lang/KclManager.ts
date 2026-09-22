@@ -7,6 +7,7 @@ import {
   setArtifactGraphEffect,
 } from '@src/editor/plugins/artifacts'
 import type { KCLError } from '@src/lang/errors'
+import { getProgramKclVersion } from '@src/lang/kclLanguageVersion'
 import {
   compilationIssuesToDiagnostics,
   kclErrorsToDiagnostics,
@@ -1398,6 +1399,12 @@ export class KclManager extends File {
     return this._kclVersion
   }
 
+  syncEngineKclVersion(code = this.code, force = false): void {
+    if (!this._wasmInstance || !this.engineCommandManager.isReady) return
+    const version = getProgramKclVersion(code, this._wasmInstance)
+    if (version) this.engineCommandManager.setKclVersion(version, force)
+  }
+
   get errors() {
     return this._errors.value
   }
@@ -1614,6 +1621,7 @@ export class KclManager extends File {
         this._userDocumentVersion += 1
       }
       this._code.value = newCode
+      this.syncEngineKclVersion(newCode)
       this._hasEditsSinceLastExecution.value = !isCodeTheSame(
         newCode,
         this.lastExecutedCode
@@ -1886,6 +1894,7 @@ export class KclManager extends File {
     options: FromFileOptions = { shouldSyncRustOnOpen: true }
   ) {
     this._code.value = code
+    this.syncEngineKclVersion(code)
     this._hasEditsSinceLastExecution.value = !isCodeTheSame(
       code,
       this.lastExecutedCode
@@ -2225,6 +2234,7 @@ export class KclManager extends File {
     providedEditor.path = file.path
     providedEditor.id = file.id
     providedEditor.codeSignal.value = initialCode
+    providedEditor.syncEngineKclVersion(initialCode, true)
     const savedEditorState = providedEditor.editorStatesByPath.get(file.path)
     const canRestoreEditorState =
       savedEditorState !== undefined &&
@@ -2305,6 +2315,7 @@ export class KclManager extends File {
 
     this.systemDeps.wasmInstancePromise
       .then(async (wasmInstance) => {
+        this._wasmInstance = wasmInstance
         this._kclVersion = getKclVersion(wasmInstance)
         if (typeof wasmInstance === 'string') {
           this.wasmInitFailed = true

@@ -54,6 +54,7 @@ export class Connection extends EventTarget {
   readonly url: string
   // Authorization bearer token for headers on websocket
   private readonly _token: string | undefined
+  private readonly onWebSocketOpen: (() => void) | undefined
   private _pingPongSpan: {
     ping: number | undefined
     pong: number | undefined
@@ -118,6 +119,7 @@ export class Connection extends EventTarget {
     unitTestPool,
     handleMessage,
     getCloudProjectId,
+    onWebSocketOpen,
   }: {
     url: string
     token: string
@@ -130,6 +132,7 @@ export class Connection extends EventTarget {
     unitTestPool?: 'cpu'
     handleMessage: (event: MessageEvent<any>) => void
     getCloudProjectId: () => string | undefined
+    onWebSocketOpen?: () => void
   }) {
     markOnce('code/startInitialEngineConnect')
     super()
@@ -147,6 +150,7 @@ export class Connection extends EventTarget {
     this.rejectPendingCommand = rejectPendingCommand
     this.handleMessage = handleMessage
     this.getCloudProjectId = getCloudProjectId
+    this.onWebSocketOpen = onWebSocketOpen
     this._pingPongSpan = { ping: undefined, pong: undefined }
     this.deferredConnection = null
     this.deferredPeerConnection = null
@@ -647,6 +651,7 @@ export class Connection extends EventTarget {
       send: this.send.bind(this),
       token: this.token,
       dispatchEvent: this.dispatchEvent.bind(this),
+      onOpen: this.onWebSocketOpen,
     })
     const onWebSocketError = createOnWebSocketError()
     const onWebSocketMessage = createOnWebSocketMessage({

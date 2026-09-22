@@ -30,6 +30,7 @@ const attemptToConnectToEngine = async ({
   setIsSceneReady,
   timeToConnect,
   engineCommandManager,
+  kclManager,
   rustContext,
 }: {
   authToken: string
@@ -39,6 +40,7 @@ const attemptToConnectToEngine = async ({
   setIsSceneReady: React.Dispatch<React.SetStateAction<boolean>>
   timeToConnect: number
   engineCommandManager: ConnectionManager
+  kclManager: KclManager
   rustContext: RustContext
 }) => {
   const codecError = await preflightEngineVideoCodecSupport()
@@ -91,6 +93,7 @@ const attemptToConnectToEngine = async ({
             setAppState({ isStreamReady: true })
           },
           rustContext,
+          onWebSocketOpen: () => kclManager.syncEngineKclVersion(),
         })
 
         if (!videoRef.current) {
@@ -264,6 +267,7 @@ export async function tryConnecting({
             setIsSceneReady,
             timeToConnect,
             engineCommandManager,
+            kclManager,
             rustContext,
           })
 

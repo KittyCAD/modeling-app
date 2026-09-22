@@ -87,6 +87,35 @@ describe('ConnectionManager', () => {
     ReconnectTestWebSocket.instances = []
   })
 
+  it('sends the file version once per WebSocket and sends changes', () => {
+    const manager = createConnectionManager()
+    const send = vi.fn()
+    manager.connection = {
+      websocket: { readyState: WebSocket.OPEN },
+      send,
+    } as unknown as Connection
+
+    manager.setKclVersion('2.0')
+    manager.setKclVersion('2.0')
+    manager.setKclVersion('2.0', true)
+    manager.setKclVersion('3.0-preview')
+
+    expect(send).toHaveBeenCalledTimes(3)
+    expect(send.mock.calls.map(([request]) => request.cmd)).toEqual([
+      { type: 'set_kcl_version', kcl_version: '2.0' },
+      { type: 'set_kcl_version', kcl_version: '2.0' },
+      { type: 'set_kcl_version', kcl_version: '3.0-preview' },
+    ])
+
+    const reconnectSend = vi.fn()
+    manager.connection = {
+      websocket: { readyState: WebSocket.OPEN },
+      send: reconnectSend,
+    } as unknown as Connection
+    manager.setKclVersion('3.0-preview')
+    expect(reconnectSend).toHaveBeenCalledOnce()
+  })
+
   it('warns when Engine rejects a modeling command', async () => {
     const manager = createConnectionManager()
     manager.connection = {} as Connection

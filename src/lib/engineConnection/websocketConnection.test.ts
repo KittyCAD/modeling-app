@@ -10,7 +10,10 @@ vi.mock('@src/lib/clientErrors', () => ({
 }))
 
 import { EngineConnectionErrorKind } from '@src/lib/engineConnection/utils'
-import { createOnWebSocketMessage } from '@src/lib/engineConnection/websocketConnection'
+import {
+  createOnWebSocketMessage,
+  createOnWebSocketOpen,
+} from '@src/lib/engineConnection/websocketConnection'
 
 const disconnectAll = vi.fn()
 const tearDownManager = vi.fn()
@@ -51,6 +54,36 @@ const dispatchFailureMessage = (message: string, cloudProjectId?: string) => {
     })
   )
 }
+
+describe('createOnWebSocketOpen', () => {
+  it('sends the active file version after authentication headers', () => {
+    const send = vi.fn()
+    const onOpen = vi.fn(() => send({ type: 'version' }))
+    createOnWebSocketOpen({
+      send,
+      token: 'token',
+      dispatchEvent: vi.fn(() => true),
+      onOpen,
+    })(new Event('open'))
+
+    expect(send.mock.calls.map(([request]) => request.type)).toEqual([
+      'headers',
+      'version',
+    ])
+  })
+
+  it('sends the active file version with cookie authentication', () => {
+    const onOpen = vi.fn()
+    createOnWebSocketOpen({
+      send: vi.fn(),
+      token: undefined,
+      dispatchEvent: vi.fn(() => true),
+      onOpen,
+    })(new Event('open'))
+
+    expect(onOpen).toHaveBeenCalledOnce()
+  })
+})
 
 describe('createOnWebSocketMessage', () => {
   beforeEach(() => {

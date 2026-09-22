@@ -3,6 +3,8 @@ import type {
   WebSocketRequest,
   WebSocketResponse,
 } from '@kittycad/lib'
+import type { KclVersion } from '@rust/kcl-lib/bindings/KclVersion'
+import type { ModelingCmd as RustModelingCmd } from '@rust/kcl-lib/bindings/ModelingCmd'
 import {
   decode as msgpackDecode,
   encode as msgpackEncode,
@@ -107,6 +109,10 @@ export class ConnectionManager extends EventTarget {
   commandLogs: CommandLog[] = []
 
   connection: Connection | undefined
+  private sentKclVersion: {
+    connection: Connection
+    version: KclVersion
+  } | null = null
   lastConnectionError: EngineConnectionError | undefined
   private connectionStartedAt = performance.now()
   private shutdownReported = false
@@ -122,6 +128,32 @@ export class ConnectionManager extends EventTarget {
       this.started &&
       this.connection.websocket?.readyState === WebSocket.OPEN
     )
+  }
+  setKclVersion(version: KclVersion, force = false): void {
+    const connection = this.connection
+    if (!connection || connection.websocket?.readyState !== WebSocket.OPEN) {
+      return
+    }
+    if (
+      !force &&
+      this.sentKclVersion?.connection === connection &&
+      this.sentKclVersion.version === version
+    ) {
+      return
+    }
+    // The installed SDK predates this modeling command. Use the generated
+    // Rust binding to check its wire shape before crossing the SDK boundary.
+    const cmd = {
+      type: 'set_kcl_version',
+      kcl_version: version,
+    } satisfies Extract<RustModelingCmd, { type: 'set_kcl_version' }>
+    const command = {
+      type: 'modeling_cmd_req' as const,
+      cmd_id: uuidv4(),
+      cmd,
+    } as unknown as WebSocketRequest
+    connection.send(command)
+    this.sentKclVersion = { connection, version }
   }
   private readonly systemDeps: ConnectionSystemDeps
 
@@ -189,6 +221,7 @@ export class ConnectionManager extends EventTarget {
     unitTestWebrtc,
     unitTestPool,
     rustContext,
+    onWebSocketOpen,
   }: {
     width: number
     height: number
@@ -198,6 +231,7 @@ export class ConnectionManager extends EventTarget {
     unitTestWebrtc?: boolean
     unitTestPool?: 'cpu'
     rustContext?: RustContext
+    onWebSocketOpen?: () => void
   }) {
     EngineDebugger.addLog({
       label: 'connectionManager',
@@ -250,6 +284,7 @@ export class ConnectionManager extends EventTarget {
       getCloudProjectId: () =>
         this.systemDeps.settingsActor.getSnapshot().context.currentProject
           ?.cloudProjectId,
+      onWebSocketOpen,
     })
 
     // Nothing more to do when using a lite engine initialization
