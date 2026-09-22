@@ -233,9 +233,11 @@ export async function deleteFromSelection(
       typeof pipeItemIndex === 'number' && pipeItemIndex > 0
         ? varDecNodeInit.body[pipeItemIndex]
         : undefined
-    // Legacy Sketch 1 segments and faces can reference sketch pipe stages.
-    // Keep their sketch/extrusion deletion paths instead of removing those stages.
-    // Remove these exclusions when Sketch 1 support and its tests are retired.
+    // Legacy Sketch 1 segment, wall, and cap selections can point to a sketch
+    // pipe stage. Removing that stage would delete sketch code instead of the
+    // selected sketch or extrusion, so let the geometry handlers below handle it.
+    // TODO: Handle geometry selections before generic pipe deletion so this
+    // exclusion is unnecessary. Retire the Sketch 1 paths with its support/tests.
     const isGeometrySelection =
       selection.artifact?.type === 'segment' ||
       selection.artifact?.type === 'wall' ||
