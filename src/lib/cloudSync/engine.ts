@@ -1194,7 +1194,7 @@ async function removeLocalProjectCloudProjectId(projectPath: string) {
 
 async function updateLocalProjectToml(
   projectPath: string,
-  update: (contents: string) => string
+  update: (contents: string) => string | Error
 ) {
   const projectTomlPath = localFs.join(projectPath, PROJECT_SETTINGS_FILE_NAME)
   let projectToml = ''
@@ -1205,6 +1205,9 @@ async function updateLocalProjectToml(
   }
 
   const nextProjectToml = update(projectToml)
+  if (isErr(nextProjectToml)) {
+    return Promise.reject(nextProjectToml)
+  }
   if (nextProjectToml === projectToml) {
     return false
   }

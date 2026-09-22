@@ -149,6 +149,10 @@ describe('projectTomlMetadata', () => {
       'project-123'
     )
 
+    expect(toml).not.toBeInstanceOf(Error)
+    if (toml instanceof Error) {
+      throw toml
+    }
     expect(getProjectTitleFromProjectTomlContents(toml)).toBe('Some demo')
     expect(getCloudProjectIdFromProjectTomlContents(toml, 'zoo.dev')).toBe(
       'project-123'
@@ -169,10 +173,26 @@ describe('projectTomlMetadata', () => {
       'new-project'
     )
 
+    expect(toml).not.toBeInstanceOf(Error)
+    if (toml instanceof Error) {
+      throw toml
+    }
     expect(getCloudProjectIdFromProjectTomlContents(toml, 'zoo.dev')).toBe(
       'new-project'
     )
     expect(toml).not.toContain('old-project')
+  })
+
+  it('returns an error when setting a cloud project id in invalid TOML', () => {
+    const toml = setCloudProjectIdInProjectTomlContents(
+      'title = [invalid',
+      'zoo.dev',
+      'project-123'
+    )
+
+    expect(toml).toEqual(
+      new Error('Unable to parse project.toml while updating cloud project ID')
+    )
   })
 
   it('removes one cloud project id without dropping other metadata', () => {

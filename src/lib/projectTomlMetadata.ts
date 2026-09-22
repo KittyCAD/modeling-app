@@ -239,8 +239,7 @@ export function setCloudProjectIdInProjectTomlContents(
 ) {
   const table = parseProjectToml(contents)
   if (!table) {
-    // eslint-disable-next-line suggest-no-throw/suggest-no-throw
-    throw new Error(
+    return new Error(
       'Unable to parse project.toml while updating cloud project ID'
     )
   }
