@@ -11,6 +11,10 @@ import { err } from '@src/lib/trap'
 import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
 import { expect, it } from 'vitest'
 
+// Each row selects an operation in a pipe and checks the resulting KCL.
+// Later stages are removed individually; selecting the initial extrusion removes
+// its assignment. Nested calls must be rejected rather than removing their parent.
+// Rows contain: selected operation name, appended pipe stage, reject nested call.
 it.each([
   ['appearance', 'appearance(color = "#7093ad", roughness = 55)'],
   ['translate', 'translate(x = 10mm, global = true)'],
@@ -72,6 +76,9 @@ profileRegion = region(point = [1mm, 0mm], sketch = profile)`
   }
 )
 
+// Generalized pipe deletion must preserve geometry selection behavior:
+// walls/caps remove the extrusion but keep its sketch; fillets/chamfers remove
+// only their finishing stage and keep the extrusion.
 it.each(['wall', 'cap', 'fillet', 'chamfer'] as const)(
   'preserves %s deletion',
   async (kind) => {
