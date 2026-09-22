@@ -169,11 +169,11 @@ describe('credit refresh countdown', () => {
   })
 
   test.each([
-    ['2026-09-25T16:00:00Z', '3d 4h'],
-    ['2026-09-23T00:30:00Z', '12h 30m'],
-    ['2026-09-22T12:25:00Z', '25m'],
-    ['2026-09-22T12:00:30Z', '< 1m'],
-    ['2026-09-22T14:25:00+02:00', '25m'],
+    ['2026-09-25T16:00:00Z', '3 days'],
+    ['2026-09-23T00:30:00Z', '13 hours'],
+    ['2026-09-22T12:25:00Z', '25 minutes'],
+    ['2026-09-22T12:00:30Z', '30 seconds'],
+    ['2026-09-22T14:25:00+02:00', '25 minutes'],
   ])(
     'shows time until %s below the expanded credit bar',
     (refreshAt, expected) => {
@@ -210,10 +210,10 @@ describe('credit refresh countdown', () => {
       },
     }
     const { rerender, unmount } = render(<BillingRemaining {...props} />)
-    expect(screen.getByText('Credits refresh in 2m')).toBeVisible()
+    expect(screen.getByText('Credits refresh in 2 minutes')).toBeVisible()
 
     await act(() => vi.advanceTimersByTime(60_000))
-    expect(screen.getByText('Credits refresh in 1m')).toBeVisible()
+    expect(screen.getByText('Credits refresh in 1 minute')).toBeVisible()
     await act(() => vi.advanceTimersByTime(60_000))
     expect(screen.getByText('Credit refresh pending')).toBeVisible()
     await act(() => vi.advanceTimersByTime(60_000))
@@ -226,7 +226,7 @@ describe('credit refresh countdown', () => {
         userPaymentBalance={paymentBalance}
       />
     )
-    expect(screen.getByText('Credits refresh in 3d 3h')).toBeVisible()
+    expect(screen.getByText('Credits refresh in 3 days')).toBeVisible()
 
     unmount()
     expect(vi.getTimerCount()).toBe(0)
