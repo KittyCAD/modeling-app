@@ -24,6 +24,7 @@ import {
   makeProjectZookeeperConversationStore,
   zookeeperConversationsToJson,
 } from '@src/lib/zookeeper/zookeeperConversationStore'
+import { getZookeeperConversationIdsFromProjectTomlContents } from '@src/lib/projectTomlMetadata'
 
 const zookeeperConversationStore = makeZookeeperConversationStore(
   fsMocks as unknown as FileOperationsRegistryService
@@ -157,6 +158,10 @@ describe('project-backed Zookeeper conversations', () => {
     await store().saveProjectConversationId({ projectId, conversationId })
     const syncedToml = files.get(projectTomlPath)!
     expect(syncedToml).toContain('[settings.zookeeper."zoo.dev"]')
+    expect(
+      getZookeeperConversationIdsFromProjectTomlContents(syncedToml, 'zoo.dev')
+    ).toEqual([conversationId])
+    expect(syncedToml).toContain('conversation_ids =')
 
     files = new Map([[projectTomlPath, syncedToml]])
     fsMocks.readFile.mockClear()
@@ -190,8 +195,13 @@ describe('project-backed Zookeeper conversations', () => {
       '/tmp/ml-conversations.json',
       JSON.stringify({ [projectId]: conversationId })
     )
+    await store().getProjectConversationId(projectId)
+    await store().saveProjectConversationId({
+      projectId,
+      conversationId: replacementId,
+    })
     await store().deleteProjectConversationId(projectId)
-    expect(files.get(projectTomlPath)).toContain('conversation_id = ""')
+    expect(files.get(projectTomlPath)).toContain('conversation_ids = []')
     await expect(
       store().getProjectConversationId(projectId)
     ).resolves.toBeUndefined()
@@ -203,6 +213,7 @@ describe('project-backed Zookeeper conversations', () => {
     await expect(store().getProjectConversationId(projectId)).resolves.toBe(
       replacementId
     )
+    expect(files.get(projectTomlPath)).not.toContain(conversationId)
   })
 
   it('keeps environments separate without migrating an unscoped mapping into a second environment', async () => {
@@ -232,6 +243,67 @@ describe('project-backed Zookeeper conversations', () => {
     await store().getProjectConversationId(projectId)
     await store().saveProjectConversationId({ projectId, conversationId })
     expect(fsMocks.writeFile).not.toHaveBeenCalled()
+  })
+
+  it('appends new IDs without duplicating or reordering existing conversations', async () => {
+    await store().saveProjectConversationId({ projectId, conversationId })
+    await store().saveProjectConversationId({
+      projectId,
+      conversationId: replacementId,
+    })
+    const contents = files.get(projectTomlPath)!
+    expect(
+      getZookeeperConversationIdsFromProjectTomlContents(contents, 'zoo.dev')
+    ).toEqual([conversationId, replacementId])
+
+    fsMocks.writeFile.mockClear()
+    await store().saveProjectConversationId({ projectId, conversationId })
+    await expect(store().getProjectConversationId(projectId)).resolves.toBe(
+      replacementId
+    )
+    expect(files.get(projectTomlPath)).toBe(contents)
+    expect(fsMocks.writeFile).not.toHaveBeenCalled()
+  })
+
+  it.each([conversationId, ''])(
+    'preserves the earlier singular field on read and replaces it on save: %s',
+    async (savedId) => {
+      files.set(
+        projectTomlPath,
+        `${initialToml}\n[settings.zookeeper."zoo.dev"]\nconversation_id = "${savedId}"\n`
+      )
+      files.set(
+        '/tmp/ml-conversations.json',
+        JSON.stringify({ [projectId]: replacementId })
+      )
+      await expect(store().getProjectConversationId(projectId)).resolves.toBe(
+        savedId || undefined
+      )
+      if (savedId) {
+        await store().saveProjectConversationId({
+          projectId,
+          conversationId: savedId,
+        })
+      } else {
+        await store().deleteProjectConversationId(projectId)
+      }
+      const contents = files.get(projectTomlPath)!
+      expect(
+        getZookeeperConversationIdsFromProjectTomlContents(contents, 'zoo.dev')
+      ).toEqual(savedId ? [savedId] : [])
+      expect(contents).toContain('conversation_ids =')
+      expect(contents).not.toContain('conversation_id =')
+    }
+  )
+
+  it('gives an explicit list priority over the earlier singular field', async () => {
+    files.set(
+      projectTomlPath,
+      `${initialToml}\n[settings.zookeeper."zoo.dev"]\nconversation_ids = []\nconversation_id = "${conversationId}"\n`
+    )
+    await expect(
+      store().getProjectConversationId(projectId)
+    ).resolves.toBeUndefined()
   })
 
   it('serializes pending saves and clear operations for a project', async () => {
@@ -290,16 +362,24 @@ describe('project-backed Zookeeper conversations', () => {
     expect(fsMocks.writeFile).not.toHaveBeenCalled()
   })
 
-  it('rejects malformed conversation metadata without replacing it', async () => {
-    const contents = `${initialToml}\n[settings.zookeeper."zoo.dev"]\nconversation_id = "invalid"\n`
-    files.set(projectTomlPath, contents)
-    await expect(store().getProjectConversationId(projectId)).rejects.toThrow(
-      'Invalid Zookeeper conversation ID'
-    )
-    await expect(
-      store().saveProjectConversationId({ projectId, conversationId })
-    ).rejects.toThrow('Invalid Zookeeper conversation ID')
-    expect(files.get(projectTomlPath)).toBe(contents)
-    expect(fsMocks.writeFile).not.toHaveBeenCalled()
-  })
+  it.each([
+    'conversation_ids = "invalid"',
+    `conversation_ids = ["${conversationId}", "invalid"]`,
+    'conversation_ids = [42]',
+    'conversation_id = "invalid"',
+  ])(
+    'rejects malformed conversation metadata without replacing it: %s',
+    async (metadata) => {
+      const contents = `${initialToml}\n[settings.zookeeper."zoo.dev"]\n${metadata}\n`
+      files.set(projectTomlPath, contents)
+      await expect(store().getProjectConversationId(projectId)).rejects.toThrow(
+        'Invalid Zookeeper conversation ID'
+      )
+      await expect(
+        store().saveProjectConversationId({ projectId, conversationId })
+      ).rejects.toThrow('Invalid Zookeeper conversation ID')
+      expect(files.get(projectTomlPath)).toBe(contents)
+      expect(fsMocks.writeFile).not.toHaveBeenCalled()
+    }
+  )
 })

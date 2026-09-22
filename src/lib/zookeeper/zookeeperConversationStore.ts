@@ -4,7 +4,7 @@ import fsZds from '@src/lib/fs-zds'
 import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
 import {
   getProjectIdFromProjectTomlContents,
-  getZookeeperConversationIdFromProjectTomlContents,
+  getZookeeperConversationIdsFromProjectTomlContents,
   setZookeeperConversationInProjectTomlContents,
 } from '@src/lib/projectTomlMetadata'
 import { isErr } from '@src/lib/trap'
@@ -162,7 +162,7 @@ export const makeProjectZookeeperConversationStore = (
     getProjectConversationId(projectId) {
       return serialize(async () => {
         const contents = await readProjectToml(projectId)
-        const saved = getZookeeperConversationIdFromProjectTomlContents(
+        const saved = getZookeeperConversationIdsFromProjectTomlContents(
           contents,
           environment
         )
@@ -170,7 +170,8 @@ export const makeProjectZookeeperConversationStore = (
           return Promise.reject(saved)
         }
         if (saved !== undefined) {
-          return saved || undefined
+          // Until there is a conversation picker, resume the last added conversation.
+          return saved.at(-1)
         }
         const legacy = (await readZookeeperConversations(fileOperations)).get(
           projectId

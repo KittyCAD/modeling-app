@@ -120,7 +120,7 @@ describe('duplicateProjectInDirectory', () => {
   it('keeps duplicated project metadata even when project.toml is the active file', async () => {
     const conversationId = 'b9e0a35a-56b8-4cb4-9c67-afc14bdf820f'
     const project = await makeProject({
-      projectToml: `title = "Source project"\ndefault_file = "main.kcl"\n\n[settings.zookeeper."zoo.dev"]\nconversation_id = "${conversationId}"\n`,
+      projectToml: `title = "Source project"\ndefault_file = "main.kcl"\n\n[settings.zookeeper."zoo.dev"]\nconversation_ids = ["${conversationId}"]\n`,
     })
 
     const { targetPath } = await duplicateSourceProject({

@@ -173,11 +173,11 @@ export function setProjectIdInProjectTomlContents(
   return stringifyProjectToml(table)
 }
 
-/** Undefined permits legacy migration; an empty string means no saved conversation. */
-export function getZookeeperConversationIdFromProjectTomlContents(
+/** Undefined permits legacy migration; an empty list means no saved conversations. */
+export function getZookeeperConversationIdsFromProjectTomlContents(
   contents: string,
   environmentName: string
-): string | undefined | Error {
+): string[] | undefined | Error {
   const table = parseProjectToml(contents)
   if (!table) {
     return new Error(
@@ -194,22 +194,25 @@ export function getZookeeperConversationIdFromProjectTomlContents(
   const environment = zookeeper[environmentName]
   // Once migrated, never reuse the unscoped legacy mapping in another environment.
   if (environment === undefined) {
-    return ''
+    return []
   }
   if (!isTomlTable(environment)) {
     return new Error('Invalid Zookeeper environment metadata in project.toml')
   }
-  const conversationId = environment.conversation_id
-  if (conversationId === undefined || conversationId === '') {
-    return ''
-  }
+  // Preserve conversations saved by builds using the earlier singular field.
+  const legacyId = environment.conversation_id
+  const conversationIds =
+    environment.conversation_ids ??
+    (legacyId === undefined || legacyId === '' ? [] : [legacyId])
   if (
-    typeof conversationId !== 'string' ||
-    !REGEXP_UUIDV4.test(conversationId)
+    !isArray(conversationIds) ||
+    !conversationIds.every(
+      (id): id is string => typeof id === 'string' && REGEXP_UUIDV4.test(id)
+    )
   ) {
-    return new Error('Invalid Zookeeper conversation ID in project.toml')
+    return new Error('Invalid Zookeeper conversation IDs in project.toml')
   }
-  return conversationId
+  return conversationIds
 }
 
 export function setZookeeperConversationInProjectTomlContents(
@@ -217,7 +220,7 @@ export function setZookeeperConversationInProjectTomlContents(
   environmentName: string,
   conversationId: string | undefined
 ): string | Error {
-  const current = getZookeeperConversationIdFromProjectTomlContents(
+  const current = getZookeeperConversationIdsFromProjectTomlContents(
     contents,
     environmentName
   )
@@ -245,11 +248,26 @@ export function setZookeeperConversationInProjectTomlContents(
     zookeeper[environmentName] = {}
   }
   const environment = zookeeper[environmentName]
-  if (environment.conversation_id === (conversationId ?? '')) {
+  const conversationIds = current ?? []
+  const alreadySaved =
+    conversationId === undefined
+      ? conversationIds.length === 0
+      : conversationIds.includes(conversationId)
+  if (
+    alreadySaved &&
+    environment.conversation_ids !== undefined &&
+    environment.conversation_id === undefined
+  ) {
     return contents
   }
-  // An explicit empty ID prevents a stale local mapping from resurrecting cleared chat.
-  environment.conversation_id = conversationId ?? ''
+  // An explicit empty list prevents a stale local mapping from resurrecting cleared chat.
+  environment.conversation_ids =
+    conversationId === undefined
+      ? []
+      : alreadySaved
+        ? conversationIds
+        : [...conversationIds, conversationId]
+  delete environment.conversation_id
   return stringifyProjectToml(table)
 }
 

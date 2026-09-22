@@ -84,7 +84,7 @@ describe('projectTomlMetadata', () => {
 
   it('prepares duplicated projects without dropping unrelated metadata', () => {
     const toml = prepareProjectTomlForDuplication(
-      'title = "Original"\ndefault_file = "nested/part.kcl"\n\n[custom]\nvalue = "kept"\n\n[settings.meta]\nid = "old-local-id"\n\n[settings.zookeeper."zoo.dev"]\nconversation_id = "old-conversation"\n\n[cloud."zoo.dev"]\nproject_id = "old-cloud-id"\n',
+      'title = "Original"\ndefault_file = "nested/part.kcl"\n\n[custom]\nvalue = "kept"\n\n[settings.meta]\nid = "old-local-id"\n\n[settings.zookeeper."zoo.dev"]\nconversation_ids = ["old-conversation"]\n\n[cloud."zoo.dev"]\nproject_id = "old-cloud-id"\n',
       'Original-1',
       'new-local-id'
     )
@@ -104,8 +104,8 @@ describe('projectTomlMetadata', () => {
 
   it('preserves the latest conversation metadata over a stale settings snapshot', () => {
     const toml = preserveProjectTomlMetadataInProjectSettingsContents(
-      '[settings.meta]\nid = "project-id"\n[settings.zookeeper."zoo.dev"]\nconversation_id = "new-conversation"\n',
-      '[settings.meta]\nid = "project-id"\n[settings.modeling]\nbase_unit = "mm"\n[settings.zookeeper."zoo.dev"]\nconversation_id = "old-conversation"\n'
+      '[settings.meta]\nid = "project-id"\n[settings.zookeeper."zoo.dev"]\nconversation_ids = ["new-conversation"]\n',
+      '[settings.meta]\nid = "project-id"\n[settings.modeling]\nbase_unit = "mm"\n[settings.zookeeper."zoo.dev"]\nconversation_ids = ["old-conversation"]\n'
     )
     expect(toml).toContain('new-conversation')
     expect(toml).not.toContain('old-conversation')
@@ -114,11 +114,11 @@ describe('projectTomlMetadata', () => {
 
   it('preserves an explicitly cleared conversation when saving settings', () => {
     const toml = preserveProjectTomlMetadataInProjectSettingsContents(
-      '[settings.zookeeper."zoo.dev"]\nconversation_id = ""\n',
+      '[settings.zookeeper."zoo.dev"]\nconversation_ids = []\n',
       '[settings.modeling]\nbase_unit = "mm"\n'
     )
     expect(toml).toContain('[settings.zookeeper."zoo.dev"]')
-    expect(toml).toContain('conversation_id = ""')
+    expect(toml).toContain('conversation_ids = []')
   })
 
   it('preserves top-level project metadata when replacing project settings', () => {
