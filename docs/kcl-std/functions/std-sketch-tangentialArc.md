@@ -68,7 +68,7 @@ example = extrude(exampleSketch, length = 10)
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the tangentialArc function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-tangentialArc0_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-tangentialArc0_output.glb"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-tangentialArc0.png"
@@ -94,7 +94,7 @@ example = extrude(exampleSketch, length = 10)
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the tangentialArc function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-tangentialArc1_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-tangentialArc1_output.glb"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-tangentialArc1.png"
@@ -120,7 +120,7 @@ example = extrude(exampleSketch, length = 10)
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the tangentialArc function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-tangentialArc2_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-tangentialArc2_output.glb"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-tangentialArc2.png"

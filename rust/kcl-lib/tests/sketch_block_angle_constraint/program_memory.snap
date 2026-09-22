@@ -45,18 +45,22 @@ description: Variables in memory after executing sketch_block_angle_constraint.k
             "type": "Number",
             "value": 0.06021787979229933,
             "ty": {
-              "mm": null,
               "type": "Known",
-              "type": "Length"
+              "value": {
+                "type": "Length",
+                "value": "mm"
+              }
             }
           },
           {
             "type": "Number",
             "value": 4.063434860152846,
             "ty": {
-              "mm": null,
               "type": "Known",
-              "type": "Length"
+              "value": {
+                "type": "Length",
+                "value": "mm"
+              }
             }
           }
         ]
@@ -75,17 +79,21 @@ description: Variables in memory after executing sketch_block_angle_constraint.k
                       {
                         "n": 0.06021787979229933,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 4.063434860152846,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -93,17 +101,21 @@ description: Variables in memory after executing sketch_block_angle_constraint.k
                       {
                         "n": 1.5303438685086626,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.7752921319327536,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -188,18 +200,22 @@ description: Variables in memory after executing sketch_block_angle_constraint.k
             "type": "Number",
             "value": 1.5303438779339193,
             "ty": {
-              "mm": null,
               "type": "Known",
-              "type": "Length"
+              "value": {
+                "type": "Length",
+                "value": "mm"
+              }
             }
           },
           {
             "type": "Number",
             "value": 0.7752921333613939,
             "ty": {
-              "mm": null,
               "type": "Known",
-              "type": "Length"
+              "value": {
+                "type": "Length",
+                "value": "mm"
+              }
             }
           }
         ]
@@ -218,17 +234,21 @@ description: Variables in memory after executing sketch_block_angle_constraint.k
                       {
                         "n": 1.5303438779339193,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.7752921333613939,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -236,17 +256,21 @@ description: Variables in memory after executing sketch_block_angle_constraint.k
                       {
                         "n": 1.5303438685086626,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.7752921319327536,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -331,18 +355,22 @@ description: Variables in memory after executing sketch_block_angle_constraint.k
             "type": "Number",
             "value": 2.979083243428067,
             "ty": {
-              "mm": null,
               "type": "Known",
-              "type": "Length"
+              "value": {
+                "type": "Length",
+                "value": "mm"
+              }
             }
           },
           {
             "type": "Number",
             "value": 0.48606496504174806,
             "ty": {
-              "mm": null,
               "type": "Known",
-              "type": "Length"
+              "value": {
+                "type": "Length",
+                "value": "mm"
+              }
             }
           }
         ]
@@ -361,17 +389,21 @@ description: Variables in memory after executing sketch_block_angle_constraint.k
                       {
                         "n": 2.979083243428067,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.48606496504174806,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -379,17 +411,21 @@ description: Variables in memory after executing sketch_block_angle_constraint.k
                       {
                         "n": 1.5303438685086626,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.7752921319327536,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -626,18 +662,22 @@ description: Variables in memory after executing sketch_block_angle_constraint.k
             "type": "Number",
             "value": 1.5303438685086626,
             "ty": {
-              "mm": null,
               "type": "Known",
-              "type": "Length"
+              "value": {
+                "type": "Length",
+                "value": "mm"
+              }
             }
           },
           {
             "type": "Number",
             "value": 0.7752921319327536,
             "ty": {
-              "mm": null,
               "type": "Known",
-              "type": "Length"
+              "value": {
+                "type": "Length",
+                "value": "mm"
+              }
             }
           }
         ]

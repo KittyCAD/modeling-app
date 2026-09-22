@@ -80,7 +80,7 @@ beforeEach(async () => {
   }
 
   const { instance, kclManager, engineCommandManager, rustContext } =
-    await buildTheWorldAndConnectToEngine({ geometryOnly: true })
+    await buildTheWorldAndConnectToEngine({ webrtc: false, pool: 'cpu' })
   instanceInThisFile = instance
   kclManagerInThisFile = kclManager
   engineCommandManagerInThisFile = engineCommandManager
@@ -88,7 +88,10 @@ beforeEach(async () => {
 })
 
 afterAll(() => {
-  engineCommandManagerInThisFile.tearDown()
+  engineCommandManagerInThisFile.tearDown({
+    route: 'user-requested',
+    initiatedBy: 'client',
+  })
 })
 
 describe('findAllPreviousVariables', () => {
@@ -122,8 +125,10 @@ variableBelowShouldNotBeIncluded = 3
     )
     const defaultTy = {
       type: 'Default',
-      angle: 'degrees',
-      len: 'mm',
+      value: {
+        angle: 'degrees',
+        len: 'mm',
+      },
     }
     expect(variables).toEqual([
       {
@@ -879,6 +884,7 @@ describe('Testing findOperationArtifact', () => {
     return {
       type: 'gdtAnnotation',
       id,
+      consumed: false,
       codeRef: {
         range: sourceRange,
         nodePath: defaultNodePath(),

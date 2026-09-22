@@ -64,7 +64,10 @@ describe('Zookeeper prompt selections from modelingMachine', () => {
   })
 
   afterAll(() => {
-    world.engineCommandManager.tearDown()
+    world.engineCommandManager.tearDown({
+      route: 'user-requested',
+      initiatedBy: 'client',
+    })
     world.commandBarActor.stop()
     world.settingsActor.stop()
   })

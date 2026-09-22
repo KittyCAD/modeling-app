@@ -1,6 +1,6 @@
 /// Definitions of standard holes that could be drilled or cut into solids.
 
-@settings(defaultLengthUnit = mm, kclVersion = 1.0)
+@settings(defaultLengthUnit = mm)
 
 // Tops
 

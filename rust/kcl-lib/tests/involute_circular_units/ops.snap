@@ -12,8 +12,10 @@ description: Operations executed involute_circular_units.kcl
         "value": 21.0,
         "ty": {
           "type": "Default",
-          "len": "cm",
-          "angle": "degrees"
+          "value": {
+            "len": "cm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -41,8 +43,10 @@ description: Operations executed involute_circular_units.kcl
         "value": 0.5,
         "ty": {
           "type": "Default",
-          "len": "cm",
-          "angle": "degrees"
+          "value": {
+            "len": "cm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -70,8 +74,10 @@ description: Operations executed involute_circular_units.kcl
         "value": 10.5,
         "ty": {
           "type": "Default",
-          "len": "cm",
-          "angle": "degrees"
+          "value": {
+            "len": "cm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -98,9 +104,11 @@ description: Operations executed involute_circular_units.kcl
         "type": "Number",
         "value": 20.0,
         "ty": {
-          "degrees": null,
           "type": "Known",
-          "type": "Angle"
+          "value": {
+            "type": "Angle",
+            "value": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -128,8 +136,10 @@ description: Operations executed involute_circular_units.kcl
         "value": 0.5,
         "ty": {
           "type": "Default",
-          "len": "cm",
-          "angle": "degrees"
+          "value": {
+            "len": "cm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -157,8 +167,10 @@ description: Operations executed involute_circular_units.kcl
         "value": 0.625,
         "ty": {
           "type": "Default",
-          "len": "cm",
-          "angle": "degrees"
+          "value": {
+            "len": "cm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -186,8 +198,10 @@ description: Operations executed involute_circular_units.kcl
         "value": 9.866772518252038,
         "ty": {
           "type": "Default",
-          "len": "cm",
-          "angle": "degrees"
+          "value": {
+            "len": "cm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -215,8 +229,10 @@ description: Operations executed involute_circular_units.kcl
         "value": 11.5,
         "ty": {
           "type": "Default",
-          "len": "cm",
-          "angle": "degrees"
+          "value": {
+            "len": "cm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -244,8 +260,10 @@ description: Operations executed involute_circular_units.kcl
         "value": 0.3,
         "ty": {
           "type": "Default",
-          "len": "cm",
-          "angle": "degrees"
+          "value": {
+            "len": "cm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -272,9 +290,11 @@ description: Operations executed involute_circular_units.kcl
         "type": "Number",
         "value": 6.0,
         "ty": {
-          "degrees": null,
           "type": "Known",
-          "type": "Angle"
+          "value": {
+            "type": "Angle",
+            "value": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -387,8 +407,10 @@ description: Operations executed involute_circular_units.kcl
             "value": 0.3,
             "ty": {
               "type": "Default",
-              "len": "cm",
-              "angle": "degrees"
+              "value": {
+                "len": "cm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -451,7 +473,9 @@ description: Operations executed involute_circular_units.kcl
         "value": 2.718281828459045,
         "ty": {
           "type": "Known",
-          "type": "Count"
+          "value": {
+            "type": "Count"
+          }
         }
       },
       "visibility": "export",
@@ -479,7 +503,9 @@ description: Operations executed involute_circular_units.kcl
         "value": 6.283185307179586,
         "ty": {
           "type": "Known",
-          "type": "Count"
+          "value": {
+            "type": "Count"
+          }
         }
       },
       "visibility": "export",

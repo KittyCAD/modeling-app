@@ -12,8 +12,10 @@ description: Operations executed clock.kcl
         "value": 500.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -41,8 +43,10 @@ description: Operations executed clock.kcl
         "value": 50.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -70,8 +74,10 @@ description: Operations executed clock.kcl
         "value": 100.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -99,8 +105,10 @@ description: Operations executed clock.kcl
         "value": 30.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -128,8 +136,10 @@ description: Operations executed clock.kcl
         "value": 10.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -157,8 +167,10 @@ description: Operations executed clock.kcl
         "value": 25.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -186,8 +198,10 @@ description: Operations executed clock.kcl
         "value": 25.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -215,8 +229,10 @@ description: Operations executed clock.kcl
         "value": 230.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -244,8 +260,10 @@ description: Operations executed clock.kcl
         "value": 310.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -273,8 +291,10 @@ description: Operations executed clock.kcl
         "value": 5.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -302,8 +322,10 @@ description: Operations executed clock.kcl
         "value": 10.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -331,8 +353,10 @@ description: Operations executed clock.kcl
         "value": 10.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -360,8 +384,10 @@ description: Operations executed clock.kcl
         "value": 450.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -389,8 +415,10 @@ description: Operations executed clock.kcl
         "value": 62.5,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -418,8 +446,10 @@ description: Operations executed clock.kcl
         "value": 100.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -447,8 +477,10 @@ description: Operations executed clock.kcl
         "value": 9.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -476,8 +508,10 @@ description: Operations executed clock.kcl
         "value": 29.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -504,9 +538,11 @@ description: Operations executed clock.kcl
         "type": "Number",
         "value": -180.0,
         "ty": {
-          "degrees": null,
           "type": "Known",
-          "type": "Angle"
+          "value": {
+            "type": "Angle",
+            "value": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -533,9 +569,11 @@ description: Operations executed clock.kcl
         "type": "Number",
         "value": -84.0,
         "ty": {
-          "degrees": null,
           "type": "Known",
-          "type": "Angle"
+          "value": {
+            "type": "Angle",
+            "value": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -590,18 +628,22 @@ description: Operations executed clock.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -616,18 +658,22 @@ description: Operations executed clock.kcl
                 "type": "SketchVar",
                 "value": 250.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -720,8 +766,10 @@ description: Operations executed clock.kcl
             "value": 50.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -801,8 +849,10 @@ description: Operations executed clock.kcl
             "value": 5.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -863,18 +913,22 @@ description: Operations executed clock.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -889,18 +943,22 @@ description: Operations executed clock.kcl
                 "type": "SketchVar",
                 "value": 250.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -950,18 +1008,22 @@ description: Operations executed clock.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -976,18 +1038,22 @@ description: Operations executed clock.kcl
                 "type": "SketchVar",
                 "value": 225.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -1080,8 +1146,10 @@ description: Operations executed clock.kcl
             "value": 10.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -1161,8 +1229,10 @@ description: Operations executed clock.kcl
             "value": 5.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -1246,8 +1316,10 @@ description: Operations executed clock.kcl
             "value": 50.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -1307,18 +1379,22 @@ description: Operations executed clock.kcl
                 "type": "SketchVar",
                 "value": 4.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 20.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -1333,18 +1409,22 @@ description: Operations executed clock.kcl
                 "type": "SketchVar",
                 "value": -4.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 20.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -1394,18 +1474,22 @@ description: Operations executed clock.kcl
                 "type": "SketchVar",
                 "value": 4.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -20.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -1420,18 +1504,22 @@ description: Operations executed clock.kcl
                 "type": "SketchVar",
                 "value": 4.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 20.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -1525,18 +1613,22 @@ description: Operations executed clock.kcl
                 "type": "SketchVar",
                 "value": -4.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -20.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -1551,18 +1643,22 @@ description: Operations executed clock.kcl
                 "type": "SketchVar",
                 "value": 4.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -20.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -1656,18 +1752,22 @@ description: Operations executed clock.kcl
                 "type": "SketchVar",
                 "value": -4.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 20.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -1682,18 +1782,22 @@ description: Operations executed clock.kcl
                 "type": "SketchVar",
                 "value": -4.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -20.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -1841,8 +1945,10 @@ description: Operations executed clock.kcl
             "value": 10.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -1926,8 +2032,10 @@ description: Operations executed clock.kcl
             "value": 50.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -1987,18 +2095,22 @@ description: Operations executed clock.kcl
                 "type": "SketchVar",
                 "value": -13.333333333,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 20.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -2013,18 +2125,22 @@ description: Operations executed clock.kcl
                 "type": "SketchVar",
                 "value": -20.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 20.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -2074,18 +2190,22 @@ description: Operations executed clock.kcl
                 "type": "SketchVar",
                 "value": -8.480396876,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 6.666666667,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -2100,18 +2220,22 @@ description: Operations executed clock.kcl
                 "type": "SketchVar",
                 "value": -13.333333333,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 20.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -2205,18 +2329,22 @@ description: Operations executed clock.kcl
                 "type": "SketchVar",
                 "value": -3.62746042,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 20.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -2231,18 +2359,22 @@ description: Operations executed clock.kcl
                 "type": "SketchVar",
                 "value": -8.480396876,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 6.666666667,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -2336,18 +2468,22 @@ description: Operations executed clock.kcl
                 "type": "SketchVar",
                 "value": 3.039206247,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 20.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -2362,18 +2498,22 @@ description: Operations executed clock.kcl
                 "type": "SketchVar",
                 "value": -3.62746042,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 20.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -2467,18 +2607,22 @@ description: Operations executed clock.kcl
                 "type": "SketchVar",
                 "value": -4.240198438,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -2493,18 +2637,22 @@ description: Operations executed clock.kcl
                 "type": "SketchVar",
                 "value": 3.039206247,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 20.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -2598,18 +2746,22 @@ description: Operations executed clock.kcl
                 "type": "SketchVar",
                 "value": 3.039206247,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -20.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -2624,18 +2776,22 @@ description: Operations executed clock.kcl
                 "type": "SketchVar",
                 "value": -4.240198438,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -2729,18 +2885,22 @@ description: Operations executed clock.kcl
                 "type": "SketchVar",
                 "value": -3.62746042,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -20.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -2755,18 +2915,22 @@ description: Operations executed clock.kcl
                 "type": "SketchVar",
                 "value": 3.039206247,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -20.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -2860,18 +3024,22 @@ description: Operations executed clock.kcl
                 "type": "SketchVar",
                 "value": -8.480396876,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -6.666666667,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -2886,18 +3054,22 @@ description: Operations executed clock.kcl
                 "type": "SketchVar",
                 "value": -3.62746042,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -20.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -2991,18 +3163,22 @@ description: Operations executed clock.kcl
                 "type": "SketchVar",
                 "value": -13.333333333,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -20.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -3017,18 +3193,22 @@ description: Operations executed clock.kcl
                 "type": "SketchVar",
                 "value": -8.480396876,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -6.666666667,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -3122,18 +3302,22 @@ description: Operations executed clock.kcl
                 "type": "SketchVar",
                 "value": -20.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -20.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -3148,18 +3332,22 @@ description: Operations executed clock.kcl
                 "type": "SketchVar",
                 "value": -13.333333333,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -20.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -3253,18 +3441,22 @@ description: Operations executed clock.kcl
                 "type": "SketchVar",
                 "value": -12.720595315,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -3279,18 +3471,22 @@ description: Operations executed clock.kcl
                 "type": "SketchVar",
                 "value": -20.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -20.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -3384,18 +3580,22 @@ description: Operations executed clock.kcl
                 "type": "SketchVar",
                 "value": -20.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 20.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -3410,18 +3610,22 @@ description: Operations executed clock.kcl
                 "type": "SketchVar",
                 "value": -12.720595315,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -3569,8 +3773,10 @@ description: Operations executed clock.kcl
             "value": 10.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -3654,8 +3860,10 @@ description: Operations executed clock.kcl
             "value": 50.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -3715,18 +3923,22 @@ description: Operations executed clock.kcl
                 "type": "SketchVar",
                 "value": -4.166666667,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 20.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -3741,18 +3953,22 @@ description: Operations executed clock.kcl
                 "type": "SketchVar",
                 "value": -12.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 20.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -3802,18 +4018,22 @@ description: Operations executed clock.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -3828,18 +4048,22 @@ description: Operations executed clock.kcl
                 "type": "SketchVar",
                 "value": -4.166666667,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 20.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -3933,18 +4157,22 @@ description: Operations executed clock.kcl
                 "type": "SketchVar",
                 "value": 4.166666667,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 20.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -3959,18 +4187,22 @@ description: Operations executed clock.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -4064,18 +4296,22 @@ description: Operations executed clock.kcl
                 "type": "SketchVar",
                 "value": 12.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 20.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -4090,18 +4326,22 @@ description: Operations executed clock.kcl
                 "type": "SketchVar",
                 "value": 4.166666667,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 20.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -4195,18 +4435,22 @@ description: Operations executed clock.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -20.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -4221,18 +4465,22 @@ description: Operations executed clock.kcl
                 "type": "SketchVar",
                 "value": 12.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 20.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -4326,18 +4574,22 @@ description: Operations executed clock.kcl
                 "type": "SketchVar",
                 "value": -12.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 20.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -4352,18 +4604,22 @@ description: Operations executed clock.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -20.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -4511,8 +4767,10 @@ description: Operations executed clock.kcl
             "value": 10.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -4593,8 +4851,10 @@ description: Operations executed clock.kcl
               "value": 93.75000000000001,
               "ty": {
                 "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
+                "value": {
+                  "len": "mm",
+                  "angle": "degrees"
+                }
               }
             },
             "sourceRange": []
@@ -4605,8 +4865,10 @@ description: Operations executed clock.kcl
               "value": 162.37976320958225,
               "ty": {
                 "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
+                "value": {
+                  "len": "mm",
+                  "angle": "degrees"
+                }
               }
             },
             "sourceRange": []
@@ -4688,8 +4950,10 @@ description: Operations executed clock.kcl
             "value": 93.75000000000001,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -4700,8 +4964,10 @@ description: Operations executed clock.kcl
             "value": 162.37976320958225,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -4754,8 +5020,10 @@ description: Operations executed clock.kcl
               "value": 152.37976320958225,
               "ty": {
                 "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
+                "value": {
+                  "len": "mm",
+                  "angle": "degrees"
+                }
               }
             },
             "sourceRange": []
@@ -4766,8 +5034,10 @@ description: Operations executed clock.kcl
               "value": 93.74999999999999,
               "ty": {
                 "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
+                "value": {
+                  "len": "mm",
+                  "angle": "degrees"
+                }
               }
             },
             "sourceRange": []
@@ -4849,8 +5119,10 @@ description: Operations executed clock.kcl
             "value": 152.37976320958225,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -4861,8 +5133,10 @@ description: Operations executed clock.kcl
             "value": 93.74999999999999,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -4915,8 +5189,10 @@ description: Operations executed clock.kcl
               "value": 167.37976320958225,
               "ty": {
                 "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
+                "value": {
+                  "len": "mm",
+                  "angle": "degrees"
+                }
               }
             },
             "sourceRange": []
@@ -4927,8 +5203,10 @@ description: Operations executed clock.kcl
               "value": 93.74999999999999,
               "ty": {
                 "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
+                "value": {
+                  "len": "mm",
+                  "angle": "degrees"
+                }
               }
             },
             "sourceRange": []
@@ -5010,8 +5288,10 @@ description: Operations executed clock.kcl
             "value": 167.37976320958225,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -5022,8 +5302,10 @@ description: Operations executed clock.kcl
             "value": 93.74999999999999,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -5076,8 +5358,10 @@ description: Operations executed clock.kcl
               "value": 172.5,
               "ty": {
                 "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
+                "value": {
+                  "len": "mm",
+                  "angle": "degrees"
+                }
               }
             },
             "sourceRange": []
@@ -5088,8 +5372,10 @@ description: Operations executed clock.kcl
               "value": 0.0,
               "ty": {
                 "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
+                "value": {
+                  "len": "mm",
+                  "angle": "degrees"
+                }
               }
             },
             "sourceRange": []
@@ -5171,8 +5457,10 @@ description: Operations executed clock.kcl
             "value": 172.5,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -5183,8 +5471,10 @@ description: Operations executed clock.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -5237,8 +5527,10 @@ description: Operations executed clock.kcl
               "value": 187.5,
               "ty": {
                 "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
+                "value": {
+                  "len": "mm",
+                  "angle": "degrees"
+                }
               }
             },
             "sourceRange": []
@@ -5249,8 +5541,10 @@ description: Operations executed clock.kcl
               "value": 0.0,
               "ty": {
                 "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
+                "value": {
+                  "len": "mm",
+                  "angle": "degrees"
+                }
               }
             },
             "sourceRange": []
@@ -5332,8 +5626,10 @@ description: Operations executed clock.kcl
             "value": 187.5,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -5344,8 +5640,10 @@ description: Operations executed clock.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -5398,8 +5696,10 @@ description: Operations executed clock.kcl
               "value": 202.5,
               "ty": {
                 "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
+                "value": {
+                  "len": "mm",
+                  "angle": "degrees"
+                }
               }
             },
             "sourceRange": []
@@ -5410,8 +5710,10 @@ description: Operations executed clock.kcl
               "value": 0.0,
               "ty": {
                 "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
+                "value": {
+                  "len": "mm",
+                  "angle": "degrees"
+                }
               }
             },
             "sourceRange": []
@@ -5493,8 +5795,10 @@ description: Operations executed clock.kcl
             "value": 202.5,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -5505,8 +5809,10 @@ description: Operations executed clock.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -5559,8 +5865,10 @@ description: Operations executed clock.kcl
               "value": 152.37976320958225,
               "ty": {
                 "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
+                "value": {
+                  "len": "mm",
+                  "angle": "degrees"
+                }
               }
             },
             "sourceRange": []
@@ -5571,8 +5879,10 @@ description: Operations executed clock.kcl
               "value": -93.74999999999999,
               "ty": {
                 "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
+                "value": {
+                  "len": "mm",
+                  "angle": "degrees"
+                }
               }
             },
             "sourceRange": []
@@ -5654,8 +5964,10 @@ description: Operations executed clock.kcl
             "value": 152.37976320958225,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -5666,8 +5978,10 @@ description: Operations executed clock.kcl
             "value": -93.74999999999999,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -5720,8 +6034,10 @@ description: Operations executed clock.kcl
               "value": 175.37976320958225,
               "ty": {
                 "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
+                "value": {
+                  "len": "mm",
+                  "angle": "degrees"
+                }
               }
             },
             "sourceRange": []
@@ -5732,8 +6048,10 @@ description: Operations executed clock.kcl
               "value": -93.74999999999999,
               "ty": {
                 "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
+                "value": {
+                  "len": "mm",
+                  "angle": "degrees"
+                }
               }
             },
             "sourceRange": []
@@ -5815,8 +6133,10 @@ description: Operations executed clock.kcl
             "value": 175.37976320958225,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -5827,8 +6147,10 @@ description: Operations executed clock.kcl
             "value": -93.74999999999999,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -5881,8 +6203,10 @@ description: Operations executed clock.kcl
               "value": 93.75000000000001,
               "ty": {
                 "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
+                "value": {
+                  "len": "mm",
+                  "angle": "degrees"
+                }
               }
             },
             "sourceRange": []
@@ -5893,8 +6217,10 @@ description: Operations executed clock.kcl
               "value": -162.37976320958225,
               "ty": {
                 "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
+                "value": {
+                  "len": "mm",
+                  "angle": "degrees"
+                }
               }
             },
             "sourceRange": []
@@ -5976,8 +6302,10 @@ description: Operations executed clock.kcl
             "value": 93.75000000000001,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -5988,8 +6316,10 @@ description: Operations executed clock.kcl
             "value": -162.37976320958225,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -6042,8 +6372,10 @@ description: Operations executed clock.kcl
               "value": -9.99999999999999,
               "ty": {
                 "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
+                "value": {
+                  "len": "mm",
+                  "angle": "degrees"
+                }
               }
             },
             "sourceRange": []
@@ -6054,8 +6386,10 @@ description: Operations executed clock.kcl
               "value": -187.5,
               "ty": {
                 "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
+                "value": {
+                  "len": "mm",
+                  "angle": "degrees"
+                }
               }
             },
             "sourceRange": []
@@ -6137,8 +6471,10 @@ description: Operations executed clock.kcl
             "value": -9.99999999999999,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -6149,8 +6485,10 @@ description: Operations executed clock.kcl
             "value": -187.5,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -6203,8 +6541,10 @@ description: Operations executed clock.kcl
               "value": 12.00000000000001,
               "ty": {
                 "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
+                "value": {
+                  "len": "mm",
+                  "angle": "degrees"
+                }
               }
             },
             "sourceRange": []
@@ -6215,8 +6555,10 @@ description: Operations executed clock.kcl
               "value": -187.5,
               "ty": {
                 "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
+                "value": {
+                  "len": "mm",
+                  "angle": "degrees"
+                }
               }
             },
             "sourceRange": []
@@ -6298,8 +6640,10 @@ description: Operations executed clock.kcl
             "value": 12.00000000000001,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -6310,8 +6654,10 @@ description: Operations executed clock.kcl
             "value": -187.5,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -6364,8 +6710,10 @@ description: Operations executed clock.kcl
               "value": -108.74999999999996,
               "ty": {
                 "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
+                "value": {
+                  "len": "mm",
+                  "angle": "degrees"
+                }
               }
             },
             "sourceRange": []
@@ -6376,8 +6724,10 @@ description: Operations executed clock.kcl
               "value": -162.37976320958225,
               "ty": {
                 "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
+                "value": {
+                  "len": "mm",
+                  "angle": "degrees"
+                }
               }
             },
             "sourceRange": []
@@ -6459,8 +6809,10 @@ description: Operations executed clock.kcl
             "value": -108.74999999999996,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -6471,8 +6823,10 @@ description: Operations executed clock.kcl
             "value": -162.37976320958225,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -6525,8 +6879,10 @@ description: Operations executed clock.kcl
               "value": -88.74999999999996,
               "ty": {
                 "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
+                "value": {
+                  "len": "mm",
+                  "angle": "degrees"
+                }
               }
             },
             "sourceRange": []
@@ -6537,8 +6893,10 @@ description: Operations executed clock.kcl
               "value": -162.37976320958225,
               "ty": {
                 "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
+                "value": {
+                  "len": "mm",
+                  "angle": "degrees"
+                }
               }
             },
             "sourceRange": []
@@ -6620,8 +6978,10 @@ description: Operations executed clock.kcl
             "value": -88.74999999999996,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -6632,8 +6992,10 @@ description: Operations executed clock.kcl
             "value": -162.37976320958225,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -6686,8 +7048,10 @@ description: Operations executed clock.kcl
               "value": -73.74999999999996,
               "ty": {
                 "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
+                "value": {
+                  "len": "mm",
+                  "angle": "degrees"
+                }
               }
             },
             "sourceRange": []
@@ -6698,8 +7062,10 @@ description: Operations executed clock.kcl
               "value": -162.37976320958225,
               "ty": {
                 "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
+                "value": {
+                  "len": "mm",
+                  "angle": "degrees"
+                }
               }
             },
             "sourceRange": []
@@ -6781,8 +7147,10 @@ description: Operations executed clock.kcl
             "value": -73.74999999999996,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -6793,8 +7161,10 @@ description: Operations executed clock.kcl
             "value": -162.37976320958225,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -6847,8 +7217,10 @@ description: Operations executed clock.kcl
               "value": -172.37976320958225,
               "ty": {
                 "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
+                "value": {
+                  "len": "mm",
+                  "angle": "degrees"
+                }
               }
             },
             "sourceRange": []
@@ -6859,8 +7231,10 @@ description: Operations executed clock.kcl
               "value": -93.74999999999999,
               "ty": {
                 "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
+                "value": {
+                  "len": "mm",
+                  "angle": "degrees"
+                }
               }
             },
             "sourceRange": []
@@ -6942,8 +7316,10 @@ description: Operations executed clock.kcl
             "value": -172.37976320958225,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -6954,8 +7330,10 @@ description: Operations executed clock.kcl
             "value": -93.74999999999999,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -7008,8 +7386,10 @@ description: Operations executed clock.kcl
               "value": -152.37976320958225,
               "ty": {
                 "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
+                "value": {
+                  "len": "mm",
+                  "angle": "degrees"
+                }
               }
             },
             "sourceRange": []
@@ -7020,8 +7400,10 @@ description: Operations executed clock.kcl
               "value": -93.74999999999999,
               "ty": {
                 "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
+                "value": {
+                  "len": "mm",
+                  "angle": "degrees"
+                }
               }
             },
             "sourceRange": []
@@ -7103,8 +7485,10 @@ description: Operations executed clock.kcl
             "value": -152.37976320958225,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -7115,8 +7499,10 @@ description: Operations executed clock.kcl
             "value": -93.74999999999999,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -7169,8 +7555,10 @@ description: Operations executed clock.kcl
               "value": -137.37976320958225,
               "ty": {
                 "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
+                "value": {
+                  "len": "mm",
+                  "angle": "degrees"
+                }
               }
             },
             "sourceRange": []
@@ -7181,8 +7569,10 @@ description: Operations executed clock.kcl
               "value": -93.74999999999999,
               "ty": {
                 "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
+                "value": {
+                  "len": "mm",
+                  "angle": "degrees"
+                }
               }
             },
             "sourceRange": []
@@ -7264,8 +7654,10 @@ description: Operations executed clock.kcl
             "value": -137.37976320958225,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -7276,8 +7668,10 @@ description: Operations executed clock.kcl
             "value": -93.74999999999999,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -7330,8 +7724,10 @@ description: Operations executed clock.kcl
               "value": -122.37976320958225,
               "ty": {
                 "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
+                "value": {
+                  "len": "mm",
+                  "angle": "degrees"
+                }
               }
             },
             "sourceRange": []
@@ -7342,8 +7738,10 @@ description: Operations executed clock.kcl
               "value": -93.74999999999999,
               "ty": {
                 "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
+                "value": {
+                  "len": "mm",
+                  "angle": "degrees"
+                }
               }
             },
             "sourceRange": []
@@ -7425,8 +7823,10 @@ description: Operations executed clock.kcl
             "value": -122.37976320958225,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -7437,8 +7837,10 @@ description: Operations executed clock.kcl
             "value": -93.74999999999999,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -7491,8 +7893,10 @@ description: Operations executed clock.kcl
               "value": -202.5,
               "ty": {
                 "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
+                "value": {
+                  "len": "mm",
+                  "angle": "degrees"
+                }
               }
             },
             "sourceRange": []
@@ -7503,8 +7907,10 @@ description: Operations executed clock.kcl
               "value": 0.000000000000022962127484012872,
               "ty": {
                 "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
+                "value": {
+                  "len": "mm",
+                  "angle": "degrees"
+                }
               }
             },
             "sourceRange": []
@@ -7586,8 +7992,10 @@ description: Operations executed clock.kcl
             "value": -202.5,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -7598,8 +8006,10 @@ description: Operations executed clock.kcl
             "value": 0.000000000000022962127484012872,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -7652,8 +8062,10 @@ description: Operations executed clock.kcl
               "value": -172.5,
               "ty": {
                 "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
+                "value": {
+                  "len": "mm",
+                  "angle": "degrees"
+                }
               }
             },
             "sourceRange": []
@@ -7664,8 +8076,10 @@ description: Operations executed clock.kcl
               "value": 0.000000000000022962127484012872,
               "ty": {
                 "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
+                "value": {
+                  "len": "mm",
+                  "angle": "degrees"
+                }
               }
             },
             "sourceRange": []
@@ -7747,8 +8161,10 @@ description: Operations executed clock.kcl
             "value": -172.5,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -7759,8 +8175,10 @@ description: Operations executed clock.kcl
             "value": 0.000000000000022962127484012872,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -7813,8 +8231,10 @@ description: Operations executed clock.kcl
               "value": -157.37976320958225,
               "ty": {
                 "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
+                "value": {
+                  "len": "mm",
+                  "angle": "degrees"
+                }
               }
             },
             "sourceRange": []
@@ -7825,8 +8245,10 @@ description: Operations executed clock.kcl
               "value": 93.74999999999999,
               "ty": {
                 "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
+                "value": {
+                  "len": "mm",
+                  "angle": "degrees"
+                }
               }
             },
             "sourceRange": []
@@ -7908,8 +8330,10 @@ description: Operations executed clock.kcl
             "value": -157.37976320958225,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -7920,8 +8344,10 @@ description: Operations executed clock.kcl
             "value": 93.74999999999999,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -7974,8 +8400,10 @@ description: Operations executed clock.kcl
               "value": -93.74999999999996,
               "ty": {
                 "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
+                "value": {
+                  "len": "mm",
+                  "angle": "degrees"
+                }
               }
             },
             "sourceRange": []
@@ -7986,8 +8414,10 @@ description: Operations executed clock.kcl
               "value": 162.37976320958225,
               "ty": {
                 "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
+                "value": {
+                  "len": "mm",
+                  "angle": "degrees"
+                }
               }
             },
             "sourceRange": []
@@ -8069,8 +8499,10 @@ description: Operations executed clock.kcl
             "value": -93.74999999999996,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -8081,8 +8513,10 @@ description: Operations executed clock.kcl
             "value": 162.37976320958225,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -8135,8 +8569,10 @@ description: Operations executed clock.kcl
               "value": -83.74999999999996,
               "ty": {
                 "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
+                "value": {
+                  "len": "mm",
+                  "angle": "degrees"
+                }
               }
             },
             "sourceRange": []
@@ -8147,8 +8583,10 @@ description: Operations executed clock.kcl
               "value": 162.37976320958225,
               "ty": {
                 "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
+                "value": {
+                  "len": "mm",
+                  "angle": "degrees"
+                }
               }
             },
             "sourceRange": []
@@ -8230,8 +8668,10 @@ description: Operations executed clock.kcl
             "value": -83.74999999999996,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -8242,8 +8682,10 @@ description: Operations executed clock.kcl
             "value": 162.37976320958225,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -8296,8 +8738,10 @@ description: Operations executed clock.kcl
               "value": -9.99999999999999,
               "ty": {
                 "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
+                "value": {
+                  "len": "mm",
+                  "angle": "degrees"
+                }
               }
             },
             "sourceRange": []
@@ -8308,8 +8752,10 @@ description: Operations executed clock.kcl
               "value": 187.5,
               "ty": {
                 "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
+                "value": {
+                  "len": "mm",
+                  "angle": "degrees"
+                }
               }
             },
             "sourceRange": []
@@ -8391,8 +8837,10 @@ description: Operations executed clock.kcl
             "value": -9.99999999999999,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -8403,8 +8851,10 @@ description: Operations executed clock.kcl
             "value": 187.5,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -8457,8 +8907,10 @@ description: Operations executed clock.kcl
               "value": 5.0000000000000115,
               "ty": {
                 "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
+                "value": {
+                  "len": "mm",
+                  "angle": "degrees"
+                }
               }
             },
             "sourceRange": []
@@ -8469,8 +8921,10 @@ description: Operations executed clock.kcl
               "value": 187.5,
               "ty": {
                 "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
+                "value": {
+                  "len": "mm",
+                  "angle": "degrees"
+                }
               }
             },
             "sourceRange": []
@@ -8552,8 +9006,10 @@ description: Operations executed clock.kcl
             "value": 5.0000000000000115,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -8564,8 +9020,10 @@ description: Operations executed clock.kcl
             "value": 187.5,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -8618,8 +9076,10 @@ description: Operations executed clock.kcl
               "value": 20.00000000000001,
               "ty": {
                 "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
+                "value": {
+                  "len": "mm",
+                  "angle": "degrees"
+                }
               }
             },
             "sourceRange": []
@@ -8630,8 +9090,10 @@ description: Operations executed clock.kcl
               "value": 187.5,
               "ty": {
                 "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
+                "value": {
+                  "len": "mm",
+                  "angle": "degrees"
+                }
               }
             },
             "sourceRange": []
@@ -8713,8 +9175,10 @@ description: Operations executed clock.kcl
             "value": 20.00000000000001,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -8725,8 +9189,10 @@ description: Operations executed clock.kcl
             "value": 187.5,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -8878,18 +9344,22 @@ description: Operations executed clock.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -8904,18 +9374,22 @@ description: Operations executed clock.kcl
                 "type": "SketchVar",
                 "value": 15.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -9008,8 +9482,10 @@ description: Operations executed clock.kcl
             "value": 10.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -9048,8 +9524,10 @@ description: Operations executed clock.kcl
             "value": 55.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -9109,18 +9587,22 @@ description: Operations executed clock.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -9135,18 +9617,22 @@ description: Operations executed clock.kcl
                 "type": "SketchVar",
                 "value": -19.381160304,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 7.054165456,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -9161,18 +9647,22 @@ description: Operations executed clock.kcl
                 "type": "SketchVar",
                 "value": -19.381160304,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -7.054165456,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -9222,18 +9712,22 @@ description: Operations executed clock.kcl
                 "type": "SketchVar",
                 "value": -81.881160304,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 7.054165456,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -9248,18 +9742,22 @@ description: Operations executed clock.kcl
                 "type": "SketchVar",
                 "value": -19.381160304,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 7.054165456,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -9353,18 +9851,22 @@ description: Operations executed clock.kcl
                 "type": "SketchVar",
                 "value": -81.881160304,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 19.554165456,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -9379,18 +9881,22 @@ description: Operations executed clock.kcl
                 "type": "SketchVar",
                 "value": -81.881160304,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 7.054165456,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -9484,18 +9990,22 @@ description: Operations executed clock.kcl
                 "type": "SketchVar",
                 "value": -115.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -9510,18 +10020,22 @@ description: Operations executed clock.kcl
                 "type": "SketchVar",
                 "value": -81.881160304,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 19.554165456,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -9615,18 +10129,22 @@ description: Operations executed clock.kcl
                 "type": "SketchVar",
                 "value": -81.506176117,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -18.904673793,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -9641,18 +10159,22 @@ description: Operations executed clock.kcl
                 "type": "SketchVar",
                 "value": -115.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -9746,18 +10268,22 @@ description: Operations executed clock.kcl
                 "type": "SketchVar",
                 "value": -81.506176117,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -6.404673793,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -9772,18 +10298,22 @@ description: Operations executed clock.kcl
                 "type": "SketchVar",
                 "value": -81.506176117,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -18.904673793,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -9877,18 +10407,22 @@ description: Operations executed clock.kcl
                 "type": "SketchVar",
                 "value": -19.381160304,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -7.054165456,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -9903,18 +10437,22 @@ description: Operations executed clock.kcl
                 "type": "SketchVar",
                 "value": -81.506176117,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -6.404673793,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -10008,18 +10546,22 @@ description: Operations executed clock.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -10034,18 +10576,22 @@ description: Operations executed clock.kcl
                 "type": "SketchVar",
                 "value": 15.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -10142,8 +10688,10 @@ description: Operations executed clock.kcl
             "value": 5.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -10227,8 +10775,10 @@ description: Operations executed clock.kcl
             "value": 50.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -10288,18 +10838,22 @@ description: Operations executed clock.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -10314,18 +10868,22 @@ description: Operations executed clock.kcl
                 "type": "SketchVar",
                 "value": -4.989639097,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -20.012349354,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -10340,18 +10898,22 @@ description: Operations executed clock.kcl
                 "type": "SketchVar",
                 "value": 9.041404903,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -18.537627205,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -10401,18 +10963,22 @@ description: Operations executed clock.kcl
                 "type": "SketchVar",
                 "value": 5.46320723,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -119.464538891,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -10427,18 +10993,22 @@ description: Operations executed clock.kcl
                 "type": "SketchVar",
                 "value": -4.989639097,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -20.012349354,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -10532,18 +11102,22 @@ description: Operations executed clock.kcl
                 "type": "SketchVar",
                 "value": -6.968316462,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -120.771144682,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -10558,18 +11132,22 @@ description: Operations executed clock.kcl
                 "type": "SketchVar",
                 "value": 5.46320723,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -119.464538891,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -10663,18 +11241,22 @@ description: Operations executed clock.kcl
                 "type": "SketchVar",
                 "value": 16.201911806,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -154.150893782,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -10689,18 +11271,22 @@ description: Operations executed clock.kcl
                 "type": "SketchVar",
                 "value": -6.968316462,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -120.771144682,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -10794,18 +11380,22 @@ description: Operations executed clock.kcl
                 "type": "SketchVar",
                 "value": 33.524508365,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -117.39501294,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -10820,18 +11410,22 @@ description: Operations executed clock.kcl
                 "type": "SketchVar",
                 "value": 16.201911806,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -154.150893782,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -10925,18 +11519,22 @@ description: Operations executed clock.kcl
                 "type": "SketchVar",
                 "value": 21.092984673,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -118.701618731,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -10951,18 +11549,22 @@ description: Operations executed clock.kcl
                 "type": "SketchVar",
                 "value": 33.524508365,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -117.39501294,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -11056,18 +11658,22 @@ description: Operations executed clock.kcl
                 "type": "SketchVar",
                 "value": 9.041404903,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -18.537627205,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -11082,18 +11688,22 @@ description: Operations executed clock.kcl
                 "type": "SketchVar",
                 "value": 21.092984673,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -118.701618731,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -11187,18 +11797,22 @@ description: Operations executed clock.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -11213,18 +11827,22 @@ description: Operations executed clock.kcl
                 "type": "SketchVar",
                 "value": 15.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -11321,8 +11939,10 @@ description: Operations executed clock.kcl
             "value": 5.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -11397,8 +12017,10 @@ description: Operations executed clock.kcl
         "value": 9.53,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -11426,8 +12048,10 @@ description: Operations executed clock.kcl
         "value": 0.5,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -11455,8 +12079,10 @@ description: Operations executed clock.kcl
         "value": 5.015,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -11484,8 +12110,10 @@ description: Operations executed clock.kcl
         "value": 40.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -11540,18 +12168,22 @@ description: Operations executed clock.kcl
                 "type": "SketchVar",
                 "value": -2.5075,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 160.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -11566,18 +12198,22 @@ description: Operations executed clock.kcl
                 "type": "SketchVar",
                 "value": -2.5075,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 200.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -11627,18 +12263,22 @@ description: Operations executed clock.kcl
                 "type": "SketchVar",
                 "value": 0.125,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 155.440376249,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -11653,18 +12293,22 @@ description: Operations executed clock.kcl
                 "type": "SketchVar",
                 "value": 2.7575,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 160.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -11679,18 +12323,22 @@ description: Operations executed clock.kcl
                 "type": "SketchVar",
                 "value": -2.5075,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 160.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -11784,18 +12432,22 @@ description: Operations executed clock.kcl
                 "type": "SketchVar",
                 "value": 2.7575,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 200.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -11810,18 +12462,22 @@ description: Operations executed clock.kcl
                 "type": "SketchVar",
                 "value": 2.7575,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 160.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -11915,18 +12571,22 @@ description: Operations executed clock.kcl
                 "type": "SketchVar",
                 "value": 0.125,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 200.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -11941,18 +12601,22 @@ description: Operations executed clock.kcl
                 "type": "SketchVar",
                 "value": -2.5075,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 200.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -11967,18 +12631,22 @@ description: Operations executed clock.kcl
                 "type": "SketchVar",
                 "value": 2.7575,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 200.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -12119,8 +12787,10 @@ description: Operations executed clock.kcl
             "value": -20.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -12176,7 +12846,9 @@ description: Operations executed clock.kcl
         "value": 2.718281828459045,
         "ty": {
           "type": "Known",
-          "type": "Count"
+          "value": {
+            "type": "Count"
+          }
         }
       },
       "visibility": "export",
@@ -12204,7 +12876,9 @@ description: Operations executed clock.kcl
         "value": 6.283185307179586,
         "ty": {
           "type": "Known",
-          "type": "Count"
+          "value": {
+            "type": "Count"
+          }
         }
       },
       "visibility": "export",

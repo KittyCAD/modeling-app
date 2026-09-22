@@ -25,6 +25,7 @@ const createMessageHandler = (
     setPong: vi.fn(),
     dispatchEvent: vi.fn(() => true),
     ping: vi.fn(),
+    setPing: vi.fn(),
     createPeerConnection: vi.fn(),
     send: vi.fn(),
     setSdpAnswer: vi.fn(),
@@ -109,7 +110,8 @@ describe('createOnWebSocketMessage', () => {
 
     expect(reportClientError).toHaveBeenCalledOnce()
     expect(tearDownManager).toHaveBeenCalledWith({
-      websocketClosed: true,
+      route: 'backend-shutdown',
+      initiatedBy: 'unknown',
       connectionError: {
         kind: EngineConnectionErrorKind.BackendDisconnect,
         message: 'modeling connection interrupted; please reconnect and retry',

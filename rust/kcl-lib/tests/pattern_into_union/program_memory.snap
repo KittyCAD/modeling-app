@@ -312,8 +312,10 @@ description: Variables in memory after executing pattern_into_union.kcl
     "value": 0.25,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "buildPlateThickness": {
@@ -321,8 +323,10 @@ description: Variables in memory after executing pattern_into_union.kcl
     "value": 0.03937007874015748,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "buildPlateWidth": {
@@ -330,8 +334,10 @@ description: Variables in memory after executing pattern_into_union.kcl
     "value": 10.125,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "depth": {
@@ -339,8 +345,10 @@ description: Variables in memory after executing pattern_into_union.kcl
     "value": 3.28740157480315,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "endTabHeight": {
@@ -348,8 +356,10 @@ description: Variables in memory after executing pattern_into_union.kcl
     "value": 1.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "endTabThickness": {
@@ -357,8 +367,10 @@ description: Variables in memory after executing pattern_into_union.kcl
     "value": 0.1,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "endTabWidth": {
@@ -366,8 +378,10 @@ description: Variables in memory after executing pattern_into_union.kcl
     "value": 2.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "endTabs": {
@@ -567,8 +581,10 @@ description: Variables in memory after executing pattern_into_union.kcl
                 "n": 0.1,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               "edgeId": "[uuid]",
@@ -773,8 +789,10 @@ description: Variables in memory after executing pattern_into_union.kcl
                 "n": 0.1,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               "edgeId": "[uuid]",
@@ -979,8 +997,10 @@ description: Variables in memory after executing pattern_into_union.kcl
                 "n": 0.1,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               "edgeId": "[uuid]",
@@ -1185,8 +1205,10 @@ description: Variables in memory after executing pattern_into_union.kcl
                 "n": 0.1,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               "edgeId": "[uuid]",
@@ -1391,8 +1413,10 @@ description: Variables in memory after executing pattern_into_union.kcl
                 "n": 0.1,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               "edgeId": "[uuid]",
@@ -1597,8 +1621,10 @@ description: Variables in memory after executing pattern_into_union.kcl
                 "n": 0.1,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               "edgeId": "[uuid]",
@@ -1803,8 +1829,10 @@ description: Variables in memory after executing pattern_into_union.kcl
                 "n": 0.1,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               "edgeId": "[uuid]",
@@ -2009,8 +2037,10 @@ description: Variables in memory after executing pattern_into_union.kcl
                 "n": 0.1,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               "edgeId": "[uuid]",
@@ -2215,8 +2245,10 @@ description: Variables in memory after executing pattern_into_union.kcl
                 "n": 0.1,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               "edgeId": "[uuid]",
@@ -2421,8 +2453,10 @@ description: Variables in memory after executing pattern_into_union.kcl
                 "n": 0.1,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               "edgeId": "[uuid]",
@@ -2627,8 +2661,10 @@ description: Variables in memory after executing pattern_into_union.kcl
                 "n": 0.1,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               "edgeId": "[uuid]",
@@ -2833,8 +2869,10 @@ description: Variables in memory after executing pattern_into_union.kcl
                 "n": 0.1,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               "edgeId": "[uuid]",
@@ -3039,8 +3077,10 @@ description: Variables in memory after executing pattern_into_union.kcl
                 "n": 0.1,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               "edgeId": "[uuid]",
@@ -3245,8 +3285,10 @@ description: Variables in memory after executing pattern_into_union.kcl
                 "n": 0.1,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               "edgeId": "[uuid]",
@@ -3451,8 +3493,10 @@ description: Variables in memory after executing pattern_into_union.kcl
                 "n": 0.1,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               "edgeId": "[uuid]",
@@ -3657,8 +3701,10 @@ description: Variables in memory after executing pattern_into_union.kcl
                 "n": 0.1,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               "edgeId": "[uuid]",
@@ -3863,8 +3909,10 @@ description: Variables in memory after executing pattern_into_union.kcl
                 "n": 0.1,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               "edgeId": "[uuid]",
@@ -4069,8 +4117,10 @@ description: Variables in memory after executing pattern_into_union.kcl
                 "n": 0.1,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               "edgeId": "[uuid]",
@@ -4275,8 +4325,10 @@ description: Variables in memory after executing pattern_into_union.kcl
                 "n": 0.1,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               "edgeId": "[uuid]",
@@ -4481,8 +4533,10 @@ description: Variables in memory after executing pattern_into_union.kcl
                 "n": 0.1,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               "edgeId": "[uuid]",
@@ -4687,8 +4741,10 @@ description: Variables in memory after executing pattern_into_union.kcl
                 "n": 0.1,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               "edgeId": "[uuid]",
@@ -4898,8 +4954,10 @@ description: Variables in memory after executing pattern_into_union.kcl
                 "n": 0.1,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               "edgeId": "[uuid]",
@@ -5104,8 +5162,10 @@ description: Variables in memory after executing pattern_into_union.kcl
                 "n": 0.1,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               "edgeId": "[uuid]",
@@ -5310,8 +5370,10 @@ description: Variables in memory after executing pattern_into_union.kcl
                 "n": 0.1,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               "edgeId": "[uuid]",
@@ -5516,8 +5578,10 @@ description: Variables in memory after executing pattern_into_union.kcl
                 "n": 0.1,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               "edgeId": "[uuid]",
@@ -5722,8 +5786,10 @@ description: Variables in memory after executing pattern_into_union.kcl
                 "n": 0.1,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               "edgeId": "[uuid]",
@@ -5928,8 +5994,10 @@ description: Variables in memory after executing pattern_into_union.kcl
                 "n": 0.1,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               "edgeId": "[uuid]",
@@ -6134,8 +6202,10 @@ description: Variables in memory after executing pattern_into_union.kcl
                 "n": 0.1,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               "edgeId": "[uuid]",
@@ -6340,8 +6410,10 @@ description: Variables in memory after executing pattern_into_union.kcl
                 "n": 0.1,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               "edgeId": "[uuid]",
@@ -6546,8 +6618,10 @@ description: Variables in memory after executing pattern_into_union.kcl
                 "n": 0.1,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               "edgeId": "[uuid]",
@@ -6752,8 +6826,10 @@ description: Variables in memory after executing pattern_into_union.kcl
                 "n": 0.1,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               "edgeId": "[uuid]",
@@ -6958,8 +7034,10 @@ description: Variables in memory after executing pattern_into_union.kcl
                 "n": 0.1,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               "edgeId": "[uuid]",
@@ -7164,8 +7242,10 @@ description: Variables in memory after executing pattern_into_union.kcl
                 "n": 0.1,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               "edgeId": "[uuid]",
@@ -7370,8 +7450,10 @@ description: Variables in memory after executing pattern_into_union.kcl
                 "n": 0.1,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               "edgeId": "[uuid]",
@@ -7576,8 +7658,10 @@ description: Variables in memory after executing pattern_into_union.kcl
                 "n": 0.1,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               "edgeId": "[uuid]",
@@ -7782,8 +7866,10 @@ description: Variables in memory after executing pattern_into_union.kcl
                 "n": 0.1,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               "edgeId": "[uuid]",
@@ -7988,8 +8074,10 @@ description: Variables in memory after executing pattern_into_union.kcl
                 "n": 0.1,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               "edgeId": "[uuid]",
@@ -8194,8 +8282,10 @@ description: Variables in memory after executing pattern_into_union.kcl
                 "n": 0.1,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               "edgeId": "[uuid]",
@@ -8400,8 +8490,10 @@ description: Variables in memory after executing pattern_into_union.kcl
                 "n": 0.1,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               "edgeId": "[uuid]",
@@ -8606,8 +8698,10 @@ description: Variables in memory after executing pattern_into_union.kcl
                 "n": 0.1,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               "edgeId": "[uuid]",
@@ -8812,8 +8906,10 @@ description: Variables in memory after executing pattern_into_union.kcl
                 "n": 0.1,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               "edgeId": "[uuid]",
@@ -9018,8 +9114,10 @@ description: Variables in memory after executing pattern_into_union.kcl
                 "n": 0.1,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               "edgeId": "[uuid]",
@@ -9037,8 +9135,10 @@ description: Variables in memory after executing pattern_into_union.kcl
     "value": 0.5,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "nPlates": {
@@ -9046,17 +9146,17 @@ description: Variables in memory after executing pattern_into_union.kcl
     "value": 20.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "seg01": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "seg01"
   },
   "seg02": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "seg02"
   },
@@ -9065,17 +9165,17 @@ description: Variables in memory after executing pattern_into_union.kcl
     "value": 0.02,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "toFillet": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "toFillet"
   },
   "toFillet2": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "toFillet2"
   },
@@ -9084,8 +9184,10 @@ description: Variables in memory after executing pattern_into_union.kcl
     "value": 11.525,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "widthTolerance": {
@@ -9093,8 +9195,10 @@ description: Variables in memory after executing pattern_into_union.kcl
     "value": 0.2,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   }
 }

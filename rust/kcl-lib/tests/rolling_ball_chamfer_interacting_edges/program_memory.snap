@@ -155,8 +155,10 @@ description: Variables in memory after executing rolling_ball_chamfer_interactin
             "n": 0.0625,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           "edgeId": "[uuid]",
@@ -169,8 +171,10 @@ description: Variables in memory after executing rolling_ball_chamfer_interactin
             "n": 0.0625,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           "edgeId": "[uuid]",
@@ -186,8 +190,10 @@ description: Variables in memory after executing rolling_ball_chamfer_interactin
     "value": 0.0625,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "edge001": {
@@ -367,8 +373,10 @@ description: Variables in memory after executing rolling_ball_chamfer_interactin
     "value": 0.09375,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "keywaySketch": {
@@ -498,8 +506,10 @@ description: Variables in memory after executing rolling_ball_chamfer_interactin
     "value": 0.188,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "shaftBody": {
@@ -655,17 +665,17 @@ description: Variables in memory after executing rolling_ball_chamfer_interactin
     "value": 0.75,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "shaftEdge": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "shaftEdge"
   },
   "shaftEnd": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "shaftEnd"
   },
@@ -674,8 +684,10 @@ description: Variables in memory after executing rolling_ball_chamfer_interactin
     "value": 12.0,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "shaftProfile": {

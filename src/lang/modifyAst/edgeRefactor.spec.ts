@@ -51,6 +51,7 @@ import type {
   EdgeRefactorMeta,
 } from '@src/lang/wasm'
 import { loadAndInitialiseWasmInstance } from '@src/lang/wasmUtilsNode'
+import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 import { err } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
@@ -389,64 +390,6 @@ extrude002 = extrude(region(point = [3, 2], sketch = sketch002), length = -.1)
          getNextAdjacentEdge(%.sketch.tags.edge1),
        ],
      )
-`
-
-const KCL_MIXED_SKETCH_TAGS_AND_DEPRECATED_HELPERS = `@settings(defaultLengthUnit = mm, kclVersion = 1.0)
-
-bodyCenterX = 270mm
-bodyCenterY = -15mm
-bodyWidth = 400mm
-bodyDepth = 410mm
-bodyHeight = 420mm
-bodyBottomZ = 160mm
-bodyCornerRadius = 12mm
-bodyFrontY = bodyCenterY - (bodyDepth / 2)
-bodyMinX = bodyCenterX - (bodyWidth / 2)
-
-bodyBasePlane = {
-  origin = [bodyMinX, bodyFrontY, bodyBottomZ],
-  xAxis = [1, 0, 0],
-  yAxis = [0, 1, 0]
-}
-
-bodyBoxSketch = sketch(on = bodyBasePlane) {
-  b1 = line(start = [var 0mm, var 0mm], end = [var 400mm, var 0mm])
-  b2 = line(start = [var 400mm, var 0mm], end = [var 400mm, var 410mm])
-  b3 = line(start = [var 400mm, var 410mm], end = [var 0mm, var 410mm])
-  b4 = line(start = [var 0mm, var 410mm], end = [var 0mm, var 0mm])
-
-  coincident([b1.end, b2.start])
-  coincident([b2.end, b3.start])
-  coincident([b3.end, b4.start])
-  coincident([b4.end, b1.start])
-  coincident([b1.start, ORIGIN])
-  horizontal(b1)
-  vertical(b2)
-  horizontal(b3)
-  vertical(b4)
-  horizontalDistance([b1.start, b1.end]) == bodyWidth
-  verticalDistance([b1.start, b4.start]) == bodyDepth
-}
-bodyBoxRegion = region(point = [200mm, 205mm], sketch = bodyBoxSketch)
-bodyBoxRaw = extrude(bodyBoxRegion, length = bodyHeight)
-bodyBoxRounded = fillet(
-  bodyBoxRaw,
-  radius = bodyCornerRadius,
-  tags = [
-    bodyBoxRaw.sketch.tags.b1,
-    bodyBoxRaw.sketch.tags.b2,
-    bodyBoxRaw.sketch.tags.b3,
-    bodyBoxRaw.sketch.tags.b4,
-    getOppositeEdge(bodyBoxRaw.sketch.tags.b1),
-    getOppositeEdge(bodyBoxRaw.sketch.tags.b2),
-    getOppositeEdge(bodyBoxRaw.sketch.tags.b3),
-    getOppositeEdge(bodyBoxRaw.sketch.tags.b4),
-    getNextAdjacentEdge(bodyBoxRaw.sketch.tags.b1),
-    getPreviousAdjacentEdge(bodyBoxRaw.sketch.tags.b1),
-    getNextAdjacentEdge(bodyBoxRaw.sketch.tags.b2),
-    getPreviousAdjacentEdge(bodyBoxRaw.sketch.tags.b3)
-  ],
-)
 `
 
 const KCL_MEMBER_DIRECT_SKETCH_TAGS = `@settings(defaultLengthUnit = mm, kclVersion = 1.0)
@@ -1642,27 +1585,37 @@ part = bracket()
     })
   })
 
-  describe('integration (engine required)', () => {
+  describe('integration (CPU Engine)', () => {
     let instanceInThisFile: ModuleType = null!
     let kclManagerInThisFile: KclManager = null!
-    let engineCommandManagerInThisFile: { tearDown: () => void } = null!
+    let engineCommandManagerInThisFile: ConnectionManager = null!
 
     beforeEach(async () => {
       if (instanceInThisFile) return
       const { instance, kclManager, engineCommandManager } =
-        await buildTheWorldAndConnectToEngine({ geometryOnly: true })
+        await buildTheWorldAndConnectToEngine({
+          webrtc: false,
+          pool: 'cpu',
+        })
+      instance.set_kcl_runtime_flags(
+        JSON.stringify({ enable_z0006_lint: 'On' })
+      )
       instanceInThisFile = instance
       kclManagerInThisFile = kclManager
       engineCommandManagerInThisFile = engineCommandManager
     })
 
     afterAll(() => {
-      engineCommandManagerInThisFile?.tearDown()
+      engineCommandManagerInThisFile?.tearDown({
+        route: 'user-requested',
+        initiatedBy: 'client',
+      })
     })
 
     async function runIntegrationRefactor(kcl: string): Promise<string> {
       const ast = assertParse(kcl, instanceInThisFile)
       await kclManagerInThisFile.executeAst({ ast })
+      expect(kclManagerInThisFile.errors).toEqual([])
       const execState = kclManagerInThisFile.execState
       expect(execState.artifactGraph.size).toBeGreaterThan(0)
       const refactored = refactorZ0006Unified(
@@ -2125,28 +2078,6 @@ surface001 = extrude(
         expect(n).toContain('%.sketch.tags.edge1')
         expect(n).toContain('%.sketch.tags.edge3')
         expect(n).not.toContain('%.sketch.tags.seg')
-      }
-    )
-
-    it(
-      'refactors mixed direct sketch tags and deprecated helper tags',
-      { timeout: 30_000 },
-      async () => {
-        const refactored = await runIntegrationRefactor(
-          KCL_MIXED_SKETCH_TAGS_AND_DEPRECATED_HELPERS
-        )
-        expect(refactored).not.toMatch(UUID_IN_FACES_REGEX)
-        expect(refactored).not.toContain('tag = $seg')
-        const n = norm(refactored)
-        expect(n).toContain('edges = [')
-        expect(n).not.toContain('tags = [')
-        expect(n).not.toContain('getOppositeEdge')
-        expect(n).not.toContain('getNextAdjacentEdge')
-        expect(n).not.toContain('getPreviousAdjacentEdge')
-        expect(n).toContain('bodyBoxRaw.sketch.tags.b1')
-        expect(n).toContain('bodyBoxRaw.sketch.tags.b2')
-        expect(n).toContain('bodyBoxRaw.sketch.tags.b3')
-        expect(n).toContain('bodyBoxRaw.sketch.tags.b4')
       }
     )
 

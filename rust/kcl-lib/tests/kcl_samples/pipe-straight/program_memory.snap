@@ -104,8 +104,10 @@ description: Variables in memory after executing pipe-straight.kcl
     "value": 110.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "boltHoleBodies": {
@@ -2226,8 +2228,10 @@ description: Variables in memory after executing pipe-straight.kcl
     "value": 16.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "boltHoleDiameter": {
@@ -2235,8 +2239,10 @@ description: Variables in memory after executing pipe-straight.kcl
     "value": 12.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "boltHoleSketch": {
@@ -2256,17 +2262,21 @@ description: Variables in memory after executing pipe-straight.kcl
                       {
                         "n": 58.24887419460894,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 5.044285526124314,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -2274,17 +2284,21 @@ description: Variables in memory after executing pipe-straight.kcl
                       {
                         "n": 55.00000000003961,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.00000000006150272324141266,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -2376,17 +2390,21 @@ description: Variables in memory after executing pipe-straight.kcl
                       {
                         "n": 55.00000000002641,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.000000000041001815310976155,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -2394,17 +2412,21 @@ description: Variables in memory after executing pipe-straight.kcl
                       {
                         "n": 0.000000000013204018806533923,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.00000000002050090760049835,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -2685,7 +2707,6 @@ description: Variables in memory after executing pipe-straight.kcl
     }
   },
   "circle1": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "circle1"
   },
@@ -3035,7 +3056,6 @@ description: Variables in memory after executing pipe-straight.kcl
   },
   "flangeInnerCircle": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "flangeInnerCircle"
   },
   "flangeInsideDiameter": {
@@ -3043,12 +3063,13 @@ description: Variables in memory after executing pipe-straight.kcl
     "value": 70.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "flangeOuterCircle": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "flangeOuterCircle"
   },
@@ -3057,8 +3078,10 @@ description: Variables in memory after executing pipe-straight.kcl
     "value": 130.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "flangeRegion": {
@@ -3208,17 +3231,21 @@ description: Variables in memory after executing pipe-straight.kcl
                       {
                         "n": 31.129873571889167,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": -15.997842710759363,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -3226,17 +3253,21 @@ description: Variables in memory after executing pipe-straight.kcl
                       {
                         "n": 0.00000000000000000025506300303710433,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": -0.0000000000000000001310786070815444,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -3328,17 +3359,21 @@ description: Variables in memory after executing pipe-straight.kcl
                       {
                         "n": 60.59775023484809,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 23.514095059665124,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -3346,17 +3381,21 @@ description: Variables in memory after executing pipe-straight.kcl
                       {
                         "n": -0.00000000000000000848385222119702,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": -0.0000000000000000032920390444375287,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -3595,8 +3634,10 @@ description: Variables in memory after executing pipe-straight.kcl
     "value": 20.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "leftEndFlange": {
@@ -3916,7 +3957,6 @@ description: Variables in memory after executing pipe-straight.kcl
   },
   "pipeInnerCircle": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "pipeInnerCircle"
   },
   "pipeInsideDiameter": {
@@ -3924,8 +3964,10 @@ description: Variables in memory after executing pipe-straight.kcl
     "value": 70.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "pipeLength": {
@@ -3933,12 +3975,13 @@ description: Variables in memory after executing pipe-straight.kcl
     "value": 150.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "pipeOuterCircle": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "pipeOuterCircle"
   },
@@ -3947,8 +3990,10 @@ description: Variables in memory after executing pipe-straight.kcl
     "value": 90.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "pipeRegion": {
@@ -4251,17 +4296,21 @@ description: Variables in memory after executing pipe-straight.kcl
                       {
                         "n": 31.129873573929668,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": -15.99784271180799,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -4269,17 +4318,21 @@ description: Variables in memory after executing pipe-straight.kcl
                       {
                         "n": 0.0000000005101264330250895,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": -0.0000000002621572877918648,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -4371,17 +4424,21 @@ description: Variables in memory after executing pipe-straight.kcl
                       {
                         "n": 41.95228897317963,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 16.27898800781807,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -4389,17 +4446,21 @@ description: Variables in memory after executing pipe-straight.kcl
                       {
                         "n": 0.0000000016777110305592157,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0000000006510119911882535,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -4485,8 +4546,10 @@ description: Variables in memory after executing pipe-straight.kcl
     "value": 10.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "rightEndFlange": {

@@ -7698,7 +7698,7 @@ sketch(on = XY) {
     #[tokio::test(flavor = "multi_thread")]
     async fn test_sketch_checkpoint_round_trip_restores_state() {
         let mut frontend = FrontendState::new();
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
 
@@ -7740,7 +7740,7 @@ sketch(on = XY) {
     #[tokio::test(flavor = "multi_thread")]
     async fn test_sketch_checkpoints_prune_oldest_entries() {
         let mut frontend = FrontendState::new();
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
 
@@ -7794,7 +7794,7 @@ sketch(on = XY) {
     #[tokio::test(flavor = "multi_thread")]
     async fn test_clear_sketch_checkpoints_removes_all_restore_points() {
         let mut frontend = FrontendState::new();
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
 
@@ -7822,7 +7822,7 @@ sketch(on = XY) {
     #[tokio::test(flavor = "multi_thread")]
     async fn test_hack_set_program_keeps_old_checkpoints_and_adds_fresh_baseline() {
         let mut frontend = FrontendState::new();
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
 
@@ -7863,7 +7863,7 @@ sketch(on = XY) {
     #[tokio::test(flavor = "multi_thread")]
     async fn test_hack_set_program_exec_failure_does_not_add_checkpoint() {
         let mut frontend = FrontendState::new();
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
 
@@ -7893,7 +7893,7 @@ sketch(on = XY) {
     #[tokio::test(flavor = "multi_thread")]
     async fn test_restore_sketch_checkpoint_restores_and_clears_mock_memory() {
         let mut frontend = FrontendState::new();
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
 
         let program = Program::parse(
             "width = 2mm\nsketch001 = sketch(on = offsetPlane(XY, offset = width)) {\n  line1 = line(start = [var 0, var 0], end = [var 1mm, var 0])\n  distance([line1.start, line1.end]) == width\n}\n",
@@ -7953,7 +7953,7 @@ bad = missing_name
 
         let mut frontend = FrontendState::new();
 
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
         let project_id = ProjectId(0);
@@ -7986,7 +7986,7 @@ bad = missing_name
         let mut frontend = FrontendState::new();
         frontend.program = program;
 
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
 
@@ -8075,7 +8075,7 @@ bad = missing_name
         let mut frontend = FrontendState::new();
         frontend.program = program;
 
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
 
@@ -8187,7 +8187,7 @@ bad = missing_name
         let mut frontend = FrontendState::new();
         frontend.program = program;
 
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
 
@@ -8324,7 +8324,7 @@ bad = missing_name
         let mut frontend = FrontendState::new();
         frontend.program = program;
 
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
 
@@ -8422,7 +8422,7 @@ bad = missing_name
         let program = Program::parse(initial_source).unwrap().0.unwrap();
         let mut frontend = FrontendState::new();
 
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
 
@@ -8459,7 +8459,7 @@ bad = missing_name
         let program = Program::parse(initial_source).unwrap().0.unwrap();
         let mut frontend = FrontendState::new();
 
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
 
@@ -8526,7 +8526,7 @@ bad = missing_name
 
         let mut frontend = FrontendState::new();
 
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
 
@@ -8577,7 +8577,7 @@ bad = missing_name
         let mut frontend = FrontendState::new();
         frontend.program = program;
 
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
 
@@ -8759,7 +8759,7 @@ sketch(on = XY) {
         let program = Program::parse(initial_source).unwrap().0.unwrap();
         let mut frontend = FrontendState::new();
 
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
 
@@ -8795,7 +8795,7 @@ sketch(on = XY) {
         let program = Program::parse(initial_source).unwrap().0.unwrap();
         let mut frontend = FrontendState::new();
 
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
 
@@ -8834,7 +8834,7 @@ sketch(on = XY) {
         let program = Program::parse(initial_source).unwrap().0.unwrap();
         let mut frontend = FrontendState::new();
 
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
 
@@ -8883,7 +8883,7 @@ sketch(on = XY) {
         let program = Program::parse(initial_source).unwrap().0.unwrap();
         let mut frontend = FrontendState::new();
 
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
 
@@ -8926,7 +8926,7 @@ sketch(on = XY) {
 
         let mut frontend = FrontendState::new();
 
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
 
@@ -8977,7 +8977,7 @@ sketch(on = XY) {
 
         let mut frontend = FrontendState::new();
 
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
 
@@ -9036,7 +9036,7 @@ sketch(on = XY) {
 
         let mut frontend = FrontendState::new();
 
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
 
@@ -9634,7 +9634,7 @@ sketch(on = XY) {
 
         let mut frontend = FrontendState::new();
 
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
 
@@ -9671,7 +9671,7 @@ sketch(on = XY) {
 
         let mut frontend = FrontendState::new();
 
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
 
@@ -9708,7 +9708,7 @@ sketch(on = XY) {
 
         let mut frontend = FrontendState::new();
 
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
 
@@ -9748,7 +9748,7 @@ sketch(on = XY) {
 
         let mut frontend = FrontendState::new();
 
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
 
@@ -9785,7 +9785,7 @@ sketch(on = XY) {
 
         let mut frontend = FrontendState::new();
 
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
 
@@ -9828,7 +9828,7 @@ sketch(on = XY) {
 
         let mut frontend = FrontendState::new();
 
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
 
@@ -10062,7 +10062,7 @@ sketch(on = XY) {
 
         let mut frontend = FrontendState::new();
 
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
 
@@ -10281,7 +10281,7 @@ sketch(on = XY) {
 
         let mut frontend = FrontendState::new();
 
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
 
@@ -10324,7 +10324,7 @@ sketch(on = XY) {
 
         let mut frontend = FrontendState::new();
 
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
 
@@ -10375,7 +10375,7 @@ sketch(on = XY) {
 
         let mut frontend = FrontendState::new();
 
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
 
@@ -10417,7 +10417,7 @@ sketch(on = XY) {
 
         let mut frontend = FrontendState::new();
 
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
 
@@ -10453,7 +10453,7 @@ sketch(on = XY) {
 
         let mut frontend = FrontendState::new();
 
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
 
@@ -10605,7 +10605,7 @@ sketch(on = XY) {
 
             let mut frontend = FrontendState::new();
 
-            let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+            let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
             let mock_ctx = ExecutorContext::new_mock(None).await;
             let version = Version(0);
 
@@ -10660,7 +10660,7 @@ sketch(on = XY) {
 
         let mut frontend = FrontendState::new();
 
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
 
@@ -10772,7 +10772,7 @@ sketch(on = XY) {
         let mut frontend = FrontendState::new();
         frontend.program = program;
 
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
 
@@ -10927,7 +10927,7 @@ sketch(on = XY) {
 
         let mut frontend = FrontendState::new();
 
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
 
@@ -11696,7 +11696,7 @@ sketch(on = XY) {
 
         let mut frontend = FrontendState::new();
 
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
 
@@ -11771,7 +11771,7 @@ sketch(on = XY) {
 
         let mut frontend = FrontendState::new();
 
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
 
@@ -11929,7 +11929,7 @@ sketch(on = XY) {
 
         let mut frontend = FrontendState::new();
 
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
 
@@ -11994,7 +11994,7 @@ sketch(on = XY) {
 
         let mut frontend = FrontendState::new();
 
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
 
@@ -12060,7 +12060,7 @@ sketch(on = XY) {
 
         let mut frontend = FrontendState::new();
 
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
 
@@ -12118,7 +12118,7 @@ sketch(on = XY) {
 
         let mut frontend = FrontendState::new();
 
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
 
@@ -12243,7 +12243,7 @@ sketch(on = XY) {
 
         let mut frontend = FrontendState::new();
 
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
 
@@ -12504,7 +12504,7 @@ sketch(on = XY) {
 
         let mut frontend = FrontendState::new();
 
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
 
@@ -12562,7 +12562,7 @@ sketch(on = XY) {
 
         let mut frontend = FrontendState::new();
 
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
 
@@ -12635,7 +12635,7 @@ sketch(on = XY) {
 
         let mut frontend = FrontendState::new();
 
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
 
@@ -12682,7 +12682,7 @@ sketch(on = XY) {
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_radius_error_cases() {
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
 
@@ -12758,7 +12758,7 @@ sketch(on = XY) {
 
         let mut frontend = FrontendState::new();
 
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
 
@@ -12940,7 +12940,7 @@ sketch(on = XY) {
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_diameter_error_cases() {
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
 
@@ -13016,7 +13016,7 @@ sketch(on = XY) {
 
         let mut frontend = FrontendState::new();
 
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
 
@@ -13060,7 +13060,7 @@ splineSketch = sketch(on = XY) {
 
         let mut frontend = FrontendState::new();
 
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
 
@@ -13127,7 +13127,7 @@ splineSketch = sketch(on = XY) {
 
         let mut frontend = FrontendState::new();
 
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
 
@@ -13228,7 +13228,7 @@ splineSketch = sketch(on = XY) {
 
         let mut frontend = FrontendState::new();
 
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
         let mock_ctx = ExecutorContext::new_mock(None).await;
 
         seed_frontend_with_mock(&mut frontend, &mock_ctx, &program).await;
@@ -13286,7 +13286,7 @@ splineSketch = sketch(on = XY) {
 
         let mut frontend = FrontendState::new();
 
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
 
@@ -13406,7 +13406,7 @@ sketch(on = XY) {
 
         let mut frontend = FrontendState::new();
 
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
 
@@ -13446,7 +13446,7 @@ sketch001 = sketch(on = XY) {
 
         let mut frontend = FrontendState::new();
 
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
 
@@ -13491,7 +13491,7 @@ sketch001 = sketch(on = XY) {
 
         let mut frontend = FrontendState::new();
 
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
 
@@ -13535,7 +13535,7 @@ sketch001 = sketch(on = XY) {
 
         let mut frontend = FrontendState::new();
 
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
 
@@ -13577,7 +13577,7 @@ sketch(on = XY) {
 
         let mut frontend = FrontendState::new();
 
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
 
@@ -13620,7 +13620,7 @@ sketch(on = XY) {
         let program = Program::parse(initial_source).unwrap().0.unwrap();
 
         let mut frontend = FrontendState::new();
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
 
@@ -13675,7 +13675,7 @@ sketch(on = XY) {
 
         let mut frontend = FrontendState::new();
 
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
 
@@ -13719,7 +13719,7 @@ sketch(on = XY) {
 
         let mut frontend = FrontendState::new();
 
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
 
@@ -13770,7 +13770,7 @@ sketch(on = XY) {
 
         let mut frontend = FrontendState::new();
 
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
 
@@ -13813,7 +13813,7 @@ sketch(on = XY) {
 
         let mut frontend = FrontendState::new();
 
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
 
@@ -13932,7 +13932,7 @@ sketch(on = XY) {
 
         let mut frontend = FrontendState::new();
 
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
 
@@ -14246,7 +14246,7 @@ face = faceOf(cube, face = side)
 
         let mut frontend = FrontendState::new();
 
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
 
@@ -14343,7 +14343,7 @@ extrude001 = extrude(region001, length = 5)
         let program = Program::parse(initial_source).unwrap().0.unwrap();
 
         let mut frontend = FrontendState::new();
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
         let version = Version(0);
 
         frontend.hack_set_program(&ctx, program).await.unwrap();
@@ -14386,7 +14386,7 @@ extrude001 = extrude(region001, length = 5)
         let program = Program::parse(initial_source).unwrap().0.unwrap();
 
         let mut frontend = FrontendState::new();
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
         let version = Version(0);
 
         frontend.hack_set_program(&ctx, program).await.unwrap();
@@ -14420,7 +14420,7 @@ extrude001 = extrude([region001, region002], length = 5)
 ";
 
         let program = Program::parse(initial_source).unwrap().0.unwrap();
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
         let version = Version(0);
 
         for (solid_output_index, expected_face) in [
@@ -14484,7 +14484,7 @@ extrude001 = extrude([region001, region002], length = 5)
 
         let program = Program::parse(initial_source).unwrap().0.unwrap();
         let mut frontend = FrontendState::new();
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
         let version = Version(0);
 
         frontend.hack_set_program(&ctx, program).await.unwrap();
@@ -14585,7 +14585,7 @@ part = subtract(boxSolid, tools = [cutSolid])
 ";
         let program = Program::parse(source).unwrap().0.unwrap();
         let mut frontend = FrontendState::new();
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
         match frontend.hack_set_program(&ctx, program).await.unwrap() {
             SetProgramOutcome::Success { .. } => {}
             SetProgramOutcome::ExecFailure { error } => panic!("KCL fixture failed to execute: {error:?}"),
@@ -14671,7 +14671,7 @@ plane = planeOf(cube, face = side)
 
         let mut frontend = FrontendState::new();
 
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
 
@@ -14729,7 +14729,7 @@ sketch1 = sketch(on = XY) {
         let program = Program::parse(initial_source).unwrap().0.unwrap();
 
         let mut frontend = FrontendState::new();
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
         let version = Version(0);
 
         frontend.hack_set_program(&ctx, program).await.unwrap();
@@ -14757,7 +14757,7 @@ sketch1 = sketch(on = XY) {
         let program = Program::parse(initial_source).unwrap().0.unwrap();
 
         let mut frontend = FrontendState::new();
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
         let version = Version(0);
 
         frontend.hack_set_program(&ctx, program).await.unwrap();
@@ -14787,7 +14787,7 @@ sketch(on = offsetPlane(XY, offset = width)) {
         let program = Program::parse(initial_source).unwrap().0.unwrap();
 
         let mut frontend = FrontendState::new();
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
         let project_id = ProjectId(0);
@@ -14969,7 +14969,7 @@ sketch2 = sketch(on = XY) {
 
         let mut frontend = FrontendState::new();
 
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
         let project_id = ProjectId(0);
@@ -15175,7 +15175,7 @@ sketch001 = sketch(on = XY) {
         let program = Program::parse(initial_source).unwrap().0.unwrap();
         let mut frontend = FrontendState::new();
 
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
         let project_id = ProjectId(0);
@@ -15246,7 +15246,7 @@ s = sketch(on = XY) {}
         let program = Program::parse(initial_source).unwrap().0.unwrap();
         let mut frontend = FrontendState::new();
 
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
 
@@ -15309,7 +15309,7 @@ sketch001 = sketch(on = XY) {
         let program = Program::parse(initial_source).unwrap().0.unwrap();
         let mut frontend = FrontendState::new();
 
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
         let project_id = ProjectId(0);
@@ -15399,7 +15399,7 @@ sketch001 = sketch(on = XY) {
         let program = Program::parse(initial_source).unwrap().0.unwrap();
         let mut frontend = FrontendState::new();
 
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
 
@@ -15442,7 +15442,7 @@ sketch001 = sketch(on = XY) {
         let program = Program::parse(initial_source).unwrap().0.unwrap();
         let mut frontend = FrontendState::new();
 
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
 
@@ -15513,7 +15513,7 @@ sketch001 = sketch(on = XY) {
         let program = Program::parse(initial_source).unwrap().0.unwrap();
         let mut frontend = FrontendState::new();
 
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
 
@@ -15628,7 +15628,7 @@ sketch001 = sketch(on = XY) {
         let program = Program::parse(initial_source).unwrap().0.unwrap();
         let mut frontend = FrontendState::new();
 
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
 
@@ -15691,7 +15691,7 @@ sketch001 = sketch(on = XY) {
         let program = Program::parse(initial_source).unwrap().0.unwrap();
         let mut frontend = FrontendState::new();
 
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
         let project_id = ProjectId(0);
@@ -15769,7 +15769,7 @@ sketch001 = sketch(on = XY) {
         let program = Program::parse(initial_source).unwrap().0.unwrap();
         let mut frontend = FrontendState::new();
 
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
 

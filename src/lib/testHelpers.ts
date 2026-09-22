@@ -69,20 +69,41 @@ export async function enginelessExecutor(
   return await rustContext.executeMock(ast, settings, path, usePrevMemory)
 }
 
+// Tests reuse one manager per file, and a timeout does not cancel its pending
+// helper, so the next test can enter while the previous execution still runs.
+const artifactExecutions = new WeakMap<KclManager, Promise<undefined>>()
+
 export async function getAstAndArtifactGraph(
   code: string,
   instance: ModuleType,
   kclManager: KclManager
 ) {
   const ast = assertParse(code, instance)
-  await kclManager.executeAst({ ast })
-  const {
-    artifactGraph,
-    execState: { operations },
-    variables,
-  } = kclManager
-  await new Promise((resolve) => setTimeout(resolve, 100))
-  return { ast, artifactGraph, operations, variables }
+  const previous = artifactExecutions.get(kclManager)
+  const completion = Promise.withResolvers<undefined>()
+  artifactExecutions.set(kclManager, completion.promise)
+  try {
+    await previous
+    await kclManager.flushPendingEditorExecution()
+    await kclManager.executeAst({ ast }).catch((error) => {
+      if (kclManager.isExecuting) {
+        kclManager.executeAstCleanUp()
+      }
+      return Promise.reject(error)
+    })
+    const {
+      artifactGraph,
+      execState: { operations },
+      variables,
+    } = kclManager
+    await new Promise((resolve) => setTimeout(resolve, 100))
+    return { ast, artifactGraph, operations, variables }
+  } finally {
+    completion.resolve(undefined)
+    if (artifactExecutions.get(kclManager) === completion.promise) {
+      artifactExecutions.delete(kclManager)
+    }
+  }
 }
 
 export async function getAstAndSketchSelections(

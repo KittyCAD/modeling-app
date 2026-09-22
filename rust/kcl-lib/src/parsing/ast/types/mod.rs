@@ -3312,6 +3312,9 @@ impl Identifier {
     }
 }
 
+pub(crate) const ABSOLUTE_PATHS_NOT_SUPPORTED: &str =
+    "Absolute paths (names beginning with `::`) are not yet supported";
+
 /// A qualified name, e.g., `foo`, `bar::foo`, or `::bar::foo`.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
@@ -4116,8 +4119,6 @@ pub enum PrimitiveType {
     ImportedGeometry,
     /// `fn`, type of functions.
     Function(FunctionType),
-    /// An identifier used as a type (not really a primitive type, but whatever).
-    Named { id: Node<Identifier> },
 }
 
 impl PrimitiveType {
@@ -4146,7 +4147,6 @@ impl PrimitiveType {
             PrimitiveType::Boolean => "bools".to_owned(),
             PrimitiveType::ImportedGeometry => "imported geometries".to_owned(),
             PrimitiveType::Function(_) => "functions".to_owned(),
-            PrimitiveType::Named { id } => format!("`{}`s", id.name),
             PrimitiveType::TagDecl => "tag declarations".to_owned(),
         }
     }
@@ -4192,7 +4192,6 @@ impl fmt::Display for PrimitiveType {
                 }
                 Ok(())
             }
-            PrimitiveType::Named { id: n } => write!(f, "{}", n.name),
         }
     }
 }
@@ -4227,6 +4226,10 @@ impl FunctionType {
 pub enum Type {
     /// A primitive type.
     Primitive(PrimitiveType),
+    /// An unresolved type name, possibly qualified by a module path.
+    Named {
+        name: Node<Name>,
+    },
     // An array of a primitive type.
     Array {
         ty: Box<Type>,
@@ -4246,6 +4249,10 @@ impl Type {
     pub fn human_friendly_type(&self) -> String {
         match self {
             Type::Primitive(ty) => format!("a value with type `{ty}`"),
+            Type::Named { name } => {
+                let name_string = name.to_string();
+                format!("a value with type `{name_string}`")
+            }
             Type::Array {
                 ty,
                 len: ArrayLen::None | ArrayLen::Minimum(0),
@@ -4278,6 +4285,10 @@ impl Type {
     fn display_multiple(&self) -> String {
         match self {
             Type::Primitive(ty) => ty.display_multiple(),
+            Type::Named { name } => {
+                let name_string = name.to_string();
+                format!("`{name_string}`s")
+            }
             Type::Array { .. } => "arrays".to_owned(),
             Type::Union { tys } => tys
                 .iter()
@@ -4293,6 +4304,7 @@ impl fmt::Display for Type {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             Type::Primitive(primitive_type) => primitive_type.fmt(f),
+            Type::Named { name } => name.write_to(f),
             Type::Array { ty, len } => {
                 write!(f, "[{ty}")?;
                 match len {

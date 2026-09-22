@@ -50,7 +50,10 @@ beforeEach(() => {
 })
 afterAll(() => {
   vi.restoreAllMocks()
-  world.engineCommandManager.tearDown()
+  world.engineCommandManager.tearDown({
+    route: 'user-requested',
+    initiatedBy: 'client',
+  })
 })
 
 describe('deleteSelectionPromise', () => {

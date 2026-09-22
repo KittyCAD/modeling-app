@@ -1,7 +1,8 @@
-// Pins that imported geometry is engine-addressable by the id hide() sends
-// (an import has a single engine id, recorded unchanged on the operation).
-// The rendered snapshot must show ONLY the anchor box -- the imported cube
-// must be gone.
+@settings(kclVersion = 2.0, experimentalFeatures = allow)
+
+// This test verifies that imported geometry is engine-addressable by the id
+// that hide() sends. An import has a single engine id, which the operation
+// records unchanged. The rendered snapshot must show only the anchor box.
 import "../inputs/cube.step" as cube
 
 cube
@@ -20,3 +21,10 @@ anchorSketch = sketch(on = XY) {
 boxVisible = extrude(region(point = [1750, 250], sketch = anchorSketch), length = 500)
 
 hide(cube)
+
+importedView = view::named(
+  "Anchor only",
+  camera = view::oriented(view::Orientation::Isometric),
+  baseline = view::Visibility::Show,
+  except = [cube],
+)

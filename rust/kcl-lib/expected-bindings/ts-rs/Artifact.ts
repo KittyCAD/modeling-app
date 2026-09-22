@@ -157,7 +157,7 @@ export type EdgeCutEdge = { id: ArtifactId, edgeCutId: ArtifactId, surfaceId: Ar
 
 export type EdgeCutSubType = "fillet" | "chamfer" | "custom";
 
-export type GdtAnnotationArtifact = { id: ArtifactId, codeRef: CodeRef, };
+export type GdtAnnotationArtifact = { id: ArtifactId, codeRef: CodeRef, consumed: boolean, };
 
 export type Helix = { id: ArtifactId, 
 /**
@@ -174,7 +174,7 @@ trajectorySweepId: ArtifactId | null,
  */
 consumed: boolean, };
 
-export type ImportedGeometryArtifact = { id: ArtifactId, codeRef: CodeRef, };
+export type ImportedGeometryArtifact = { id: ArtifactId, codeRef: CodeRef, consumed: boolean, };
 
 /**
  * A named view declared in KCL by `view::named`: a display name, camera intent
