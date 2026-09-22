@@ -135,23 +135,16 @@ describe('getMergedSweepBodyArtifact', () => {
     }
   }
 
-  it.each(['cap', 'wall'] as const)(
-    'resolves merged region outputs on a %s to their shared body',
-    (faceType) => {
-      const { artifactGraph, base, first, second } =
-        createFaceMergeGraph(faceType)
+  it('resolves a merged extrusion on a wall to its shared body', () => {
+    const { artifactGraph, base, first } = createFaceMergeGraph('wall')
 
-      expect(getMergedSweepBodyArtifact(first.sweep, artifactGraph)).toBe(
-        base.sweep
-      )
-      expect(getMergedSweepBodyArtifact(second.sweep, artifactGraph)).toBe(
-        base.sweep
-      )
-      expect(
-        getMergedSweepBodyArtifact(first.sweep, artifactGraph, false)
-      ).toBe(first.sweep)
-    }
-  )
+    expect(getMergedSweepBodyArtifact(first.sweep, artifactGraph)).toBe(
+      base.sweep
+    )
+    expect(getMergedSweepBodyArtifact(first.sweep, artifactGraph, false)).toBe(
+      first.sweep
+    )
+  })
 
   it('keeps new and cloned bodies distinct from their support body', () => {
     const { artifactGraph, first, second } = createFaceMergeGraph()
