@@ -1,7 +1,8 @@
-import { fireEvent, render } from '@testing-library/react'
+import { fireEvent, render, screen } from '@testing-library/react'
 import '@testing-library/jest-dom'
 import type { CustomerBalance } from '@kittycad/lib'
 import { BillingDialog } from '@kittycad/ui-components'
+import type { MouseEvent } from 'react'
 import { expect, test, vi } from 'vitest'
 
 const userPaymentBalance = {
@@ -15,7 +16,7 @@ const userPaymentBalance = {
 } satisfies CustomerBalance
 
 test('Shows account billing action when total due is positive', () => {
-  const billingClick = vi.fn()
+  const billingClick = vi.fn((event: MouseEvent) => event.preventDefault())
   const { queryByTestId } = render(
     <BillingDialog
       upgradeHref="https://zoo.dev/design-studio-pricing"
@@ -73,4 +74,24 @@ test('Shows upgrade action when total due is zero', () => {
 
   expect(queryByTestId('billing-account-button')).toBeNull()
   expect(queryByTestId('billing-upgrade-button')).toBeVisible()
+})
+
+test('Shows the monthly credit refresh schedule in the billing dialog', () => {
+  render(
+    <BillingDialog
+      upgradeHref="https://zoo.dev/design-studio-pricing"
+      accountHref="https://zoo.dev/account/billing"
+      balance={0}
+      allowance={20}
+      userPaymentBalance={{
+        ...userPaymentBalance,
+        total_due: 0,
+        monthly_api_credits_refresh_at: new Date(
+          Date.now() - 1000
+        ).toISOString(),
+      }}
+    />
+  )
+
+  expect(screen.getByText('Credit refresh pending')).toBeVisible()
 })

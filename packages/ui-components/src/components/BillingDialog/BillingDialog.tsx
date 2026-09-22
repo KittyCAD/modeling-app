@@ -128,6 +128,7 @@ export function BillingDialog(props: BillingDialogProps) {
           error={props.error}
           balance={props.balance}
           allowance={props.allowance}
+          userPaymentBalance={props.userPaymentBalance}
         />
         {!hasUnlimited && (
           <a
