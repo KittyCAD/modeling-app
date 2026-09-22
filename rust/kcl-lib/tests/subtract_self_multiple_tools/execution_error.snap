@@ -7,6 +7,7 @@ KCL Engine error
   × engine: command BooleanSubtract resulted in errors:
   │  Each UUID in brepIds must refer to a valid Solid3D. This often occurs
   │ when the referenced body was consumed by another operation.
+  │ (API call ID: [uuid])
     ╭─[14:12]
  13 │ 
  14 │ fullPart = subtract(part001, tools = [part001, part002])
@@ -18,6 +19,7 @@ KCL Engine error
         × engine: command BooleanSubtract resulted in errors:
         │  Each UUID in brepIds must refer to a valid Solid3D. This often
         │ occurs when the referenced body was consumed by another operation.
+        │ (API call ID: [uuid])
           ╭─[14:12]
        13 │
        14 │ fullPart = subtract(part001, tools = [part001, part002])

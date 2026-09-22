@@ -146,32 +146,24 @@ const MATERIAL_DENSITY_KG_PER_CUBIC_METER: f64 = 1000.0;
 // near zero. The snapshots use fixed units: mm, mm^2, g, and kg/m^3.
 const PHYSICAL_PROPERTIES_ABSOLUTE_TOLERANCE: f64 = 1e-9;
 const PHYSICAL_PROPERTIES_RELATIVE_TOLERANCE: f64 = 1e-12;
+const API_CALL_ID_SNAPSHOT_PATTERN: &str = r"(?s)(API call ID:[^[:xdigit:]]{0,64})[[:xdigit:]]{8}-[[:xdigit:]]{4}-[[:xdigit:]]{4}-[[:xdigit:]]{4}-[[:xdigit:]]{12}";
 
 fn is_writing() -> bool {
     matches!(std::env::var("ZOO_SIM_UPDATE").as_deref(), Ok("always"))
 }
 
-fn remove_api_call_id_for_snapshot(error: &mut KclError) {
-    let message = &mut error.details_mut().message;
-    let Some((base, suffix)) = message.rsplit_once(" (API call ID: ") else {
-        return;
-    };
-    let Some(api_call_id) = suffix.strip_suffix(')') else {
-        return;
-    };
-    if !api_call_id.is_empty() {
-        message.truncate(base.len());
-    }
-}
-
 #[test]
-fn snapshot_errors_omit_api_call_id() {
-    let mut error = KclError::new_engine(crate::errors::KclErrorDetails::new(
-        "engine failure (API call ID: 70fd17fc-f92f-4e5e-9750-55d3d3fa37d9)".to_owned(),
-        vec![],
-    ));
-    remove_api_call_id_for_snapshot(&mut error);
-    assert_eq!(error.message(), "engine failure");
+fn api_call_ids_are_redacted_in_snapshots() {
+    let filter = regex::Regex::new(API_CALL_ID_SNAPSHOT_PATTERN).unwrap();
+    let id = "70fd17fc-f92f-4e5e-9750-55d3d3fa37d9";
+    assert_eq!(
+        filter.replace_all(&format!("API call ID: {id}"), "$1[uuid]"),
+        "API call ID: [uuid]"
+    );
+    assert_eq!(
+        filter.replace_all(&format!("API call ID:\n  │ {id}"), "$1[uuid]"),
+        "API call ID:\n  │ [uuid]"
+    );
 }
 
 #[derive(Deserialize, Clone, Debug)]
@@ -360,6 +352,9 @@ where
         // Sorting maps makes them easier to diff.
         settings.set_sort_maps(true);
     }
+    // API call IDs are nondeterministic, so always redact them in snapshots.
+    // This is independent of the test's general UUID redaction setting.
+    settings.add_filter(API_CALL_ID_SNAPSHOT_PATTERN, "$1[uuid]");
     #[cfg(not(feature = "snapshot-engine-responses"))]
     {
         if test.redact_uuids {
@@ -955,12 +950,10 @@ async fn execute_once(test: &Test, render_to_png: bool, kcl_version: Option<&str
             let ok_path = test.output_dir.join("execution_success.snap");
             let previously_passed = std::fs::exists(&ok_path).unwrap();
             match e.error {
-                crate::errors::ExecError::Kcl(mut error) => {
+                crate::errors::ExecError::Kcl(error) => {
                     // Snapshot the KCL error with a fancy graphical report.
                     // This looks like a Cargo compile error, with arrows pointing
                     // to source code, underlines, etc.
-                    // The API call ID is useful in real failures but changes every run.
-                    remove_api_call_id_for_snapshot(&mut error.error);
                     let report = error.clone().into_miette_report_with_outputs(&input).unwrap();
                     let report = miette::Report::new(report);
                     if previously_passed {
