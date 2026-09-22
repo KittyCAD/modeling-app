@@ -173,11 +173,11 @@ export function setProjectIdInProjectTomlContents(
   return stringifyProjectToml(table)
 }
 
-/** Undefined means this project has never migrated its device-local mapping. */
-export function getZookeeperConversationFromProjectTomlContents(
+/** Undefined permits legacy migration; an empty string means no saved conversation. */
+export function getZookeeperConversationIdFromProjectTomlContents(
   contents: string,
   environmentName: string
-): { conversationId?: string } | undefined | Error {
+): string | undefined | Error {
   const table = parseProjectToml(contents)
   if (!table) {
     return new Error(
@@ -194,14 +194,14 @@ export function getZookeeperConversationFromProjectTomlContents(
   const environment = zookeeper[environmentName]
   // Once migrated, never reuse the unscoped legacy mapping in another environment.
   if (environment === undefined) {
-    return {}
+    return ''
   }
   if (!isTomlTable(environment)) {
     return new Error('Invalid Zookeeper environment metadata in project.toml')
   }
   const conversationId = environment.conversation_id
   if (conversationId === undefined || conversationId === '') {
-    return {}
+    return ''
   }
   if (
     typeof conversationId !== 'string' ||
@@ -209,7 +209,7 @@ export function getZookeeperConversationFromProjectTomlContents(
   ) {
     return new Error('Invalid Zookeeper conversation ID in project.toml')
   }
-  return { conversationId }
+  return conversationId
 }
 
 export function setZookeeperConversationInProjectTomlContents(
@@ -217,7 +217,7 @@ export function setZookeeperConversationInProjectTomlContents(
   environmentName: string,
   conversationId: string | undefined
 ): string | Error {
-  const current = getZookeeperConversationFromProjectTomlContents(
+  const current = getZookeeperConversationIdFromProjectTomlContents(
     contents,
     environmentName
   )
