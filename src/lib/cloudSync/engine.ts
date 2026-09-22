@@ -39,6 +39,7 @@ import {
   createProjectReplacementAttempt,
   type ProjectReplacementAttempt,
 } from '@src/lib/cloudSync/replacementAttempt'
+import { coordinateCloudSyncFileSystem } from '@src/lib/cloudSync/fileSystem'
 import { parseAcknowledgedSyncBase } from '@src/lib/cloudSync/syncBase'
 import {
   appendOutboxEntry as appendSyncDbOutboxEntry,
@@ -152,7 +153,7 @@ const SYNC_NOW_MAX_PASSES = 4
 const REMOTE_UPLOAD_FORBIDDEN_MESSAGE =
   'Cloud sync cannot upload local changes because this account does not have edit access to the linked cloud project. Local changes are safe on this device.'
 
-let localFs: IZooDesignStudioFS = opfs.impl
+let localFs = coordinateCloudSyncFileSystem(opfs.impl)
 
 let config: CloudSyncConfig = {
   enabled: false,
@@ -1167,15 +1168,17 @@ async function writeLocalProjectCloudProjectId(
     return false
   }
 
-  return updateLocalProjectToml(projectPath, (projectToml) =>
-    getCloudProjectIdFromProjectTomlContents(projectToml, environmentName) ===
-    projectId
-      ? projectToml
-      : setCloudProjectIdInProjectTomlContents(
-          projectToml,
-          environmentName,
-          projectId
-        )
+  return localFs.updateFile(
+    localFs.join(projectPath, PROJECT_SETTINGS_FILE_NAME),
+    (projectToml) =>
+      getCloudProjectIdFromProjectTomlContents(projectToml, environmentName) ===
+      projectId
+        ? projectToml
+        : setCloudProjectIdInProjectTomlContents(
+            projectToml,
+            environmentName,
+            projectId
+          )
   )
 }
 
@@ -3149,6 +3152,17 @@ async function syncProject(
         pendingProjectPaths: new Set(),
       })
     }
+    if (
+      metadata.remoteProjectId &&
+      syncBase &&
+      remoteRevision === syncBase.revision &&
+      cloudBinding.kind === 'unbound'
+    ) {
+      await writeLocalProjectCloudProjectId(
+        metadata.localProjectPath,
+        metadata.remoteProjectId
+      )
+    }
     const localFiles = await collectLocalProjectFiles(metadata.localProjectPath)
     const localManifest = await projectManifestFromFiles(localFiles)
     const syncCheckpoint: ProjectSyncCheckpoint = {
@@ -4504,7 +4518,8 @@ async function getObservedDeletedPaths(
 export function configureCloudSyncLocalFileSystem(
   nextLocalFs: IZooDesignStudioFS
 ) {
-  localFs = nextLocalFs
+  localFs = coordinateCloudSyncFileSystem(nextLocalFs)
+  return localFs
 }
 
 export async function notifyCloudSyncWriteLikeMutation(targetPath: string) {
