@@ -1,3 +1,4 @@
+import type { ProjectResponse } from '@kittycad/lib'
 import type { ProjectLibraryType } from '@src/lib/projectLibraries'
 
 /** Cloud API project revision token used for guarded updates. */
@@ -103,6 +104,16 @@ export type RemoteProjectSummary = {
 
 /** Full remote project metadata used by cloud sync before archive download. */
 export type RemoteProject = RemoteProjectSummary
+
+export type CreatedRemoteProject = RemoteProject &
+  Pick<ProjectResponse, 'revision'> & {
+    files: Required<
+      Pick<
+        ProjectResponse['files'][number],
+        'relative_path' | 'byte_size' | 'sha256'
+      >
+    >[]
+  }
 
 /** Metadata fields sent alongside whole-project cloud archive uploads. */
 export type ProjectUploadBody = {

@@ -66,26 +66,26 @@ impl TcpRead {
 }
 
 type WebSocketTcpWrite = futures::stream::SplitSink<tokio_tungstenite::WebSocketStream<reqwest::Upgraded>, WsMsg>;
+const CLOSE_HANDSHAKE_TIMEOUT: Duration = Duration::from_secs(1);
 
 /// Sends requests to the engine over its Modeling API WebSocket.
 /// Used on native platforms, does not work in browser WASM sandbox.
 pub struct WebSocketTransport {
-    _tcp_read_handle: Arc<TcpReadHandle>,
+    tcp_read_handle: tokio::task::AbortHandle,
+    tcp_write_handle: tokio::task::AbortHandle,
     engine_req_tx: mpsc::Sender<ToEngineReq>,
     shutdown_tx: mpsc::Sender<()>,
     responses: ResponseInformation,
     pending_errors: Arc<RwLock<Vec<String>>>,
     session_data: Arc<RwLock<Option<ModelingSessionData>>>,
     socket_health: Arc<RwLock<SocketHealth>>,
+    upgrade_request_id: Option<String>,
 }
 
-pub struct TcpReadHandle {
-    handle: Arc<tokio::task::JoinHandle<Result<(), WebSocketReadError>>>,
-}
-
-impl Drop for TcpReadHandle {
+impl Drop for WebSocketTransport {
     fn drop(&mut self) {
-        self.handle.abort();
+        self.tcp_read_handle.abort();
+        self.tcp_write_handle.abort();
     }
 }
 
@@ -126,6 +126,7 @@ impl WebSocketTransport {
         session_data: Arc<RwLock<Option<ModelingSessionData>>>,
         pending_errors: Arc<RwLock<Vec<String>>>,
         socket_health: Arc<RwLock<SocketHealth>>,
+        upgrade_request_id: Option<String>,
     ) -> Self {
         let wsconfig = tokio_tungstenite::tungstenite::protocol::WebSocketConfig::default()
             // 4294967296 bytes, which is around 4.2 GB.
@@ -142,7 +143,7 @@ impl WebSocketTransport {
         let (tcp_write, tcp_read) = ws_stream.split();
         let (engine_req_tx, engine_req_rx) = mpsc::channel(10);
         let (shutdown_tx, shutdown_rx) = mpsc::channel(1);
-        tokio::task::spawn(Self::start_write_actor(
+        let tcp_write_handle = tokio::task::spawn(Self::start_write_actor(
             tcp_write,
             engine_req_rx,
             shutdown_rx,
@@ -155,7 +156,7 @@ impl WebSocketTransport {
         let session_data_for_read = session_data.clone();
         let pending_errors_for_read = pending_errors.clone();
         let socket_health_tcp_read = socket_health.clone();
-        let tcp_read_handle = tokio::spawn(async move {
+        let tcp_read_handle: tokio::task::JoinHandle<Result<(), WebSocketReadError>> = tokio::spawn(async move {
             // Get Websocket messages from API server
             loop {
                 match tcp_read.read().await {
@@ -271,10 +272,20 @@ impl WebSocketTransport {
             pending_errors,
             session_data,
             socket_health,
+            upgrade_request_id,
             engine_req_tx,
-            _tcp_read_handle: Arc::new(TcpReadHandle {
-                handle: Arc::new(tcp_read_handle),
-            }),
+            tcp_read_handle: tcp_read_handle.abort_handle(),
+            tcp_write_handle: tcp_write_handle.abort_handle(),
+        }
+    }
+
+    fn connection_id_message(&self, session: Option<&ModelingSessionData>) -> String {
+        if let Some(session) = session {
+            format!(" (API call ID: {})", session.api_call_id)
+        } else if let Some(id) = &self.upgrade_request_id {
+            format!(" (Engine upgrade request ID: {id})")
+        } else {
+            " (No API call ID: session data empty)".to_string()
         }
     }
 
@@ -373,6 +384,29 @@ impl WebSocketTransport {
             .map_err(|e| anyhow!("could not send close over websocket: {e}"))?;
         Ok(())
     }
+
+    async fn close_with_timeout(&self, timeout: Duration) {
+        let _ = self.shutdown_tx.try_send(());
+        let _ = tokio::time::timeout(timeout, async {
+            loop {
+                if *self.socket_health.read().await == SocketHealth::Inactive {
+                    return;
+                }
+                tokio::task::yield_now().await;
+            }
+        })
+        .await;
+        // An inactive reader does not guarantee the writer has finished sending.
+        // It could have encountered an error.
+        // So, the graceful timeout request above may not have worked.
+        // So, we should abort here, in case it's still trying to send.
+        // Aborting a task that has already completed is a no-op.
+        // Aborting a task that's stuck or in-progress and didn't gracefully shutdown will
+        // accomplish our goal (stopping). So either way, we should abort.
+        self.tcp_read_handle.abort();
+        self.tcp_write_handle.abort();
+        *self.socket_health.write().await = SocketHealth::Inactive;
+    }
 }
 
 #[async_trait::async_trait]
@@ -386,16 +420,7 @@ impl EngineTransport for WebSocketTransport {
     ) -> Result<(), KclError> {
         let (tx, rx) = oneshot::channel();
 
-        let api_call_id_msg = {
-            // Get the API call ID from session data if available. Drop it as
-            // soon as we're done.
-            let session_data = self.session_data.read().await;
-            if let Some(session) = session_data.as_ref() {
-                format!(" (API call ID: {})", session.api_call_id)
-            } else {
-                " (No API call ID: session data empty)".to_string()
-            }
-        };
+        let api_call_id_msg = self.connection_id_message(self.session_data.read().await.as_ref());
 
         // Send the request to the engine, via the actor.
         self.engine_req_tx
@@ -461,11 +486,7 @@ impl EngineTransport for WebSocketTransport {
                 // Get the API call ID from session data if available
                 let session_data = self.session_data.read().await;
                 let api_call_id = session_data.as_ref().map(|session| session.api_call_id.to_string());
-                let api_call_id_msg = if let Some(ref id) = api_call_id {
-                    format!(" (API call ID: {})", id)
-                } else {
-                    String::new()
-                };
+                let api_call_id_msg = self.connection_id_message(session_data.as_ref());
 
                 // Check if we have any pending errors.
                 let pe = self.pending_errors.read().await;
@@ -492,12 +513,7 @@ impl EngineTransport for WebSocketTransport {
         }
 
         // Get the API call ID from session data if available for timeout error
-        let session_data = self.session_data.read().await;
-        let api_call_id_msg = if let Some(session) = session_data.as_ref() {
-            format!(" (API call ID: {})", session.api_call_id)
-        } else {
-            String::new()
-        };
+        let api_call_id_msg = self.connection_id_message(self.session_data.read().await.as_ref());
 
         Err(KclError::new_engine(KclErrorDetails::new(
             format!("Modeling command timed out `{cmd_id}`{}", api_call_id_msg),
@@ -506,12 +522,79 @@ impl EngineTransport for WebSocketTransport {
     }
 
     async fn close(&self) -> Result<(), TransportCloseError> {
-        let _ = self.shutdown_tx.send(()).await;
-        loop {
-            let guard = self.socket_health.read().await;
-            if *guard == SocketHealth::Inactive {
-                return Ok(());
-            }
-        }
+        self.close_with_timeout(CLOSE_HANDSHAKE_TIMEOUT).await;
+        Ok(())
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[tokio::test]
+    async fn close_aborts_writer_when_reader_stops_before_timeout() {
+        let write = tokio::spawn(std::future::pending::<()>());
+        let (engine_req_tx, _engine_req_rx) = mpsc::channel(1);
+        let (shutdown_tx, mut shutdown_rx) = mpsc::channel(1);
+        let socket_health = Arc::new(RwLock::new(SocketHealth::Active));
+        let read_health = socket_health.clone();
+        let read = tokio::spawn(async move {
+            // Simulate the reader observing the peer's close after shutdown is requested.
+            shutdown_rx.recv().await.expect("shutdown should be requested");
+            *read_health.write().await = SocketHealth::Inactive;
+        });
+        let transport = WebSocketTransport {
+            tcp_read_handle: read.abort_handle(),
+            tcp_write_handle: write.abort_handle(),
+            engine_req_tx,
+            shutdown_tx,
+            responses: ResponseInformation::new(Arc::new(RwLock::new(Default::default()))),
+            pending_errors: Arc::new(RwLock::new(Vec::new())),
+            session_data: Arc::new(RwLock::new(None)),
+            socket_health: socket_health.clone(),
+            upgrade_request_id: None,
+        };
+
+        tokio::time::timeout(Duration::from_secs(1), async {
+            // The outer deadline ensures we exercise completion before the close timeout.
+            transport.close_with_timeout(Duration::from_secs(10)).await;
+            read.await.expect("reader should finish normally");
+            assert!(write.await.unwrap_err().is_cancelled());
+        })
+        .await
+        .expect("close should abort the writer even when the reader has stopped");
+
+        assert_eq!(*socket_health.read().await, SocketHealth::Inactive);
+    }
+
+    #[tokio::test]
+    async fn close_aborts_tasks_when_peer_does_not_close() {
+        let read = tokio::spawn(std::future::pending::<()>());
+        let write = tokio::spawn(std::future::pending::<()>());
+        let (engine_req_tx, _engine_req_rx) = mpsc::channel(1);
+        let (shutdown_tx, _shutdown_rx) = mpsc::channel(1);
+        let socket_health = Arc::new(RwLock::new(SocketHealth::Active));
+        let transport = WebSocketTransport {
+            tcp_read_handle: read.abort_handle(),
+            tcp_write_handle: write.abort_handle(),
+            engine_req_tx,
+            shutdown_tx,
+            responses: ResponseInformation::new(Arc::new(RwLock::new(Default::default()))),
+            pending_errors: Arc::new(RwLock::new(Vec::new())),
+            session_data: Arc::new(RwLock::new(None)),
+            socket_health: socket_health.clone(),
+            upgrade_request_id: None,
+        };
+
+        tokio::time::timeout(
+            Duration::from_secs(1),
+            transport.close_with_timeout(Duration::from_millis(1)),
+        )
+        .await
+        .expect("close should be bounded");
+
+        assert_eq!(*socket_health.read().await, SocketHealth::Inactive);
+        assert!(read.await.unwrap_err().is_cancelled());
+        assert!(write.await.unwrap_err().is_cancelled());
     }
 }
