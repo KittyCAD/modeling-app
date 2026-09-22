@@ -846,11 +846,14 @@ async fn execute_once(test: &Test, kcl_version: Option<&str>) {
                 )
             }
             // rendering to png means the model was exported with mesh and readable brep data.
-            if let Some(image) = graphics_result.image() {
-                twenty_twenty::try_assert_image(test.output_dir.join(RENDERED_MODEL_NAME), &image, 0.99)
-                    .unwrap_or_else(|_| {
-                        panic!("Image assertion failed; input KCL file: {}", test.entry_point.display())
-                    });
+            if let Some(image) = graphics_result.image()
+                && let Err(err) =
+                    twenty_twenty::try_assert_image(test.output_dir.join(RENDERED_MODEL_NAME), &image, 0.99)
+            {
+                panic!(
+                    "Image assertion failed; input KCL file: {}; error: \n{err}",
+                    test.entry_point.display()
+                )
             }
 
             let ok_snap = catch_unwind(AssertUnwindSafe(|| {

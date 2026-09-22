@@ -199,9 +199,11 @@ async fn execute_from_graphics_params(
     match graphics {
         // maybe there's something we can do to pipe reason into test output,
         // or maybe the main importance of the field is just that it must exist in config.toml files
-        TestGraphicsParams::EngineRender { reason: _r } => execute_locally_and_render_on_engine(ctx, program, None)
-            .await
-            .map(|(state, env, image)| (state, env, TestGraphicsArtifact::Image(image))),
+        TestGraphicsParams::EngineRender { reason: _r } => {
+            execute_locally_and_render_on_engine(ctx, program, deprecation_version_override)
+                .await
+                .map(|(state, env, image)| (state, env, TestGraphicsArtifact::Image(image)))
+        }
         TestGraphicsParams::ExportAndRender => {
             execute_export_and_render_locally(ctx, program, deprecation_version_override)
                 .await
@@ -216,7 +218,7 @@ async fn execute_from_graphics_params(
                     )
                 })
         }
-        TestGraphicsParams::None => do_execute(ctx, program, None)
+        TestGraphicsParams::None => do_execute(ctx, program, deprecation_version_override)
             .await
             .map(|(state, env)| (state, env, TestGraphicsArtifact::None)),
     }
