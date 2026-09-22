@@ -588,6 +588,37 @@ describe('Zookeeper session controller', () => {
     ).toHaveLength(0)
   })
 
+  it('keeps a failed metadata lookup from starting a new conversation and supports retry', async () => {
+    const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {})
+    const lookup = deferred<string | undefined>()
+    const { actor, controller, conversationStore } = createHarness({
+      actorState: 'ready-await',
+      storeGet: lookup.promise,
+    })
+    lookup.reject(new Error('Cannot read project.toml'))
+    await flushPromises()
+    expect(controller.showManualConnect.value).toBe(true)
+    expect(controller.conversationLookupError.value).toContain(
+      'Could not read the saved Zookeeper conversation'
+    )
+    expect(
+      sentEvents(actor, ZookeeperManagerTransitions.CacheSetupAndConnect)
+    ).toHaveLength(0)
+
+    vi.mocked(conversationStore.getProjectConversationId).mockResolvedValue(
+      'saved-conversation'
+    )
+    controller.reconnect()
+    await flushPromises()
+    expect(controller.conversationLookupError.value).toBeUndefined()
+    expect(
+      sentEvents(actor, ZookeeperManagerTransitions.CacheSetupAndConnect)
+    ).toEqual([
+      expect.objectContaining({ conversationId: 'saved-conversation' }),
+    ])
+    consoleError.mockRestore()
+  })
+
   it('does not repeat setup while the actor waits for auth hydration', async () => {
     const { actor } = createHarness({
       actorState: 'ready-await',

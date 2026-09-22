@@ -5,6 +5,8 @@ import {
   type TomlTable,
   type TomlValue,
 } from 'smol-toml'
+import { REGEXP_UUIDV4 } from '@src/lib/constants'
+import { isErr } from '@src/lib/trap'
 
 function parseProjectToml(contents: string): TomlTable | undefined {
   try {
@@ -166,7 +168,88 @@ export function setProjectIdInProjectTomlContents(
     settings.meta = {}
   }
   settings.meta.id = projectId
+  delete settings.zookeeper
 
+  return stringifyProjectToml(table)
+}
+
+/** Undefined means this project has never migrated its device-local mapping. */
+export function getZookeeperConversationFromProjectTomlContents(
+  contents: string,
+  environmentName: string
+): { conversationId?: string } | undefined | Error {
+  const table = parseProjectToml(contents)
+  if (!table) {
+    return new Error(
+      'Unable to parse project.toml while reading Zookeeper conversation'
+    )
+  }
+  if (!isTomlTable(table.settings) || table.settings.zookeeper === undefined) {
+    return undefined
+  }
+  const zookeeper = table.settings.zookeeper
+  if (!isTomlTable(zookeeper)) {
+    return new Error('Invalid Zookeeper metadata in project.toml')
+  }
+  const environment = zookeeper[environmentName]
+  // Once migrated, never reuse the unscoped legacy mapping in another environment.
+  if (environment === undefined) {
+    return {}
+  }
+  if (!isTomlTable(environment)) {
+    return new Error('Invalid Zookeeper environment metadata in project.toml')
+  }
+  const conversationId = environment.conversation_id
+  if (conversationId === undefined || conversationId === '') {
+    return {}
+  }
+  if (
+    typeof conversationId !== 'string' ||
+    !REGEXP_UUIDV4.test(conversationId)
+  ) {
+    return new Error('Invalid Zookeeper conversation ID in project.toml')
+  }
+  return { conversationId }
+}
+
+export function setZookeeperConversationInProjectTomlContents(
+  contents: string,
+  environmentName: string,
+  conversationId: string | undefined
+): string | Error {
+  const current = getZookeeperConversationFromProjectTomlContents(
+    contents,
+    environmentName
+  )
+  if (isErr(current)) {
+    return current
+  }
+  if (conversationId !== undefined && !REGEXP_UUIDV4.test(conversationId)) {
+    return new Error('Invalid Zookeeper conversation ID')
+  }
+  const table = parseProjectToml(contents)
+  if (!table) {
+    return new Error(
+      'Unable to parse project.toml while saving Zookeeper conversation'
+    )
+  }
+  if (!isTomlTable(table.settings)) {
+    table.settings = {}
+  }
+  const settings = table.settings
+  if (!isTomlTable(settings.zookeeper)) {
+    settings.zookeeper = {}
+  }
+  const zookeeper = settings.zookeeper
+  if (!isTomlTable(zookeeper[environmentName])) {
+    zookeeper[environmentName] = {}
+  }
+  const environment = zookeeper[environmentName]
+  if (environment.conversation_id === (conversationId ?? '')) {
+    return contents
+  }
+  // An explicit empty ID prevents a stale local mapping from resurrecting cleared chat.
+  environment.conversation_id = conversationId ?? ''
   return stringifyProjectToml(table)
 }
 
@@ -200,6 +283,7 @@ export function prepareProjectTomlForDuplication(
     settings.meta = {}
   }
   settings.meta.id = projectId
+  delete settings.zookeeper
 
   return stringifyProjectToml(table)
 }
@@ -227,6 +311,17 @@ export function preserveProjectTomlMetadataInProjectSettingsContents(
     if (key !== 'settings' && !(key in nextTable)) {
       nextTable[key] = value
     }
+  }
+
+  // Conversation metadata is owned by the conversation store, not the settings form.
+  if (
+    isTomlTable(existingTable.settings) &&
+    existingTable.settings.zookeeper !== undefined
+  ) {
+    if (!isTomlTable(nextTable.settings)) {
+      nextTable.settings = {}
+    }
+    nextTable.settings.zookeeper = existingTable.settings.zookeeper
   }
 
   return stringifyProjectToml(nextTable)

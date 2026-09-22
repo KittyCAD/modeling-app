@@ -699,7 +699,7 @@ export const ZookeeperConversation = (props: ZookeeperConversationProps) => {
                 <ConnectionRecovery
                   className="h-full min-h-[12rem] w-full"
                   title={props.connectionError ?? 'No internet connection.'}
-                  description="Check your network connection, then click below to try again."
+                  description="Click below to try again."
                   onReconnect={props.onReconnect}
                   reconnectDisabled={props.isClearingChat}
                 />

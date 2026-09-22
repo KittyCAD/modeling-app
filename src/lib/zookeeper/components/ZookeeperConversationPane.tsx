@@ -195,7 +195,8 @@ export const ZookeeperConversationPane = (props: {
         onCheckBilling={checkBillingAccess}
         onOpenBilling={onOpenBilling}
         connectionError={
-          showManualConnect ? 'No internet connection.' : closeReason
+          controller.conversationLookupError.value ??
+          (showManualConnect ? 'No internet connection.' : closeReason)
         }
         connectionFailed={setupFailed}
         accessDeniedCode={accessDeniedCode}

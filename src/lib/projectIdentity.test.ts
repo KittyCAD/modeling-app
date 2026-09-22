@@ -59,6 +59,11 @@ describe('separateProjectsSharingProjectId', () => {
   })
 
   it('keeps the selected project id and gives every other copy a new id', async () => {
+    fsZdsMocks.readFile.mockResolvedValue(
+      new TextEncoder().encode(
+        `${projectToml('shared-project-id')}\n[settings.zookeeper."zoo.dev"]\nconversation_id = "old-conversation"\n`
+      )
+    )
     await expect(
       separateProjectsSharingProjectId({
         fileOperations,
@@ -69,6 +74,10 @@ describe('separateProjectsSharingProjectId', () => {
 
     expect(writtenProjectId('/projects/original')).toBe('new-project-id-1')
     expect(writtenProjectId('/projects/copy')).toBeUndefined()
+    expect(fsZdsMocks.writeFile.mock.calls[0][1]).not.toContain('zookeeper')
+    expect(fsZdsMocks.writeFile.mock.calls[0][1]).not.toContain(
+      'old-conversation'
+    )
   })
 
   it('gives every copy a new id when no project keeps the history', async () => {
