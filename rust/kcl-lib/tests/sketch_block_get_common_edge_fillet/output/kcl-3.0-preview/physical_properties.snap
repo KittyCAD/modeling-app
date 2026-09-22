@@ -5,14 +5,14 @@ description: Physical properties sketch_block_get_common_edge_fillet.kcl
 {
   "bounding_box": {
     "center": {
-      "x": 50.0,
-      "y": 50.0,
-      "z": 50.0
+      "x": 50.0000000149259,
+      "y": 50.00000001492593,
+      "z": 50.00000000000004
     },
     "dimensions": {
-      "x": 100.0,
-      "y": 100.0,
-      "z": 100.0
+      "x": 100.0000000298518,
+      "y": 100.00000002985186,
+      "z": 120.00000000000016
     },
     "unit": "mm"
   },

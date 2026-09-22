@@ -332,7 +332,9 @@ description: Artifact commands chamfer_multiple_auto_hole_region_face_api.kcl
         "strategy": "automatic",
         "extra_face_ids": [
           "[uuid]"
-        ]
+        ],
+        "version": "v2",
+        "tangent_chain": true
       }
     }
   ]

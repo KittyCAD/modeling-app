@@ -5,14 +5,14 @@ description: Physical properties clone_w_face_tags.kcl
 {
   "bounding_box": {
     "center": {
-      "x": 4.26,
-      "y": 2.635,
-      "z": 1.0000000000000002
+      "x": 4.394000000000003,
+      "y": 2.6349999986555703,
+      "z": 1.0000000021851374
     },
     "dimensions": {
-      "x": 7.68,
-      "y": 3.45,
-      "z": 2.0000000000000004
+      "x": 7.948000000000006,
+      "y": 3.45000000268886,
+      "z": 2.000000004370275
     },
     "unit": "mm"
   },
@@ -24,6 +24,6 @@ description: Physical properties clone_w_face_tags.kcl
     "material_density": 1000.0,
     "material_density_unit": "kg:m3",
     "unit": "g",
-    "value": 0.03640803564070963
+    "value": 0.03640803197234773
   }
 }

@@ -353,7 +353,9 @@ description: Artifact commands clone_w_face_tags.kcl
         },
         "tolerance": 0.0000001,
         "strategy": "automatic",
-        "extra_face_ids": []
+        "extra_face_ids": [],
+        "version": "v2",
+        "tangent_chain": true
       }
     }
   ]

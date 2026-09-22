@@ -7,23 +7,23 @@ description: Physical properties fillet_ambiguous_region_edge_specifier_broad.kc
     "center": {
       "x": 0.529237019207331,
       "y": 0.010917630454832404,
-      "z": 2.0
+      "z": 1.999999988654293
     },
     "dimensions": {
       "x": 12.951161905493308,
       "y": 15.68068641316409,
-      "z": 4.0
+      "z": 4.000000022691414
     },
     "unit": "mm"
   },
   "surface_area": {
     "unit": "mm2",
-    "value": 286.8894034295244
+    "value": 282.93787651212375
   },
   "weight": {
     "material_density": 1000.0,
     "material_density_unit": "kg:m3",
     "unit": "g",
-    "value": 0.3033487341525945
+    "value": 0.30210942528269397
   }
 }
