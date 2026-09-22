@@ -1,3 +1,4 @@
+import type { ProjectResponse } from '@kittycad/lib'
 import type { ProjectLibraryType } from '@src/lib/projectLibraries'
 
 /** Cloud API project revision token used for guarded updates. */
@@ -106,19 +107,20 @@ export type RemoteProject = RemoteProjectSummary
 
 /**
  * Minimal partial of the project API response returned after creation.
- * Cloud sync only needs the revision and each accepted file's path, size, and
- * fingerprint in addition to the remote project metadata.
+ * Cloud sync requires each accepted file's fingerprint to establish the
+ * initial sync baseline.
  *
  * @see https://zoo.dev/docs/developer-tools/api/projects/get-one-of-the-authenticated-user's-projects#files
  */
-export type CreatedRemoteProject = RemoteProject & {
-  revision: Revision
-  files: {
-    relative_path: string
-    byte_size: number
-    sha256: string
-  }[]
-}
+export type CreatedRemoteProject = RemoteProject &
+  Pick<ProjectResponse, 'revision'> & {
+    files: Required<
+      Pick<
+        ProjectResponse['files'][number],
+        'relative_path' | 'byte_size' | 'sha256'
+      >
+    >[]
+  }
 
 /** Metadata fields sent alongside whole-project cloud archive uploads. */
 export type ProjectUploadBody = {
