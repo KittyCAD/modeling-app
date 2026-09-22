@@ -146,7 +146,8 @@ const MATERIAL_DENSITY_KG_PER_CUBIC_METER: f64 = 1000.0;
 // near zero. The snapshots use fixed units: mm, mm^2, g, and kg/m^3.
 const PHYSICAL_PROPERTIES_ABSOLUTE_TOLERANCE: f64 = 1e-9;
 const PHYSICAL_PROPERTIES_RELATIVE_TOLERANCE: f64 = 1e-12;
-const API_CALL_ID_SNAPSHOT_PATTERN: &str = r"(?s)(API call ID:[^[:xdigit:]]{0,64})[[:xdigit:]]{8}-[[:xdigit:]]{4}-[[:xdigit:]]{4}-[[:xdigit:]]{4}-[[:xdigit:]]{12}";
+const API_CALL_ID_SNAPSHOT_PATTERN: &str = r"(?s)(API call ID:).{0,32}?[[:xdigit:]]{8}-.{0,32}?[[:xdigit:]]{4}-.{0,32}?[[:xdigit:]]{4}-.{0,32}?[[:xdigit:]]{4}-.{0,32}?[[:xdigit:]]{12}";
+const API_CALL_ID_SNAPSHOT_REPLACEMENT: &str = "$1 [uuid]";
 
 fn is_writing() -> bool {
     matches!(std::env::var("ZOO_SIM_UPDATE").as_deref(), Ok("always"))
@@ -157,12 +158,22 @@ fn api_call_ids_are_redacted_in_snapshots() {
     let filter = regex::Regex::new(API_CALL_ID_SNAPSHOT_PATTERN).unwrap();
     let id = "70fd17fc-f92f-4e5e-9750-55d3d3fa37d9";
     assert_eq!(
-        filter.replace_all(&format!("API call ID: {id}"), "$1[uuid]"),
+        filter.replace_all(&format!("API call ID: {id}"), API_CALL_ID_SNAPSHOT_REPLACEMENT),
         "API call ID: [uuid]"
     );
     assert_eq!(
-        filter.replace_all(&format!("API call ID:\n  │ {id}"), "$1[uuid]"),
-        "API call ID:\n  │ [uuid]"
+        filter.replace_all(
+            "API call ID: 70fd17fc-\n  │ f92f-4e5e-9750-55d3d3fa37d9",
+            API_CALL_ID_SNAPSHOT_REPLACEMENT
+        ),
+        "API call ID: [uuid]"
+    );
+    assert_eq!(
+        filter.replace_all(
+            "API call ID: 70fd17fc-f92f-\n  \u{1b}[31m│\u{1b}[0m 4e5e-9750-55d3d3fa37d9",
+            API_CALL_ID_SNAPSHOT_REPLACEMENT
+        ),
+        "API call ID: [uuid]"
     );
 }
 
@@ -354,7 +365,7 @@ where
     }
     // API call IDs are nondeterministic, so always redact them in snapshots.
     // This is independent of the test's general UUID redaction setting.
-    settings.add_filter(API_CALL_ID_SNAPSHOT_PATTERN, "$1[uuid]");
+    settings.add_filter(API_CALL_ID_SNAPSHOT_PATTERN, API_CALL_ID_SNAPSHOT_REPLACEMENT);
     #[cfg(not(feature = "snapshot-engine-responses"))]
     {
         if test.redact_uuids {

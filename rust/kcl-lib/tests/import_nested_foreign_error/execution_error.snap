@@ -4,7 +4,7 @@ description: Error from executing import_nested_foreign_error.kcl
 ---
 KCL Engine error
 
-  × engine: Import failed: object contains no polygons
+  × engine: Import failed: object contains no polygons (API call ID: [uuid])
    ╭─[1:1]
  1 │ import "bad.obj"
    · ────────┬───────
@@ -13,7 +13,7 @@ KCL Engine error
    ╰────
   ╰─▶ KCL Engine error
       
-        × engine: Import failed: object contains no polygons
+        × engine: Import failed: object contains no polygons (API call ID: [uuid])
          ╭─[3:1]
        2 │ // must keep the import chain back to this file.
        3 │ import theModel from "assembly.kcl"
