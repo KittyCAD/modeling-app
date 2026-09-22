@@ -276,7 +276,19 @@ pub async fn execute_sim_test_no_close(
     let heartbeats = Some(5);
     let version = ast
         .language_version()
-        .map_err(KclErrorWithOutputs::no_outputs)
+        .map_err(|error| {
+            let mut error = KclErrorWithOutputs::no_outputs(error);
+            if let Some(path) = &current_file {
+                error.filenames.insert(
+                    crate::ModuleId::default(),
+                    crate::modules::ModulePath::Local {
+                        value: crate::TypedPath(path.clone()),
+                        original_import_path: None,
+                    },
+                );
+            }
+            error
+        })
         .map_err(ExecError::from)?;
     let ctx = new_context_with_heartbeats(true, current_file, heartbeats, graphics.geometry_only(), version).await?;
     let result = execute_from_graphics_params(graphics, ast, deprecation_version_override, &ctx).await;

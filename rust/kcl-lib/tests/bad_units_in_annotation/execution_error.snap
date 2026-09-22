@@ -9,6 +9,6 @@ KCL Semantic error
    ╭─[1:1]
  1 │ @settings(defaultLengthUnit = nm)
    · ────────────────┬────────────────
-   ·                 ╰── main
+   ·                 ╰── tests/bad_units_in_annotation/input.kcl
  2 │ 
    ╰────
