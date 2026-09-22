@@ -318,10 +318,35 @@ pub(super) async fn get_changed_program(old: CacheInformation<'_>, new: CacheInf
     }
 
     // Check if the block annotations like @settings() are different.
-    if !significant_attrs_match(
-        old_ast.inner_attrs.iter().filter(annotations::is_significant),
-        new_ast.inner_attrs.iter().filter(annotations::is_significant),
-    ) {
+    if !old_ast
+        .inner_attrs
+        .iter()
+        .filter(annotations::is_significant)
+        .zip_longest(new_ast.inner_attrs.iter().filter(annotations::is_significant))
+        .all(|pair| {
+            match pair {
+                EitherOrBoth::Both(old, new) => {
+                    // Compare annotations, ignoring source ranges.  Digests must
+                    // have been computed before this.
+                    let Annotation { name, properties, .. } = &old.inner;
+                    let Annotation {
+                        name: new_name,
+                        properties: new_properties,
+                        ..
+                    } = &new.inner;
+
+                    name.as_ref().map(|n| n.digest) == new_name.as_ref().map(|n| n.digest)
+                        && properties
+                            .as_ref()
+                            .map(|props| props.iter().map(|p| p.digest).collect::<Vec<_>>())
+                            == new_properties
+                                .as_ref()
+                                .map(|props| props.iter().map(|p| p.digest).collect::<Vec<_>>())
+                }
+                _ => false,
+            }
+        })
+    {
         // If any of the annotations are different at the beginning of the
         // program, it's likely the settings, and we have to bust the cache and
         // re-execute the whole thing.
@@ -334,33 +359,6 @@ pub(super) async fn get_changed_program(old: CacheInformation<'_>, new: CacheInf
 
     // Check if the changes were only to Non-code areas, like comments or whitespace.
     generate_changed_program(old_ast, new_ast, reapply_settings)
-}
-
-/// Whether two sequences of significant annotations agree, ignoring source
-/// ranges. Digests must have been computed before this.
-fn significant_attrs_match<'a, 'b>(
-    old: impl Iterator<Item = &'a Node<Annotation>>,
-    new: impl Iterator<Item = &'b Node<Annotation>>,
-) -> bool {
-    old.zip_longest(new).all(|pair| match pair {
-        EitherOrBoth::Both(old, new) => {
-            let Annotation { name, properties, .. } = &old.inner;
-            let Annotation {
-                name: new_name,
-                properties: new_properties,
-                ..
-            } = &new.inner;
-
-            name.as_ref().map(|n| n.digest) == new_name.as_ref().map(|n| n.digest)
-                && properties
-                    .as_ref()
-                    .map(|props| props.iter().map(|p| p.digest).collect::<Vec<_>>())
-                    == new_properties
-                        .as_ref()
-                        .map(|props| props.iter().map(|p| p.digest).collect::<Vec<_>>())
-        }
-        _ => false,
-    })
 }
 
 /// Force-generate a new CacheResult, even if one shouldn't be made. The
