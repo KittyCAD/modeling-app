@@ -52,6 +52,7 @@ pub struct Context {
     fs: kcl_lib::FileSystemHandle,
     execution_path: ExecutionPath,
     mock_engine: Arc<kcl_lib::wasm_engine::EngineConnection>,
+    geometry_only: bool,
     execution_callbacks: Option<JsExecutionCallbacks>,
     pub(crate) project_manager: ProjectManager,
     pub(crate) frontend: Arc<tokio::sync::RwLock<FrontendState>>,
@@ -64,6 +65,7 @@ impl Context {
         engine_manager: kcl_lib::wasm_engine::EngineCommandManager,
         fs_manager: kcl_lib::wasm_engine::FileSystemManager,
         execution_callbacks: Option<JsExecutionCallbacks>,
+        geometry_only: Option<bool>,
     ) -> Result<Self, JsValue> {
         console_error_panic_hook::set_once();
         // Initialize the thread pool for rayon. For some reason, this wasn't
@@ -83,6 +85,7 @@ impl Context {
             fs: kcl_lib::new_file_system_handle(FileManager::new(fs_manager)),
             execution_path: ExecutionPath::default(),
             mock_engine: Arc::new(kcl_lib::wasm_engine::EngineConnection::new_mock()),
+            geometry_only: geometry_only.unwrap_or_default(),
             execution_callbacks,
             response_context,
             project_manager: ProjectManager,
@@ -98,6 +101,7 @@ impl Context {
             fs: self.fs.clone(),
             execution_path: self.execution_path.clone(),
             mock_engine: self.mock_engine.clone(),
+            geometry_only: self.geometry_only,
             execution_callbacks: Some(execution_callbacks),
             project_manager: self.project_manager.clone(),
             frontend: self.frontend.clone(),
@@ -125,7 +129,10 @@ impl Context {
         Ok(self.executor_ctx(settings, is_mock))
     }
 
-    fn executor_ctx(&self, settings: kcl_lib::ExecutorSettings, is_mock: bool) -> kcl_lib::ExecutorContext {
+    fn executor_ctx(&self, mut settings: kcl_lib::ExecutorSettings, is_mock: bool) -> kcl_lib::ExecutorContext {
+        if !is_mock {
+            settings.geometry_only = self.geometry_only;
+        }
         let mut ctx = if is_mock {
             kcl_lib::ExecutorContext::new_mock(self.mock_engine.clone(), self.fs.clone(), settings)
         } else {

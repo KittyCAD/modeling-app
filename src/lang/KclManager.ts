@@ -1732,12 +1732,14 @@ export class KclManager extends File {
       newCode,
       shouldResetCamera,
       requestedUserDocumentVersion,
+      forceExecution = false,
     }: {
       newCode: string
       shouldResetCamera: boolean
       requestedUserDocumentVersion: number
+      forceExecution?: boolean
     }) => {
-      if (!this._automaticallyRenderEnabled) {
+      if (!forceExecution && !this._automaticallyRenderEnabled) {
         return
       }
 
@@ -1847,6 +1849,15 @@ export class KclManager extends File {
     },
     1000
   )
+
+  scheduleCurrentCodeExecution(shouldResetCamera: boolean) {
+    this.deferredExecution({
+      newCode: this.code,
+      shouldResetCamera,
+      requestedUserDocumentVersion: this._userDocumentVersion,
+      forceExecution: true,
+    })
+  }
 
   /**
    * Finish the latest direct editor execution before a workflow consumes the
@@ -3895,24 +3906,21 @@ export class KclManager extends File {
     this.timeoutWriter = undefined
     this.timeoutRewatch = undefined
 
-    await this.performDelayedWriteToFile({
-      newCode: this.code,
-      requestedDocumentVersion: this._documentVersion,
-      requestedPath: this.path,
-      options,
-    })
+    const flushCurrentBuffer = () =>
+      this.performDelayedWriteToFile({
+        newCode: this.code,
+        requestedDocumentVersion: this._documentVersion,
+        requestedPath: this.path,
+        options,
+      })
+    await flushCurrentBuffer()
 
     // Seeding an empty main.kcl (or an edit that lands during the flush) can
     // schedule one more save. Persist that latest buffer before changing paths.
     if (this.timeoutWriter !== undefined) {
       clearTimeout(this.timeoutWriter)
       this.timeoutWriter = undefined
-      await this.performDelayedWriteToFile({
-        newCode: this.code,
-        requestedDocumentVersion: this._documentVersion,
-        requestedPath: this.path,
-        options,
-      })
+      await flushCurrentBuffer()
     }
 
     return !this.hasUnsavedLocalChanges()

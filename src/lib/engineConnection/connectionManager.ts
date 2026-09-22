@@ -44,6 +44,7 @@ import {
   EngineConnectionEvents,
   EngineConnectionManagerEvents,
   EngineConnectionStateType,
+  getResponseErrorMessage,
   REJECTED_TOO_EARLY_WEBSOCKET_MESSAGE,
   validateStreamDimensions,
   type EngineDisconnectEventDetail,
@@ -185,7 +186,8 @@ export class ConnectionManager extends EventTarget {
     token,
     setStreamIsReady,
     callbackOnUnitTestingConnection,
-    unitTestGeometryOnly,
+    unitTestWebrtc,
+    unitTestPool,
     rustContext,
   }: {
     width: number
@@ -193,7 +195,8 @@ export class ConnectionManager extends EventTarget {
     token: string
     setStreamIsReady: (setStreamIsReady: boolean) => void
     callbackOnUnitTestingConnection?: (message: string) => void
-    unitTestGeometryOnly?: boolean
+    unitTestWebrtc?: boolean
+    unitTestPool?: 'cpu'
     rustContext?: RustContext
   }) {
     EngineDebugger.addLog({
@@ -241,7 +244,8 @@ export class ConnectionManager extends EventTarget {
       tearDownManager: this.tearDown.bind(this),
       rejectPendingCommand: this.rejectPendingCommand.bind(this),
       callbackOnUnitTestingConnection,
-      unitTestGeometryOnly,
+      unitTestWebrtc,
+      unitTestPool,
       handleMessage,
       getCloudProjectId: () =>
         this.systemDeps.settingsActor.getSnapshot().context.currentProject
@@ -1401,7 +1405,13 @@ export class ConnectionManager extends EventTarget {
       command,
       range,
       idToRangeMap,
-    }).catch(reportRejection)
+    }).catch((e) => {
+      if (
+        getResponseErrorMessage(e, '') !== EXECUTE_AST_INTERRUPT_ERROR_MESSAGE
+      ) {
+        reportRejection(e)
+      }
+    })
   }
 
   /**
@@ -1443,22 +1453,20 @@ export class ConnectionManager extends EventTarget {
       })
       return msgpackEncode(resp[0])
     } catch (e) {
-      console.warn(e)
-      if (isArray(e) && e.length > 0) {
+      const isExecutionInterrupt =
+        getResponseErrorMessage(e, '') === EXECUTE_AST_INTERRUPT_ERROR_MESSAGE
+      const error = isArray(e) && e.length > 0 ? e[0] : e
+
+      if (!isExecutionInterrupt) {
+        console.warn(e)
         EngineDebugger.addLog({
           label: 'sendCommand',
           message: 'error',
-          metadata: { e: JSON.stringify(e[0]) },
+          metadata: { e: JSON.stringify(error) },
         })
-        return Promise.reject(JSON.stringify(e[0]))
       }
 
-      EngineDebugger.addLog({
-        label: 'sendCommand',
-        message: 'error',
-        metadata: { e: JSON.stringify(e) },
-      })
-      return Promise.reject(JSON.stringify(e))
+      return Promise.reject(JSON.stringify(error))
     }
   }
 
@@ -1480,6 +1488,15 @@ export class ConnectionManager extends EventTarget {
    * to the engine
    */
   rejectAllModelingCommands(rejectionMessage: string) {
+    const pendingCommandCount = Object.values(this.pendingCommands).filter(
+      (pending) => !pending.isSceneCommand
+    ).length
+    EngineDebugger.addLog({
+      label: 'connectionManager',
+      message: 'interrupting stale modeling execution',
+      metadata: { pendingCommandCount },
+    })
+
     for (const [cmdId, pending] of Object.entries(this.pendingCommands)) {
       if (!pending.isSceneCommand) {
         pending.reject([

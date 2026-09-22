@@ -3,11 +3,29 @@
 # bash strict mode
 set -euo pipefail
 
+first_failure_dir=".playwright-first-failure"
+
+if [[ -d "test-results/first-failure" ]]; then
+    mv "test-results/first-failure" "$first_failure_dir"
+fi
+
+restore_first_failure() {
+    if [[ -d "$first_failure_dir" ]]; then
+        mkdir -p "test-results"
+        mv "$first_failure_dir" "test-results/first-failure"
+    fi
+}
+
+trap restore_first_failure EXIT
+
 if [[ -f "test-results/.last-run.json" ]]; then
     saved_run_status=0
     node scripts/check-playwright-run.mjs --classify-for-outer-retry || saved_run_status=$?
     if [[ $saved_run_status -eq 2 ]]; then
         # --last-failed cannot recover global errors, so rerun the full shard.
+        if [[ ! -d "$first_failure_dir" ]]; then
+            cp -R "test-results" "$first_failure_dir"
+        fi
         rm -f test-results/.last-run.json test-results/report.json
     elif [[ $saved_run_status -ne 0 ]]; then
         exit "$saved_run_status"
@@ -40,6 +58,9 @@ while [[ $retry -le $max_retries ]]; do
     if [[ -f "test-results/.last-run.json" ]]; then
         status=$(jq -r '.status' test-results/.last-run.json)
         if [[ "$status" == "failed" ]]; then
+            if [[ ! -d "$first_failure_dir" ]]; then
+                cp -R "test-results" "$first_failure_dir"
+            fi
             echo "retried=true" >>$GITHUB_OUTPUT
             echo "run playwright with last failed tests and retry $retry"
             if [[ "$3" == *ubuntu* ]]; then

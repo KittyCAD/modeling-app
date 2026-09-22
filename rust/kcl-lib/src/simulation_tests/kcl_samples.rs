@@ -186,8 +186,14 @@ fn test(test_name: &str, entry_point: std::path::PathBuf) -> Test {
     let relative_path = parent.strip_prefix(inputs_dir).unwrap();
     let output_dir = std::fs::canonicalize(OUTPUTS_DIR.as_path()).unwrap();
     let test_config = TestConfig::from_file(&output_dir.join(test_name)).unwrap_or_default();
-    let TestConfig { redact_uuids } = test_config;
-    let relative_output_dir = output_dir.join(relative_path);
+    let TestConfig {
+        redact_uuids,
+        kcl_versions,
+    } = test_config;
+    let mut relative_output_dir = output_dir.join(relative_path);
+    if !kcl_versions.is_empty() {
+        relative_output_dir = relative_output_dir.join("output");
+    }
 
     // Ensure the output directory exists.
     if !relative_output_dir.exists() {
@@ -203,6 +209,7 @@ fn test(test_name: &str, entry_point: std::path::PathBuf) -> Test {
         skip_assert_artifact_graph: true,
         snapshot_physical_properties: true,
         expected_deprecation_warnings: Some(0),
+        kcl_versions,
     }
 }
 

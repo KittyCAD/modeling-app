@@ -386,7 +386,7 @@ export class ZookeeperFileRequestProcessor {
                                 shouldAddToHistory: false,
                                 shouldClearHistory:
                                   !shouldRecordHistory || !requestCanFinish(),
-                                shouldExecute: true,
+                                shouldExecute: false,
                                 shouldResetCamera: true,
                                 shouldWriteToDisk: !shouldRecordHistory,
                               }
