@@ -1156,12 +1156,14 @@ impl ExecutorSettings {
 /// Keep the execution state boxed when transferring it between phases.
 enum PreparedCachedExecution {
     Cached(Box<ExecOutcome>),
-    Execute {
-        program: crate::Program,
-        exec_state: Box<ExecState>,
-        universe_info: Option<(Universe, UniverseMap)>,
-        preserve_mem: PreserveMem,
-    },
+    Execute(Box<CachedExecution>),
+}
+
+struct CachedExecution {
+    program: crate::Program,
+    exec_state: Box<ExecState>,
+    universe_info: Option<(Universe, UniverseMap)>,
+    preserve_mem: PreserveMem,
 }
 
 impl ExecutorContext {
@@ -1611,16 +1613,15 @@ impl ExecutorContext {
 
     async fn run_with_caching_inner(&self, program: crate::Program) -> Result<ExecOutcome, KclErrorWithOutputs> {
         let original_program = program.clone();
-        let (program, mut exec_state, universe_info, preserve_mem) =
-            match self.prepare_cached_execution(program).await? {
-                PreparedCachedExecution::Cached(outcome) => return Ok(*outcome),
-                PreparedCachedExecution::Execute {
-                    program,
-                    exec_state,
-                    universe_info,
-                    preserve_mem,
-                } => (program, exec_state, universe_info, preserve_mem),
-            };
+        let CachedExecution {
+            program,
+            mut exec_state,
+            universe_info,
+            preserve_mem,
+        } = *match self.prepare_cached_execution(program).await? {
+            PreparedCachedExecution::Cached(outcome) => return Ok(*outcome),
+            PreparedCachedExecution::Execute(execution) => execution,
+        };
         let result = self
             .run_concurrent_inner(&program, &mut exec_state, universe_info, preserve_mem)
             .await;
@@ -1852,12 +1853,12 @@ impl ExecutorContext {
                 }
             };
 
-            Ok(PreparedCachedExecution::Execute {
+            Ok(PreparedCachedExecution::Execute(Box::new(CachedExecution {
                 program,
                 exec_state: Box::new(exec_state),
                 universe_info,
                 preserve_mem,
-            })
+            })))
         })
     }
 
@@ -5152,7 +5153,7 @@ solid7 = extrude(r7, length = width)
         assert_eq!(cache::read_old_ast().await.unwrap().settings, ctx.settings);
 
         let invalid = crate::Program::parse_no_errs("@settings(kclVersion = 2.0)\nx = missing").unwrap();
-        assert!(ctx.run_with_caching(invalid).await.is_err());
+        ctx.run_with_caching(invalid).await.unwrap_err();
         assert!(
             cache::read_old_ast().await.is_none(),
             "execution errors must invalidate the cache"
