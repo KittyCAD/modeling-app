@@ -102,11 +102,15 @@ export type RemoteProjectSummary = {
 }
 
 /** Full remote project metadata used by cloud sync before archive download. */
-export type RemoteProject = RemoteProjectSummary & {
-  files?: {
+export type RemoteProject = RemoteProjectSummary
+
+/** Creation response with fingerprints of the files accepted by the cloud. */
+export type CreatedRemoteProject = RemoteProject & {
+  revision: Revision
+  files: {
     relative_path: string
     byte_size: number
-    sha256?: string | null
+    sha256: string
   }[]
 }
 

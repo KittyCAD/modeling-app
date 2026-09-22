@@ -2619,38 +2619,6 @@ function projectArchiveFileMap(files: ProjectArchiveFile[]) {
   return filesByPath
 }
 
-function getCreatedProjectSyncBase(
-  project: RemoteProject,
-  uploadedManifest: ProjectManifest
-) {
-  if (!project.revision || !project.files?.length) {
-    return undefined
-  }
-  const manifest: ProjectManifest = { files: {} }
-  for (const file of project.files) {
-    const relativePath = normalizeRelativePath(file.relative_path)
-    if (
-      isCloudSyncExcludedPath(relativePath) ||
-      isCloudSyncGeneratedArtifactPath(relativePath)
-    ) {
-      continue
-    }
-    if (!file.sha256) {
-      return undefined
-    }
-    manifest.files[relativePath] = {
-      byteSize: file.byte_size,
-      sha256: file.sha256,
-    }
-  }
-  if (
-    Object.keys(uploadedManifest.files).some((path) => !manifest.files[path])
-  ) {
-    return undefined
-  }
-  return { revision: String(project.revision), manifest }
-}
-
 /**
  * Builds a whole-project snapshot when local and remote changed independent
  * paths from the last synced base. This is intentionally file-level only: when
@@ -3159,13 +3127,19 @@ async function syncProject(
         () => createRemoteProject(config, metadata.localProjectPath, localFiles)
       )
       // The response hashes include the API's changes to project.toml.
-      const createdSyncBase = getCreatedProjectSyncBase(created, localManifest)
+      const baseManifest: ProjectManifest = { files: {} }
+      for (const file of created.files) {
+        baseManifest.files[normalizeRelativePath(file.relative_path)] = {
+          byteSize: file.byte_size,
+          sha256: file.sha256,
+        }
+      }
       metadata = {
         ...metadata,
         remoteProjectId: created.id,
-        remoteRevision: createdSyncBase?.revision,
+        remoteRevision: created.revision,
         remoteUpdatedAt: getRemoteUpdatedAt(created),
-        baseManifest: createdSyncBase?.manifest ?? localManifest,
+        baseManifest,
         conflict: undefined,
         lastFailure: undefined,
       }
@@ -3181,12 +3155,10 @@ async function syncProject(
         targetPath: metadata.localProjectPath,
         createdAt: nowIso(),
       })
-      if (createdSyncBase) {
-        await writeLocalProjectCloudProjectId(
-          metadata.localProjectPath,
-          created.id
-        )
-      }
+      await writeLocalProjectCloudProjectId(
+        metadata.localProjectPath,
+        created.id
+      )
       scheduleSync(0)
       return
     }
