@@ -8,7 +8,6 @@ import {
   setZookeeperConversationInProjectTomlContents,
 } from '@src/lib/projectTomlMetadata'
 import { isErr } from '@src/lib/trap'
-import { withProjectTomlLock } from '@src/lib/projectTomlFile'
 
 const ZOOKEEPER_CONVERSATIONS_FILE_NAME = 'ml-conversations.json'
 
@@ -117,6 +116,8 @@ export const makeZookeeperConversationStore = (
   }
 }
 
+// TODO: Coordinate project.toml updates with settings and cloud writes.
+// https://github.com/KittyCAD/modeling-app/pull/14058#discussion_r4069113804
 export const makeProjectZookeeperConversationStore = (
   fileOperations: FileOperationsRegistryService,
   projectPath: string,
@@ -159,7 +160,7 @@ export const makeProjectZookeeperConversationStore = (
 
   return {
     getProjectConversationId(projectId) {
-      return withProjectTomlLock(projectTomlPath, async () => {
+      return serialize(async () => {
         const contents = await readProjectToml(projectId)
         const saved = getZookeeperConversationFromProjectTomlContents(
           contents,
@@ -181,12 +182,12 @@ export const makeProjectZookeeperConversationStore = (
       })
     },
     saveProjectConversationId({ projectId, conversationId }) {
-      return withProjectTomlLock(projectTomlPath, async () => {
+      return serialize(async () => {
         await saveConversation(await readProjectToml(projectId), conversationId)
       })
     },
     deleteProjectConversationId(projectId) {
-      return withProjectTomlLock(projectTomlPath, async () => {
+      return serialize(async () => {
         await saveConversation(await readProjectToml(projectId), undefined)
       })
     },

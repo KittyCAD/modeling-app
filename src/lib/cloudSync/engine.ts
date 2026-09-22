@@ -100,7 +100,6 @@ import {
 } from '@src/lib/projectTomlMetadata'
 import { isErr, reportRejection } from '@src/lib/trap'
 import { v4 } from 'uuid'
-import { withProjectTomlLock } from '@src/lib/projectTomlFile'
 
 export {
   prepareProjectFilesForCloudUpload,
@@ -1168,6 +1167,8 @@ async function writeLocalProjectCloudProjectId(
     return false
   }
 
+  // TODO: Coordinate cloud ID updates with settings saves.
+  // An overlapping save can overwrite the ID or newer settings.
   return updateLocalProjectToml(projectPath, (projectToml) =>
     getCloudProjectIdFromProjectTomlContents(projectToml, environmentName) ===
     projectId
@@ -1196,28 +1197,26 @@ async function updateLocalProjectToml(
   update: (contents: string) => string | Error
 ) {
   const projectTomlPath = localFs.join(projectPath, PROJECT_SETTINGS_FILE_NAME)
-  return withProjectTomlLock(projectTomlPath, async () => {
-    let projectToml = ''
-    if (await exists(projectTomlPath)) {
-      projectToml = await localFs.readFile(projectTomlPath, {
-        encoding: 'utf-8',
-      })
-    }
+  let projectToml = ''
+  if (await exists(projectTomlPath)) {
+    projectToml = await localFs.readFile(projectTomlPath, {
+      encoding: 'utf-8',
+    })
+  }
 
-    const nextProjectToml = update(projectToml)
-    if (isErr(nextProjectToml)) {
-      return Promise.reject(nextProjectToml)
-    }
-    if (nextProjectToml === projectToml) {
-      return false
-    }
+  const nextProjectToml = update(projectToml)
+  if (isErr(nextProjectToml)) {
+    return Promise.reject(nextProjectToml)
+  }
+  if (nextProjectToml === projectToml) {
+    return false
+  }
 
-    await localFs.writeFile(
-      projectTomlPath,
-      new TextEncoder().encode(nextProjectToml)
-    )
-    return true
-  })
+  await localFs.writeFile(
+    projectTomlPath,
+    new TextEncoder().encode(nextProjectToml)
+  )
+  return true
 }
 
 async function appendOutboxEntry(entry: Omit<OutboxEntry, 'id'>) {

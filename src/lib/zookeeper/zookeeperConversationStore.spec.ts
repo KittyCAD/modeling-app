@@ -3,10 +3,7 @@ import {
   downloadRemoteProjectArchive,
 } from '@src/lib/cloudSync/cloudApi'
 import { parseProjectArchive } from '@src/lib/cloudSync/projectArchive'
-import {
-  overwriteProjectTomlWithNewSettings,
-  writeProjectTitleToProjectToml,
-} from '@src/lib/desktop'
+import { overwriteProjectTomlWithNewSettings } from '@src/lib/desktop'
 import { testFileOperations } from '@src/lib/fileSystem/testRuntime'
 import fsZds, { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
 import { makeProjectZookeeperConversationStore } from '@src/lib/zookeeper/zookeeperConversationStore'
@@ -47,7 +44,6 @@ beforeEach(async () => {
 })
 
 afterEach(async () => {
-  vi.useRealTimers()
   vi.unstubAllGlobals()
   await fsZds.rm(rootPath, { recursive: true, force: true })
 })
@@ -123,67 +119,4 @@ describe('project conversation persistence', () => {
     )
     expect(fetchMock).toHaveBeenCalledTimes(2)
   })
-
-  it.each(['settings', 'title'])(
-    'preserves a conversation saved concurrently with a %s update',
-    async (update) => {
-      vi.useFakeTimers()
-      let contents = initialToml
-      const pendingWrite = Promise.withResolvers<undefined>()
-      const readFile = vi.fn(async () => new TextEncoder().encode(contents))
-      const writeFile = vi.fn<typeof testFileOperations.writeFile>(
-        async (_path, next) => {
-          contents =
-            typeof next === 'string' ? next : new TextDecoder().decode(next)
-        }
-      )
-      writeFile.mockImplementationOnce(async (_path, next) => {
-        await pendingWrite.promise
-        contents =
-          typeof next === 'string' ? next : new TextDecoder().decode(next)
-      })
-      const fileOperations = {
-        ...testFileOperations,
-        exists: vi.fn(async () => true),
-        readFile,
-        writeFile,
-      }
-      const store = makeProjectZookeeperConversationStore(
-        fileOperations,
-        projectPath,
-        'zoo.dev'
-      )
-      const save = store.saveProjectConversationId({
-        projectId,
-        conversationId,
-      })
-      await vi.advanceTimersByTimeAsync(0)
-      expect(writeFile).toHaveBeenCalledOnce()
-      const updatePromise =
-        update === 'settings'
-          ? overwriteProjectTomlWithNewSettings(
-              fileOperations,
-              projectPath,
-              `${settingsToml}\n[settings.app]\nproject_directory = "/projects"\n`
-            )
-          : writeProjectTitleToProjectToml(
-              fileOperations,
-              projectPath,
-              'Renamed'
-            )
-      await vi.advanceTimersByTimeAsync(0)
-      expect(readFile).toHaveBeenCalledOnce()
-      pendingWrite.resolve(undefined)
-      await Promise.all([save, updatePromise])
-
-      await expect(store.getProjectConversationId(projectId)).resolves.toBe(
-        conversationId
-      )
-      expect(contents).toContain(
-        update === 'settings'
-          ? 'project_directory = "/projects"'
-          : 'title = "Renamed"'
-      )
-    }
-  )
 })

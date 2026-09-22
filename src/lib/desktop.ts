@@ -59,7 +59,6 @@ import { getInVariableCase, isArray } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
 import { IS_STAGING, IS_STAGING_OR_DEBUG } from '@src/routes/utils'
-import { withProjectTomlLock } from '@src/lib/projectTomlFile'
 
 const textDecoder = new TextDecoder()
 
@@ -778,23 +777,21 @@ export async function overwriteProjectTomlWithNewSettings(
   if (err(tomlStr)) {
     return Promise.reject(tomlStr)
   }
-  return withProjectTomlLock(projectSettingsFilePath, async () => {
-    let projectToml = tomlStr
-    try {
-      const existingProjectToml = textDecoder.decode(
-        await fileOperations.readFile(projectSettingsFilePath)
-      )
-      projectToml = preserveProjectTomlMetadataInProjectSettingsContents(
-        existingProjectToml,
-        tomlStr
-      )
-    } catch (error) {
-      if (!isPathNotFoundError(error)) {
-        return Promise.reject(error)
-      }
+  let projectToml = tomlStr
+  try {
+    const existingProjectToml = textDecoder.decode(
+      await fileOperations.readFile(projectSettingsFilePath)
+    )
+    projectToml = preserveProjectTomlMetadataInProjectSettingsContents(
+      existingProjectToml,
+      tomlStr
+    )
+  } catch (error) {
+    if (!isPathNotFoundError(error)) {
+      return Promise.reject(error)
     }
-    return fileOperations.writeFile(projectSettingsFilePath, projectToml)
-  })
+  }
+  return fileOperations.writeFile(projectSettingsFilePath, projectToml)
 }
 
 export async function writeProjectTitleToProjectToml(
@@ -804,24 +801,22 @@ export async function writeProjectTitleToProjectToml(
 ): Promise<void> {
   const projectSettingsFilePath = await getProjectSettingsFilePath(projectPath)
   await ensureDirectory(fileOperations, projectPath)
-  return withProjectTomlLock(projectSettingsFilePath, async () => {
-    let projectToml = ''
-    try {
-      projectToml = textDecoder.decode(
-        await fileOperations.readFile(projectSettingsFilePath)
-      )
-    } catch (error) {
-      if (!isPathNotFoundError(error)) {
-        return Promise.reject(error)
-      }
-    }
-
-    const nextProjectToml = setProjectTitleInProjectTomlContents(
-      projectToml,
-      title
+  let projectToml = ''
+  try {
+    projectToml = textDecoder.decode(
+      await fileOperations.readFile(projectSettingsFilePath)
     )
-    await fileOperations.writeFile(projectSettingsFilePath, nextProjectToml)
-  })
+  } catch (error) {
+    if (!isPathNotFoundError(error)) {
+      return Promise.reject(error)
+    }
+  }
+
+  const nextProjectToml = setProjectTitleInProjectTomlContents(
+    projectToml,
+    title
+  )
+  await fileOperations.writeFile(projectSettingsFilePath, nextProjectToml)
 }
 
 const getAppFolderName = () => {
