@@ -243,7 +243,6 @@ test(
     const publicProjectTitle = '!!!'
     const publicProjectDirectoryName = 'shared-project'
     const publicProjectSettingsId = '29501ba6-dfa1-486f-b51d-aa9331ee441e'
-    const personalCloudSettingsId = '29501ba6-dfa1-486f-b51d-aa9331ee442f'
     const publicProjectFiles = {
       'main.kcl': 'aquariumShared = 1\n',
       'project.toml': [
@@ -258,22 +257,10 @@ test(
       revision: 'personal-cloud-copy-rev-1',
       files: {
         'main.kcl': publicProjectFiles['main.kcl'],
-        'project.toml': [
-          'project_id = "personal-cloud-copy"',
-          '',
-          '[settings.meta]',
-          `id = "${personalCloudSettingsId}"`,
-          '',
-        ].join('\n'),
       },
     }
     const publicProjectArchive = await zipProject(publicProjectFiles)
     let publicProjectDownloads = 0
-    let releasePersonalCloudDownload!: () => void
-    const personalCloudDownloadGate = new Promise<void>((resolve) => {
-      releasePersonalCloudDownload = resolve
-    })
-    let personalCloudDownloadStarted = false
     await context.route(
       `**/projects/public/${publicProjectId}**`,
       async (route) => {
@@ -309,16 +296,19 @@ test(
     const { calls: apiCalls } = await routeCloudProjects(context, {
       remoteProjects: [personalCloudProject],
       listedProjects: [],
-      createProject: () => personalCloudProject,
+      createProject: async () => {
+        const files = await readOpfsTextFiles(page, {
+          projectToml: `${PROJECT_DIR}/${publicProjectDirectoryName}/project.toml`,
+        })
+        personalCloudProject.files['project.toml'] = [
+          files.projectToml,
+          '[cloud."dev.zoo.dev"]',
+          'project_id = "personal-cloud-copy"',
+          '',
+        ].join('\n')
+        return personalCloudProject
+      },
     })
-    await context.route(
-      `**/user/projects/${personalCloudProject.id}/download**`,
-      async (route) => {
-        personalCloudDownloadStarted = true
-        await personalCloudDownloadGate
-        await route.fallback()
-      }
-    )
 
     await setup(context, page, testInfo, [OPFS_CLOUD_FEATURE_FLAG], {
       cloudSyncEnabled: true,
@@ -334,14 +324,6 @@ test(
       })
       .toBe(1)
     expect(publicProjectDownloads).toBe(1)
-    await expect
-      .poll(() => personalCloudDownloadStarted, {
-        timeout: CLOUD_SYNC_E2E_TIMEOUT,
-      })
-      .toBe(true)
-    await expect(page).not.toHaveURL(/\/file\//)
-    releasePersonalCloudDownload()
-
     await expectProjectFileRoute(page)
     await expect
       .poll(() =>
@@ -351,25 +333,14 @@ test(
         )
       )
       .toBe(true)
-    await expect
-      .poll(async () => {
-        try {
-          const files = await readOpfsTextFiles(page, {
-            projectToml: `${PROJECT_DIR}/${publicProjectDirectoryName}/project.toml`,
-          })
-          return files.projectToml
-        } catch {
-          // Replacing a project archive briefly removes the old directory.
-          return ''
-        }
-      })
-      .toContain('project_id = "personal-cloud-copy"')
-
     const files = await readOpfsTextFiles(page, {
       main: `${PROJECT_DIR}/${publicProjectDirectoryName}/main.kcl`,
       projectToml: `${PROJECT_DIR}/${publicProjectDirectoryName}/project.toml`,
     })
     expect(files.main).toContain('aquariumShared = 1')
+    expect(files.projectToml).toContain('project_id = "personal-cloud-copy"')
+    expect(apiCalls.creates).toHaveLength(1)
+    expect(apiCalls.downloads).toHaveLength(0)
     const clonedProjectSettingsId = files.projectToml.match(
       /\[settings\.meta\]\s*\nid = "([^"]+)"/
     )?.[1]

@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto'
 import type { BrowserContext, Page, Route } from '@playwright/test'
 import { PROJECT_FOLDER } from '@src/lib/constants'
 import JSZip from 'jszip'
@@ -102,6 +103,11 @@ export function cloudProjectResponse(project: CloudProject) {
     description: project.description ?? '',
     category_ids: project.categoryIds ?? [],
     revision: project.revision,
+    files: Object.entries(project.files).map(([relative_path, contents]) => ({
+      relative_path,
+      byte_size: Buffer.byteLength(contents),
+      sha256: createHash('sha256').update(contents).digest('hex'),
+    })),
     updated_at: project.updatedAt ?? '2026-09-01T12:00:00.000Z',
     publication_status: project.publicationStatus ?? 'private',
     publication: {
