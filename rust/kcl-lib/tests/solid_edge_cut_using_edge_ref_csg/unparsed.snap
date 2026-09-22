@@ -2,7 +2,7 @@
 source: kcl-lib/src/simulation_tests.rs
 description: Result of unparsing solid_edge_cut_using_edge_ref_csg.kcl
 ---
-@settings(kclVersion = 2.0, experimentalFeatures = allow)
+@settings(kclVersion = 2.0)
 
 rect1 = sketch(on = XY) {
   line1 = line(start = [var -5.7mm, var 1.02mm], end = [var 2.32mm, var 1.02mm])

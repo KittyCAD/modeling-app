@@ -3,8 +3,9 @@ import asyncio
 import os
 import sys
 
-import kcl
 import pytest
+
+import kcl
 from kcl import Point3d
 
 # Get the path to this script's parent directory.
@@ -403,6 +404,37 @@ async def test_kcl_mock_execute_with_engine_exception_should_pass():
     # Read from a file.
     outcome = await kcl.mock_execute(engine_error_file)
     assert outcome.issues() == []
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    ("operation", "size_argument"), [("fillet", "radius"), ("chamfer", "length")]
+)
+@pytest.mark.parametrize("mock", [True, pytest.param(False, marks=requires_engine)])
+async def test_face_api_edges_without_experimental_opt_in(
+    operation: str, size_argument: str, mock: bool
+) -> None:
+    code = f"""@settings(kclVersion = 2.0, defaultLengthUnit = mm)
+profile = sketch(on = XY) {{
+  line1 = line(start = [0mm, 0mm], end = [20mm, 0mm])
+  line2 = line(start = [20mm, 0mm], end = [20mm, 20mm])
+  line3 = line(start = [20mm, 20mm], end = [0mm, 0mm])
+}}
+profileRegion = region(segments = [profile.line1, profile.line2])
+body = extrude(profileRegion, length = 10mm)
+{operation}(
+  body,
+  {size_argument} = 1mm,
+  edges = [{{ sideFaces = [profileRegion.tags.line1, profileRegion.tags.line2] }}],
+)
+"""
+    if mock:
+        outcome = await kcl.mock_execute_code(code)
+    else:
+        outcome = await execute_with_retries(kcl.execute_code, code)
+
+    assert isinstance(outcome, kcl.ExecOutcome)
+    assert outcome.issues() == [], outcome.report_all()
 
 
 @requires_engine

@@ -81,10 +81,10 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 827,
-            "end": 833,
+            "commentStart": 797,
+            "end": 803,
             "moduleId": 0,
-            "start": 827,
+            "start": 797,
             "type": "TagDeclarator",
             "value": "bottom"
           },
@@ -95,10 +95,10 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 882,
-            "end": 887,
+            "commentStart": 852,
+            "end": 857,
             "moduleId": 0,
-            "start": 882,
+            "start": 852,
             "type": "TagDeclarator",
             "value": "right"
           },
@@ -109,10 +109,10 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 938,
-            "end": 941,
+            "commentStart": 908,
+            "end": 911,
             "moduleId": 0,
-            "start": 938,
+            "start": 908,
             "type": "TagDeclarator",
             "value": "top"
           },
@@ -123,10 +123,10 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 992,
-            "end": 996,
+            "commentStart": 962,
+            "end": 966,
             "moduleId": 0,
-            "start": 992,
+            "start": 962,
             "type": "TagDeclarator",
             "value": "left"
           },
@@ -137,10 +137,10 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1153,
-            "end": 1160,
+            "commentStart": 1123,
+            "end": 1130,
             "moduleId": 0,
-            "start": 1153,
+            "start": 1123,
             "type": "TagDeclarator",
             "value": "topCap"
           },
@@ -151,10 +151,10 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1462,
-            "end": 1474,
+            "commentStart": 1432,
+            "end": 1444,
             "moduleId": 0,
-            "start": 1462,
+            "start": 1432,
             "type": "TagDeclarator",
             "value": "beveledFace"
           },
@@ -186,10 +186,10 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
               0.0
             ],
             "tag": {
-              "commentStart": 827,
-              "end": 833,
+              "commentStart": 797,
+              "end": 803,
               "moduleId": 0,
-              "start": 827,
+              "start": 797,
               "type": "TagDeclarator",
               "value": "bottom"
             },
@@ -210,10 +210,10 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
               0.0
             ],
             "tag": {
-              "commentStart": 882,
-              "end": 887,
+              "commentStart": 852,
+              "end": 857,
               "moduleId": 0,
-              "start": 882,
+              "start": 852,
               "type": "TagDeclarator",
               "value": "right"
             },
@@ -234,10 +234,10 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
               10.0
             ],
             "tag": {
-              "commentStart": 938,
-              "end": 941,
+              "commentStart": 908,
+              "end": 911,
               "moduleId": 0,
-              "start": 938,
+              "start": 908,
               "type": "TagDeclarator",
               "value": "top"
             },
@@ -258,10 +258,10 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
               10.0
             ],
             "tag": {
-              "commentStart": 992,
-              "end": 996,
+              "commentStart": 962,
+              "end": 966,
               "moduleId": 0,
-              "start": 992,
+              "start": 962,
               "type": "TagDeclarator",
               "value": "left"
             },
@@ -375,10 +375,10 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 827,
-            "end": 833,
+            "commentStart": 797,
+            "end": 803,
             "moduleId": 0,
-            "start": 827,
+            "start": 797,
             "type": "TagDeclarator",
             "value": "bottom"
           },
@@ -389,10 +389,10 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 882,
-            "end": 887,
+            "commentStart": 852,
+            "end": 857,
             "moduleId": 0,
-            "start": 882,
+            "start": 852,
             "type": "TagDeclarator",
             "value": "right"
           },
@@ -403,10 +403,10 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 938,
-            "end": 941,
+            "commentStart": 908,
+            "end": 911,
             "moduleId": 0,
-            "start": 938,
+            "start": 908,
             "type": "TagDeclarator",
             "value": "top"
           },
@@ -417,10 +417,10 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 992,
-            "end": 996,
+            "commentStart": 962,
+            "end": 966,
             "moduleId": 0,
-            "start": 992,
+            "start": 962,
             "type": "TagDeclarator",
             "value": "left"
           },
@@ -431,10 +431,10 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1153,
-            "end": 1160,
+            "commentStart": 1123,
+            "end": 1130,
             "moduleId": 0,
-            "start": 1153,
+            "start": 1123,
             "type": "TagDeclarator",
             "value": "topCap"
           },
@@ -462,10 +462,10 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
               0.0
             ],
             "tag": {
-              "commentStart": 827,
-              "end": 833,
+              "commentStart": 797,
+              "end": 803,
               "moduleId": 0,
-              "start": 827,
+              "start": 797,
               "type": "TagDeclarator",
               "value": "bottom"
             },
@@ -486,10 +486,10 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
               0.0
             ],
             "tag": {
-              "commentStart": 882,
-              "end": 887,
+              "commentStart": 852,
+              "end": 857,
               "moduleId": 0,
-              "start": 882,
+              "start": 852,
               "type": "TagDeclarator",
               "value": "right"
             },
@@ -510,10 +510,10 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
               10.0
             ],
             "tag": {
-              "commentStart": 938,
-              "end": 941,
+              "commentStart": 908,
+              "end": 911,
               "moduleId": 0,
-              "start": 938,
+              "start": 908,
               "type": "TagDeclarator",
               "value": "top"
             },
@@ -534,10 +534,10 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
               10.0
             ],
             "tag": {
-              "commentStart": 992,
-              "end": 996,
+              "commentStart": 962,
+              "end": 966,
               "moduleId": 0,
-              "start": 992,
+              "start": 962,
               "type": "TagDeclarator",
               "value": "left"
             },
@@ -647,10 +647,10 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 87,
-            "end": 92,
+            "commentStart": 57,
+            "end": 62,
             "moduleId": 0,
-            "start": 87,
+            "start": 57,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -661,10 +661,10 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 168,
-            "end": 173,
+            "commentStart": 138,
+            "end": 143,
             "moduleId": 0,
-            "start": 168,
+            "start": 138,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -675,10 +675,10 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 248,
-            "end": 253,
+            "commentStart": 218,
+            "end": 223,
             "moduleId": 0,
-            "start": 248,
+            "start": 218,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -689,10 +689,10 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 327,
-            "end": 332,
+            "commentStart": 297,
+            "end": 302,
             "moduleId": 0,
-            "start": 327,
+            "start": 297,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -714,10 +714,10 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
               1.02
             ],
             "tag": {
-              "commentStart": 87,
-              "end": 92,
+              "commentStart": 57,
+              "end": 62,
               "moduleId": 0,
-              "start": 87,
+              "start": 57,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -738,10 +738,10 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
               1.02
             ],
             "tag": {
-              "commentStart": 168,
-              "end": 173,
+              "commentStart": 138,
+              "end": 143,
               "moduleId": 0,
-              "start": 168,
+              "start": 138,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -762,10 +762,10 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
               4.1
             ],
             "tag": {
-              "commentStart": 248,
-              "end": 253,
+              "commentStart": 218,
+              "end": 223,
               "moduleId": 0,
-              "start": 248,
+              "start": 218,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -786,10 +786,10 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
               4.1
             ],
             "tag": {
-              "commentStart": 327,
-              "end": 332,
+              "commentStart": 297,
+              "end": 302,
               "moduleId": 0,
-              "start": 327,
+              "start": 297,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -893,10 +893,10 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
             1.02
           ],
           "tag": {
-            "commentStart": 87,
-            "end": 92,
+            "commentStart": 57,
+            "end": 62,
             "moduleId": 0,
-            "start": 87,
+            "start": 57,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -917,10 +917,10 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
             1.02
           ],
           "tag": {
-            "commentStart": 168,
-            "end": 173,
+            "commentStart": 138,
+            "end": 143,
             "moduleId": 0,
-            "start": 168,
+            "start": 138,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -941,10 +941,10 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
             4.1
           ],
           "tag": {
-            "commentStart": 248,
-            "end": 253,
+            "commentStart": 218,
+            "end": 223,
             "moduleId": 0,
-            "start": 248,
+            "start": 218,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -965,10 +965,10 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
             4.1
           ],
           "tag": {
-            "commentStart": 327,
-            "end": 332,
+            "commentStart": 297,
+            "end": 302,
             "moduleId": 0,
-            "start": 327,
+            "start": 297,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -1067,10 +1067,10 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
             0.0
           ],
           "tag": {
-            "commentStart": 827,
-            "end": 833,
+            "commentStart": 797,
+            "end": 803,
             "moduleId": 0,
-            "start": 827,
+            "start": 797,
             "type": "TagDeclarator",
             "value": "bottom"
           },
@@ -1091,10 +1091,10 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
             0.0
           ],
           "tag": {
-            "commentStart": 882,
-            "end": 887,
+            "commentStart": 852,
+            "end": 857,
             "moduleId": 0,
-            "start": 882,
+            "start": 852,
             "type": "TagDeclarator",
             "value": "right"
           },
@@ -1115,10 +1115,10 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
             10.0
           ],
           "tag": {
-            "commentStart": 938,
-            "end": 941,
+            "commentStart": 908,
+            "end": 911,
             "moduleId": 0,
-            "start": 938,
+            "start": 908,
             "type": "TagDeclarator",
             "value": "top"
           },
@@ -1139,10 +1139,10 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
             10.0
           ],
           "tag": {
-            "commentStart": 992,
-            "end": 996,
+            "commentStart": 962,
+            "end": 966,
             "moduleId": 0,
-            "start": 992,
+            "start": 962,
             "type": "TagDeclarator",
             "value": "left"
           },
@@ -1523,10 +1523,10 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 827,
-                    "end": 833,
+                    "commentStart": 797,
+                    "end": 803,
                     "moduleId": 0,
-                    "start": 827,
+                    "start": 797,
                     "type": "TagDeclarator",
                     "value": "bottom"
                   },
@@ -1547,10 +1547,10 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 882,
-                    "end": 887,
+                    "commentStart": 852,
+                    "end": 857,
                     "moduleId": 0,
-                    "start": 882,
+                    "start": 852,
                     "type": "TagDeclarator",
                     "value": "right"
                   },
@@ -1571,10 +1571,10 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
                     10.0
                   ],
                   "tag": {
-                    "commentStart": 938,
-                    "end": 941,
+                    "commentStart": 908,
+                    "end": 911,
                     "moduleId": 0,
-                    "start": 938,
+                    "start": 908,
                     "type": "TagDeclarator",
                     "value": "top"
                   },
@@ -1595,10 +1595,10 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
                     10.0
                   ],
                   "tag": {
-                    "commentStart": 992,
-                    "end": 996,
+                    "commentStart": 962,
+                    "end": 966,
                     "moduleId": 0,
-                    "start": 992,
+                    "start": 962,
                     "type": "TagDeclarator",
                     "value": "left"
                   },
@@ -2477,10 +2477,10 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
                     1.02
                   ],
                   "tag": {
-                    "commentStart": 87,
-                    "end": 92,
+                    "commentStart": 57,
+                    "end": 62,
                     "moduleId": 0,
-                    "start": 87,
+                    "start": 57,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -2501,10 +2501,10 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
                     1.02
                   ],
                   "tag": {
-                    "commentStart": 168,
-                    "end": 173,
+                    "commentStart": 138,
+                    "end": 143,
                     "moduleId": 0,
-                    "start": 168,
+                    "start": 138,
                     "type": "TagDeclarator",
                     "value": "line2"
                   },
@@ -2525,10 +2525,10 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
                     4.1
                   ],
                   "tag": {
-                    "commentStart": 248,
-                    "end": 253,
+                    "commentStart": 218,
+                    "end": 223,
                     "moduleId": 0,
-                    "start": 248,
+                    "start": 218,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
@@ -2549,10 +2549,10 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
                     4.1
                   ],
                   "tag": {
-                    "commentStart": 327,
-                    "end": 332,
+                    "commentStart": 297,
+                    "end": 302,
                     "moduleId": 0,
-                    "start": 327,
+                    "start": 297,
                     "type": "TagDeclarator",
                     "value": "line4"
                   },
@@ -2657,10 +2657,10 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
             1.02
           ],
           "tag": {
-            "commentStart": 87,
-            "end": 92,
+            "commentStart": 57,
+            "end": 62,
             "moduleId": 0,
-            "start": 87,
+            "start": 57,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -2681,10 +2681,10 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
             1.02
           ],
           "tag": {
-            "commentStart": 168,
-            "end": 173,
+            "commentStart": 138,
+            "end": 143,
             "moduleId": 0,
-            "start": 168,
+            "start": 138,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -2705,10 +2705,10 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
             4.1
           ],
           "tag": {
-            "commentStart": 248,
-            "end": 253,
+            "commentStart": 218,
+            "end": 223,
             "moduleId": 0,
-            "start": 248,
+            "start": 218,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -2729,10 +2729,10 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
             4.1
           ],
           "tag": {
-            "commentStart": 327,
-            "end": 332,
+            "commentStart": 297,
+            "end": 302,
             "moduleId": 0,
-            "start": 327,
+            "start": 297,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -2831,10 +2831,10 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
             0.0
           ],
           "tag": {
-            "commentStart": 827,
-            "end": 833,
+            "commentStart": 797,
+            "end": 803,
             "moduleId": 0,
-            "start": 827,
+            "start": 797,
             "type": "TagDeclarator",
             "value": "bottom"
           },
@@ -2855,10 +2855,10 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
             0.0
           ],
           "tag": {
-            "commentStart": 882,
-            "end": 887,
+            "commentStart": 852,
+            "end": 857,
             "moduleId": 0,
-            "start": 882,
+            "start": 852,
             "type": "TagDeclarator",
             "value": "right"
           },
@@ -2879,10 +2879,10 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
             10.0
           ],
           "tag": {
-            "commentStart": 938,
-            "end": 941,
+            "commentStart": 908,
+            "end": 911,
             "moduleId": 0,
-            "start": 938,
+            "start": 908,
             "type": "TagDeclarator",
             "value": "top"
           },
@@ -2903,10 +2903,10 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
             10.0
           ],
           "tag": {
-            "commentStart": 992,
-            "end": 996,
+            "commentStart": 962,
+            "end": 966,
             "moduleId": 0,
-            "start": 992,
+            "start": 962,
             "type": "TagDeclarator",
             "value": "left"
           },
@@ -3015,10 +3015,10 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 827,
-            "end": 833,
+            "commentStart": 797,
+            "end": 803,
             "moduleId": 0,
-            "start": 827,
+            "start": 797,
             "type": "TagDeclarator",
             "value": "bottom"
           },
@@ -3029,10 +3029,10 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 882,
-            "end": 887,
+            "commentStart": 852,
+            "end": 857,
             "moduleId": 0,
-            "start": 882,
+            "start": 852,
             "type": "TagDeclarator",
             "value": "right"
           },
@@ -3043,10 +3043,10 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 938,
-            "end": 941,
+            "commentStart": 908,
+            "end": 911,
             "moduleId": 0,
-            "start": 938,
+            "start": 908,
             "type": "TagDeclarator",
             "value": "top"
           },
@@ -3057,10 +3057,10 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 992,
-            "end": 996,
+            "commentStart": 962,
+            "end": 966,
             "moduleId": 0,
-            "start": 992,
+            "start": 962,
             "type": "TagDeclarator",
             "value": "left"
           },
@@ -3071,10 +3071,10 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1153,
-            "end": 1160,
+            "commentStart": 1123,
+            "end": 1130,
             "moduleId": 0,
-            "start": 1153,
+            "start": 1123,
             "type": "TagDeclarator",
             "value": "topCap"
           },
@@ -3085,10 +3085,10 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1462,
-            "end": 1474,
+            "commentStart": 1432,
+            "end": 1444,
             "moduleId": 0,
-            "start": 1462,
+            "start": 1432,
             "type": "TagDeclarator",
             "value": "beveledFace"
           },
@@ -3120,10 +3120,10 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
               0.0
             ],
             "tag": {
-              "commentStart": 827,
-              "end": 833,
+              "commentStart": 797,
+              "end": 803,
               "moduleId": 0,
-              "start": 827,
+              "start": 797,
               "type": "TagDeclarator",
               "value": "bottom"
             },
@@ -3144,10 +3144,10 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
               0.0
             ],
             "tag": {
-              "commentStart": 882,
-              "end": 887,
+              "commentStart": 852,
+              "end": 857,
               "moduleId": 0,
-              "start": 882,
+              "start": 852,
               "type": "TagDeclarator",
               "value": "right"
             },
@@ -3168,10 +3168,10 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
               10.0
             ],
             "tag": {
-              "commentStart": 938,
-              "end": 941,
+              "commentStart": 908,
+              "end": 911,
               "moduleId": 0,
-              "start": 938,
+              "start": 908,
               "type": "TagDeclarator",
               "value": "top"
             },
@@ -3192,10 +3192,10 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
               10.0
             ],
             "tag": {
-              "commentStart": 992,
-              "end": 996,
+              "commentStart": 962,
+              "end": 966,
               "moduleId": 0,
-              "start": 992,
+              "start": 962,
               "type": "TagDeclarator",
               "value": "left"
             },
@@ -3309,10 +3309,10 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 827,
-            "end": 833,
+            "commentStart": 797,
+            "end": 803,
             "moduleId": 0,
-            "start": 827,
+            "start": 797,
             "type": "TagDeclarator",
             "value": "bottom"
           },
@@ -3323,10 +3323,10 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 882,
-            "end": 887,
+            "commentStart": 852,
+            "end": 857,
             "moduleId": 0,
-            "start": 882,
+            "start": 852,
             "type": "TagDeclarator",
             "value": "right"
           },
@@ -3337,10 +3337,10 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 938,
-            "end": 941,
+            "commentStart": 908,
+            "end": 911,
             "moduleId": 0,
-            "start": 938,
+            "start": 908,
             "type": "TagDeclarator",
             "value": "top"
           },
@@ -3351,10 +3351,10 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 992,
-            "end": 996,
+            "commentStart": 962,
+            "end": 966,
             "moduleId": 0,
-            "start": 992,
+            "start": 962,
             "type": "TagDeclarator",
             "value": "left"
           },
@@ -3365,10 +3365,10 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1153,
-            "end": 1160,
+            "commentStart": 1123,
+            "end": 1130,
             "moduleId": 0,
-            "start": 1153,
+            "start": 1123,
             "type": "TagDeclarator",
             "value": "topCap"
           },
@@ -3379,10 +3379,10 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1316,
-            "end": 1328,
+            "commentStart": 1286,
+            "end": 1298,
             "moduleId": 0,
-            "start": 1316,
+            "start": 1286,
             "type": "TagDeclarator",
             "value": "roundedFace"
           },
@@ -3414,10 +3414,10 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
               0.0
             ],
             "tag": {
-              "commentStart": 827,
-              "end": 833,
+              "commentStart": 797,
+              "end": 803,
               "moduleId": 0,
-              "start": 827,
+              "start": 797,
               "type": "TagDeclarator",
               "value": "bottom"
             },
@@ -3438,10 +3438,10 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
               0.0
             ],
             "tag": {
-              "commentStart": 882,
-              "end": 887,
+              "commentStart": 852,
+              "end": 857,
               "moduleId": 0,
-              "start": 882,
+              "start": 852,
               "type": "TagDeclarator",
               "value": "right"
             },
@@ -3462,10 +3462,10 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
               10.0
             ],
             "tag": {
-              "commentStart": 938,
-              "end": 941,
+              "commentStart": 908,
+              "end": 911,
               "moduleId": 0,
-              "start": 938,
+              "start": 908,
               "type": "TagDeclarator",
               "value": "top"
             },
@@ -3486,10 +3486,10 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
               10.0
             ],
             "tag": {
-              "commentStart": 992,
-              "end": 996,
+              "commentStart": 962,
+              "end": 966,
               "moduleId": 0,
-              "start": 992,
+              "start": 962,
               "type": "TagDeclarator",
               "value": "left"
             },

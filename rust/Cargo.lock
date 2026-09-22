@@ -2876,7 +2876,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-python-bindings"
-version = "0.3.186"
+version = "0.3.186+faceapi.1"
 dependencies = [
  "anyhow",
  "kcl-api",

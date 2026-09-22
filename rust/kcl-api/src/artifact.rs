@@ -304,7 +304,8 @@ pub struct Segment {
 pub struct Sweep {
     pub id: ArtifactId,
     pub sub_type: SweepSubType,
-    pub path_id: ArtifactId,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub path_id: Option<ArtifactId>,
     pub surface_ids: Vec<ArtifactId>,
     pub edge_ids: Vec<ArtifactId>,
     pub code_ref: CodeRef,
@@ -520,7 +521,8 @@ pub enum SweepEdgeSubType {
 pub struct EdgeCut {
     pub id: ArtifactId,
     pub sub_type: EdgeCutSubType,
-    pub consumed_edge_id: ArtifactId,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub consumed_edge_id: Option<ArtifactId>,
     pub edge_ids: Vec<ArtifactId>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub surface_id: Option<ArtifactId>,
