@@ -40,8 +40,8 @@ description: Variables in memory after executing loft_arc_subtract.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "kind": "Custom",
       "objectId": 24,
+      "kind": "Custom",
       "origin": {
         "x": 0.0,
         "y": -10.0,
@@ -73,8 +73,8 @@ description: Variables in memory after executing loft_arc_subtract.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "kind": "Custom",
       "objectId": 48,
+      "kind": "Custom",
       "origin": {
         "x": 0.0,
         "y": 1.0,
@@ -103,11 +103,9 @@ description: Variables in memory after executing loft_arc_subtract.kcl
   },
   "arc1": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "arc1"
   },
   "arc2": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "arc2"
   },
@@ -116,6 +114,8 @@ description: Variables in memory after executing loft_arc_subtract.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -278,17 +278,17 @@ description: Variables in memory after executing loft_arc_subtract.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 48,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -344,8 +344,8 @@ description: Variables in memory after executing loft_arc_subtract.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "mm"
+        "units": "mm",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -520,17 +520,17 @@ description: Variables in memory after executing loft_arc_subtract.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 0,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -694,17 +694,17 @@ description: Variables in memory after executing loft_arc_subtract.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 48,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 1.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -766,21 +766,17 @@ description: Variables in memory after executing loft_arc_subtract.kcl
   },
   "line1": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "line1"
   },
   "line2": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "line2"
   },
   "line3": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "line3"
   },
   "line4": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "line4"
   },
@@ -789,6 +785,8 @@ description: Variables in memory after executing loft_arc_subtract.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -963,17 +961,17 @@ description: Variables in memory after executing loft_arc_subtract.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 0,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -1029,8 +1027,8 @@ description: Variables in memory after executing loft_arc_subtract.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "mm"
+        "units": "mm",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -1043,8 +1041,8 @@ description: Variables in memory after executing loft_arc_subtract.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "kind": "Custom",
       "objectId": 24,
+      "kind": "Custom",
       "origin": {
         "x": 0.0,
         "y": -10.0,
@@ -1076,8 +1074,8 @@ description: Variables in memory after executing loft_arc_subtract.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "kind": "Custom",
       "objectId": 48,
+      "kind": "Custom",
       "origin": {
         "x": 0.0,
         "y": 1.0,
@@ -1220,17 +1218,17 @@ description: Variables in memory after executing loft_arc_subtract.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 0,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -1286,8 +1284,8 @@ description: Variables in memory after executing loft_arc_subtract.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "mm"
+      "units": "mm",
+      "isClosed": "explicitly"
     }
   },
   "region002": {
@@ -1406,17 +1404,17 @@ description: Variables in memory after executing loft_arc_subtract.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 24,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": -10.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -1472,8 +1470,8 @@ description: Variables in memory after executing loft_arc_subtract.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "mm"
+      "units": "mm",
+      "isClosed": "explicitly"
     }
   },
   "region003": {
@@ -1580,17 +1578,17 @@ description: Variables in memory after executing loft_arc_subtract.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 48,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 1.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -1646,8 +1644,8 @@ description: Variables in memory after executing loft_arc_subtract.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "mm"
+      "units": "mm",
+      "isClosed": "explicitly"
     }
   },
   "sketch001": {
@@ -1667,17 +1665,21 @@ description: Variables in memory after executing loft_arc_subtract.kcl
                       {
                         "n": -5.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -1685,17 +1687,21 @@ description: Variables in memory after executing loft_arc_subtract.kcl
                       {
                         "n": 5.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -1703,17 +1709,21 @@ description: Variables in memory after executing loft_arc_subtract.kcl
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 2.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -1819,17 +1829,21 @@ description: Variables in memory after executing loft_arc_subtract.kcl
                       {
                         "n": -4.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -1837,17 +1851,21 @@ description: Variables in memory after executing loft_arc_subtract.kcl
                       {
                         "n": 4.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -1855,17 +1873,21 @@ description: Variables in memory after executing loft_arc_subtract.kcl
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 2.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -1971,17 +1993,21 @@ description: Variables in memory after executing loft_arc_subtract.kcl
                       {
                         "n": -5.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -1989,17 +2015,21 @@ description: Variables in memory after executing loft_arc_subtract.kcl
                       {
                         "n": -4.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -2091,17 +2121,21 @@ description: Variables in memory after executing loft_arc_subtract.kcl
                       {
                         "n": 4.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -2109,17 +2143,21 @@ description: Variables in memory after executing loft_arc_subtract.kcl
                       {
                         "n": 5.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -2367,17 +2405,17 @@ description: Variables in memory after executing loft_arc_subtract.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 0,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -2460,17 +2498,21 @@ description: Variables in memory after executing loft_arc_subtract.kcl
                       {
                         "n": -5.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -2478,17 +2520,21 @@ description: Variables in memory after executing loft_arc_subtract.kcl
                       {
                         "n": 5.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -2496,17 +2542,21 @@ description: Variables in memory after executing loft_arc_subtract.kcl
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 2.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -2612,17 +2662,21 @@ description: Variables in memory after executing loft_arc_subtract.kcl
                       {
                         "n": -4.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -2630,17 +2684,21 @@ description: Variables in memory after executing loft_arc_subtract.kcl
                       {
                         "n": 4.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -2648,17 +2706,21 @@ description: Variables in memory after executing loft_arc_subtract.kcl
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 2.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -2764,17 +2826,21 @@ description: Variables in memory after executing loft_arc_subtract.kcl
                       {
                         "n": -5.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -2782,17 +2848,21 @@ description: Variables in memory after executing loft_arc_subtract.kcl
                       {
                         "n": -4.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -2884,17 +2954,21 @@ description: Variables in memory after executing loft_arc_subtract.kcl
                       {
                         "n": 4.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -2902,17 +2976,21 @@ description: Variables in memory after executing loft_arc_subtract.kcl
                       {
                         "n": 5.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -3160,17 +3238,17 @@ description: Variables in memory after executing loft_arc_subtract.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 24,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": -10.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -3253,17 +3331,21 @@ description: Variables in memory after executing loft_arc_subtract.kcl
                       {
                         "n": -1.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -3271,17 +3353,21 @@ description: Variables in memory after executing loft_arc_subtract.kcl
                       {
                         "n": 1.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -3373,17 +3459,21 @@ description: Variables in memory after executing loft_arc_subtract.kcl
                       {
                         "n": 1.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -3391,17 +3481,21 @@ description: Variables in memory after executing loft_arc_subtract.kcl
                       {
                         "n": 1.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": -5.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -3493,17 +3587,21 @@ description: Variables in memory after executing loft_arc_subtract.kcl
                       {
                         "n": 1.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": -5.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -3511,17 +3609,21 @@ description: Variables in memory after executing loft_arc_subtract.kcl
                       {
                         "n": -1.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": -5.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -3613,17 +3715,21 @@ description: Variables in memory after executing loft_arc_subtract.kcl
                       {
                         "n": -1.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": -5.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -3631,17 +3737,21 @@ description: Variables in memory after executing loft_arc_subtract.kcl
                       {
                         "n": -1.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -3826,17 +3936,17 @@ description: Variables in memory after executing loft_arc_subtract.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 48,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 1.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,

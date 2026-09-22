@@ -1,0 +1,33 @@
+@settings(kclVersion = 2.0)
+
+sketch001 = sketch(on = XY) {
+  circle1 = circle(start = [var -3.35mm, var -0.7mm], center = [var -5.74mm, var 1.39mm])
+}
+
+sketch002 = sketch(on = XY) {
+  circle1 = circle(start = [var 3.47mm, var -1.07mm], center = [var 4.76mm, var 1.86mm])
+}
+sketch003 = sketch(on = XY) {
+  line1 = line(start = [var -4.05mm, var 2.82mm], end = [var 3.62mm, var 2.82mm])
+  line2 = line(start = [var 3.62mm, var 2.82mm], end = [var 3.62mm, var 0.54mm])
+  line3 = line(start = [var 3.62mm, var 0.54mm], end = [var -4.05mm, var 0.54mm])
+  line4 = line(start = [var -4.05mm, var 0.54mm], end = [var -4.05mm, var 2.82mm])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  parallel([line2, line4])
+  parallel([line3, line1])
+  perpendicular([line1, line2])
+  horizontal(line3)
+}
+
+region001 = region(segments = [sketch001.circle1])
+left = extrude(region001, length = 0.5)
+region002 = region(segments = [sketch002.circle1])
+right = extrude(region002, length = 0.5)
+region003 = region(segments = [sketch003.line1, sketch003.line2], direction = CW)
+tool = extrude(region003, length = 2, symmetric = true)
+
+subtractedParts = subtract([left, right], tools = [tool])
+output = subtractedParts[1]

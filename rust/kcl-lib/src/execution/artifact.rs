@@ -67,7 +67,8 @@ pub struct ArtifactCommand {
     /// The engine command.  Each artifact command is backed by an engine
     /// command.  In the future, we may need to send information to the TS side
     /// without an engine command, in which case, we would make this field
-    /// optional.
+    /// optional. Imported file commands retain paths and format but omit raw
+    /// file bytes after the command has been sent to the engine.
     pub command: ModelingCmd,
     /// Extra artifact identity needed when an engine clone represents a KCL
     /// solid whose body artifact ID differs from its engine entity ID.
@@ -258,6 +259,7 @@ fn merge_artifacts(old: &mut Artifact, new: Artifact) -> Option<Artifact> {
         Artifact::Cap(a) => merge_cap(a, new),
         Artifact::EdgeCut(a) => merge_edge_cut(a, new),
         Artifact::Helix(a) => merge_helix(a, new),
+        Artifact::ImportedGeometry(_) => Some(new),
         Artifact::GdtAnnotation(a) => merge_gdt_annotation(a, new),
         // One `view::named` call supplies every field, so nothing accumulates.
         // Replacing wholesale keeps `show_ids`/`hide_ids` exactly as that call
@@ -357,6 +359,7 @@ fn merge_gdt_annotation(old: &mut GdtAnnotationArtifact, new: Artifact) -> Optio
         return Some(new);
     };
     old.code_ref = new.code_ref;
+    old.consumed = new.consumed;
     None
 }
 
@@ -480,6 +483,16 @@ pub(super) fn build_artifact_graph(
         }
         if let ModelingCmd::SketchModeDisable(_) = artifact_command.command {
             current_plane_id = None;
+        }
+
+        // Some artifacts, including GD&T annotations, are recorded directly
+        // during execution instead of being created from an artifact command.
+        // Apply deletion before those artifacts are merged into the graph.
+        if let ModelingCmd::RemoveSceneObjects(remove) = &artifact_command.command {
+            let updates = mark_deleted_artifacts_consumed(exec_artifacts, &remove.object_ids);
+            for artifact in updates {
+                merge_artifact_into_map(exec_artifacts, artifact);
+            }
         }
 
         let artifact_updates = artifacts_to_update(
@@ -946,9 +959,19 @@ fn remap_artifact_for_clone(
                 source.consumed
             },
         }),
+        Artifact::ImportedGeometry(source) => Artifact::ImportedGeometry(ImportedGeometryArtifact {
+            id: remap_id_for_clone(source.id, entity_id_map),
+            code_ref: clone_code_ref.clone(),
+            consumed: if source.id == source_root_id {
+                false
+            } else {
+                source.consumed
+            },
+        }),
         Artifact::GdtAnnotation(source) => Artifact::GdtAnnotation(GdtAnnotationArtifact {
             id: remap_id_for_clone(source.id, entity_id_map),
             code_ref: clone_code_ref.clone(),
+            consumed: source.consumed,
         }),
         // A named view has no engine entity, so it can never appear in a
         // clone's id map, and `clone()` takes only a sketch, solid or imported
@@ -1169,6 +1192,16 @@ fn mark_artifact_consumed_by_id(
             new_helix.consumed = true;
             return_arr.push(Artifact::Helix(new_helix));
         }
+        Artifact::ImportedGeometry(imported_geometry) => {
+            let mut new_imported_geometry = imported_geometry.clone();
+            new_imported_geometry.consumed = true;
+            return_arr.push(Artifact::ImportedGeometry(new_imported_geometry));
+        }
+        Artifact::GdtAnnotation(annotation) => {
+            let mut new_annotation = annotation.clone();
+            new_annotation.consumed = true;
+            return_arr.push(Artifact::GdtAnnotation(new_annotation));
+        }
         _ => {}
     }
 }
@@ -1311,6 +1344,13 @@ fn artifacts_to_update(
     let cmd = &artifact_command.command;
 
     match cmd {
+        ModelingCmd::ImportFiles(_) => {
+            return Ok(vec![Artifact::ImportedGeometry(ImportedGeometryArtifact {
+                id,
+                code_ref,
+                consumed: false,
+            })]);
+        }
         ModelingCmd::MakePlane(_) => {
             if range.is_synthetic() {
                 return Ok(Vec::new());

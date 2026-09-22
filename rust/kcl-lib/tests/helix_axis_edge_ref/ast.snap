@@ -1094,6 +1094,7 @@ description: Result of parsing helix_axis_edge_ref.kcl
     "commentStart": 0,
     "end": 0,
     "moduleId": 0,
-    "start": 0
+    "start": 0,
+    "type": "Program"
   }
 }

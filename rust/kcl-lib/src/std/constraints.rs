@@ -577,6 +577,70 @@ fn extract_point_component(
     }
 }
 
+/// Convert a point solved by an earlier sketch into a point backed by fixed
+/// variables in the current sketch's solver. Constraint implementations can
+/// then handle it through the same paths they use for local sketch points.
+fn solved_point_segment_as_fixed_unsolved(
+    value: KclValue,
+    exec_state: &mut ExecState,
+    range: crate::SourceRange,
+    function_name: &str,
+) -> Result<KclValue, KclError> {
+    let KclValue::Segment {
+        value: abstract_segment,
+    } = value
+    else {
+        return Ok(value);
+    };
+
+    let SegmentRepr::Solved { segment } = &abstract_segment.repr else {
+        return Ok(KclValue::Segment {
+            value: abstract_segment,
+        });
+    };
+    let crate::execution::SegmentKind::Point { position, ctor, .. } = &segment.kind else {
+        return Ok(KclValue::Segment {
+            value: abstract_segment,
+        });
+    };
+
+    let x_value = ty_f64_to_kcl_value(position[0].clone(), range);
+    let y_value = ty_f64_to_kcl_value(position[1].clone(), range);
+    let (x, x_fixed) =
+        extract_point_component(&x_value, exec_state, range, function_name, "solved point x coordinate")?;
+    let (y, y_fixed) =
+        extract_point_component(&y_value, exec_state, range, function_name, "solved point y coordinate")?;
+
+    let Some(sketch_state) = exec_state.sketch_block_mut() else {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            format!("{function_name}() can only be used inside a sketch block"),
+            vec![range],
+        )));
+    };
+    sketch_state
+        .solver_constraints
+        .extend([x_fixed, y_fixed].into_iter().flatten());
+
+    Ok(KclValue::Segment {
+        value: Box::new(AbstractSegment {
+            repr: SegmentRepr::Unsolved {
+                segment: Box::new(UnsolvedSegment {
+                    id: segment.id,
+                    object_id: segment.object_id,
+                    kind: UnsolvedSegmentKind::Point {
+                        position: [UnsolvedExpr::Unknown(x), UnsolvedExpr::Unknown(y)],
+                        ctor: ctor.clone(),
+                    },
+                    tag: segment.tag.clone(),
+                    node_path: segment.node_path.clone(),
+                    meta: segment.meta.clone(),
+                }),
+            },
+            meta: abstract_segment.meta,
+        }),
+    })
+}
+
 fn coincident_segments_for_segment_and_point2d(
     segment_id: ObjectId,
     point2d: &KclValue,
@@ -1562,6 +1626,10 @@ pub async fn coincident(exec_state: &mut ExecState, args: Args) -> Result<KclVal
         ),
         exec_state,
     )?;
+    let points = points
+        .into_iter()
+        .map(|point| solved_point_segment_as_fixed_unsolved(point, exec_state, args.source_range, "coincident"))
+        .collect::<Result<Vec<_>, _>>()?;
     if points.len() > 2 {
         return coincident_points(points, exec_state, args);
     }
@@ -1571,7 +1639,6 @@ pub async fn coincident(exec_state: &mut ExecState, args: Args) -> Result<KclVal
             vec![args.source_range],
         ))
     })?;
-
     let range = args.source_range;
     match (&point0, &point1) {
         (KclValue::Segment { value: seg0 }, KclValue::Segment { value: seg1 }) => {
@@ -2534,6 +2601,8 @@ pub async fn distance(exec_state: &mut ExecState, args: Args) -> Result<KclValue
             vec![args.source_range],
         ))
     })?;
+    let point0 = solved_point_segment_as_fixed_unsolved(point0, exec_state, args.source_range, "distance")?;
+    let point1 = solved_point_segment_as_fixed_unsolved(point1, exec_state, args.source_range, "distance")?;
 
     match (&point0, &point1) {
         (KclValue::Segment { value: seg0 }, KclValue::Segment { value: seg1 }) => {
@@ -2997,6 +3066,10 @@ pub async fn horizontal_distance(exec_state: &mut ExecState, args: Args) -> Resu
         &RuntimeType::Array(Box::new(RuntimeType::Primitive(PrimitiveType::Any)), ArrayLen::Known(2)),
         exec_state,
     )?;
+    let points = points
+        .into_iter()
+        .map(|point| solved_point_segment_as_fixed_unsolved(point, exec_state, args.source_range, "horizontalDistance"))
+        .collect::<Result<Vec<_>, _>>()?;
     let label_position = get_constraint_label_position(exec_state, &args, "horizontalDistance")?;
     let [p1, p2] = points.as_slice() else {
         return Err(KclError::new_semantic(KclErrorDetails::new(
@@ -3139,6 +3212,10 @@ pub async fn vertical_distance(exec_state: &mut ExecState, args: Args) -> Result
         &RuntimeType::Array(Box::new(RuntimeType::Primitive(PrimitiveType::Any)), ArrayLen::Known(2)),
         exec_state,
     )?;
+    let points = points
+        .into_iter()
+        .map(|point| solved_point_segment_as_fixed_unsolved(point, exec_state, args.source_range, "verticalDistance"))
+        .collect::<Result<Vec<_>, _>>()?;
     let label_position = get_constraint_label_position(exec_state, &args, "verticalDistance")?;
     let [p1, p2] = points.as_slice() else {
         return Err(KclError::new_semantic(KclErrorDetails::new(
@@ -3440,6 +3517,7 @@ pub async fn midpoint(exec_state: &mut ExecState, args: Args) -> Result<KclValue
         &RuntimeType::Union(vec![RuntimeType::segment(), RuntimeType::point2d()]),
         exec_state,
     )?;
+    let point = solved_point_segment_as_fixed_unsolved(point, exec_state, args.source_range, "midpoint")?;
     let range = args.source_range;
 
     let point = extract_midpoint_point(&point, range)?;
@@ -5066,6 +5144,11 @@ fn axis_constraint_points(
             vec![args.source_range],
         )));
     }
+
+    let point_values = point_values
+        .into_iter()
+        .map(|point| solved_point_segment_as_fixed_unsolved(point, exec_state, args.source_range, kind.function_name()))
+        .collect::<Result<Vec<_>, _>>()?;
 
     let trackable_point_ids = point_values
         .iter()

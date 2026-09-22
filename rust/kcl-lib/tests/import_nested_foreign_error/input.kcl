@@ -1,0 +1,5 @@
+// An engine failure importing a foreign file inside a nested KCL import
+// must keep the import chain back to this file.
+import theModel from "assembly.kcl"
+
+theModel

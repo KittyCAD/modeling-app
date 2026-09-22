@@ -524,9 +524,21 @@ pub struct Helix {
 #[derive(Debug, Clone, Serialize, Deserialize, JsonSchema, PartialEq, Eq, ts_rs::TS)]
 #[ts(export_to = "Artifact.ts")]
 #[serde(rename_all = "camelCase")]
+pub struct ImportedGeometryArtifact {
+    pub id: ArtifactId,
+    pub code_ref: CodeRef,
+    #[serde(default)]
+    pub consumed: bool,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, JsonSchema, PartialEq, Eq, ts_rs::TS)]
+#[ts(export_to = "Artifact.ts")]
+#[serde(rename_all = "camelCase")]
 pub struct GdtAnnotationArtifact {
     pub id: ArtifactId,
     pub code_ref: CodeRef,
+    #[serde(default)]
+    pub consumed: bool,
 }
 
 /// A named view declared in KCL by `view::named`: a display name, camera intent
@@ -605,6 +617,7 @@ pub enum Artifact {
     Cap(Cap),
     EdgeCut(EdgeCut),
     Helix(Helix),
+    ImportedGeometry(ImportedGeometryArtifact),
     GdtAnnotation(GdtAnnotationArtifact),
     NamedView(NamedViewArtifact),
     Pattern(Pattern),
@@ -630,6 +643,7 @@ impl Artifact {
             Self::Cap(a) => a.id,
             Self::EdgeCut(a) => a.id,
             Self::Helix(a) => a.id,
+            Self::ImportedGeometry(a) => a.id,
             Self::GdtAnnotation(a) => a.id,
             Self::NamedView(a) => a.id,
             Self::Pattern(a) => a.id,
@@ -656,6 +670,7 @@ impl Artifact {
             Self::Wall(_) | Self::Cap(_) => None,
             Self::EdgeCut(a) => Some(&a.code_ref),
             Self::Helix(a) => Some(&a.code_ref),
+            Self::ImportedGeometry(a) => Some(&a.code_ref),
             Self::GdtAnnotation(a) => Some(&a.code_ref),
             Self::NamedView(a) => Some(&a.code_ref),
             Self::Pattern(a) => Some(&a.code_ref),

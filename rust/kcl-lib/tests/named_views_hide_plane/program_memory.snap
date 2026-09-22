@@ -52,17 +52,21 @@ description: Variables in memory after executing named_views_hide_plane.kcl
                       {
                         "n": 20.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -70,17 +74,21 @@ description: Variables in memory after executing named_views_hide_plane.kcl
                       {
                         "n": 30.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -172,17 +180,21 @@ description: Variables in memory after executing named_views_hide_plane.kcl
                       {
                         "n": 30.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -190,17 +202,21 @@ description: Variables in memory after executing named_views_hide_plane.kcl
                       {
                         "n": 30.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 10.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -292,17 +308,21 @@ description: Variables in memory after executing named_views_hide_plane.kcl
                       {
                         "n": 30.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 10.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -310,17 +330,21 @@ description: Variables in memory after executing named_views_hide_plane.kcl
                       {
                         "n": 20.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 10.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -412,17 +436,21 @@ description: Variables in memory after executing named_views_hide_plane.kcl
                       {
                         "n": 20.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 10.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -430,17 +458,21 @@ description: Variables in memory after executing named_views_hide_plane.kcl
                       {
                         "n": 20.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -537,10 +569,10 @@ description: Variables in memory after executing named_views_hide_plane.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 431,
-                    "end": 436,
+                    "commentStart": 435,
+                    "end": 440,
                     "moduleId": 0,
-                    "start": 431,
+                    "start": 435,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -561,10 +593,10 @@ description: Variables in memory after executing named_views_hide_plane.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 494,
-                    "end": 499,
+                    "commentStart": 498,
+                    "end": 503,
                     "moduleId": 0,
-                    "start": 494,
+                    "start": 498,
                     "type": "TagDeclarator",
                     "value": "line2"
                   },
@@ -585,10 +617,10 @@ description: Variables in memory after executing named_views_hide_plane.kcl
                     10.0
                   ],
                   "tag": {
-                    "commentStart": 558,
-                    "end": 563,
+                    "commentStart": 562,
+                    "end": 567,
                     "moduleId": 0,
-                    "start": 558,
+                    "start": 562,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
@@ -609,10 +641,10 @@ description: Variables in memory after executing named_views_hide_plane.kcl
                     10.0
                   ],
                   "tag": {
-                    "commentStart": 623,
-                    "end": 628,
+                    "commentStart": 627,
+                    "end": 632,
                     "moduleId": 0,
-                    "start": 623,
+                    "start": 627,
                     "type": "TagDeclarator",
                     "value": "line4"
                   },
@@ -625,17 +657,17 @@ description: Variables in memory after executing named_views_hide_plane.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 2,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -706,6 +738,8 @@ description: Variables in memory after executing named_views_hide_plane.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -713,10 +747,10 @@ description: Variables in memory after executing named_views_hide_plane.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 431,
-            "end": 436,
+            "commentStart": 435,
+            "end": 440,
             "moduleId": 0,
-            "start": 431,
+            "start": 435,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -727,10 +761,10 @@ description: Variables in memory after executing named_views_hide_plane.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 494,
-            "end": 499,
+            "commentStart": 498,
+            "end": 503,
             "moduleId": 0,
-            "start": 494,
+            "start": 498,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -741,10 +775,10 @@ description: Variables in memory after executing named_views_hide_plane.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 558,
-            "end": 563,
+            "commentStart": 562,
+            "end": 567,
             "moduleId": 0,
-            "start": 558,
+            "start": 562,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -755,10 +789,10 @@ description: Variables in memory after executing named_views_hide_plane.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 623,
-            "end": 628,
+            "commentStart": 627,
+            "end": 632,
             "moduleId": 0,
-            "start": 623,
+            "start": 627,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -780,10 +814,10 @@ description: Variables in memory after executing named_views_hide_plane.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 431,
-              "end": 436,
+              "commentStart": 435,
+              "end": 440,
               "moduleId": 0,
-              "start": 431,
+              "start": 435,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -804,10 +838,10 @@ description: Variables in memory after executing named_views_hide_plane.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 494,
-              "end": 499,
+              "commentStart": 498,
+              "end": 503,
               "moduleId": 0,
-              "start": 494,
+              "start": 498,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -828,10 +862,10 @@ description: Variables in memory after executing named_views_hide_plane.kcl
               10.0
             ],
             "tag": {
-              "commentStart": 558,
-              "end": 563,
+              "commentStart": 562,
+              "end": 567,
               "moduleId": 0,
-              "start": 558,
+              "start": 562,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -852,10 +886,10 @@ description: Variables in memory after executing named_views_hide_plane.kcl
               10.0
             ],
             "tag": {
-              "commentStart": 623,
-              "end": 628,
+              "commentStart": 627,
+              "end": 632,
               "moduleId": 0,
-              "start": 623,
+              "start": 627,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -868,17 +902,17 @@ description: Variables in memory after executing named_views_hide_plane.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 2,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -934,8 +968,8 @@ description: Variables in memory after executing named_views_hide_plane.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "mm"
+        "units": "mm",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -948,8 +982,8 @@ description: Variables in memory after executing named_views_hide_plane.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "kind": "Custom",
       "objectId": 1,
+      "kind": "Custom",
       "origin": {
         "x": 0.0,
         "y": 0.0,
@@ -976,13 +1010,33 @@ description: Variables in memory after executing named_views_hide_plane.kcl
       }
     }
   },
+  "planeView": {
+    "type": "NamedView",
+    "value": {
+      "artifactId": "[uuid]",
+      "name": "Near plane",
+      "camera": {
+        "look": {
+          "type": "oriented",
+          "orientation": "Isometric"
+        },
+        "target": null,
+        "distance": null,
+        "projection": "Orthographic"
+      },
+      "baseline": "Show",
+      "exceptIds": [
+        "[uuid]"
+      ]
+    }
+  },
   "planeVisible": {
     "type": "Plane",
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "kind": "Custom",
       "objectId": 0,
+      "kind": "Custom",
       "origin": {
         "x": 0.0,
         "y": 0.0,

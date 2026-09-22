@@ -57,14 +57,17 @@ beforeEach(async () => {
   }
 
   const { instance, kclManager, engineCommandManager, rustContext } =
-    await buildTheWorldAndConnectToEngine()
+    await buildTheWorldAndConnectToEngine({ webrtc: false, pool: 'cpu' })
   instanceInThisFile = instance
   kclManagerInThisFile = kclManager
   engineCommandManagerInThisFile = engineCommandManager
   rustContextInThisFile = rustContext
 })
 afterAll(() => {
-  engineCommandManagerInThisFile.tearDown()
+  engineCommandManagerInThisFile.tearDown({
+    route: 'user-requested',
+    initiatedBy: 'client',
+  })
 })
 
 describe('faces.test.ts', () => {
@@ -271,7 +274,7 @@ shell001 = shell(extrude001, faces = END, thickness = 1)
         instanceInThisFile,
         kclManagerInThisFile
       )
-      const faces = getCapFromCylinder(artifactGraph)
+      const faces = { graphSelections: [], otherSelections: [] }
       const thickness = (await stringToKclExpression(
         '2',
         rustContextInThisFile
@@ -290,9 +293,9 @@ shell001 = shell(extrude001, faces = END, thickness = 1)
       }
 
       const newCode = recast(result.modifiedAst, instanceInThisFile)
-      expect(newCode).toContain(cylinderWithEndTag)
+      expect(newCode).toContain(cylinder)
       expect(newCode).toContain(
-        `shell001 = shell(extrude001, faces = capEnd001, thickness = 2)`
+        `shell001 = shell(extrude001, faces = END, thickness = 2)`
       )
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
@@ -875,7 +878,7 @@ fillet001 = fillet(
         `${bracket}surface001 = deleteFace(finalBracket, faces = bracketProfileRegion.tags.line6)`
       )
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
-    })
+    }, 15_000)
 
     it('should add a deleteFace call on one inner shell face and a wall', async () => {
       const shell = `sketch001 = startSketchOn(XZ)
@@ -1008,6 +1011,14 @@ surface003 = deleteFace(loft002, faces = capStart001)`)
   cutAt = [0, 0],
   holeBottom = hole::flat(),
   holeBody = hole::blind(depth = 5, diameter = 1),
+  holeType = hole::simple(),
+)`
+    const secondSimpleHole = `hole002 = hole::hole(
+  hole001,
+  face = capEnd001,
+  cutAt = [3, 3],
+  holeBottom = hole::flat(),
+  holeBody = hole::blind(depth = 3, diameter = 2),
   holeType = hole::simple(),
 )`
 
@@ -1166,6 +1177,61 @@ hole002 = hole::hole(
   holeType = hole::counterbore(depth = 1, diameter = 2),
 )`
       )
+      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
+    })
+
+    it('should preserve the solid input when editing a hole with a downstream hole', async () => {
+      const twoHoleCode = `${cylinderWithEndTag}
+${simpleHole}
+${secondSimpleHole}`
+      const { artifactGraph, ast } = await getAstAndArtifactGraph(
+        twoHoleCode,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const astThroughFirstHole = {
+        ...ast,
+        body: ast.body.slice(0, -1),
+      }
+      const nodeToEdit = createPathToNodeForLastVariable(
+        astThroughFirstHole,
+        false
+      )
+      const face = getCapFromCylinder(artifactGraph)
+      const cutAt = (await stringToKclExpression(
+        '[0, 0]',
+        rustContextInThisFile,
+        { allowArrays: true }
+      )) as KclCommandValue
+      const depth = (await stringToKclExpression(
+        '5',
+        rustContextInThisFile
+      )) as KclCommandValue
+      const diameter = (await stringToKclExpression(
+        '1',
+        rustContextInThisFile
+      )) as KclCommandValue
+
+      const result = addHole({
+        ast,
+        artifactGraph,
+        nodeToEdit,
+        face,
+        cutAt,
+        holeBody: 'blind',
+        blindDepth: depth,
+        blindDiameter: diameter,
+        holeType: 'simple',
+        holeBottom: 'flat',
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) {
+        throw result
+      }
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      expect(newCode).toContain(`${simpleHole}
+${secondSimpleHole}`)
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
 

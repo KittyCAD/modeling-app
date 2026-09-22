@@ -20,6 +20,8 @@ X coordinate. A positive value places the second point at a greater X
 than the first, and swapping the points negates the sign. For example,
 `horizontalDistance([ORIGIN, point]) == 5mm` places `point` at X = 5mm,
 while `horizontalDistance([point, ORIGIN]) == 5mm` places it at X = -5mm.
+Negative values are valid: if the second point is left of the first, use a
+negative value (or swap the points and use the corresponding positive value).
 
 ### Arguments
 
@@ -52,7 +54,7 @@ solid = extrude(region(segments = [profile.edge1, profile.edge2]), length = 2)
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the solver::horizontalDistance function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-solver-horizontalDistance0_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-solver-horizontalDistance0_output.glb"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-solver-horizontalDistance0.png"

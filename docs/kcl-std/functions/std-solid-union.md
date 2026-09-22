@@ -15,15 +15,18 @@ union(
 ): [Solid; 1+]
 ```
 
-
+This operation consumes every input solid. After it succeeds, the original
+solid variables cannot be used in another modeling operation. Assign the
+returned solid or solids to a new variable and use that result for any
+subsequent operations.
 
 ### Arguments
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `solids` | [[`Solid`](/docs/kcl-std/types/std-types-Solid); 2+] | The solids to union. | Yes |
+| `solids` | [[`Solid`](/docs/kcl-std/types/std-types-Solid); 2+] | The solids to union. Every input solid is consumed by this operation. | Yes |
 | `tolerance` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | Defines the smallest distance below which two entities are considered coincident, intersecting, coplanar, or similar. For most use cases, it should not be changed from its default value of 10^-7 millimeters. | No |
-| `legacyMethod` | [`bool`](/docs/kcl-std/types/std-types-bool) | **Deprecated as of KCL 2.0.** You probably shouldn't set this or care about this, it's for opting back into an older version of an engine algorithm. If true, revert to older engine SSI algorithm. Defaults to false. | No |
+| `legacyMethod` | [`bool`](/docs/kcl-std/types/std-types-bool) | **Deprecated as of KCL 2.0.** **Removed in KCL 3.0.** You probably shouldn't set this or care about this, it's for opting back into an older version of an engine algorithm. If true, revert to older engine SSI algorithm. Defaults to false. | No |
 
 ### Returns
 
@@ -57,7 +60,7 @@ unionedPart = union([part001, part002])
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the union function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-union0_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-union0_output.glb"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-solid-union0.png"
@@ -95,7 +98,7 @@ unionedPart = part001 + part002
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the union function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-union1_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-union1_output.glb"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-solid-union1.png"
@@ -135,7 +138,7 @@ unionedPart = part001 | part002
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the union function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-union2_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-union2_output.glb"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-solid-union2.png"

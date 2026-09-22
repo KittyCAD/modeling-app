@@ -37,11 +37,9 @@ description: Variables in memory after executing pipe.kcl
   },
   "circle1": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "circle1"
   },
   "circle2": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "circle2"
   },
@@ -50,6 +48,8 @@ description: Variables in memory after executing pipe.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -57,10 +57,10 @@ description: Variables in memory after executing pipe.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 338,
-            "end": 345,
+            "commentStart": 361,
+            "end": 368,
             "moduleId": 0,
-            "start": 338,
+            "start": 361,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -71,10 +71,10 @@ description: Variables in memory after executing pipe.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 460,
-            "end": 467,
+            "commentStart": 483,
+            "end": 490,
             "moduleId": 0,
-            "start": 460,
+            "start": 483,
             "type": "TagDeclarator",
             "value": "circle2"
           },
@@ -102,10 +102,10 @@ description: Variables in memory after executing pipe.kcl
             ],
             "radius": 1.1874999992875002,
             "tag": {
-              "commentStart": 338,
-              "end": 345,
+              "commentStart": 361,
+              "end": 368,
               "moduleId": 0,
-              "start": 338,
+              "start": 361,
               "type": "TagDeclarator",
               "value": "circle1"
             },
@@ -132,10 +132,10 @@ description: Variables in memory after executing pipe.kcl
             ],
             "radius": 1.00000000225514,
             "tag": {
-              "commentStart": 460,
-              "end": 467,
+              "commentStart": 483,
+              "end": 490,
               "moduleId": 0,
-              "start": 460,
+              "start": 483,
               "type": "TagDeclarator",
               "value": "circle2"
             },
@@ -148,17 +148,17 @@ description: Variables in memory after executing pipe.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 0,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -206,8 +206,8 @@ description: Variables in memory after executing pipe.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "in"
+        "units": "in",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -220,8 +220,10 @@ description: Variables in memory after executing pipe.kcl
     "value": 2.0,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "pipeLength": {
@@ -229,8 +231,10 @@ description: Variables in memory after executing pipe.kcl
     "value": 6.0,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "pipeOuterDiameter": {
@@ -238,8 +242,10 @@ description: Variables in memory after executing pipe.kcl
     "value": 2.375,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "pipeSection": {
@@ -259,17 +265,21 @@ description: Variables in memory after executing pipe.kcl
                       {
                         "n": 1.1874999990500001,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -277,17 +287,21 @@ description: Variables in memory after executing pipe.kcl
                       {
                         "n": -0.00000000023749996596524477,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -379,17 +393,21 @@ description: Variables in memory after executing pipe.kcl
                       {
                         "n": 0.9761870629602243,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.21693045918634368,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -397,17 +415,21 @@ description: Variables in memory after executing pipe.kcl
                       {
                         "n": 0.0000000007338128321805248,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.00000000016306954056475418,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -510,10 +532,10 @@ description: Variables in memory after executing pipe.kcl
                   ],
                   "radius": 1.1874999992875002,
                   "tag": {
-                    "commentStart": 338,
-                    "end": 345,
+                    "commentStart": 361,
+                    "end": 368,
                     "moduleId": 0,
-                    "start": 338,
+                    "start": 361,
                     "type": "TagDeclarator",
                     "value": "circle1"
                   },
@@ -557,10 +579,10 @@ description: Variables in memory after executing pipe.kcl
                   ],
                   "radius": 1.00000000225514,
                   "tag": {
-                    "commentStart": 460,
-                    "end": 467,
+                    "commentStart": 483,
+                    "end": 490,
                     "moduleId": 0,
-                    "start": 460,
+                    "start": 483,
                     "type": "TagDeclarator",
                     "value": "circle2"
                   },
@@ -573,17 +595,17 @@ description: Variables in memory after executing pipe.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 0,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -646,8 +668,10 @@ description: Variables in memory after executing pipe.kcl
     "value": 0.1875,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "ringRegion": {
@@ -672,10 +696,10 @@ description: Variables in memory after executing pipe.kcl
           ],
           "radius": 1.1874999992875002,
           "tag": {
-            "commentStart": 338,
-            "end": 345,
+            "commentStart": 361,
+            "end": 368,
             "moduleId": 0,
-            "start": 338,
+            "start": 361,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -702,10 +726,10 @@ description: Variables in memory after executing pipe.kcl
           ],
           "radius": 1.00000000225514,
           "tag": {
-            "commentStart": 460,
-            "end": 467,
+            "commentStart": 483,
+            "end": 490,
             "moduleId": 0,
-            "start": 460,
+            "start": 483,
             "type": "TagDeclarator",
             "value": "circle2"
           },
@@ -718,17 +742,17 @@ description: Variables in memory after executing pipe.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 0,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -776,8 +800,8 @@ description: Variables in memory after executing pipe.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "in"
+      "units": "in",
+      "isClosed": "explicitly"
     }
   }
 }

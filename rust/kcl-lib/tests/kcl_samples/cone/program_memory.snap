@@ -40,6 +40,8 @@ description: Variables in memory after executing cone.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -47,10 +49,10 @@ description: Variables in memory after executing cone.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 315,
-            "end": 320,
+            "commentStart": 359,
+            "end": 364,
             "moduleId": 0,
-            "start": 315,
+            "start": 359,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -61,10 +63,10 @@ description: Variables in memory after executing cone.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 423,
-            "end": 428,
+            "commentStart": 467,
+            "end": 472,
             "moduleId": 0,
-            "start": 423,
+            "start": 467,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -86,10 +88,10 @@ description: Variables in memory after executing cone.kcl
               10.0
             ],
             "tag": {
-              "commentStart": 245,
-              "end": 250,
+              "commentStart": 289,
+              "end": 294,
               "moduleId": 0,
-              "start": 245,
+              "start": 289,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -110,10 +112,10 @@ description: Variables in memory after executing cone.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 315,
-              "end": 320,
+              "commentStart": 359,
+              "end": 364,
               "moduleId": 0,
-              "start": 315,
+              "start": 359,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -134,10 +136,10 @@ description: Variables in memory after executing cone.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 423,
-              "end": 428,
+              "commentStart": 467,
+              "end": 472,
               "moduleId": 0,
-              "start": 423,
+              "start": 467,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -150,17 +152,17 @@ description: Variables in memory after executing cone.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 0,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -212,8 +214,8 @@ description: Variables in memory after executing cone.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "mm"
+        "units": "mm",
+        "isClosed": "explicitly"
       },
       "startCapId": null,
       "endCapId": null,
@@ -226,8 +228,10 @@ description: Variables in memory after executing cone.kcl
     "value": 10.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "coneHeight": {
@@ -235,8 +239,10 @@ description: Variables in memory after executing cone.kcl
     "value": 10.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "coneRegion": {
@@ -255,10 +261,10 @@ description: Variables in memory after executing cone.kcl
             10.0
           ],
           "tag": {
-            "commentStart": 245,
-            "end": 250,
+            "commentStart": 289,
+            "end": 294,
             "moduleId": 0,
-            "start": 245,
+            "start": 289,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -279,10 +285,10 @@ description: Variables in memory after executing cone.kcl
             0.0
           ],
           "tag": {
-            "commentStart": 315,
-            "end": 320,
+            "commentStart": 359,
+            "end": 364,
             "moduleId": 0,
-            "start": 315,
+            "start": 359,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -303,10 +309,10 @@ description: Variables in memory after executing cone.kcl
             0.0
           ],
           "tag": {
-            "commentStart": 423,
-            "end": 428,
+            "commentStart": 467,
+            "end": 472,
             "moduleId": 0,
-            "start": 423,
+            "start": 467,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -319,17 +325,17 @@ description: Variables in memory after executing cone.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 0,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -381,22 +387,19 @@ description: Variables in memory after executing cone.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "mm"
+      "units": "mm",
+      "isClosed": "explicitly"
     }
   },
   "line1": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "line1"
   },
   "line2": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "line2"
   },
   "line3": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "line3"
   },
@@ -417,17 +420,21 @@ description: Variables in memory after executing cone.kcl
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 10.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -435,17 +442,21 @@ description: Variables in memory after executing cone.kcl
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -537,17 +548,21 @@ description: Variables in memory after executing cone.kcl
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -555,17 +570,21 @@ description: Variables in memory after executing cone.kcl
                       {
                         "n": 5.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -657,17 +676,21 @@ description: Variables in memory after executing cone.kcl
                       {
                         "n": 5.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -675,17 +698,21 @@ description: Variables in memory after executing cone.kcl
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 10.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -782,10 +809,10 @@ description: Variables in memory after executing cone.kcl
                     10.0
                   ],
                   "tag": {
-                    "commentStart": 245,
-                    "end": 250,
+                    "commentStart": 289,
+                    "end": 294,
                     "moduleId": 0,
-                    "start": 245,
+                    "start": 289,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -806,10 +833,10 @@ description: Variables in memory after executing cone.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 315,
-                    "end": 320,
+                    "commentStart": 359,
+                    "end": 364,
                     "moduleId": 0,
-                    "start": 315,
+                    "start": 359,
                     "type": "TagDeclarator",
                     "value": "line2"
                   },
@@ -830,10 +857,10 @@ description: Variables in memory after executing cone.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 423,
-                    "end": 428,
+                    "commentStart": 467,
+                    "end": 472,
                     "moduleId": 0,
-                    "start": 423,
+                    "start": 467,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
@@ -846,17 +873,17 @@ description: Variables in memory after executing cone.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 0,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,

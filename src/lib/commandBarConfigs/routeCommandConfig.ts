@@ -6,9 +6,11 @@ import { PATHS, webSafeJoin } from '@src/lib/paths'
 export function createRouteCommands(
   navigate: NavigateFunction,
   location: Location,
-  filePath: string
+  filePath: string,
+  scopes: Command['scopes']
 ) {
   const RouteTelemetryCommand: Command = {
+    scopes,
     name: 'Go to Telemetry',
     displayName: `Go to Telemetry`,
     description: 'View the Telemetry metrics',
@@ -25,6 +27,7 @@ export function createRouteCommands(
   }
 
   const RouteHomeCommand: Command = {
+    scopes,
     name: 'Go to Home',
     displayName: `Go to Home`,
     description: 'Go to the home page',
@@ -37,6 +40,7 @@ export function createRouteCommands(
   }
 
   const RouteSettingsCommand: Command = {
+    scopes,
     name: 'Go to Settings',
     displayName: `Go to Settings`,
     description: 'Go to the settings page',

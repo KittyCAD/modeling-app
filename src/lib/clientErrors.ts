@@ -1,4 +1,6 @@
 import { type ClientErrorReport, users } from '@kittycad/lib'
+import type { ReadonlySignal } from '@preact/signals-core'
+import { EngineDebugger } from '@src/lib/debugger'
 import { createKCClient, kcCall } from '@src/lib/kcClient'
 
 type ReportClientErrorParams = {
@@ -23,24 +25,53 @@ export enum ClientErrorCode {
   CloudSyncConflict = 'cloud_sync_conflict',
   CloudSyncConflictCopyDetected = 'cloud_sync_conflict_copy_detected',
   CloudSyncFailure = 'cloud_sync_failure',
+  CloudSyncUntrackedLocalChanges = 'cloud_sync_untracked_local_changes',
   DesktopChildProcessGone = 'desktop_child_process_gone',
   DesktopRendererUnresponsive = 'desktop_renderer_unresponsive',
   DesktopRenderProcessGone = 'desktop_render_process_gone',
+  EngineBackendDisconnect = 'engine_backend_disconnect',
   EngineDisconnect = 'engine_disconnect',
+  EngineUnsupportedVideoCodec = 'engine_unsupported_video_codec',
+  EngineWebrtcDisconnect = 'engine_webrtc_disconnect',
+  FileOperationsError = 'file_operations_error',
   LegacySketchMode = 'legacy_sketch_mode',
   SystemIOError = 'system_io_error',
   ToolbarDropdownAnchorPositioningError = 'toolbar_dropdown_anchor_positioning_error',
+  UnsupportedBrowserFeature = 'unsupported_browser_feature',
   UserFeaturesFetchError = 'user_features_fetch_error',
   ZookeeperActorError = 'zookeeper_actor_error',
   ZookeeperSetupError = 'zookeeper_setup_error',
   ZookeeperWebsocketBinaryDecodeError = 'zookeeper_websocket_binary_decode_error',
   ZookeeperWebsocketJsonParseError = 'zookeeper_websocket_json_parse_error',
+  EngineTeardown = 'engine_teardown',
 }
 
 const reportedClientErrors = new Set<string>()
+const pendingReports: { body: ClientErrorReport; dedupeKey?: string }[] = []
+let authReady = false
+let hasAuthenticated = false
+const FALLBACK_APP_RELEASE = 'unknown'
+// Match the API's stack limit in Unicode characters.
+const MAX_STACK_LENGTH = 8192
 
 const getAppRelease = () => {
-  return typeof __APP_VERSION__ === 'undefined' ? 'unknown' : __APP_VERSION__
+  if (typeof window !== 'undefined') {
+    const packageVersion = (
+      window.electron?.packageJson as { version?: string } | undefined
+    )?.version
+    if (packageVersion && packageVersion !== '0.0.0') {
+      return packageVersion
+    }
+  }
+
+  const commitSha = import.meta.env.MODELING_APP_COMMIT_SHA
+  if (commitSha && commitSha.length >= 7) {
+    return commitSha.slice(0, 7)
+  }
+
+  return typeof __APP_VERSION__ === 'undefined'
+    ? FALLBACK_APP_RELEASE
+    : __APP_VERSION__
 }
 
 const getCurrentRoute = () => {
@@ -105,13 +136,40 @@ const buildStack = (params: ReportClientErrorParams) => {
   const userAgent =
     typeof navigator === 'undefined' ? undefined : navigator.userAgent
 
-  return JSON.stringify({
+  const context: Record<string, unknown> = {
     ...(params.error instanceof Error && params.error.stack
       ? { runtimeStack: params.error.stack }
       : {}),
     ...params.extra,
     userAgent,
-  })
+  }
+  if (
+    params.code !== ClientErrorCode.EngineDisconnect &&
+    params.code !== ClientErrorCode.EngineBackendDisconnect &&
+    params.code !== ClientErrorCode.EngineTeardown
+  ) {
+    return JSON.stringify(context)
+  }
+
+  let stack: string
+  try {
+    stack = JSON.stringify({
+      ...context,
+      // Keep recent events first so they survive the raw crop below.
+      engineDebugger: EngineDebugger.logs
+        .map(({ time, message, label, metadata }) => ({
+          time,
+          message,
+          label,
+          metadata,
+        }))
+        .reverse(),
+    })
+  } catch {
+    // Still report the original error if the debugger buffer cannot serialize.
+    stack = JSON.stringify(context)
+  }
+  return Array.from(stack).slice(0, MAX_STACK_LENGTH).join('')
 }
 
 const buildClientErrorReport = (
@@ -129,6 +187,9 @@ const buildClientErrorReport = (
 }
 
 export const reportClientError = async (params: ReportClientErrorParams) => {
+  // Buffer startup errors only, with a cap if authentication never succeeds.
+  if (!authReady && (hasAuthenticated || pendingReports.length >= 100)) return
+
   const dedupeKey = params.dedupeKey
   if (dedupeKey && reportedClientErrors.has(dedupeKey)) {
     return
@@ -137,11 +198,23 @@ export const reportClientError = async (params: ReportClientErrorParams) => {
     reportedClientErrors.add(dedupeKey)
   }
 
+  const body = buildClientErrorReport(params)
+  if (!authReady) {
+    pendingReports.push({ body, dedupeKey })
+    return
+  }
+  await sendClientErrorReport(body, dedupeKey)
+}
+
+async function sendClientErrorReport(
+  body: ClientErrorReport,
+  dedupeKey?: string
+) {
   const client = createKCClient(getAuthToken())
   const result = await kcCall(() =>
     users.report_user_client_error({
       client,
-      body: buildClientErrorReport(params),
+      body,
     })
   )
 
@@ -153,6 +226,24 @@ export const reportClientError = async (params: ReportClientErrorParams) => {
   }
 }
 
+export function initializeClientErrorReporting(
+  isLoggedIn: ReadonlySignal<boolean>
+) {
+  return isLoggedIn.subscribe((ready) => {
+    authReady = ready
+    if (!ready) return
+    hasAuthenticated = true
+    for (const { body, dedupeKey } of pendingReports.splice(0)) {
+      void sendClientErrorReport(body, dedupeKey).catch((error: unknown) => {
+        console.warn('Failed to report client error', error)
+      })
+    }
+  })
+}
+
 export const resetReportedClientErrorsForTests = () => {
   reportedClientErrors.clear()
+  pendingReports.length = 0
+  authReady = false
+  hasAuthenticated = false
 }

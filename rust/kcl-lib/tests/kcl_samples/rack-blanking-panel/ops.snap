@@ -12,8 +12,10 @@ description: Operations executed rack-blanking-panel.kcl
         "value": 19.0,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -41,8 +43,10 @@ description: Operations executed rack-blanking-panel.kcl
         "value": 1.75,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -70,8 +74,10 @@ description: Operations executed rack-blanking-panel.kcl
         "value": 0.0598,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -99,8 +105,10 @@ description: Operations executed rack-blanking-panel.kcl
         "value": 0.03,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -128,8 +136,10 @@ description: Operations executed rack-blanking-panel.kcl
         "value": 0.3333333333333333,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -157,8 +167,10 @@ description: Operations executed rack-blanking-panel.kcl
         "value": 0.3333333333333333,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -186,8 +198,10 @@ description: Operations executed rack-blanking-panel.kcl
         "value": 0.1875,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -242,18 +256,22 @@ description: Operations executed rack-blanking-panel.kcl
                 "type": "SketchVar",
                 "value": -0.12,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.01,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -268,18 +286,22 @@ description: Operations executed rack-blanking-panel.kcl
                 "type": "SketchVar",
                 "value": -0.43,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.01,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -329,18 +351,22 @@ description: Operations executed rack-blanking-panel.kcl
                 "type": "SketchVar",
                 "value": -0.12,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.13,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -355,18 +381,22 @@ description: Operations executed rack-blanking-panel.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.14,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -381,18 +411,22 @@ description: Operations executed rack-blanking-panel.kcl
                 "type": "SketchVar",
                 "value": -0.12,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.01,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -530,18 +564,22 @@ description: Operations executed rack-blanking-panel.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.65,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -556,18 +594,22 @@ description: Operations executed rack-blanking-panel.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.14,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -661,18 +703,22 @@ description: Operations executed rack-blanking-panel.kcl
                 "type": "SketchVar",
                 "value": -0.11,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.65,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -687,18 +733,22 @@ description: Operations executed rack-blanking-panel.kcl
                 "type": "SketchVar",
                 "value": -0.08,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.75,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -713,18 +763,22 @@ description: Operations executed rack-blanking-panel.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.65,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -862,18 +916,22 @@ description: Operations executed rack-blanking-panel.kcl
                 "type": "SketchVar",
                 "value": -0.4,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.75,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -888,18 +946,22 @@ description: Operations executed rack-blanking-panel.kcl
                 "type": "SketchVar",
                 "value": -0.08,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.75,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -993,18 +1055,22 @@ description: Operations executed rack-blanking-panel.kcl
                 "type": "SketchVar",
                 "value": -0.4,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.69,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -1019,18 +1085,22 @@ description: Operations executed rack-blanking-panel.kcl
                 "type": "SketchVar",
                 "value": -0.4,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.75,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -1124,18 +1194,22 @@ description: Operations executed rack-blanking-panel.kcl
                 "type": "SketchVar",
                 "value": -0.09,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.69,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -1150,18 +1224,22 @@ description: Operations executed rack-blanking-panel.kcl
                 "type": "SketchVar",
                 "value": -0.4,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.69,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -1255,18 +1333,22 @@ description: Operations executed rack-blanking-panel.kcl
                 "type": "SketchVar",
                 "value": -0.09,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.66,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -1281,18 +1363,22 @@ description: Operations executed rack-blanking-panel.kcl
                 "type": "SketchVar",
                 "value": -0.09,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.69,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -1307,18 +1393,22 @@ description: Operations executed rack-blanking-panel.kcl
                 "type": "SketchVar",
                 "value": -0.06,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.65,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -1456,18 +1546,22 @@ description: Operations executed rack-blanking-panel.kcl
                 "type": "SketchVar",
                 "value": -0.06,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.14,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -1482,18 +1576,22 @@ description: Operations executed rack-blanking-panel.kcl
                 "type": "SketchVar",
                 "value": -0.06,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.65,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -1587,18 +1685,22 @@ description: Operations executed rack-blanking-panel.kcl
                 "type": "SketchVar",
                 "value": -0.12,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.14,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -1613,18 +1715,22 @@ description: Operations executed rack-blanking-panel.kcl
                 "type": "SketchVar",
                 "value": -0.06,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.14,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -1639,18 +1745,22 @@ description: Operations executed rack-blanking-panel.kcl
                 "type": "SketchVar",
                 "value": -0.12,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.08,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -1788,18 +1898,22 @@ description: Operations executed rack-blanking-panel.kcl
                 "type": "SketchVar",
                 "value": -0.43,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.08,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -1814,18 +1928,22 @@ description: Operations executed rack-blanking-panel.kcl
                 "type": "SketchVar",
                 "value": -0.12,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.08,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -1919,18 +2037,22 @@ description: Operations executed rack-blanking-panel.kcl
                 "type": "SketchVar",
                 "value": -0.43,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.01,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -1945,18 +2067,22 @@ description: Operations executed rack-blanking-panel.kcl
                 "type": "SketchVar",
                 "value": -0.43,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.08,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -2612,18 +2738,22 @@ description: Operations executed rack-blanking-panel.kcl
                 "type": "SketchVar",
                 "value": -0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -2638,18 +2768,22 @@ description: Operations executed rack-blanking-panel.kcl
                 "type": "SketchVar",
                 "value": -0.41,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -2747,18 +2881,22 @@ description: Operations executed rack-blanking-panel.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -2814,18 +2952,22 @@ description: Operations executed rack-blanking-panel.kcl
                 "type": "SketchVar",
                 "value": -0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.14,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -2840,18 +2982,22 @@ description: Operations executed rack-blanking-panel.kcl
                 "type": "SketchVar",
                 "value": -0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -3115,18 +3261,22 @@ description: Operations executed rack-blanking-panel.kcl
                 "type": "SketchVar",
                 "value": -0.4,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.75,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -3141,18 +3291,22 @@ description: Operations executed rack-blanking-panel.kcl
                 "type": "SketchVar",
                 "value": -0.33,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -3806,8 +3960,10 @@ description: Operations executed rack-blanking-panel.kcl
             "value": 19.0,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -3878,18 +4034,22 @@ description: Operations executed rack-blanking-panel.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.75,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -3904,18 +4064,22 @@ description: Operations executed rack-blanking-panel.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -3969,18 +4133,22 @@ description: Operations executed rack-blanking-panel.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -4036,18 +4204,22 @@ description: Operations executed rack-blanking-panel.kcl
                 "type": "SketchVar",
                 "value": 9.17,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.42,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -4062,18 +4234,22 @@ description: Operations executed rack-blanking-panel.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.75,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -4174,18 +4350,22 @@ description: Operations executed rack-blanking-panel.kcl
                 "type": "SketchVar",
                 "value": 9.17,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.33,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -4200,18 +4380,22 @@ description: Operations executed rack-blanking-panel.kcl
                 "type": "SketchVar",
                 "value": 9.17,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.42,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -4312,18 +4496,22 @@ description: Operations executed rack-blanking-panel.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -4338,18 +4526,22 @@ description: Operations executed rack-blanking-panel.kcl
                 "type": "SketchVar",
                 "value": 9.17,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.33,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -4747,18 +4939,22 @@ description: Operations executed rack-blanking-panel.kcl
                 "type": "SketchVar",
                 "value": 9.17,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.42,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -4773,18 +4969,22 @@ description: Operations executed rack-blanking-panel.kcl
                 "type": "SketchVar",
                 "value": 8.23,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 3.52,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -4878,18 +5078,22 @@ description: Operations executed rack-blanking-panel.kcl
                 "type": "SketchVar",
                 "value": 9.17,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.33,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -4904,18 +5108,22 @@ description: Operations executed rack-blanking-panel.kcl
                 "type": "SketchVar",
                 "value": 8.48,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -1.71,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -5082,72 +5290,15 @@ description: Operations executed rack-blanking-panel.kcl
       "name": "region",
       "unlabeledArg": null,
       "labeledArgs": {
-        "point": {
+        "segments": {
           "value": {
             "type": "Array",
             "value": [
               {
-                "type": "Number",
-                "value": 233.4933,
-                "ty": {
-                  "mm": null,
-                  "type": "Known",
-                  "type": "Length"
-                }
-              },
-              {
-                "type": "Number",
-                "value": 10.752,
-                "ty": {
-                  "mm": null,
-                  "type": "Known",
-                  "type": "Length"
-                }
+                "type": "Segment",
+                "artifact_id": "[uuid]"
               }
             ]
-          },
-          "sourceRange": []
-        },
-        "sketch": {
-          "value": {
-            "type": "Object",
-            "value": {
-              "circle1": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "circle2": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "line1": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "line2": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "line3": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "line4": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "meta": {
-                "type": "Object",
-                "value": {
-                  "sketch": {
-                    "type": "Sketch",
-                    "value": {
-                      "artifactId": "[uuid]"
-                    }
-                  }
-                }
-              }
-            }
           },
           "sourceRange": []
         }
@@ -5173,72 +5324,15 @@ description: Operations executed rack-blanking-panel.kcl
       "name": "region",
       "unlabeledArg": null,
       "labeledArgs": {
-        "point": {
+        "segments": {
           "value": {
             "type": "Array",
             "value": [
               {
-                "type": "Number",
-                "value": 233.7022,
-                "ty": {
-                  "mm": null,
-                  "type": "Known",
-                  "type": "Length"
-                }
-              },
-              {
-                "type": "Number",
-                "value": 33.769,
-                "ty": {
-                  "mm": null,
-                  "type": "Known",
-                  "type": "Length"
-                }
+                "type": "Segment",
+                "artifact_id": "[uuid]"
               }
             ]
-          },
-          "sourceRange": []
-        },
-        "sketch": {
-          "value": {
-            "type": "Object",
-            "value": {
-              "circle1": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "circle2": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "line1": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "line2": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "line3": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "line4": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "meta": {
-                "type": "Object",
-                "value": {
-                  "sketch": {
-                    "type": "Sketch",
-                    "value": {
-                      "artifactId": "[uuid]"
-                    }
-                  }
-                }
-              }
-            }
           },
           "sourceRange": []
         }
@@ -5289,8 +5383,10 @@ description: Operations executed rack-blanking-panel.kcl
             "value": 5.0,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -5359,8 +5455,10 @@ description: Operations executed rack-blanking-panel.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   },
                   {
@@ -5368,8 +5466,10 @@ description: Operations executed rack-blanking-panel.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   },
                   {
@@ -5377,8 +5477,10 @@ description: Operations executed rack-blanking-panel.kcl
                     "value": 1.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   }
                 ]
@@ -5391,8 +5493,10 @@ description: Operations executed rack-blanking-panel.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   },
                   {
@@ -5400,8 +5504,10 @@ description: Operations executed rack-blanking-panel.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   },
                   {
@@ -5409,8 +5515,10 @@ description: Operations executed rack-blanking-panel.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   }
                 ]
@@ -5428,8 +5536,10 @@ description: Operations executed rack-blanking-panel.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": "in",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "in",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -5437,8 +5547,10 @@ description: Operations executed rack-blanking-panel.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": "in",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "in",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -5446,8 +5558,10 @@ description: Operations executed rack-blanking-panel.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": "in",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "in",
+                    "angle": "degrees"
+                  }
                 }
               }
             ]
@@ -5460,7 +5574,9 @@ description: Operations executed rack-blanking-panel.kcl
             "value": 2.0,
             "ty": {
               "type": "Known",
-              "type": "Count"
+              "value": {
+                "type": "Count"
+              }
             }
           },
           "sourceRange": []
@@ -5499,13 +5615,6 @@ description: Operations executed rack-blanking-panel.kcl
         "sourceRange": []
       },
       "labeledArgs": {
-        "legacyMethod": {
-          "value": {
-            "type": "Bool",
-            "value": true
-          },
-          "sourceRange": []
-        },
         "tools": {
           "value": {
             "type": "Array",
@@ -5592,7 +5701,9 @@ description: Operations executed rack-blanking-panel.kcl
         "value": 2.718281828459045,
         "ty": {
           "type": "Known",
-          "type": "Count"
+          "value": {
+            "type": "Count"
+          }
         }
       },
       "visibility": "export",
@@ -5620,7 +5731,9 @@ description: Operations executed rack-blanking-panel.kcl
         "value": 6.283185307179586,
         "ty": {
           "type": "Known",
-          "type": "Count"
+          "value": {
+            "type": "Count"
+          }
         }
       },
       "visibility": "export",
@@ -5654,7 +5767,7 @@ description: Operations executed rack-blanking-panel.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 23
+            "index": 24
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -5678,7 +5791,7 @@ description: Operations executed rack-blanking-panel.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 24
+            "index": 25
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -5702,7 +5815,7 @@ description: Operations executed rack-blanking-panel.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 25
+            "index": 26
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -5726,7 +5839,7 @@ description: Operations executed rack-blanking-panel.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 26
+            "index": 27
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -5750,7 +5863,7 @@ description: Operations executed rack-blanking-panel.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 27
+            "index": 28
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -5774,7 +5887,7 @@ description: Operations executed rack-blanking-panel.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 28
+            "index": 29
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -5798,7 +5911,7 @@ description: Operations executed rack-blanking-panel.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 29
+            "index": 30
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -5822,7 +5935,7 @@ description: Operations executed rack-blanking-panel.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 30
+            "index": 31
           },
           {
             "type": "VariableDeclarationDeclaration"

@@ -7743,7 +7743,7 @@ description: Result of parsing m4-insert.kcl
           "type": "NonCodeNode",
           "value": {
             "type": "blockComment",
-            "value": "Categories: Fasteners",
+            "value": "Categories: Mechanical Components; 3D Printable",
             "style": "line"
           }
         },
@@ -7759,6 +7759,7 @@ description: Result of parsing m4-insert.kcl
         }
       ]
     },
-    "start": 0
+    "start": 0,
+    "type": "Program"
   }
 }

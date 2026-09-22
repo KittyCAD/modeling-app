@@ -16,8 +16,13 @@ subtract2d(
 ): Sketch
 ```
 
-This is part of sketch v1 and is deprecated in favor of
-[sketch-solve](/docs/kcl-std/modules/std-solver).
+This is part of sketch v1 and is deprecated. Legacy sketch functions cannot
+be used with constraints. Strongly prefer constraint-based sketch functions:
+in KCL 2, construct the outer
+boundary and hole as segments inside a
+[`sketch` block](/docs/kcl-lang/sketches), then select the
+required bounded face with
+[`region`](/docs/kcl-std/functions/std-sketch-region).
 
 ### Arguments
 
@@ -34,6 +39,8 @@ This is part of sketch v1 and is deprecated in favor of
 ### Examples
 
 ```kcl
+@settings(kclVersion = 1.0)
+
 exampleSketch = startSketchOn(XY)
   |> startProfile(at = [0, 0])
   |> line(end = [0, 5])
@@ -51,7 +58,7 @@ example = extrude(exampleSketch, length = 1)
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the subtract2d function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-subtract2d0_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-subtract2d0_output.glb"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-subtract2d0.png"
@@ -62,6 +69,8 @@ example = extrude(exampleSketch, length = 1)
 </model-viewer>
 
 ```kcl
+@settings(kclVersion = 1.0)
+
 fn squareHoleSketch() {
   squareSketch = startSketchOn(-XZ)
     |> startProfile(at = [-1, -1])
@@ -83,7 +92,7 @@ example = extrude(exampleSketch, length = 1)
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the subtract2d function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-subtract2d1_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-subtract2d1_output.glb"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-subtract2d1.png"

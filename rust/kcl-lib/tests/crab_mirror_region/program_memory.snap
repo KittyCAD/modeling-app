@@ -37,51 +37,41 @@ description: Variables in memory after executing crab_mirror_region.kcl
   },
   "belly": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "belly"
   },
   "bodyAfterClaw": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "bodyAfterClaw"
   },
   "bodyToEye": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "bodyToEye"
   },
   "bodyToLeg1": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "bodyToLeg1"
   },
   "bodyToLeg2": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "bodyToLeg2"
   },
   "bodyToLeg3": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "bodyToLeg3"
   },
   "clawNotch": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "clawNotch"
   },
   "clawOuterLower": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "clawOuterLower"
   },
   "clawReturn": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "clawReturn"
   },
   "clawUpperArm": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "clawUpperArm"
   },
@@ -102,17 +92,21 @@ description: Variables in memory after executing crab_mirror_region.kcl
                       {
                         "n": 1.5092409450050073,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -2.2730097068559973,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -120,17 +114,21 @@ description: Variables in memory after executing crab_mirror_region.kcl
                       {
                         "n": -0.07604392031568925,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -2.6114163875126164,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -138,17 +136,21 @@ description: Variables in memory after executing crab_mirror_region.kcl
                       {
                         "n": 0.8575619696760547,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -3.1025641840410274,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -254,17 +256,21 @@ description: Variables in memory after executing crab_mirror_region.kcl
                       {
                         "n": 3.06,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.88,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -272,17 +278,21 @@ description: Variables in memory after executing crab_mirror_region.kcl
                       {
                         "n": 2.02,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.8,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -374,17 +384,21 @@ description: Variables in memory after executing crab_mirror_region.kcl
                       {
                         "n": 0.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 1.75,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -392,17 +406,21 @@ description: Variables in memory after executing crab_mirror_region.kcl
                       {
                         "n": 0.55,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 1.92,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -494,17 +512,21 @@ description: Variables in memory after executing crab_mirror_region.kcl
                       {
                         "n": 2.02,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.8,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -512,17 +534,21 @@ description: Variables in memory after executing crab_mirror_region.kcl
                       {
                         "n": 1.92,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.42,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -614,17 +640,21 @@ description: Variables in memory after executing crab_mirror_region.kcl
                       {
                         "n": 2.14,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -0.08,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -632,17 +662,21 @@ description: Variables in memory after executing crab_mirror_region.kcl
                       {
                         "n": 1.96,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -0.56,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -734,17 +768,21 @@ description: Variables in memory after executing crab_mirror_region.kcl
                       {
                         "n": 2.24,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -1.24,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -752,17 +790,21 @@ description: Variables in memory after executing crab_mirror_region.kcl
                       {
                         "n": 1.82,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -1.74,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -854,17 +896,21 @@ description: Variables in memory after executing crab_mirror_region.kcl
                       {
                         "n": 5.05,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 2.42,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -872,17 +918,21 @@ description: Variables in memory after executing crab_mirror_region.kcl
                       {
                         "n": 4.38,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 1.82,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -974,17 +1024,21 @@ description: Variables in memory after executing crab_mirror_region.kcl
                       {
                         "n": 4.98,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 1.12,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -992,17 +1046,21 @@ description: Variables in memory after executing crab_mirror_region.kcl
                       {
                         "n": 4.28,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.6,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -1094,17 +1152,21 @@ description: Variables in memory after executing crab_mirror_region.kcl
                       {
                         "n": 4.28,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.6,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -1112,17 +1174,21 @@ description: Variables in memory after executing crab_mirror_region.kcl
                       {
                         "n": 3.06,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.88,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -1214,17 +1280,21 @@ description: Variables in memory after executing crab_mirror_region.kcl
                       {
                         "n": 2.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 1.58,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -1232,17 +1302,21 @@ description: Variables in memory after executing crab_mirror_region.kcl
                       {
                         "n": 3.35,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 2.7,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -1334,17 +1408,21 @@ description: Variables in memory after executing crab_mirror_region.kcl
                       {
                         "n": 1.04,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 3.26,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -1352,17 +1430,21 @@ description: Variables in memory after executing crab_mirror_region.kcl
                       {
                         "n": 0.3,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 3.26,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -1370,17 +1452,21 @@ description: Variables in memory after executing crab_mirror_region.kcl
                       {
                         "n": 0.67,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 3.26,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -1486,17 +1572,21 @@ description: Variables in memory after executing crab_mirror_region.kcl
                       {
                         "n": 0.3,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 3.26,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -1504,17 +1594,21 @@ description: Variables in memory after executing crab_mirror_region.kcl
                       {
                         "n": 0.72,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 2.18,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -1606,17 +1700,21 @@ description: Variables in memory after executing crab_mirror_region.kcl
                       {
                         "n": 0.55,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 1.92,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -1624,17 +1722,21 @@ description: Variables in memory after executing crab_mirror_region.kcl
                       {
                         "n": 1.04,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 3.26,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -1726,17 +1828,21 @@ description: Variables in memory after executing crab_mirror_region.kcl
                       {
                         "n": 0.72,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 2.18,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -1744,17 +1850,21 @@ description: Variables in memory after executing crab_mirror_region.kcl
                       {
                         "n": 2.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 1.58,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -1846,17 +1956,21 @@ description: Variables in memory after executing crab_mirror_region.kcl
                       {
                         "n": 4.9,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.18,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -1864,17 +1978,21 @@ description: Variables in memory after executing crab_mirror_region.kcl
                       {
                         "n": 2.14,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -0.08,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -1966,17 +2084,21 @@ description: Variables in memory after executing crab_mirror_region.kcl
                       {
                         "n": 4.26,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.57,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -1984,17 +2106,21 @@ description: Variables in memory after executing crab_mirror_region.kcl
                       {
                         "n": 4.9,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.18,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -2086,17 +2212,21 @@ description: Variables in memory after executing crab_mirror_region.kcl
                       {
                         "n": 1.92,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.42,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -2104,17 +2234,21 @@ description: Variables in memory after executing crab_mirror_region.kcl
                       {
                         "n": 4.26,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.57,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -2206,17 +2340,21 @@ description: Variables in memory after executing crab_mirror_region.kcl
                       {
                         "n": 4.96,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -1.22,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -2224,17 +2362,21 @@ description: Variables in memory after executing crab_mirror_region.kcl
                       {
                         "n": 2.24,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -1.24,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -2326,17 +2468,21 @@ description: Variables in memory after executing crab_mirror_region.kcl
                       {
                         "n": 4.28,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -0.76,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -2344,17 +2490,21 @@ description: Variables in memory after executing crab_mirror_region.kcl
                       {
                         "n": 4.96,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -1.22,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -2446,17 +2596,21 @@ description: Variables in memory after executing crab_mirror_region.kcl
                       {
                         "n": 1.96,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -0.56,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -2464,17 +2618,21 @@ description: Variables in memory after executing crab_mirror_region.kcl
                       {
                         "n": 4.28,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -0.76,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -2566,17 +2724,21 @@ description: Variables in memory after executing crab_mirror_region.kcl
                       {
                         "n": 4.72,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -2.98,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -2584,17 +2746,21 @@ description: Variables in memory after executing crab_mirror_region.kcl
                       {
                         "n": 1.5092409450357664,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -2.2730097068229878,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -2686,17 +2852,21 @@ description: Variables in memory after executing crab_mirror_region.kcl
                       {
                         "n": 4.02,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -2.34,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -2704,17 +2874,21 @@ description: Variables in memory after executing crab_mirror_region.kcl
                       {
                         "n": 4.72,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -2.98,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -2806,17 +2980,21 @@ description: Variables in memory after executing crab_mirror_region.kcl
                       {
                         "n": 1.82,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -1.74,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -2824,17 +3002,21 @@ description: Variables in memory after executing crab_mirror_region.kcl
                       {
                         "n": 4.02,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -2.34,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -2926,17 +3108,21 @@ description: Variables in memory after executing crab_mirror_region.kcl
                       {
                         "n": 4.38,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 1.82,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -2944,17 +3130,21 @@ description: Variables in memory after executing crab_mirror_region.kcl
                       {
                         "n": 4.98,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 1.12,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -3655,17 +3845,17 @@ description: Variables in memory after executing crab_mirror_region.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 0,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -3826,17 +4016,21 @@ description: Variables in memory after executing crab_mirror_region.kcl
                       {
                         "n": 3.35,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 2.7,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -3844,17 +4038,21 @@ description: Variables in memory after executing crab_mirror_region.kcl
                       {
                         "n": 5.05,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 2.42,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -4555,17 +4753,17 @@ description: Variables in memory after executing crab_mirror_region.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 0,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -5299,17 +5497,17 @@ description: Variables in memory after executing crab_mirror_region.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 0,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -5449,8 +5647,8 @@ description: Variables in memory after executing crab_mirror_region.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "in"
+      "units": "in",
+      "isClosed": "explicitly"
     }
   },
   "crabSolid": {
@@ -5458,6 +5656,8 @@ description: Variables in memory after executing crab_mirror_region.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -6386,17 +6586,17 @@ description: Variables in memory after executing crab_mirror_region.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 0,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -6536,8 +6736,8 @@ description: Variables in memory after executing crab_mirror_region.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "in"
+        "units": "in",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -6549,83 +6749,70 @@ description: Variables in memory after executing crab_mirror_region.kcl
     "type": "Number",
     "value": 2.0,
     "ty": {
-      "in": null,
       "type": "Known",
-      "type": "Length"
+      "value": {
+        "type": "Length",
+        "value": "in"
+      }
     }
   },
   "eyeBulb": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "eyeBulb"
   },
   "eyeStalkInner": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "eyeStalkInner"
   },
   "eyeStalkOuter": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "eyeStalkOuter"
   },
   "eyeToClaw": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "eyeToClaw"
   },
   "leg1Lower": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "leg1Lower"
   },
   "leg1Tip": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "leg1Tip"
   },
   "leg1Upper": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "leg1Upper"
   },
   "leg2Lower": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "leg2Lower"
   },
   "leg2Tip": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "leg2Tip"
   },
   "leg2Upper": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "leg2Upper"
   },
   "leg3Lower": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "leg3Lower"
   },
   "leg3Tip": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "leg3Tip"
   },
   "leg3Upper": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "leg3Upper"
   },
   "lowerPincer": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "lowerPincer"
   },
   "upperPincer": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "upperPincer"
   }

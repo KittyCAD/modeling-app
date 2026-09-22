@@ -115,7 +115,8 @@ description: Artifact commands tube-manifold.kcl
         "segment": "[uuid]",
         "intersection_segment": "[uuid]",
         "intersection_index": -1,
-        "curve_clockwise": false
+        "curve_clockwise": false,
+        "version": "V1"
       }
     },
     {
@@ -426,7 +427,8 @@ description: Artifact commands tube-manifold.kcl
         "segment": "[uuid]",
         "intersection_segment": "[uuid]",
         "intersection_index": -1,
-        "curve_clockwise": false
+        "curve_clockwise": false,
+        "version": "V1"
       }
     },
     {
@@ -754,7 +756,8 @@ description: Artifact commands tube-manifold.kcl
         "segment": "[uuid]",
         "intersection_segment": "[uuid]",
         "intersection_index": -1,
-        "curve_clockwise": false
+        "curve_clockwise": false,
+        "version": "V1"
       }
     },
     {
@@ -1017,7 +1020,8 @@ description: Artifact commands tube-manifold.kcl
         "query_point": {
           "x": 17.779999999999998,
           "y": 76.19999999999999
-        }
+        },
+        "version": "V1"
       }
     },
     {

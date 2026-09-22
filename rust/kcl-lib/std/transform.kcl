@@ -1,7 +1,7 @@
 /// This module contains functions for transforming sketches and solids.
 
 @no_std
-@settings(defaultLengthUnit = mm, kclVersion = 1.0, experimentalFeatures = allow)
+@settings(defaultLengthUnit = mm, experimentalFeatures = allow)
 
 import Axis2d, Axis3d, Edge, GdtAnnotation, Helix, Plane, Point3d, Segment, Sketch, Solid from "std::types"
 
@@ -52,7 +52,7 @@ import Axis2d, Axis3d, Edge, GdtAnnotation, Helix, Plane, Point3d, Segment, Sket
 /// // example = extrude(sketch001, length = 10)
 /// ```
 ///
-/// ```kcl,sketchSolve
+/// ```kcl,sketchSolve,no3d
 /// // Mirror an un-closed sketch across a line from a sketch block.
 /// helper001 = sketch(on = XZ) {
 ///   line1 = line(start = [var 0mm, var 0mm], end = [var 0mm, var 10mm])
@@ -232,37 +232,27 @@ export fn mirror3d(
 /// Translate is really useful for sketches if you want to move a sketch
 /// and then rotate it using the `rotate` function to create a loft.
 ///
-/// ```kcl,legacySketch
-/// // Move a pipe.
+/// ```kcl,sketchSolve
+/// @settings(defaultLengthUnit = mm, kclVersion = 2.0)
 ///
-/// // Create a path for the sweep.
-/// sweepPath = startSketchOn(XZ)
-///     |> startProfile(at = [0.05, 0.05])
-///     |> line(end = [0, 7])
-///     |> tangentialArc(angle = 90deg, radius = 5)
-///     |> line(end = [-3, 0])
-///     |> tangentialArc(angle = -90deg, radius = 5)
-///     |> line(end = [0, 7])
-///
-/// // Create a hole for the pipe.
-/// pipeHole = startSketchOn(XY)
-///     |> circle(
-///         center = [0, 0],
-///         radius = 1.5,
-///     )
-///
-/// sweepSketch = startSketchOn(XY)
-///     |> circle(
-///         center = [0, 0],
-///         radius = 2,
-///         )              
-///     |> subtract2d(tool = pipeHole)
-///     |> sweep(path = sweepPath)   
-///     |> translate(
-///         x = 1.0,
-///         y = 1.0,
-///         z = 2.5,
-///     )
+/// sweepPath = sketch(on = XZ) {
+///   line1 = line(start = [var 0.05mm, var 0.05mm], end = [var 0.05mm, var 7.05mm])
+///   arc2 = arc(start = [var 0.05mm, var 7.05mm], end = [var -4.95mm, var 12.05mm], center = [var -4.95mm, var 7.05mm])
+///   coincident([line1.end, arc2.start])
+///   line3 = line(start = [var -4.95mm, var 12.05mm], end = [var -7.95mm, var 12.05mm])
+///   coincident([arc2.end, line3.start])
+///   arc4 = arc(start = [var -12.95mm, var 17.05mm], end = [var -7.95mm, var 12.05mm], center = [var -7.95mm, var 17.05mm])
+///   coincident([line3.end, arc4.end])
+///   line5 = line(start = [var -12.95mm, var 17.05mm], end = [var -12.95mm, var 24.05mm])
+///   coincident([arc4.start, line5.start])
+/// }
+/// pipeProfile = sketch(on = XY) {
+///   outerCircle = circle(start = [var 2mm, var 0mm], center = [var 0mm, var 0mm])
+///   innerCircle = circle(start = [var 1.5mm, var 0mm], center = [var 0mm, var 0mm])
+/// }
+/// pipeRegion = region(segments = [pipeProfile.outerCircle])
+/// moved = sweep(pipeRegion, path = sweepPath)
+///   |> translate(x = 1mm, y = 1mm, z = 2.5mm)
 /// ```
 ///
 /// ```kcl,legacySketch
@@ -401,7 +391,7 @@ export fn translate(
   @(includeInSnippet = true)
   z?: number(Length) = 0,
   /// If true, the transform is applied in global space. The origin of the model will move. By default, the transform is applied in local sketch axis, therefore the origin will not move.
-  global?: bool = false,  
+  global?: bool = false,
   /// If given, interpret this point as 3 distances, along each of [X, Y, Z] and translate by each of them.
   xyz?: [number(Length); 3]
 ): [Solid; 1+] | [Sketch; 1+] | [Helix; 1+] | ImportedGeometry {}
@@ -438,100 +428,73 @@ export fn translate(
 /// When rotating a part around an axis, you specify the axis of rotation and the angle of
 /// rotation.
 ///
-/// ```kcl,legacySketch
-/// // Rotate a pipe with roll, pitch, and yaw.
+/// ```kcl,sketchSolve
+/// @settings(defaultLengthUnit = mm, kclVersion = 2.0)
 ///
-/// // Create a path for the sweep.
-/// sweepPath = startSketchOn(XZ)
-///     |> startProfile(at = [0.05, 0.05])
-///     |> line(end = [0, 7])
-///     |> tangentialArc(angle = 90deg, radius = 5)
-///     |> line(end = [-3, 0])
-///     |> tangentialArc(angle = -90deg, radius = 5)
-///     |> line(end = [0, 7])
-///
-/// // Create a hole for the pipe.
-/// pipeHole = startSketchOn(XY)
-///     |> circle(
-///         center = [0, 0],
-///         radius = 1.5,
-///     )
-///
-/// sweepSketch = startSketchOn(XY)
-///     |> circle(
-///         center = [0, 0],
-///         radius = 2,
-///         )              
-///     |> subtract2d(tool = pipeHole)
-///     |> sweep(path = sweepPath)   
-///     |> rotate(
-///         roll = 10,
-///         pitch =  10,
-///         yaw = 90,
-///     )
+/// sweepPath = sketch(on = XZ) {
+///   line1 = line(start = [var 0.05mm, var 0.05mm], end = [var 0.05mm, var 7.05mm])
+///   arc2 = arc(start = [var 0.05mm, var 7.05mm], end = [var -4.95mm, var 12.05mm], center = [var -4.95mm, var 7.05mm])
+///   coincident([line1.end, arc2.start])
+///   line3 = line(start = [var -4.95mm, var 12.05mm], end = [var -7.95mm, var 12.05mm])
+///   coincident([arc2.end, line3.start])
+///   arc4 = arc(start = [var -12.95mm, var 17.05mm], end = [var -7.95mm, var 12.05mm], center = [var -7.95mm, var 17.05mm])
+///   coincident([line3.end, arc4.end])
+///   line5 = line(start = [var -12.95mm, var 17.05mm], end = [var -12.95mm, var 24.05mm])
+///   coincident([arc4.start, line5.start])
+/// }
+/// pipeProfile = sketch(on = XY) {
+///   outerCircle = circle(start = [var 2mm, var 0mm], center = [var 0mm, var 0mm])
+///   innerCircle = circle(start = [var 1.5mm, var 0mm], center = [var 0mm, var 0mm])
+/// }
+/// pipeRegion = region(segments = [pipeProfile.outerCircle])
+/// rotated = sweep(pipeRegion, path = sweepPath)
+///   |> rotate(roll = 10deg, pitch = 10deg, yaw = 90deg)
 /// ```
 ///
-/// ```kcl,legacySketch
-/// // Rotate a pipe with just roll.
+/// ```kcl,sketchSolve
+/// @settings(defaultLengthUnit = mm, kclVersion = 2.0)
 ///
-/// // Create a path for the sweep.
-/// sweepPath = startSketchOn(XZ)
-///     |> startProfile(at = [0.05, 0.05])
-///     |> line(end = [0, 7])
-///     |> tangentialArc(angle = 90deg, radius = 5)
-///     |> line(end = [-3, 0])
-///     |> tangentialArc(angle = -90deg, radius = 5)
-///     |> line(end = [0, 7])
-///
-/// // Create a hole for the pipe.
-/// pipeHole = startSketchOn(XY)
-///     |> circle(
-///         center = [0, 0],
-///         radius = 1.5,
-///     )
-///
-/// sweepSketch = startSketchOn(XY)
-///     |> circle(
-///         center = [0, 0],
-///         radius = 2,
-///         )              
-///     |> subtract2d(tool = pipeHole)
-///     |> sweep(path = sweepPath)   
-///     |> rotate(
-///         roll = 10,
-///     )
+/// sweepPath = sketch(on = XZ) {
+///   line1 = line(start = [var 0.05mm, var 0.05mm], end = [var 0.05mm, var 7.05mm])
+///   arc2 = arc(start = [var 0.05mm, var 7.05mm], end = [var -4.95mm, var 12.05mm], center = [var -4.95mm, var 7.05mm])
+///   coincident([line1.end, arc2.start])
+///   line3 = line(start = [var -4.95mm, var 12.05mm], end = [var -7.95mm, var 12.05mm])
+///   coincident([arc2.end, line3.start])
+///   arc4 = arc(start = [var -12.95mm, var 17.05mm], end = [var -7.95mm, var 12.05mm], center = [var -7.95mm, var 17.05mm])
+///   coincident([line3.end, arc4.end])
+///   line5 = line(start = [var -12.95mm, var 17.05mm], end = [var -12.95mm, var 24.05mm])
+///   coincident([arc4.start, line5.start])
+/// }
+/// pipeProfile = sketch(on = XY) {
+///   outerCircle = circle(start = [var 2mm, var 0mm], center = [var 0mm, var 0mm])
+///   innerCircle = circle(start = [var 1.5mm, var 0mm], center = [var 0mm, var 0mm])
+/// }
+/// pipeRegion = region(segments = [pipeProfile.outerCircle])
+/// rotated = sweep(pipeRegion, path = sweepPath)
+///   |> rotate(roll = 10deg)
 /// ```
 ///
-/// ```kcl,legacySketch
-/// // Rotate a pipe about a named axis with an angle.
+/// ```kcl,sketchSolve
+/// @settings(defaultLengthUnit = mm, kclVersion = 2.0)
 ///
-/// // Create a path for the sweep.
-/// sweepPath = startSketchOn(XZ)
-///     |> startProfile(at = [0.05, 0.05])
-///     |> line(end = [0, 7])
-///     |> tangentialArc(angle = 90deg, radius = 5)
-///     |> line(end = [-3, 0])
-///     |> tangentialArc(angle = -90deg, radius = 5)
-///     |> line(end = [0, 7])
-///
-/// // Create a hole for the pipe.
-/// pipeHole = startSketchOn(XY)
-///     |> circle(
-///         center = [0, 0],
-///         radius = 1.5,
-///    )
-///
-/// sweepSketch = startSketchOn(XY)
-///     |> circle(
-///         center = [0, 0],
-///         radius = 2,
-///         )              
-///     |> subtract2d(tool = pipeHole)
-///     |> sweep(path = sweepPath)   
-///     |> rotate(
-///     axis =  Z,
-///     angle = 90deg,
-///     )
+/// sweepPath = sketch(on = XZ) {
+///   line1 = line(start = [var 0.05mm, var 0.05mm], end = [var 0.05mm, var 7.05mm])
+///   arc2 = arc(start = [var 0.05mm, var 7.05mm], end = [var -4.95mm, var 12.05mm], center = [var -4.95mm, var 7.05mm])
+///   coincident([line1.end, arc2.start])
+///   line3 = line(start = [var -4.95mm, var 12.05mm], end = [var -7.95mm, var 12.05mm])
+///   coincident([arc2.end, line3.start])
+///   arc4 = arc(start = [var -12.95mm, var 17.05mm], end = [var -7.95mm, var 12.05mm], center = [var -7.95mm, var 17.05mm])
+///   coincident([line3.end, arc4.end])
+///   line5 = line(start = [var -12.95mm, var 17.05mm], end = [var -12.95mm, var 24.05mm])
+///   coincident([arc4.start, line5.start])
+/// }
+/// pipeProfile = sketch(on = XY) {
+///   outerCircle = circle(start = [var 2mm, var 0mm], center = [var 0mm, var 0mm])
+///   innerCircle = circle(start = [var 1.5mm, var 0mm], center = [var 0mm, var 0mm])
+/// }
+/// pipeRegion = region(segments = [pipeProfile.outerCircle])
+/// rotated = sweep(pipeRegion, path = sweepPath)
+///   |> rotate(axis = Z, angle = 90deg)
 /// ```
 ///
 /// ```kcl,sketchSyntaxAgnostic
@@ -546,36 +509,27 @@ export fn translate(
 ///     )
 /// ```
 ///
-/// ```kcl,legacySketch
-/// // Rotate a pipe about a raw axis with an angle.
+/// ```kcl,sketchSolve
+/// @settings(defaultLengthUnit = mm, kclVersion = 2.0)
 ///
-/// // Create a path for the sweep.
-/// sweepPath = startSketchOn(XZ)
-///     |> startProfile(at = [0.05, 0.05])
-///     |> line(end = [0, 7])
-///     |> tangentialArc(angle = 90deg, radius = 5)
-///     |> line(end = [-3, 0])
-///     |> tangentialArc(angle = -90deg, radius = 5)
-///     |> line(end = [0, 7])
-///
-/// // Create a hole for the pipe.
-/// pipeHole = startSketchOn(XY)
-///     |> circle(
-///         center = [0, 0],
-///         radius = 1.5,
-///    )
-///
-/// sweepSketch = startSketchOn(XY)
-///     |> circle(
-///         center = [0, 0],
-///         radius = 2,
-///         )              
-///     |> subtract2d(tool = pipeHole)
-///     |> sweep(path = sweepPath)   
-///     |> rotate(
-///     axis =  [0, 0, 1.0],
-///     angle = 90deg,
-///     )
+/// sweepPath = sketch(on = XZ) {
+///   line1 = line(start = [var 0.05mm, var 0.05mm], end = [var 0.05mm, var 7.05mm])
+///   arc2 = arc(start = [var 0.05mm, var 7.05mm], end = [var -4.95mm, var 12.05mm], center = [var -4.95mm, var 7.05mm])
+///   coincident([line1.end, arc2.start])
+///   line3 = line(start = [var -4.95mm, var 12.05mm], end = [var -7.95mm, var 12.05mm])
+///   coincident([arc2.end, line3.start])
+///   arc4 = arc(start = [var -12.95mm, var 17.05mm], end = [var -7.95mm, var 12.05mm], center = [var -7.95mm, var 17.05mm])
+///   coincident([line3.end, arc4.end])
+///   line5 = line(start = [var -12.95mm, var 17.05mm], end = [var -12.95mm, var 24.05mm])
+///   coincident([arc4.start, line5.start])
+/// }
+/// pipeProfile = sketch(on = XY) {
+///   outerCircle = circle(start = [var 2mm, var 0mm], center = [var 0mm, var 0mm])
+///   innerCircle = circle(start = [var 1.5mm, var 0mm], center = [var 0mm, var 0mm])
+/// }
+/// pipeRegion = region(segments = [pipeProfile.outerCircle])
+/// rotated = sweep(pipeRegion, path = sweepPath)
+///   |> rotate(axis = [0, 0, 1], angle = 90deg)
 /// ```
 ///
 /// ```kcl,legacySketch
@@ -634,18 +588,18 @@ export fn translate(
 export fn rotate(
   /// The solid, sketch, helix, or set of solids, sketches, or helices to rotate.
   @objects: [Solid; 1+] | [Sketch; 1+] | [Helix; 1+] | ImportedGeometry,
-  /// The roll angle. Must be between -360deg and 360deg.
+  /// The roll angle.
   @(includeInSnippet = true)
   roll?: number(Angle),
-  /// The pitch angle. Must be between -360deg and 360deg.
+  /// The pitch angle.
   @(includeInSnippet = true)
   pitch?: number(Angle),
-  /// The yaw angle. Must be between -360deg and 360deg.
+  /// The yaw angle.
   @(includeInSnippet = true)
   yaw?: number(Angle),
   /// The axis to rotate around. Must be used with `angle`.
   axis?: Axis3d | Point3d,
-  /// The angle to rotate. Must be used with `axis`. Must be between -360deg and 360deg.
+  /// The angle to rotate. Must be used with `axis`.
   angle?: number(Angle),
   /// If true, the transform is applied in global space. The origin of the model will move. By default, the transform is applied in local sketch axis, therefore the origin will not move.
   global?: bool = false,
@@ -658,6 +612,11 @@ export fn rotate(
 ///
 /// For sketches, you can use this to scale a sketch and then loft it with another sketch.
 ///
+/// The `x`, `y`, `z`, and `factor` arguments are dimensionless multipliers, not physical
+/// distances. Unlike `translate`, `scale` does not accept a length such as `10mm`. To resize
+/// an object with a known size, divide the target length by the current length. For example,
+/// `targetWidth / seedWidth` produces the dimensionless scale factor for the x axis.
+///
 /// By default the transform is applied in local sketch axis, therefore the origin will not move.
 ///
 /// If you want to apply the transform in global space, set `global` to `true`. The origin of the
@@ -666,35 +625,30 @@ export fn rotate(
 /// `(1,1) - (1,2) - (2,2) - (2,1)` and you scale by 2 globally it will become
 /// `(2,2) - (2,4)`...etc so the origin has moved from `(1.5, 1.5)` to `(2,2)`.
 ///
-/// ```kcl,legacySketch
-/// // Scale a pipe.
+/// **NOTE:** Currently,, revolved bodies don't support being scaled in a non-uniform
+/// way (i.e. scaled differently along each axis).
 ///
-/// // Create a path for the sweep.
-/// sweepPath = startSketchOn(XZ)
-///     |> startProfile(at = [0.05, 0.05])
-///     |> line(end = [0, 7])
-///     |> tangentialArc(angle = 90deg, radius = 5)
-///     |> line(end = [-3, 0])
-///     |> tangentialArc(angle = -90deg, radius = 5)
-///     |> line(end = [0, 7])
+/// ```kcl,sketchSolve
+/// @settings(defaultLengthUnit = mm, kclVersion = 2.0)
 ///
-/// // Create a hole for the pipe.
-/// pipeHole = startSketchOn(XY)
-///     |> circle(
-///         center = [0, 0],
-///         radius = 1.5,
-///     )
-///
-/// sweepSketch = startSketchOn(XY)
-///     |> circle(
-///         center = [0, 0],
-///         radius = 2,
-///         )              
-///     |> subtract2d(tool = pipeHole)
-///     |> sweep(path = sweepPath)   
-///     |> scale(
-///     z = 2.5,
-///     )
+/// sweepPath = sketch(on = XZ) {
+///   line1 = line(start = [var 0.05mm, var 0.05mm], end = [var 0.05mm, var 7.05mm])
+///   arc2 = arc(start = [var 0.05mm, var 7.05mm], end = [var -4.95mm, var 12.05mm], center = [var -4.95mm, var 7.05mm])
+///   coincident([line1.end, arc2.start])
+///   line3 = line(start = [var -4.95mm, var 12.05mm], end = [var -7.95mm, var 12.05mm])
+///   coincident([arc2.end, line3.start])
+///   arc4 = arc(start = [var -12.95mm, var 17.05mm], end = [var -7.95mm, var 12.05mm], center = [var -7.95mm, var 17.05mm])
+///   coincident([line3.end, arc4.end])
+///   line5 = line(start = [var -12.95mm, var 17.05mm], end = [var -12.95mm, var 24.05mm])
+///   coincident([arc4.start, line5.start])
+/// }
+/// pipeProfile = sketch(on = XY) {
+///   outerCircle = circle(start = [var 2mm, var 0mm], center = [var 0mm, var 0mm])
+///   innerCircle = circle(start = [var 1.5mm, var 0mm], center = [var 0mm, var 0mm])
+/// }
+/// pipeRegion = region(segments = [pipeProfile.outerCircle])
+/// scaled = sweep(pipeRegion, path = sweepPath)
+///   |> scale(z = 2.5)
 /// ```
 ///
 /// ```kcl,sketchSyntaxAgnostic
@@ -743,7 +697,7 @@ export fn rotate(
 /// button1 = startSketchOn(XY)
 ///   |> circle(center = [0, 0], radius = 1.53)
 ///   |> extrude(length = 1)
-/// 
+///
 /// // Duplicate it, but use `scale` to make it smaller.
 /// button2 = startSketchOn(XY)
 ///   |> circle(center = [0, 0], radius = 1.53)
@@ -753,22 +707,55 @@ export fn rotate(
 ///   |> scale(factor = 0.5)
 ///   |> appearance(color = "#ff9922")
 /// ```
+/// ```kcl,sketchSolve
+/// // Resize a 1 mm seed cube to exact physical dimensions.
+/// @settings(kclVersion = 2.0)
+///
+/// seedSize = 1mm
+/// targetWidth = 40mm
+/// targetDepth = 20mm
+/// targetHeight = 10mm
+///
+/// seedSketch = sketch(on = XY) {
+///   bottom = line(start = [var 0mm, var 0mm], end = [var 1mm, var 0mm])
+///   right = line(start = [var 1mm, var 0mm], end = [var 1mm, var 1mm])
+///   top = line(start = [var 1mm, var 1mm], end = [var 0mm, var 1mm])
+///   left = line(start = [var 0mm, var 1mm], end = [var 0mm, var 0mm])
+///   coincident([bottom.end, right.start])
+///   coincident([right.end, top.start])
+///   coincident([top.end, left.start])
+///   coincident([left.end, bottom.start])
+///   horizontal(bottom)
+///   horizontal(top)
+///   vertical(right)
+///   vertical(left)
+/// }
+/// seedRegion = region(segments = [seedSketch.bottom, seedSketch.right])
+/// seedCube = extrude(seedRegion, length = seedSize)
+///
+/// resized = scale(
+///   seedCube,
+///   x = targetWidth / seedSize,
+///   y = targetDepth / seedSize,
+///   z = targetHeight / seedSize,
+/// )
+/// ```
 @(impl = std_rust, feature_tree = true)
 export fn scale(
   /// The solid, sketch, helix, or set of solids, sketches, or helices to scale.
   @objects: [Solid; 1+] | [Sketch; 1+] | [Helix; 1+] | ImportedGeometry,
-  /// The scale factor for the x axis.
+  /// The dimensionless scale factor for the x axis.
   @(includeInSnippet = true)
   x?: number(Count) = 1,
-  /// The scale factor for the y axis.
+  /// The dimensionless scale factor for the y axis.
   @(includeInSnippet = true)
   y?: number(Count) = 1,
-  /// The scale factor for the z axis.
+  /// The dimensionless scale factor for the z axis.
   @(includeInSnippet = true)
   z?: number(Count) = 1,
   /// If true, the transform is applied in global space. The origin of the model will move. By default, the transform is applied in local sketch axis, therefore the origin will not move.
-  global?: bool = false,  
-  /// If given, scale the solid by this much.
+  global?: bool = false,
+  /// If given, scale the solid by this dimensionless factor.
   /// Equivalent to setting `x`, `y` and `z` all to this number.
   /// Incompatible with `x`, `y` or `z`.
   factor?: number(Count),
@@ -780,7 +767,7 @@ export fn scale(
 /// Hiding can be useful to see hard-to-reach vantages, or clarify overlapping geometry
 /// while you work.
 ///
-/// ```kcl,legacySketch
+/// ```kcl,legacySketch,no3d
 /// // Hide a body, leaving a sketch on face intact
 /// cylinder = startSketchOn(XY)
 ///   |> circle(center = [0, 0], radius = 2)
@@ -789,7 +776,7 @@ export fn scale(
 ///   |> circle(center = [0, 0], radius = 1)
 /// hide(cylinder)
 /// ```
-/// ```kcl,legacySketch
+/// ```kcl,legacySketch,no3d
 /// // Hide an imported model, leaving a local sketch.
 /// import "tests/inputs/cube.sldprt" as cube
 ///
@@ -808,10 +795,10 @@ export fn scale(
 /// ```
 /// ```kcl,legacySketch
 /// @settings(defaultLengthUnit = in)
-/// 
+///
 /// // Example of hiding GDT annotations
 /// width = 5
-/// 
+///
 /// startSketchOn(XY)
 ///   |> startProfile(at = [0, 0])
 ///   |> line(end = [width, 0], tag = $side1)
@@ -820,14 +807,14 @@ export fn scale(
 ///   |> line(end = [0, -width], tag = $side4)
 ///   |> close()
 ///   |> extrude(length = 5, tagStart = $bottom, tagEnd = $top)
-/// 
+///
 /// label = gdt::datum(
 ///   face = side2,
 ///   name = "A",
 ///   framePosition = [5, 0],
 ///   framePlane = XZ,
 /// )
-/// 
+///
 /// hide(label)
 /// ```
 @(impl = std_rust, feature_tree = true)
@@ -838,9 +825,9 @@ export fn hide(
 
 /// Deletes something from the scene. Once it's deleted, you can't use it anymore.
 /// This means deleting something twice is an error, as is hiding something after you delete it.
-/// ```kcl,sketchSolve
+/// ```kcl,sketchSolve,no3d
 /// // Basic example, showing deleting something.
-/// @settings(kclVersion = 2.0, experimentalFeatures = allow)
+/// @settings(kclVersion = 2.0)
 ///
 /// // Make a cylinder
 /// sketch001 = sketch(on = XY) {
@@ -852,7 +839,7 @@ export fn hide(
 /// ```
 /// ```kcl,legacySketch
 /// // Example showing how to delete bodies after splitting them.
-/// @settings(kclVersion = 2.0, experimentalFeatures = allow)
+/// @settings(kclVersion = 2.0)
 ///
 /// // Make a cylinder.
 /// sketch001 = startSketchOn(XY)
@@ -863,7 +850,7 @@ export fn hide(
 ///   tag = $seg01,
 /// )
 /// cylinder = extrude(profile001, length = 5)
-/// 
+///
 /// // Make a wedge that splits the cylinder down the middle.
 /// sketch002 = startSketchOn(XY)
 /// profile002 = startProfile(sketch002, at = [0, -4.75])
@@ -873,14 +860,14 @@ export fn hide(
 ///   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
 ///   |> close()
 /// wedge = extrude(profile002, length = 15, symmetric = true)
-/// 
+///
 /// // Split the cylinder down the wedge.
 /// result = split([cylinder], tools = [wedge])
-/// 
+///
 /// // Delete the left and right split parts.
 /// delete([result[2], result[0]])
 /// ```
-@(impl = std_rust, feature_tree = true, experimental = true)
+@(impl = std_rust, feature_tree = true)
 export fn delete(
   /// The object or objects to delete.
   @objects: [Solid; 1+] | [Sketch; 1+] | [Helix; 1+] | ImportedGeometry | [GdtAnnotation; 1+],

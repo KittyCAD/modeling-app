@@ -8,8 +8,8 @@ description: Variables in memory after executing dining-table.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "kind": "Custom",
       "objectId": 0,
+      "kind": "Custom",
       "origin": {
         "x": 0.0,
         "y": 0.0,
@@ -73,8 +73,8 @@ description: Variables in memory after executing dining-table.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "kind": "Custom",
       "objectId": 50,
+      "kind": "Custom",
       "origin": {
         "x": 0.0,
         "y": 0.0,
@@ -106,8 +106,8 @@ description: Variables in memory after executing dining-table.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "kind": "Custom",
       "objectId": 50,
+      "kind": "Custom",
       "origin": {
         "x": 0.0,
         "y": 0.0,
@@ -139,8 +139,10 @@ description: Variables in memory after executing dining-table.kcl
     "value": 120.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "apronThickness": {
@@ -148,8 +150,10 @@ description: Variables in memory after executing dining-table.kcl
     "value": 20.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "apronTopElevation": {
@@ -157,8 +161,10 @@ description: Variables in memory after executing dining-table.kcl
     "value": 750.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "distanceBetweenLegAxisLength": {
@@ -166,8 +172,10 @@ description: Variables in memory after executing dining-table.kcl
     "value": 1940.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "distanceBetweenLegAxisWidth": {
@@ -175,8 +183,10 @@ description: Variables in memory after executing dining-table.kcl
     "value": 640.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "distanceFromTableTopCornerToApronSide": {
@@ -184,8 +194,10 @@ description: Variables in memory after executing dining-table.kcl
     "value": 70.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "distanceFromTableTopCornerToLegAxis": {
@@ -193,8 +205,10 @@ description: Variables in memory after executing dining-table.kcl
     "value": 80.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "distanceFromTableTopCornerToLegBackSide": {
@@ -202,8 +216,10 @@ description: Variables in memory after executing dining-table.kcl
     "value": 100.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "leg2": {
@@ -211,6 +227,8 @@ description: Variables in memory after executing dining-table.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -218,10 +236,10 @@ description: Variables in memory after executing dining-table.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1927,
-            "end": 1932,
+            "commentStart": 1956,
+            "end": 1961,
             "moduleId": 0,
-            "start": 1927,
+            "start": 1956,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -232,10 +250,10 @@ description: Variables in memory after executing dining-table.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1997,
-            "end": 2002,
+            "commentStart": 2026,
+            "end": 2031,
             "moduleId": 0,
-            "start": 1997,
+            "start": 2026,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -246,10 +264,10 @@ description: Variables in memory after executing dining-table.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2069,
-            "end": 2074,
+            "commentStart": 2098,
+            "end": 2103,
             "moduleId": 0,
-            "start": 2069,
+            "start": 2098,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -260,10 +278,10 @@ description: Variables in memory after executing dining-table.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2141,
-            "end": 2146,
+            "commentStart": 2170,
+            "end": 2175,
             "moduleId": 0,
-            "start": 2141,
+            "start": 2170,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -285,10 +303,10 @@ description: Variables in memory after executing dining-table.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 1927,
-              "end": 1932,
+              "commentStart": 1956,
+              "end": 1961,
               "moduleId": 0,
-              "start": 1927,
+              "start": 1956,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -309,10 +327,10 @@ description: Variables in memory after executing dining-table.kcl
               40.0
             ],
             "tag": {
-              "commentStart": 1997,
-              "end": 2002,
+              "commentStart": 2026,
+              "end": 2031,
               "moduleId": 0,
-              "start": 1997,
+              "start": 2026,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -333,10 +351,10 @@ description: Variables in memory after executing dining-table.kcl
               40.0
             ],
             "tag": {
-              "commentStart": 2069,
-              "end": 2074,
+              "commentStart": 2098,
+              "end": 2103,
               "moduleId": 0,
-              "start": 2069,
+              "start": 2098,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -357,10 +375,10 @@ description: Variables in memory after executing dining-table.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 2141,
-              "end": 2146,
+              "commentStart": 2170,
+              "end": 2175,
               "moduleId": 0,
-              "start": 2141,
+              "start": 2170,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -373,17 +391,17 @@ description: Variables in memory after executing dining-table.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 25,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -439,8 +457,8 @@ description: Variables in memory after executing dining-table.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "mm"
+        "units": "mm",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -453,6 +471,8 @@ description: Variables in memory after executing dining-table.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -460,10 +480,10 @@ description: Variables in memory after executing dining-table.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1927,
-            "end": 1932,
+            "commentStart": 1956,
+            "end": 1961,
             "moduleId": 0,
-            "start": 1927,
+            "start": 1956,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -474,10 +494,10 @@ description: Variables in memory after executing dining-table.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1997,
-            "end": 2002,
+            "commentStart": 2026,
+            "end": 2031,
             "moduleId": 0,
-            "start": 1997,
+            "start": 2026,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -488,10 +508,10 @@ description: Variables in memory after executing dining-table.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2069,
-            "end": 2074,
+            "commentStart": 2098,
+            "end": 2103,
             "moduleId": 0,
-            "start": 2069,
+            "start": 2098,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -502,10 +522,10 @@ description: Variables in memory after executing dining-table.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2141,
-            "end": 2146,
+            "commentStart": 2170,
+            "end": 2175,
             "moduleId": 0,
-            "start": 2141,
+            "start": 2170,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -527,10 +547,10 @@ description: Variables in memory after executing dining-table.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 1927,
-              "end": 1932,
+              "commentStart": 1956,
+              "end": 1961,
               "moduleId": 0,
-              "start": 1927,
+              "start": 1956,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -551,10 +571,10 @@ description: Variables in memory after executing dining-table.kcl
               40.0
             ],
             "tag": {
-              "commentStart": 1997,
-              "end": 2002,
+              "commentStart": 2026,
+              "end": 2031,
               "moduleId": 0,
-              "start": 1997,
+              "start": 2026,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -575,10 +595,10 @@ description: Variables in memory after executing dining-table.kcl
               40.0
             ],
             "tag": {
-              "commentStart": 2069,
-              "end": 2074,
+              "commentStart": 2098,
+              "end": 2103,
               "moduleId": 0,
-              "start": 2069,
+              "start": 2098,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -599,10 +619,10 @@ description: Variables in memory after executing dining-table.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 2141,
-              "end": 2146,
+              "commentStart": 2170,
+              "end": 2175,
               "moduleId": 0,
-              "start": 2141,
+              "start": 2170,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -615,17 +635,17 @@ description: Variables in memory after executing dining-table.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 25,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -681,8 +701,8 @@ description: Variables in memory after executing dining-table.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "mm"
+        "units": "mm",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -695,6 +715,8 @@ description: Variables in memory after executing dining-table.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -702,10 +724,10 @@ description: Variables in memory after executing dining-table.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1927,
-            "end": 1932,
+            "commentStart": 1956,
+            "end": 1961,
             "moduleId": 0,
-            "start": 1927,
+            "start": 1956,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -716,10 +738,10 @@ description: Variables in memory after executing dining-table.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1997,
-            "end": 2002,
+            "commentStart": 2026,
+            "end": 2031,
             "moduleId": 0,
-            "start": 1997,
+            "start": 2026,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -730,10 +752,10 @@ description: Variables in memory after executing dining-table.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2069,
-            "end": 2074,
+            "commentStart": 2098,
+            "end": 2103,
             "moduleId": 0,
-            "start": 2069,
+            "start": 2098,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -744,10 +766,10 @@ description: Variables in memory after executing dining-table.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2141,
-            "end": 2146,
+            "commentStart": 2170,
+            "end": 2175,
             "moduleId": 0,
-            "start": 2141,
+            "start": 2170,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -769,10 +791,10 @@ description: Variables in memory after executing dining-table.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 1927,
-              "end": 1932,
+              "commentStart": 1956,
+              "end": 1961,
               "moduleId": 0,
-              "start": 1927,
+              "start": 1956,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -793,10 +815,10 @@ description: Variables in memory after executing dining-table.kcl
               40.0
             ],
             "tag": {
-              "commentStart": 1997,
-              "end": 2002,
+              "commentStart": 2026,
+              "end": 2031,
               "moduleId": 0,
-              "start": 1997,
+              "start": 2026,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -817,10 +839,10 @@ description: Variables in memory after executing dining-table.kcl
               40.0
             ],
             "tag": {
-              "commentStart": 2069,
-              "end": 2074,
+              "commentStart": 2098,
+              "end": 2103,
               "moduleId": 0,
-              "start": 2069,
+              "start": 2098,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -841,10 +863,10 @@ description: Variables in memory after executing dining-table.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 2141,
-              "end": 2146,
+              "commentStart": 2170,
+              "end": 2175,
               "moduleId": 0,
-              "start": 2141,
+              "start": 2170,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -857,17 +879,17 @@ description: Variables in memory after executing dining-table.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 25,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -923,8 +945,8 @@ description: Variables in memory after executing dining-table.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "mm"
+        "units": "mm",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -937,6 +959,8 @@ description: Variables in memory after executing dining-table.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -944,10 +968,10 @@ description: Variables in memory after executing dining-table.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1927,
-            "end": 1932,
+            "commentStart": 1956,
+            "end": 1961,
             "moduleId": 0,
-            "start": 1927,
+            "start": 1956,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -958,10 +982,10 @@ description: Variables in memory after executing dining-table.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1997,
-            "end": 2002,
+            "commentStart": 2026,
+            "end": 2031,
             "moduleId": 0,
-            "start": 1997,
+            "start": 2026,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -972,10 +996,10 @@ description: Variables in memory after executing dining-table.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2069,
-            "end": 2074,
+            "commentStart": 2098,
+            "end": 2103,
             "moduleId": 0,
-            "start": 2069,
+            "start": 2098,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -986,10 +1010,10 @@ description: Variables in memory after executing dining-table.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2141,
-            "end": 2146,
+            "commentStart": 2170,
+            "end": 2175,
             "moduleId": 0,
-            "start": 2141,
+            "start": 2170,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -1011,10 +1035,10 @@ description: Variables in memory after executing dining-table.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 1927,
-              "end": 1932,
+              "commentStart": 1956,
+              "end": 1961,
               "moduleId": 0,
-              "start": 1927,
+              "start": 1956,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -1035,10 +1059,10 @@ description: Variables in memory after executing dining-table.kcl
               40.0
             ],
             "tag": {
-              "commentStart": 1997,
-              "end": 2002,
+              "commentStart": 2026,
+              "end": 2031,
               "moduleId": 0,
-              "start": 1997,
+              "start": 2026,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -1059,10 +1083,10 @@ description: Variables in memory after executing dining-table.kcl
               40.0
             ],
             "tag": {
-              "commentStart": 2069,
-              "end": 2074,
+              "commentStart": 2098,
+              "end": 2103,
               "moduleId": 0,
-              "start": 2069,
+              "start": 2098,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -1083,10 +1107,10 @@ description: Variables in memory after executing dining-table.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 2141,
-              "end": 2146,
+              "commentStart": 2170,
+              "end": 2175,
               "moduleId": 0,
-              "start": 2141,
+              "start": 2170,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -1099,17 +1123,17 @@ description: Variables in memory after executing dining-table.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 25,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -1165,8 +1189,8 @@ description: Variables in memory after executing dining-table.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "mm"
+        "units": "mm",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -1179,8 +1203,10 @@ description: Variables in memory after executing dining-table.kcl
     "value": 730.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "legOffset": {
@@ -1188,8 +1214,10 @@ description: Variables in memory after executing dining-table.kcl
     "value": 60.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "legProfile": {
@@ -1209,17 +1237,21 @@ description: Variables in memory after executing dining-table.kcl
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -1227,17 +1259,21 @@ description: Variables in memory after executing dining-table.kcl
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 40.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -1329,17 +1365,21 @@ description: Variables in memory after executing dining-table.kcl
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 40.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -1347,17 +1387,21 @@ description: Variables in memory after executing dining-table.kcl
                       {
                         "n": 40.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 40.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -1449,17 +1493,21 @@ description: Variables in memory after executing dining-table.kcl
                       {
                         "n": 40.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 40.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -1467,17 +1515,21 @@ description: Variables in memory after executing dining-table.kcl
                       {
                         "n": 40.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -1569,17 +1621,21 @@ description: Variables in memory after executing dining-table.kcl
                       {
                         "n": 40.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -1587,17 +1643,21 @@ description: Variables in memory after executing dining-table.kcl
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -1694,10 +1754,10 @@ description: Variables in memory after executing dining-table.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 1927,
-                    "end": 1932,
+                    "commentStart": 1956,
+                    "end": 1961,
                     "moduleId": 0,
-                    "start": 1927,
+                    "start": 1956,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -1718,10 +1778,10 @@ description: Variables in memory after executing dining-table.kcl
                     40.0
                   ],
                   "tag": {
-                    "commentStart": 1997,
-                    "end": 2002,
+                    "commentStart": 2026,
+                    "end": 2031,
                     "moduleId": 0,
-                    "start": 1997,
+                    "start": 2026,
                     "type": "TagDeclarator",
                     "value": "line2"
                   },
@@ -1742,10 +1802,10 @@ description: Variables in memory after executing dining-table.kcl
                     40.0
                   ],
                   "tag": {
-                    "commentStart": 2069,
-                    "end": 2074,
+                    "commentStart": 2098,
+                    "end": 2103,
                     "moduleId": 0,
-                    "start": 2069,
+                    "start": 2098,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
@@ -1766,10 +1826,10 @@ description: Variables in memory after executing dining-table.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 2141,
-                    "end": 2146,
+                    "commentStart": 2170,
+                    "end": 2175,
                     "moduleId": 0,
-                    "start": 2141,
+                    "start": 2170,
                     "type": "TagDeclarator",
                     "value": "line4"
                   },
@@ -1782,17 +1842,17 @@ description: Variables in memory after executing dining-table.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 25,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -1874,10 +1934,10 @@ description: Variables in memory after executing dining-table.kcl
             0.0
           ],
           "tag": {
-            "commentStart": 1927,
-            "end": 1932,
+            "commentStart": 1956,
+            "end": 1961,
             "moduleId": 0,
-            "start": 1927,
+            "start": 1956,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -1898,10 +1958,10 @@ description: Variables in memory after executing dining-table.kcl
             40.0
           ],
           "tag": {
-            "commentStart": 1997,
-            "end": 2002,
+            "commentStart": 2026,
+            "end": 2031,
             "moduleId": 0,
-            "start": 1997,
+            "start": 2026,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -1922,10 +1982,10 @@ description: Variables in memory after executing dining-table.kcl
             40.0
           ],
           "tag": {
-            "commentStart": 2069,
-            "end": 2074,
+            "commentStart": 2098,
+            "end": 2103,
             "moduleId": 0,
-            "start": 2069,
+            "start": 2098,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -1946,10 +2006,10 @@ description: Variables in memory after executing dining-table.kcl
             0.0
           ],
           "tag": {
-            "commentStart": 2141,
-            "end": 2146,
+            "commentStart": 2170,
+            "end": 2175,
             "moduleId": 0,
-            "start": 2141,
+            "start": 2170,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -1962,17 +2022,17 @@ description: Variables in memory after executing dining-table.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 25,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -2028,8 +2088,8 @@ description: Variables in memory after executing dining-table.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "mm"
+      "units": "mm",
+      "isClosed": "explicitly"
     }
   },
   "legSketch": {
@@ -2069,27 +2129,25 @@ description: Variables in memory after executing dining-table.kcl
     "value": 40.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "line1": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "line1"
   },
   "line2": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "line2"
   },
   "line3": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "line3"
   },
   "line4": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "line4"
   },
@@ -2098,6 +2156,8 @@ description: Variables in memory after executing dining-table.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -2105,10 +2165,10 @@ description: Variables in memory after executing dining-table.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3947,
-            "end": 3952,
+            "commentStart": 3976,
+            "end": 3981,
             "moduleId": 0,
-            "start": 3947,
+            "start": 3976,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -2119,10 +2179,10 @@ description: Variables in memory after executing dining-table.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4019,
-            "end": 4024,
+            "commentStart": 4048,
+            "end": 4053,
             "moduleId": 0,
-            "start": 4019,
+            "start": 4048,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -2133,10 +2193,10 @@ description: Variables in memory after executing dining-table.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4095,
-            "end": 4100,
+            "commentStart": 4124,
+            "end": 4129,
             "moduleId": 0,
-            "start": 4095,
+            "start": 4124,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -2147,10 +2207,10 @@ description: Variables in memory after executing dining-table.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4169,
-            "end": 4174,
+            "commentStart": 4198,
+            "end": 4203,
             "moduleId": 0,
-            "start": 4169,
+            "start": 4198,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -2172,10 +2232,10 @@ description: Variables in memory after executing dining-table.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 3947,
-              "end": 3952,
+              "commentStart": 3976,
+              "end": 3981,
               "moduleId": 0,
-              "start": 3947,
+              "start": 3976,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -2196,10 +2256,10 @@ description: Variables in memory after executing dining-table.kcl
               1900.0
             ],
             "tag": {
-              "commentStart": 4019,
-              "end": 4024,
+              "commentStart": 4048,
+              "end": 4053,
               "moduleId": 0,
-              "start": 4019,
+              "start": 4048,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -2220,10 +2280,10 @@ description: Variables in memory after executing dining-table.kcl
               1900.0
             ],
             "tag": {
-              "commentStart": 4095,
-              "end": 4100,
+              "commentStart": 4124,
+              "end": 4129,
               "moduleId": 0,
-              "start": 4095,
+              "start": 4124,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -2244,10 +2304,10 @@ description: Variables in memory after executing dining-table.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 4169,
-              "end": 4174,
+              "commentStart": 4198,
+              "end": 4203,
               "moduleId": 0,
-              "start": 4169,
+              "start": 4198,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -2260,17 +2320,17 @@ description: Variables in memory after executing dining-table.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 50,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 730.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -2326,8 +2386,8 @@ description: Variables in memory after executing dining-table.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "mm"
+        "units": "mm",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -2340,6 +2400,8 @@ description: Variables in memory after executing dining-table.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -2347,10 +2409,10 @@ description: Variables in memory after executing dining-table.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3947,
-            "end": 3952,
+            "commentStart": 3976,
+            "end": 3981,
             "moduleId": 0,
-            "start": 3947,
+            "start": 3976,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -2361,10 +2423,10 @@ description: Variables in memory after executing dining-table.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4019,
-            "end": 4024,
+            "commentStart": 4048,
+            "end": 4053,
             "moduleId": 0,
-            "start": 4019,
+            "start": 4048,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -2375,10 +2437,10 @@ description: Variables in memory after executing dining-table.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4095,
-            "end": 4100,
+            "commentStart": 4124,
+            "end": 4129,
             "moduleId": 0,
-            "start": 4095,
+            "start": 4124,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -2389,10 +2451,10 @@ description: Variables in memory after executing dining-table.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4169,
-            "end": 4174,
+            "commentStart": 4198,
+            "end": 4203,
             "moduleId": 0,
-            "start": 4169,
+            "start": 4198,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -2414,10 +2476,10 @@ description: Variables in memory after executing dining-table.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 3947,
-              "end": 3952,
+              "commentStart": 3976,
+              "end": 3981,
               "moduleId": 0,
-              "start": 3947,
+              "start": 3976,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -2438,10 +2500,10 @@ description: Variables in memory after executing dining-table.kcl
               1900.0
             ],
             "tag": {
-              "commentStart": 4019,
-              "end": 4024,
+              "commentStart": 4048,
+              "end": 4053,
               "moduleId": 0,
-              "start": 4019,
+              "start": 4048,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -2462,10 +2524,10 @@ description: Variables in memory after executing dining-table.kcl
               1900.0
             ],
             "tag": {
-              "commentStart": 4095,
-              "end": 4100,
+              "commentStart": 4124,
+              "end": 4129,
               "moduleId": 0,
-              "start": 4095,
+              "start": 4124,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -2486,10 +2548,10 @@ description: Variables in memory after executing dining-table.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 4169,
-              "end": 4174,
+              "commentStart": 4198,
+              "end": 4203,
               "moduleId": 0,
-              "start": 4169,
+              "start": 4198,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -2502,17 +2564,17 @@ description: Variables in memory after executing dining-table.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 50,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 730.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -2568,8 +2630,8 @@ description: Variables in memory after executing dining-table.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "mm"
+        "units": "mm",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -2582,8 +2644,10 @@ description: Variables in memory after executing dining-table.kcl
     "value": 1900.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "longApronProfile": {
@@ -2603,17 +2667,21 @@ description: Variables in memory after executing dining-table.kcl
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -2621,17 +2689,21 @@ description: Variables in memory after executing dining-table.kcl
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 1900.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -2723,17 +2795,21 @@ description: Variables in memory after executing dining-table.kcl
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 1900.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -2741,17 +2817,21 @@ description: Variables in memory after executing dining-table.kcl
                       {
                         "n": 20.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 1900.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -2843,17 +2923,21 @@ description: Variables in memory after executing dining-table.kcl
                       {
                         "n": 20.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 1900.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -2861,17 +2945,21 @@ description: Variables in memory after executing dining-table.kcl
                       {
                         "n": 20.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -2963,17 +3051,21 @@ description: Variables in memory after executing dining-table.kcl
                       {
                         "n": 20.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -2981,17 +3073,21 @@ description: Variables in memory after executing dining-table.kcl
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -3088,10 +3184,10 @@ description: Variables in memory after executing dining-table.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 3947,
-                    "end": 3952,
+                    "commentStart": 3976,
+                    "end": 3981,
                     "moduleId": 0,
-                    "start": 3947,
+                    "start": 3976,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -3112,10 +3208,10 @@ description: Variables in memory after executing dining-table.kcl
                     1900.0
                   ],
                   "tag": {
-                    "commentStart": 4019,
-                    "end": 4024,
+                    "commentStart": 4048,
+                    "end": 4053,
                     "moduleId": 0,
-                    "start": 4019,
+                    "start": 4048,
                     "type": "TagDeclarator",
                     "value": "line2"
                   },
@@ -3136,10 +3232,10 @@ description: Variables in memory after executing dining-table.kcl
                     1900.0
                   ],
                   "tag": {
-                    "commentStart": 4095,
-                    "end": 4100,
+                    "commentStart": 4124,
+                    "end": 4129,
                     "moduleId": 0,
-                    "start": 4095,
+                    "start": 4124,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
@@ -3160,10 +3256,10 @@ description: Variables in memory after executing dining-table.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 4169,
-                    "end": 4174,
+                    "commentStart": 4198,
+                    "end": 4203,
                     "moduleId": 0,
-                    "start": 4169,
+                    "start": 4198,
                     "type": "TagDeclarator",
                     "value": "line4"
                   },
@@ -3176,17 +3272,17 @@ description: Variables in memory after executing dining-table.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 50,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 730.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -3268,10 +3364,10 @@ description: Variables in memory after executing dining-table.kcl
             0.0
           ],
           "tag": {
-            "commentStart": 3947,
-            "end": 3952,
+            "commentStart": 3976,
+            "end": 3981,
             "moduleId": 0,
-            "start": 3947,
+            "start": 3976,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -3292,10 +3388,10 @@ description: Variables in memory after executing dining-table.kcl
             1900.0
           ],
           "tag": {
-            "commentStart": 4019,
-            "end": 4024,
+            "commentStart": 4048,
+            "end": 4053,
             "moduleId": 0,
-            "start": 4019,
+            "start": 4048,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -3316,10 +3412,10 @@ description: Variables in memory after executing dining-table.kcl
             1900.0
           ],
           "tag": {
-            "commentStart": 4095,
-            "end": 4100,
+            "commentStart": 4124,
+            "end": 4129,
             "moduleId": 0,
-            "start": 4095,
+            "start": 4124,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -3340,10 +3436,10 @@ description: Variables in memory after executing dining-table.kcl
             0.0
           ],
           "tag": {
-            "commentStart": 4169,
-            "end": 4174,
+            "commentStart": 4198,
+            "end": 4203,
             "moduleId": 0,
-            "start": 4169,
+            "start": 4198,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -3356,17 +3452,17 @@ description: Variables in memory after executing dining-table.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 50,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 730.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -3422,8 +3518,8 @@ description: Variables in memory after executing dining-table.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "mm"
+      "units": "mm",
+      "isClosed": "explicitly"
     }
   },
   "longApronRegion": {
@@ -3442,10 +3538,10 @@ description: Variables in memory after executing dining-table.kcl
             0.0
           ],
           "tag": {
-            "commentStart": 3947,
-            "end": 3952,
+            "commentStart": 3976,
+            "end": 3981,
             "moduleId": 0,
-            "start": 3947,
+            "start": 3976,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -3466,10 +3562,10 @@ description: Variables in memory after executing dining-table.kcl
             1900.0
           ],
           "tag": {
-            "commentStart": 4019,
-            "end": 4024,
+            "commentStart": 4048,
+            "end": 4053,
             "moduleId": 0,
-            "start": 4019,
+            "start": 4048,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -3490,10 +3586,10 @@ description: Variables in memory after executing dining-table.kcl
             1900.0
           ],
           "tag": {
-            "commentStart": 4095,
-            "end": 4100,
+            "commentStart": 4124,
+            "end": 4129,
             "moduleId": 0,
-            "start": 4095,
+            "start": 4124,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -3514,10 +3610,10 @@ description: Variables in memory after executing dining-table.kcl
             0.0
           ],
           "tag": {
-            "commentStart": 4169,
-            "end": 4174,
+            "commentStart": 4198,
+            "end": 4203,
             "moduleId": 0,
-            "start": 4169,
+            "start": 4198,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -3530,17 +3626,17 @@ description: Variables in memory after executing dining-table.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 50,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 730.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -3596,8 +3692,8 @@ description: Variables in memory after executing dining-table.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "mm"
+      "units": "mm",
+      "isClosed": "explicitly"
     }
   },
   "shortApron1": {
@@ -3605,6 +3701,8 @@ description: Variables in memory after executing dining-table.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -3612,10 +3710,10 @@ description: Variables in memory after executing dining-table.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 5191,
-            "end": 5196,
+            "commentStart": 5220,
+            "end": 5225,
             "moduleId": 0,
-            "start": 5191,
+            "start": 5220,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -3626,10 +3724,10 @@ description: Variables in memory after executing dining-table.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 5261,
-            "end": 5266,
+            "commentStart": 5290,
+            "end": 5295,
             "moduleId": 0,
-            "start": 5261,
+            "start": 5290,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -3640,10 +3738,10 @@ description: Variables in memory after executing dining-table.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 5334,
-            "end": 5339,
+            "commentStart": 5363,
+            "end": 5368,
             "moduleId": 0,
-            "start": 5334,
+            "start": 5363,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -3654,10 +3752,10 @@ description: Variables in memory after executing dining-table.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 5408,
-            "end": 5413,
+            "commentStart": 5437,
+            "end": 5442,
             "moduleId": 0,
-            "start": 5408,
+            "start": 5437,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -3679,10 +3777,10 @@ description: Variables in memory after executing dining-table.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 5191,
-              "end": 5196,
+              "commentStart": 5220,
+              "end": 5225,
               "moduleId": 0,
-              "start": 5191,
+              "start": 5220,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -3703,10 +3801,10 @@ description: Variables in memory after executing dining-table.kcl
               20.0
             ],
             "tag": {
-              "commentStart": 5261,
-              "end": 5266,
+              "commentStart": 5290,
+              "end": 5295,
               "moduleId": 0,
-              "start": 5261,
+              "start": 5290,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -3727,10 +3825,10 @@ description: Variables in memory after executing dining-table.kcl
               20.0
             ],
             "tag": {
-              "commentStart": 5334,
-              "end": 5339,
+              "commentStart": 5363,
+              "end": 5368,
               "moduleId": 0,
-              "start": 5334,
+              "start": 5363,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -3751,10 +3849,10 @@ description: Variables in memory after executing dining-table.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 5408,
-              "end": 5413,
+              "commentStart": 5437,
+              "end": 5442,
               "moduleId": 0,
-              "start": 5408,
+              "start": 5437,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -3767,17 +3865,17 @@ description: Variables in memory after executing dining-table.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 50,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 730.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -3833,8 +3931,8 @@ description: Variables in memory after executing dining-table.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "mm"
+        "units": "mm",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -3847,6 +3945,8 @@ description: Variables in memory after executing dining-table.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -3854,10 +3954,10 @@ description: Variables in memory after executing dining-table.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 5191,
-            "end": 5196,
+            "commentStart": 5220,
+            "end": 5225,
             "moduleId": 0,
-            "start": 5191,
+            "start": 5220,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -3868,10 +3968,10 @@ description: Variables in memory after executing dining-table.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 5261,
-            "end": 5266,
+            "commentStart": 5290,
+            "end": 5295,
             "moduleId": 0,
-            "start": 5261,
+            "start": 5290,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -3882,10 +3982,10 @@ description: Variables in memory after executing dining-table.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 5334,
-            "end": 5339,
+            "commentStart": 5363,
+            "end": 5368,
             "moduleId": 0,
-            "start": 5334,
+            "start": 5363,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -3896,10 +3996,10 @@ description: Variables in memory after executing dining-table.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 5408,
-            "end": 5413,
+            "commentStart": 5437,
+            "end": 5442,
             "moduleId": 0,
-            "start": 5408,
+            "start": 5437,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -3921,10 +4021,10 @@ description: Variables in memory after executing dining-table.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 5191,
-              "end": 5196,
+              "commentStart": 5220,
+              "end": 5225,
               "moduleId": 0,
-              "start": 5191,
+              "start": 5220,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -3945,10 +4045,10 @@ description: Variables in memory after executing dining-table.kcl
               20.0
             ],
             "tag": {
-              "commentStart": 5261,
-              "end": 5266,
+              "commentStart": 5290,
+              "end": 5295,
               "moduleId": 0,
-              "start": 5261,
+              "start": 5290,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -3969,10 +4069,10 @@ description: Variables in memory after executing dining-table.kcl
               20.0
             ],
             "tag": {
-              "commentStart": 5334,
-              "end": 5339,
+              "commentStart": 5363,
+              "end": 5368,
               "moduleId": 0,
-              "start": 5334,
+              "start": 5363,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -3993,10 +4093,10 @@ description: Variables in memory after executing dining-table.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 5408,
-              "end": 5413,
+              "commentStart": 5437,
+              "end": 5442,
               "moduleId": 0,
-              "start": 5408,
+              "start": 5437,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -4009,17 +4109,17 @@ description: Variables in memory after executing dining-table.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 50,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 730.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -4075,8 +4175,8 @@ description: Variables in memory after executing dining-table.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "mm"
+        "units": "mm",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -4089,8 +4189,10 @@ description: Variables in memory after executing dining-table.kcl
     "value": 600.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "shortApronProfile": {
@@ -4110,17 +4212,21 @@ description: Variables in memory after executing dining-table.kcl
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -4128,17 +4234,21 @@ description: Variables in memory after executing dining-table.kcl
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 20.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -4230,17 +4340,21 @@ description: Variables in memory after executing dining-table.kcl
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 20.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -4248,17 +4362,21 @@ description: Variables in memory after executing dining-table.kcl
                       {
                         "n": 600.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 20.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -4350,17 +4468,21 @@ description: Variables in memory after executing dining-table.kcl
                       {
                         "n": 600.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 20.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -4368,17 +4490,21 @@ description: Variables in memory after executing dining-table.kcl
                       {
                         "n": 600.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -4470,17 +4596,21 @@ description: Variables in memory after executing dining-table.kcl
                       {
                         "n": 600.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -4488,17 +4618,21 @@ description: Variables in memory after executing dining-table.kcl
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -4595,10 +4729,10 @@ description: Variables in memory after executing dining-table.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 5191,
-                    "end": 5196,
+                    "commentStart": 5220,
+                    "end": 5225,
                     "moduleId": 0,
-                    "start": 5191,
+                    "start": 5220,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -4619,10 +4753,10 @@ description: Variables in memory after executing dining-table.kcl
                     20.0
                   ],
                   "tag": {
-                    "commentStart": 5261,
-                    "end": 5266,
+                    "commentStart": 5290,
+                    "end": 5295,
                     "moduleId": 0,
-                    "start": 5261,
+                    "start": 5290,
                     "type": "TagDeclarator",
                     "value": "line2"
                   },
@@ -4643,10 +4777,10 @@ description: Variables in memory after executing dining-table.kcl
                     20.0
                   ],
                   "tag": {
-                    "commentStart": 5334,
-                    "end": 5339,
+                    "commentStart": 5363,
+                    "end": 5368,
                     "moduleId": 0,
-                    "start": 5334,
+                    "start": 5363,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
@@ -4667,10 +4801,10 @@ description: Variables in memory after executing dining-table.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 5408,
-                    "end": 5413,
+                    "commentStart": 5437,
+                    "end": 5442,
                     "moduleId": 0,
-                    "start": 5408,
+                    "start": 5437,
                     "type": "TagDeclarator",
                     "value": "line4"
                   },
@@ -4683,17 +4817,17 @@ description: Variables in memory after executing dining-table.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 50,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 730.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -4775,10 +4909,10 @@ description: Variables in memory after executing dining-table.kcl
             0.0
           ],
           "tag": {
-            "commentStart": 5191,
-            "end": 5196,
+            "commentStart": 5220,
+            "end": 5225,
             "moduleId": 0,
-            "start": 5191,
+            "start": 5220,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -4799,10 +4933,10 @@ description: Variables in memory after executing dining-table.kcl
             20.0
           ],
           "tag": {
-            "commentStart": 5261,
-            "end": 5266,
+            "commentStart": 5290,
+            "end": 5295,
             "moduleId": 0,
-            "start": 5261,
+            "start": 5290,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -4823,10 +4957,10 @@ description: Variables in memory after executing dining-table.kcl
             20.0
           ],
           "tag": {
-            "commentStart": 5334,
-            "end": 5339,
+            "commentStart": 5363,
+            "end": 5368,
             "moduleId": 0,
-            "start": 5334,
+            "start": 5363,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -4847,10 +4981,10 @@ description: Variables in memory after executing dining-table.kcl
             0.0
           ],
           "tag": {
-            "commentStart": 5408,
-            "end": 5413,
+            "commentStart": 5437,
+            "end": 5442,
             "moduleId": 0,
-            "start": 5408,
+            "start": 5437,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -4863,17 +4997,17 @@ description: Variables in memory after executing dining-table.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 50,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 730.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -4929,8 +5063,8 @@ description: Variables in memory after executing dining-table.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "mm"
+      "units": "mm",
+      "isClosed": "explicitly"
     }
   },
   "shortApronRegion": {
@@ -4949,10 +5083,10 @@ description: Variables in memory after executing dining-table.kcl
             0.0
           ],
           "tag": {
-            "commentStart": 5191,
-            "end": 5196,
+            "commentStart": 5220,
+            "end": 5225,
             "moduleId": 0,
-            "start": 5191,
+            "start": 5220,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -4973,10 +5107,10 @@ description: Variables in memory after executing dining-table.kcl
             20.0
           ],
           "tag": {
-            "commentStart": 5261,
-            "end": 5266,
+            "commentStart": 5290,
+            "end": 5295,
             "moduleId": 0,
-            "start": 5261,
+            "start": 5290,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -4997,10 +5131,10 @@ description: Variables in memory after executing dining-table.kcl
             20.0
           ],
           "tag": {
-            "commentStart": 5334,
-            "end": 5339,
+            "commentStart": 5363,
+            "end": 5368,
             "moduleId": 0,
-            "start": 5334,
+            "start": 5363,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -5021,10 +5155,10 @@ description: Variables in memory after executing dining-table.kcl
             0.0
           ],
           "tag": {
-            "commentStart": 5408,
-            "end": 5413,
+            "commentStart": 5437,
+            "end": 5442,
             "moduleId": 0,
-            "start": 5408,
+            "start": 5437,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -5037,17 +5171,17 @@ description: Variables in memory after executing dining-table.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 50,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 730.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -5103,8 +5237,8 @@ description: Variables in memory after executing dining-table.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "mm"
+      "units": "mm",
+      "isClosed": "explicitly"
     }
   },
   "stretcherPlane": {
@@ -5112,8 +5246,8 @@ description: Variables in memory after executing dining-table.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "kind": "Custom",
       "objectId": 50,
+      "kind": "Custom",
       "origin": {
         "x": 0.0,
         "y": 0.0,
@@ -5145,8 +5279,8 @@ description: Variables in memory after executing dining-table.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "kind": "Custom",
       "objectId": 50,
+      "kind": "Custom",
       "origin": {
         "x": 0.0,
         "y": 0.0,
@@ -5178,8 +5312,10 @@ description: Variables in memory after executing dining-table.kcl
     "value": 750.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "tableLength": {
@@ -5187,8 +5323,10 @@ description: Variables in memory after executing dining-table.kcl
     "value": 2100.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "tableTopExtrude": {
@@ -5196,6 +5334,8 @@ description: Variables in memory after executing dining-table.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -5203,10 +5343,10 @@ description: Variables in memory after executing dining-table.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 707,
-            "end": 712,
+            "commentStart": 736,
+            "end": 741,
             "moduleId": 0,
-            "start": 707,
+            "start": 736,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -5217,10 +5357,10 @@ description: Variables in memory after executing dining-table.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 779,
-            "end": 784,
+            "commentStart": 808,
+            "end": 813,
             "moduleId": 0,
-            "start": 779,
+            "start": 808,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -5231,10 +5371,10 @@ description: Variables in memory after executing dining-table.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 856,
-            "end": 861,
+            "commentStart": 885,
+            "end": 890,
             "moduleId": 0,
-            "start": 856,
+            "start": 885,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -5245,10 +5385,10 @@ description: Variables in memory after executing dining-table.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 932,
-            "end": 937,
+            "commentStart": 961,
+            "end": 966,
             "moduleId": 0,
-            "start": 932,
+            "start": 961,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -5270,10 +5410,10 @@ description: Variables in memory after executing dining-table.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 707,
-              "end": 712,
+              "commentStart": 736,
+              "end": 741,
               "moduleId": 0,
-              "start": 707,
+              "start": 736,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -5294,10 +5434,10 @@ description: Variables in memory after executing dining-table.kcl
               2100.0
             ],
             "tag": {
-              "commentStart": 779,
-              "end": 784,
+              "commentStart": 808,
+              "end": 813,
               "moduleId": 0,
-              "start": 779,
+              "start": 808,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -5318,10 +5458,10 @@ description: Variables in memory after executing dining-table.kcl
               2100.0
             ],
             "tag": {
-              "commentStart": 856,
-              "end": 861,
+              "commentStart": 885,
+              "end": 890,
               "moduleId": 0,
-              "start": 856,
+              "start": 885,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -5342,10 +5482,10 @@ description: Variables in memory after executing dining-table.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 932,
-              "end": 937,
+              "commentStart": 961,
+              "end": 966,
               "moduleId": 0,
-              "start": 932,
+              "start": 961,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -5358,17 +5498,17 @@ description: Variables in memory after executing dining-table.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 0,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 750.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -5424,8 +5564,8 @@ description: Variables in memory after executing dining-table.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "mm"
+        "units": "mm",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -5438,8 +5578,8 @@ description: Variables in memory after executing dining-table.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "kind": "Custom",
       "objectId": 0,
+      "kind": "Custom",
       "origin": {
         "x": 0.0,
         "y": 0.0,
@@ -5483,17 +5623,21 @@ description: Variables in memory after executing dining-table.kcl
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -5501,17 +5645,21 @@ description: Variables in memory after executing dining-table.kcl
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 2100.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -5603,17 +5751,21 @@ description: Variables in memory after executing dining-table.kcl
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 2100.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -5621,17 +5773,21 @@ description: Variables in memory after executing dining-table.kcl
                       {
                         "n": 800.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 2100.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -5723,17 +5879,21 @@ description: Variables in memory after executing dining-table.kcl
                       {
                         "n": 800.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 2100.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -5741,17 +5901,21 @@ description: Variables in memory after executing dining-table.kcl
                       {
                         "n": 800.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -5843,17 +6007,21 @@ description: Variables in memory after executing dining-table.kcl
                       {
                         "n": 800.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -5861,17 +6029,21 @@ description: Variables in memory after executing dining-table.kcl
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -5968,10 +6140,10 @@ description: Variables in memory after executing dining-table.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 707,
-                    "end": 712,
+                    "commentStart": 736,
+                    "end": 741,
                     "moduleId": 0,
-                    "start": 707,
+                    "start": 736,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -5992,10 +6164,10 @@ description: Variables in memory after executing dining-table.kcl
                     2100.0
                   ],
                   "tag": {
-                    "commentStart": 779,
-                    "end": 784,
+                    "commentStart": 808,
+                    "end": 813,
                     "moduleId": 0,
-                    "start": 779,
+                    "start": 808,
                     "type": "TagDeclarator",
                     "value": "line2"
                   },
@@ -6016,10 +6188,10 @@ description: Variables in memory after executing dining-table.kcl
                     2100.0
                   ],
                   "tag": {
-                    "commentStart": 856,
-                    "end": 861,
+                    "commentStart": 885,
+                    "end": 890,
                     "moduleId": 0,
-                    "start": 856,
+                    "start": 885,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
@@ -6040,10 +6212,10 @@ description: Variables in memory after executing dining-table.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 932,
-                    "end": 937,
+                    "commentStart": 961,
+                    "end": 966,
                     "moduleId": 0,
-                    "start": 932,
+                    "start": 961,
                     "type": "TagDeclarator",
                     "value": "line4"
                   },
@@ -6056,17 +6228,17 @@ description: Variables in memory after executing dining-table.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 0,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 750.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -6148,10 +6320,10 @@ description: Variables in memory after executing dining-table.kcl
             0.0
           ],
           "tag": {
-            "commentStart": 707,
-            "end": 712,
+            "commentStart": 736,
+            "end": 741,
             "moduleId": 0,
-            "start": 707,
+            "start": 736,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -6172,10 +6344,10 @@ description: Variables in memory after executing dining-table.kcl
             2100.0
           ],
           "tag": {
-            "commentStart": 779,
-            "end": 784,
+            "commentStart": 808,
+            "end": 813,
             "moduleId": 0,
-            "start": 779,
+            "start": 808,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -6196,10 +6368,10 @@ description: Variables in memory after executing dining-table.kcl
             2100.0
           ],
           "tag": {
-            "commentStart": 856,
-            "end": 861,
+            "commentStart": 885,
+            "end": 890,
             "moduleId": 0,
-            "start": 856,
+            "start": 885,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -6220,10 +6392,10 @@ description: Variables in memory after executing dining-table.kcl
             0.0
           ],
           "tag": {
-            "commentStart": 932,
-            "end": 937,
+            "commentStart": 961,
+            "end": 966,
             "moduleId": 0,
-            "start": 932,
+            "start": 961,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -6236,17 +6408,17 @@ description: Variables in memory after executing dining-table.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 0,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 750.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -6302,8 +6474,8 @@ description: Variables in memory after executing dining-table.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "mm"
+      "units": "mm",
+      "isClosed": "explicitly"
     }
   },
   "tableTopSketch": {
@@ -6311,8 +6483,8 @@ description: Variables in memory after executing dining-table.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "kind": "Custom",
       "objectId": 0,
+      "kind": "Custom",
       "origin": {
         "x": 0.0,
         "y": 0.0,
@@ -6344,8 +6516,10 @@ description: Variables in memory after executing dining-table.kcl
     "value": 20.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "tableWidth": {
@@ -6353,8 +6527,10 @@ description: Variables in memory after executing dining-table.kcl
     "value": 800.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   }
 }

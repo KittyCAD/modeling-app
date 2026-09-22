@@ -15,9 +15,10 @@
 //!
 //! | KCL value kind | Artifact id vs engine object id |
 //! |---|---|
-//! | solid from `extrude`, `revolve`, or `sweep`; a pattern's ORIGINAL | differ |
-//! | solid from `loft` (`loft.rs` overrides the profile id with its command id) | equal |
-//! | sketch, plane, helix, GD&T annotation, imported geometry, pattern COPIES | equal |
+//! | solid from `extrude` (with or without `twistAngle`), `revolve` (either axis form), or `sweep`; a pattern's ORIGINAL | differ |
+//! | solid from `loft` or `blend`, each of which overrides the profile id with its own command id | equal |
+//! | solid from `mirror3d` | equal |
+//! | sketch, plane from `offsetPlane` or `planeOf`, helix, GD&T annotation, imported geometry, pattern COPIES | equal |
 //!
 //! For the divergent kinds, the artifact graph's `Artifact::Sweep` node holds
 //! the pair: its `id` is the artifact id and its `path_id` is the engine
@@ -25,6 +26,13 @@
 //! other, and the route matters because the engine silently ignores unknown
 //! ids and acks success -- sending an artifact id where an engine object id
 //! is required hides nothing and reports nothing.
+//!
+//! A `Sweep` node's subtype does not by itself decide which row it falls in.
+//! `mirror3d` copies the source body's node, overwrites `id` with the mirrored
+//! body's engine object id, and leaves `path_id` naming the SOURCE body's path,
+//! so a mirrored `extrusion` node sits in the equal row while the node it was
+//! copied from sits in the divergent one. The `Path` node's `sweep_id`
+//! back-link separates them, because it records the original node only.
 //!
 //! The relation holds over both sketch construction routes, which differ in
 //! what the profile becomes:
@@ -48,17 +56,25 @@
 //!
 //! One English word, three systems: in this file "sweep" always names the
 //! artifact-graph node kind `Artifact::Sweep`, which covers ALL swept bodies
-//! (subtypes extrusion, revolve, sweep, loft). It is not the KCL `sweep()`
-//! function and not an engine command, though both exist.
+//! (subtypes extrusion, extrusionTwist, revolve, revolveAboutEdge, loft, blend,
+//! sweep). It is not the KCL `sweep()` function and not an engine command,
+//! though both exist.
 //!
 //! Real engine required (`ZOO_API_TOKEN`): mock execution cannot reach some
 //! construction paths (pattern copies get engine-assigned ids).
 
+use futures::FutureExt;
 use kittycad_modeling_cmds::ModelingCmd;
+use kittycad_modeling_cmds::each_cmd as mcmd;
+use kittycad_modeling_cmds::ok_response::OkModelingCmdResponse;
+use kittycad_modeling_cmds::shared::EntityType;
+use kittycad_modeling_cmds::websocket::OkWebSocketResponseData;
 use uuid::Uuid;
 
 use super::ExecState;
+use super::ExecutorContext;
 use super::Operation;
+use crate::SourceRange;
 use crate::execution::Artifact;
 use crate::execution::ArtifactId;
 
@@ -87,6 +103,13 @@ struct SweepIds {
     path_id: ArtifactId,
 }
 
+/// An `Artifact::Plane` node's identity and sketch paths.
+#[derive(Debug)]
+struct PlaneIds {
+    id: ArtifactId,
+    path_ids: Vec<ArtifactId>,
+}
+
 /// One execution's `hide()` call as seen by its three observers: the engine
 /// channel, the operations stream, and the artifact graph.
 struct ObservedIds {
@@ -98,6 +121,19 @@ struct ObservedIds {
     recorded_in_operations: Vec<ArtifactId>,
     /// From the artifact graph: the id pairs that relate the two domains.
     sweep_ids: Vec<SweepIds>,
+    /// From the artifact graph: each `Artifact::Path` node's id paired with the
+    /// sweep that names it as its base path, if any. A client reads this
+    /// back-link to tell an original swept body from a `mirror3d` copy. Both
+    /// carry the same `path_id`.
+    path_back_links: Vec<(ArtifactId, Option<ArtifactId>)>,
+    /// From the artifact graph: each plane and the paths that use it.
+    plane_ids: Vec<PlaneIds>,
+    /// From the artifact graph: each plane produced by `planeOf()`.
+    plane_of_face_ids: Vec<ArtifactId>,
+    /// From the artifact graph: each path paired with its supporting plane.
+    path_plane_links: Vec<(ArtifactId, ArtifactId)>,
+    /// From the recorded command stream: ids assigned to `FaceIsPlanar`.
+    face_is_planar_command_ids: Vec<ArtifactId>,
 }
 
 impl ObservedIds {
@@ -111,8 +147,11 @@ impl ObservedIds {
     }
 }
 
-async fn execute_and_observe(code: &str, current_file: Option<std::path::PathBuf>) -> ObservedIds {
-    let ctx = crate::test_server::new_context(true, current_file).await.unwrap();
+async fn execute_and_observe_open(
+    code: &str,
+    current_file: Option<std::path::PathBuf>,
+) -> (ExecutorContext, ObservedIds) {
+    let ctx = crate::test_server::new_context(true, current_file, true).await.unwrap();
     let program = crate::Program::parse_no_errs(code).unwrap();
     let mut exec_state = ExecState::new(&ctx);
     ctx.run(&program, &mut exec_state).await.unwrap();
@@ -158,13 +197,112 @@ async fn execute_and_observe(code: &str, current_file: Option<std::path::PathBuf
         })
         .collect();
 
-    ctx.close().await;
+    let path_back_links = exec_state
+        .global
+        .artifacts
+        .graph
+        .values()
+        .filter_map(|artifact| match artifact {
+            Artifact::Path(path) => Some((path.id, path.sweep_id)),
+            _ => None,
+        })
+        .collect();
 
-    ObservedIds {
-        sent_to_engine,
-        recorded_in_operations,
-        sweep_ids,
-    }
+    let plane_ids = exec_state
+        .global
+        .artifacts
+        .graph
+        .values()
+        .filter_map(|artifact| match artifact {
+            Artifact::Plane(plane) => Some(PlaneIds {
+                id: plane.id,
+                path_ids: plane.path_ids.clone(),
+            }),
+            _ => None,
+        })
+        .collect();
+
+    let plane_of_face_ids = exec_state
+        .global
+        .artifacts
+        .graph
+        .values()
+        .filter_map(|artifact| match artifact {
+            Artifact::PlaneOfFace(plane) => Some(plane.id),
+            _ => None,
+        })
+        .collect();
+
+    let path_plane_links = exec_state
+        .global
+        .artifacts
+        .graph
+        .values()
+        .filter_map(|artifact| match artifact {
+            Artifact::Path(path) => Some((path.id, path.plane_id)),
+            _ => None,
+        })
+        .collect();
+
+    let face_is_planar_command_ids = exec_state
+        .global
+        .root_module_artifacts
+        .commands
+        .iter()
+        .filter_map(|artifact_command| match artifact_command.command {
+            ModelingCmd::FaceIsPlanar(_) => Some(ArtifactId::new(artifact_command.cmd_id)),
+            _ => None,
+        })
+        .collect();
+
+    (
+        ctx,
+        ObservedIds {
+            sent_to_engine,
+            recorded_in_operations,
+            sweep_ids,
+            path_back_links,
+            plane_ids,
+            plane_of_face_ids,
+            path_plane_links,
+            face_is_planar_command_ids,
+        },
+    )
+}
+
+async fn execute_and_observe(code: &str, current_file: Option<std::path::PathBuf>) -> ObservedIds {
+    let (ctx, observed) = execute_and_observe_open(code, current_file).await;
+    ctx.close().await;
+    observed
+}
+
+/// Verifies that the engine resolves an artifact id to a plane entity.
+async fn assert_engine_entity_is_plane(ctx: &ExecutorContext, artifact_id: ArtifactId) {
+    let response = ctx
+        .engine
+        .send_modeling_cmd(
+            &ctx.engine_batch,
+            Uuid::new_v4(),
+            SourceRange::default(),
+            &ModelingCmd::from(
+                mcmd::GetEntityType::builder()
+                    .entity_id(Uuid::from(artifact_id))
+                    .build(),
+            ),
+        )
+        .await
+        .unwrap_or_else(|err| panic!("engine did not resolve plane artifact id {artifact_id:?}: {err}"));
+    let OkWebSocketResponseData::Modeling {
+        modeling_response: OkModelingCmdResponse::GetEntityType(entity),
+    } = response
+    else {
+        panic!("expected GetEntityType for plane artifact id {artifact_id:?}, got {response:?}");
+    };
+    assert_eq!(
+        entity.entity_type,
+        EntityType::Plane,
+        "artifact id {artifact_id:?} should identify an engine plane"
+    );
 }
 
 /// Collects every value under an artifact-id key, at any depth. The nesting
@@ -172,9 +310,8 @@ async fn execute_and_observe(code: &str, current_file: Option<std::path::PathBuf
 /// `rename_all = "camelCase"` structs one level down (`artifactId`), while
 /// `OpKclValue::Plane`, `GdtAnnotation` and `ImportedGeometry` are flat enum
 /// variants with no rename, so they serialize as `artifact_id`. The TypeScript
-/// client's `getHideOperationArtifactIds` only reads the first shape, which
-/// means it cannot see hidden planes, GD&T annotations or imported geometry --
-/// a gap this file deliberately does NOT copy.
+/// client reads both shapes in `artifactIdsInOpValue`
+/// (`src/lib/operations.ts`), so both are collected on each side.
 fn artifact_ids_in(value: &serde_json::Value) -> Vec<ArtifactId> {
     match value {
         serde_json::Value::Object(map) => map
@@ -246,6 +383,63 @@ fn assert_sweep_bridge(observed: &ObservedIds) {
     );
 }
 
+/// Asserts that a `mirror3d` body owns its engine object id.
+///
+/// A mirrored node inherits its subtype from the source body, so subtype alone
+/// cannot decide the translation. `mirror_3d_artifact_updates` copies the source
+/// body's `Artifact::Sweep` node, overwrites `id` with the mirrored body's engine
+/// object id, and leaves `path_id` naming the SOURCE body's path.
+///
+/// Three assertions pin what a client depends on:
+///
+/// - the recorded artifact id, reinterpreted, is among the sent ids, so the two
+///   domains agree for this body;
+/// - `path_id` is a different id, and the path it names does not record the
+///   mirrored node as its sweep;
+/// - `path_id` was NOT sent, so translating through it addresses the source
+///   body.
+#[track_caller]
+fn assert_mirrored_body_owns_its_engine_id(observed: &ObservedIds) {
+    let hidden = observed.hidden_object_ids();
+    assert_eq!(
+        observed.recorded_in_operations.len(),
+        1,
+        "expected exactly one artifact id recorded on the hide operation, got {:?}",
+        observed.recorded_in_operations
+    );
+    let recorded = observed.recorded_in_operations[0];
+    assert!(
+        hidden.contains(&in_engine_domain(recorded)),
+        "a mirrored body should hold the same uuid in both domains; recorded on the operation: \
+         {recorded:?}, sent as hidden: {hidden:?}"
+    );
+
+    let mirrored = observed.sweep_ids.iter().find(|sweep| sweep.sweep_id == recorded);
+    let Some(SweepIds { path_id, .. }) = mirrored else {
+        panic!("no Artifact::Sweep node with id {recorded:?} in the artifact graph");
+    };
+    assert_ne!(
+        *path_id, recorded,
+        "the mirrored node should carry the source body's path_id, which is a different id"
+    );
+
+    let Some((_, back_link)) = observed.path_back_links.iter().find(|(path, _)| path == path_id) else {
+        panic!("no Artifact::Path node with id {path_id:?} in the artifact graph");
+    };
+    assert_ne!(
+        *back_link,
+        Some(recorded),
+        "the base path should NOT record the mirrored node as its sweep; if it now does, the \
+         back-link a client tests no longer separates a mirror3d copy from an original -- update \
+         the named-views apply-path translation and this test together. path_id: {path_id:?}"
+    );
+    assert!(
+        !hidden.contains(&in_engine_domain(*path_id)),
+        "path_id was not sent for this hide, so translating the mirrored body through it would \
+         address the source body instead; path_id: {path_id:?}, sent as hidden: {hidden:?}"
+    );
+}
+
 #[tokio::test(flavor = "multi_thread")]
 async fn named_views_hide_ids_sketch() {
     let code = r#"sketchHidden = sketch(on = XY) {
@@ -279,6 +473,30 @@ hide(part001)
     assert_sweep_bridge(&observed);
 }
 
+/// The twist subtype reaches `TwistExtrude` but shares `do_post_extrude` with
+/// plain extrusion, so it diverges the same way. That shared handling is the
+/// only reason it does, and nothing else in the suite sends that command.
+#[tokio::test(flavor = "multi_thread")]
+async fn named_views_hide_ids_extrude_twist() {
+    let code = r#"sketch001 = sketch(on = XY) {
+  line1 = line(start = [var 0, var 0], end = [var 10, var 0])
+  line2 = line(start = [var 10, var 0], end = [var 10, var 10])
+  line3 = line(start = [var 10, var 10], end = [var 0, var 10])
+  line4 = line(start = [var 0, var 10], end = [var 0, var 0])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+}
+
+part001 = extrude(region(point = [5, 5], sketch = sketch001), length = 5, twistAngle = 45deg)
+
+hide(part001)
+"#;
+    let observed = execute_and_observe(code, None).await;
+    assert_sweep_bridge(&observed);
+}
+
 #[tokio::test(flavor = "multi_thread")]
 async fn named_views_hide_ids_revolve() {
     let code = r#"sketch001 = sketch(on = XZ) {
@@ -293,6 +511,32 @@ async fn named_views_hide_ids_revolve() {
 }
 
 part001 = revolve(region(point = [6.5, 1.5], sketch = sketch001), axis = Y)
+
+hide(part001)
+"#;
+    let observed = execute_and_observe(code, None).await;
+    assert_sweep_bridge(&observed);
+}
+
+/// A solved segment as the axis reaches `RevolveAboutEdge`, which the artifact
+/// graph records under its own subtype. It calls the same `do_post_extrude` as
+/// the axis form, so it diverges identically.
+#[tokio::test(flavor = "multi_thread")]
+async fn named_views_hide_ids_revolve_about_edge() {
+    let code = r#"sketch001 = sketch(on = XZ) {
+  line1 = line(start = [var -3.34mm, var -1.89mm], end = [var -1.62mm, var -1.89mm])
+  line2 = line(start = [var -1.62mm, var -1.89mm], end = [var -1.62mm, var 0.56mm])
+  line3 = line(start = [var -1.62mm, var 0.56mm], end = [var -3.34mm, var 0.56mm])
+  line4 = line(start = [var -3.34mm, var 0.56mm], end = [var -3.34mm, var -1.89mm])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  line5 = line(start = [var 0.94mm, var -3.66mm], end = [var 0.05mm, var 4.57mm])
+}
+
+region001 = region(segments = [sketch001.line1, sketch001.line2])
+part001 = revolve(region001, angle = 36deg, axis = sketch001.line5)
 
 hide(part001)
 "#;
@@ -351,6 +595,47 @@ hide(part001)
     assert_ids_equal(&observed);
 }
 
+/// `blend` is the second sweep subtype that does not diverge. `surfaces.rs`
+/// builds its result as `Solid { id, artifact_id: id.into() }`, so the engine
+/// knows the body under its artifact id. Its KCL function takes edges, not
+/// sketches, so its `path_id` is a surface's path.
+#[tokio::test(flavor = "multi_thread")]
+async fn named_views_hide_ids_blend() {
+    let code = r#"sketch001 = sketch(on = YZ) {
+  line1 = line(start = [var 4.1mm, var -0.1mm], end = [var 5.5mm, var 0mm])
+  line2 = line(start = [var 5.5mm, var 0mm], end = [var 5.5mm, var 3mm])
+  line3 = line(start = [var 5.5mm, var 3mm], end = [var 3.9mm, var 2.8mm])
+  line4 = line(start = [var 4.1mm, var 3mm], end = [var 4.5mm, var -0.2mm])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+}
+
+sketch002 = sketch(on = -XZ) {
+  line5 = line(start = [var -5.3mm, var -0.1mm], end = [var -3.5mm, var -0.1mm])
+  line6 = line(start = [var -3.5mm, var -0.1mm], end = [var -3.5mm, var 3.1mm])
+  line7 = line(start = [var -3.5mm, var 4.5mm], end = [var -5.4mm, var 4.5mm])
+  line8 = line(start = [var -5.3mm, var 3.1mm], end = [var -5.3mm, var -0.1mm])
+  coincident([line5.end, line6.start])
+  coincident([line6.end, line7.start])
+  coincident([line7.end, line8.start])
+  coincident([line8.end, line5.start])
+}
+
+region001 = region(segments = [sketch002.line5, sketch002.line6])
+extrude001 = extrude(region001, length = -2mm, bodyType = SURFACE)
+region002 = region(segments = [sketch001.line1, sketch001.line2])
+extrude002 = extrude(region002, length = -2mm, bodyType = SURFACE)
+
+part001 = blend([extrude001.sketch.tags.line7, extrude002.sketch.tags.line3])
+
+hide(part001)
+"#;
+    let observed = execute_and_observe(code, None).await;
+    assert_ids_equal(&observed);
+}
+
 #[tokio::test(flavor = "multi_thread")]
 async fn named_views_hide_ids_gdt_annotation() {
     let code = r#"@settings(kclVersion = 2.0)
@@ -390,8 +675,119 @@ async fn named_views_hide_ids_plane() {
 
 hide(plane001)
 "#;
-    let observed = execute_and_observe(code, None).await;
-    assert_ids_equal(&observed);
+    let (ctx, observed) = execute_and_observe_open(code, None).await;
+
+    // Close the context even if an assertion panics, then let the panic continue.
+    let test_result = std::panic::AssertUnwindSafe(async {
+        assert_ids_equal(&observed);
+
+        let artifact_id = observed.recorded_in_operations[0];
+        let plane = observed
+            .plane_ids
+            .iter()
+            .find(|plane| plane.id == artifact_id)
+            .unwrap_or_else(|| panic!("no Artifact::Plane node with id {artifact_id:?}"));
+        assert!(
+            plane.path_ids.is_empty(),
+            "a standalone offset plane should not support any sketch paths"
+        );
+        assert_engine_entity_is_plane(&ctx, artifact_id).await;
+    })
+    .catch_unwind()
+    .await;
+
+    ctx.close().await;
+    if let Err(panic) = test_result {
+        std::panic::resume_unwind(panic);
+    }
+}
+
+/// A plane used as a sketch surface is hidden by the executor. The artifact
+/// graph records that purpose through reciprocal plane-to-path and
+/// path-to-plane links.
+#[tokio::test(flavor = "multi_thread")]
+async fn named_views_plane_used_for_sketch_has_path_ids() {
+    let code = include_str!("../../tests/sketch_block_on_offset_plane/input.kcl");
+    let (ctx, observed) = execute_and_observe_open(code, None).await;
+
+    // Close the context even if an assertion panics, then let the panic continue.
+    let test_result = std::panic::AssertUnwindSafe(async {
+        assert!(
+            observed.recorded_in_operations.is_empty(),
+            "the executor's plane-hiding command should not create a KCL hide operation"
+        );
+        assert_eq!(
+            observed.plane_ids.len(),
+            1,
+            "the fixture should create exactly one plane artifact"
+        );
+        let plane = &observed.plane_ids[0];
+        assert_eq!(
+            plane.path_ids.len(),
+            1,
+            "the plane artifact should contain the sketch path id"
+        );
+        let path_id = plane.path_ids[0];
+        assert!(
+            observed.path_plane_links.contains(&(path_id, plane.id)),
+            "the sketch path should identify the plane that contains its id"
+        );
+        assert!(
+            observed.hidden_object_ids().contains(&in_engine_domain(plane.id)),
+            "the executor should hide the plane used as the sketch surface"
+        );
+        assert_engine_entity_is_plane(&ctx, plane.id).await;
+    })
+    .catch_unwind()
+    .await;
+
+    ctx.close().await;
+    if let Err(panic) = test_result {
+        std::panic::resume_unwind(panic);
+    }
+}
+
+/// `planeOf()` uses its `FaceIsPlanar` command id for the runtime value, the
+/// artifact graph and the engine entity.
+#[tokio::test(flavor = "multi_thread")]
+async fn named_views_plane_of_id_is_engine_addressable() {
+    let code = r#"sketch001 = sketch(on = XY) {
+  circle1 = circle(start = [var 3, var 0], center = [var 0, var 0])
+}
+
+body = extrude(region(point = [0, 0], sketch = sketch001), length = 5)
+plane001 = planeOf(body, face = END)
+
+hide(plane001)
+"#;
+    let (ctx, observed) = execute_and_observe_open(code, None).await;
+
+    // Close the context even if an assertion panics, then let the panic continue.
+    let test_result = std::panic::AssertUnwindSafe(async {
+        assert_ids_equal(&observed);
+
+        assert_eq!(
+            observed.face_is_planar_command_ids.len(),
+            1,
+            "the fixture should send exactly one FaceIsPlanar command"
+        );
+        assert_eq!(
+            observed.plane_of_face_ids.len(),
+            1,
+            "an unused planeOf result should remain an Artifact::PlaneOfFace"
+        );
+        let artifact_id = observed.recorded_in_operations[0];
+        assert_eq!(observed.face_is_planar_command_ids[0], artifact_id);
+        assert_eq!(observed.plane_of_face_ids[0], artifact_id);
+        assert_engine_entity_is_plane(&ctx, artifact_id).await;
+    })
+    .catch_unwind()
+    .await;
+
+    ctx.close().await;
+    if let Err(panic) = test_result {
+        std::panic::resume_unwind(panic);
+    }
 }
 
 /// Route-independent: the program contains no sketch, so V1/V2 does not
@@ -488,6 +884,31 @@ hide(part001)
 // The `_v1` tests below pin the classic pipeline's OWN behavior -- the parts
 // of the old route that differ from sketch V2 and remain in production. They
 // are deliberately few; sketch V2 is the default suite above.
+
+/// A mirrored extrusion. The node's subtype is `extrusion`, its two id domains
+/// agree, and its `path_id` names the source body's path. That combination is
+/// what makes the subtype table insufficient on its own.
+#[tokio::test(flavor = "multi_thread")]
+async fn named_views_hide_ids_mirror3d() {
+    let code = r#"sketch001 = sketch(on = XY) {
+  line1 = line(start = [var 0, var 0], end = [var 10, var 0])
+  line2 = line(start = [var 10, var 0], end = [var 10, var 10])
+  line3 = line(start = [var 10, var 10], end = [var 0, var 10])
+  line4 = line(start = [var 0, var 10], end = [var 0, var 0])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+}
+
+part001 = extrude(region(point = [5, 5], sketch = sketch001), length = 5)
+mirrored001 = mirror3d(part001, across = YZ)
+
+hide(mirrored001)
+"#;
+    let observed = execute_and_observe(code, None).await;
+    assert_mirrored_body_owns_its_engine_id(&observed);
+}
 
 /// Classic route only: the extrude consumes its profile, so the body answers
 /// to the profile's engine object id. This is the divergence as it was first

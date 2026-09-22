@@ -1,0 +1,14 @@
+@settings(experimentalFeatures = deny)
+
+width = 20
+length = 10
+
+mySketch = startSketchOn(XY)
+  |> startProfile(at = [-width / 2, -length / 2])
+profile001 = conic(
+  mySketch,
+  end = [20, 0],
+  endTangent = [1, 1],
+  interior = [5, 5],
+  startTangent = [0, -1],
+)

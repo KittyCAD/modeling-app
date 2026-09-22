@@ -505,7 +505,8 @@ description: Artifact commands engine-valve.kcl
         "segment": "[uuid]",
         "intersection_segment": "[uuid]",
         "intersection_index": -1,
-        "curve_clockwise": false
+        "curve_clockwise": false,
+        "version": "V1"
       }
     },
     {

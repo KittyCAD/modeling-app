@@ -8,8 +8,7 @@ KCL Semantic error
     ╭─[12:7]
  11 │ 
  12 │ bad = view::oriented(view::Orientation::Front, distance = -50)
-    ·       ────────────────────────────┬───────────────────────────┬
-    ·                                   ╰── tests/named_views_negative_distance/input.kcl
+    ·       ────────────────────────────┬───────────────────────────
     ·                                   ╰── tests/named_views_negative_distance/input.kcl
     ╰────
   ╰─▶ KCL Semantic error

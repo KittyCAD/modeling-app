@@ -19,8 +19,15 @@ circle(
 ): Sketch
 ```
 
-This is part of sketch v1 and is deprecated in favor of
-[sketch-solve](/docs/kcl-std/modules/std-solver).
+This is part of sketch v1 and is deprecated. Legacy sketch functions cannot
+be used with constraints. Strongly prefer constraint-based sketch functions:
+in KCL 2, create a
+[`solver::circle`](/docs/kcl-std/functions/std-solver-circle) inside a
+[`sketch` block](/docs/kcl-lang/sketches), then select the
+closed profile with [`region`](/docs/kcl-std/functions/std-sketch-region).
+
+
+**Legacy KCL 1 example:** The next example uses deprecated `subtract2d`.
 
 ### Arguments
 
@@ -51,7 +58,7 @@ example = extrude(exampleSketch, length = 5)
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the circle function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-circle0_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-circle0_output.glb"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-circle0.png"
@@ -62,6 +69,8 @@ example = extrude(exampleSketch, length = 5)
 </model-viewer>
 
 ```kcl
+@settings(kclVersion = 1.0)
+
 exampleSketch = startSketchOn(XZ)
   |> startProfile(at = [-15, 0])
   |> line(end = [30, 0])
@@ -78,7 +87,7 @@ example = extrude(exampleSketch, length = 5)
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the circle function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-circle1_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-circle1_output.glb"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-circle1.png"

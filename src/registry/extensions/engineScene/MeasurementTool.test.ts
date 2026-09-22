@@ -1,4 +1,6 @@
+import type { UnitArea, UnitVolume } from '@kittycad/lib'
 import type { Artifact } from '@src/lang/std/artifactGraph'
+import type { ArtifactGraph } from '@src/lang/wasm'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 import { describe, expect, it } from 'vitest'
 import {
@@ -17,7 +19,10 @@ import {
   getMeasurementEntities,
   getMeasurementEntityIds,
   getVolumeUnit,
+  graphSelectionsReferenceCurrentArtifacts,
   type MeasurementEntity,
+  unitAreaLabels,
+  unitVolumeLabels,
 } from './measurementUtils'
 
 describe('MeasurementTool helpers', () => {
@@ -32,6 +37,47 @@ describe('MeasurementTool helpers', () => {
     return value as Artifact
   }
 
+  function sweepArtifact(value: {
+    id: string
+    pathId: string
+    subType: Extract<Artifact, { type: 'sweep' }>['subType']
+  }): Extract<Artifact, { type: 'sweep' }> {
+    return {
+      ...value,
+      type: 'sweep',
+      surfaceIds: [],
+      edgeIds: [],
+      codeRef: {
+        range: [0, 1, 0],
+        pathToNode: [],
+        nodePath: { steps: [] },
+      },
+      trajectoryId: null,
+      method: 'new',
+      consumed: false,
+    }
+  }
+
+  function pathArtifact(value: {
+    id: string
+    sweepId?: string | null
+  }): Extract<Artifact, { type: 'path' }> {
+    return {
+      ...value,
+      type: 'path',
+      subType: 'sketch',
+      planeId: 'plane-id',
+      segIds: [],
+      trajectorySweepId: null,
+      consumed: false,
+      codeRef: {
+        range: [0, 1, 0],
+        pathToNode: [],
+        nodePath: { steps: [] },
+      },
+    }
+  }
+
   function patternArtifact(value: {
     id: string
     copyIds: string[]
@@ -42,6 +88,10 @@ describe('MeasurementTool helpers', () => {
       ...value,
       type: 'pattern',
     } as Artifact
+  }
+
+  function graph(...artifacts: Artifact[]): ArtifactGraph {
+    return new Map(artifacts.map((artifact) => [artifact.id, artifact]))
   }
 
   it('resolves graph selections to engine entity ids', () => {
@@ -155,6 +205,136 @@ describe('MeasurementTool helpers', () => {
     ])
   })
 
+  it('routes original swept body selections to engine object ids', () => {
+    const path = pathArtifact({ id: 'engine-body-id', sweepId: 'sweep-id' })
+    const sweep = sweepArtifact({
+      id: 'sweep-id',
+      pathId: path.id,
+      subType: 'extrusion',
+    })
+    const selections: Selections = {
+      graphSelections: [
+        {
+          artifact: sweep,
+          codeRef: sweep.codeRef,
+        },
+      ],
+      otherSelections: [],
+    }
+
+    expect(getMeasurementEntities(selections, graph(path, sweep))).toEqual([
+      { id: 'engine-body-id', kind: 'body' },
+    ])
+  })
+
+  it('keeps loft body selections on the artifact id domain', () => {
+    const path = pathArtifact({ id: 'loft-profile-id', sweepId: 'loft-id' })
+    const loft = sweepArtifact({
+      id: 'loft-id',
+      pathId: path.id,
+      subType: 'loft',
+    })
+    const selections: Selections = {
+      graphSelections: [
+        {
+          artifact: loft,
+          codeRef: loft.codeRef,
+        },
+      ],
+      otherSelections: [],
+    }
+
+    expect(getMeasurementEntities(selections, graph(path, loft))).toEqual([
+      { id: 'loft-id', kind: 'body' },
+    ])
+  })
+
+  it('does not route mirrored swept bodies through the source path id', () => {
+    const sourcePath = pathArtifact({
+      id: 'source-engine-body-id',
+      sweepId: 'source-sweep-id',
+    })
+    const mirroredSweep = sweepArtifact({
+      id: 'mirrored-engine-body-id',
+      pathId: sourcePath.id,
+      subType: 'extrusion',
+    })
+    const selections: Selections = {
+      graphSelections: [
+        {
+          artifact: mirroredSweep,
+          codeRef: mirroredSweep.codeRef,
+        },
+      ],
+      otherSelections: [],
+    }
+
+    expect(
+      getMeasurementEntities(selections, graph(sourcePath, mirroredSweep))
+    ).toEqual([{ id: 'mirrored-engine-body-id', kind: 'body' }])
+  })
+
+  it('routes pattern source rows through their source sweep bridge', () => {
+    const sourcePath = pathArtifact({
+      id: 'source-engine-body-id',
+      sweepId: 'source-sweep-id',
+    })
+    const sourceSweep = sweepArtifact({
+      id: 'source-sweep-id',
+      pathId: sourcePath.id,
+      subType: 'extrusion',
+    })
+    const pattern = patternArtifact({
+      id: 'pattern-id',
+      copyIds: ['copy-body-id'],
+      copyFaceIds: [],
+      copyEdgeIds: [],
+    })
+    const selections: Selections = {
+      graphSelections: [
+        {
+          artifact: pattern,
+          engineEntityId: sourceSweep.id,
+          codeRef: sourceSweep.codeRef,
+        },
+      ],
+      otherSelections: [],
+    }
+
+    expect(
+      getMeasurementEntities(
+        selections,
+        graph(sourcePath, sourceSweep, pattern)
+      )
+    ).toEqual([{ id: 'source-engine-body-id', kind: 'body' }])
+  })
+
+  it('keeps pattern copy rows on their copy engine object id', () => {
+    const pattern = patternArtifact({
+      id: 'pattern-id',
+      copyIds: ['copy-body-id'],
+      copyFaceIds: [],
+      copyEdgeIds: [],
+    })
+    const selections: Selections = {
+      graphSelections: [
+        {
+          artifact: pattern,
+          engineEntityId: 'copy-body-id',
+          codeRef: {
+            range: [0, 1, 0],
+            pathToNode: [],
+          },
+        },
+      ],
+      otherSelections: [],
+    }
+
+    expect(getMeasurementEntities(selections, graph(pattern))).toEqual([
+      { id: 'copy-body-id', kind: 'body' },
+    ])
+  })
+
   it('includes selectable non-code scene entities', () => {
     const selections: Selections = {
       graphSelections: [],
@@ -191,6 +371,51 @@ describe('MeasurementTool helpers', () => {
     ])
   })
 
+  it('detects graph selections whose artifacts were replaced after regeneration', () => {
+    const currentBody = artifact({
+      id: 'body-id',
+      type: 'sweep',
+    })
+    const staleBody = artifact({
+      id: 'body-id',
+      type: 'sweep',
+    })
+    const currentArtifactGraph = new Map([[currentBody.id, currentBody]])
+    const codeRef = {
+      range: [0, 1, 0] as [number, number, number],
+      pathToNode: [],
+    }
+
+    expect(
+      graphSelectionsReferenceCurrentArtifacts(
+        {
+          graphSelections: [
+            {
+              artifact: currentBody,
+              codeRef,
+            },
+          ],
+          otherSelections: [],
+        },
+        currentArtifactGraph
+      )
+    ).toBe(true)
+    expect(
+      graphSelectionsReferenceCurrentArtifacts(
+        {
+          graphSelections: [
+            {
+              artifact: staleBody,
+              codeRef,
+            },
+          ],
+          otherSelections: [],
+        },
+        currentArtifactGraph
+      )
+    ).toBe(false)
+  })
+
   it('classifies non-code faces and bodies', () => {
     const selections: Selections = {
       graphSelections: [],
@@ -220,6 +445,7 @@ describe('MeasurementTool helpers', () => {
     const edge = measurementEntity('edge')
     const face = measurementEntity('face')
     const body = measurementEntity('body')
+    const other = measurementEntity('other')
 
     expect(
       measurementCapabilities.map((capability) => ({
@@ -248,6 +474,9 @@ describe('MeasurementTool helpers', () => {
       type: 'distance',
       entities: [body, face],
     })
+    expect(getMeasurementTarget([body, other])).toBeNull()
+    expect(getMeasurementTarget([edge, other])).toBeNull()
+    expect(getMeasurementTarget([other, other])).toBeNull()
     expect(getMeasurementTarget([body, face, edge])).toBeNull()
   })
 
@@ -323,5 +552,52 @@ describe('MeasurementTool helpers', () => {
     expect(formatPoint3d({ x: 1.23456, y: 0.00000012, z: Number.NaN })).toBe(
       '1.2346, 1.200e-7, -'
     )
+  })
+})
+
+describe('unit display labels', () => {
+  it('labels every area and volume unit', () => {
+    const areaUnits: UnitArea[] = [
+      'mm2',
+      'cm2',
+      'dm2',
+      'm2',
+      'km2',
+      'in2',
+      'ft2',
+      'yd2',
+    ]
+    const volumeUnits: UnitVolume[] = [
+      'mm3',
+      'cm3',
+      'm3',
+      'in3',
+      'ft3',
+      'yd3',
+      'ml',
+      'l',
+      'usfloz',
+      'usgal',
+    ]
+
+    for (const unit of areaUnits) {
+      expect(unitAreaLabels[unit]).toBeTruthy()
+    }
+    for (const unit of volumeUnits) {
+      expect(unitVolumeLabels[unit]).toBeTruthy()
+    }
+  })
+
+  it('renders squared and cubed units as superscripts', () => {
+    expect(unitAreaLabels.mm2).toBe('mm\u00b2')
+    expect(unitVolumeLabels.mm3).toBe('mm\u00b3')
+
+    // A label must never fall back to a trailing ASCII 2 or 3.
+    for (const label of [
+      ...Object.values(unitAreaLabels),
+      ...Object.values(unitVolumeLabels),
+    ]) {
+      expect(label).not.toMatch(/[23]$/)
+    }
   })
 })

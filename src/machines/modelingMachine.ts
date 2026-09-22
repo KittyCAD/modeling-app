@@ -148,6 +148,7 @@ import {
 } from '@src/lang/modifyAst/gears'
 import { addHelix } from '@src/lang/modifyAst/geometry'
 import { sketchBlockOnExtrudedFace } from '@src/lang/modifyAst/legacySketchFace'
+import { createModelingCodemodActor } from '@src/lang/modifyAst/modelingCodemod'
 import {
   addPatternCircular3D,
   addPatternLinear3D,
@@ -209,6 +210,7 @@ import type {
 } from '@src/lang/wasm'
 import { parse, recast, resultIsOk, sketchFromKclValue } from '@src/lang/wasm'
 import type { MachineManager } from '@src/lib/MachineManager'
+import { modelingCommandCodemods } from '@src/lib/commandBarConfigs/modelingCommandCodemods'
 import type { ModelingCommandSchema } from '@src/lib/commandBarConfigs/modelingCommandConfig'
 import type { KclCommandValue } from '@src/lib/commandTypes'
 import {
@@ -217,12 +219,15 @@ import {
   EXECUTION_TYPE_REAL,
   EXPORT_TOAST_MESSAGES,
   MAKE_TOAST_MESSAGES,
+  PROJECT_ENTRYPOINT,
 } from '@src/lib/constants'
 import { ClientErrorCode, reportClientError } from '@src/lib/clientErrors'
 import { exportMake } from '@src/lib/exportMake'
 import { exportSave } from '@src/lib/exportSave'
+import { toProjectRelativePath, webSafePathSplit } from '@src/lib/paths'
 import { toPlaneName } from '@src/lib/planes'
 import type { Project } from '@src/lib/project'
+import { sanitizeProjectName } from '@src/lib/projectName'
 import type RustContext from '@src/lib/rustContext'
 import {
   getDefaultSketchPlaneData,
@@ -701,13 +706,11 @@ export type ModelingMachineEvent =
       type: 'equip tool'
       data: { tool: EquipTool }
       keepSelection?: boolean
+      forceEquip?: boolean
     }
+  | { type: 'pick hovered tool' }
   | {
-      type:
-        | 'Dimension'
-        | 'HorizontalDistance'
-        | 'VerticalDistance'
-        | 'construction'
+      type: 'Dimension' | 'construction'
       keepSelection?: boolean
     }
   | { type: 'unequip tool' }
@@ -3247,6 +3250,7 @@ export const modelingMachine = setup({
           defaultUnit,
           projectRef,
         } = input
+        await kclManager.flushPendingEditorExecution()
         if (kclManager.hasParseErrors()) {
           return reject(
             new Error('Unable to enter sketch while KCL has parse errors.')
@@ -5272,6 +5276,9 @@ export const modelingMachine = setup({
         )
       }
     ),
+    deleteAstMod: fromPromise(
+      createModelingCodemodActor(modelingCommandCodemods.Delete)
+    ),
     gdtFlatnessAstMod: fromPromise(
       async ({
         input,
@@ -6203,13 +6210,14 @@ export const modelingMachine = setup({
               kclManager: KclManager
               rustContext: RustContext
               defaultUnit?: ModelingMachineContext['store']['defaultUnit']
+              fileName: string
             }
           | undefined
       }) => {
         if (!input || !input.data) {
           return new Error(NO_INPUT_PROVIDED_MESSAGE)
         }
-        const { data, kclManager, rustContext, defaultUnit } = input
+        const { data, kclManager, rustContext, defaultUnit, fileName } = input
 
         if (kclManager.hasErrors() || kclManager.ast.body.length === 0) {
           let errorMessage = 'Unable to Export '
@@ -6221,15 +6229,6 @@ export const modelingMachine = setup({
           console.error(errorMessage)
           toast.error(errorMessage)
           return new Error(errorMessage)
-        }
-
-        let fileName = (kclManager.currentFileName ?? 'output.kcl')?.replace(
-          '.kcl',
-          `.${data.type}`
-        )
-        // Ensure the file has an extension.
-        if (!fileName.includes('.')) {
-          fileName += `.${data.type}`
         }
 
         const { up, scale, ...formatData } = data
@@ -6305,7 +6304,17 @@ export const modelingMachine = setup({
           return
         }
 
-        await exportSave({ files, toastId, fileName })
+        const fileOperations = kclManager.fileOperations
+        if (!fileOperations) {
+          return new Error('File operations are not configured.')
+        }
+
+        await exportSave({
+          fileOperations,
+          files,
+          toastId,
+          fileName,
+        })
       }
     ),
     makeFromEngine: fromPromise(
@@ -6839,6 +6848,10 @@ export const modelingMachine = setup({
 
         Hide: {
           target: 'Applying hide',
+        },
+
+        Delete: {
+          target: 'Applying delete',
         },
 
         'GDT Flatness': {
@@ -8386,16 +8399,13 @@ export const modelingMachine = setup({
             'equip tool': {
               actions: ['forward event to sketch solve if active'],
             },
+            'pick hovered tool': {
+              actions: ['forward event to sketch solve if active'],
+            },
             'unequip tool': {
               actions: ['forward event to sketch solve if active'],
             },
             Dimension: {
-              actions: ['forward event to sketch solve if active'],
-            },
-            HorizontalDistance: {
-              actions: ['forward event to sketch solve if active'],
-            },
-            VerticalDistance: {
               actions: ['forward event to sketch solve if active'],
             },
             construction: {
@@ -8966,6 +8976,27 @@ export const modelingMachine = setup({
       },
     },
 
+    'Applying delete': {
+      invoke: {
+        src: 'deleteAstMod',
+        id: 'deleteAstMod',
+        input: ({ event, context }) => {
+          if (event.type !== 'Delete') return undefined
+          return {
+            data: event.data,
+            kclManager: context.kclManager,
+            rustContext: context.rustContext,
+            wasmInstance: context.wasmInstance,
+          }
+        },
+        onDone: ['idle'],
+        onError: {
+          target: 'idle',
+          actions: 'toastError',
+        },
+      },
+    },
+
     'Applying GDT Flatness': {
       invoke: {
         src: 'gdtFlatnessAstMod',
@@ -9334,12 +9365,40 @@ export const modelingMachine = setup({
         id: 'exportFromEngine',
         input: ({ event, context }) => {
           if (event.type !== 'Export') return undefined
+          const project = context.projectRef?.current
+          const currentFileName = context.kclManager.currentFileName ?? ''
+          // start with the file name by default, eg. "other.kcl"
+          let fileName = currentFileName
+          if (currentFileName === PROJECT_ENTRYPOINT && project) {
+            // currentFileName is "main.kcl"
+
+            const projectRelativePath = toProjectRelativePath(
+              project.path,
+              context.kclManager.path
+            )
+            if (projectRelativePath === PROJECT_ENTRYPOINT) {
+              // root "main.kcl" -> use project title or directory name
+              fileName = project.title?.trim() || project.name
+            } else if (!projectRelativePath.startsWith('../')) {
+              // "subfolder/main.kcl" -> export as "subfolder.gltf" (in case gltf format)
+              fileName =
+                webSafePathSplit(projectRelativePath).at(-2) || currentFileName
+            }
+          }
+          fileName = fileName.replace(/\.kcl$/i, '') // remove trailing .kcl
+          fileName = sanitizeProjectName(fileName, 'output') // remove slash, backslash
+          const extension =
+            event.data.type === 'gltf' && event.data.storage === 'binary'
+              ? 'glb'
+              : event.data.type
+          fileName += `.${extension}` // add file extension
+
           return {
             data: event.data,
             kclManager: context.kclManager,
             rustContext: context.rustContext,
             defaultUnit: context.store.defaultUnit,
-            fileName: context.fileName,
+            fileName,
           }
         },
         onDone: ['idle'],

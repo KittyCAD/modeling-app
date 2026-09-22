@@ -64,7 +64,10 @@ describe('Zookeeper prompt selections from modelingMachine', () => {
   })
 
   afterAll(() => {
-    world.engineCommandManager.tearDown()
+    world.engineCommandManager.tearDown({
+      route: 'user-requested',
+      initiatedBy: 'client',
+    })
     world.commandBarActor.stop()
     world.settingsActor.stop()
   })
@@ -143,7 +146,7 @@ describe('Zookeeper prompt selections from modelingMachine', () => {
         })),
       },
     })
-    const actor = createActor(machine, { input: { apiToken: '' } }).start()
+    const actor = createActor(machine, { input: { apiToken: 'token' } }).start()
     const projectFiles: FileMeta[] = [
       {
         type: 'kcl',

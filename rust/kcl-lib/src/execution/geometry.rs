@@ -753,12 +753,9 @@ impl TryFrom<PlaneData> for PlaneInfo {
 impl From<&PlaneData> for PlaneKind {
     fn from(value: &PlaneData) -> Self {
         match value {
-            PlaneData::XY => PlaneKind::XY,
-            PlaneData::NegXY => PlaneKind::XY,
-            PlaneData::XZ => PlaneKind::XZ,
-            PlaneData::NegXZ => PlaneKind::XZ,
-            PlaneData::YZ => PlaneKind::YZ,
-            PlaneData::NegYZ => PlaneKind::YZ,
+            PlaneData::XY | PlaneData::NegXY => PlaneKind::XY,
+            PlaneData::XZ | PlaneData::NegXZ => PlaneKind::XZ,
+            PlaneData::YZ | PlaneData::NegYZ => PlaneKind::YZ,
             PlaneData::Plane(_) => PlaneKind::Custom,
         }
     }
@@ -766,15 +763,13 @@ impl From<&PlaneData> for PlaneKind {
 
 impl From<&PlaneInfo> for PlaneKind {
     fn from(value: &PlaneInfo) -> Self {
-        let data = PlaneData::Plane(value.clone());
-        PlaneKind::from(&data)
+        PlaneKind::from(&PlaneData::Plane(value.clone()))
     }
 }
 
 impl From<PlaneInfo> for PlaneKind {
     fn from(value: PlaneInfo) -> Self {
-        let data = PlaneData::Plane(value);
-        PlaneKind::from(&data)
+        PlaneKind::from(&PlaneData::Plane(value))
     }
 }
 
@@ -1298,6 +1293,14 @@ pub struct Solid {
     #[serde(skip)]
     #[ts(skip)]
     pub(crate) pattern_source_artifact_id: Option<ArtifactId>,
+    /// Body type known from the KCL operation that created this value.
+    ///
+    /// Mock execution cannot query the engine for this, so retain it when it
+    /// is known locally. Procedural operations whose result depends on engine
+    /// topology may leave it unset.
+    #[serde(skip)]
+    #[ts(skip)]
+    pub(crate) best_guess_body_type: Option<kcmc::shared::BodyType>,
     /// The artifact ID of the solid.  Unlike `id`, this doesn't change.
     pub artifact_id: ArtifactId,
     /// The extrude surfaces.
@@ -2214,6 +2217,15 @@ impl ExtrudeSurface {
             ExtrudeSurface::ExtrudeArc(ea) => ea.geo_meta.id,
             ExtrudeSurface::Fillet(f) => f.geo_meta.id,
             ExtrudeSurface::Chamfer(c) => c.geo_meta.id,
+        }
+    }
+
+    pub fn set_id(&mut self, id: uuid::Uuid) {
+        match self {
+            ExtrudeSurface::ExtrudePlane(ep) => ep.geo_meta.id = id,
+            ExtrudeSurface::ExtrudeArc(ea) => ea.geo_meta.id = id,
+            ExtrudeSurface::Fillet(f) => f.geo_meta.id = id,
+            ExtrudeSurface::Chamfer(c) => c.geo_meta.id = id,
         }
     }
 

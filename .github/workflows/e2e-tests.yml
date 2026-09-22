@@ -70,7 +70,7 @@ jobs:
     if: github.repository == 'kittycad/modeling-app'
 
     steps:
-      - uses: actions/create-github-app-token@v3.2.0
+      - uses: actions/create-github-app-token@v3
         id: app-token
         with:
           app-id: ${{ secrets.MODELING_APP_GH_APP_ID }}
@@ -113,7 +113,7 @@ jobs:
           cache: npm
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci
 
       - name: Download browser cache
         uses: actions/cache@v6.1.0
@@ -134,8 +134,18 @@ jobs:
           CI_SUITE: e2e:snapshots
           TARGET: web
 
-      - name: Update snapshots
+      - name: Check for snapshot mismatches
         if: failure()
+        id: snapshot_mismatch
+        shell: bash
+        run: |
+          if find test-results -name '*-actual.png' -print -quit 2>/dev/null | grep --quiet .
+          then echo "found=true" >> $GITHUB_OUTPUT
+          else echo "found=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Update snapshots
+        if: failure() && steps.snapshot_mismatch.outputs.found == 'true'
         run: npm run test:snapshots -- --last-failed --update-snapshots
         env:
           VITE_ZOO_API_TOKEN: ${{ secrets.ZOO_API_TOKEN }}
@@ -204,16 +214,29 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - os: namespace-profile-ubuntu-8-cores
+          - os: namespace-profile-ubuntu-8-cores;overrides.cache-tag=modeling-app-general-v2
+            label: ubuntu
+            test_script: test:e2e:web
+            playwright_cache_path: ~/.cache/ms-playwright
           - os: namespace-profile-macos-8-cores
+            label: macos
+            test_script: test:e2e:web
+            playwright_cache_path: ~/Library/Caches/ms-playwright
           - os: namespace-profile-windows-8-cores
+            label: windows
+            test_script: test:e2e:web
+            playwright_cache_path: ~/AppData/Local/ms-playwright
+          - os: namespace-profile-macos-8-cores
+            label: macos, webkit
+            test_script: test:e2e:web:webkit
+            playwright_cache_path: ~/Library/Caches/ms-playwright
     runs-on: ${{ matrix.os }}
-    name: e2e:web (${{ contains(matrix.os, 'ubuntu') && 'ubuntu' || (contains(matrix.os, 'windows') && 'windows' || 'macos') }})
+    name: e2e:web (${{ matrix.label }})
     env:
       OS_NAME: ${{ contains(matrix.os, 'ubuntu') && 'ubuntu' || (contains(matrix.os, 'windows') && 'windows' || 'macos') }}
 
     steps:
-      - uses: actions/create-github-app-token@v3.2.0
+      - uses: actions/create-github-app-token@v3
         id: app-token
         with:
           app-id: ${{ secrets.MODELING_APP_GH_APP_ID }}
@@ -256,12 +279,12 @@ jobs:
           cache: npm
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci
 
       - name: Download browser cache
         uses: actions/cache@v6.1.0
         with:
-          path: ~/.cache/ms-playwright/
+          path: ${{ matrix.playwright_cache_path }}
           key: ${{ runner.os }}-playwright-${{ hashFiles('package-lock.json') }}
 
       - name: Install browsers
@@ -274,7 +297,7 @@ jobs:
           GH_ACTIONS_AXIOM_TOKEN: ${{ secrets.GH_ACTIONS_AXIOM_TOKEN }}
           OS_NAME: ${{ env.OS_NAME }}
 
-      - run: npm run test:e2e:web
+      - run: npm run ${{ matrix.test_script }}
         env:
           VITE_ZOO_API_TOKEN: ${{ secrets.ZOO_API_TOKEN }}
           TAB_API_URL: ${{ vars.TAB_API_URL }}
@@ -288,7 +311,7 @@ jobs:
         uses: actions/upload-artifact@v7
         if: ${{ !cancelled() && (success() || failure()) }}
         with:
-          name: playwright-report-web-${{ env.OS_NAME }}-${{ matrix.shardIndex }}-${{ github.sha }}
+          name: playwright-report-web-${{ matrix.label }}-${{ github.sha }}
           path: playwright-report/
           include-hidden-files: true
           retention-days: 30
@@ -296,6 +319,7 @@ jobs:
 
       - name: Track teardown (web)
         if: always()
+        shell: bash
         run: .github/ci-cd-scripts/track-step.sh
         env:
           TAB_API_URL: ${{ vars.TAB_API_URL }}
@@ -310,7 +334,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [namespace-profile-ubuntu-8-cores]
+        os:
+          - namespace-profile-ubuntu-8-cores;overrides.cache-tag=modeling-app-general-v2
         shardIndex: [1, 2, 3, 4, 5, 6, 7, 8]
         shardTotal: [8]
         include:
@@ -361,8 +386,7 @@ jobs:
           cache: npm
 
       - name: Install dependencies
-        id: deps-install
-        run: npm install
+        run: npm ci
 
       - name: Download browser cache
         uses: actions/cache@v6.1.0
@@ -381,10 +405,14 @@ jobs:
           OS_NAME: ${{ env.OS_NAME }}
 
       - name: Build app
+        id: build
         run: npm run tronb:vite:dev
+        env:
+          NODE_OPTIONS: ${{ runner.os == 'macOS' && '--max-old-space-size=4096' || '' }}
 
-      - uses: actions/download-artifact@v8
-        if: ${{ !cancelled() && (success() || failure()) }}
+      - name: Download test results from a previous workflow attempt
+        if: ${{ github.run_attempt > 1 && !cancelled() && (success() || failure()) }}
+        uses: actions/download-artifact@v8
         continue-on-error: true
         with:
           name: test-results-desktop-${{ env.OS_NAME }}-${{ matrix.shardIndex }}-${{ github.sha }}
@@ -392,7 +420,7 @@ jobs:
 
       - name: npm run test:e2e:desktop
         id: retry
-        if: ${{ !cancelled() && steps.deps-install.outcome == 'success' }}
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
         uses: nick-fields/retry@v4.0.0
         with:
           shell: bash
@@ -431,6 +459,7 @@ jobs:
 
       - name: Track teardown (desktop)
         if: always()
+        shell: bash
         run: .github/ci-cd-scripts/track-step.sh
         env:
           TAB_API_URL: ${{ vars.TAB_API_URL }}
@@ -442,7 +471,7 @@ jobs:
 
   vercel:
     name: e2e:web (vercel)
-    runs-on: namespace-profile-ubuntu-8-cores
+    runs-on: namespace-profile-ubuntu-8-cores;overrides.cache-tag=modeling-app-general-v2
     if: github.repository == 'kittycad/modeling-app' && (github.event_name == 'pull_request' || (github.event_name == 'push' && github.ref_name == 'main'))
 
     steps:
@@ -454,7 +483,7 @@ jobs:
           cache: npm
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci
 
       - name: Download browser cache
         uses: actions/cache@v6.1.0

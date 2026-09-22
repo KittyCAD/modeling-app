@@ -3,6 +3,35 @@ source: kcl-lib/src/simulation_tests.rs
 description: Artifact commands import_transform.kcl
 ---
 {
+  "rust/kcl-lib/tests/import_transform/2-5-long-m8-chc-screw.stl": [
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "import_files",
+        "files": [
+          {
+            "path": "2-5-long-m8-chc-screw.stl",
+            "data": []
+          }
+        ],
+        "format": {
+          "type": "stl",
+          "coords": {
+            "forward": {
+              "axis": "y",
+              "direction": "negative"
+            },
+            "up": {
+              "axis": "z",
+              "direction": "positive"
+            }
+          },
+          "units": "m"
+        }
+      }
+    }
+  ],
   "rust/kcl-lib/tests/import_transform/input.kcl": [
     {
       "cmdId": "[uuid]",

@@ -21,6 +21,9 @@ export interface CommandWithDisabledState {
   disabled: boolean
 }
 
+export const commandKey = (command: Command) =>
+  command.id ?? `${command.groupId}:${String(command.name)}`
+
 /**
  * Sorting logic for commands in the command combo box.
  */

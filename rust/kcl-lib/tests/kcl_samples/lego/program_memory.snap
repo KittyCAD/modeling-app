@@ -121,6 +121,8 @@ description: Variables in memory after executing lego.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -128,10 +130,10 @@ description: Variables in memory after executing lego.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 993,
-            "end": 998,
+            "commentStart": 1039,
+            "end": 1044,
             "moduleId": 0,
-            "start": 993,
+            "start": 1039,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -142,10 +144,10 @@ description: Variables in memory after executing lego.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1075,
-            "end": 1080,
+            "commentStart": 1121,
+            "end": 1126,
             "moduleId": 0,
-            "start": 1075,
+            "start": 1121,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -156,10 +158,10 @@ description: Variables in memory after executing lego.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1194,
-            "end": 1199,
+            "commentStart": 1240,
+            "end": 1245,
             "moduleId": 0,
-            "start": 1194,
+            "start": 1240,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -170,10 +172,10 @@ description: Variables in memory after executing lego.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1313,
-            "end": 1318,
+            "commentStart": 1359,
+            "end": 1364,
             "moduleId": 0,
-            "start": 1313,
+            "start": 1359,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -195,10 +197,10 @@ description: Variables in memory after executing lego.kcl
               -11.9
             ],
             "tag": {
-              "commentStart": 993,
-              "end": 998,
+              "commentStart": 1039,
+              "end": 1044,
               "moduleId": 0,
-              "start": 993,
+              "start": 1039,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -219,10 +221,10 @@ description: Variables in memory after executing lego.kcl
               -11.9
             ],
             "tag": {
-              "commentStart": 1075,
-              "end": 1080,
+              "commentStart": 1121,
+              "end": 1126,
               "moduleId": 0,
-              "start": 1075,
+              "start": 1121,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -243,10 +245,10 @@ description: Variables in memory after executing lego.kcl
               11.9
             ],
             "tag": {
-              "commentStart": 1194,
-              "end": 1199,
+              "commentStart": 1240,
+              "end": 1245,
               "moduleId": 0,
-              "start": 1194,
+              "start": 1240,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -267,10 +269,10 @@ description: Variables in memory after executing lego.kcl
               11.9
             ],
             "tag": {
-              "commentStart": 1313,
-              "end": 1318,
+              "commentStart": 1359,
+              "end": 1364,
               "moduleId": 0,
-              "start": 1313,
+              "start": 1359,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -283,17 +285,17 @@ description: Variables in memory after executing lego.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 0,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -349,8 +351,8 @@ description: Variables in memory after executing lego.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "in"
+        "units": "in",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -363,8 +365,10 @@ description: Variables in memory after executing lego.kcl
     "value": 4.8,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "bumpHeight": {
@@ -372,8 +376,10 @@ description: Variables in memory after executing lego.kcl
     "value": 1.8,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "clearance": {
@@ -381,8 +387,10 @@ description: Variables in memory after executing lego.kcl
     "value": 0.1,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "height": {
@@ -390,8 +398,10 @@ description: Variables in memory after executing lego.kcl
     "value": 3.2,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "lSegments": {
@@ -399,8 +409,10 @@ description: Variables in memory after executing lego.kcl
     "value": 7.933333333333334,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "lbumps": {
@@ -408,27 +420,25 @@ description: Variables in memory after executing lego.kcl
     "value": 3.0,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "line1": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "line1"
   },
   "line2": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "line2"
   },
   "line3": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "line3"
   },
   "line4": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "line4"
   },
@@ -437,8 +447,10 @@ description: Variables in memory after executing lego.kcl
     "value": -4.0,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "pegCenterY": {
@@ -446,12 +458,13 @@ description: Variables in memory after executing lego.kcl
     "value": -8.0,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "pegCircle": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "pegCircle"
   },
@@ -463,6 +476,8 @@ description: Variables in memory after executing lego.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -470,10 +485,10 @@ description: Variables in memory after executing lego.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2491,
-                "end": 2500,
+                "commentStart": 2537,
+                "end": 2546,
                 "moduleId": 0,
-                "start": 2491,
+                "start": 2537,
                 "type": "TagDeclarator",
                 "value": "pegCircle"
               },
@@ -501,10 +516,10 @@ description: Variables in memory after executing lego.kcl
                 ],
                 "radius": 2.4,
                 "tag": {
-                  "commentStart": 2491,
-                  "end": 2500,
+                  "commentStart": 2537,
+                  "end": 2546,
                   "moduleId": 0,
-                  "start": 2491,
+                  "start": 2537,
                   "type": "TagDeclarator",
                   "value": "pegCircle"
                 },
@@ -565,8 +580,8 @@ description: Variables in memory after executing lego.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "in"
+            "units": "in",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -579,6 +594,8 @@ description: Variables in memory after executing lego.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -586,10 +603,10 @@ description: Variables in memory after executing lego.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2491,
-                "end": 2500,
+                "commentStart": 2537,
+                "end": 2546,
                 "moduleId": 0,
-                "start": 2491,
+                "start": 2537,
                 "type": "TagDeclarator",
                 "value": "pegCircle"
               },
@@ -617,10 +634,10 @@ description: Variables in memory after executing lego.kcl
                 ],
                 "radius": 2.4,
                 "tag": {
-                  "commentStart": 2491,
-                  "end": 2500,
+                  "commentStart": 2537,
+                  "end": 2546,
                   "moduleId": 0,
-                  "start": 2491,
+                  "start": 2537,
                   "type": "TagDeclarator",
                   "value": "pegCircle"
                 },
@@ -681,8 +698,8 @@ description: Variables in memory after executing lego.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "in"
+            "units": "in",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -695,6 +712,8 @@ description: Variables in memory after executing lego.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -702,10 +721,10 @@ description: Variables in memory after executing lego.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2491,
-                "end": 2500,
+                "commentStart": 2537,
+                "end": 2546,
                 "moduleId": 0,
-                "start": 2491,
+                "start": 2537,
                 "type": "TagDeclarator",
                 "value": "pegCircle"
               },
@@ -733,10 +752,10 @@ description: Variables in memory after executing lego.kcl
                 ],
                 "radius": 2.4,
                 "tag": {
-                  "commentStart": 2491,
-                  "end": 2500,
+                  "commentStart": 2537,
+                  "end": 2546,
                   "moduleId": 0,
-                  "start": 2491,
+                  "start": 2537,
                   "type": "TagDeclarator",
                   "value": "pegCircle"
                 },
@@ -797,8 +816,8 @@ description: Variables in memory after executing lego.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "in"
+            "units": "in",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -811,6 +830,8 @@ description: Variables in memory after executing lego.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -818,10 +839,10 @@ description: Variables in memory after executing lego.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2491,
-                "end": 2500,
+                "commentStart": 2537,
+                "end": 2546,
                 "moduleId": 0,
-                "start": 2491,
+                "start": 2537,
                 "type": "TagDeclarator",
                 "value": "pegCircle"
               },
@@ -849,10 +870,10 @@ description: Variables in memory after executing lego.kcl
                 ],
                 "radius": 2.4,
                 "tag": {
-                  "commentStart": 2491,
-                  "end": 2500,
+                  "commentStart": 2537,
+                  "end": 2546,
                   "moduleId": 0,
-                  "start": 2491,
+                  "start": 2537,
                   "type": "TagDeclarator",
                   "value": "pegCircle"
                 },
@@ -913,8 +934,8 @@ description: Variables in memory after executing lego.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "in"
+            "units": "in",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -927,6 +948,8 @@ description: Variables in memory after executing lego.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -934,10 +957,10 @@ description: Variables in memory after executing lego.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2491,
-                "end": 2500,
+                "commentStart": 2537,
+                "end": 2546,
                 "moduleId": 0,
-                "start": 2491,
+                "start": 2537,
                 "type": "TagDeclarator",
                 "value": "pegCircle"
               },
@@ -965,10 +988,10 @@ description: Variables in memory after executing lego.kcl
                 ],
                 "radius": 2.4,
                 "tag": {
-                  "commentStart": 2491,
-                  "end": 2500,
+                  "commentStart": 2537,
+                  "end": 2546,
                   "moduleId": 0,
-                  "start": 2491,
+                  "start": 2537,
                   "type": "TagDeclarator",
                   "value": "pegCircle"
                 },
@@ -1029,8 +1052,8 @@ description: Variables in memory after executing lego.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "in"
+            "units": "in",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -1043,6 +1066,8 @@ description: Variables in memory after executing lego.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -1050,10 +1075,10 @@ description: Variables in memory after executing lego.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2491,
-                "end": 2500,
+                "commentStart": 2537,
+                "end": 2546,
                 "moduleId": 0,
-                "start": 2491,
+                "start": 2537,
                 "type": "TagDeclarator",
                 "value": "pegCircle"
               },
@@ -1081,10 +1106,10 @@ description: Variables in memory after executing lego.kcl
                 ],
                 "radius": 2.4,
                 "tag": {
-                  "commentStart": 2491,
-                  "end": 2500,
+                  "commentStart": 2537,
+                  "end": 2546,
                   "moduleId": 0,
-                  "start": 2491,
+                  "start": 2537,
                   "type": "TagDeclarator",
                   "value": "pegCircle"
                 },
@@ -1145,8 +1170,8 @@ description: Variables in memory after executing lego.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "in"
+            "units": "in",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -1178,10 +1203,10 @@ description: Variables in memory after executing lego.kcl
           ],
           "radius": 2.4,
           "tag": {
-            "commentStart": 2491,
-            "end": 2500,
+            "commentStart": 2537,
+            "end": 2546,
             "moduleId": 0,
-            "start": 2491,
+            "start": 2537,
             "type": "TagDeclarator",
             "value": "pegCircle"
           },
@@ -1242,8 +1267,8 @@ description: Variables in memory after executing lego.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "in"
+      "units": "in",
+      "isClosed": "explicitly"
     }
   },
   "pegSeed": {
@@ -1251,6 +1276,8 @@ description: Variables in memory after executing lego.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -1258,10 +1285,10 @@ description: Variables in memory after executing lego.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2491,
-            "end": 2500,
+            "commentStart": 2537,
+            "end": 2546,
             "moduleId": 0,
-            "start": 2491,
+            "start": 2537,
             "type": "TagDeclarator",
             "value": "pegCircle"
           },
@@ -1289,10 +1316,10 @@ description: Variables in memory after executing lego.kcl
             ],
             "radius": 2.4,
             "tag": {
-              "commentStart": 2491,
-              "end": 2500,
+              "commentStart": 2537,
+              "end": 2546,
               "moduleId": 0,
-              "start": 2491,
+              "start": 2537,
               "type": "TagDeclarator",
               "value": "pegCircle"
             },
@@ -1353,8 +1380,8 @@ description: Variables in memory after executing lego.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "in"
+        "units": "in",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -1390,10 +1417,10 @@ description: Variables in memory after executing lego.kcl
                   ],
                   "radius": 2.4,
                   "tag": {
-                    "commentStart": 2491,
-                    "end": 2500,
+                    "commentStart": 2537,
+                    "end": 2546,
                     "moduleId": 0,
-                    "start": 2491,
+                    "start": 2537,
                     "type": "TagDeclarator",
                     "value": "pegCircle"
                   },
@@ -1475,17 +1502,21 @@ description: Variables in memory after executing lego.kcl
                       {
                         "n": -4.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -8.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -1493,17 +1524,21 @@ description: Variables in memory after executing lego.kcl
                       {
                         "n": 0.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -1590,17 +1625,21 @@ description: Variables in memory after executing lego.kcl
                       {
                         "n": -1.6,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -8.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -1608,17 +1647,21 @@ description: Variables in memory after executing lego.kcl
                       {
                         "n": -4.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -8.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -1725,8 +1768,10 @@ description: Variables in memory after executing lego.kcl
     "value": 8.0,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "postDiam": {
@@ -1734,8 +1779,10 @@ description: Variables in memory after executing lego.kcl
     "value": 6.5,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "region001": {
@@ -1754,10 +1801,10 @@ description: Variables in memory after executing lego.kcl
             -11.9
           ],
           "tag": {
-            "commentStart": 993,
-            "end": 998,
+            "commentStart": 1039,
+            "end": 1044,
             "moduleId": 0,
-            "start": 993,
+            "start": 1039,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -1778,10 +1825,10 @@ description: Variables in memory after executing lego.kcl
             -11.9
           ],
           "tag": {
-            "commentStart": 1075,
-            "end": 1080,
+            "commentStart": 1121,
+            "end": 1126,
             "moduleId": 0,
-            "start": 1075,
+            "start": 1121,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -1802,10 +1849,10 @@ description: Variables in memory after executing lego.kcl
             11.9
           ],
           "tag": {
-            "commentStart": 1194,
-            "end": 1199,
+            "commentStart": 1240,
+            "end": 1245,
             "moduleId": 0,
-            "start": 1194,
+            "start": 1240,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -1826,10 +1873,10 @@ description: Variables in memory after executing lego.kcl
             11.9
           ],
           "tag": {
-            "commentStart": 1313,
-            "end": 1318,
+            "commentStart": 1359,
+            "end": 1364,
             "moduleId": 0,
-            "start": 1313,
+            "start": 1359,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -1842,17 +1889,17 @@ description: Variables in memory after executing lego.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 0,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -1908,8 +1955,8 @@ description: Variables in memory after executing lego.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "in"
+      "units": "in",
+      "isClosed": "explicitly"
     }
   },
   "region002": {
@@ -1928,10 +1975,10 @@ description: Variables in memory after executing lego.kcl
             -10.4
           ],
           "tag": {
-            "commentStart": 1777,
-            "end": 1782,
+            "commentStart": 1823,
+            "end": 1828,
             "moduleId": 0,
-            "start": 1777,
+            "start": 1823,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -1952,10 +1999,10 @@ description: Variables in memory after executing lego.kcl
             -10.4
           ],
           "tag": {
-            "commentStart": 1859,
-            "end": 1864,
+            "commentStart": 1905,
+            "end": 1910,
             "moduleId": 0,
-            "start": 1859,
+            "start": 1905,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -1976,10 +2023,10 @@ description: Variables in memory after executing lego.kcl
             10.4
           ],
           "tag": {
-            "commentStart": 1978,
-            "end": 1983,
+            "commentStart": 2024,
+            "end": 2029,
             "moduleId": 0,
-            "start": 1978,
+            "start": 2024,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -2000,10 +2047,10 @@ description: Variables in memory after executing lego.kcl
             10.4
           ],
           "tag": {
-            "commentStart": 2097,
-            "end": 2102,
+            "commentStart": 2143,
+            "end": 2148,
             "moduleId": 0,
-            "start": 2097,
+            "start": 2143,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -2076,8 +2123,8 @@ description: Variables in memory after executing lego.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "in"
+      "units": "in",
+      "isClosed": "explicitly"
     }
   },
   "shellExtrude": {
@@ -2085,6 +2132,8 @@ description: Variables in memory after executing lego.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -2092,10 +2141,10 @@ description: Variables in memory after executing lego.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1777,
-            "end": 1782,
+            "commentStart": 1823,
+            "end": 1828,
             "moduleId": 0,
-            "start": 1777,
+            "start": 1823,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -2106,10 +2155,10 @@ description: Variables in memory after executing lego.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1859,
-            "end": 1864,
+            "commentStart": 1905,
+            "end": 1910,
             "moduleId": 0,
-            "start": 1859,
+            "start": 1905,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -2120,10 +2169,10 @@ description: Variables in memory after executing lego.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1978,
-            "end": 1983,
+            "commentStart": 2024,
+            "end": 2029,
             "moduleId": 0,
-            "start": 1978,
+            "start": 2024,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -2134,10 +2183,10 @@ description: Variables in memory after executing lego.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2097,
-            "end": 2102,
+            "commentStart": 2143,
+            "end": 2148,
             "moduleId": 0,
-            "start": 2097,
+            "start": 2143,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -2159,10 +2208,10 @@ description: Variables in memory after executing lego.kcl
               -10.4
             ],
             "tag": {
-              "commentStart": 1777,
-              "end": 1782,
+              "commentStart": 1823,
+              "end": 1828,
               "moduleId": 0,
-              "start": 1777,
+              "start": 1823,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -2183,10 +2232,10 @@ description: Variables in memory after executing lego.kcl
               -10.4
             ],
             "tag": {
-              "commentStart": 1859,
-              "end": 1864,
+              "commentStart": 1905,
+              "end": 1910,
               "moduleId": 0,
-              "start": 1859,
+              "start": 1905,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -2207,10 +2256,10 @@ description: Variables in memory after executing lego.kcl
               10.4
             ],
             "tag": {
-              "commentStart": 1978,
-              "end": 1983,
+              "commentStart": 2024,
+              "end": 2029,
               "moduleId": 0,
-              "start": 1978,
+              "start": 2024,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -2231,10 +2280,10 @@ description: Variables in memory after executing lego.kcl
               10.4
             ],
             "tag": {
-              "commentStart": 2097,
-              "end": 2102,
+              "commentStart": 2143,
+              "end": 2148,
               "moduleId": 0,
-              "start": 2097,
+              "start": 2143,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -2307,8 +2356,8 @@ description: Variables in memory after executing lego.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "in"
+        "units": "in",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": null,
@@ -2333,17 +2382,21 @@ description: Variables in memory after executing lego.kcl
                       {
                         "n": -7.9,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -11.9,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -2351,17 +2404,21 @@ description: Variables in memory after executing lego.kcl
                       {
                         "n": 7.9,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -11.9,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -2453,17 +2510,21 @@ description: Variables in memory after executing lego.kcl
                       {
                         "n": 7.9,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -11.9,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -2471,17 +2532,21 @@ description: Variables in memory after executing lego.kcl
                       {
                         "n": 7.9,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 11.9,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -2573,17 +2638,21 @@ description: Variables in memory after executing lego.kcl
                       {
                         "n": 7.9,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 11.9,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -2591,17 +2660,21 @@ description: Variables in memory after executing lego.kcl
                       {
                         "n": -7.9,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 11.9,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -2693,17 +2766,21 @@ description: Variables in memory after executing lego.kcl
                       {
                         "n": -7.9,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 11.9,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -2711,17 +2788,21 @@ description: Variables in memory after executing lego.kcl
                       {
                         "n": -7.9,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -11.9,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -2818,10 +2899,10 @@ description: Variables in memory after executing lego.kcl
                     -11.9
                   ],
                   "tag": {
-                    "commentStart": 993,
-                    "end": 998,
+                    "commentStart": 1039,
+                    "end": 1044,
                     "moduleId": 0,
-                    "start": 993,
+                    "start": 1039,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -2842,10 +2923,10 @@ description: Variables in memory after executing lego.kcl
                     -11.9
                   ],
                   "tag": {
-                    "commentStart": 1075,
-                    "end": 1080,
+                    "commentStart": 1121,
+                    "end": 1126,
                     "moduleId": 0,
-                    "start": 1075,
+                    "start": 1121,
                     "type": "TagDeclarator",
                     "value": "line2"
                   },
@@ -2866,10 +2947,10 @@ description: Variables in memory after executing lego.kcl
                     11.9
                   ],
                   "tag": {
-                    "commentStart": 1194,
-                    "end": 1199,
+                    "commentStart": 1240,
+                    "end": 1245,
                     "moduleId": 0,
-                    "start": 1194,
+                    "start": 1240,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
@@ -2890,10 +2971,10 @@ description: Variables in memory after executing lego.kcl
                     11.9
                   ],
                   "tag": {
-                    "commentStart": 1313,
-                    "end": 1318,
+                    "commentStart": 1359,
+                    "end": 1364,
                     "moduleId": 0,
-                    "start": 1313,
+                    "start": 1359,
                     "type": "TagDeclarator",
                     "value": "line4"
                   },
@@ -2906,17 +2987,17 @@ description: Variables in memory after executing lego.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 0,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -2999,17 +3080,21 @@ description: Variables in memory after executing lego.kcl
                       {
                         "n": -6.4,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -10.4,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -3017,17 +3102,21 @@ description: Variables in memory after executing lego.kcl
                       {
                         "n": 6.4,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -10.4,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -3113,17 +3202,21 @@ description: Variables in memory after executing lego.kcl
                       {
                         "n": 6.4,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -10.4,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -3131,17 +3224,21 @@ description: Variables in memory after executing lego.kcl
                       {
                         "n": 6.4,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 10.4,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -3227,17 +3324,21 @@ description: Variables in memory after executing lego.kcl
                       {
                         "n": 6.4,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 10.4,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -3245,17 +3346,21 @@ description: Variables in memory after executing lego.kcl
                       {
                         "n": -6.4,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 10.4,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -3341,17 +3446,21 @@ description: Variables in memory after executing lego.kcl
                       {
                         "n": -6.4,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 10.4,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -3359,17 +3468,21 @@ description: Variables in memory after executing lego.kcl
                       {
                         "n": -6.4,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -10.4,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -3460,10 +3573,10 @@ description: Variables in memory after executing lego.kcl
                     -10.4
                   ],
                   "tag": {
-                    "commentStart": 1777,
-                    "end": 1782,
+                    "commentStart": 1823,
+                    "end": 1828,
                     "moduleId": 0,
-                    "start": 1777,
+                    "start": 1823,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -3484,10 +3597,10 @@ description: Variables in memory after executing lego.kcl
                     -10.4
                   ],
                   "tag": {
-                    "commentStart": 1859,
-                    "end": 1864,
+                    "commentStart": 1905,
+                    "end": 1910,
                     "moduleId": 0,
-                    "start": 1859,
+                    "start": 1905,
                     "type": "TagDeclarator",
                     "value": "line2"
                   },
@@ -3508,10 +3621,10 @@ description: Variables in memory after executing lego.kcl
                     10.4
                   ],
                   "tag": {
-                    "commentStart": 1978,
-                    "end": 1983,
+                    "commentStart": 2024,
+                    "end": 2029,
                     "moduleId": 0,
-                    "start": 1978,
+                    "start": 2024,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
@@ -3532,10 +3645,10 @@ description: Variables in memory after executing lego.kcl
                     10.4
                   ],
                   "tag": {
-                    "commentStart": 2097,
-                    "end": 2102,
+                    "commentStart": 2143,
+                    "end": 2148,
                     "moduleId": 0,
-                    "start": 2097,
+                    "start": 2143,
                     "type": "TagDeclarator",
                     "value": "line4"
                   },
@@ -3623,8 +3736,10 @@ description: Variables in memory after executing lego.kcl
     "value": 1.5,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "totalLength": {
@@ -3632,8 +3747,10 @@ description: Variables in memory after executing lego.kcl
     "value": 23.8,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "totalWidth": {
@@ -3641,8 +3758,10 @@ description: Variables in memory after executing lego.kcl
     "value": 15.8,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "tubeCenterX": {
@@ -3650,8 +3769,10 @@ description: Variables in memory after executing lego.kcl
     "value": 0.0,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "tubeCenterY": {
@@ -3659,12 +3780,13 @@ description: Variables in memory after executing lego.kcl
     "value": -4.0,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "tubeCircle": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "tubeCircle"
   },
@@ -3676,6 +3798,8 @@ description: Variables in memory after executing lego.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -3683,10 +3807,10 @@ description: Variables in memory after executing lego.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3453,
-                "end": 3463,
+                "commentStart": 3499,
+                "end": 3509,
                 "moduleId": 0,
-                "start": 3453,
+                "start": 3499,
                 "type": "TagDeclarator",
                 "value": "tubeCircle"
               },
@@ -3714,10 +3838,10 @@ description: Variables in memory after executing lego.kcl
                 ],
                 "radius": 2.4,
                 "tag": {
-                  "commentStart": 3453,
-                  "end": 3463,
+                  "commentStart": 3499,
+                  "end": 3509,
                   "moduleId": 0,
-                  "start": 3453,
+                  "start": 3499,
                   "type": "TagDeclarator",
                   "value": "tubeCircle"
                 },
@@ -3778,8 +3902,8 @@ description: Variables in memory after executing lego.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "in"
+            "units": "in",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -3792,6 +3916,8 @@ description: Variables in memory after executing lego.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -3799,10 +3925,10 @@ description: Variables in memory after executing lego.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3453,
-                "end": 3463,
+                "commentStart": 3499,
+                "end": 3509,
                 "moduleId": 0,
-                "start": 3453,
+                "start": 3499,
                 "type": "TagDeclarator",
                 "value": "tubeCircle"
               },
@@ -3830,10 +3956,10 @@ description: Variables in memory after executing lego.kcl
                 ],
                 "radius": 2.4,
                 "tag": {
-                  "commentStart": 3453,
-                  "end": 3463,
+                  "commentStart": 3499,
+                  "end": 3509,
                   "moduleId": 0,
-                  "start": 3453,
+                  "start": 3499,
                   "type": "TagDeclarator",
                   "value": "tubeCircle"
                 },
@@ -3894,8 +4020,8 @@ description: Variables in memory after executing lego.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "in"
+            "units": "in",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -3927,10 +4053,10 @@ description: Variables in memory after executing lego.kcl
           ],
           "radius": 2.4,
           "tag": {
-            "commentStart": 3453,
-            "end": 3463,
+            "commentStart": 3499,
+            "end": 3509,
             "moduleId": 0,
-            "start": 3453,
+            "start": 3499,
             "type": "TagDeclarator",
             "value": "tubeCircle"
           },
@@ -3991,8 +4117,8 @@ description: Variables in memory after executing lego.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "in"
+      "units": "in",
+      "isClosed": "explicitly"
     }
   },
   "tubeSeed": {
@@ -4000,6 +4126,8 @@ description: Variables in memory after executing lego.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -4007,10 +4135,10 @@ description: Variables in memory after executing lego.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3453,
-            "end": 3463,
+            "commentStart": 3499,
+            "end": 3509,
             "moduleId": 0,
-            "start": 3453,
+            "start": 3499,
             "type": "TagDeclarator",
             "value": "tubeCircle"
           },
@@ -4038,10 +4166,10 @@ description: Variables in memory after executing lego.kcl
             ],
             "radius": 2.4,
             "tag": {
-              "commentStart": 3453,
-              "end": 3463,
+              "commentStart": 3499,
+              "end": 3509,
               "moduleId": 0,
-              "start": 3453,
+              "start": 3499,
               "type": "TagDeclarator",
               "value": "tubeCircle"
             },
@@ -4102,8 +4230,8 @@ description: Variables in memory after executing lego.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "in"
+        "units": "in",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -4139,10 +4267,10 @@ description: Variables in memory after executing lego.kcl
                   ],
                   "radius": 2.4,
                   "tag": {
-                    "commentStart": 3453,
-                    "end": 3463,
+                    "commentStart": 3499,
+                    "end": 3509,
                     "moduleId": 0,
-                    "start": 3453,
+                    "start": 3499,
                     "type": "TagDeclarator",
                     "value": "tubeCircle"
                   },
@@ -4224,17 +4352,21 @@ description: Variables in memory after executing lego.kcl
                       {
                         "n": 0.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -4.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -4242,17 +4374,21 @@ description: Variables in memory after executing lego.kcl
                       {
                         "n": 0.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -4339,17 +4475,21 @@ description: Variables in memory after executing lego.kcl
                       {
                         "n": 2.4,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -4.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -4357,17 +4497,21 @@ description: Variables in memory after executing lego.kcl
                       {
                         "n": 0.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -4.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -4474,8 +4618,10 @@ description: Variables in memory after executing lego.kcl
     "value": 7.9,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "wbumps": {
@@ -4483,8 +4629,10 @@ description: Variables in memory after executing lego.kcl
     "value": 2.0,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   }
 }

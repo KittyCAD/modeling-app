@@ -1,13 +1,18 @@
 import { join } from 'node:path'
-import { bracket } from '@e2e/playwright/fixtures/bracket'
-import { FILE_EXT } from '@src/lib/constants'
+import fsSync from 'node:fs'
+import { FILE_EXT, OPFS_CLOUD_FEATURE_FLAG } from '@src/lib/constants'
 
 import {
-  closeOnboardingModalIfPresent,
   getUtils,
+  waitForWebKitBillingToSettle,
 } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
+
+const bracket = fsSync.readFileSync(
+  join('public', 'kcl-samples', 'bracket', 'main.kcl'),
+  'utf8'
+)
 
 test.describe('Testing loading external models', { tag: '@desktop' }, () => {
   /**
@@ -127,6 +132,9 @@ test.describe('Testing loading external models', { tag: '@desktop' }, () => {
       await expect(
         page.getByTestId('file-tree-item').getByText(sampleOne.folderName)
       ).toBeVisible()
+      // The folder can appear before navigation closes the command bar.
+      await expect(page).toHaveURL(/ball-bearing(?:%2F|%5C)main\.kcl$/)
+      await scene.settled()
     })
 
     await test.step('Load a KCL sample with the command palette', async () => {
@@ -138,16 +146,23 @@ test.describe('Testing loading external models', { tag: '@desktop' }, () => {
       await expect(
         page.getByTestId('file-tree-item').getByText(sampleOne.folderName1)
       ).toBeVisible()
+      await expect(page).toHaveURL(/ball-bearing-1(?:%2F|%5C)main\.kcl$/)
     })
   })
 })
 
 test.describe('Query parameter command', { tag: '@web' }, () => {
+  test.use({ userFeatures: [OPFS_CLOUD_FEATURE_FLAG] })
   test('applies the ttc layout without opening the command palette', async ({
     page,
     cmdBar,
   }) => {
     await page.goto('/?cmd=set-layout&groupId=application&layoutId=ttc')
+
+    // The root route awaits Wasm before mounting the query-command consumer.
+    await page.evaluate(async () => {
+      await window.app.wasmPromise
+    })
 
     await expect
       .poll(() =>
@@ -165,12 +180,18 @@ test.describe('Query parameter command', { tag: '@web' }, () => {
     toolbar,
     editor,
   }) => {
-    await closeOnboardingModalIfPresent(page)
+    // Avoid interrupting WebKit's in-flight billing request when the query
+    // command replaces the current document.
+    await waitForWebKitBillingToSettle(page)
 
     const sampleTitle = 'Socket Head Cap Screw'
     const sampleSlug = 'socket-head-cap-screw'
     const queryString = `?cmd=add-kcl-file-to-project&groupId=application&projectName=browser&source=kcl-samples&sample=${sampleSlug}/main.kcl`
     await page.goto(page.url() + queryString)
+
+    await page.evaluate(async () => {
+      await window.app.wasmPromise
+    })
 
     await toolbar.openPane(DefaultLayoutPaneID.Code)
     await editor.expectEditor.toContain(sampleTitle, { timeout: 30_000 })

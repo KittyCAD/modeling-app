@@ -39,18 +39,26 @@ description: Result of parsing ascription_unknown_type.kcl
             "ty": {
               "commentStart": 0,
               "end": 0,
-              "id": {
+              "moduleId": 0,
+              "name": {
+                "abs_path": false,
                 "commentStart": 0,
                 "end": 0,
                 "moduleId": 0,
-                "name": "NotARealType",
+                "name": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "name": "NotARealType",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 0,
-                "type": "Identifier"
+                "type": "Name"
               },
-              "moduleId": 0,
-              "p_type": "Named",
               "start": 0,
-              "type": "Primitive"
+              "type": "Named"
             },
             "type": "AscribedExpression",
             "type": "AscribedExpression"
@@ -70,6 +78,7 @@ description: Result of parsing ascription_unknown_type.kcl
     "commentStart": 0,
     "end": 0,
     "moduleId": 0,
-    "start": 0
+    "start": 0,
+    "type": "Program"
   }
 }

@@ -489,12 +489,13 @@ description: Artifact commands gingerbread-man.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "create_region_from_query_point",
+        "type": "create_region",
         "object_id": "[uuid]",
-        "query_point": {
-          "x": 0.0,
-          "y": 180.0
-        }
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
+        "intersection_index": -1,
+        "curve_clockwise": false,
+        "version": "V1"
       }
     },
     {
@@ -776,7 +777,8 @@ description: Artifact commands gingerbread-man.kcl
         "segment": "[uuid]",
         "intersection_segment": "[uuid]",
         "intersection_index": -1,
-        "curve_clockwise": false
+        "curve_clockwise": false,
+        "version": "V1"
       }
     },
     {
@@ -1054,7 +1056,8 @@ description: Artifact commands gingerbread-man.kcl
         "segment": "[uuid]",
         "intersection_segment": "[uuid]",
         "intersection_index": -1,
-        "curve_clockwise": false
+        "curve_clockwise": false,
+        "version": "V1"
       }
     },
     {
@@ -1237,7 +1240,8 @@ description: Artifact commands gingerbread-man.kcl
         "segment": "[uuid]",
         "intersection_segment": "[uuid]",
         "intersection_index": -1,
-        "curve_clockwise": false
+        "curve_clockwise": false,
+        "version": "V1"
       }
     },
     {
@@ -1445,7 +1449,8 @@ description: Artifact commands gingerbread-man.kcl
         "segment": "[uuid]",
         "intersection_segment": "[uuid]",
         "intersection_index": -1,
-        "curve_clockwise": false
+        "curve_clockwise": false,
+        "version": "V1"
       }
     },
     {
@@ -1741,7 +1746,8 @@ description: Artifact commands gingerbread-man.kcl
         "segment": "[uuid]",
         "intersection_segment": "[uuid]",
         "intersection_index": -1,
-        "curve_clockwise": false
+        "curve_clockwise": false,
+        "version": "V1"
       }
     },
     {
@@ -2155,7 +2161,8 @@ description: Artifact commands gingerbread-man.kcl
         "segment": "[uuid]",
         "intersection_segment": "[uuid]",
         "intersection_index": -1,
-        "curve_clockwise": false
+        "curve_clockwise": false,
+        "version": "V1"
       }
     },
     {
@@ -2448,7 +2455,8 @@ description: Artifact commands gingerbread-man.kcl
         "segment": "[uuid]",
         "intersection_segment": "[uuid]",
         "intersection_index": -1,
-        "curve_clockwise": true
+        "curve_clockwise": true,
+        "version": "V1"
       }
     },
     {

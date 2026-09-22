@@ -121,17 +121,21 @@ description: Variables in memory after executing router-template-cross-bar.kcl
     "value": 30.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "distanceToInsideEdge": {
     "type": "Number",
     "value": 1.2846948818897639,
     "ty": {
-      "in": null,
       "type": "Known",
-      "type": "Length"
+      "value": {
+        "type": "Length",
+        "value": "in"
+      }
     }
   },
   "extrude001": {
@@ -139,6 +143,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -146,10 +152,10 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 573,
-            "end": 578,
+            "commentStart": 580,
+            "end": 585,
             "moduleId": 0,
-            "start": 573,
+            "start": 580,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -160,10 +166,10 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 654,
-            "end": 658,
+            "commentStart": 661,
+            "end": 665,
             "moduleId": 0,
-            "start": 654,
+            "start": 661,
             "type": "TagDeclarator",
             "value": "arc2"
           },
@@ -174,10 +180,10 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 805,
-            "end": 810,
+            "commentStart": 812,
+            "end": 817,
             "moduleId": 0,
-            "start": 805,
+            "start": 812,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -188,10 +194,10 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 926,
-            "end": 931,
+            "commentStart": 933,
+            "end": 938,
             "moduleId": 0,
-            "start": 926,
+            "start": 933,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -202,10 +208,10 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1047,
-            "end": 1052,
+            "commentStart": 1054,
+            "end": 1059,
             "moduleId": 0,
-            "start": 1047,
+            "start": 1054,
             "type": "TagDeclarator",
             "value": "line5"
           },
@@ -216,10 +222,10 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1170,
-            "end": 1175,
+            "commentStart": 1177,
+            "end": 1182,
             "moduleId": 0,
-            "start": 1170,
+            "start": 1177,
             "type": "TagDeclarator",
             "value": "line6"
           },
@@ -230,10 +236,10 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1296,
-            "end": 1301,
+            "commentStart": 1303,
+            "end": 1308,
             "moduleId": 0,
-            "start": 1296,
+            "start": 1303,
             "type": "TagDeclarator",
             "value": "line7"
           },
@@ -244,10 +250,10 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1423,
-            "end": 1428,
+            "commentStart": 1430,
+            "end": 1435,
             "moduleId": 0,
-            "start": 1423,
+            "start": 1430,
             "type": "TagDeclarator",
             "value": "line8"
           },
@@ -258,10 +264,10 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1549,
-            "end": 1554,
+            "commentStart": 1556,
+            "end": 1561,
             "moduleId": 0,
-            "start": 1549,
+            "start": 1556,
             "type": "TagDeclarator",
             "value": "line9"
           },
@@ -272,10 +278,10 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1674,
-            "end": 1680,
+            "commentStart": 1681,
+            "end": 1687,
             "moduleId": 0,
-            "start": 1674,
+            "start": 1681,
             "type": "TagDeclarator",
             "value": "line10"
           },
@@ -286,10 +292,10 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1797,
-            "end": 1803,
+            "commentStart": 1804,
+            "end": 1810,
             "moduleId": 0,
-            "start": 1797,
+            "start": 1804,
             "type": "TagDeclarator",
             "value": "line11"
           },
@@ -300,10 +306,10 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1922,
-            "end": 1928,
+            "commentStart": 1929,
+            "end": 1935,
             "moduleId": 0,
-            "start": 1922,
+            "start": 1929,
             "type": "TagDeclarator",
             "value": "line12"
           },
@@ -314,10 +320,10 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2052,
-            "end": 2058,
+            "commentStart": 2059,
+            "end": 2065,
             "moduleId": 0,
-            "start": 2052,
+            "start": 2059,
             "type": "TagDeclarator",
             "value": "line13"
           },
@@ -328,10 +334,10 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2183,
-            "end": 2189,
+            "commentStart": 2190,
+            "end": 2196,
             "moduleId": 0,
-            "start": 2183,
+            "start": 2190,
             "type": "TagDeclarator",
             "value": "line14"
           },
@@ -342,10 +348,10 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2315,
-            "end": 2321,
+            "commentStart": 2322,
+            "end": 2328,
             "moduleId": 0,
-            "start": 2315,
+            "start": 2322,
             "type": "TagDeclarator",
             "value": "line15"
           },
@@ -356,10 +362,10 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2446,
-            "end": 2452,
+            "commentStart": 2453,
+            "end": 2459,
             "moduleId": 0,
-            "start": 2446,
+            "start": 2453,
             "type": "TagDeclarator",
             "value": "line16"
           },
@@ -370,10 +376,10 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2574,
-            "end": 2580,
+            "commentStart": 2581,
+            "end": 2587,
             "moduleId": 0,
-            "start": 2574,
+            "start": 2581,
             "type": "TagDeclarator",
             "value": "line17"
           },
@@ -384,10 +390,10 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2700,
-            "end": 2706,
+            "commentStart": 2707,
+            "end": 2713,
             "moduleId": 0,
-            "start": 2700,
+            "start": 2707,
             "type": "TagDeclarator",
             "value": "line18"
           },
@@ -398,10 +404,10 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2825,
-            "end": 2830,
+            "commentStart": 2832,
+            "end": 2837,
             "moduleId": 0,
-            "start": 2825,
+            "start": 2832,
             "type": "TagDeclarator",
             "value": "arc19"
           },
@@ -412,10 +418,10 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2982,
-            "end": 2988,
+            "commentStart": 2989,
+            "end": 2995,
             "moduleId": 0,
-            "start": 2982,
+            "start": 2989,
             "type": "TagDeclarator",
             "value": "line20"
           },
@@ -437,10 +443,10 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               31.88031248649379
             ],
             "tag": {
-              "commentStart": 573,
-              "end": 578,
+              "commentStart": 580,
+              "end": 585,
               "moduleId": 0,
-              "start": 573,
+              "start": 580,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -467,10 +473,10 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             ],
             "radius": 11.88125,
             "tag": {
-              "commentStart": 654,
-              "end": 658,
+              "commentStart": 661,
+              "end": 665,
               "moduleId": 0,
-              "start": 654,
+              "start": 661,
               "type": "TagDeclarator",
               "value": "arc2"
             },
@@ -491,10 +497,10 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               19.999999999999552
             ],
             "tag": {
-              "commentStart": 805,
-              "end": 810,
+              "commentStart": 812,
+              "end": 817,
               "moduleId": 0,
-              "start": 805,
+              "start": 812,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -515,10 +521,10 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               -10.00000000000045
             ],
             "tag": {
-              "commentStart": 926,
-              "end": 931,
+              "commentStart": 933,
+              "end": 938,
               "moduleId": 0,
-              "start": 926,
+              "start": 933,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -539,10 +545,10 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               -10.00000000000045
             ],
             "tag": {
-              "commentStart": 1047,
-              "end": 1052,
+              "commentStart": 1054,
+              "end": 1059,
               "moduleId": 0,
-              "start": 1047,
+              "start": 1054,
               "type": "TagDeclarator",
               "value": "line5"
             },
@@ -563,10 +569,10 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               10.94
             ],
             "tag": {
-              "commentStart": 1170,
-              "end": 1175,
+              "commentStart": 1177,
+              "end": 1182,
               "moduleId": 0,
-              "start": 1170,
+              "start": 1177,
               "type": "TagDeclarator",
               "value": "line6"
             },
@@ -587,10 +593,10 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               10.94
             ],
             "tag": {
-              "commentStart": 1296,
-              "end": 1301,
+              "commentStart": 1303,
+              "end": 1308,
               "moduleId": 0,
-              "start": 1296,
+              "start": 1303,
               "type": "TagDeclarator",
               "value": "line7"
             },
@@ -611,10 +617,10 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               30.94
             ],
             "tag": {
-              "commentStart": 1423,
-              "end": 1428,
+              "commentStart": 1430,
+              "end": 1435,
               "moduleId": 0,
-              "start": 1423,
+              "start": 1430,
               "type": "TagDeclarator",
               "value": "line8"
             },
@@ -635,10 +641,10 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               30.94
             ],
             "tag": {
-              "commentStart": 1549,
-              "end": 1554,
+              "commentStart": 1556,
+              "end": 1561,
               "moduleId": 0,
-              "start": 1549,
+              "start": 1556,
               "type": "TagDeclarator",
               "value": "line9"
             },
@@ -659,10 +665,10 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               41.88
             ],
             "tag": {
-              "commentStart": 1674,
-              "end": 1680,
+              "commentStart": 1681,
+              "end": 1687,
               "moduleId": 0,
-              "start": 1674,
+              "start": 1681,
               "type": "TagDeclarator",
               "value": "line10"
             },
@@ -683,10 +689,10 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               41.88
             ],
             "tag": {
-              "commentStart": 1797,
-              "end": 1803,
+              "commentStart": 1804,
+              "end": 1810,
               "moduleId": 0,
-              "start": 1797,
+              "start": 1804,
               "type": "TagDeclarator",
               "value": "line11"
             },
@@ -707,10 +713,10 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               41.88
             ],
             "tag": {
-              "commentStart": 1922,
-              "end": 1928,
+              "commentStart": 1929,
+              "end": 1935,
               "moduleId": 0,
-              "start": 1922,
+              "start": 1929,
               "type": "TagDeclarator",
               "value": "line12"
             },
@@ -731,10 +737,10 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               30.94
             ],
             "tag": {
-              "commentStart": 2052,
-              "end": 2058,
+              "commentStart": 2059,
+              "end": 2065,
               "moduleId": 0,
-              "start": 2052,
+              "start": 2059,
               "type": "TagDeclarator",
               "value": "line13"
             },
@@ -755,10 +761,10 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               30.94
             ],
             "tag": {
-              "commentStart": 2183,
-              "end": 2189,
+              "commentStart": 2190,
+              "end": 2196,
               "moduleId": 0,
-              "start": 2183,
+              "start": 2190,
               "type": "TagDeclarator",
               "value": "line14"
             },
@@ -779,10 +785,10 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               10.94
             ],
             "tag": {
-              "commentStart": 2315,
-              "end": 2321,
+              "commentStart": 2322,
+              "end": 2328,
               "moduleId": 0,
-              "start": 2315,
+              "start": 2322,
               "type": "TagDeclarator",
               "value": "line15"
             },
@@ -803,10 +809,10 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               10.94
             ],
             "tag": {
-              "commentStart": 2446,
-              "end": 2452,
+              "commentStart": 2453,
+              "end": 2459,
               "moduleId": 0,
-              "start": 2446,
+              "start": 2453,
               "type": "TagDeclarator",
               "value": "line16"
             },
@@ -827,10 +833,10 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               -10.000000000000432
             ],
             "tag": {
-              "commentStart": 2574,
-              "end": 2580,
+              "commentStart": 2581,
+              "end": 2587,
               "moduleId": 0,
-              "start": 2574,
+              "start": 2581,
               "type": "TagDeclarator",
               "value": "line17"
             },
@@ -851,10 +857,10 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               -10.000000000000432
             ],
             "tag": {
-              "commentStart": 2700,
-              "end": 2706,
+              "commentStart": 2707,
+              "end": 2713,
               "moduleId": 0,
-              "start": 2700,
+              "start": 2707,
               "type": "TagDeclarator",
               "value": "line18"
             },
@@ -881,10 +887,10 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             ],
             "radius": 11.88125,
             "tag": {
-              "commentStart": 2825,
-              "end": 2830,
+              "commentStart": 2832,
+              "end": 2837,
               "moduleId": 0,
-              "start": 2825,
+              "start": 2832,
               "type": "TagDeclarator",
               "value": "arc19"
             },
@@ -905,10 +911,10 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               31.880312486493793
             ],
             "tag": {
-              "commentStart": 2982,
-              "end": 2988,
+              "commentStart": 2989,
+              "end": 2995,
               "moduleId": 0,
-              "start": 2982,
+              "start": 2989,
               "type": "TagDeclarator",
               "value": "line20"
             },
@@ -921,17 +927,17 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 0,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -1051,8 +1057,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "mm"
+        "units": "mm",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -1065,6 +1071,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -1072,10 +1080,10 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4249,
-            "end": 4254,
+            "commentStart": 4256,
+            "end": 4261,
             "moduleId": 0,
-            "start": 4249,
+            "start": 4256,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -1086,10 +1094,10 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4326,
-            "end": 4331,
+            "commentStart": 4333,
+            "end": 4338,
             "moduleId": 0,
-            "start": 4326,
+            "start": 4333,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -1100,10 +1108,10 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4444,
-            "end": 4449,
+            "commentStart": 4451,
+            "end": 4456,
             "moduleId": 0,
-            "start": 4444,
+            "start": 4451,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -1114,10 +1122,10 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4564,
-            "end": 4569,
+            "commentStart": 4571,
+            "end": 4576,
             "moduleId": 0,
-            "start": 4564,
+            "start": 4571,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -1139,10 +1147,10 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 4249,
-              "end": 4254,
+              "commentStart": 4256,
+              "end": 4261,
               "moduleId": 0,
-              "start": 4249,
+              "start": 4256,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -1163,10 +1171,10 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 4326,
-              "end": 4331,
+              "commentStart": 4333,
+              "end": 4338,
               "moduleId": 0,
-              "start": 4326,
+              "start": 4333,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -1187,10 +1195,10 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               -10.0
             ],
             "tag": {
-              "commentStart": 4444,
-              "end": 4449,
+              "commentStart": 4451,
+              "end": 4456,
               "moduleId": 0,
-              "start": 4444,
+              "start": 4451,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -1211,10 +1219,10 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               -10.0
             ],
             "tag": {
-              "commentStart": 4564,
-              "end": 4569,
+              "commentStart": 4571,
+              "end": 4576,
               "moduleId": 0,
-              "start": 4564,
+              "start": 4571,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -1287,8 +1295,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "mm"
+        "units": "mm",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -1301,6 +1309,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -1308,10 +1318,10 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 5108,
-            "end": 5113,
+            "commentStart": 5115,
+            "end": 5120,
             "moduleId": 0,
-            "start": 5108,
+            "start": 5115,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -1322,10 +1332,10 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 5187,
-            "end": 5192,
+            "commentStart": 5194,
+            "end": 5199,
             "moduleId": 0,
-            "start": 5187,
+            "start": 5194,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -1336,10 +1346,10 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 5307,
-            "end": 5312,
+            "commentStart": 5314,
+            "end": 5319,
             "moduleId": 0,
-            "start": 5307,
+            "start": 5314,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -1350,10 +1360,10 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 5429,
-            "end": 5434,
+            "commentStart": 5436,
+            "end": 5441,
             "moduleId": 0,
-            "start": 5429,
+            "start": 5436,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -1375,10 +1385,10 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 5108,
-              "end": 5113,
+              "commentStart": 5115,
+              "end": 5120,
               "moduleId": 0,
-              "start": 5108,
+              "start": 5115,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -1399,10 +1409,10 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 5187,
-              "end": 5192,
+              "commentStart": 5194,
+              "end": 5199,
               "moduleId": 0,
-              "start": 5187,
+              "start": 5194,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -1423,10 +1433,10 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               -10.0
             ],
             "tag": {
-              "commentStart": 5307,
-              "end": 5312,
+              "commentStart": 5314,
+              "end": 5319,
               "moduleId": 0,
-              "start": 5307,
+              "start": 5314,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -1447,10 +1457,10 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               -10.0
             ],
             "tag": {
-              "commentStart": 5429,
-              "end": 5434,
+              "commentStart": 5436,
+              "end": 5441,
               "moduleId": 0,
-              "start": 5429,
+              "start": 5436,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -1523,8 +1533,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "mm"
+        "units": "mm",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -1537,6 +1547,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -1544,10 +1556,10 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 5973,
-            "end": 5978,
+            "commentStart": 5980,
+            "end": 5985,
             "moduleId": 0,
-            "start": 5973,
+            "start": 5980,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -1558,10 +1570,10 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 6051,
-            "end": 6056,
+            "commentStart": 6058,
+            "end": 6063,
             "moduleId": 0,
-            "start": 6051,
+            "start": 6058,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -1572,10 +1584,10 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 6169,
-            "end": 6174,
+            "commentStart": 6176,
+            "end": 6181,
             "moduleId": 0,
-            "start": 6169,
+            "start": 6176,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -1586,10 +1598,10 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 6290,
-            "end": 6295,
+            "commentStart": 6297,
+            "end": 6302,
             "moduleId": 0,
-            "start": 6290,
+            "start": 6297,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -1611,10 +1623,10 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 5973,
-              "end": 5978,
+              "commentStart": 5980,
+              "end": 5985,
               "moduleId": 0,
-              "start": 5973,
+              "start": 5980,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -1635,10 +1647,10 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 6051,
-              "end": 6056,
+              "commentStart": 6058,
+              "end": 6063,
               "moduleId": 0,
-              "start": 6051,
+              "start": 6058,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -1659,10 +1671,10 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               -10.0
             ],
             "tag": {
-              "commentStart": 6169,
-              "end": 6174,
+              "commentStart": 6176,
+              "end": 6181,
               "moduleId": 0,
-              "start": 6169,
+              "start": 6176,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -1683,10 +1695,10 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               -10.0
             ],
             "tag": {
-              "commentStart": 6290,
-              "end": 6295,
+              "commentStart": 6297,
+              "end": 6302,
               "moduleId": 0,
-              "start": 6290,
+              "start": 6297,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -1759,8 +1771,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "mm"
+        "units": "mm",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -1773,8 +1785,10 @@ description: Variables in memory after executing router-template-cross-bar.kcl
     "value": 80.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "radius": {
@@ -1782,8 +1796,10 @@ description: Variables in memory after executing router-template-cross-bar.kcl
     "value": 10.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "region001": {
@@ -1802,10 +1818,10 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             31.88031248649379
           ],
           "tag": {
-            "commentStart": 573,
-            "end": 578,
+            "commentStart": 580,
+            "end": 585,
             "moduleId": 0,
-            "start": 573,
+            "start": 580,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -1832,10 +1848,10 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           ],
           "radius": 11.88125,
           "tag": {
-            "commentStart": 654,
-            "end": 658,
+            "commentStart": 661,
+            "end": 665,
             "moduleId": 0,
-            "start": 654,
+            "start": 661,
             "type": "TagDeclarator",
             "value": "arc2"
           },
@@ -1856,10 +1872,10 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             19.999999999999552
           ],
           "tag": {
-            "commentStart": 805,
-            "end": 810,
+            "commentStart": 812,
+            "end": 817,
             "moduleId": 0,
-            "start": 805,
+            "start": 812,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -1880,10 +1896,10 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             -10.00000000000045
           ],
           "tag": {
-            "commentStart": 926,
-            "end": 931,
+            "commentStart": 933,
+            "end": 938,
             "moduleId": 0,
-            "start": 926,
+            "start": 933,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -1904,10 +1920,10 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             -10.00000000000045
           ],
           "tag": {
-            "commentStart": 1047,
-            "end": 1052,
+            "commentStart": 1054,
+            "end": 1059,
             "moduleId": 0,
-            "start": 1047,
+            "start": 1054,
             "type": "TagDeclarator",
             "value": "line5"
           },
@@ -1928,10 +1944,10 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             10.94
           ],
           "tag": {
-            "commentStart": 1170,
-            "end": 1175,
+            "commentStart": 1177,
+            "end": 1182,
             "moduleId": 0,
-            "start": 1170,
+            "start": 1177,
             "type": "TagDeclarator",
             "value": "line6"
           },
@@ -1952,10 +1968,10 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             10.94
           ],
           "tag": {
-            "commentStart": 1296,
-            "end": 1301,
+            "commentStart": 1303,
+            "end": 1308,
             "moduleId": 0,
-            "start": 1296,
+            "start": 1303,
             "type": "TagDeclarator",
             "value": "line7"
           },
@@ -1976,10 +1992,10 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             30.94
           ],
           "tag": {
-            "commentStart": 1423,
-            "end": 1428,
+            "commentStart": 1430,
+            "end": 1435,
             "moduleId": 0,
-            "start": 1423,
+            "start": 1430,
             "type": "TagDeclarator",
             "value": "line8"
           },
@@ -2000,10 +2016,10 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             30.94
           ],
           "tag": {
-            "commentStart": 1549,
-            "end": 1554,
+            "commentStart": 1556,
+            "end": 1561,
             "moduleId": 0,
-            "start": 1549,
+            "start": 1556,
             "type": "TagDeclarator",
             "value": "line9"
           },
@@ -2024,10 +2040,10 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             41.88
           ],
           "tag": {
-            "commentStart": 1674,
-            "end": 1680,
+            "commentStart": 1681,
+            "end": 1687,
             "moduleId": 0,
-            "start": 1674,
+            "start": 1681,
             "type": "TagDeclarator",
             "value": "line10"
           },
@@ -2048,10 +2064,10 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             41.88
           ],
           "tag": {
-            "commentStart": 1797,
-            "end": 1803,
+            "commentStart": 1804,
+            "end": 1810,
             "moduleId": 0,
-            "start": 1797,
+            "start": 1804,
             "type": "TagDeclarator",
             "value": "line11"
           },
@@ -2072,10 +2088,10 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             41.88
           ],
           "tag": {
-            "commentStart": 1922,
-            "end": 1928,
+            "commentStart": 1929,
+            "end": 1935,
             "moduleId": 0,
-            "start": 1922,
+            "start": 1929,
             "type": "TagDeclarator",
             "value": "line12"
           },
@@ -2096,10 +2112,10 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             30.94
           ],
           "tag": {
-            "commentStart": 2052,
-            "end": 2058,
+            "commentStart": 2059,
+            "end": 2065,
             "moduleId": 0,
-            "start": 2052,
+            "start": 2059,
             "type": "TagDeclarator",
             "value": "line13"
           },
@@ -2120,10 +2136,10 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             30.94
           ],
           "tag": {
-            "commentStart": 2183,
-            "end": 2189,
+            "commentStart": 2190,
+            "end": 2196,
             "moduleId": 0,
-            "start": 2183,
+            "start": 2190,
             "type": "TagDeclarator",
             "value": "line14"
           },
@@ -2144,10 +2160,10 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             10.94
           ],
           "tag": {
-            "commentStart": 2315,
-            "end": 2321,
+            "commentStart": 2322,
+            "end": 2328,
             "moduleId": 0,
-            "start": 2315,
+            "start": 2322,
             "type": "TagDeclarator",
             "value": "line15"
           },
@@ -2168,10 +2184,10 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             10.94
           ],
           "tag": {
-            "commentStart": 2446,
-            "end": 2452,
+            "commentStart": 2453,
+            "end": 2459,
             "moduleId": 0,
-            "start": 2446,
+            "start": 2453,
             "type": "TagDeclarator",
             "value": "line16"
           },
@@ -2192,10 +2208,10 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             -10.000000000000432
           ],
           "tag": {
-            "commentStart": 2574,
-            "end": 2580,
+            "commentStart": 2581,
+            "end": 2587,
             "moduleId": 0,
-            "start": 2574,
+            "start": 2581,
             "type": "TagDeclarator",
             "value": "line17"
           },
@@ -2216,10 +2232,10 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             -10.000000000000432
           ],
           "tag": {
-            "commentStart": 2700,
-            "end": 2706,
+            "commentStart": 2707,
+            "end": 2713,
             "moduleId": 0,
-            "start": 2700,
+            "start": 2707,
             "type": "TagDeclarator",
             "value": "line18"
           },
@@ -2246,10 +2262,10 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           ],
           "radius": 11.88125,
           "tag": {
-            "commentStart": 2825,
-            "end": 2830,
+            "commentStart": 2832,
+            "end": 2837,
             "moduleId": 0,
-            "start": 2825,
+            "start": 2832,
             "type": "TagDeclarator",
             "value": "arc19"
           },
@@ -2270,10 +2286,10 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             31.880312486493793
           ],
           "tag": {
-            "commentStart": 2982,
-            "end": 2988,
+            "commentStart": 2989,
+            "end": 2995,
             "moduleId": 0,
-            "start": 2982,
+            "start": 2989,
             "type": "TagDeclarator",
             "value": "line20"
           },
@@ -2286,17 +2302,17 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 0,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -2416,8 +2432,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "mm"
+      "units": "mm",
+      "isClosed": "explicitly"
     }
   },
   "region002": {
@@ -2436,10 +2452,10 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             0.0
           ],
           "tag": {
-            "commentStart": 4249,
-            "end": 4254,
+            "commentStart": 4256,
+            "end": 4261,
             "moduleId": 0,
-            "start": 4249,
+            "start": 4256,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -2460,10 +2476,10 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             0.0
           ],
           "tag": {
-            "commentStart": 4326,
-            "end": 4331,
+            "commentStart": 4333,
+            "end": 4338,
             "moduleId": 0,
-            "start": 4326,
+            "start": 4333,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -2484,10 +2500,10 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             -10.0
           ],
           "tag": {
-            "commentStart": 4444,
-            "end": 4449,
+            "commentStart": 4451,
+            "end": 4456,
             "moduleId": 0,
-            "start": 4444,
+            "start": 4451,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -2508,10 +2524,10 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             -10.0
           ],
           "tag": {
-            "commentStart": 4564,
-            "end": 4569,
+            "commentStart": 4571,
+            "end": 4576,
             "moduleId": 0,
-            "start": 4564,
+            "start": 4571,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -2584,8 +2600,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "mm"
+      "units": "mm",
+      "isClosed": "explicitly"
     }
   },
   "region003": {
@@ -2604,10 +2620,10 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             0.0
           ],
           "tag": {
-            "commentStart": 5108,
-            "end": 5113,
+            "commentStart": 5115,
+            "end": 5120,
             "moduleId": 0,
-            "start": 5108,
+            "start": 5115,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -2628,10 +2644,10 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             0.0
           ],
           "tag": {
-            "commentStart": 5187,
-            "end": 5192,
+            "commentStart": 5194,
+            "end": 5199,
             "moduleId": 0,
-            "start": 5187,
+            "start": 5194,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -2652,10 +2668,10 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             -10.0
           ],
           "tag": {
-            "commentStart": 5307,
-            "end": 5312,
+            "commentStart": 5314,
+            "end": 5319,
             "moduleId": 0,
-            "start": 5307,
+            "start": 5314,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -2676,10 +2692,10 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             -10.0
           ],
           "tag": {
-            "commentStart": 5429,
-            "end": 5434,
+            "commentStart": 5436,
+            "end": 5441,
             "moduleId": 0,
-            "start": 5429,
+            "start": 5436,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -2752,8 +2768,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "mm"
+      "units": "mm",
+      "isClosed": "explicitly"
     }
   },
   "region004": {
@@ -2772,10 +2788,10 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             0.0
           ],
           "tag": {
-            "commentStart": 5973,
-            "end": 5978,
+            "commentStart": 5980,
+            "end": 5985,
             "moduleId": 0,
-            "start": 5973,
+            "start": 5980,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -2796,10 +2812,10 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             0.0
           ],
           "tag": {
-            "commentStart": 6051,
-            "end": 6056,
+            "commentStart": 6058,
+            "end": 6063,
             "moduleId": 0,
-            "start": 6051,
+            "start": 6058,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -2820,10 +2836,10 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             -10.0
           ],
           "tag": {
-            "commentStart": 6169,
-            "end": 6174,
+            "commentStart": 6176,
+            "end": 6181,
             "moduleId": 0,
-            "start": 6169,
+            "start": 6176,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -2844,10 +2860,10 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             -10.0
           ],
           "tag": {
-            "commentStart": 6290,
-            "end": 6295,
+            "commentStart": 6297,
+            "end": 6302,
             "moduleId": 0,
-            "start": 6290,
+            "start": 6297,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -2920,8 +2936,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "mm"
+      "units": "mm",
+      "isClosed": "explicitly"
     }
   },
   "routerDiameter": {
@@ -2929,8 +2945,10 @@ description: Variables in memory after executing router-template-cross-bar.kcl
     "value": 12.7,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "sketch001": {
@@ -2950,17 +2968,21 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       {
                         "n": -10.749999999998202,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 31.88031248649379,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -2968,17 +2990,21 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       {
                         "n": -22.630138884777278,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 19.999999999999567,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -2986,17 +3012,21 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       {
                         "n": -10.748888921761356,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 19.999062538445177,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -3102,17 +3132,21 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       {
                         "n": 22.630096150997286,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 19.999999999999552,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -3120,17 +3154,21 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       {
                         "n": 10.749999999997936,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 31.88031248649379,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -3138,17 +3176,21 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       {
                         "n": 10.748846187981044,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 19.99906254251829,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -3254,17 +3296,21 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 31.88031248649379,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -3272,17 +3318,21 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       {
                         "n": 10.749999999997936,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 31.88031248649379,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -3374,17 +3424,21 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       {
                         "n": 32.63160714284858,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 41.88,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -3392,17 +3446,21 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       {
                         "n": 0.0003571428485752179,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 41.88,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -3494,17 +3552,21 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       {
                         "n": 0.000357142848575218,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 41.88,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -3512,17 +3574,21 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       {
                         "n": -32.63089285715142,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 41.88,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -3614,17 +3680,21 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       {
                         "n": -32.63089285715142,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 41.88,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -3632,17 +3702,21 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       {
                         "n": -32.63089285715142,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 30.94,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -3734,17 +3808,21 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       {
                         "n": -32.63089285715142,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 30.94,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -3752,17 +3830,21 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       {
                         "n": -102.63089285715144,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 30.94,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -3854,17 +3936,21 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       {
                         "n": -102.63089285715144,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 30.94,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -3872,17 +3958,21 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       {
                         "n": -102.63089285715144,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 10.94,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -3974,17 +4064,21 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       {
                         "n": -102.63089285715144,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 10.94,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -3992,17 +4086,21 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       {
                         "n": -32.63013888477728,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 10.94,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -4094,17 +4192,21 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       {
                         "n": -32.63013888477728,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 10.94,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -4112,17 +4214,21 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       {
                         "n": -32.63013888477728,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": -10.000000000000432,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -4214,17 +4320,21 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       {
                         "n": -32.63013888477728,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": -10.000000000000432,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -4232,17 +4342,21 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       {
                         "n": -22.630138884777278,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": -10.000000000000432,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -4334,17 +4448,21 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       {
                         "n": -22.630138884777278,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": -10.000000000000432,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -4352,17 +4470,21 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       {
                         "n": -22.630138884777278,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 19.999999999999567,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -4454,17 +4576,21 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       {
                         "n": -10.749999999998202,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 31.88031248649379,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -4472,17 +4598,21 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 31.88031248649379,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -4574,17 +4704,21 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       {
                         "n": 22.630096150997286,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 19.999999999999552,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -4592,17 +4726,21 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       {
                         "n": 22.630096150997286,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": -10.00000000000045,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -4694,17 +4832,21 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       {
                         "n": 22.630096150997286,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": -10.00000000000045,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -4712,17 +4854,21 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       {
                         "n": 32.63009615099729,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": -10.00000000000045,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -4814,17 +4960,21 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       {
                         "n": 32.63009615099729,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": -10.00000000000045,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -4832,17 +4982,21 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       {
                         "n": 32.63009615099729,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 10.94,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -4934,17 +5088,21 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       {
                         "n": 32.63009615099729,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 10.94,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -4952,17 +5110,21 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       {
                         "n": 102.63009615099729,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 10.94,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -5054,17 +5216,21 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       {
                         "n": 102.63009615099729,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 10.94,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -5072,17 +5238,21 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       {
                         "n": 102.63009615099729,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 30.94,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -5174,17 +5344,21 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       {
                         "n": 102.63009615099729,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 30.94,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -5192,17 +5366,21 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       {
                         "n": 32.63160714284858,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 30.94,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -5294,17 +5472,21 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       {
                         "n": 32.63160714284858,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 30.94,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -5312,17 +5494,21 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       {
                         "n": 32.63160714284858,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 41.88,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -5419,10 +5605,10 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     31.88031248649379
                   ],
                   "tag": {
-                    "commentStart": 573,
-                    "end": 578,
+                    "commentStart": 580,
+                    "end": 585,
                     "moduleId": 0,
-                    "start": 573,
+                    "start": 580,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -5449,10 +5635,10 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   ],
                   "radius": 11.88125,
                   "tag": {
-                    "commentStart": 654,
-                    "end": 658,
+                    "commentStart": 661,
+                    "end": 665,
                     "moduleId": 0,
-                    "start": 654,
+                    "start": 661,
                     "type": "TagDeclarator",
                     "value": "arc2"
                   },
@@ -5473,10 +5659,10 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     19.999999999999552
                   ],
                   "tag": {
-                    "commentStart": 805,
-                    "end": 810,
+                    "commentStart": 812,
+                    "end": 817,
                     "moduleId": 0,
-                    "start": 805,
+                    "start": 812,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
@@ -5497,10 +5683,10 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     -10.00000000000045
                   ],
                   "tag": {
-                    "commentStart": 926,
-                    "end": 931,
+                    "commentStart": 933,
+                    "end": 938,
                     "moduleId": 0,
-                    "start": 926,
+                    "start": 933,
                     "type": "TagDeclarator",
                     "value": "line4"
                   },
@@ -5521,10 +5707,10 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     -10.00000000000045
                   ],
                   "tag": {
-                    "commentStart": 1047,
-                    "end": 1052,
+                    "commentStart": 1054,
+                    "end": 1059,
                     "moduleId": 0,
-                    "start": 1047,
+                    "start": 1054,
                     "type": "TagDeclarator",
                     "value": "line5"
                   },
@@ -5545,10 +5731,10 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     10.94
                   ],
                   "tag": {
-                    "commentStart": 1170,
-                    "end": 1175,
+                    "commentStart": 1177,
+                    "end": 1182,
                     "moduleId": 0,
-                    "start": 1170,
+                    "start": 1177,
                     "type": "TagDeclarator",
                     "value": "line6"
                   },
@@ -5569,10 +5755,10 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     10.94
                   ],
                   "tag": {
-                    "commentStart": 1296,
-                    "end": 1301,
+                    "commentStart": 1303,
+                    "end": 1308,
                     "moduleId": 0,
-                    "start": 1296,
+                    "start": 1303,
                     "type": "TagDeclarator",
                     "value": "line7"
                   },
@@ -5593,10 +5779,10 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     30.94
                   ],
                   "tag": {
-                    "commentStart": 1423,
-                    "end": 1428,
+                    "commentStart": 1430,
+                    "end": 1435,
                     "moduleId": 0,
-                    "start": 1423,
+                    "start": 1430,
                     "type": "TagDeclarator",
                     "value": "line8"
                   },
@@ -5617,10 +5803,10 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     30.94
                   ],
                   "tag": {
-                    "commentStart": 1549,
-                    "end": 1554,
+                    "commentStart": 1556,
+                    "end": 1561,
                     "moduleId": 0,
-                    "start": 1549,
+                    "start": 1556,
                     "type": "TagDeclarator",
                     "value": "line9"
                   },
@@ -5641,10 +5827,10 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     41.88
                   ],
                   "tag": {
-                    "commentStart": 1674,
-                    "end": 1680,
+                    "commentStart": 1681,
+                    "end": 1687,
                     "moduleId": 0,
-                    "start": 1674,
+                    "start": 1681,
                     "type": "TagDeclarator",
                     "value": "line10"
                   },
@@ -5665,10 +5851,10 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     41.88
                   ],
                   "tag": {
-                    "commentStart": 1797,
-                    "end": 1803,
+                    "commentStart": 1804,
+                    "end": 1810,
                     "moduleId": 0,
-                    "start": 1797,
+                    "start": 1804,
                     "type": "TagDeclarator",
                     "value": "line11"
                   },
@@ -5689,10 +5875,10 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     41.88
                   ],
                   "tag": {
-                    "commentStart": 1922,
-                    "end": 1928,
+                    "commentStart": 1929,
+                    "end": 1935,
                     "moduleId": 0,
-                    "start": 1922,
+                    "start": 1929,
                     "type": "TagDeclarator",
                     "value": "line12"
                   },
@@ -5713,10 +5899,10 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     30.94
                   ],
                   "tag": {
-                    "commentStart": 2052,
-                    "end": 2058,
+                    "commentStart": 2059,
+                    "end": 2065,
                     "moduleId": 0,
-                    "start": 2052,
+                    "start": 2059,
                     "type": "TagDeclarator",
                     "value": "line13"
                   },
@@ -5737,10 +5923,10 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     30.94
                   ],
                   "tag": {
-                    "commentStart": 2183,
-                    "end": 2189,
+                    "commentStart": 2190,
+                    "end": 2196,
                     "moduleId": 0,
-                    "start": 2183,
+                    "start": 2190,
                     "type": "TagDeclarator",
                     "value": "line14"
                   },
@@ -5761,10 +5947,10 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     10.94
                   ],
                   "tag": {
-                    "commentStart": 2315,
-                    "end": 2321,
+                    "commentStart": 2322,
+                    "end": 2328,
                     "moduleId": 0,
-                    "start": 2315,
+                    "start": 2322,
                     "type": "TagDeclarator",
                     "value": "line15"
                   },
@@ -5785,10 +5971,10 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     10.94
                   ],
                   "tag": {
-                    "commentStart": 2446,
-                    "end": 2452,
+                    "commentStart": 2453,
+                    "end": 2459,
                     "moduleId": 0,
-                    "start": 2446,
+                    "start": 2453,
                     "type": "TagDeclarator",
                     "value": "line16"
                   },
@@ -5809,10 +5995,10 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     -10.000000000000432
                   ],
                   "tag": {
-                    "commentStart": 2574,
-                    "end": 2580,
+                    "commentStart": 2581,
+                    "end": 2587,
                     "moduleId": 0,
-                    "start": 2574,
+                    "start": 2581,
                     "type": "TagDeclarator",
                     "value": "line17"
                   },
@@ -5833,10 +6019,10 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     -10.000000000000432
                   ],
                   "tag": {
-                    "commentStart": 2700,
-                    "end": 2706,
+                    "commentStart": 2707,
+                    "end": 2713,
                     "moduleId": 0,
-                    "start": 2700,
+                    "start": 2707,
                     "type": "TagDeclarator",
                     "value": "line18"
                   },
@@ -5863,10 +6049,10 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   ],
                   "radius": 11.88125,
                   "tag": {
-                    "commentStart": 2825,
-                    "end": 2830,
+                    "commentStart": 2832,
+                    "end": 2837,
                     "moduleId": 0,
-                    "start": 2825,
+                    "start": 2832,
                     "type": "TagDeclarator",
                     "value": "arc19"
                   },
@@ -5887,10 +6073,10 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     31.880312486493793
                   ],
                   "tag": {
-                    "commentStart": 2982,
-                    "end": 2988,
+                    "commentStart": 2989,
+                    "end": 2995,
                     "moduleId": 0,
-                    "start": 2982,
+                    "start": 2989,
                     "type": "TagDeclarator",
                     "value": "line20"
                   },
@@ -5903,17 +6089,17 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 0,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -6060,17 +6246,21 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       {
                         "n": 32.63,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -6078,17 +6268,21 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       {
                         "n": 22.63,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -6174,17 +6368,21 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       {
                         "n": 22.63,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -6192,17 +6390,21 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       {
                         "n": 22.63,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": -10.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -6288,17 +6490,21 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       {
                         "n": 22.63,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": -10.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -6306,17 +6512,21 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       {
                         "n": 32.63,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": -10.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -6402,17 +6612,21 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       {
                         "n": 32.63,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": -10.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -6420,17 +6634,21 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       {
                         "n": 32.63,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -6521,10 +6739,10 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 4249,
-                    "end": 4254,
+                    "commentStart": 4256,
+                    "end": 4261,
                     "moduleId": 0,
-                    "start": 4249,
+                    "start": 4256,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -6545,10 +6763,10 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 4326,
-                    "end": 4331,
+                    "commentStart": 4333,
+                    "end": 4338,
                     "moduleId": 0,
-                    "start": 4326,
+                    "start": 4333,
                     "type": "TagDeclarator",
                     "value": "line2"
                   },
@@ -6569,10 +6787,10 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     -10.0
                   ],
                   "tag": {
-                    "commentStart": 4444,
-                    "end": 4449,
+                    "commentStart": 4451,
+                    "end": 4456,
                     "moduleId": 0,
-                    "start": 4444,
+                    "start": 4451,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
@@ -6593,10 +6811,10 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     -10.0
                   ],
                   "tag": {
-                    "commentStart": 4564,
-                    "end": 4569,
+                    "commentStart": 4571,
+                    "end": 4576,
                     "moduleId": 0,
-                    "start": 4564,
+                    "start": 4571,
                     "type": "TagDeclarator",
                     "value": "line4"
                   },
@@ -6696,17 +6914,21 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       {
                         "n": -32.63,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -6714,17 +6936,21 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       {
                         "n": -22.63,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -6810,17 +7036,21 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       {
                         "n": -22.63,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -6828,17 +7058,21 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       {
                         "n": -22.63,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": -10.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -6924,17 +7158,21 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       {
                         "n": -22.63,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": -10.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -6942,17 +7180,21 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       {
                         "n": -32.63,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": -10.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -7038,17 +7280,21 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       {
                         "n": -32.63,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": -10.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -7056,17 +7302,21 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       {
                         "n": -32.63,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -7157,10 +7407,10 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 5108,
-                    "end": 5113,
+                    "commentStart": 5115,
+                    "end": 5120,
                     "moduleId": 0,
-                    "start": 5108,
+                    "start": 5115,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -7181,10 +7431,10 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 5187,
-                    "end": 5192,
+                    "commentStart": 5194,
+                    "end": 5199,
                     "moduleId": 0,
-                    "start": 5187,
+                    "start": 5194,
                     "type": "TagDeclarator",
                     "value": "line2"
                   },
@@ -7205,10 +7455,10 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     -10.0
                   ],
                   "tag": {
-                    "commentStart": 5307,
-                    "end": 5312,
+                    "commentStart": 5314,
+                    "end": 5319,
                     "moduleId": 0,
-                    "start": 5307,
+                    "start": 5314,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
@@ -7229,10 +7479,10 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     -10.0
                   ],
                   "tag": {
-                    "commentStart": 5429,
-                    "end": 5434,
+                    "commentStart": 5436,
+                    "end": 5441,
                     "moduleId": 0,
-                    "start": 5429,
+                    "start": 5436,
                     "type": "TagDeclarator",
                     "value": "line4"
                   },
@@ -7332,17 +7582,21 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       {
                         "n": -32.6312500000025,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -7350,17 +7604,21 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       {
                         "n": 32.631249999992505,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -7446,17 +7704,21 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       {
                         "n": 32.63124999998875,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -7464,17 +7726,21 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       {
                         "n": 32.63124999998625,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": -10.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -7560,17 +7826,21 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       {
                         "n": 32.631249999985,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": -10.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -7578,17 +7848,21 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       {
                         "n": -32.631249999995,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": -10.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -7674,17 +7948,21 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       {
                         "n": -32.63124999999625,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": -10.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -7692,17 +7970,21 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       {
                         "n": -32.63124999999875,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -7793,10 +8075,10 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 5973,
-                    "end": 5978,
+                    "commentStart": 5980,
+                    "end": 5985,
                     "moduleId": 0,
-                    "start": 5973,
+                    "start": 5980,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -7817,10 +8099,10 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 6051,
-                    "end": 6056,
+                    "commentStart": 6058,
+                    "end": 6063,
                     "moduleId": 0,
-                    "start": 6051,
+                    "start": 6058,
                     "type": "TagDeclarator",
                     "value": "line2"
                   },
@@ -7841,10 +8123,10 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     -10.0
                   ],
                   "tag": {
-                    "commentStart": 6169,
-                    "end": 6174,
+                    "commentStart": 6176,
+                    "end": 6181,
                     "moduleId": 0,
-                    "start": 6169,
+                    "start": 6176,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
@@ -7865,10 +8147,10 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     -10.0
                   ],
                   "tag": {
-                    "commentStart": 6290,
-                    "end": 6295,
+                    "commentStart": 6297,
+                    "end": 6302,
                     "moduleId": 0,
-                    "start": 6290,
+                    "start": 6297,
                     "type": "TagDeclarator",
                     "value": "line4"
                   },
@@ -7956,17 +8238,21 @@ description: Variables in memory after executing router-template-cross-bar.kcl
     "value": 20.75,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "slotRadius": {
     "type": "Number",
     "value": 0.46776574803149606,
     "ty": {
-      "in": null,
       "type": "Known",
-      "type": "Length"
+      "value": {
+        "type": "Length",
+        "value": "in"
+      }
     }
   },
   "tabReach": {
@@ -7974,26 +8260,32 @@ description: Variables in memory after executing router-template-cross-bar.kcl
     "value": 70.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "templateDiameter": {
     "type": "Number",
     "value": 0.6875,
     "ty": {
-      "in": null,
       "type": "Known",
-      "type": "Length"
+      "value": {
+        "type": "Length",
+        "value": "in"
+      }
     }
   },
   "templateGap": {
     "type": "Number",
     "value": 0.07406496062992127,
     "ty": {
-      "in": null,
       "type": "Known",
-      "type": "Length"
+      "value": {
+        "type": "Length",
+        "value": "in"
+      }
     }
   },
   "templateThickness": {
@@ -8001,8 +8293,10 @@ description: Variables in memory after executing router-template-cross-bar.kcl
     "value": 10.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   }
 }

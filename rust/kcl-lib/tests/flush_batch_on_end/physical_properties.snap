@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties flush_batch_on_end.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": 0.0,
+      "y": 0.0,
+      "z": 19.049999999999997
+    },
+    "dimensions": {
+      "x": 16.66875,
+      "y": 16.66875,
+      "z": 38.099999999999994
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 2937.1428723550252
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 3.2141558031402915
+  }
+}

@@ -244,6 +244,7 @@ impl ArtifactMermaidExt for Artifact {
             Artifact::Cap(a) => vec![a.sweep_id],
             Artifact::EdgeCut(_) => Vec::new(),
             Artifact::Helix(a) => a.axis_id.map(|id| vec![id]).unwrap_or_default(),
+            Artifact::ImportedGeometry(_) => Vec::new(),
             Artifact::GdtAnnotation(_) => Vec::new(),
             // A view names objects that already exist when it is declared, so
             // its lists point back at prior nodes rather than owning them.
@@ -370,6 +371,7 @@ impl ArtifactMermaidExt for Artifact {
                 }
                 ids
             }
+            Artifact::ImportedGeometry(_) => Vec::new(),
             Artifact::GdtAnnotation(_) => Vec::new(),
             // Note: Don't include show_ids or hide_ids since they're parents.
             Artifact::NamedView(_) => Vec::new(),
@@ -478,6 +480,7 @@ impl ArtifactGraphMermaidExt for ArtifactGraph {
                 | Artifact::Cap(_)
                 | Artifact::EdgeCut(_)
                 | Artifact::Helix(_)
+                | Artifact::ImportedGeometry(_)
                 | Artifact::GdtAnnotation(_)
                 | Artifact::NamedView(_)
                 | Artifact::Pattern(_) => false,
@@ -672,6 +675,14 @@ impl ArtifactGraphMermaidExt for ArtifactGraph {
                 )?;
                 node_path_display(output, prefix, None, &helix.code_ref)?;
             }
+            Artifact::ImportedGeometry(imported_geometry) => {
+                writeln!(
+                    output,
+                    "{prefix}{id}[\"ImportedGeometry<br>{:?}\"]",
+                    code_ref_display(&imported_geometry.code_ref)
+                )?;
+                node_path_display(output, prefix, None, &imported_geometry.code_ref)?;
+            }
             Artifact::GdtAnnotation(annotation) => {
                 writeln!(
                     output,
@@ -823,6 +834,9 @@ impl ArtifactGraphMermaidExt for ArtifactGraph {
                 format!("EdgeCut:{:?}:{}", edge_cut.sub_type, code_ref_key(&edge_cut.code_ref))
             }
             Artifact::Helix(helix) => format!("Helix:{}", code_ref_key(&helix.code_ref)),
+            Artifact::ImportedGeometry(imported_geometry) => {
+                format!("ImportedGeometry:{}", code_ref_key(&imported_geometry.code_ref))
+            }
             Artifact::GdtAnnotation(annotation) => format!("GdtAnnotation:{}", code_ref_key(&annotation.code_ref)),
             // The name is part of the key so that two views declared in one
             // module sort deterministically by name before falling back to

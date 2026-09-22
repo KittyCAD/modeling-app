@@ -12,8 +12,10 @@ description: Operations executed m4-hex-socket-countersunk-head-screw.kcl
         "value": 20.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -41,8 +43,10 @@ description: Operations executed m4-hex-socket-countersunk-head-screw.kcl
         "value": 3.87,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -70,8 +74,10 @@ description: Operations executed m4-hex-socket-countersunk-head-screw.kcl
         "value": 7.9,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -99,8 +105,10 @@ description: Operations executed m4-hex-socket-countersunk-head-screw.kcl
         "value": 2.7,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -128,8 +136,10 @@ description: Operations executed m4-hex-socket-countersunk-head-screw.kcl
         "value": 2.9,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -157,8 +167,10 @@ description: Operations executed m4-hex-socket-countersunk-head-screw.kcl
         "value": 2.2,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -186,8 +198,10 @@ description: Operations executed m4-hex-socket-countersunk-head-screw.kcl
         "value": 1.45,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -242,18 +256,22 @@ description: Operations executed m4-hex-socket-countersunk-head-screw.kcl
                 "type": "SketchVar",
                 "value": -1.94,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -20.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -268,18 +286,22 @@ description: Operations executed m4-hex-socket-countersunk-head-screw.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -20.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -329,18 +351,22 @@ description: Operations executed m4-hex-socket-countersunk-head-screw.kcl
                 "type": "SketchVar",
                 "value": -1.94,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -2.7,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -355,18 +381,22 @@ description: Operations executed m4-hex-socket-countersunk-head-screw.kcl
                 "type": "SketchVar",
                 "value": -1.94,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -20.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -460,18 +490,22 @@ description: Operations executed m4-hex-socket-countersunk-head-screw.kcl
                 "type": "SketchVar",
                 "value": -3.95,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -486,18 +520,22 @@ description: Operations executed m4-hex-socket-countersunk-head-screw.kcl
                 "type": "SketchVar",
                 "value": -1.94,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -2.7,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -591,18 +629,22 @@ description: Operations executed m4-hex-socket-countersunk-head-screw.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -617,18 +659,22 @@ description: Operations executed m4-hex-socket-countersunk-head-screw.kcl
                 "type": "SketchVar",
                 "value": -3.95,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -722,18 +768,22 @@ description: Operations executed m4-hex-socket-countersunk-head-screw.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -20.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -748,18 +798,22 @@ description: Operations executed m4-hex-socket-countersunk-head-screw.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -1009,18 +1063,22 @@ description: Operations executed m4-hex-socket-countersunk-head-screw.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -1318,18 +1376,22 @@ description: Operations executed m4-hex-socket-countersunk-head-screw.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -1351,18 +1413,22 @@ description: Operations executed m4-hex-socket-countersunk-head-screw.kcl
                 "type": "SketchVar",
                 "value": 1.45,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -1416,18 +1482,22 @@ description: Operations executed m4-hex-socket-countersunk-head-screw.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -1476,18 +1546,22 @@ description: Operations executed m4-hex-socket-countersunk-head-screw.kcl
                 "type": "SketchVar",
                 "value": 0.73,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.26,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -1502,18 +1576,22 @@ description: Operations executed m4-hex-socket-countersunk-head-screw.kcl
                 "type": "SketchVar",
                 "value": 1.45,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -1563,18 +1641,22 @@ description: Operations executed m4-hex-socket-countersunk-head-screw.kcl
                 "type": "SketchVar",
                 "value": -0.73,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.26,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -1589,18 +1671,22 @@ description: Operations executed m4-hex-socket-countersunk-head-screw.kcl
                 "type": "SketchVar",
                 "value": 0.73,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.26,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -1738,18 +1824,22 @@ description: Operations executed m4-hex-socket-countersunk-head-screw.kcl
                 "type": "SketchVar",
                 "value": -1.45,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -1764,18 +1854,22 @@ description: Operations executed m4-hex-socket-countersunk-head-screw.kcl
                 "type": "SketchVar",
                 "value": -0.73,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.26,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -1913,18 +2007,22 @@ description: Operations executed m4-hex-socket-countersunk-head-screw.kcl
                 "type": "SketchVar",
                 "value": -0.73,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -1.26,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -1939,18 +2037,22 @@ description: Operations executed m4-hex-socket-countersunk-head-screw.kcl
                 "type": "SketchVar",
                 "value": -1.45,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -2088,18 +2190,22 @@ description: Operations executed m4-hex-socket-countersunk-head-screw.kcl
                 "type": "SketchVar",
                 "value": 0.73,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -1.26,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -2114,18 +2220,22 @@ description: Operations executed m4-hex-socket-countersunk-head-screw.kcl
                 "type": "SketchVar",
                 "value": -0.73,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -1.26,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -2263,18 +2373,22 @@ description: Operations executed m4-hex-socket-countersunk-head-screw.kcl
                 "type": "SketchVar",
                 "value": 1.45,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -2289,18 +2403,22 @@ description: Operations executed m4-hex-socket-countersunk-head-screw.kcl
                 "type": "SketchVar",
                 "value": 0.73,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -1.26,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -2545,18 +2663,22 @@ description: Operations executed m4-hex-socket-countersunk-head-screw.kcl
                 "type": "SketchVar",
                 "value": 1.45,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -2571,18 +2693,22 @@ description: Operations executed m4-hex-socket-countersunk-head-screw.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -2886,68 +3012,19 @@ description: Operations executed m4-hex-socket-countersunk-head-screw.kcl
       "name": "region",
       "unlabeledArg": null,
       "labeledArgs": {
-        "point": {
+        "segments": {
           "value": {
             "type": "Array",
             "value": [
               {
-                "type": "Number",
-                "value": -0.9675,
-                "ty": {
-                  "mm": null,
-                  "type": "Known",
-                  "type": "Length"
-                }
+                "type": "Segment",
+                "artifact_id": "[uuid]"
               },
               {
-                "type": "Number",
-                "value": -19.9975,
-                "ty": {
-                  "mm": null,
-                  "type": "Known",
-                  "type": "Length"
-                }
+                "type": "Segment",
+                "artifact_id": "[uuid]"
               }
             ]
-          },
-          "sourceRange": []
-        },
-        "sketch": {
-          "value": {
-            "type": "Object",
-            "value": {
-              "boltAxis": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "headTopEdge": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "headTransitionEdge": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "meta": {
-                "type": "Object",
-                "value": {
-                  "sketch": {
-                    "type": "Sketch",
-                    "value": {
-                      "artifactId": "[uuid]"
-                    }
-                  }
-                }
-              },
-              "shankSideWall": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "shankTopEdge": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              }
-            }
           },
           "sourceRange": []
         }
@@ -2986,9 +3063,11 @@ description: Operations executed m4-hex-socket-countersunk-head-screw.kcl
             "type": "Number",
             "value": 360.0,
             "ty": {
-              "degrees": null,
               "type": "Known",
-              "type": "Angle"
+              "value": {
+                "type": "Angle",
+                "value": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -3005,8 +3084,10 @@ description: Operations executed m4-hex-socket-countersunk-head-screw.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   },
                   {
@@ -3014,8 +3095,10 @@ description: Operations executed m4-hex-socket-countersunk-head-screw.kcl
                     "value": 1.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   }
                 ]
@@ -3028,8 +3111,10 @@ description: Operations executed m4-hex-socket-countersunk-head-screw.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   },
                   {
@@ -3037,8 +3122,10 @@ description: Operations executed m4-hex-socket-countersunk-head-screw.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   }
                 ]
@@ -3069,80 +3156,15 @@ description: Operations executed m4-hex-socket-countersunk-head-screw.kcl
       "name": "region",
       "unlabeledArg": null,
       "labeledArgs": {
-        "point": {
+        "segments": {
           "value": {
             "type": "Array",
             "value": [
               {
-                "type": "Number",
-                "value": 1.0853349,
-                "ty": {
-                  "mm": null,
-                  "type": "Known",
-                  "type": "Length"
-                }
-              },
-              {
-                "type": "Number",
-                "value": 0.6266184,
-                "ty": {
-                  "mm": null,
-                  "type": "Known",
-                  "type": "Length"
-                }
+                "type": "Segment",
+                "artifact_id": "[uuid]"
               }
             ]
-          },
-          "sourceRange": []
-        },
-        "sketch": {
-          "value": {
-            "type": "Object",
-            "value": {
-              "bottomFacet": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "lowerLeftFacet": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "lowerRightFacet": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "meta": {
-                "type": "Object",
-                "value": {
-                  "sketch": {
-                    "type": "Sketch",
-                    "value": {
-                      "artifactId": "[uuid]"
-                    }
-                  }
-                }
-              },
-              "socketRadiusGuide": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "socketReferenceCircle": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "topFacet": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "upperLeftFacet": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "upperRightFacet": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              }
-            }
           },
           "sourceRange": []
         }
@@ -3182,8 +3204,10 @@ description: Operations executed m4-hex-socket-countersunk-head-screw.kcl
             "value": 2.2,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -3284,7 +3308,9 @@ description: Operations executed m4-hex-socket-countersunk-head-screw.kcl
             "value": 100.0,
             "ty": {
               "type": "Known",
-              "type": "Count"
+              "value": {
+                "type": "Count"
+              }
             }
           },
           "sourceRange": []
@@ -3295,7 +3321,9 @@ description: Operations executed m4-hex-socket-countersunk-head-screw.kcl
             "value": 50.0,
             "ty": {
               "type": "Known",
-              "type": "Count"
+              "value": {
+                "type": "Count"
+              }
             }
           },
           "sourceRange": []
@@ -3416,7 +3444,9 @@ description: Operations executed m4-hex-socket-countersunk-head-screw.kcl
         "value": 2.718281828459045,
         "ty": {
           "type": "Known",
-          "type": "Count"
+          "value": {
+            "type": "Count"
+          }
         }
       },
       "visibility": "export",
@@ -3444,7 +3474,9 @@ description: Operations executed m4-hex-socket-countersunk-head-screw.kcl
         "value": 6.283185307179586,
         "ty": {
           "type": "Known",
-          "type": "Count"
+          "value": {
+            "type": "Count"
+          }
         }
       },
       "visibility": "export",
@@ -3478,7 +3510,7 @@ description: Operations executed m4-hex-socket-countersunk-head-screw.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 23
+            "index": 24
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3502,7 +3534,7 @@ description: Operations executed m4-hex-socket-countersunk-head-screw.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 24
+            "index": 25
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3526,7 +3558,7 @@ description: Operations executed m4-hex-socket-countersunk-head-screw.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 25
+            "index": 26
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3550,7 +3582,7 @@ description: Operations executed m4-hex-socket-countersunk-head-screw.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 26
+            "index": 27
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3574,7 +3606,7 @@ description: Operations executed m4-hex-socket-countersunk-head-screw.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 27
+            "index": 28
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3598,7 +3630,7 @@ description: Operations executed m4-hex-socket-countersunk-head-screw.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 28
+            "index": 29
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3622,7 +3654,7 @@ description: Operations executed m4-hex-socket-countersunk-head-screw.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 29
+            "index": 30
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3646,7 +3678,7 @@ description: Operations executed m4-hex-socket-countersunk-head-screw.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 30
+            "index": 31
           },
           {
             "type": "VariableDeclarationDeclaration"
