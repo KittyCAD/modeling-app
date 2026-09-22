@@ -41,6 +41,7 @@ import {
   getUtils,
   settingsToToml,
   setup,
+  token,
 } from '@e2e/playwright/test-utils'
 import type { ILog } from '@src/lib/debugger'
 import { isArray } from '@src/lib/utils'
@@ -547,10 +548,73 @@ const fixturesForWeb = {
       return disposable
     }
 
-    const webApp = new AuthenticatedApp(context, page, testInfo)
-    await webApp.initialise('', userFeatures)
+    const projectsUrl = 'https://api.dev.zoo.dev/user/projects'
+    const createdProjects = new Set<string>()
+    const uploads: Promise<void>[] = []
+    const cleanupErrors: unknown[] = []
+    // Later test routes handle mocked uploads. Only requests that reach this
+    // fallback are sent to the real API; keep the browser's native multipart body.
+    await context.route(projectsUrl, async (route) => {
+      const request = route.request()
+      if (request.method() === 'POST') {
+        uploads.push(
+          request
+            .response()
+            .then(async (response) => {
+              if (response?.ok()) {
+                const project = await response.json()
+                if (typeof project.id !== 'string') {
+                  throw new Error('Cloud upload returned no project ID')
+                }
+                createdProjects.add(project.id)
+              }
+            })
+            .catch((error) => {
+              cleanupErrors.push(error)
+            })
+        )
+      }
+      await route.fallback()
+    })
 
-    await use(page)
+    try {
+      const webApp = new AuthenticatedApp(context, page, testInfo)
+      await webApp.initialise('', userFeatures)
+      await use(page)
+    } catch (error) {
+      cleanupErrors.push(error)
+    } finally {
+      // Stop sync before deleting, including when the test failed or timed out.
+      await Promise.all(context.pages().map((page) => page.close()))
+      await Promise.all(uploads)
+      await testInfo.attach('cloud-project-cleanup', {
+        body: JSON.stringify([...createdProjects]),
+        contentType: 'application/json',
+      })
+      for (const id of createdProjects) {
+        try {
+          const response = await context.request.delete(
+            `${projectsUrl}/${encodeURIComponent(id)}`,
+            { headers: { Authorization: `Bearer ${token}` } }
+          )
+          if (!response.ok() && response.status() !== 404) {
+            cleanupErrors.push(
+              new Error(
+                `Cloud test cleanup failed: ${id} (${response.status()})`
+              )
+            )
+          }
+        } catch (error) {
+          cleanupErrors.push(error)
+        }
+      }
+    }
+    if (cleanupErrors.length) {
+      throw new AggregateError(
+        cleanupErrors,
+        'Cloud test project cleanup failed'
+      )
+    }
   },
 }
 
