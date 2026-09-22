@@ -8,6 +8,7 @@ const receipt = {
   cutoff: new Date(cutoff).toISOString(),
   deleted: [],
   skipped: [],
+  failures: [],
 }
 
 async function request(path, method = 'GET') {
@@ -67,11 +68,7 @@ try {
       })
     )
     const failures = results.filter((result) => result.status === 'rejected')
-    assert.equal(
-      failures.length,
-      0,
-      failures.map((result) => String(result.reason)).join('\n')
-    )
+    receipt.failures.push(...failures.map((result) => String(result.reason)))
     if (offset % 100 === 0) {
       console.log(`Deleted ${receipt.deleted.length} projects`)
     }
@@ -88,6 +85,7 @@ try {
   console.log(
     `Deleted ${receipt.deleted.length}; ${remaining.length} projects remain`
   )
+  assert.equal(receipt.failures.length, 0, receipt.failures.join('\n'))
 } finally {
   await writeFile(
     'cloud-project-cleanup.json',
