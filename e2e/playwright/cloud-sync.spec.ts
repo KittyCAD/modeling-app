@@ -1,4 +1,6 @@
+import { randomUUID } from 'node:crypto'
 import { expect, test } from '@e2e/playwright/base-test'
+import { EditorFixture } from '@e2e/playwright/fixtures/editorFixture'
 import {
   type CloudProject,
   cloudProjectResponse,
@@ -14,12 +16,16 @@ import {
   zipProject,
 } from '@e2e/playwright/lib/cloudSyncTestUtils'
 import {
+  createProject,
   expectCloudFeatureEnabled,
   mockClientErrorReports,
   setup,
+  token,
 } from '@e2e/playwright/test-utils'
-import type { Page } from '@playwright/test'
+import type { APIResponse, Page } from '@playwright/test'
+import type { CreatedRemoteProject } from '@src/lib/cloudSync/types'
 import { OPFS_CLOUD_FEATURE_FLAG } from '@src/lib/constants'
+import JSZip from 'jszip'
 
 const CLOUD_SYNC_E2E_TIMEOUT = 20_000
 
@@ -43,6 +49,135 @@ async function expectCloudSyncHomeReady(page: Page) {
     page.getByRole('heading', { name: /^(Project Libraries|Personal Cloud)$/ })
   ).toBeVisible({ timeout: CLOUD_SYNC_E2E_TIMEOUT })
 }
+
+test(
+  'syncs an edit queued during first upload with the real development API',
+  { tag: ['@web'] },
+  async ({ context, page, request }, testInfo) => {
+    const apiUrl = 'https://api.dev.zoo.dev'
+    const headers = { Authorization: `Bearer ${token}` }
+    const projectName = `cloud-sync-e2e-${randomUUID()}`
+    const projectPath = `${PROJECT_DIR}/${projectName}`
+    const firstUpload = Promise.withResolvers<APIResponse>()
+    const releaseUpload = Promise.withResolvers<undefined>()
+    let createCount = 0
+
+    await expect(await request.get(`${apiUrl}/user`, { headers })).toBeOK()
+    await context.route('**/user/projects**', async (route) => {
+      const url = new URL(route.request().url())
+      expect(url.origin).toBe(apiUrl)
+      if (
+        url.pathname === '/user/projects' &&
+        route.request().method() === 'POST'
+      ) {
+        createCount += 1
+        // Hold the real response so the editor change happens before the app
+        // receives its cloud ID. Forward the API's response without changing it.
+        const response = route.fetch({ timeout: CLOUD_SYNC_E2E_TIMEOUT })
+        firstUpload.resolve(response)
+        await releaseUpload.promise
+        await route.fulfill({ response: await response })
+        return
+      }
+      await route.continue()
+    })
+
+    try {
+      await setup(context, page, testInfo, [OPFS_CLOUD_FEATURE_FLAG], {
+        cloudSyncEnabled: true,
+      })
+      await expectCloudFeatureEnabled(page)
+      await page.getByText('Personal Cloud', { exact: true }).click()
+      await createProject({ name: projectName, page })
+      await expectProjectFileRoute(page)
+
+      const response = await firstUpload.promise
+      await expect(response).toBeOK()
+      const created: CreatedRemoteProject = await response.json()
+      expect(created.id).toBeTruthy()
+      expect(created.revision).toBeTruthy()
+      expect(created.files.map((file) => file.relative_path)).toEqual(
+        expect.arrayContaining(['main.kcl', 'project.toml'])
+      )
+      for (const file of created.files) {
+        expect(file.sha256).toMatch(/^[a-f0-9]{64}$/)
+        expect(file.byte_size).toBeGreaterThanOrEqual(0)
+      }
+
+      const editor = new EditorFixture(page)
+      await editor.openPane()
+      await editor.codeContent.fill('queuedCloudEdit = 42\n')
+      await expect
+        .poll(
+          () => readOpfsTextFiles(page, { main: `${projectPath}/main.kcl` }),
+          { timeout: CLOUD_SYNC_E2E_TIMEOUT }
+        )
+        .toMatchObject({ main: 'queuedCloudEdit = 42\n' })
+
+      const updatedResponse = page.waitForResponse(
+        (result) =>
+          new URL(result.url()).pathname === `/user/projects/${created.id}` &&
+          result.request().method() === 'PUT',
+        { timeout: CLOUD_SYNC_E2E_TIMEOUT }
+      )
+      releaseUpload.resolve(undefined)
+      const uploaded = await updatedResponse
+      expect(uploaded.ok()).toBe(true)
+      expect(
+        new URL(uploaded.url()).searchParams.get('expected_revision')
+      ).toBe(created.revision)
+      const updated = await uploaded.json()
+      await expect
+        .poll(() => readCloudSyncProjectMetadata(page, projectPath), {
+          timeout: CLOUD_SYNC_E2E_TIMEOUT,
+        })
+        .toMatchObject({
+          remoteProjectId: created.id,
+          remoteRevision: updated.revision,
+          lastSyncedAt: expect.any(String),
+          pendingCount: 0,
+          conflict: undefined,
+          lastFailure: undefined,
+        })
+      const files = await readOpfsTextFiles(page, {
+        projectToml: `${projectPath}/project.toml`,
+      })
+      expect(files.projectToml).toContain(`project_id = "${created.id}"`)
+
+      const download = await request.get(
+        `${apiUrl}/user/projects/${created.id}/download?format=zip`,
+        { headers }
+      )
+      await expect(download).toBeOK()
+      const archive = await JSZip.loadAsync(await download.body())
+      expect(await archive.file(/(^|\/)main\.kcl$/)[0]?.async('string')).toBe(
+        'queuedCloudEdit = 42\n'
+      )
+      expect(
+        await archive.file(/(^|\/)project\.toml$/)[0]?.async('string')
+      ).toContain(`project_id = "${created.id}"`)
+      expect(createCount).toBe(1)
+      await expect(
+        page.getByTestId('project-sidebar-cloud-conflict-badge')
+      ).toHaveCount(0)
+      await expect(page.getByTestId('cloud-conflict-dialog')).toHaveCount(0)
+    } finally {
+      releaseUpload.resolve(undefined)
+      await context.unrouteAll({ behavior: 'wait' })
+      await page.close()
+      // A failed run may have created duplicates. Delete only this run's
+      // uniquely named projects, after stopping the app's sync loop.
+      const listed = await request.get(`${apiUrl}/user/projects`, { headers })
+      await expect(listed).toBeOK()
+      const projects: { id: string; title: string }[] = await listed.json()
+      for (const project of projects.filter((p) => p.title === projectName)) {
+        const url = `${apiUrl}/user/projects/${project.id}`
+        await expect(await request.delete(url, { headers })).toBeOK()
+        expect((await request.get(url, { headers })).status()).toBe(404)
+      }
+    }
+  }
+)
 
 test(
   'creates a multi-file sample in Personal Cloud from Home',
