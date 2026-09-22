@@ -806,7 +806,7 @@ const Home = () => {
             autoUpdateDownloadProgress,
             autoUpdateReady,
             onRestartToUpdate: () => {
-              window.electron?.appRestart()
+              window.electron?.appRestart().catch(reportRejection)
             },
           }),
           ...filterStatusBarItemsForScopes(

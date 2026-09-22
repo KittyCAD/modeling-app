@@ -40,6 +40,7 @@ import {
 } from '@src/lib/constants'
 import { registerFileProtocolCsp } from '@src/lib/csp'
 import { DeviceFlowSessionStore } from '@src/lib/deviceFlowSessions'
+import { getDesktopUpdater } from '@src/lib/desktopUpdater'
 import { discoverMachineApi } from '@src/lib/discoverMachineApi'
 import {
   ELECTRON_LIFECYCLE_DRAIN_REPORTS_CHANNEL,
@@ -125,8 +126,8 @@ if (
 // Pull user and system CAs from the OS trust store into Node TLS.
 configureSystemCertificates()
 
+const desktopUpdater = getDesktopUpdater()
 let mainWindow: BrowserWindow | null = null
-let isInstallingUpdate = false
 /** All Electron windows will share this WASM module */
 const initPromise = initialiseWasmNode()
 let electronLifecycleReportSequence = 0
@@ -626,7 +627,7 @@ const isBoundsVisible = (bounds: Electron.Rectangle): boolean => {
 // for applications and their menu bar to stay active until the user quits
 // explicitly with Cmd + Q, but it is a really weird behavior with our app.
 app.on('window-all-closed', () => {
-  if (isInstallingUpdate) {
+  if (desktopUpdater.isInstalling) {
     return
   }
 
@@ -954,7 +955,7 @@ app.on('ready', () => {
   let backgroundCheckingForUpdates = false
   const checkForUpdatesBackground = () => {
     backgroundCheckingForUpdates = true
-    appUpdater
+    desktopUpdater
       .checkForUpdates()
       .catch(reportRejection)
       .finally(() => {
@@ -980,7 +981,7 @@ app.on('ready', () => {
     }
   })
 
-  appUpdater.on('error', (error) => {
+  desktopUpdater.on('update-error', (error) => {
     console.error('update-error', error)
     sendToAllWindows('update-error', error)
   })
@@ -1002,7 +1003,7 @@ app.on('ready', () => {
     sendToAllWindows('update-download-progress', progress)
   })
 
-  appUpdater.on('update-downloaded', (info) => {
+  desktopUpdater.on('update-downloaded', (info) => {
     console.log('update-downloaded', info)
     sendToAllWindows('update-downloaded', {
       version: info.version,
@@ -1011,30 +1012,24 @@ app.on('ready', () => {
   })
 
   ipcMain.handle('app.restart', (event) => {
-    if (isInstallingUpdate) {
-      return
-    }
-
-    isInstallingUpdate = true
-    if (process.platform === 'darwin') {
+    const error = desktopUpdater.install(() => {
+      if (process.platform !== 'darwin') return () => {}
       const requestingWindow = BrowserWindow.fromWebContents(event.sender)
-      prepareMacUpdateInstall(
+      return prepareMacUpdateInstall(
         app,
-        requestingWindow ? [requestingWindow] : BrowserWindow.getAllWindows(),
-        saveWindowBounds
+        BrowserWindow.getAllWindows(),
+        (browserWindow) => {
+          if (!requestingWindow || browserWindow === requestingWindow) {
+            saveWindowBounds(browserWindow)
+          }
+        }
       )
-    }
-
-    try {
-      appUpdater.quitAndInstall()
-    } catch (error) {
-      isInstallingUpdate = false
-      return Promise.reject(error)
-    }
+    })
+    if (error) return Promise.reject(error)
   })
 
   ipcMain.handle('app.checkForUpdates', () => {
-    return appUpdater.checkForUpdates()
+    return desktopUpdater.checkForUpdates()
   })
 })
 
