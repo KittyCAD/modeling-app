@@ -163,8 +163,6 @@ process.env.VITE_ZOOKEEPER_WEBSOCKET_URL ??=
   viteEnv.VITE_MLEPHANT_WEBSOCKET_URL
 process.env.VITE_ZOO_BASE_DOMAIN ??= viteEnv.VITE_ZOO_BASE_DOMAIN
 
-// Likely convenient to keep for debugging
-console.log('Environment vars', process.env)
 console.log('Parsed CLI args', args)
 
 // Set Electron's profile paths before app.ready. Chromium session/cache state is
