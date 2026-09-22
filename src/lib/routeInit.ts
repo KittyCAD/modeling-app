@@ -193,8 +193,10 @@ export async function initFileRoute(
     requestSignal?: AbortSignal
   }
 ): Promise<RouteInitResult<FileLoaderData>> {
-  // Must basically remain for all eternity, until the last person
-  // who's ever used ZDS on web before this point has died.
+  // Before multi-file web projects, the editor used
+  // `/file/%2Fbrowser%2Fmain.kcl` for its virtual browser project. Send those
+  // legacy entry URLs Home, where startup selects the current default project.
+  // Remove when support for pre-OPFS URLs ends.
   if (id?.startsWith('/browser')) {
     // Transitional loader cancellation: this legacy branch returns before it
     // can call openProject, so the loader-era implementation must explicitly
