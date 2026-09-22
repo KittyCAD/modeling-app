@@ -6,6 +6,7 @@ import {
 } from '@src/lib/cloudSync/projectArchive'
 import type {
   CloudSyncConfig,
+  CreatedRemoteProject,
   ProjectArchiveFile,
   ProjectUploadPublicationMetadata,
   RemoteProject,
@@ -371,7 +372,7 @@ export async function createRemoteProject(
   projectPath: string,
   files: ProjectArchiveFile[]
 ) {
-  return cloudJson<RemoteProject>(config, '/user/projects', {
+  return cloudJson<CreatedRemoteProject>(config, '/user/projects', {
     method: 'POST',
     body: buildProjectFormData(projectPath, files, {
       publicationMetadata: {
