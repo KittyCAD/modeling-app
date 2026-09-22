@@ -235,6 +235,8 @@ export async function deleteFromSelection(
         : undefined
     // Geometry selections retain their feature-specific deletion behavior.
     const isGeometrySelection =
+      // Preserve legacy Sketch 1 pipe deletion; remove this segment exclusion
+      // when Sketch 1 support and its tests are retired.
       selection.artifact?.type === 'segment' ||
       selection.artifact?.type === 'wall' ||
       selection.artifact?.type === 'cap' ||
