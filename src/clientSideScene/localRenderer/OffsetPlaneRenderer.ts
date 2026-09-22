@@ -44,6 +44,7 @@ export class OffsetPlaneRenderer {
     for (const artifact of artifacts.values()) {
       if (
         artifact.type !== 'plane' ||
+        artifact.hidden ||
         !artifact.planeInfo ||
         artifact.size == null
       )

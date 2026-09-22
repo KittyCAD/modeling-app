@@ -228,6 +228,9 @@ pub struct Plane {
     /// The unscaled plane size in millimeters, before view-dependent scaling.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub size: Option<f64>,
+    /// Visibility after plane creation and subsequent ObjectVisible commands.
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    pub hidden: bool,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, JsonSchema, PartialEq, ts_rs::TS)]

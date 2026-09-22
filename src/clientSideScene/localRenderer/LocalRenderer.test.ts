@@ -29,6 +29,8 @@ vi.mock('@src/lib/settings/settingsUtils', () => ({
 vi.mock('@src/lib/trap', () => ({ reportRejection: vi.fn() }))
 
 import { LocalRenderer } from '@src/clientSideScene/localRenderer/LocalRenderer'
+import { OffsetPlaneRenderer } from '@src/clientSideScene/localRenderer/OffsetPlaneRenderer'
+import type { Artifact } from '@src/lang/wasm'
 
 // Exercise the real export/GLTFLoader lifecycle without requesting a GPU device.
 type RendererInternals = {
@@ -37,6 +39,7 @@ type RendererInternals = {
   renderer: { dispose(): void; domElement: HTMLCanvasElement } | null
   scene: Scene | null
   currentModel: Group | null
+  offsetPlaneRenderer: OffsetPlaneRenderer | null
   pendingModelRefresh: boolean
   modelLoadSettledAfterRender: boolean
   previewCamera: PerspectiveCamera | OrthographicCamera | null
@@ -610,6 +613,44 @@ describe('local GLB loading', () => {
       f.target.object.geometry.dispose()
     }
   )
+
+  it('renders offset planes even when GLB export fails, and clears them on empty execution', async () => {
+    const f = fixture()
+    const scene = new Scene()
+    f.state.scene = scene
+    f.state.offsetPlaneRenderer = new OffsetPlaneRenderer()
+    f.state.offsetPlaneRenderer.addTo(scene)
+    const root = scene.children[0]
+    f.done()
+    await vi.waitFor(() => expect(f.state.currentModel).not.toBeNull())
+    const offset: Artifact = {
+      type: 'plane',
+      id: 'offset',
+      pathIds: [],
+      codeRef: { range: [0, 1, 0], pathToNode: [], nodePath: { steps: [] } },
+      planeInfo: {
+        origin: { x: 0, y: 0, z: 20, units: 'mm' },
+        xAxis: { x: 1, y: 0, z: 0, units: null },
+        yAxis: { x: 0, y: 1, z: 0, units: null },
+        zAxis: { x: 0, y: 0, z: 1, units: null },
+      },
+      size: 100,
+    }
+    f.manager.artifactGraph.clear()
+    f.manager.artifactGraph.set(offset.id, offset)
+    f.manager.rustContext.export.mockResolvedValueOnce(undefined)
+    vi.spyOn(console, 'error').mockImplementation(() => {})
+    f.done()
+    expect(root.children.map((child) => child.name)).toEqual(['offset'])
+    await vi.waitFor(() => expect(f.state.currentModel).toBeNull())
+    expect(scene.children).toEqual([root])
+    expect(root.children).toHaveLength(1)
+    f.manager.artifactGraph.clear()
+    f.done()
+    expect(root.children).toHaveLength(0)
+    f.renderer.dispose()
+    expect(scene.children).toHaveLength(0)
+  })
 
   it('ignores an old export failure after a newer model has loaded', async () => {
     const f = fixture()

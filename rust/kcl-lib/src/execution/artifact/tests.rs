@@ -41,6 +41,7 @@ result = makePlanes()
         assert_eq!(info.y_axis, artifact_point3d(Point3d::new(0.0, 0.0, 1.0, None)));
         assert_eq!(info.z_axis, artifact_point3d(Point3d::new(0.0, -1.0, 0.0, None)));
         assert_eq!(plane.size, Some(100.0));
+        assert!(!plane.hidden);
     }
 }
 
@@ -76,6 +77,7 @@ sketch(on = plane) {
         artifact_point3d(Point3d::new(0.0, 0.0, 20.0, Some(UnitLength::Millimeters)))
     );
     assert_eq!(plane.size, Some(100.0));
+    assert!(plane.hidden, "Using the offset plane for a sketch must hide it");
 
     let mut merged = plane.clone();
     let additional_path_id = ArtifactId::new(Uuid::new_v4());
@@ -90,6 +92,7 @@ sketch(on = plane) {
     );
     assert_eq!(merged.plane_info, plane.plane_info);
     assert_eq!(merged.size, plane.size);
+    assert!(merged.hidden);
     assert!(merged.path_ids.contains(&additional_path_id));
 
     let clone_id = ArtifactId::new(Uuid::new_v4());
@@ -106,6 +109,104 @@ sketch(on = plane) {
     assert_eq!(cloned.id, clone_id);
     assert_eq!(cloned.plane_info, plane.plane_info);
     assert_eq!(cloned.size, plane.size);
+    assert!(cloned.hidden);
+}
+
+#[tokio::test]
+async fn plane_visibility_hides_xy_sketch_support_but_keeps_unused_offset() {
+    let result = crate::execution::parse_execute(
+        r##"
+@settings(kclVersion = 2.0)
+plane001 = offsetPlane(XY, offset = 20mm)
+triangle = sketch(on = XY) {
+    a = line(start = [var 0, var 0], end = [var 60, var 0])
+    b = line(start = [var 60, var 0], end = [var 30, var 40])
+    c = line(start = [var 30, var 40], end = [var 0, var 0])
+    coincident([a.end, b.start])
+    coincident([b.end, c.start])
+    coincident([c.end, a.start])
+}
+body = extrude(region(point = [30, 10], sketch = triangle), length = 15)
+appearance(body, color = "#2266FF")
+"##,
+    )
+    .await
+    .unwrap();
+    let outcome = result
+        .exec_state
+        .into_exec_outcome(result.mem_env, &result.exec_ctxt)
+        .await
+        .unwrap();
+    let planes: Vec<_> = outcome
+        .artifact_graph
+        .values()
+        .filter_map(|artifact| match artifact {
+            Artifact::Plane(plane) => Some(plane),
+            _ => None,
+        })
+        .collect();
+    assert_eq!(planes.len(), 2);
+    for plane in planes {
+        let z = plane.plane_info.as_ref().unwrap().origin.z;
+        assert_eq!(plane.hidden, z == 0.0);
+    }
+    assert_eq!(
+        outcome
+            .artifact_graph
+            .values()
+            .filter(|artifact| { matches!(artifact, Artifact::Plane(plane) if !plane.hidden) })
+            .count(),
+        1
+    );
+}
+
+#[test]
+fn plane_visibility_commands_update_cached_planes() {
+    let plane_id = ArtifactId::new(Uuid::new_v4());
+    let mut graph = ArtifactGraph::from_parts(
+        IndexMap::from_iter([(
+            plane_id,
+            Artifact::Plane(Plane {
+                id: plane_id,
+                path_ids: Vec::new(),
+                code_ref: placeholder_code_ref(),
+                plane_info: None,
+                size: None,
+                hidden: false,
+            }),
+        )]),
+        0,
+    );
+    let ast = crate::parsing::parse_str("", ModuleId::default()).unwrap();
+    let programs = crate::execution::ProgramLookup::new(ast.clone(), Default::default());
+    for hidden in [true, false, true] {
+        let command = ArtifactCommand {
+            cmd_id: Uuid::new_v4(),
+            range: SourceRange::synthetic(),
+            command: ModelingCmd::from(
+                kcmc::ObjectVisible::builder()
+                    .object_id(plane_id.into())
+                    .hidden(hidden)
+                    .build(),
+            ),
+            entity_clone_info: None,
+            omit_from_graph: false,
+        };
+        graph = build_artifact_graph(
+            &[command],
+            &IndexMap::default(),
+            &ast,
+            &mut IndexMap::default(),
+            graph,
+            &programs,
+            &Default::default(),
+        )
+        .unwrap();
+        let Some(Artifact::Plane(plane)) = graph.get(&plane_id) else {
+            panic!("Expected the cached plane artifact");
+        };
+        assert_eq!(plane.hidden, hidden);
+    }
 }
 
 #[test]

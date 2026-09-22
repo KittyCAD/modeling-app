@@ -282,7 +282,11 @@ planeInfo?: ArtifactPlaneInfo | null,
 /**
  * The unscaled plane size in millimeters, before view-dependent scaling.
  */
-size?: number | null, };
+size?: number | null, 
+/**
+ * Visibility after plane creation and subsequent ObjectVisible commands.
+ */
+hidden?: boolean, };
 
 export type PlaneOfFace = { id: ArtifactId, faceId: ArtifactId, codeRef: CodeRef, };
 

@@ -290,6 +290,7 @@ fn merge_composite_solid(old: &mut CompositeSolid, new: Artifact) -> Option<Arti
 fn merge_plane(old: &mut Plane, new: Artifact) -> Option<Artifact> {
     let Artifact::Plane(new) = new else { return Some(new) };
     merge_ids(&mut old.path_ids, new.path_ids);
+    old.hidden = new.hidden;
     if new.plane_info.is_some() {
         old.plane_info = new.plane_info;
     }
@@ -1415,7 +1416,16 @@ fn artifacts_to_update(
                     z_axis: x_axis.axes_cross_product(&y_axis),
                 })),
                 size: Some(plane.size.0),
+                hidden: plane.hide.unwrap_or_default(),
             })]);
+        }
+        ModelingCmd::ObjectVisible(visibility) => {
+            if let Some(Artifact::Plane(plane)) = artifacts.get(&ArtifactId::new(visibility.object_id)) {
+                return Ok(vec![Artifact::Plane(Plane {
+                    hidden: visibility.hidden,
+                    ..plane.clone()
+                })]);
+            }
         }
         ModelingCmd::FaceIsPlanar(FaceIsPlanar { object_id, .. }) => {
             return Ok(vec![Artifact::PlaneOfFace(PlaneOfFace {
@@ -1464,6 +1474,7 @@ fn artifacts_to_update(
                             code_ref,
                             plane_info: None,
                             size: None,
+                            hidden: false,
                         },
                     })]);
                 }
