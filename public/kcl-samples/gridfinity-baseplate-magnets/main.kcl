@@ -171,23 +171,31 @@ magnetLayerCut = extrude(magnetBaseRegion, length = -magDepth)
 magnetLayer = fillet(
   magnetLayerCut,
   radius = cornerRadius,
-  tags = [
-    getCommonEdge(faces = [
-      magnetBaseRegion.tags.bottomEdge,
-      magnetBaseRegion.tags.rightEdge
-    ]),
-    getCommonEdge(faces = [
-      magnetBaseRegion.tags.rightEdge,
-      magnetBaseRegion.tags.topEdge
-    ]),
-    getCommonEdge(faces = [
-      magnetBaseRegion.tags.topEdge,
-      magnetBaseRegion.tags.leftEdge
-    ]),
-    getCommonEdge(faces = [
-      magnetBaseRegion.tags.leftEdge,
-      magnetBaseRegion.tags.bottomEdge
-    ])
+  edges = [
+    {
+      sideFaces = [
+        magnetBaseRegion.tags.bottomEdge,
+        magnetBaseRegion.tags.rightEdge
+      ]
+    },
+    {
+      sideFaces = [
+        magnetBaseRegion.tags.rightEdge,
+        magnetBaseRegion.tags.topEdge
+      ]
+    },
+    {
+      sideFaces = [
+        magnetBaseRegion.tags.topEdge,
+        magnetBaseRegion.tags.leftEdge
+      ]
+    },
+    {
+      sideFaces = [
+        magnetBaseRegion.tags.leftEdge,
+        magnetBaseRegion.tags.bottomEdge
+      ]
+    }
   ],
 )
 magnetLayers = patternLinear3d(
@@ -249,23 +257,31 @@ lowerMagnetBaseCut = extrude(lowerMagnetBaseRegion, length = -magDepth)
 lowerMagnetBase = fillet(
   lowerMagnetBaseCut,
   radius = cornerRadius,
-  tags = [
-    getCommonEdge(faces = [
-      lowerMagnetBaseRegion.tags.bottomEdge,
-      lowerMagnetBaseRegion.tags.rightEdge
-    ]),
-    getCommonEdge(faces = [
-      lowerMagnetBaseRegion.tags.rightEdge,
-      lowerMagnetBaseRegion.tags.topEdge
-    ]),
-    getCommonEdge(faces = [
-      lowerMagnetBaseRegion.tags.topEdge,
-      lowerMagnetBaseRegion.tags.leftEdge
-    ]),
-    getCommonEdge(faces = [
-      lowerMagnetBaseRegion.tags.leftEdge,
-      lowerMagnetBaseRegion.tags.bottomEdge
-    ])
+  edges = [
+    {
+      sideFaces = [
+        lowerMagnetBaseRegion.tags.bottomEdge,
+        lowerMagnetBaseRegion.tags.rightEdge
+      ]
+    },
+    {
+      sideFaces = [
+        lowerMagnetBaseRegion.tags.rightEdge,
+        lowerMagnetBaseRegion.tags.topEdge
+      ]
+    },
+    {
+      sideFaces = [
+        lowerMagnetBaseRegion.tags.topEdge,
+        lowerMagnetBaseRegion.tags.leftEdge
+      ]
+    },
+    {
+      sideFaces = [
+        lowerMagnetBaseRegion.tags.leftEdge,
+        lowerMagnetBaseRegion.tags.bottomEdge
+      ]
+    }
   ],
 )
 lowerMagnetBases = patternLinear3d(
