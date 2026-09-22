@@ -5,7 +5,6 @@ import {
   setProjectIdInProjectTomlContents,
 } from '@src/lib/projectTomlMetadata'
 import { isErr } from '@src/lib/trap'
-import { updateProjectToml } from '@src/lib/updateProjectToml'
 import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
 import { v4 as uuidv4 } from 'uuid'
 
@@ -46,6 +45,7 @@ export async function separateProjectsSharingProjectId({
         await fileOperations.readFile(projectTomlPath)
       )
       return {
+        contents,
         projectId: getProjectIdFromProjectTomlContents(contents),
         projectPath,
         projectTomlPath,
@@ -62,31 +62,22 @@ export async function separateProjectsSharingProjectId({
     )
   }
 
+  const updates: { nextContents: string; projectTomlPath: string }[] = []
+  for (const { contents, projectPath, projectTomlPath } of projects) {
+    if (projectPath === keepProjectPath) {
+      continue
+    }
+    const nextContents = setProjectIdInProjectTomlContents(contents, uuidv4())
+    if (isErr(nextContents)) {
+      return Promise.reject(nextContents)
+    }
+    updates.push({ nextContents, projectTomlPath })
+  }
+
   await Promise.all(
-    projects
-      .filter(({ projectPath }) => projectPath !== keepProjectPath)
-      .map(({ projectTomlPath }) =>
-        updateProjectToml(projectTomlPath, async () => {
-          const contents = new TextDecoder().decode(
-            await fileOperations.readFile(projectTomlPath)
-          )
-          if (
-            getProjectIdFromProjectTomlContents(contents) !== sharedProjectId
-          ) {
-            return Promise.reject(
-              new Error(
-                'These project folders no longer share the same project ID.'
-              )
-            )
-          }
-          const nextContents = setProjectIdInProjectTomlContents(
-            contents,
-            uuidv4()
-          )
-          if (isErr(nextContents)) return Promise.reject(nextContents)
-          await fileOperations.writeFile(projectTomlPath, nextContents)
-        })
-      )
+    updates.map(({ nextContents, projectTomlPath }) =>
+      fileOperations.writeFile(projectTomlPath, nextContents)
+    )
   )
 
   return { sharedProjectId }

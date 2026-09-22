@@ -99,7 +99,6 @@ import {
   setProjectTitleInProjectTomlContents,
 } from '@src/lib/projectTomlMetadata'
 import { isErr, reportRejection } from '@src/lib/trap'
-import { updateProjectToml } from '@src/lib/updateProjectToml'
 import { v4 } from 'uuid'
 
 export {
@@ -1168,6 +1167,8 @@ async function writeLocalProjectCloudProjectId(
     return false
   }
 
+  // TODO: Coordinate cloud ID updates with settings saves.
+  // An overlapping save can overwrite the ID or newer settings.
   return updateLocalProjectToml(projectPath, (projectToml) =>
     getCloudProjectIdFromProjectTomlContents(projectToml, environmentName) ===
     projectId
@@ -1196,25 +1197,23 @@ async function updateLocalProjectToml(
   update: (contents: string) => string
 ) {
   const projectTomlPath = localFs.join(projectPath, PROJECT_SETTINGS_FILE_NAME)
-  return updateProjectToml(projectTomlPath, async () => {
-    let projectToml = ''
-    if (await exists(projectTomlPath)) {
-      projectToml = await localFs.readFile(projectTomlPath, {
-        encoding: 'utf-8',
-      })
-    }
+  let projectToml = ''
+  if (await exists(projectTomlPath)) {
+    projectToml = await localFs.readFile(projectTomlPath, {
+      encoding: 'utf-8',
+    })
+  }
 
-    const nextProjectToml = update(projectToml)
-    if (nextProjectToml === projectToml) {
-      return false
-    }
+  const nextProjectToml = update(projectToml)
+  if (nextProjectToml === projectToml) {
+    return false
+  }
 
-    await localFs.writeFile(
-      projectTomlPath,
-      new TextEncoder().encode(nextProjectToml)
-    )
-    return true
-  })
+  await localFs.writeFile(
+    projectTomlPath,
+    new TextEncoder().encode(nextProjectToml)
+  )
+  return true
 }
 
 async function appendOutboxEntry(entry: Omit<OutboxEntry, 'id'>) {
@@ -1384,13 +1383,10 @@ async function replaceLocalProjectWithFiles(
     }
     const targetPath = localFs.join(projectPath, file.relativePath)
     await localFs.mkdir(localFs.dirname(targetPath), { recursive: true })
-    const write = () =>
-      localFs.writeFile(targetPath, new Uint8Array(toArrayBuffer(file.data)))
-    if (file.relativePath === PROJECT_SETTINGS_FILE_NAME) {
-      await updateProjectToml(targetPath, write)
-    } else {
-      await write()
-    }
+    await localFs.writeFile(
+      targetPath,
+      new Uint8Array(toArrayBuffer(file.data))
+    )
   }
 }
 
