@@ -10,6 +10,8 @@ import Tooltip from '@src/components/Tooltip'
 import usePlatform from '@src/hooks/usePlatform'
 import type { ArtifactGraph } from '@src/lang/wasm'
 import { hotkeyDisplay } from '@src/lib/hotkeys'
+import { interactions } from '@src/lib/interactionPerformance/definitions'
+import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 import { LayoutType } from '@src/lib/layout/types'
 import type {
   Action,
@@ -501,6 +503,16 @@ function PaneButton({
   const { areaLibrary } = useLayoutState()
   const buttonBorderWidthProp = `border${sideToReactCss(getOppositeSide(side))}Width`
   const isActiveIndex = parentActiveIndices.indexOf(childIndex) >= 0
+  const interaction =
+    pane.id === DefaultLayoutPaneID.Code
+      ? isActiveIndex
+        ? interactions.codePaneClose
+        : interactions.codePaneOpen
+      : pane.id === DefaultLayoutPaneID.Files
+        ? isActiveIndex
+          ? interactions.filesPaneClose
+          : interactions.filesPaneOpen
+        : undefined
   const resolvedAreaType =
     pane.type === LayoutType.Simple ? areaLibrary[pane.areaType] : undefined
   const icon = resolvedAreaType?.icon ?? pane.icon
@@ -529,7 +541,9 @@ function PaneButton({
         onChange={(checked) => onChange(checked)}
         className={`ui-checked:border-primary dark:ui-checked:border-primary hover:b-3 border-transparent dark:border-transparent p-2 m-0 rounded-none border-0 hover:bg-2 ${resolvedAreaType?.cssClassOverrides?.button || ''}`}
         style={{ [buttonBorderWidthProp]: '2px' }}
-        data-testid={`${pane.id}-pane-button`}
+        data-interaction-id={interaction?.id}
+        data-testid={interaction?.testId ?? `${pane.id}-pane-button`}
+        data-expect-interaction-ms={interaction?.budgetMs}
       >
         <CustomIcon
           name={icon}

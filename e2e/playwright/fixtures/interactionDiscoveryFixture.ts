@@ -1,3 +1,4 @@
+import { attachDiscoveryCapture } from '@e2e/playwright/lib/interaction-discovery-reporter'
 import type { Fixtures, PlaywrightTestArgs } from '@playwright/test'
 import type { InteractionSnapshot } from '@src/lib/interactionPerformance/types'
 
@@ -177,9 +178,6 @@ export const interactionDiscoveryFixtures: Fixtures<
           })
         await bounded(Promise.all([pending, stop]))
         try {
-          const { attachDiscoveryCapture } = await import(
-            '@e2e/playwright/lib/interaction-discovery-reporter'
-          )
           await attachDiscoveryCapture(testInfo, {
             documents,
             diagnostics: [...diagnostics],
@@ -189,6 +187,7 @@ export const interactionDiscoveryFixtures: Fixtures<
         }
       }
     },
-    { auto: true },
+    // Collector setup and teardown must not consume the functional test's budget.
+    { auto: true, timeout: 10_000 },
   ],
 }

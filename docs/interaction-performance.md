@@ -19,8 +19,10 @@ data-expect-interaction-ms={interactions.commandPaletteOpen.budgetMs}
 
 The `zds/interaction-expectations` lint rule requires these three attributes to
 reference the same central definition and prevents later props from overriding
-them. TypeScript checks that the definition exists. Controls without interaction
-annotations are not yet lint errors; adding mandatory coverage is a later stage.
+them. Toggle controls can select a definition through an immutable conditional
+`const` alias; all three fields must use that same alias. TypeScript checks that
+the definition exists. Controls without interaction annotations are not yet lint
+errors; adding mandatory coverage is a later stage.
 
 The recorder captures trusted clicks during an explicitly started session:
 
@@ -30,9 +32,13 @@ The recorder captures trusted clicks during an explicitly started session:
   delay. It also captures slow pointer handlers preceding a fast click. Browser
   durations are rounded to 8 ms; filtered or late entries remain unreported.
 
-The initial outcomes are command-palette search becoming usable and the palette
-closing. Native menus, keyboard shortcuts, engine completion, and other controls
-need their own completion conditions and scenarios.
+The registered outcomes cover command-palette search becoming usable and the
+palette closing, plus Code Editor and Project Files sidebar toggles. Code Editor
+opening waits for visible, editable CodeMirror content; Project Files opening
+waits for visible, enabled file entries. Empty file explorers do not yet have
+a completion signal. Pane closing waits for unmount. Native menus,
+keyboard shortcuts, engine completion, and panel-header close buttons need their
+own completion conditions and scenarios.
 
 Normal release builds exclude the recorder, completion checks, and measurement
 API. Test builds opt in with `VITE_INTERACTION_PERFORMANCE=1` while retaining
@@ -41,6 +47,9 @@ allocates state only when `start()` is explicitly called. Active samples stay in
 memory until the test exports them; this does not collect customer telemetry.
 
 ## Running measurements
+
+Desktop tests open real application windows and can take focus. Use the existing
+Linux CI job with its Xvfb virtual display to avoid interrupting local desktop use.
 
 Prepare dependencies and matching Wasm artifacts using the normal repository
 setup, then build and test the production Electron app:
@@ -56,21 +65,31 @@ The test process needs the existing development API token through the usual
 credential setup. CI supplies it only to the test step. Linux runs use the same
 Xvfb wrapper as the existing desktop tests.
 
-The profile uses the existing Electron fixtures and authentication, with an empty
-local project library and cloud synchronization disabled from startup. No cloud
-feature flag or settings changes are needed. Before capture it verifies that Home
-is ready and no project or engine session has started. It fixes the window size,
-restores normal motion, waits for fonts, and disables traces, screenshots, and video.
+The profile uses the existing Electron fixtures and authentication, with cloud
+synchronization disabled from startup. Home scenarios verify that Home is ready
+and no project or engine session has started. Modeling scenarios open the existing
+`named_views_hide_extrude` KCL fixture in a local project and wait for the engine
+connection and scene before capture. Both profiles fix the window size, restore
+normal motion, wait for fonts, and disable traces, screenshots, and video.
 
 Each scenario runs five times with a reloaded renderer and fresh project directory:
 
 - First-use measures one open/close pair per renderer.
 - Repeated-use measures ten pairs after one unscored warm-up pair per renderer.
 
+Home measures the command palette. Modeling measures the command palette, Code
+Editor, and Project Files separately under their registered IDs, so the same
+palette can be compared between Home and a loaded project. Modeling preserves
+the shared Playwright layout: Code starts open and Files starts closed, so Code
+is measured close-then-open. First-use means the first click on each control in
+that renderer, not the first time a default-open pane mounted. These small-project
+results do not establish performance in large projects.
+
 Harness probes inject 250 ms click and pointerdown stalls, verify missing-data
 errors, and check that secondary clicks remain unattributed across recorder
-restart. Their 10 ms polling interval controls when tests read completed records;
-the recorder owns the measurement timestamps.
+restart. Another probe delays pane-content visibility to verify that mounting an
+empty pane cannot complete a measurement. Their 10 ms polling interval controls
+when tests read completed records; the recorder owns the measurement timestamps.
 
 The CI job summary shows every scenario's measurements and errors. Raw samples,
 environment metadata, coverage, and all warnings are also retained in
