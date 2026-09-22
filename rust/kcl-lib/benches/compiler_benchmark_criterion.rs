@@ -73,7 +73,7 @@ fn mike_stress_test_program(n: usize) -> String {
 pub fn bench_mock_koch_snowflake(c: &mut Criterion) {
     let mut group = c.benchmark_group("no_engine_mock_execute_koch_snowflake");
     assert!(LSYSTEM_KOCH_SNOWFLAKE_PROGRAM.contains("iterations = 1,"));
-    for iterations in [1, 2, 3, 4, 5] {
+    for iterations in [1, 2, 3, 4] {
         let source = LSYSTEM_KOCH_SNOWFLAKE_PROGRAM.replace("iterations = 1,", &format!("iterations = {iterations},"));
         let program = kcl_lib::Program::parse_no_errs(&source).unwrap();
         group.bench_with_input(BenchmarkId::from_parameter(iterations), &program, |b, program| {
