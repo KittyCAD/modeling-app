@@ -101,6 +101,18 @@ test.describe('Zookeeper tests', { tag: ZOOKEEPER_TEST_TAGS }, () => {
     'Chat history can be cleared',
     { tag: ['@desktop', '@web'] },
     async ({ page, homePage, scene, toolbar, copilot }) => {
+      let holdResponses = false
+      let zookeeperConnectionCount = 0
+      await page.routeWebSocket('**/ws/ml/copilot**', (client) => {
+        zookeeperConnectionCount += 1
+        const server = client.connectToServer()
+        server.onMessage((message) => {
+          if (!holdResponses) {
+            client.send(message)
+          }
+        })
+      })
+      await page.reload()
       await page.setBodyDimensions({ width: 1500, height: 1000 })
       await homePage.goToModelingScene()
       await scene.settled()
@@ -111,12 +123,33 @@ test.describe('Zookeeper tests', { tag: ZOOKEEPER_TEST_TAGS }, () => {
         await copilot.conversationInput.fill(
           `This is a test prompt [${ZK_MOCK_REPLY_MARKER}]`
         )
+        holdResponses = true
         await copilot.submitButton.click()
         await expect(copilot.placeHolderResponse).toBeVisible()
       })
 
-      await test.step('Clear the chat history', async () => {
+      await test.step('Keep the current chat when clearing is dismissed', async () => {
+        const originalConnectionCount = zookeeperConnectionCount
         await copilot.clearChatButton.click()
+        const confirmationDialog = page.getByRole('dialog', {
+          name: 'Start a new chat?',
+        })
+        await expect(confirmationDialog).toContainText(
+          'This will stop the current Zookeeper response and start a new conversation.'
+        )
+        await page.getByRole('button', { name: 'Keep current chat' }).click()
+
+        await expect(confirmationDialog).not.toBeVisible()
+        await expect(page.getByTestId('ml-request-chat-bubble')).toHaveCount(1)
+        await expect(copilot.clearChatButton).toBeVisible()
+        await expect(copilot.placeHolderResponse).toBeVisible()
+        expect(zookeeperConnectionCount).toBe(originalConnectionCount)
+      })
+
+      await test.step('Confirm clearing the chat history', async () => {
+        await copilot.clearChatButton.click()
+        holdResponses = false
+        await page.getByRole('button', { name: 'Start new chat' }).click()
         await expect(copilot.welcomeSection).not.toBeVisible()
         await expect(copilot.welcomeSection).toBeVisible({ timeout: 30_000 })
 
