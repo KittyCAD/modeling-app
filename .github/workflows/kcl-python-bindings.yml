@@ -80,9 +80,6 @@ jobs:
     if: github.event_name != 'schedule'
     steps:
       - uses: actions/checkout@v7.0.1
-      - uses: actions/setup-python@v7.0.0
-        with:
-          python-version-file: .tool-versions
       - name: sccache cache on the Namespace volume
         # See the macos job.
         uses: namespacelabs/nscloud-cache-action@v1
@@ -108,7 +105,7 @@ jobs:
           target: x86_64
           # --strip is a backstop. Without it a debug .so exceeds PyPI's 100MB
           # limit.
-          args: --release --out dist --find-interpreter --strip
+          args: --release --out dist --strip -i python3.11 python3.12 python3.13 python3.14
           # Off so the volume above is used instead of the GitHub cache. That
           # also means the container has no sccache, so before-script installs
           # one.
@@ -207,7 +204,7 @@ jobs:
         with:
           path: .sccache
       - name: Install uv
-        uses: astral-sh/setup-uv@v10.0.1
+        uses: astral-sh/setup-uv@v10.1.0
       - name: Build wheels
         # Namespace persists /Users/runner/hostedtoolcache across macOS VMs, but
         # not its Python symlink targets under /Library/Frameworks. setup-python
@@ -252,9 +249,10 @@ jobs:
           CI_SUITE: integration:kcl
           CI_STEP: setup
       - name: Install uv
-        uses: astral-sh/setup-uv@v10.0.1
+        uses: astral-sh/setup-uv@v10.1.0
       - uses: actions-rust-lang/setup-rust-toolchain@v1.17.0
         with:
+          rust-src-dir: rust
           rustflags: '' # Use .cargo/config.toml
       - uses: taiki-e/install-action@just
       - name: Track start
@@ -287,7 +285,7 @@ jobs:
     steps:
       - uses: actions/checkout@v7.0.1
       - name: Install the latest version of uv
-        uses: astral-sh/setup-uv@v10.0.1
+        uses: astral-sh/setup-uv@v10.1.0
       - name: Create venv
         run: |
           uv venv .venv
@@ -318,7 +316,7 @@ jobs:
         with:
           path: rust/kcl-python-bindings
       - name: Install the latest version of uv
-        uses: astral-sh/setup-uv@v10.0.1
+        uses: astral-sh/setup-uv@v10.1.0
       - name: do uv things
         run: |
           cd rust/kcl-python-bindings

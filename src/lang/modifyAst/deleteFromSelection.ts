@@ -224,15 +224,23 @@ export async function deleteFromSelection(
     selectedCallName !== null &&
     ['extrude', 'revolve', 'sweep', 'loft', 'blend'].includes(selectedCallName)
 
-  if (
-    selection.artifact?.type === 'pattern' &&
-    varDecNodeInit?.type === 'PipeExpression'
-  ) {
+  if (varDecNodeInit?.type === 'PipeExpression') {
     const pipeBodyIndex = selection.codeRef.pathToNode.findIndex(
       ([key, kind]) => key === 'body' && kind === 'PipeExpression'
     )
     const pipeItemIndex = selection.codeRef.pathToNode[pipeBodyIndex + 1]?.[0]
-    if (typeof pipeItemIndex === 'number' && varDecNodeInit.body.length > 1) {
+    const pipeItem =
+      typeof pipeItemIndex === 'number' && pipeItemIndex > 0
+        ? varDecNodeInit.body[pipeItemIndex]
+        : undefined
+    const isPipedAppearance =
+      pipeItem?.type === 'CallExpressionKw' &&
+      pipeItem.callee.name.name === 'appearance'
+    if (
+      (selection.artifact?.type === 'pattern' || isPipedAppearance) &&
+      typeof pipeItemIndex === 'number' &&
+      varDecNodeInit.body.length > 1
+    ) {
       const varDecClone = getNodeFromPath<VariableDeclarator>(
         astClone,
         selection.codeRef.pathToNode,

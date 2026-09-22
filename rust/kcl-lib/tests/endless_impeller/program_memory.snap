@@ -3026,9 +3026,11 @@ description: Variables in memory after executing endless_impeller.kcl
     "type": "Number",
     "value": 1.0,
     "ty": {
-      "mm": null,
       "type": "Known",
-      "type": "Length"
+      "value": {
+        "type": "Length",
+        "value": "mm"
+      }
     }
   }
 }

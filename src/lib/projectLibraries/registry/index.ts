@@ -46,6 +46,7 @@ import {
 } from '@src/machines/systemIO/errorReporting'
 import { SystemIOMachineActors } from '@src/machines/systemIO/utils'
 import { cloudSyncService } from '@src/registry/contracts/cloudSync'
+import { fileOperationsService } from '@src/registry/contracts/fileOperations'
 import type { HomeProjectEntry } from '@src/registry/contracts/homeProjects'
 import {
   type ProjectLibraryOperation,
@@ -628,6 +629,7 @@ function reportDirectoryProjectStatFailures({
 }
 
 const directoryProjectLibraryType = defineRegistryItemFactory((ctx) => {
+  const fileOperations = () => ctx.services.get(fileOperationsService)
   const cloudSync = ctx.services.signal(cloudSyncService)
   const plugins = ctx.valueSpecs.signal(pluginsValueSpec)
   const isCloudSyncPluginActive = () => {
@@ -666,6 +668,7 @@ const directoryProjectLibraryType = defineRegistryItemFactory((ctx) => {
         }
 
         const project = await createProjectInLocalDirectory({
+          fileOperations: fileOperations(),
           projectDirectoryPath: library.path,
           requestedProjectName,
           requestedProjectTitle,
@@ -698,6 +701,7 @@ const directoryProjectLibraryType = defineRegistryItemFactory((ctx) => {
         }
 
         const result = await duplicateProjectInDirectory({
+          fileOperations: fileOperations(),
           source: {
             directoryName: project.localProjectName,
             displayName: getHomeProjectDisplayName(project),
@@ -719,6 +723,7 @@ const directoryProjectLibraryType = defineRegistryItemFactory((ctx) => {
         }
 
         await writeProjectTitleToProjectToml(
+          fileOperations(),
           project.localProjectPath,
           requestedName
         )
@@ -755,9 +760,7 @@ const directoryProjectLibraryType = defineRegistryItemFactory((ctx) => {
             project.localProjectPath
           )
         } else {
-          await fsZds.rm(project.localProjectPath, {
-            recursive: true,
-          })
+          await fileOperations().remove(project.localProjectPath)
         }
         refreshLocalProjectRealizations(library)
       },
@@ -770,6 +773,7 @@ const directoryProjectLibraryType = defineRegistryItemFactory((ctx) => {
     moveProjectTo: {
       run: async ({ library, sourceLibrary, source }) => {
         const result = await moveProjectIntoLocalDirectory({
+          fileOperations: fileOperations(),
           projectDirectoryPath: library.path,
           sourceProjectPath: source.localProjectPath,
           sourceProjectName: source.localProjectName,
@@ -819,6 +823,7 @@ const directoryProjectLibraryType = defineRegistryItemFactory((ctx) => {
               risk: 'read',
               run: async () => {
                 const projects = await readProjectsFromProjectDirectory({
+                  fileOperations: fileOperations(),
                   projectDirectoryPath: library.path,
                   wasmInstancePromise,
                   signal,
@@ -826,6 +831,7 @@ const directoryProjectLibraryType = defineRegistryItemFactory((ctx) => {
                 })
                 if (!signal.aborted) {
                   scheduleProjectDirectoryNameSyncFromTitles({
+                    fileOperations: fileOperations(),
                     projects,
                     onProjectDirectoriesRenamed: () =>
                       invalidateProjectLibraryRealizations({

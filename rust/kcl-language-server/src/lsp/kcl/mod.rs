@@ -32,8 +32,6 @@ use tower_lsp::lsp_types::CompletionResponse;
 use tower_lsp::lsp_types::CreateFilesParams;
 use tower_lsp::lsp_types::DeleteFilesParams;
 use tower_lsp::lsp_types::Diagnostic;
-use tower_lsp::lsp_types::DiagnosticOptions;
-use tower_lsp::lsp_types::DiagnosticServerCapabilities;
 use tower_lsp::lsp_types::DiagnosticSeverity;
 use tower_lsp::lsp_types::DidChangeConfigurationParams;
 use tower_lsp::lsp_types::DidChangeTextDocumentParams;
@@ -104,6 +102,8 @@ use tower_lsp::lsp_types::WorkspaceFolder;
 use tower_lsp::lsp_types::WorkspaceFoldersServerCapabilities;
 use tower_lsp::lsp_types::WorkspaceServerCapabilities;
 
+use crate::CompilationIssue;
+use crate::KclErrorWithOutputs;
 use crate::ModuleId;
 use crate::Program;
 use crate::SourceRange;
@@ -486,7 +486,7 @@ impl crate::lsp::backend::Backend for Backend {
             LexerMode::Old => match lex(&params.text, module_id) {
                 Ok(tokens) => (tokens, None),
                 Err(err) => {
-                    self.add_to_diagnostics(&params, &[err], true).await;
+                    self.add_to_diagnostics(&params, &[err], Replaces::All).await;
                     self.token_map.remove(&filename);
                     self.remove_from_ast_maps(&filename);
                     self.semantic_tokens_map.remove(&filename);
@@ -526,7 +526,7 @@ impl crate::lsp::backend::Backend for Backend {
         // editor keeps highlighting. No AST is produced (mirrors the parse-error
         // path below).
         if let Some(err) = lex_error {
-            self.add_to_diagnostics(&params, &[err], true).await;
+            self.add_to_diagnostics(&params, &[err], Replaces::All).await;
             self.remove_from_ast_maps(&filename);
             return;
         }
@@ -536,13 +536,13 @@ impl crate::lsp::backend::Backend for Backend {
         let (ast, errs) = match crate::parsing::parse_tokens(tokens.clone()).0 {
             Ok(result) => result,
             Err(err) => {
-                self.add_to_diagnostics(&params, &[err], true).await;
+                self.add_to_diagnostics(&params, &[err], Replaces::All).await;
                 self.remove_from_ast_maps(&filename);
                 return;
             }
         };
 
-        self.add_to_diagnostics(&params, &errs, true).await;
+        self.add_to_diagnostics(&params, &errs, Replaces::All).await;
 
         if errs.iter().any(|e| e.severity == crate::errors::Severity::Fatal) {
             self.remove_from_ast_maps(&filename);
@@ -593,7 +593,12 @@ impl crate::lsp::backend::Backend for Backend {
             let mut discovered_findings: Vec<_> = ast.lint_all().into_iter().flatten().collect();
             // Filter out Z0005 (old sketch syntax) from LSP diagnostics.
             discovered_findings.retain(|finding| finding.finding.code != "Z0005");
-            self.add_to_diagnostics(&params, &discovered_findings, false).await;
+            self.add_to_diagnostics(
+                &params,
+                &discovered_findings,
+                Replaces::Severities(&[DiagnosticSeverity::INFORMATION]),
+            )
+            .await;
         }
 
         // Send the notification to the client that the ast was updated.
@@ -606,16 +611,62 @@ impl crate::lsp::backend::Backend for Backend {
         }
 
         // Execute the code if we have an executor context.
-        // This function automatically executes if we should & updates the diagnostics if we got
-        // errors.
-        if self.execute(&params, &ast).await.is_err() {
-            return;
+        let outcome = self.execute(&ast).await;
+
+        // Execution is the last producer of Error and Warning diagnostics, so any
+        // the map still holds came from an earlier pass. This publish replaces
+        // them with the whole pass's set, the parse issues included.
+        let mut items = convert_diagnostics(&params, &errs);
+        match outcome {
+            Ok(issues) => items.extend(convert_diagnostics(&params, &issues)),
+            Err(mut err) => {
+                // A hard error carries the issues raised before it ended the run.
+                // Its own diagnostic renders only the message and source ranges.
+                let issues = issues_in_top_level_module(std::mem::take(&mut err.non_fatal));
+                items.extend(convert_diagnostics(&params, &issues));
+                items.extend(convert_diagnostics(&params, &[err]));
+            }
         }
 
-        // If we made it here we can clear the diagnostics.
-        self.clear_diagnostics_map(&params.uri, Some(DiagnosticSeverity::ERROR))
-            .await;
+        self.publish_diagnostics(
+            &params,
+            items,
+            Replaces::Severities(&[DiagnosticSeverity::ERROR, DiagnosticSeverity::WARNING]),
+        )
+        .await;
     }
+}
+
+/// Convert a batch of diagnostics to LSP diagnostics, resolved against the
+/// document's text.
+fn convert_diagnostics<DiagT: IntoDiagnostic + std::fmt::Debug>(
+    params: &TextDocumentItem,
+    diagnostics: &[DiagT],
+) -> Vec<Diagnostic> {
+    diagnostics
+        .iter()
+        .flat_map(|diagnostic| diagnostic.to_lsp_diagnostics(&params.text, &params.uri))
+        .collect()
+}
+
+/// Keep the issues that come from the top-level module. An imported module's
+/// issue has offsets into a different file, so it cannot be converted against
+/// this document's text.
+fn issues_in_top_level_module(issues: Vec<CompilationIssue>) -> Vec<CompilationIssue> {
+    issues
+        .into_iter()
+        .filter(|issue| issue.source_range.is_top_level_module())
+        .collect()
+}
+
+/// Which already-published diagnostics a publish replaces.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+enum Replaces {
+    /// Every diagnostic the document has.
+    All,
+    /// The diagnostics at these severities. The publish says nothing about the
+    /// severities it does not name.
+    Severities(&'static [DiagnosticSeverity]),
 }
 
 impl Backend {
@@ -816,106 +867,89 @@ impl Backend {
         self.semantic_tokens_map.insert(params.uri.to_string(), semantic_tokens);
     }
 
-    async fn clear_diagnostics_map(&self, uri: &url::Url, severity: Option<DiagnosticSeverity>) {
-        let Some(mut items) = self.diagnostics_map.get_mut(uri.as_str()) else {
-            return;
-        };
-
-        // If we only want to clear a specific severity, do that.
-        if let Some(severity) = severity {
-            items.retain(|x| x.severity != Some(severity));
-        } else {
-            items.clear();
-        }
-
-        if items.is_empty() {
-            #[cfg(not(target_arch = "wasm32"))]
-            {
-                self.client.publish_diagnostics(uri.clone(), items.clone(), None).await;
-            }
-
-            // We need to drop the items here.
-            drop(items);
-
-            self.diagnostics_map.remove(uri.as_str());
-        } else {
-            // We don't need to update the map since we used get_mut.
-
-            #[cfg(not(target_arch = "wasm32"))]
-            {
-                self.client.publish_diagnostics(uri.clone(), items.clone(), None).await;
-            }
-        }
-    }
-
+    /// Publish `diagnostics` for the document, replacing what `replaces`
+    /// selects.
     async fn add_to_diagnostics<DiagT: IntoDiagnostic + std::fmt::Debug>(
         &self,
         params: &TextDocumentItem,
         diagnostics: &[DiagT],
-        clear_all_before_add: bool,
+        replaces: Replaces,
     ) {
+        // An empty batch is not a statement that the document has no
+        // diagnostics, so it replaces nothing. The caller that does mean that
+        // publishes the empty set itself.
         if diagnostics.is_empty() {
             return;
         }
 
-        if clear_all_before_add {
-            self.clear_diagnostics_map(&params.uri, None).await;
-        } else if diagnostics.iter().all(|x| x.severity() == DiagnosticSeverity::ERROR) {
-            // If the diagnostic is an error, it will be the only error we get since that halts
-            // execution.
-            // Clear the diagnostics before we add a new one.
-            self.clear_diagnostics_map(&params.uri, Some(DiagnosticSeverity::ERROR))
-                .await;
-        } else if diagnostics
-            .iter()
-            .all(|x| x.severity() == DiagnosticSeverity::INFORMATION)
-        {
-            // If the diagnostic is a lint, we will pass them all to add at once so we need to
-            // clear the old ones.
-            self.clear_diagnostics_map(&params.uri, Some(DiagnosticSeverity::INFORMATION))
-                .await;
-        }
-
-        let mut items = match self.diagnostics_map.get(params.uri.as_str()) {
-            Some(items) => {
-                // TODO: Would be awesome to fix the clone here.
-                items.clone()
-            }
-            _ => {
-                vec![]
-            }
-        };
-
-        for diagnostic in diagnostics {
-            let lsp_d = diagnostic.to_lsp_diagnostics(&params.text, &params.uri);
-            // Make sure we don't duplicate diagnostics.
-            for d in lsp_d {
-                if !items.iter().any(|x| x == &d) {
-                    items.push(d);
-                }
-            }
-        }
-
-        self.diagnostics_map.insert(params.uri.to_string(), items.clone());
-
-        self.client.publish_diagnostics(params.uri.clone(), items, None).await;
+        let items = convert_diagnostics(params, diagnostics);
+        self.publish_diagnostics(params, items, replaces).await;
     }
 
-    async fn execute(&self, params: &TextDocumentItem, ast: &Program) -> Result<()> {
+    /// Publish `items` for the document, replacing what `replaces` selects.
+    ///
+    /// Sends at most one notification, and none at all when the document's
+    /// diagnostics come out unchanged. Publishing the removal and the
+    /// replacement separately would show the client a state in which the
+    /// removed diagnostics are gone and the new ones have not arrived.
+    async fn publish_diagnostics(&self, params: &TextDocumentItem, items: Vec<Diagnostic>, replaces: Replaces) {
+        let previous = self
+            .diagnostics_map
+            .get(params.uri.as_str())
+            .map(|existing| existing.clone())
+            .unwrap_or_default();
+        let mut published = previous.clone();
+
+        match replaces {
+            Replaces::All => published.clear(),
+            Replaces::Severities(severities) => {
+                published.retain(|item| !severities.iter().any(|severity| item.severity == Some(*severity)))
+            }
+        }
+
+        for item in items {
+            // Make sure we don't duplicate diagnostics.
+            if !published.contains(&item) {
+                published.push(item);
+            }
+        }
+
+        // The client's set is whatever was published last, which is what the map
+        // holds. Re-sending an identical set tells it nothing.
+        if published == previous {
+            return;
+        }
+
+        if published.is_empty() {
+            self.diagnostics_map.remove(params.uri.as_str());
+        } else {
+            self.diagnostics_map.insert(params.uri.to_string(), published.clone());
+        }
+
+        self.client
+            .publish_diagnostics(params.uri.clone(), published, None)
+            .await;
+    }
+
+    /// Run the program and return the compilation issues it raised.
+    ///
+    /// Returns no issues when this server is not set up to execute. The caller
+    /// publishes the diagnostics, so that one publish carries the whole pass.
+    async fn execute(&self, ast: &Program) -> Result<Vec<CompilationIssue>, KclErrorWithOutputs> {
         // Check if we can execute.
         if !self.can_execute().await {
-            return Ok(());
+            return Ok(Vec::new());
         }
 
         // Execute the code if we have an executor context.
         let ctx = self.executor_ctx().await;
         let Some(ref executor_ctx) = *ctx else {
-            return Ok(());
+            return Ok(Vec::new());
         };
 
         if !self.is_initialized().await {
             // We are not initialized yet.
-            return Ok(());
+            return Ok(Vec::new());
         }
 
         // Use run_mock for mock contexts, run_with_caching for live contexts
@@ -927,16 +961,7 @@ impl Backend {
             executor_ctx.run_with_caching(ast.clone()).await
         };
 
-        match result {
-            Err(err) => {
-                self.add_to_diagnostics(params, &[err], false).await;
-
-                // Since we already published the diagnostics we don't really care about the error
-                // string.
-                Err(anyhow::anyhow!("failed to execute code"))
-            }
-            Ok(_) => Ok(()),
-        }
+        result.map(|outcome| issues_in_top_level_module(outcome.issues))
     }
 
     pub fn get_semantic_token_type_index(&self, token_type: &SemanticTokenType) -> Option<u32> {
@@ -1043,9 +1068,6 @@ impl LanguageServer for Backend {
                     all_commit_characters: None,
                     ..Default::default()
                 }),
-                diagnostic_provider: Some(DiagnosticServerCapabilities::Options(DiagnosticOptions {
-                    ..Default::default()
-                })),
                 document_formatting_provider: Some(OneOf::Left(true)),
                 folding_range_provider: Some(FoldingRangeProviderCapability::Simple(true)),
                 hover_provider: Some(HoverProviderCapability::Simple(true)),
@@ -1414,6 +1436,14 @@ impl LanguageServer for Backend {
         Ok(Some(CompletionResponse::Array(completions)))
     }
 
+    /// Answer a pull-diagnostics request from the diagnostics this document
+    /// already has.
+    ///
+    /// `diagnosticProvider` is deliberately not advertised, so a client that
+    /// follows the server's capabilities never calls this. Advertising it makes
+    /// a client keep one diagnostic collection per channel and report every
+    /// diagnostic twice, once from here and once from
+    /// `textDocument/publishDiagnostics`, because both read this same map.
     async fn diagnostic(&self, params: DocumentDiagnosticParams) -> RpcResult<DocumentDiagnosticReportResult> {
         let filename = params.text_document.uri.to_string();
 

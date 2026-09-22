@@ -25,12 +25,17 @@ import {
   TELEMETRY_FILE_NAME,
   TELEMETRY_RAW_FILE_NAME,
 } from '@src/lib/constants'
-import fsZds from '@src/lib/fs-zds'
-import { fsZdsConstants } from '@src/lib/fs-zds/constants'
-import type { IStat } from '@src/lib/fs-zds/interface'
 import {
-  appendGitignoreForDirectory,
-  createInitialGitignoreStack,
+  FileAlreadyExists,
+  FileNotFound,
+  type FileStat,
+} from '@src/lib/fileSystem/fileOperations'
+import { ensureDirectory } from '@src/lib/fileSystem/ensureDirectory'
+import fsZds from '@src/lib/fs-zds'
+import {
+  appendGitignoreForDirectoryWithFs,
+  createInitialGitignoreStackWithFs,
+  fileOperationsGitignoreFs,
   type GitignoreStackEntry,
   isPathIgnoredByGitignore,
 } from '@src/lib/gitignore'
@@ -53,7 +58,10 @@ import { err } from '@src/lib/trap'
 import type { DeepPartial } from '@src/lib/types'
 import { getInVariableCase, isArray } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
 import { IS_STAGING, IS_STAGING_OR_DEBUG } from '@src/routes/utils'
+
+const textDecoder = new TextDecoder()
 
 function getProjectSettingsSection(
   config: DeepPartial<Configuration> | Configuration
@@ -85,16 +93,16 @@ function getProjectLibrarySettingsFromConfiguration(
   return isProjectLibrarySettings(libraries) ? libraries : undefined
 }
 
-const convertIStatToFileMetadata = (
-  stats: IStat | null
+const convertFileStatToFileMetadata = (
+  stats: FileStat | null
 ): FileMetadata | null => {
   if (!stats) {
     return null
   }
   return {
-    modified: stats.mtimeMs,
-    accessed: stats.atimeMs,
-    created: stats.ctimeMs,
+    modified: stats.modifiedAt,
+    accessed: stats.accessedAt,
+    created: stats.createdAt,
     // this is not used anywhere and we use statIsDirectory in other places
     // that need to know if it's a file or directory.
     type: null,
@@ -105,6 +113,7 @@ const convertIStatToFileMetadata = (
 
 export function isPathNotFoundError(error: unknown) {
   return (
+    error instanceof FileNotFound ||
     error === 'ENOENT' ||
     (typeof error === 'string' && error.startsWith('ENOENT')) ||
     (typeof error === 'object' &&
@@ -117,12 +126,15 @@ export function isPathNotFoundError(error: unknown) {
   )
 }
 
-async function readProjectTomlMetadata(projectPath: string) {
+async function readProjectTomlMetadata(
+  fileOperations: FileOperationsRegistryService,
+  projectPath: string
+) {
   const projectTomlPath = fsZds.join(projectPath, PROJECT_SETTINGS_FILE_NAME)
   try {
-    const projectToml = await fsZds.readFile(projectTomlPath, {
-      encoding: 'utf-8',
-    })
+    const projectToml = textDecoder.decode(
+      await fileOperations.readFile(projectTomlPath)
+    )
     const environmentName = getEnvironmentNameFromEnv(env())
     return {
       title: getProjectTitleFromProjectTomlContents(projectToml),
@@ -142,12 +154,14 @@ async function readProjectTomlMetadata(projectPath: string) {
 }
 
 async function ensureProjectTomlTitle({
+  fileOperations,
   projectPath,
   title,
   defaultFile,
   kclVersion,
   readExistingProjectToml = true,
 }: {
+  fileOperations: FileOperationsRegistryService
   projectPath: string
   title: string
   defaultFile: string
@@ -158,9 +172,9 @@ async function ensureProjectTomlTitle({
   let projectToml = ''
   if (readExistingProjectToml) {
     try {
-      projectToml = await fsZds.readFile(projectTomlPath, {
-        encoding: 'utf-8',
-      })
+      projectToml = textDecoder.decode(
+        await fileOperations.readFile(projectTomlPath)
+      )
     } catch (error) {
       if (!isPathNotFoundError(error)) {
         return Promise.reject(error)
@@ -193,13 +207,11 @@ async function ensureProjectTomlTitle({
       )}\n`
     }
   }
-  await fsZds.writeFile(
-    projectTomlPath,
-    new TextEncoder().encode(nextProjectToml)
-  )
+  await fileOperations.writeFile(projectTomlPath, nextProjectToml)
 }
 
 export async function renameProjectDirectory(
+  fileOperations: FileOperationsRegistryService,
   projectPath: string,
   newName: string
 ): Promise<string> {
@@ -208,9 +220,9 @@ export async function renameProjectDirectory(
   }
 
   try {
-    await fsZds.stat(projectPath)
+    await fileOperations.stat(projectPath)
   } catch (e) {
-    if (e === 'ENOENT') {
+    if (isPathNotFoundError(e)) {
       return Promise.reject(new Error(`Path ${projectPath} is not a directory`))
     }
   }
@@ -218,7 +230,7 @@ export async function renameProjectDirectory(
   // Make sure the new name does not exist.
   const newPath = fsZds.join(fsZds.dirname(projectPath), newName)
   try {
-    await fsZds.stat(newPath)
+    await fileOperations.stat(newPath)
     // If we get here it means the stat succeeded and there's a file already
     // with the same name...
     return Promise.reject(
@@ -228,8 +240,8 @@ export async function renameProjectDirectory(
     )
   } catch (e) {
     // Otherwise if it failed and the failure is "it doesn't exist" then rename it!
-    if (e === 'ENOENT') {
-      await fsZds.rename(projectPath, newPath)
+    if (isPathNotFoundError(e)) {
+      await fileOperations.rename(projectPath, newPath)
       return newPath
     }
   }
@@ -237,6 +249,7 @@ export async function renameProjectDirectory(
 }
 
 export async function ensureProjectDirectoryExists(
+  fileOperations: FileOperationsRegistryService,
   config: DeepPartial<Configuration>
 ): Promise<string | undefined> {
   const projectDir = getProjectDirectorySetting(config)
@@ -245,22 +258,41 @@ export async function ensureProjectDirectoryExists(
     return Promise.reject(new Error('projectDir is falsey'))
   }
   try {
-    await fsZds.stat(projectDir)
+    await fileOperations.stat(projectDir)
   } catch (e) {
     if (isPathNotFoundError(e)) {
-      await fsZds.mkdir(projectDir, { recursive: true })
+      try {
+        await fileOperations.createDirectory(projectDir)
+      } catch (createError) {
+        if (!(createError instanceof FileAlreadyExists)) {
+          return Promise.reject(createError)
+        }
+      }
+    } else {
+      return Promise.reject(e)
     }
   }
 
   return projectDir
 }
 
-export async function mkdirOrNOOP(directoryPath: string) {
+export async function mkdirOrNOOP(
+  fileOperations: FileOperationsRegistryService,
+  directoryPath: string
+) {
   try {
-    await fsZds.stat(directoryPath)
+    await fileOperations.stat(directoryPath)
   } catch (e) {
-    if (e === 'ENOENT') {
-      await fsZds.mkdir(directoryPath, { recursive: true })
+    if (isPathNotFoundError(e)) {
+      try {
+        await fileOperations.createDirectory(directoryPath)
+      } catch (createError) {
+        if (!(createError instanceof FileAlreadyExists)) {
+          return Promise.reject(createError)
+        }
+      }
+    } else {
+      return Promise.reject(e)
     }
   }
 
@@ -268,6 +300,7 @@ export async function mkdirOrNOOP(directoryPath: string) {
 }
 
 export async function createNewProjectDirectory(
+  fileOperations: FileOperationsRegistryService,
   projectName: string,
   wasmInstance: ModuleType,
   initialCode?: string,
@@ -277,7 +310,7 @@ export async function createNewProjectDirectory(
   projectTitle = projectName
 ): Promise<Project> {
   if (!configuration) {
-    configuration = await readAppSettingsFile(wasmInstance)
+    configuration = await readAppSettingsFile(fileOperations, wasmInstance)
   }
 
   if (err(configuration)) {
@@ -285,7 +318,7 @@ export async function createNewProjectDirectory(
   }
   const mainDir =
     overrideApplicationProjectDirectory ||
-    (await ensureProjectDirectoryExists(configuration))
+    (await ensureProjectDirectoryExists(fileOperations, configuration))
 
   if (!projectName) {
     return Promise.reject('Project name cannot be empty.')
@@ -298,21 +331,25 @@ export async function createNewProjectDirectory(
 
   let projectDirectoryCreated = false
   try {
-    await fsZds.stat(projectDir)
+    await fileOperations.stat(projectDir)
   } catch (e) {
     if (isPathNotFoundError(e)) {
-      await fsZds.mkdir(projectDir, { recursive: true })
-      projectDirectoryCreated = true
+      try {
+        await fileOperations.createDirectory(projectDir)
+        projectDirectoryCreated = true
+      } catch (createError) {
+        if (!(createError instanceof FileAlreadyExists)) {
+          return Promise.reject(createError)
+        }
+      }
+    } else {
+      return Promise.reject(e)
     }
   }
 
   const kclFileName = initialFileName || PROJECT_ENTRYPOINT
   const projectFile = fsZds.join(projectDir, kclFileName)
-  // Ensure parent directories exist for nested paths like "nested/main.kcl"
-  const projectFileDir = fsZds.dirname(projectFile)
-  if (projectFileDir !== projectDir) {
-    await fsZds.mkdir(projectFileDir, { recursive: true })
-  }
+  await ensureDirectory(fileOperations, fsZds.dirname(projectFile))
   // When initialCode is present, we're loading existing code.  If it's not
   // present, we're creating a new project, and we want to incorporate the
   // user's settings.
@@ -324,8 +361,9 @@ export async function createNewProjectDirectory(
   if (err(codeToWrite)) {
     return Promise.reject(codeToWrite)
   }
-  await fsZds.writeFile(projectFile, new TextEncoder().encode(codeToWrite))
+  await fileOperations.writeFile(projectFile, codeToWrite)
   await ensureProjectTomlTitle({
+    fileOperations,
     projectPath: projectDir,
     title: projectTitle,
     defaultFile: kclFileName,
@@ -334,9 +372,11 @@ export async function createNewProjectDirectory(
   })
   let metadata: FileMetadata | null = null
   try {
-    metadata = convertIStatToFileMetadata(await fsZds.stat(projectFile))
+    metadata = convertFileStatToFileMetadata(
+      await fileOperations.stat(projectFile)
+    )
   } catch (e) {
-    if (e === 'ENOENT') {
+    if (isPathNotFoundError(e)) {
       console.error('File does not exist')
       return Promise.reject(new Error(`File ${projectFile} does not exist`))
     }
@@ -367,6 +407,7 @@ export async function createNewProjectDirectory(
 }
 
 export async function listProjects(
+  fileOperations: FileOperationsRegistryService,
   initPromise: Promise<ModuleType> | ModuleType,
   configuration?: DeepPartial<Configuration> | Error
 ): Promise<Project[]> {
@@ -374,7 +415,10 @@ export async function listProjects(
   const wasmInstance = await initPromise
 
   if (configuration === undefined) {
-    configuration = await readAppSettingsFile(wasmInstance).catch((e) => {
+    configuration = await readAppSettingsFile(
+      fileOperations,
+      wasmInstance
+    ).catch((e) => {
       console.error(e)
       return e
     })
@@ -383,17 +427,22 @@ export async function listProjects(
   if (err(configuration) || !configuration) {
     return Promise.reject(configuration)
   }
-  const projectDir = await ensureProjectDirectoryExists(configuration)
+  const projectDir = await ensureProjectDirectoryExists(
+    fileOperations,
+    configuration
+  )
   const projects = []
   if (!projectDir) {
     return Promise.reject(new Error('projectDir was falsey'))
   }
 
   // Gotcha: readdir will list all folders at this project directory even if you do not have readwrite access on the directory path
-  const entries = await fsZds.readdir(projectDir)
+  const entries = await fileOperations.readDirectory(projectDir)
 
-  const { value: canReadWriteProjectDirectory } =
-    await canReadWriteDirectory(projectDir)
+  const { value: canReadWriteProjectDirectory } = await canReadWriteDirectory(
+    fileOperations,
+    projectDir
+  )
 
   for (const entry of entries) {
     // Skip directories that start with a dot
@@ -405,12 +454,16 @@ export async function listProjects(
 
     // if it's not a directory ignore.
     // Gotcha: statIsDirectory will work even if you do not have read write permissions on the project path
-    const isDirectory = await statIsDirectory(projectPath)
+    const isDirectory = await statIsDirectory(fileOperations, projectPath)
     if (!isDirectory) {
       continue
     }
 
-    const project = await getProjectInfo(projectPath, wasmInstance)
+    const project = await getProjectInfo(
+      fileOperations,
+      projectPath,
+      wasmInstance
+    )
 
     if (
       project.kcl_file_count === 0 &&
@@ -428,6 +481,7 @@ export async function listProjects(
 }
 
 const collectAllFilesRecursiveFrom = async (
+  fileOperations: FileOperationsRegistryService,
   targetPath: string,
   projectRoot: string,
   canReadWritePath: boolean,
@@ -439,19 +493,19 @@ const collectAllFilesRecursiveFrom = async (
     PROJECT_SETTINGS_FILE_NAME,
   ])
 
-  let stats: IStat
+  let stats: FileStat
   // Make sure the filesystem object exists.
   try {
-    stats = await fsZds.stat(targetPath)
+    stats = await fileOperations.stat(targetPath)
   } catch (e) {
-    if (e === 'ENOENT') {
+    if (isPathNotFoundError(e)) {
       return Promise.reject(new Error(`Directory ${targetPath} does not exist`))
     }
     return Promise.reject(e)
   }
 
   // Make sure the path is a directory.
-  const isPathDir = await statIsDirectory(targetPath)
+  const isPathDir = await statIsDirectory(fileOperations, targetPath)
   if (!isPathDir) {
     return Promise.reject(new Error(`Path ${targetPath} is not a directory`))
   }
@@ -461,7 +515,7 @@ const collectAllFilesRecursiveFrom = async (
   const entry: FileEntry = {
     name: name,
     path: targetPath,
-    metadata: convertIStatToFileMetadata(stats),
+    metadata: convertFileStatToFileMetadata(stats),
     children: [],
   }
 
@@ -472,7 +526,7 @@ const collectAllFilesRecursiveFrom = async (
 
   const children = []
 
-  const entries = await fsZds.readdir(targetPath)
+  const entries = [...(await fileOperations.readDirectory(targetPath))]
 
   // Sort all entries so files come first and directories last
   // so a top-most KCL file is returned first.
@@ -493,13 +547,13 @@ const collectAllFilesRecursiveFrom = async (
     }
 
     const ePath = fsZds.join(targetPath, e)
-    let eStats: IStat
+    let eStats: FileStat
     try {
-      eStats = await fsZds.stat(ePath)
+      eStats = await fileOperations.stat(ePath)
     } catch {
       continue
     }
-    const isEDir = Boolean(eStats.mode & fsZdsConstants.S_IFDIR)
+    const isEDir = eStats.kind === 'directory'
     const relativePath = fsZds.relative(projectRoot, ePath).replace(/\\/g, '/')
 
     if (isPathIgnoredByGitignore(gitignoreStack, relativePath, isEDir)) {
@@ -507,12 +561,14 @@ const collectAllFilesRecursiveFrom = async (
     }
 
     if (isEDir) {
-      const childGitignoreStack = await appendGitignoreForDirectory(
+      const childGitignoreStack = await appendGitignoreForDirectoryWithFs(
+        fileOperationsGitignoreFs(fileOperations),
         gitignoreStack,
         ePath,
         projectRoot
       )
       const subChildren = await collectAllFilesRecursiveFrom(
+        fileOperations,
         ePath,
         projectRoot,
         canReadWritePath,
@@ -528,7 +584,7 @@ const collectAllFilesRecursiveFrom = async (
         /* FileEntry */ {
           name: e,
           path: ePath,
-          metadata: convertIStatToFileMetadata(eStats),
+          metadata: convertFileStatToFileMetadata(eStats),
           children: null,
         }
       )
@@ -542,19 +598,20 @@ const collectAllFilesRecursiveFrom = async (
 }
 
 export async function getDefaultKclFileForDir(
+  fileOperations: FileOperationsRegistryService,
   projectDir: string,
   file: FileEntry,
   wasmInstance: ModuleType
 ) {
   // Make sure the dir is a directory.
-  const isFileEntryDir = await statIsDirectory(projectDir)
+  const isFileEntryDir = await statIsDirectory(fileOperations, projectDir)
   if (!isFileEntryDir) {
     return Promise.reject(new Error(`Path ${projectDir} is not a directory`))
   }
 
   const defaultFilePath = fsZds.join(projectDir, PROJECT_ENTRYPOINT)
   try {
-    await fsZds.stat(defaultFilePath)
+    await fileOperations.stat(defaultFilePath)
   } catch (e) {
     if (isPathNotFoundError(e)) {
       // Find a kcl file in the directory.
@@ -564,11 +621,19 @@ export async function getDefaultKclFileForDir(
             return fsZds.join(projectDir, entry.name)
           } else if ((entry.children?.length ?? 0) > 0) {
             // Recursively find a kcl file in the directory.
-            return getDefaultKclFileForDir(entry.path, entry, wasmInstance)
+            return getDefaultKclFileForDir(
+              fileOperations,
+              entry.path,
+              entry,
+              wasmInstance
+            )
           }
         }
         // If we didn't find a kcl file, create one.
-        const configuration = await readAppSettingsFile(wasmInstance)
+        const configuration = await readAppSettingsFile(
+          fileOperations,
+          wasmInstance
+        )
         if (err(configuration)) {
           return Promise.reject(configuration)
         }
@@ -584,21 +649,11 @@ export async function getDefaultKclFileForDir(
         try {
           // Discovery can race an import populating a new project directory.
           // Only create a missing default file; never replace newly added code.
-          await fsZds.writeFile(
-            defaultFilePath,
-            new TextEncoder().encode(codeToWrite),
-            { flag: 'wx' }
-          )
+          await fileOperations.createFile(defaultFilePath, codeToWrite)
         } catch (error: unknown) {
-          const alreadyExists =
-            error === 'EEXIST' ||
-            (typeof error === 'object' &&
-              error !== null &&
-              (('code' in error && error.code === 'EEXIST') ||
-                ('message' in error &&
-                  typeof error.message === 'string' &&
-                  error.message.startsWith('EEXIST'))))
-          if (!alreadyExists) return Promise.reject(error)
+          if (!(error instanceof FileAlreadyExists)) {
+            return Promise.reject(error)
+          }
         }
         return defaultFilePath
       }
@@ -644,15 +699,16 @@ const directoryCount = (file: FileEntry) => {
 }
 
 export async function getProjectInfo(
+  fileOperations: FileOperationsRegistryService,
   projectPath: string,
   wasmInstance: ModuleType
 ): Promise<Project> {
   // Check the directory.
-  let stats: IStat | undefined
+  let stats: FileStat | undefined
   try {
-    stats = await fsZds.stat(projectPath)
+    stats = await fileOperations.stat(projectPath)
   } catch (e) {
-    if (e === 'ENOENT') {
+    if (isPathNotFoundError(e)) {
       return Promise.reject(
         new Error(`Project directory does not exist: ${projectPath}`)
       )
@@ -660,7 +716,7 @@ export async function getProjectInfo(
   }
 
   // Make sure it is a directory.
-  const projectPathIsDir = await statIsDirectory(projectPath)
+  const projectPathIsDir = await statIsDirectory(fileOperations, projectPath)
 
   if (!projectPathIsDir) {
     return Promise.reject(
@@ -669,16 +725,22 @@ export async function getProjectInfo(
   }
 
   // Detect the projectPath has read write permission
-  const { value: canReadWriteProjectPath } =
-    await canReadWriteDirectory(projectPath)
+  const { value: canReadWriteProjectPath } = await canReadWriteDirectory(
+    fileOperations,
+    projectPath
+  )
 
-  const appSettings = await readAppSettingsFile(wasmInstance)
+  const appSettings = await readAppSettingsFile(fileOperations, wasmInstance)
   const showAllFiles = appSettings.settings?.app?.show_all_files === true
 
-  const gitignoreStack = await createInitialGitignoreStack(projectPath)
+  const gitignoreStack = await createInitialGitignoreStackWithFs(
+    fileOperationsGitignoreFs(fileOperations),
+    projectPath
+  )
 
   // Return walked early if canReadWriteProjectPath is false
   const walked = await collectAllFilesRecursiveFrom(
+    fileOperations,
     projectPath,
     projectPath,
     canReadWriteProjectPath,
@@ -691,19 +753,20 @@ export async function getProjectInfo(
   if (canReadWriteProjectPath) {
     // Create the default main.kcl file only if the project path has read write permissions
     default_file = await getDefaultKclFileForDir(
+      fileOperations,
       projectPath,
       walked,
       wasmInstance
     )
   }
   const projectTomlMetadata = canReadWriteProjectPath
-    ? await readProjectTomlMetadata(projectPath)
+    ? await readProjectTomlMetadata(fileOperations, projectPath)
     : { title: undefined, projectId: undefined, cloudProjectId: undefined }
 
   const project = {
     ...walked,
     ...projectTomlMetadata,
-    metadata: convertIStatToFileMetadata(stats ?? null),
+    metadata: convertFileStatToFileMetadata(stats ?? null),
     kcl_file_count: 0,
     directory_count: 0,
     default_file,
@@ -721,18 +784,20 @@ export async function getProjectInfo(
 
 // Write project settings file.
 export async function overwriteProjectTomlWithNewSettings(
+  fileOperations: FileOperationsRegistryService,
   projectPath: string,
   tomlStr: string
 ): Promise<void> {
   const projectSettingsFilePath = await getProjectSettingsFilePath(projectPath)
+  await ensureDirectory(fileOperations, projectPath)
   if (err(tomlStr)) {
     return Promise.reject(tomlStr)
   }
   let projectToml = tomlStr
   try {
-    const existingProjectToml = await fsZds.readFile(projectSettingsFilePath, {
-      encoding: 'utf-8',
-    })
+    const existingProjectToml = textDecoder.decode(
+      await fileOperations.readFile(projectSettingsFilePath)
+    )
     projectToml = preserveProjectTomlMetadataInProjectSettingsContents(
       existingProjectToml,
       tomlStr
@@ -742,22 +807,21 @@ export async function overwriteProjectTomlWithNewSettings(
       return Promise.reject(error)
     }
   }
-  return fsZds.writeFile(
-    projectSettingsFilePath,
-    new TextEncoder().encode(projectToml)
-  )
+  return fileOperations.writeFile(projectSettingsFilePath, projectToml)
 }
 
 export async function writeProjectTitleToProjectToml(
+  fileOperations: FileOperationsRegistryService,
   projectPath: string,
   title: string
 ): Promise<void> {
   const projectSettingsFilePath = await getProjectSettingsFilePath(projectPath)
+  await ensureDirectory(fileOperations, projectPath)
   let projectToml = ''
   try {
-    projectToml = await fsZds.readFile(projectSettingsFilePath, {
-      encoding: 'utf-8',
-    })
+    projectToml = textDecoder.decode(
+      await fileOperations.readFile(projectSettingsFilePath)
+    )
   } catch (error) {
     if (!isPathNotFoundError(error)) {
       return Promise.reject(error)
@@ -768,10 +832,7 @@ export async function writeProjectTitleToProjectToml(
     projectToml,
     title
   )
-  await fsZds.writeFile(
-    projectSettingsFilePath,
-    new TextEncoder().encode(nextProjectToml)
-  )
+  await fileOperations.writeFile(projectSettingsFilePath, nextProjectToml)
 }
 
 const getAppFolderName = () => {
@@ -808,14 +869,6 @@ export const getAppSettingsFilePath = async () => {
     }
   }
 
-  try {
-    await fsZds.stat(fullPath)
-  } catch (e) {
-    // File/path doesn't exist
-    if (e === 'ENOENT') {
-      await fsZds.mkdir(fullPath, { recursive: true })
-    }
-  }
   return fsZds.join(fullPath, SETTINGS_FILE_NAME)
 }
 
@@ -843,14 +896,6 @@ export const getEnvironmentConfigurationPath = async (
   environmentName: string
 ) => {
   const fullPath = await getEnvironmentConfigurationFolderPath()
-  try {
-    await fsZds.stat(fullPath)
-  } catch (e) {
-    // File/path doesn't exist
-    if (e === 'ENOENT') {
-      await fsZds.mkdir(fullPath, { recursive: true })
-    }
-  }
   // /envs/<subdomain>.json e.g. /envs/dev.zoo.dev.json
   return fsZds.join(fullPath, `${environmentName}.json`)
 }
@@ -870,14 +915,6 @@ export const getEnvironmentFilePath = async () => {
     }
   }
 
-  try {
-    await fsZds.stat(fullPath)
-  } catch (e) {
-    // File/path doesn't exist
-    if (e === 'ENOENT') {
-      await fsZds.mkdir(fullPath, { recursive: true })
-    }
-  }
   return fsZds.join(fullPath, ENVIRONMENT_FILE_NAME)
 }
 
@@ -896,14 +933,6 @@ const getTelemetryFilePath = async () => {
     }
   }
 
-  try {
-    await fsZds.stat(fullPath)
-  } catch (e) {
-    // File/path doesn't exist
-    if (e === 'ENOENT') {
-      await fsZds.mkdir(fullPath, { recursive: true })
-    }
-  }
   return fsZds.join(fullPath, TELEMETRY_FILE_NAME)
 }
 
@@ -922,25 +951,10 @@ const getRawTelemetryFilePath = async () => {
     }
   }
 
-  try {
-    await fsZds.stat(fullPath)
-  } catch (e) {
-    // File/path doesn't exist
-    if (e === 'ENOENT') {
-      await fsZds.mkdir(fullPath, { recursive: true })
-    }
-  }
   return fsZds.join(fullPath, TELEMETRY_RAW_FILE_NAME)
 }
 
 const getProjectSettingsFilePath = async (projectPath: string) => {
-  try {
-    await fsZds.stat(projectPath)
-  } catch (e) {
-    if (isPathNotFoundError(e)) {
-      await fsZds.mkdir(projectPath, { recursive: true })
-    }
-  }
   return fsZds.join(projectPath, PROJECT_SETTINGS_FILE_NAME)
 }
 
@@ -961,6 +975,7 @@ export const getInitialDefaultDir = async () => {
 }
 
 export const readProjectSettingsFile = async (
+  fileOperations: FileOperationsRegistryService,
   projectPath: string,
   wasmInstance: ModuleType
 ): Promise<DeepPartial<ProjectConfiguration>> => {
@@ -968,16 +983,16 @@ export const readProjectSettingsFile = async (
 
   // Check if this file exists.
   try {
-    await fsZds.stat(settingsPath)
+    await fileOperations.stat(settingsPath)
   } catch (e) {
     if (isPathNotFoundError(e)) {
       return {}
     }
   }
 
-  const configToml = await fsZds.readFile(settingsPath, {
-    encoding: 'utf-8',
-  })
+  const configToml = textDecoder.decode(
+    await fileOperations.readFile(settingsPath)
+  )
   const configObj = parseProjectSettings(configToml, wasmInstance)
   if (err(configObj)) {
     return Promise.reject(configObj)
@@ -1027,13 +1042,18 @@ const withPlaywrightSeededPlugins = (
  * Read the app settings file, or creates an initial one if it doesn't exist.
  */
 export const readAppSettingsFile = async (
+  fileOperations: FileOperationsRegistryService,
   wasmInstance: ModuleType
 ): Promise<DeepPartial<Configuration>> => {
-  const configuration = await readPersistedAppSettingsFile(wasmInstance)
+  const configuration = await readPersistedAppSettingsFile(
+    fileOperations,
+    wasmInstance
+  )
   return withPlaywrightSeededPlugins(configuration, wasmInstance)
 }
 
 const readPersistedAppSettingsFile = async (
+  fileOperations: FileOperationsRegistryService,
   wasmInstance: ModuleType
 ): Promise<DeepPartial<Configuration>> => {
   const settingsPath = await getAppSettingsFilePath()
@@ -1043,10 +1063,10 @@ const readPersistedAppSettingsFile = async (
 
   // The file exists, read it and parse it.
   try {
-    await fsZds.stat(settingsPath)
-    const configToml = await fsZds.readFile(settingsPath, {
-      encoding: 'utf-8',
-    })
+    await fileOperations.stat(settingsPath)
+    const configToml = textDecoder.decode(
+      await fileOperations.readFile(settingsPath)
+    )
     const parsedAppConfig = parseAppSettings(configToml, wasmInstance)
     if (err(parsedAppConfig)) {
       return Promise.reject(parsedAppConfig)
@@ -1098,23 +1118,28 @@ const readPersistedAppSettingsFile = async (
   }
 }
 
-export const writeAppSettingsFile = async (tomlStr: string) => {
+export const writeAppSettingsFile = async (
+  fileOperations: FileOperationsRegistryService,
+  tomlStr: string
+) => {
   const appSettingsFilePath = await getAppSettingsFilePath()
   if (err(tomlStr)) {
     return Promise.reject(tomlStr)
   }
-  return fsZds.writeFile(appSettingsFilePath, new TextEncoder().encode(tomlStr))
+  await ensureDirectory(fileOperations, fsZds.dirname(appSettingsFilePath))
+  return fileOperations.writeFile(appSettingsFilePath, tomlStr)
 }
 
 export const readEnvironmentConfigurationFile = async (
+  fileOperations: FileOperationsRegistryService,
   environmentName: string
 ): Promise<EnvironmentConfiguration | null> => {
   const path = await getEnvironmentConfigurationPath(environmentName)
   try {
-    await fsZds.stat(path)
-    const configurationJSON: string = await fsZds.readFile(path, {
-      encoding: 'utf-8',
-    })
+    await fileOperations.stat(path)
+    const configurationJSON = textDecoder.decode(
+      await fileOperations.readFile(path)
+    )
     if (!configurationJSON) {
       return null
     }
@@ -1126,46 +1151,51 @@ export const readEnvironmentConfigurationFile = async (
 }
 
 export const writeEnvironmentConfigurationToken = async (
+  fileOperations: FileOperationsRegistryService,
   environmentName: string,
   token: string
 ) => {
   environmentName = environmentName.trim()
   const path = await getEnvironmentConfigurationPath(environmentName)
-  const environmentConfiguration =
-    await getEnvironmentConfigurationObject(environmentName)
+  const environmentConfiguration = await getEnvironmentConfigurationObject(
+    fileOperations,
+    environmentName
+  )
   environmentConfiguration.token = token
   const requestedConfiguration = JSON.stringify(environmentConfiguration)
-  const result = await fsZds.writeFile(
-    path,
-    new TextEncoder().encode(requestedConfiguration)
-  )
+  await ensureDirectory(fileOperations, fsZds.dirname(path))
+  const result = await fileOperations.writeFile(path, requestedConfiguration)
   console.log(`wrote ${environmentName}.json to disk`)
   return result
 }
 
 export const writeEnvironmentConfigurationKittycadWebSocketUrl = async (
+  fileOperations: FileOperationsRegistryService,
   environmentName: string,
   kittycadWebSocketUrl: string
 ) => {
   kittycadWebSocketUrl = kittycadWebSocketUrl.trim()
   const path = await getEnvironmentConfigurationPath(environmentName)
-  const environmentConfiguration =
-    await getEnvironmentConfigurationObject(environmentName)
+  const environmentConfiguration = await getEnvironmentConfigurationObject(
+    fileOperations,
+    environmentName
+  )
   environmentConfiguration.kittycadWebSocketUrl = kittycadWebSocketUrl
   const requestedConfiguration = JSON.stringify(environmentConfiguration)
-  const result = await fsZds.writeFile(
-    path,
-    new TextEncoder().encode(requestedConfiguration)
-  )
+  await ensureDirectory(fileOperations, fsZds.dirname(path))
+  const result = await fileOperations.writeFile(path, requestedConfiguration)
   console.log(`wrote ${environmentName}.json to disk`)
   return result
 }
 
 export const getEnvironmentConfigurationObject = async (
+  fileOperations: FileOperationsRegistryService,
   environmentName: string
 ) => {
-  let environmentConfiguration =
-    await readEnvironmentConfigurationFile(environmentName)
+  let environmentConfiguration = await readEnvironmentConfigurationFile(
+    fileOperations,
+    environmentName
+  )
   if (environmentConfiguration === null) {
     const initialConfiguration: EnvironmentConfiguration = {
       token: '',
@@ -1177,10 +1207,13 @@ export const getEnvironmentConfigurationObject = async (
 }
 
 export const readEnvironmentConfigurationToken = async (
+  fileOperations: FileOperationsRegistryService,
   environmentName: string
 ) => {
-  const environmentConfiguration =
-    await readEnvironmentConfigurationFile(environmentName)
+  const environmentConfiguration = await readEnvironmentConfigurationFile(
+    fileOperations,
+    environmentName
+  )
   if (!environmentConfiguration?.token) {
     return ''
   }
@@ -1188,10 +1221,13 @@ export const readEnvironmentConfigurationToken = async (
 }
 
 export const readEnvironmentConfigurationKittycadWebSocketUrl = async (
+  fileOperations: FileOperationsRegistryService,
   environmentName: string
 ) => {
-  const environmentConfiguration =
-    await readEnvironmentConfigurationFile(environmentName)
+  const environmentConfiguration = await readEnvironmentConfigurationFile(
+    fileOperations,
+    environmentName
+  )
   if (!environmentConfiguration?.kittycadWebSocketUrl) {
     return ''
   }
@@ -1199,28 +1235,32 @@ export const readEnvironmentConfigurationKittycadWebSocketUrl = async (
 }
 
 export const writeEnvironmentConfigurationZookeeperWebSocketUrl = async (
+  fileOperations: FileOperationsRegistryService,
   environmentName: string,
   zookeeperWebSocketUrl: string
 ) => {
   zookeeperWebSocketUrl = zookeeperWebSocketUrl.trim()
   const path = await getEnvironmentConfigurationPath(environmentName)
-  const environmentConfiguration =
-    await getEnvironmentConfigurationObject(environmentName)
+  const environmentConfiguration = await getEnvironmentConfigurationObject(
+    fileOperations,
+    environmentName
+  )
   environmentConfiguration.zookeeperWebSocketUrl = zookeeperWebSocketUrl
   const requestedConfiguration = JSON.stringify(environmentConfiguration)
-  const result = await fsZds.writeFile(
-    path,
-    new TextEncoder().encode(requestedConfiguration)
-  )
+  await ensureDirectory(fileOperations, fsZds.dirname(path))
+  const result = await fileOperations.writeFile(path, requestedConfiguration)
   console.log(`wrote ${environmentName}.json to disk`)
   return result
 }
 
 export const readEnvironmentConfigurationZookeeperWebSocketUrl = async (
+  fileOperations: FileOperationsRegistryService,
   environmentName: string
 ) => {
-  const environmentConfiguration =
-    await readEnvironmentConfigurationFile(environmentName)
+  const environmentConfiguration = await readEnvironmentConfigurationFile(
+    fileOperations,
+    environmentName
+  )
   const zookeeperWebSocketUrl =
     environmentConfiguration?.zookeeperWebSocketUrl ??
     environmentConfiguration?.mlephantWebSocketUrl
@@ -1230,15 +1270,17 @@ export const readEnvironmentConfigurationZookeeperWebSocketUrl = async (
   return zookeeperWebSocketUrl.trim()
 }
 
-export const readEnvironmentFile = async () => {
+export const readEnvironmentFile = async (
+  fileOperations: FileOperationsRegistryService
+) => {
   const environmentFilePath = await getEnvironmentFilePath()
   console.log(readEnvironmentFile)
 
   try {
-    await fsZds.stat(environmentFilePath)
-    const environment: string = await fsZds.readFile(environmentFilePath, {
-      encoding: 'utf-8',
-    })
+    await fileOperations.stat(environmentFilePath)
+    const environment = textDecoder.decode(
+      await fileOperations.readFile(environmentFilePath)
+    )
     if (!environment) {
       return ''
     }
@@ -1253,23 +1295,29 @@ export const readEnvironmentFile = async () => {
  * Store the last selected environment on disk to allow us to sign back into the correct
  * environment when they refresh the application or update the application.
  */
-export const writeEnvironmentFile = async (environment: string) => {
+export const writeEnvironmentFile = async (
+  fileOperations: FileOperationsRegistryService,
+  environment: string
+) => {
   environment = environment.trim()
   const environmentFilePath = await getEnvironmentFilePath()
   if (err(environment)) {
     return Promise.reject(environment)
   }
-  const result = await fsZds.writeFile(
+  await ensureDirectory(fileOperations, fsZds.dirname(environmentFilePath))
+  const result = await fileOperations.writeFile(
     environmentFilePath,
-    new TextEncoder().encode(environment)
+    environment
   )
   console.log('environment written to disk')
   return result
 }
 
-export const listAllEnvironments = async () => {
+export const listAllEnvironments = async (
+  fileOperations: FileOperationsRegistryService
+) => {
   const environmentFolder = await getEnvironmentConfigurationFolderPath()
-  const files = await fsZds.readdir(environmentFolder)
+  const files = await fileOperations.readDirectory(environmentFolder)
   const suffix = '.json'
   return files
     .filter((fileName: string) => {
@@ -1280,12 +1328,17 @@ export const listAllEnvironments = async () => {
     })
 }
 
-export const listAllEnvironmentsWithTokens = async () => {
-  const environments = await listAllEnvironments()
+export const listAllEnvironmentsWithTokens = async (
+  fileOperations: FileOperationsRegistryService
+) => {
+  const environments = await listAllEnvironments(fileOperations)
   const environmentsWithTokens = []
   for (let i = 0; i < environments.length; i++) {
     const environment = environments[i]
-    const token = await readEnvironmentConfigurationToken(environment)
+    const token = await readEnvironmentConfigurationToken(
+      fileOperations,
+      environment
+    )
     if (token) {
       environmentsWithTokens.push(environment)
     }
@@ -1293,23 +1346,28 @@ export const listAllEnvironmentsWithTokens = async () => {
   return environmentsWithTokens
 }
 
-export const writeTelemetryFile = async (content: string) => {
+export const writeTelemetryFile = async (
+  fileOperations: FileOperationsRegistryService,
+  content: string
+) => {
   const telemetryFilePath = await getTelemetryFilePath()
   if (err(content)) {
     return Promise.reject(content)
   }
-  return fsZds.writeFile(telemetryFilePath, new TextEncoder().encode(content))
+  await ensureDirectory(fileOperations, fsZds.dirname(telemetryFilePath))
+  return fileOperations.writeFile(telemetryFilePath, content)
 }
 
-export const writeRawTelemetryFile = async (content: string) => {
+export const writeRawTelemetryFile = async (
+  fileOperations: FileOperationsRegistryService,
+  content: string
+) => {
   const rawTelemetryFilePath = await getRawTelemetryFilePath()
   if (err(content)) {
     return Promise.reject(content)
   }
-  return fsZds.writeFile(
-    rawTelemetryFilePath,
-    new TextEncoder().encode(content)
-  )
+  await ensureDirectory(fileOperations, fsZds.dirname(rawTelemetryFilePath))
+  return fileOperations.writeFile(rawTelemetryFilePath, content)
 }
 
 let appStateStore: Project | undefined
@@ -1332,6 +1390,7 @@ export const getUser = async (token: string): Promise<UserResponse> => {
 }
 
 export const writeProjectThumbnailFile = async (
+  fileOperations: FileOperationsRegistryService,
   dataUrl: string,
   projectDirectoryPath: string
 ) => {
@@ -1345,15 +1404,12 @@ export const writeProjectThumbnailFile = async (
   // Configure Git to ignore the generated thumbnail
   const gitignorePath = fsZds.join(projectDirectoryPath, '.gitignore')
   try {
-    await fsZds.stat(gitignorePath)
+    await fileOperations.stat(gitignorePath)
   } catch {
-    await fsZds.writeFile(
-      gitignorePath,
-      new TextEncoder().encode(`${PROJECT_IMAGE_NAME}\n`)
-    )
+    await fileOperations.writeFile(gitignorePath, `${PROJECT_IMAGE_NAME}\n`)
   }
 
-  return fsZds.writeFile(filePath, asArray)
+  return fileOperations.writeFile(filePath, asArray)
 }
 
 export function getPathFilenameInVariableCase(targetPath: string) {
@@ -1363,9 +1419,10 @@ export function getPathFilenameInVariableCase(targetPath: string) {
 }
 
 export const canReadWriteDirectory = async (
+  fileOperations: FileOperationsRegistryService,
   targetPath: string
 ): Promise<{ value: boolean; error: unknown }> => {
-  const isDirectory = await statIsDirectory(targetPath)
+  const isDirectory = await statIsDirectory(fileOperations, targetPath)
   if (!isDirectory) {
     return {
       value: false,
@@ -1373,28 +1430,26 @@ export const canReadWriteDirectory = async (
     }
   }
 
-  // bitwise OR to check read and write permissions
   try {
-    const canReadWrite = await fsZds.access(
-      targetPath,
-      fsZdsConstants.R_OK | fsZdsConstants.W_OK
-    )
-    // This function returns undefined. If it cannot access the path it will throw an error
-    return canReadWrite === undefined
-      ? { value: true, error: undefined }
-      : { value: false, error: undefined }
+    return {
+      value: await fileOperations.canReadWrite(targetPath),
+      error: undefined,
+    }
   } catch (e) {
     console.error(e)
     return { value: false, error: e }
   }
 }
 
-export async function statIsDirectory(targetPath: string): Promise<boolean> {
+export async function statIsDirectory(
+  fileOperations: FileOperationsRegistryService,
+  targetPath: string
+): Promise<boolean> {
   try {
-    const res = await fsZds.stat(targetPath)
-    return Boolean(res.mode & fsZdsConstants.S_IFDIR)
+    const res = await fileOperations.stat(targetPath)
+    return res.kind === 'directory'
   } catch (e) {
-    if (e === 'ENOENT') {
+    if (isPathNotFoundError(e)) {
       console.error('File does not exist', e)
       return false
     }

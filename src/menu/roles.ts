@@ -83,7 +83,7 @@ type ViewRoleLabel =
 type DesignRoleLabel =
   | 'Design'
   | 'Create a Parameter'
-  | 'Insert from Project File'
+  | 'Import from Project File'
   | 'Start Sketch'
   | 'Create an Offset Plane'
   | 'Create a Helix'

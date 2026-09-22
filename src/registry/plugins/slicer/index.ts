@@ -9,18 +9,22 @@ import { useNetworkContext } from '@src/hooks/useNetworkContext'
 import { NetworkHealthState } from '@src/hooks/useNetworkStatus'
 import type { KclManager } from '@src/lang/KclManager'
 import type { Command } from '@src/lib/commandTypes'
+import { EngineConnectionStateType } from '@src/lib/engineConnection/utils'
 import { isDesktop } from '@src/lib/isDesktop'
 import { DefaultLayoutToolbarID } from '@src/lib/layout/configs/default'
-import { EngineConnectionStateType } from '@src/lib/engineConnection/utils'
-import {
-  commandSystemService,
-  provideCommand,
-} from '@src/registry/contracts/commands'
 import {
   layoutActionLibraryValueSpec,
   layoutContributionsValueSpec,
 } from '@src/lib/layout/registry/contract'
-import { MODE_MODELING_COMMAND_SCOPE } from '@src/registry/contracts/commands'
+import {
+  commandSystemService,
+  MODE_MODELING_COMMAND_SCOPE,
+  provideCommand,
+} from '@src/registry/contracts/commands'
+import {
+  type FileOperationsRegistryService,
+  fileOperationsService,
+} from '@src/registry/contracts/fileOperations'
 import { createZdsPlugin } from '@src/registry/createZdsPlugin'
 import {
   EXPORT_TO_SLICER_ACTION_TYPE,
@@ -31,9 +35,9 @@ import {
 } from '@src/registry/plugins/slicer/constants'
 import { exportCurrentPartToSlicer } from '@src/registry/plugins/slicer/exportCurrentPartToSlicer'
 import {
+  getSlicerExportDefinition,
   SLICER_COMMAND_OPTIONS,
   type SlicerId,
-  getSlicerExportDefinition,
 } from '@src/registry/plugins/slicer/slicerDefinitions'
 
 type ExportToSlicerCommandArgs = {
@@ -75,8 +79,10 @@ function getSubmittedSlicerId(data: unknown): SlicerId | undefined {
 
 function createExportToSlicerCommand({
   getKclManager,
+  getFileOperations,
 }: {
   getKclManager: () => KclManager | undefined
+  getFileOperations: () => FileOperationsRegistryService
 }): Command {
   return {
     scopes: [MODE_MODELING_COMMAND_SCOPE],
@@ -109,7 +115,10 @@ function createExportToSlicerCommand({
         return new Error('No active modeling context')
       }
 
-      return exportCurrentPartToSlicer(definition, { kclManager })
+      return exportCurrentPartToSlicer(definition, {
+        kclManager,
+        fileOperations: getFileOperations(),
+      })
     },
   }
 }
@@ -120,6 +129,7 @@ const exportToSlicerSidebarItem = defineRegistryItemFactory((ctx) => {
     getCommandSystem().actor.getSnapshot().context.kclManager
   const exportToSlicerCommand = createExportToSlicerCommand({
     getKclManager,
+    getFileOperations: () => ctx.services.get(fileOperationsService),
   })
   const useExportToSlicerDisabled = createUseExportToSlicerDisabled({
     getKclManager,

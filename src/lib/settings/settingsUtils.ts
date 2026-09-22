@@ -1,8 +1,8 @@
+import type { Feature } from '@kittycad/lib'
 import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
 import type { NamedView } from '@rust/kcl-lib/bindings/NamedView'
 import type { ProjectConfiguration } from '@rust/kcl-lib/bindings/ProjectConfiguration'
 import type { JsonValue } from '@rust/kcl-lib/bindings/serde_json/JsonValue'
-import type { Feature } from '@kittycad/lib'
 import {
   kclSettings,
   changeKclVersion,
@@ -28,8 +28,8 @@ import {
 import fsZds from '@src/lib/fs-zds'
 import { isDesktop } from '@src/lib/isDesktop'
 import type {
-  LayoutWithMetadata,
   LayoutsWithMetadata,
+  LayoutWithMetadata,
 } from '@src/lib/layout/types'
 import {
   createLayoutWithMetadata,
@@ -42,13 +42,11 @@ import {
   mergeProjectLibrarySettings,
   type ProjectLibrarySetting,
 } from '@src/lib/projectLibraries'
-import type { ProjectLibrarySettingDefaultPolicy } from '@src/registry/contracts/projectLibraries'
-import { resolveProjectLibrarySettingDefaults } from '@src/registry/contracts/projectLibraries'
 import type { ResolvedExtensionSettings } from '@src/lib/settings/extensionSettings'
 import {
+  createSettings,
   Setting,
   type SettingsType,
-  createSettings,
 } from '@src/lib/settings/initialSettings'
 import type {
   SaveSettingsPayload,
@@ -60,8 +58,13 @@ import type { DeepPartial } from '@src/lib/types'
 import { isArray } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { SettingsActorType } from '@src/machines/settingsMachine'
+import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
+import type { ProjectLibrarySettingDefaultPolicy } from '@src/registry/contracts/projectLibraries'
+import { resolveProjectLibrarySettingDefaults } from '@src/registry/contracts/projectLibraries'
 import decamelize from 'decamelize'
 import { NIL as uuidNIL, v4 } from 'uuid'
+
+const textDecoder = new TextDecoder()
 
 const INITIALISM_MAPPING: Record<string, string> = {
   api: 'API',
@@ -974,13 +977,14 @@ function setProjectConfigurationKclVersion(
 }
 
 async function resolveProjectEntrypointPath(
+  fileOperations: FileOperationsRegistryService,
   projectPath: string
 ): Promise<string> {
   const projectTomlPath = fsZds.join(projectPath, PROJECT_SETTINGS_FILE_NAME)
   try {
-    const projectToml = await fsZds.readFile(projectTomlPath, {
-      encoding: 'utf-8',
-    })
+    const projectToml = textDecoder.decode(
+      await fileOperations.readFile(projectTomlPath)
+    )
     const defaultFileMatch = projectToml.match(
       /^\s*default_file\s*=\s*(".*?")/m
     )
@@ -997,12 +1001,18 @@ async function resolveProjectEntrypointPath(
 }
 
 async function readKclVersionFromEntrypoint(
+  fileOperations: FileOperationsRegistryService,
   projectPath: string,
   wasmInstance: ModuleType
 ): Promise<string | undefined> {
-  const entrypointPath = await resolveProjectEntrypointPath(projectPath)
+  const entrypointPath = await resolveProjectEntrypointPath(
+    fileOperations,
+    projectPath
+  )
   try {
-    const code = await fsZds.readFile(entrypointPath, { encoding: 'utf-8' })
+    const code = textDecoder.decode(
+      await fileOperations.readFile(entrypointPath)
+    )
     const settings = kclSettings(code, wasmInstance)
     if (isErr(settings) || !settings) {
       return undefined
@@ -1023,14 +1033,18 @@ async function readKclVersionFromEntrypoint(
  * only writes when the file content would change.
  */
 export async function syncKclVersionToEntrypoint(
+  fileOperations: FileOperationsRegistryService,
   projectPath: string,
   kclVersion: string,
   wasmInstance: ModuleType
 ): Promise<void> {
-  const entrypointPath = await resolveProjectEntrypointPath(projectPath)
+  const entrypointPath = await resolveProjectEntrypointPath(
+    fileOperations,
+    projectPath
+  )
   let code = ''
   try {
-    code = await fsZds.readFile(entrypointPath, { encoding: 'utf-8' })
+    code = textDecoder.decode(await fileOperations.readFile(entrypointPath))
   } catch {
     // Missing entrypoint so there is nothing to sync.
     return
@@ -1052,7 +1066,7 @@ export async function syncKclVersionToEntrypoint(
     return
   }
 
-  await fsZds.writeFile(entrypointPath, new TextEncoder().encode(updated))
+  await fileOperations.writeFile(entrypointPath, updated)
 }
 
 export interface AppSettings {
@@ -1068,6 +1082,7 @@ export interface AppSettings {
  * Relies on WASM for TOML de/serialization.
  */
 export async function loadAndValidateSettings(
+  fileOperations: FileOperationsRegistryService,
   initPromise: Promise<ModuleType> | ModuleType,
   projectPathOrOptions:
     | string
@@ -1093,7 +1108,10 @@ export async function loadAndValidateSettings(
   const wasmInstance = await initPromise
 
   // Load the app settings from the file system or localStorage.
-  const appSettingsPayload = await readAppSettingsFile(wasmInstance)
+  const appSettingsPayload = await readAppSettingsFile(
+    fileOperations,
+    wasmInstance
+  )
 
   if (err(appSettingsPayload)) {
     return Promise.reject(appSettingsPayload)
@@ -1132,6 +1150,7 @@ export async function loadAndValidateSettings(
   // Load the project settings if they exist
   if (projectPath) {
     let projectSettings = await readProjectSettingsFile(
+      fileOperations,
       projectPath,
       wasmInstance
     )
@@ -1157,8 +1176,11 @@ export async function loadAndValidateSettings(
     let projectKclVersion = projectSettings.settings?.modeling?.kcl_version
     if (!projectKclVersion) {
       projectKclVersion =
-        (await readKclVersionFromEntrypoint(projectPath, wasmInstance)) ??
-        LEGACY_KCL_VERSION
+        (await readKclVersionFromEntrypoint(
+          fileOperations,
+          projectPath,
+          wasmInstance
+        )) ?? LEGACY_KCL_VERSION
       projectSettings = setProjectConfigurationKclVersion(
         projectSettings,
         projectKclVersion
@@ -1175,11 +1197,16 @@ export async function loadAndValidateSettings(
           new Error('Could not serialize project configuration')
         )
       }
-      await overwriteProjectTomlWithNewSettings(projectPath, projectTomlString)
+      await overwriteProjectTomlWithNewSettings(
+        fileOperations,
+        projectPath,
+        projectTomlString
+      )
     }
 
     // Keep main.kcl `@settings(kclVersion)` aligned if the entrypoint already has one.
     await syncKclVersionToEntrypoint(
+      fileOperations,
       projectPath,
       projectKclVersion,
       wasmInstance
@@ -1259,6 +1286,7 @@ async function resolveAsyncHideOnPlatform(
  * Relies on WASM for TOML serialization.
  */
 export async function saveSettings(
+  fileOperations: FileOperationsRegistryService,
   initPromise: Promise<ModuleType>,
   allSettings: SettingsType,
   extensionSettings: ResolvedExtensionSettings = {},
@@ -1288,7 +1316,7 @@ export async function saveSettings(
   }
 
   // Write the app settings.
-  await writeAppSettingsFile(appTomlString)
+  await writeAppSettingsFile(fileOperations, appTomlString)
 
   if (!projectPath) {
     // If we're not saving project settings, we're done.
@@ -1298,6 +1326,7 @@ export async function saveSettings(
   // Get the project settings.
   const jsProjectSettings = getChangedSettingsAtLevel(allSettings, 'project')
   const existingProjectSettings = await readProjectSettingsFile(
+    fileOperations,
     projectPath,
     wasmInstance
   )
@@ -1318,12 +1347,17 @@ export async function saveSettings(
   }
 
   // Write the project settings.
-  await overwriteProjectTomlWithNewSettings(projectPath, projectTomlString)
+  await overwriteProjectTomlWithNewSettings(
+    fileOperations,
+    projectPath,
+    projectTomlString
+  )
 
   // Keep main.kcl `@settings(kclVersion)` aligned if the entrypoint already has one.
   const projectKclVersion = allSettings.modeling.kclVersion.current
   if (projectKclVersion) {
     await syncKclVersionToEntrypoint(
+      fileOperations,
       projectPath,
       projectKclVersion,
       wasmInstance

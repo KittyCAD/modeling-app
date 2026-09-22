@@ -40,8 +40,10 @@ description: Variables in memory after executing bracket.kcl
     "value": 35000.0,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "appliedLoad": {
@@ -49,8 +51,10 @@ description: Variables in memory after executing bracket.kcl
     "value": 300.0,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "bendingMoment": {
@@ -58,8 +62,10 @@ description: Variables in memory after executing bracket.kcl
     "value": 3600.0,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "bracketBlank": {
@@ -695,17 +701,21 @@ description: Variables in memory after executing bracket.kcl
                       {
                         "n": 0.000000000000000001633779704845423,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -2.25,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -713,17 +723,21 @@ description: Variables in memory after executing bracket.kcl
                       {
                         "n": 0.0000000000000000005650253629438937,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.00000000000000007946295334367389,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -815,17 +829,21 @@ description: Variables in memory after executing bracket.kcl
                       {
                         "n": -0.0000000000000000004458439395163346,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.00000000000000005772023962747664,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -833,17 +851,21 @@ description: Variables in memory after executing bracket.kcl
                       {
                         "n": 5.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.00000000000000009117282649743997,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -935,17 +957,21 @@ description: Variables in memory after executing bracket.kcl
                       {
                         "n": 5.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.00000000000000012061552630787694,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -953,17 +979,21 @@ description: Variables in memory after executing bracket.kcl
                       {
                         "n": 5.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -0.38485618835389096,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -1055,17 +1085,21 @@ description: Variables in memory after executing bracket.kcl
                       {
                         "n": 5.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -0.38485618835389096,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -1073,17 +1107,21 @@ description: Variables in memory after executing bracket.kcl
                       {
                         "n": 0.3848561883538911,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -0.38485618835389096,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -1175,17 +1213,21 @@ description: Variables in memory after executing bracket.kcl
                       {
                         "n": 0.3848561883538911,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -0.38485618835389096,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -1193,17 +1235,21 @@ description: Variables in memory after executing bracket.kcl
                       {
                         "n": 0.3848561883538911,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -2.25,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -1295,17 +1341,21 @@ description: Variables in memory after executing bracket.kcl
                       {
                         "n": 0.3848561883538911,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -2.25,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -1313,17 +1363,21 @@ description: Variables in memory after executing bracket.kcl
                       {
                         "n": 0.000000000000000002696361469919717,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -2.25,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -1649,8 +1703,10 @@ description: Variables in memory after executing bracket.kcl
     "value": 0.3848561883538911,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "bracketWidth": {
@@ -1658,8 +1714,10 @@ description: Variables in memory after executing bracket.kcl
     "value": 5.0,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "bracketWithBendFillets": {
@@ -2040,8 +2098,10 @@ description: Variables in memory after executing bracket.kcl
             "n": 0.25,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           "edgeId": "[uuid]",
@@ -2054,8 +2114,10 @@ description: Variables in memory after executing bracket.kcl
             "n": 0.6348561883538911,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           "edgeId": "[uuid]",
@@ -2444,8 +2506,10 @@ description: Variables in memory after executing bracket.kcl
             "n": 0.25,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           "edgeId": "[uuid]",
@@ -2458,8 +2522,10 @@ description: Variables in memory after executing bracket.kcl
             "n": 0.6348561883538911,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           "edgeId": "[uuid]",
@@ -2472,8 +2538,10 @@ description: Variables in memory after executing bracket.kcl
             "n": 0.5,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           "edgeId": "[uuid]",
@@ -2486,8 +2554,10 @@ description: Variables in memory after executing bracket.kcl
             "n": 0.5,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           "edgeId": "[uuid]",
@@ -2500,8 +2570,10 @@ description: Variables in memory after executing bracket.kcl
             "n": 0.5,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           "edgeId": "[uuid]",
@@ -2514,8 +2586,10 @@ description: Variables in memory after executing bracket.kcl
             "n": 0.5,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           "edgeId": "[uuid]",
@@ -2904,8 +2978,10 @@ description: Variables in memory after executing bracket.kcl
             "n": 0.25,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           "edgeId": "[uuid]",
@@ -3294,8 +3370,10 @@ description: Variables in memory after executing bracket.kcl
             "n": 0.25,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           "edgeId": "[uuid]",
@@ -3308,8 +3386,10 @@ description: Variables in memory after executing bracket.kcl
             "n": 0.6348561883538911,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           "edgeId": "[uuid]",
@@ -3322,8 +3402,10 @@ description: Variables in memory after executing bracket.kcl
             "n": 0.5,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           "edgeId": "[uuid]",
@@ -3336,8 +3418,10 @@ description: Variables in memory after executing bracket.kcl
             "n": 0.5,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           "edgeId": "[uuid]",
@@ -3350,8 +3434,10 @@ description: Variables in memory after executing bracket.kcl
             "n": 0.5,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           "edgeId": "[uuid]",
@@ -3364,8 +3450,10 @@ description: Variables in memory after executing bracket.kcl
             "n": 0.5,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           "edgeId": "[uuid]",
@@ -3381,8 +3469,10 @@ description: Variables in memory after executing bracket.kcl
     "value": 0.5,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "factorOfSafety": {
@@ -3390,8 +3480,10 @@ description: Variables in memory after executing bracket.kcl
     "value": 1.2,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "finalBracket": {
@@ -3772,8 +3864,10 @@ description: Variables in memory after executing bracket.kcl
             "n": 0.25,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           "edgeId": "[uuid]",
@@ -3786,8 +3880,10 @@ description: Variables in memory after executing bracket.kcl
             "n": 0.6348561883538911,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           "edgeId": "[uuid]",
@@ -3800,8 +3896,10 @@ description: Variables in memory after executing bracket.kcl
             "n": 0.5,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           "edgeId": "[uuid]",
@@ -3814,8 +3912,10 @@ description: Variables in memory after executing bracket.kcl
             "n": 0.5,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           "edgeId": "[uuid]",
@@ -3828,8 +3928,10 @@ description: Variables in memory after executing bracket.kcl
             "n": 0.5,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           "edgeId": "[uuid]",
@@ -3842,8 +3944,10 @@ description: Variables in memory after executing bracket.kcl
             "n": 0.5,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           "edgeId": "[uuid]",
@@ -3859,8 +3963,10 @@ description: Variables in memory after executing bracket.kcl
     "value": 0.25,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "line1": {
@@ -3892,8 +3998,10 @@ description: Variables in memory after executing bracket.kcl
     "value": 0.6348561883538911,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "referenceShelfMountHoleDiameter": {
@@ -3901,8 +4009,10 @@ description: Variables in memory after executing bracket.kcl
     "value": 0.5,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "referenceWallMountHoleDiameter": {
@@ -3910,8 +4020,10 @@ description: Variables in memory after executing bracket.kcl
     "value": 0.625,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "shelfDepth": {
@@ -3919,8 +4031,10 @@ description: Variables in memory after executing bracket.kcl
     "value": 12.0,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "shelfLegLength": {
@@ -3928,8 +4042,10 @@ description: Variables in memory after executing bracket.kcl
     "value": 5.0,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "shelfMountHoleBendSideCenterX": {
@@ -3937,8 +4053,10 @@ description: Variables in memory after executing bracket.kcl
     "value": -1.5,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "shelfMountHoleBottomRowCenterY": {
@@ -3946,8 +4064,10 @@ description: Variables in memory after executing bracket.kcl
     "value": -1.5,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "shelfMountHoleCenters": {
@@ -3961,8 +4081,10 @@ description: Variables in memory after executing bracket.kcl
             "value": -1.5,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -3970,8 +4092,10 @@ description: Variables in memory after executing bracket.kcl
             "value": 1.5,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           }
         ]
@@ -3984,8 +4108,10 @@ description: Variables in memory after executing bracket.kcl
             "value": -4.0,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -3993,8 +4119,10 @@ description: Variables in memory after executing bracket.kcl
             "value": 1.5,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           }
         ]
@@ -4007,8 +4135,10 @@ description: Variables in memory after executing bracket.kcl
             "value": -1.5,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -4016,8 +4146,10 @@ description: Variables in memory after executing bracket.kcl
             "value": -1.5,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           }
         ]
@@ -4030,8 +4162,10 @@ description: Variables in memory after executing bracket.kcl
             "value": -4.0,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -4039,8 +4173,10 @@ description: Variables in memory after executing bracket.kcl
             "value": -1.5,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           }
         ]
@@ -4052,8 +4188,10 @@ description: Variables in memory after executing bracket.kcl
     "value": 1.0,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "shelfMountHoleDiameter": {
@@ -4061,8 +4199,10 @@ description: Variables in memory after executing bracket.kcl
     "value": 0.5,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "shelfMountHoleTipSideCenterX": {
@@ -4070,8 +4210,10 @@ description: Variables in memory after executing bracket.kcl
     "value": -4.0,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "shelfMountHoleTopRowCenterY": {
@@ -4079,8 +4221,10 @@ description: Variables in memory after executing bracket.kcl
     "value": 1.5,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "wallLegLength": {
@@ -4088,8 +4232,10 @@ description: Variables in memory after executing bracket.kcl
     "value": 2.25,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "wallMountHoleBottomRowCenterY": {
@@ -4097,8 +4243,10 @@ description: Variables in memory after executing bracket.kcl
     "value": -1.5,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "wallMountHoleCenters": {
@@ -4112,8 +4260,10 @@ description: Variables in memory after executing bracket.kcl
             "value": -1.5,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -4121,8 +4271,10 @@ description: Variables in memory after executing bracket.kcl
             "value": 1.5,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           }
         ]
@@ -4135,8 +4287,10 @@ description: Variables in memory after executing bracket.kcl
             "value": -1.5,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -4144,8 +4298,10 @@ description: Variables in memory after executing bracket.kcl
             "value": -1.5,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           }
         ]
@@ -4157,8 +4313,10 @@ description: Variables in memory after executing bracket.kcl
     "value": -1.5,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "wallMountHoleDepth": {
@@ -4166,8 +4324,10 @@ description: Variables in memory after executing bracket.kcl
     "value": 1.0,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "wallMountHoleDiameter": {
@@ -4175,8 +4335,10 @@ description: Variables in memory after executing bracket.kcl
     "value": 0.8,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "wallMountHoleTopRowCenterY": {
@@ -4184,8 +4346,10 @@ description: Variables in memory after executing bracket.kcl
     "value": 1.5,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   }
 }

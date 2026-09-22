@@ -264,9 +264,9 @@ fn generate_example(index: usize, src: &str, props: &ExampleProperties, file_nam
     } else {
         // Refers to the specific path of zoo.dev that assets are served under.
         // Look in website repo's ContentLayer configuration to find how this is set.
-        // Right now, we assume the GLTF export is called 'output' but in the future, we should
+        // Right now, we assume the GLB export is called 'output' but in the future, we should
         // pass its name in from the process which ran the export.
-        format!("/kcl-test-outputs/models/serial_test_example_{file_name}{index}_output.gltf")
+        format!("/kcl-test-outputs/models/serial_test_example_{file_name}{index}_output.glb")
     };
 
     let image_path = if props.norun {
@@ -862,7 +862,7 @@ async fn run_example_with_retries(text: &str) -> Result<()> {
 }
 
 async fn run_example(program: &crate::Program) -> Result<(), ExecErrorWithState> {
-    let ctx = ExecutorContext::new_with_default_client()
+    let ctx = ExecutorContext::new_geometry_only_with_default_client()
         .await
         .map_err(ConnectionError::CouldNotMakeClient)?;
     let mut exec_state = crate::execution::ExecState::new(&ctx);
