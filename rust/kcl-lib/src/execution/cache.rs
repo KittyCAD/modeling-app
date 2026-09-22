@@ -9,6 +9,7 @@ use tokio::sync::RwLock;
 
 use crate::ExecOutcome;
 use crate::ExecutorContext;
+use crate::KclVersion;
 use crate::SourceRange;
 use crate::errors::KclError;
 use crate::execution::ConstraintKey;
@@ -157,7 +158,7 @@ impl GlobalState {
             constraint_state: self.main.exec_state.constraint_state.clone(),
             scene_objects: self.exec_state.root_module_artifacts.scene_objects.clone(),
             std_not_yet_added: self.exec_state.std_not_yet_added.clone(),
-            significant_attrs: significant_attrs(&self.main.ast),
+            kcl_version: self.exec_state.entry_point_kcl_version.unwrap_or_default(),
         })
     }
 }
@@ -191,19 +192,20 @@ pub(crate) struct SketchModeState {
     /// See `GlobalState::std_not_yet_added`. Restored because a run reusing
     /// this memory skips the prelude.
     pub std_not_yet_added: IndexMap<String, NotYetAdded>,
-    /// The significant annotations of the program that wrote this memory; see
-    /// [`Self::reusable_for`].
-    pub significant_attrs: Vec<Node<Annotation>>,
+    /// The effective kclVersion (declared, or the default) of the program that
+    /// wrote this memory; see [`Self::reusable_for`].
+    pub kcl_version: KclVersion,
 }
 
 impl SketchModeState {
-    /// Whether `ast` may reuse this memory: only when its significant
-    /// annotations match. Memory from another kclVersion or setting keeps
-    /// bindings, module outcomes, and a prelude this program must not see,
-    /// and the LSP worker reuses memory with no other invalidation.
-    pub(crate) fn reusable_for(&self, ast: &Node<Program>) -> bool {
-        let attrs = significant_attrs(ast);
-        significant_attrs_match(self.significant_attrs.iter(), attrs.iter())
+    /// Whether a program with the effective `kcl_version` may reuse this
+    /// memory. Memory from another version keeps bindings, module outcomes,
+    /// and a prelude this program must not see, and the LSP worker reuses
+    /// memory with no other invalidation. Only the version counts: after other
+    /// settings changes the frontend may execute a single sketch, which needs
+    /// this memory and cannot rebuild it.
+    pub(crate) fn reusable_for(&self, kcl_version: KclVersion) -> bool {
+        self.kcl_version == kcl_version
     }
 }
 
@@ -225,7 +227,7 @@ impl SketchModeState {
             constraint_state: Default::default(),
             scene_objects: Vec::new(),
             std_not_yet_added: Default::default(),
-            significant_attrs: Vec::new(),
+            kcl_version: KclVersion::default(),
         }
     }
 }
@@ -332,21 +334,6 @@ pub(super) async fn get_changed_program(old: CacheInformation<'_>, new: CacheInf
 
     // Check if the changes were only to Non-code areas, like comments or whitespace.
     generate_changed_program(old_ast, new_ast, reapply_settings)
-}
-
-/// The program's significant top-level annotations (`@settings`, `@no_std`,
-/// `@warnings`, `@diagnostics`), with digests computed so that they compare
-/// independent of source positions.
-pub(crate) fn significant_attrs(ast: &Node<Program>) -> Vec<Node<Annotation>> {
-    ast.inner_attrs
-        .iter()
-        .filter(annotations::is_significant)
-        .map(|attr| {
-            let mut attr = attr.clone();
-            attr.compute_digest();
-            attr
-        })
-        .collect()
 }
 
 /// Whether two sequences of significant annotations agree, ignoring source

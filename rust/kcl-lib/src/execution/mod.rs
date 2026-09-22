@@ -1493,7 +1493,7 @@ impl ExecutorContext {
         let constraint_state = exec_state.mod_local.constraint_state.clone();
         let scene_objects = exec_state.global.root_module_artifacts.scene_objects.clone();
         let std_not_yet_added = exec_state.global.std_not_yet_added.clone();
-        let significant_attrs = cache::significant_attrs(&program.ast);
+        let kcl_version = exec_state.entry_point_kcl_version();
         let outcome = exec_state
             .into_exec_outcome(main_ref, self)
             .await
@@ -1508,7 +1508,7 @@ impl ExecutorContext {
             constraint_state,
             scene_objects,
             std_not_yet_added,
-            significant_attrs,
+            kcl_version,
         };
         cache::write_old_memory(state).await;
 
@@ -1538,12 +1538,12 @@ impl ExecutorContext {
             .map_err(KclErrorWithOutputs::no_outputs)?;
         if use_prev_memory {
             match cache::read_old_memory().await {
-                Some(mem) if mem.reusable_for(&program.ast) => {
+                Some(mem) if mem.reusable_for(exec_state.entry_point_kcl_version()) => {
                     Self::restore_mock_memory(&mut exec_state, mem, mock_config)?
                 }
-                // No memory, or memory from a program with other significant
-                // settings such as another kclVersion, whose bindings, module
-                // outcomes, and prelude this program must not see.
+                // No memory, or memory from another effective kclVersion, whose
+                // bindings, module outcomes, and prelude this program must not
+                // see.
                 _ => self.prepare_mem(&mut exec_state).await?,
             }
         } else {
@@ -2165,7 +2165,6 @@ impl ExecutorContext {
         /// execution.
         async fn write_old_memory(
             ctx: &ExecutorContext,
-            program: &crate::Program,
             exec_state: &ExecState,
             env_ref: EnvironmentRef,
         ) -> Result<(), KclError> {
@@ -2182,7 +2181,7 @@ impl ExecutorContext {
                 constraint_state: exec_state.mod_local.constraint_state.clone(),
                 scene_objects: exec_state.global.root_module_artifacts.scene_objects.clone(),
                 std_not_yet_added: exec_state.global.std_not_yet_added.clone(),
-                significant_attrs: cache::significant_attrs(&program.ast),
+                kcl_version: exec_state.entry_point_kcl_version(),
             };
             cache::write_old_memory(state).await;
             Ok(())
@@ -2194,7 +2193,7 @@ impl ExecutorContext {
                 // Preserve memory on execution failures so follow-up mock
                 // execution can still reuse stable IDs before the error.
                 if let Some(env_ref) = env_ref {
-                    write_old_memory(self, program, exec_state, env_ref)
+                    write_old_memory(self, exec_state, env_ref)
                         .await
                         .map_err(|err| exec_state.error_with_outputs(err, Some(env_ref), default_planes.clone()))?;
                 }
@@ -2202,7 +2201,7 @@ impl ExecutorContext {
             }
         };
 
-        write_old_memory(self, program, exec_state, env_ref)
+        write_old_memory(self, exec_state, env_ref)
             .await
             .map_err(|err| exec_state.error_with_outputs(err, Some(env_ref), default_planes.clone()))?;
 
@@ -9301,23 +9300,42 @@ x = [1, 2]: NewT
         ctx.close().await;
     }
 
-    /// Every significant annotation counts, not only the version, matching
-    /// what the engine cache re-executes for; unchanged ones keep reusing.
+    /// Only the version decides reuse. Adding the first spline makes the
+    /// frontend add `experimentalFeatures = allow` and then execute just that
+    /// sketch, which needs the cached memory and cannot rebuild it.
     #[tokio::test(flavor = "multi_thread")]
-    async fn mock_memory_is_reused_only_under_the_same_significant_settings() {
+    async fn mock_memory_is_reused_when_only_other_settings_change() {
         clear_mem_cache().await;
         let ctx = ExecutorContext::new_mock(None).await;
 
         run_mock_reusing_memory(&ctx, "@settings(kclVersion = 2.0)\nx = 2\n")
             .await
             .unwrap();
-        // Same settings: the previous run's `x` is visible.
-        let outcome = run_mock_reusing_memory(&ctx, "@settings(kclVersion = 2.0)\ny = x\n")
+        let outcome = run_mock_reusing_memory(
+            &ctx,
+            "@settings(kclVersion = 2.0, experimentalFeatures = allow)\ny = x\n",
+        )
+        .await
+        .unwrap();
+        assert_eq!(outcome_f64(&outcome, "y"), 2.0);
+
+        clear_mem_cache().await;
+        ctx.close().await;
+    }
+
+    /// An undeclared version is the default version, so declaring the default
+    /// explicitly is not a change, while declaring another version is.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn mock_memory_treats_an_undeclared_kcl_version_as_the_default() {
+        clear_mem_cache().await;
+        let ctx = ExecutorContext::new_mock(None).await;
+
+        run_mock_reusing_memory(&ctx, "x = 2\n").await.unwrap();
+        let outcome = run_mock_reusing_memory(&ctx, "@settings(kclVersion = 1.0)\ny = x\n")
             .await
             .unwrap();
         assert_eq!(outcome_f64(&outcome, "y"), 2.0);
-        // A changed setting: memory is rebuilt, so `x` is gone.
-        let err = run_mock_reusing_memory(&ctx, "@settings(kclVersion = 2.0, defaultLengthUnit = in)\nz = x\n")
+        let err = run_mock_reusing_memory(&ctx, "@settings(kclVersion = 2.0)\nz = x\n")
             .await
             .unwrap_err();
         assert_eq!(err.error.message(), "`x` is not defined");
