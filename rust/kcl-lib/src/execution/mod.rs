@@ -12,6 +12,7 @@ pub(crate) use artifact::sketch_block_constraint_type;
 use cache::GlobalState;
 pub use cache::bust_cache;
 pub use cache::clear_mem_cache;
+use futures::future::BoxFuture;
 pub use geometry::*;
 pub use id_generator::IdGenerator;
 pub(crate) use import::PreImportedGeometry;
@@ -1151,6 +1152,18 @@ impl ExecutorSettings {
     }
 }
 
+/// Either reuse a complete outcome or pass owned state into execution.
+/// Keep the execution state boxed when transferring it between phases.
+enum PreparedCachedExecution {
+    Cached(Box<ExecOutcome>),
+    Execute {
+        program: crate::Program,
+        exec_state: Box<ExecState>,
+        universe_info: Option<(Universe, UniverseMap)>,
+        preserve_mem: PreserveMem,
+    },
+}
+
 impl ExecutorContext {
     /// Create a new live executor context from an engine and file manager.
     pub fn new_with_engine_and_fs(
@@ -1583,6 +1596,8 @@ impl ExecutorContext {
         Ok((exec_state, main_ref))
     }
 
+    /// Plan, execute, and save in separate phases so cache-management stack
+    /// frames are not held underneath deep KCL execution in debug builds.
     pub async fn run_with_caching(&self, program: crate::Program) -> Result<ExecOutcome, KclErrorWithOutputs> {
         assert!(!self.is_mock());
         let result = self
@@ -1595,63 +1610,153 @@ impl ExecutorContext {
     }
 
     async fn run_with_caching_inner(&self, program: crate::Program) -> Result<ExecOutcome, KclErrorWithOutputs> {
-        let grid_scale = if self.settings.fixed_size_grid {
-            GridScaleBehavior::Fixed(program.meta_settings().ok().flatten().map(|s| s.default_length_units))
-        } else {
-            GridScaleBehavior::ScaleWithZoom
-        };
-
         let original_program = program.clone();
+        let (program, mut exec_state, universe_info, preserve_mem) =
+            match self.prepare_cached_execution(program).await? {
+                PreparedCachedExecution::Cached(outcome) => return Ok(*outcome),
+                PreparedCachedExecution::Execute {
+                    program,
+                    exec_state,
+                    universe_info,
+                    preserve_mem,
+                } => (program, exec_state, universe_info, preserve_mem),
+            };
+        let result = self
+            .run_concurrent_inner(&program, &mut exec_state, universe_info, preserve_mem)
+            .await;
+        self.finish_cached_execution(original_program, exec_state, result).await
+    }
 
-        let (_program, exec_state, result) = match cache::read_old_ast().await {
-            Some(mut cached_state) => {
-                let old = CacheInformation {
-                    ast: &cached_state.main.ast,
-                    settings: &cached_state.settings,
-                };
-                let new = CacheInformation {
-                    ast: &program.ast,
-                    settings: &self.settings,
-                };
+    // Construct each phase's future here, rather than in run_with_caching,
+    // so the coordinator does not reserve stack for its large temporaries.
+    #[inline(never)]
+    fn prepare_cached_execution(
+        &self,
+        program: crate::Program,
+    ) -> BoxFuture<'_, Result<PreparedCachedExecution, KclErrorWithOutputs>> {
+        Box::pin(async move {
+            let grid_scale = if self.settings.fixed_size_grid {
+                GridScaleBehavior::Fixed(program.meta_settings().ok().flatten().map(|s| s.default_length_units))
+            } else {
+                GridScaleBehavior::ScaleWithZoom
+            };
 
-                // Get the program that actually changed from the old and new information.
-                let (clear_scene, program, import_check_info) = match cache::get_changed_program(old, new).await {
-                    CacheResult::ReExecute {
-                        clear_scene,
-                        reapply_settings,
-                        program: changed_program,
-                    } => {
-                        if reapply_settings
-                            && self
-                                .engine
-                                .reapply_settings(
-                                    &self.engine_batch,
-                                    &self.settings,
-                                    Default::default(),
-                                    &mut cached_state.main.exec_state.id_generator,
-                                    grid_scale,
+            let (program, exec_state, universe_info, preserve_mem) = match cache::read_old_ast().await {
+                Some(mut cached_state) => {
+                    let old = CacheInformation {
+                        ast: &cached_state.main.ast,
+                        settings: &cached_state.settings,
+                    };
+                    let new = CacheInformation {
+                        ast: &program.ast,
+                        settings: &self.settings,
+                    };
+
+                    // Get the program that actually changed from the old and new information.
+                    let (clear_scene, program, import_check_info) = match cache::get_changed_program(old, new).await {
+                        CacheResult::ReExecute {
+                            clear_scene,
+                            reapply_settings,
+                            program: changed_program,
+                        } => {
+                            if reapply_settings
+                                && self
+                                    .engine
+                                    .reapply_settings(
+                                        &self.engine_batch,
+                                        &self.settings,
+                                        Default::default(),
+                                        &mut cached_state.main.exec_state.id_generator,
+                                        grid_scale,
+                                    )
+                                    .await
+                                    .is_err()
+                            {
+                                (true, program, None)
+                            } else {
+                                (
+                                    clear_scene,
+                                    crate::Program {
+                                        ast: changed_program,
+                                        original_file_contents: program.original_file_contents,
+                                    },
+                                    None,
                                 )
-                                .await
-                                .is_err()
-                        {
-                            (true, program, None)
-                        } else {
-                            (
-                                clear_scene,
-                                crate::Program {
-                                    ast: changed_program,
-                                    original_file_contents: program.original_file_contents,
-                                },
-                                None,
-                            )
+                            }
                         }
-                    }
-                    CacheResult::CheckImportsOnly {
-                        reapply_settings,
-                        ast: changed_program,
-                    } => {
-                        let mut reapply_failed = false;
-                        if reapply_settings {
+                        CacheResult::CheckImportsOnly {
+                            reapply_settings,
+                            ast: changed_program,
+                        } => {
+                            let mut reapply_failed = false;
+                            if reapply_settings {
+                                if self
+                                    .engine
+                                    .reapply_settings(
+                                        &self.engine_batch,
+                                        &self.settings,
+                                        Default::default(),
+                                        &mut cached_state.main.exec_state.id_generator,
+                                        grid_scale,
+                                    )
+                                    .await
+                                    .is_ok()
+                                {
+                                    cache::write_old_ast(GlobalState::with_settings(
+                                        cached_state.clone(),
+                                        self.settings.clone(),
+                                    ))
+                                    .await;
+                                } else {
+                                    reapply_failed = true;
+                                }
+                            }
+
+                            if reapply_failed {
+                                (true, program, None)
+                            } else {
+                                // We need to check our imports to see if they changed.
+                                let mut new_exec_state = ExecState::new(self);
+                                let (new_universe, new_universe_map) =
+                                    self.get_universe(&program, &mut new_exec_state).await?;
+
+                                let clear_scene = new_universe.values().any(|value| {
+                                    let id = value.1;
+                                    match (
+                                        cached_state.exec_state.get_source(id),
+                                        new_exec_state.global.get_source(id),
+                                    ) {
+                                        (Some(s0), Some(s1)) => s0.source != s1.source,
+                                        _ => false,
+                                    }
+                                });
+
+                                if !clear_scene {
+                                    // Return early we don't need to clear the scene.
+                                    cache::write_old_memory(
+                                        cached_state
+                                            .mock_memory_state()
+                                            .map_err(KclErrorWithOutputs::no_outputs)?,
+                                    )
+                                    .await;
+                                    return cached_state
+                                        .into_exec_outcome(self)
+                                        .await
+                                        .map(|outcome| PreparedCachedExecution::Cached(Box::new(outcome)))
+                                        .map_err(KclErrorWithOutputs::no_outputs);
+                                }
+
+                                (
+                                    true,
+                                    crate::Program {
+                                        ast: changed_program,
+                                        original_file_contents: program.original_file_contents,
+                                    },
+                                    Some((new_universe, new_universe_map, new_exec_state)),
+                                )
+                            }
+                        }
+                        CacheResult::NoAction(true) => {
                             if self
                                 .engine
                                 .reapply_settings(
@@ -1664,37 +1769,13 @@ impl ExecutorContext {
                                 .await
                                 .is_ok()
                             {
+                                // We need to update the old ast state with the new settings!!
                                 cache::write_old_ast(GlobalState::with_settings(
                                     cached_state.clone(),
                                     self.settings.clone(),
                                 ))
                                 .await;
-                            } else {
-                                reapply_failed = true;
-                            }
-                        }
 
-                        if reapply_failed {
-                            (true, program, None)
-                        } else {
-                            // We need to check our imports to see if they changed.
-                            let mut new_exec_state = ExecState::new(self);
-                            let (new_universe, new_universe_map) =
-                                self.get_universe(&program, &mut new_exec_state).await?;
-
-                            let clear_scene = new_universe.values().any(|value| {
-                                let id = value.1;
-                                match (
-                                    cached_state.exec_state.get_source(id),
-                                    new_exec_state.global.get_source(id),
-                                ) {
-                                    (Some(s0), Some(s1)) => s0.source != s1.source,
-                                    _ => false,
-                                }
-                            });
-
-                            if !clear_scene {
-                                // Return early we don't need to clear the scene.
                                 cache::write_old_memory(
                                     cached_state
                                         .mock_memory_state()
@@ -1704,39 +1785,12 @@ impl ExecutorContext {
                                 return cached_state
                                     .into_exec_outcome(self)
                                     .await
+                                    .map(|outcome| PreparedCachedExecution::Cached(Box::new(outcome)))
                                     .map_err(KclErrorWithOutputs::no_outputs);
                             }
-
-                            (
-                                true,
-                                crate::Program {
-                                    ast: changed_program,
-                                    original_file_contents: program.original_file_contents,
-                                },
-                                Some((new_universe, new_universe_map, new_exec_state)),
-                            )
+                            (true, program, None)
                         }
-                    }
-                    CacheResult::NoAction(true) => {
-                        if self
-                            .engine
-                            .reapply_settings(
-                                &self.engine_batch,
-                                &self.settings,
-                                Default::default(),
-                                &mut cached_state.main.exec_state.id_generator,
-                                grid_scale,
-                            )
-                            .await
-                            .is_ok()
-                        {
-                            // We need to update the old ast state with the new settings!!
-                            cache::write_old_ast(GlobalState::with_settings(
-                                cached_state.clone(),
-                                self.settings.clone(),
-                            ))
-                            .await;
-
+                        CacheResult::NoAction(false) => {
                             cache::write_old_memory(
                                 cached_state
                                     .mock_memory_state()
@@ -1746,107 +1800,95 @@ impl ExecutorContext {
                             return cached_state
                                 .into_exec_outcome(self)
                                 .await
+                                .map(|outcome| PreparedCachedExecution::Cached(Box::new(outcome)))
                                 .map_err(KclErrorWithOutputs::no_outputs);
                         }
-                        (true, program, None)
-                    }
-                    CacheResult::NoAction(false) => {
-                        cache::write_old_memory(
-                            cached_state
-                                .mock_memory_state()
-                                .map_err(KclErrorWithOutputs::no_outputs)?,
-                        )
-                        .await;
-                        return cached_state
-                            .into_exec_outcome(self)
-                            .await
-                            .map_err(KclErrorWithOutputs::no_outputs);
-                    }
-                };
+                    };
 
-                let (exec_state, result) = match import_check_info {
-                    Some((new_universe, new_universe_map, mut new_exec_state)) => {
-                        // Clear the scene if the imports changed.
-                        self.send_clear_scene(&mut new_exec_state, Default::default())
-                            .await
-                            .map_err(KclErrorWithOutputs::no_outputs)?;
+                    let (exec_state, universe_info, preserve_mem) = match import_check_info {
+                        Some((new_universe, new_universe_map, mut new_exec_state)) => {
+                            // Clear the scene if the imports changed.
+                            self.send_clear_scene(&mut new_exec_state, Default::default())
+                                .await
+                                .map_err(KclErrorWithOutputs::no_outputs)?;
 
-                        let result = self
-                            .run_concurrent_inner(
-                                &program,
-                                &mut new_exec_state,
+                            (
+                                new_exec_state,
                                 Some((new_universe, new_universe_map)),
                                 PreserveMem::Normal,
                             )
-                            .await;
+                        }
+                        None if clear_scene => {
+                            // Pop the execution state, since we are starting fresh.
+                            let mut exec_state = cached_state.reconstitute_exec_state(self);
+                            exec_state.reset(self);
 
-                        (new_exec_state, result)
-                    }
-                    None if clear_scene => {
-                        // Pop the execution state, since we are starting fresh.
-                        let mut exec_state = cached_state.reconstitute_exec_state(self);
-                        exec_state.reset(self);
+                            self.send_clear_scene(&mut exec_state, Default::default())
+                                .await
+                                .map_err(KclErrorWithOutputs::no_outputs)?;
 
-                        self.send_clear_scene(&mut exec_state, Default::default())
-                            .await
-                            .map_err(KclErrorWithOutputs::no_outputs)?;
+                            (exec_state, None, PreserveMem::Normal)
+                        }
+                        None => {
+                            let mut exec_state = cached_state.reconstitute_exec_state(self);
+                            exec_state
+                                .mut_stack()
+                                .restore_env(cached_state.main.result_env)
+                                .map_err(KclErrorWithOutputs::no_outputs)?;
 
-                        let result = self
-                            .run_concurrent_inner(&program, &mut exec_state, None, PreserveMem::Normal)
-                            .await;
+                            (exec_state, None, PreserveMem::Always)
+                        }
+                    };
 
-                        (exec_state, result)
-                    }
-                    None => {
-                        let mut exec_state = cached_state.reconstitute_exec_state(self);
-                        exec_state
-                            .mut_stack()
-                            .restore_env(cached_state.main.result_env)
-                            .map_err(KclErrorWithOutputs::no_outputs)?;
+                    (program, exec_state, universe_info, preserve_mem)
+                }
+                None => {
+                    let mut exec_state = ExecState::new(self);
+                    self.send_clear_scene(&mut exec_state, Default::default())
+                        .await
+                        .map_err(KclErrorWithOutputs::no_outputs)?;
 
-                        let result = self
-                            .run_concurrent_inner(&program, &mut exec_state, None, PreserveMem::Always)
-                            .await;
+                    (program, exec_state, None, PreserveMem::Normal)
+                }
+            };
 
-                        (exec_state, result)
-                    }
-                };
+            Ok(PreparedCachedExecution::Execute {
+                program,
+                exec_state: Box::new(exec_state),
+                universe_info,
+                preserve_mem,
+            })
+        })
+    }
 
-                (program, exec_state, result)
-            }
-            None => {
-                let mut exec_state = ExecState::new(self);
-                self.send_clear_scene(&mut exec_state, Default::default())
-                    .await
-                    .map_err(KclErrorWithOutputs::no_outputs)?;
+    #[inline(never)]
+    fn finish_cached_execution(
+        &self,
+        original_program: crate::Program,
+        exec_state: Box<ExecState>,
+        result: Result<(EnvironmentRef, Option<ModelingSessionData>), KclErrorWithOutputs>,
+    ) -> BoxFuture<'_, Result<ExecOutcome, KclErrorWithOutputs>> {
+        Box::pin(async move {
+            // Throw the error.
+            let result = result?;
 
-                let result = self
-                    .run_concurrent_inner(&program, &mut exec_state, None, PreserveMem::Normal)
-                    .await;
+            // Save this as the last successful execution to the cache.
+            // Gotcha: `CacheResult::ReExecute.program` may be diff-based, do not save that AST
+            // the last-successful AST. Instead, save in the full AST passed in.
+            cache::write_old_ast(GlobalState::new(
+                (*exec_state).clone(),
+                self.settings.clone(),
+                original_program.ast,
+                result.0,
+            ))
+            .await;
 
-                (program, exec_state, result)
-            }
-        };
-
-        // Throw the error.
-        let result = result?;
-
-        // Save this as the last successful execution to the cache.
-        // Gotcha: `CacheResult::ReExecute.program` may be diff-based, do not save that AST
-        // the last-successful AST. Instead, save in the full AST passed in.
-        cache::write_old_ast(GlobalState::new(
-            exec_state.clone(),
-            self.settings.clone(),
-            original_program.ast,
-            result.0,
-        ))
-        .await;
-
-        let outcome = exec_state
-            .into_exec_outcome(result.0, self)
-            .await
-            .map_err(KclErrorWithOutputs::no_outputs)?;
-        Ok(outcome)
+            let outcome = exec_state
+                .into_exec_outcome(result.0, self)
+                .await
+                .map_err(KclErrorWithOutputs::no_outputs)?;
+            Ok(outcome)
+        })
     }
 
     /// Perform the execution of a program.
@@ -5072,6 +5114,89 @@ solid7 = extrude(r7, length = width)
         assert_eq!(exec_state.global.module_infos, mem.module_infos);
         assert_eq!(exec_state.mod_local.constraint_state, mem.constraint_state);
 
+        clear_mem_cache().await;
+        ctx.close().await;
+    }
+
+    // These use a live execution context with a mock engine so they exercise
+    // the cache orchestration without a server or API token. Nextest isolates
+    // the process-global caches between tests.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn cached_execution_phases_preserve_edits_settings_and_error_recovery() {
+        cache::bust_cache().await;
+        clear_mem_cache().await;
+        let mut ctx = ExecutorContext::new_with_engine(Arc::new(EngineManager::new_mock()), Default::default());
+        let original = crate::Program::parse_no_errs("@settings(kclVersion = 2.0)\nx = 2").unwrap();
+        for _ in 0..2 {
+            let outcome = ctx.run_with_caching(original.clone()).await.unwrap();
+            assert_number_variable(&outcome.variables, "x", 2.0);
+        }
+
+        // Appending a statement reuses the old environment. Finalization must
+        // cache the full program, including the unchanged statement.
+        let extended = crate::Program::parse_no_errs("@settings(kclVersion = 2.0)\nx = 2\ny = x + 1").unwrap();
+        for _ in 0..2 {
+            let outcome = ctx.run_with_caching(extended.clone()).await.unwrap();
+            assert_number_variable(&outcome.variables, "x", 2.0);
+            assert_number_variable(&outcome.variables, "y", 3.0);
+            assert_eq!(cache::read_old_ast().await.unwrap().main.ast.body.len(), 2);
+        }
+
+        // Changing an existing statement requires a fresh execution state.
+        let changed = crate::Program::parse_no_errs("@settings(kclVersion = 2.0)\nx = 4\ny = x + 1").unwrap();
+        let outcome = ctx.run_with_caching(changed.clone()).await.unwrap();
+        assert_number_variable(&outcome.variables, "y", 5.0);
+        ctx.settings.highlight_edges = !ctx.settings.highlight_edges;
+        let outcome = ctx.run_with_caching(changed).await.unwrap();
+        assert_number_variable(&outcome.variables, "y", 5.0);
+        assert_eq!(cache::read_old_ast().await.unwrap().settings, ctx.settings);
+
+        let invalid = crate::Program::parse_no_errs("@settings(kclVersion = 2.0)\nx = missing").unwrap();
+        assert!(ctx.run_with_caching(invalid).await.is_err());
+        assert!(
+            cache::read_old_ast().await.is_none(),
+            "execution errors must invalidate the cache"
+        );
+        let outcome = ctx.run_with_caching(original).await.unwrap();
+        assert_number_variable(&outcome.variables, "x", 2.0);
+        cache::bust_cache().await;
+        clear_mem_cache().await;
+        ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn cached_execution_phases_recheck_changed_imports() {
+        cache::bust_cache().await;
+        clear_mem_cache().await;
+        let project = tempfile::TempDir::with_prefix("kcl_cache_phases").unwrap();
+        let imported = project.path().join("values.kcl");
+        tokio::fs::write(&imported, "export x = 2").await.unwrap();
+        let mut ctx = ExecutorContext::new_with_engine(
+            Arc::new(EngineManager::new_mock()),
+            ExecutorSettings {
+                project_directory: Some(crate::TypedPath(project.path().into())),
+                ..Default::default()
+            },
+        );
+        let program =
+            crate::Program::parse_no_errs("@settings(kclVersion = 2.0)\nimport x from 'values.kcl'\ny = x + 1")
+                .unwrap();
+        for _ in 0..2 {
+            let outcome = ctx.run_with_caching(program.clone()).await.unwrap();
+            assert_number_variable(&outcome.variables, "y", 3.0);
+        }
+        // Exercise the unchanged-import early return with settings reapplied.
+        ctx.settings.highlight_edges = !ctx.settings.highlight_edges;
+        let outcome = ctx.run_with_caching(program.clone()).await.unwrap();
+        assert_number_variable(&outcome.variables, "y", 3.0);
+        assert_eq!(cache::read_old_ast().await.unwrap().settings, ctx.settings);
+
+        tokio::fs::write(&imported, "export x = 7").await.unwrap();
+        for _ in 0..2 {
+            let outcome = ctx.run_with_caching(program.clone()).await.unwrap();
+            assert_number_variable(&outcome.variables, "y", 8.0);
+        }
+        cache::bust_cache().await;
         clear_mem_cache().await;
         ctx.close().await;
     }
