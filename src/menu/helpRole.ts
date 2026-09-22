@@ -1,7 +1,7 @@
 import type { BrowserWindow } from 'electron'
 import { shell } from 'electron'
 
-import { getDesktopUpdater } from '@src/lib/desktopUpdater'
+import { checkForUpdates } from '@src/lib/desktopUpdater'
 import { reportRejection } from '@src/lib/trap'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import { sendMenuAction } from '@src/menu/channels'
@@ -93,7 +93,7 @@ export const helpRole = (
         id: 'Help.Check for updates',
         label: 'Check for Updates',
         click: () => {
-          getDesktopUpdater().checkForUpdates().catch(reportRejection)
+          checkForUpdates().catch(reportRejection)
         },
       },
       { type: 'separator' },

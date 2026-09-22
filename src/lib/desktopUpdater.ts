@@ -1,15 +1,39 @@
-import { DesktopUpdateController } from '@src/lib/desktopUpdateController'
-import { autoUpdater as nativeUpdater } from 'electron'
 import { autoUpdater } from 'electron-updater'
 
-let desktopUpdater: DesktopUpdateController | undefined
+let checkPromise: Promise<void> | undefined
+let updatePending = false
+let notifyPendingUpdate: (() => void) | undefined
 
-// Shared by background checks, the native Help menu, and renderer IPC.
-// Importing menu definitions should not initialize the Electron runtime.
-export function getDesktopUpdater() {
-  desktopUpdater ??= new DesktopUpdateController(
-    autoUpdater,
-    process.platform === 'darwin' ? nativeUpdater : undefined
-  )
-  return desktopUpdater
+export function configureUpdateChecks(notifyReady: () => void) {
+  notifyPendingUpdate = notifyReady
+}
+
+// Share one check across background polling, the Help menu, and renderer IPC.
+// Keep it even after downloadPromise resolves: on macOS another check recreates
+// Squirrel and can delete the staged app while its old ready flag remains set.
+export function checkForUpdates(): Promise<void> {
+  if (checkPromise) return checkPromise
+  if (updatePending) {
+    notifyPendingUpdate?.()
+    return Promise.resolve()
+  }
+  updatePending = true
+  checkPromise = Promise.resolve()
+    .then(() => autoUpdater.checkForUpdates())
+    .then(async (result) => {
+      await result?.downloadPromise
+      if (!result?.isUpdateAvailable) updatePending = false
+    })
+    .catch((error: unknown) => {
+      updatePending = false
+      return Promise.reject(error)
+    })
+    .finally(() => {
+      checkPromise = undefined
+    })
+  return checkPromise
+}
+
+export function resetUpdateCheck() {
+  updatePending = false
 }

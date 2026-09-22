@@ -10,6 +10,7 @@ import {
   BrowserWindow,
   Menu,
   app,
+  autoUpdater as nativeUpdater,
   dialog,
   ipcMain,
   nativeTheme,
@@ -18,6 +19,7 @@ import {
   shell,
 } from 'electron'
 import { autoUpdater as appUpdater } from 'electron-updater'
+import type { UpdateDownloadedEvent } from 'electron-updater'
 import {
   Configuration,
   None,
@@ -40,7 +42,11 @@ import {
 } from '@src/lib/constants'
 import { registerFileProtocolCsp } from '@src/lib/csp'
 import { DeviceFlowSessionStore } from '@src/lib/deviceFlowSessions'
-import { getDesktopUpdater } from '@src/lib/desktopUpdater'
+import {
+  checkForUpdates,
+  configureUpdateChecks,
+  resetUpdateCheck,
+} from '@src/lib/desktopUpdater'
 import { discoverMachineApi } from '@src/lib/discoverMachineApi'
 import {
   ELECTRON_LIFECYCLE_DRAIN_REPORTS_CHANNEL,
@@ -57,7 +63,7 @@ import {
 import { getAllowedExternalURL } from '@src/lib/externalUrls'
 import getCurrentProjectFile from '@src/lib/getCurrentProjectFile'
 import { prepareMacUpdateInstall } from '@src/lib/macUpdateInstall'
-import { reportRejection } from '@src/lib/trap'
+import { isErr, reportRejection } from '@src/lib/trap'
 import { isArray } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { WindowMenuManager, isAppMenuPage } from '@src/menu/windowMenus'
@@ -126,8 +132,8 @@ if (
 // Pull user and system CAs from the OS trust store into Node TLS.
 configureSystemCertificates()
 
-const desktopUpdater = getDesktopUpdater()
 let mainWindow: BrowserWindow | null = null
+let isInstallingUpdate = false
 /** All Electron windows will share this WASM module */
 const initPromise = initialiseWasmNode()
 let electronLifecycleReportSequence = 0
@@ -627,7 +633,7 @@ const isBoundsVisible = (bounds: Electron.Rectangle): boolean => {
 // for applications and their menu bar to stay active until the user quits
 // explicitly with Cmd + Q, but it is a really weird behavior with our app.
 app.on('window-all-closed', () => {
-  if (desktopUpdater.isInstalling) {
+  if (isInstallingUpdate) {
     return
   }
 
@@ -955,8 +961,7 @@ app.on('ready', () => {
   let backgroundCheckingForUpdates = false
   const checkForUpdatesBackground = () => {
     backgroundCheckingForUpdates = true
-    desktopUpdater
-      .checkForUpdates()
+    checkForUpdates()
       .catch(reportRejection)
       .finally(() => {
         backgroundCheckingForUpdates = false
@@ -981,10 +986,20 @@ app.on('ready', () => {
     }
   })
 
-  desktopUpdater.on('update-error', (error) => {
+  let downloadedUpdate: UpdateDownloadedEvent | undefined
+  let updateReady = false
+  let restoreAfterFailedInstall: (() => void) | undefined
+  const onUpdateError = (error: Error) => {
+    resetUpdateCheck()
+    downloadedUpdate = undefined
+    updateReady = false
+    isInstallingUpdate = false
+    restoreAfterFailedInstall?.()
+    restoreAfterFailedInstall = undefined
     console.error('update-error', error)
     sendToAllWindows('update-error', error)
-  })
+  }
+  appUpdater.on('error', onUpdateError)
 
   appUpdater.on('update-available', (info) => {
     console.log('update-available', info)
@@ -1003,33 +1018,58 @@ app.on('ready', () => {
     sendToAllWindows('update-download-progress', progress)
   })
 
-  desktopUpdater.on('update-downloaded', (info) => {
-    console.log('update-downloaded', info)
+  const publishUpdateReady = () => {
+    if (!downloadedUpdate) return
+    updateReady = true
     sendToAllWindows('update-downloaded', {
-      version: info.version,
-      releaseNotes: info.releaseNotes,
+      version: downloadedUpdate.version,
+      releaseNotes: downloadedUpdate.releaseNotes,
     })
+  }
+  configureUpdateChecks(() => {
+    // A newly opened window may have missed the original notification.
+    if (updateReady && !isInstallingUpdate) publishUpdateReady()
   })
+  appUpdater.on('update-downloaded', (info) => {
+    console.log('update-downloaded', info)
+    downloadedUpdate = info
+    if (process.platform !== 'darwin') publishUpdateReady()
+  })
+  // MacUpdater emits above before Squirrel verifies and stages the app. Its
+  // internal ready flag survives errors, so require native completion on retries.
+  if (process.platform === 'darwin') {
+    nativeUpdater.on('update-downloaded', publishUpdateReady)
+  }
 
   ipcMain.handle('app.restart', (event) => {
-    const error = desktopUpdater.install(() => {
-      if (process.platform !== 'darwin') return () => {}
-      const requestingWindow = BrowserWindow.fromWebContents(event.sender)
-      return prepareMacUpdateInstall(
-        app,
-        BrowserWindow.getAllWindows(),
-        (browserWindow) => {
-          if (!requestingWindow || browserWindow === requestingWindow) {
-            saveWindowBounds(browserWindow)
+    if (isInstallingUpdate) return
+    if (!updateReady) {
+      return Promise.reject(new Error('The update is not ready to install.'))
+    }
+    isInstallingUpdate = true
+    try {
+      if (process.platform === 'darwin') {
+        const requestingWindow = BrowserWindow.fromWebContents(event.sender)
+        restoreAfterFailedInstall = prepareMacUpdateInstall(
+          app,
+          BrowserWindow.getAllWindows(),
+          (browserWindow) => {
+            if (!requestingWindow || browserWindow === requestingWindow) {
+              saveWindowBounds(browserWindow)
+            }
           }
-        }
-      )
-    })
-    if (error) return Promise.reject(error)
+        )
+      }
+      appUpdater.quitAndInstall()
+    } catch (reason) {
+      const error = isErr(reason) ? reason : new Error(String(reason))
+      onUpdateError(error)
+      return Promise.reject(error)
+    }
   })
 
   ipcMain.handle('app.checkForUpdates', () => {
-    return desktopUpdater.checkForUpdates()
+    return checkForUpdates()
   })
 })
 
