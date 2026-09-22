@@ -14,9 +14,11 @@ class TestWebSocket extends EventTarget {
 }
 
 function createUnitTestConnection({
-  geometryOnly,
+  webrtc,
+  pool,
 }: {
-  geometryOnly?: boolean
+  webrtc?: boolean
+  pool?: 'cpu'
 }) {
   const callbackOnUnitTestingConnection = vi.fn()
   const connection = new Connection({
@@ -27,7 +29,8 @@ function createUnitTestConnection({
     tearDownManager: vi.fn(),
     rejectPendingCommand: vi.fn(),
     callbackOnUnitTestingConnection,
-    unitTestGeometryOnly: geometryOnly,
+    unitTestWebrtc: webrtc,
+    unitTestPool: pool,
     handleMessage: vi.fn(),
     getCloudProjectId: () => undefined,
   })
@@ -44,16 +47,54 @@ describe('unit testing engine connection', () => {
     vi.unstubAllGlobals()
   })
 
-  it('requests a geometry-only engine session without WebRTC', () => {
-    createUnitTestConnection({ geometryOnly: true })
+  it('can disable WebRTC without requesting the CPU pool', () => {
+    createUnitTestConnection({ webrtc: false })
 
     const websocketUrl = new URL(TestWebSocket.instances[0].url)
     expect(websocketUrl.searchParams.get('webrtc')).toBe('false')
+    expect(websocketUrl.searchParams.has('pool')).toBe(false)
+    expect(websocketUrl.searchParams.get('post_effect')).toBe('ssao')
   })
 
-  it('treats session data as the successful geometry-only handshake', () => {
+  it('routes compatible tests without WebRTC to the CPU pool', () => {
+    createUnitTestConnection({ webrtc: false, pool: 'cpu' })
+
+    const websocketUrl = new URL(TestWebSocket.instances[0].url)
+    expect(websocketUrl.searchParams.get('webrtc')).toBe('false')
+    expect(websocketUrl.searchParams.get('pool')).toBe('cpu')
+    expect(websocketUrl.searchParams.has('post_effect')).toBe(false)
+  })
+
+  it('forwards engine errors to the command response handler', () => {
+    const { connection } = createUnitTestConnection({
+      webrtc: false,
+      pool: 'cpu',
+    })
+    const websocket = TestWebSocket.instances[0]
+    const errorResponse = {
+      success: false,
+      request_id: 'test-request-id',
+      errors: [
+        {
+          error_code: 'internal_engine',
+          message: 'Internal engine error on request',
+        },
+      ],
+    }
+
+    websocket.dispatchEvent(
+      new MessageEvent('message', { data: JSON.stringify(errorResponse) })
+    )
+
+    expect(connection.handleMessage).toHaveBeenCalledOnce()
+    expect(connection.handleMessage).toHaveBeenCalledWith(
+      expect.objectContaining({ data: JSON.stringify(errorResponse) })
+    )
+  })
+
+  it('treats session data as the successful no-WebRTC handshake', () => {
     const { callbackOnUnitTestingConnection, connection } =
-      createUnitTestConnection({ geometryOnly: true })
+      createUnitTestConnection({ webrtc: false })
     const websocket = TestWebSocket.instances[0]
 
     websocket.dispatchEvent(
