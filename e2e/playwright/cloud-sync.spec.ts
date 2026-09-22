@@ -1,4 +1,4 @@
-import { randomUUID } from 'node:crypto'
+import { createHash, randomUUID } from 'node:crypto'
 import { expect, test } from '@e2e/playwright/base-test'
 import { EditorFixture } from '@e2e/playwright/fixtures/editorFixture'
 import {
@@ -180,6 +180,154 @@ test(
       await page.close()
       // A failed run may have created duplicates. Delete only this run's
       // uniquely named projects, after stopping the app's sync loop.
+      const listed = await request.get(`${apiUrl}/user/projects`, { headers })
+      await expect(listed).toBeOK()
+      const projects: { id: string; title: string }[] = await listed.json()
+      for (const project of projects.filter((p) => p.title === projectName)) {
+        const url = `${apiUrl}/user/projects/${project.id}`
+        await expect(await request.delete(url, { headers })).toBeOK()
+        expect((await request.get(url, { headers })).status()).toBe(404)
+      }
+    }
+  }
+)
+
+test(
+  'recovers a thumbnail in the acknowledged base with the real development API',
+  { tag: ['@web'] },
+  async ({ context, page, request }, testInfo) => {
+    const apiUrl = 'https://api.dev.zoo.dev'
+    const headers = { Authorization: `Bearer ${token}` }
+    const projectName = `cloud-sync-e2e-${randomUUID()}`
+    const projectPath = `${PROJECT_DIR}/${projectName}`
+    const baseFiles: Record<string, string> = {
+      'main.kcl': 'value = 1\n',
+      'obsolete.kcl': 'obsolete = 1\n',
+      'project.toml': projectToml(projectName),
+      // Deletion validation uses the preview role, not image decoding.
+      'thumbnail.png': 'legacy preview',
+    }
+
+    try {
+      const createdResponse = await request.post(`${apiUrl}/user/projects`, {
+        headers,
+        multipart: {
+          body: {
+            name: 'body',
+            mimeType: 'application/json',
+            buffer: Buffer.from(
+              JSON.stringify({
+                title: projectName,
+                description: '',
+                category_ids: [],
+                entrypoint_path: 'main.kcl',
+                project_toml_path: 'project.toml',
+              })
+            ),
+          },
+          ...Object.fromEntries(
+            Object.entries(baseFiles).map(([name, contents]) => [
+              name,
+              {
+                name,
+                mimeType: 'application/octet-stream',
+                buffer: Buffer.from(contents),
+              },
+            ])
+          ),
+        },
+      })
+      await expect(createdResponse).toBeOK()
+      const created: CreatedRemoteProject = await createdResponse.json()
+      expect(created.files.map((file) => file.relative_path).sort()).toEqual(
+        Object.keys(baseFiles).sort()
+      )
+      const projectUrl = `${apiUrl}/user/projects/${created.id}`
+      const download = await request.get(`${projectUrl}/download?format=zip`, {
+        headers,
+      })
+      await expect(download).toBeOK()
+      const archive = await JSZip.loadAsync(await download.body())
+      baseFiles['project.toml'] = await archive
+        .file(/(^|\/)project\.toml$/)[0]
+        .async('string')
+      for (const file of created.files) {
+        expect(file.sha256).toBe(
+          createHash('sha256')
+            .update(baseFiles[file.relative_path])
+            .digest('hex')
+        )
+      }
+
+      await setup(context, page, testInfo, [OPFS_CLOUD_FEATURE_FLAG], {
+        cloudSyncEnabled: true,
+      })
+      await expectCloudSyncHomeReady(page)
+      await seedCloudSyncState(page, {
+        projects: [
+          {
+            projectName,
+            files: {
+              'main.kcl': 'value = 2\n',
+              'project.toml': baseFiles['project.toml'],
+              'thumbnail.png': 'regenerated preview',
+            },
+          },
+        ],
+        metadata: [
+          {
+            projectName,
+            remoteProjectId: created.id,
+            remoteRevision: created.revision,
+            baseFiles,
+          },
+        ],
+        outbox: [
+          { projectName, kind: 'upsert', targetRelativePath: 'main.kcl' },
+        ],
+      })
+      const uploadedResponse = page.waitForResponse(
+        (response) =>
+          new URL(response.url()).pathname === `/user/projects/${created.id}` &&
+          response.request().method() === 'PUT',
+        { timeout: CLOUD_SYNC_E2E_TIMEOUT }
+      )
+      await page.reload()
+      const uploaded = await uploadedResponse
+      expect(uploaded.ok()).toBe(true)
+      expect(
+        new URL(uploaded.url()).searchParams.get('expected_revision')
+      ).toBe(created.revision)
+      const updated: CreatedRemoteProject = await uploaded.json()
+      expect(updated.revision).not.toBe(created.revision)
+      expect(updated.files.map((file) => file.relative_path).sort()).toEqual([
+        'main.kcl',
+        'project.toml',
+      ])
+      expect(
+        updated.files.find((file) => file.relative_path === 'main.kcl')?.sha256
+      ).toBe(createHash('sha256').update('value = 2\n').digest('hex'))
+      await expect
+        .poll(() => readCloudSyncProjectMetadata(page, projectPath), {
+          timeout: CLOUD_SYNC_E2E_TIMEOUT,
+        })
+        .toMatchObject({
+          remoteProjectId: created.id,
+          remoteRevision: updated.revision,
+          pendingCount: 0,
+          conflict: undefined,
+          lastFailure: undefined,
+          lastSyncedAt: expect.any(String),
+        })
+      await page.getByPlaceholder(/^Search projects/).fill(projectName)
+      await openHomeProject(page, projectName)
+      await expectProjectFileRoute(page)
+      await expect(
+        page.getByTestId('project-sidebar-cloud-conflict-badge')
+      ).toHaveCount(0)
+      await expect(page.getByTestId('cloud-conflict-dialog')).toHaveCount(0)
+    } finally {
+      await page.close()
       const listed = await request.get(`${apiUrl}/user/projects`, { headers })
       await expect(listed).toBeOK()
       const projects: { id: string; title: string }[] = await listed.json()

@@ -252,6 +252,7 @@ describe('cloud sync reliability', () => {
     const deletedFilePath = `${projectPath}/obsolete.kcl`
     const files = new Map([
       [`${projectPath}/main.kcl`, 'base = 1\n'],
+      [`${projectPath}/thumbnail.png`, 'generated preview'],
       [`${projectPath}/${PROJECT_SETTINGS_FILE_NAME}`, projectToml],
     ])
     configureCloudSyncLocalFileSystem(
@@ -270,6 +271,7 @@ describe('cloud sync reliability', () => {
     })
     let uploadedDeletedPaths: string[] | undefined
     installFetchMock(async (formData) => {
+      expect(formData.has('thumbnail.png')).toBe(false)
       const body = JSON.parse(await (formData.get('body') as Blob).text()) as {
         deleted_paths?: string[]
       }
