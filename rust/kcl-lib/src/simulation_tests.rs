@@ -656,7 +656,7 @@ async fn unparse_test(test: &Test) {
     input_result.unwrap();
 }
 
-async fn execute(test_name: &str, _render_to_png: bool) {
+async fn execute(test_name: &str) {
     execute_test(&Test::new(test_name)).await
 }
 
@@ -1116,7 +1116,7 @@ mod cube {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod cube_with_error {
@@ -1137,7 +1137,7 @@ mod cube_with_error {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod any_type {
@@ -1158,7 +1158,7 @@ mod any_type {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, false).await
+        super::execute(TEST_NAME).await
     }
 }
 mod coerce_from_trig_to_point {
@@ -1179,7 +1179,7 @@ mod coerce_from_trig_to_point {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod artifact_graph_example_code1 {
@@ -1200,7 +1200,7 @@ mod artifact_graph_example_code1 {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod artifact_graph_example_code_no_3d {
@@ -1221,7 +1221,7 @@ mod artifact_graph_example_code_no_3d {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod artifact_graph_example_code_offset_planes {
@@ -1242,7 +1242,7 @@ mod artifact_graph_example_code_offset_planes {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod artifact_graph_sketch_on_face_etc {
@@ -1263,7 +1263,7 @@ mod artifact_graph_sketch_on_face_etc {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod helix_ccw {
@@ -1284,7 +1284,7 @@ mod helix_ccw {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod double_map_fn {
@@ -1305,7 +1305,7 @@ mod double_map_fn {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, false).await
+        super::execute(TEST_NAME).await
     }
 }
 mod blend_with_edge_specifier_objects {
@@ -1323,7 +1323,7 @@ mod blend_with_edge_specifier_objects {
 
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod extrude_to_edge_specifier {
@@ -1341,7 +1341,7 @@ mod extrude_to_edge_specifier {
 
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod revolve_axis_edge_ref {
@@ -1359,7 +1359,7 @@ mod revolve_axis_edge_ref {
 
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod index_of_array {
@@ -1380,7 +1380,7 @@ mod index_of_array {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, false).await
+        super::execute(TEST_NAME).await
     }
 }
 mod comparisons {
@@ -1401,7 +1401,7 @@ mod comparisons {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, false).await
+        super::execute(TEST_NAME).await
     }
 }
 mod array_range_expr {
@@ -1422,7 +1422,7 @@ mod array_range_expr {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, false).await
+        super::execute(TEST_NAME).await
     }
 }
 mod array_range_negative_expr {
@@ -1443,7 +1443,7 @@ mod array_range_negative_expr {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, false).await
+        super::execute(TEST_NAME).await
     }
 }
 mod array_range_with_units {
@@ -1464,7 +1464,7 @@ mod array_range_with_units {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, false).await
+        super::execute(TEST_NAME).await
     }
 }
 mod array_range_mismatch_units {
@@ -1485,7 +1485,7 @@ mod array_range_mismatch_units {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, false).await
+        super::execute(TEST_NAME).await
     }
 }
 mod array_range_units_default_count {
@@ -1506,7 +1506,7 @@ mod array_range_units_default_count {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, false).await
+        super::execute(TEST_NAME).await
     }
 }
 
@@ -1528,7 +1528,7 @@ mod sketch_in_object {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, false).await
+        super::execute(TEST_NAME).await
     }
 }
 mod if_else {
@@ -1549,7 +1549,7 @@ mod if_else {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, false).await
+        super::execute(TEST_NAME).await
     }
 }
 mod add_lots {
@@ -1570,7 +1570,7 @@ mod add_lots {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, false).await
+        super::execute(TEST_NAME).await
     }
 }
 mod add_arrays {
@@ -1591,7 +1591,7 @@ mod add_arrays {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, false).await
+        super::execute(TEST_NAME).await
     }
 }
 mod argument_error {
@@ -1615,7 +1615,7 @@ mod argument_error {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, false).await
+        super::execute(TEST_NAME).await
     }
 }
 mod array_elem_push {
@@ -1636,7 +1636,7 @@ mod array_elem_push {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, false).await
+        super::execute(TEST_NAME).await
     }
 }
 mod array_concat_non_array {
@@ -1657,7 +1657,7 @@ mod array_concat_non_array {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, false).await
+        super::execute(TEST_NAME).await
     }
 }
 mod invalid_index_str {
@@ -1678,7 +1678,7 @@ mod invalid_index_str {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, false).await
+        super::execute(TEST_NAME).await
     }
 }
 mod invalid_index_negative {
@@ -1699,7 +1699,7 @@ mod invalid_index_negative {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, false).await
+        super::execute(TEST_NAME).await
     }
 }
 mod invalid_index_fractional {
@@ -1720,7 +1720,7 @@ mod invalid_index_fractional {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, false).await
+        super::execute(TEST_NAME).await
     }
 }
 mod property_access_not_found_on_solid {
@@ -1741,7 +1741,7 @@ mod property_access_not_found_on_solid {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod invalid_member_object {
@@ -1762,7 +1762,7 @@ mod invalid_member_object {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, false).await
+        super::execute(TEST_NAME).await
     }
 }
 mod invalid_member_object_prop {
@@ -1783,7 +1783,7 @@ mod invalid_member_object_prop {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, false).await
+        super::execute(TEST_NAME).await
     }
 }
 mod invalid_member_object_using_string {
@@ -1804,7 +1804,7 @@ mod invalid_member_object_using_string {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, false).await
+        super::execute(TEST_NAME).await
     }
 }
 mod non_string_key_of_object {
@@ -1825,7 +1825,7 @@ mod non_string_key_of_object {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, false).await
+        super::execute(TEST_NAME).await
     }
 }
 mod array_index_oob {
@@ -1846,7 +1846,7 @@ mod array_index_oob {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, false).await
+        super::execute(TEST_NAME).await
     }
 }
 mod object_prop_not_found {
@@ -1867,7 +1867,7 @@ mod object_prop_not_found {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, false).await
+        super::execute(TEST_NAME).await
     }
 }
 mod pipe_substitution_inside_function_called_from_pipeline {
@@ -1888,7 +1888,7 @@ mod pipe_substitution_inside_function_called_from_pipeline {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, false).await
+        super::execute(TEST_NAME).await
     }
 }
 mod comparisons_multiple {
@@ -1909,7 +1909,7 @@ mod comparisons_multiple {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, false).await
+        super::execute(TEST_NAME).await
     }
 }
 mod import_cycle1 {
@@ -1930,7 +1930,7 @@ mod import_cycle1 {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, false).await
+        super::execute(TEST_NAME).await
     }
 }
 mod import_only_at_top_level {
@@ -1951,7 +1951,7 @@ mod import_only_at_top_level {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, false).await
+        super::execute(TEST_NAME).await
     }
 }
 mod import_function_not_sketch {
@@ -1972,7 +1972,7 @@ mod import_function_not_sketch {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod import_constant {
@@ -1993,7 +1993,7 @@ mod import_constant {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, false).await
+        super::execute(TEST_NAME).await
     }
 }
 mod import_export {
@@ -2014,7 +2014,7 @@ mod import_export {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, false).await
+        super::execute(TEST_NAME).await
     }
 }
 mod import_glob {
@@ -2035,7 +2035,7 @@ mod import_glob {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, false).await
+        super::execute(TEST_NAME).await
     }
 }
 mod import_whole_simple {
@@ -2056,7 +2056,7 @@ mod import_whole_simple {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, false).await
+        super::execute(TEST_NAME).await
     }
 }
 mod import_whole_transitive_import {
@@ -2077,7 +2077,7 @@ mod import_whole_transitive_import {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, false).await
+        super::execute(TEST_NAME).await
     }
 }
 mod import_side_effect {
@@ -2098,7 +2098,7 @@ mod import_side_effect {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, false).await
+        super::execute(TEST_NAME).await
     }
 }
 mod import_foreign {
@@ -2119,7 +2119,7 @@ mod import_foreign {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, false).await
+        super::execute(TEST_NAME).await
     }
 }
 mod export_var_only_at_top_level {
@@ -2140,7 +2140,7 @@ mod export_var_only_at_top_level {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, false).await
+        super::execute(TEST_NAME).await
     }
 }
 mod import_nested_runtime_error {
@@ -2161,7 +2161,7 @@ mod import_nested_runtime_error {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod assembly_non_default_units {
@@ -2182,7 +2182,7 @@ mod assembly_non_default_units {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 
@@ -2204,7 +2204,7 @@ mod array_elem_push_fail {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, false).await
+        super::execute(TEST_NAME).await
     }
 }
 mod array_push_item_wrong_type {
@@ -2225,7 +2225,7 @@ mod array_push_item_wrong_type {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, false).await
+        super::execute(TEST_NAME).await
     }
 }
 mod sketch_on_face {
@@ -2246,7 +2246,7 @@ mod sketch_on_face {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod revolve_about_edge {
@@ -2267,7 +2267,7 @@ mod revolve_about_edge {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod poop_chute {
@@ -2288,7 +2288,7 @@ mod poop_chute {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod neg_xz_plane {
@@ -2309,7 +2309,7 @@ mod neg_xz_plane {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod xz_plane {
@@ -2330,7 +2330,7 @@ mod xz_plane {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod sketch_on_face_after_fillets_referencing_face {
@@ -2351,7 +2351,7 @@ mod sketch_on_face_after_fillets_referencing_face {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod circular_pattern3d_a_pattern {
@@ -2372,7 +2372,7 @@ mod circular_pattern3d_a_pattern {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod linear_pattern3d_a_pattern {
@@ -2393,7 +2393,7 @@ mod linear_pattern3d_a_pattern {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod pattern_circular_in_module {
@@ -2414,7 +2414,7 @@ mod pattern_circular_in_module {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod pattern_linear_in_module {
@@ -2435,7 +2435,7 @@ mod pattern_linear_in_module {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod tangential_arc {
@@ -2456,7 +2456,7 @@ mod tangential_arc {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod sketch_on_face_circle_tagged {
@@ -2477,7 +2477,7 @@ mod sketch_on_face_circle_tagged {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod basic_fillet_cube_start {
@@ -2498,7 +2498,7 @@ mod basic_fillet_cube_start {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod basic_fillet_cube_next_adjacent {
@@ -2519,7 +2519,7 @@ mod basic_fillet_cube_next_adjacent {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod basic_fillet_cube_previous_adjacent {
@@ -2540,7 +2540,7 @@ mod basic_fillet_cube_previous_adjacent {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod basic_fillet_cube_end {
@@ -2561,7 +2561,7 @@ mod basic_fillet_cube_end {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod basic_fillet_cube_close_opposite {
@@ -2582,7 +2582,7 @@ mod basic_fillet_cube_close_opposite {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod sketch_on_face_end {
@@ -2603,7 +2603,7 @@ mod sketch_on_face_end {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod sketch_on_face_start {
@@ -2624,7 +2624,7 @@ mod sketch_on_face_start {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod sketch_on_face_end_negative_extrude {
@@ -2645,7 +2645,7 @@ mod sketch_on_face_end_negative_extrude {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod pentagon_fillet_sugar {
@@ -2666,7 +2666,7 @@ mod pentagon_fillet_sugar {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod pipe_as_arg {
@@ -2687,7 +2687,7 @@ mod pipe_as_arg {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod computed_var {
@@ -2708,7 +2708,7 @@ mod computed_var {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod riddle_small {
@@ -2729,7 +2729,7 @@ mod riddle_small {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod tan_arc_x_line {
@@ -2750,7 +2750,7 @@ mod tan_arc_x_line {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod fillet_and_shell {
@@ -2771,7 +2771,7 @@ mod fillet_and_shell {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod sketch_on_chamfer_two_times {
@@ -2792,7 +2792,7 @@ mod sketch_on_chamfer_two_times {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod sketch_on_chamfer_two_times_different_order {
@@ -2813,7 +2813,7 @@ mod sketch_on_chamfer_two_times_different_order {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod parametric_with_tan_arc {
@@ -2834,7 +2834,7 @@ mod parametric_with_tan_arc {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod parametric {
@@ -2855,7 +2855,7 @@ mod parametric {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod ssi_pattern {
@@ -2876,7 +2876,7 @@ mod ssi_pattern {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod angled_line {
@@ -2897,7 +2897,7 @@ mod angled_line {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod function_sketch_with_position {
@@ -2918,7 +2918,7 @@ mod function_sketch_with_position {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod function_sketch {
@@ -2939,7 +2939,7 @@ mod function_sketch {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod i_shape {
@@ -2960,7 +2960,7 @@ mod i_shape {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod kittycad_svg {
@@ -2981,7 +2981,7 @@ mod kittycad_svg {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod kw_fn {
@@ -3002,7 +3002,7 @@ mod kw_fn {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod kw_fn_too_few_args {
@@ -3023,7 +3023,7 @@ mod kw_fn_too_few_args {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, false).await
+        super::execute(TEST_NAME).await
     }
 }
 mod kw_fn_unlabeled_but_has_label {
@@ -3044,7 +3044,7 @@ mod kw_fn_unlabeled_but_has_label {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, false).await
+        super::execute(TEST_NAME).await
     }
 }
 mod kw_fn_with_defaults {
@@ -3065,7 +3065,7 @@ mod kw_fn_with_defaults {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, false).await
+        super::execute(TEST_NAME).await
     }
 }
 mod function_expr_with_name {
@@ -3086,7 +3086,7 @@ mod function_expr_with_name {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, false).await
+        super::execute(TEST_NAME).await
     }
 }
 mod recursive_function_factorial {
@@ -3107,7 +3107,7 @@ mod recursive_function_factorial {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, false).await
+        super::execute(TEST_NAME).await
     }
 }
 mod boolean_logical_and {
@@ -3128,7 +3128,7 @@ mod boolean_logical_and {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, false).await
+        super::execute(TEST_NAME).await
     }
 }
 mod boolean_logical_or {
@@ -3149,7 +3149,7 @@ mod boolean_logical_or {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, false).await
+        super::execute(TEST_NAME).await
     }
 }
 mod boolean_logical_multiple {
@@ -3170,7 +3170,7 @@ mod boolean_logical_multiple {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, false).await
+        super::execute(TEST_NAME).await
     }
 }
 mod circle_three_point {
@@ -3191,7 +3191,7 @@ mod circle_three_point {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod array_elem_pop {
@@ -3212,7 +3212,7 @@ mod array_elem_pop {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, false).await
+        super::execute(TEST_NAME).await
     }
 }
 mod array_elem_pop_empty_fail {
@@ -3233,7 +3233,7 @@ mod array_elem_pop_empty_fail {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, false).await
+        super::execute(TEST_NAME).await
     }
 }
 mod array_elem_pop_fail {
@@ -3254,7 +3254,7 @@ mod array_elem_pop_fail {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, false).await
+        super::execute(TEST_NAME).await
     }
 }
 mod helix_simple {
@@ -3275,7 +3275,7 @@ mod helix_simple {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 
@@ -3297,7 +3297,7 @@ mod helix_axis_edge_ref {
     /// Test that helix with axis as edge reference object executes correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 
@@ -3319,7 +3319,7 @@ mod import_file_not_exist_error {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 
@@ -3340,7 +3340,7 @@ mod import_file_parse_error {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 
@@ -3362,7 +3362,7 @@ mod flush_batch_on_end {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 
@@ -3384,7 +3384,7 @@ mod multi_transform {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 
@@ -3406,7 +3406,7 @@ mod module_return_using_var {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 
@@ -3428,7 +3428,7 @@ mod import_transform {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 
@@ -3450,7 +3450,7 @@ mod out_of_band_sketches {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 
@@ -3472,7 +3472,7 @@ mod crazy_multi_profile {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod assembly_mixed_units_cubes {
@@ -3493,7 +3493,7 @@ mod assembly_mixed_units_cubes {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod bad_units_in_annotation {
@@ -3514,7 +3514,7 @@ mod bad_units_in_annotation {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod translate_after_fillet {
@@ -3535,7 +3535,7 @@ mod translate_after_fillet {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod scale_after_fillet {
@@ -3556,7 +3556,7 @@ mod scale_after_fillet {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod rotate_after_fillet {
@@ -3577,7 +3577,7 @@ mod rotate_after_fillet {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod union_cubes {
@@ -3598,7 +3598,7 @@ mod union_cubes {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod subtract_cylinder_from_cube {
@@ -3619,7 +3619,7 @@ mod subtract_cylinder_from_cube {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod intersect_cubes {
@@ -3640,7 +3640,7 @@ mod intersect_cubes {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod csg_subtract_multi_target_result_reuse {
@@ -3661,7 +3661,7 @@ mod csg_subtract_multi_target_result_reuse {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, false).await
+        super::execute(TEST_NAME).await
     }
 }
 mod csg_subtract_self_empty_result {
@@ -3682,7 +3682,7 @@ mod csg_subtract_self_empty_result {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, false).await
+        super::execute(TEST_NAME).await
     }
 }
 mod pattern_into_union {
@@ -3703,7 +3703,7 @@ mod pattern_into_union {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod subtract_doesnt_need_brackets {
@@ -3724,7 +3724,7 @@ mod subtract_doesnt_need_brackets {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 
@@ -3745,7 +3745,7 @@ mod tangent_to_3_point_arc {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod import_async {
@@ -3766,7 +3766,7 @@ mod import_async {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod loop_tag {
@@ -3787,7 +3787,7 @@ mod loop_tag {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod multiple_foreign_imports_all_render {
@@ -3808,7 +3808,7 @@ mod multiple_foreign_imports_all_render {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod import_mesh_clone {
@@ -3829,7 +3829,7 @@ mod import_mesh_clone {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod clone_w_fillets {
@@ -3861,7 +3861,7 @@ mod clone_w_fillets {
     #[tokio::test(flavor = "multi_thread")]
     #[ignore] // engine EntityClone does not carry fillets/chamfers to the clone yet
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod clone_w_shell {
@@ -3882,7 +3882,7 @@ mod clone_w_shell {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod involute_circular_units {
@@ -3903,7 +3903,7 @@ mod involute_circular_units {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod panic_repro_cube {
@@ -3924,7 +3924,7 @@ mod panic_repro_cube {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod subtract_regression00 {
@@ -3945,7 +3945,7 @@ mod subtract_regression00 {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod subtract_regression01 {
@@ -3966,7 +3966,7 @@ mod subtract_regression01 {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod subtract_regression02 {
@@ -3987,7 +3987,7 @@ mod subtract_regression02 {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod subtract_regression03 {
@@ -4008,7 +4008,7 @@ mod subtract_regression03 {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod subtract_regression04 {
@@ -4029,7 +4029,7 @@ mod subtract_regression04 {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod subtract_regression05 {
@@ -4050,7 +4050,7 @@ mod subtract_regression05 {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod subtract_regression06 {
@@ -4071,7 +4071,7 @@ mod subtract_regression06 {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod fillet_duplicate_tags {
@@ -4092,7 +4092,7 @@ mod fillet_duplicate_tags {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod execute_engine_error_return {
@@ -4113,7 +4113,7 @@ mod execute_engine_error_return {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod basic_revolve_circle {
@@ -4134,7 +4134,7 @@ mod basic_revolve_circle {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod error_inside_fn_also_has_source_range_of_call_site_recursive {
@@ -4155,7 +4155,7 @@ mod error_inside_fn_also_has_source_range_of_call_site_recursive {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod revolve_on_edge_get_edge {
@@ -4176,7 +4176,7 @@ mod revolve_on_edge_get_edge {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod subtract_with_pattern {
@@ -4197,7 +4197,7 @@ mod subtract_with_pattern {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod subtract_with_pattern_cut_thru {
@@ -4218,7 +4218,7 @@ mod subtract_with_pattern_cut_thru {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod sketch_on_face_union {
@@ -4239,7 +4239,7 @@ mod sketch_on_face_union {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod multi_target_csg {
@@ -4260,7 +4260,7 @@ mod multi_target_csg {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod revolve_colinear {
@@ -4281,7 +4281,7 @@ mod revolve_colinear {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod subtract_regression07 {
@@ -4302,7 +4302,7 @@ mod subtract_regression07 {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod subtract_regression08 {
@@ -4323,7 +4323,7 @@ mod subtract_regression08 {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod subtract_regression09 {
@@ -4344,7 +4344,7 @@ mod subtract_regression09 {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod subtract_regression10 {
@@ -4365,7 +4365,7 @@ mod subtract_regression10 {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod nested_main_kcl {
@@ -4386,7 +4386,7 @@ mod nested_main_kcl {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod nested_windows_main_kcl {
@@ -4407,7 +4407,7 @@ mod nested_windows_main_kcl {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod nested_assembly {
@@ -4428,7 +4428,7 @@ mod nested_assembly {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod subtract_regression11 {
@@ -4449,7 +4449,7 @@ mod subtract_regression11 {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod subtract_regression12 {
@@ -4470,7 +4470,7 @@ mod subtract_regression12 {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod spheres {
@@ -4491,7 +4491,7 @@ mod spheres {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod var_ref_in_own_def {
@@ -4512,7 +4512,7 @@ mod var_ref_in_own_def {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod ascription_unknown_type {
@@ -4533,7 +4533,7 @@ mod ascription_unknown_type {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod var_ref_in_own_def_decl {
@@ -4554,7 +4554,7 @@ mod var_ref_in_own_def_decl {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod user_reported_union_2_bug {
@@ -4578,7 +4578,7 @@ mod user_reported_union_2_bug {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, false).await
+        super::execute(TEST_NAME).await
     }
 }
 mod non_english_identifiers {
@@ -4599,7 +4599,7 @@ mod non_english_identifiers {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod rect {
@@ -4620,7 +4620,7 @@ mod rect {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod rect_helper {
@@ -4641,7 +4641,7 @@ mod rect_helper {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod plane_of {
@@ -4662,7 +4662,7 @@ mod plane_of {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod complex_expr_as_array_index {
@@ -4683,7 +4683,7 @@ mod complex_expr_as_array_index {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod elliptic_curve_inches_regression {
@@ -4704,7 +4704,7 @@ mod elliptic_curve_inches_regression {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod tag_inner_face {
@@ -4725,7 +4725,7 @@ mod tag_inner_face {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 
@@ -4747,7 +4747,7 @@ mod double_close {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 
@@ -4769,7 +4769,7 @@ mod revolve_on_face {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod subtract_self {
@@ -4790,7 +4790,7 @@ mod subtract_self {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod subtract_self_multiple_tools {
@@ -4811,7 +4811,7 @@ mod subtract_self_multiple_tools {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod union_self {
@@ -4832,7 +4832,7 @@ mod union_self {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod plane_of_chamfer {
@@ -4853,7 +4853,7 @@ mod plane_of_chamfer {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod sketch_block_basic_fixed_constraints {
@@ -4874,7 +4874,7 @@ mod sketch_block_basic_fixed_constraints {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, false).await
+        super::execute(TEST_NAME).await
     }
 }
 mod sketch_block_failed_unit_conversion {
@@ -4895,7 +4895,7 @@ mod sketch_block_failed_unit_conversion {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, false).await
+        super::execute(TEST_NAME).await
     }
 }
 mod sketch_block_unexpected_argument {
@@ -4916,7 +4916,7 @@ mod sketch_block_unexpected_argument {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, false).await
+        super::execute(TEST_NAME).await
     }
 }
 mod sketch_block_unexpected_shorthand_arg {
@@ -4937,7 +4937,7 @@ mod sketch_block_unexpected_shorthand_arg {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, false).await
+        super::execute(TEST_NAME).await
     }
 }
 mod sketch_block_vars_equal {
@@ -4958,7 +4958,7 @@ mod sketch_block_vars_equal {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, false).await
+        super::execute(TEST_NAME).await
     }
 }
 mod sketch_block_coincident_constraint {
@@ -4979,7 +4979,7 @@ mod sketch_block_coincident_constraint {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, false).await
+        super::execute(TEST_NAME).await
     }
 }
 mod sketch_block_coincident_point2d {
@@ -5000,7 +5000,7 @@ mod sketch_block_coincident_point2d {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod sketch_block_arc_using_center_simple {
@@ -5021,7 +5021,7 @@ mod sketch_block_arc_using_center_simple {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod sketch_block_arc_using_center_coincident {
@@ -5042,7 +5042,7 @@ mod sketch_block_arc_using_center_coincident {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod sketch_block_circle_simple {
@@ -5063,7 +5063,7 @@ mod sketch_block_circle_simple {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod sketch_block_modeling_command_is_error {
@@ -5084,7 +5084,7 @@ mod sketch_block_modeling_command_is_error {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, false).await
+        super::execute(TEST_NAME).await
     }
 }
 mod holes_cube {
@@ -5105,7 +5105,7 @@ mod holes_cube {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod multi_body_multi_tool_subtract {
@@ -5126,7 +5126,7 @@ mod multi_body_multi_tool_subtract {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod sketch_block_line_simple {
@@ -5147,7 +5147,7 @@ mod sketch_block_line_simple {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod sketch_block_points_coincident_simple {
@@ -5168,7 +5168,7 @@ mod sketch_block_points_coincident_simple {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod sketch_block_lines_coincident_simple {
@@ -5189,7 +5189,7 @@ mod sketch_block_lines_coincident_simple {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod sketch_block_on_face {
@@ -5210,7 +5210,7 @@ mod sketch_block_on_face {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod sketch_block_on_plane_of {
@@ -5231,7 +5231,7 @@ mod sketch_block_on_plane_of {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod sketch_block_on_offset_plane {
@@ -5252,7 +5252,7 @@ mod sketch_block_on_offset_plane {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod sketch_block_region_triangle {
@@ -5273,7 +5273,7 @@ mod sketch_block_region_triangle {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod sketch_block_region_from_point_in_triangle {
@@ -5294,7 +5294,7 @@ mod sketch_block_region_from_point_in_triangle {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod sketch_block_region_from_point2d_in_triangle {
@@ -5315,7 +5315,7 @@ mod sketch_block_region_from_point2d_in_triangle {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod sketch_block_on_negative_plane {
@@ -5336,7 +5336,7 @@ mod sketch_block_on_negative_plane {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod sketch_on_face_normal {
@@ -5357,7 +5357,7 @@ mod sketch_on_face_normal {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod sketch_on_face_normal_inches {
@@ -5378,7 +5378,7 @@ mod sketch_on_face_normal_inches {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod sketch_on_face_of_region_extrude_one_to_one {
@@ -5399,7 +5399,7 @@ mod sketch_on_face_of_region_extrude_one_to_one {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod sketch_on_face_of_region_extrude_one_to_many {
@@ -5420,7 +5420,7 @@ mod sketch_on_face_of_region_extrude_one_to_many {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod sketch_block_tags_do_not_leak_to_parent_from_region {
@@ -5441,7 +5441,7 @@ mod sketch_block_tags_do_not_leak_to_parent_from_region {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod sketch_block_tags_do_not_leak_to_parent_from_extrude {
@@ -5462,7 +5462,7 @@ mod sketch_block_tags_do_not_leak_to_parent_from_extrude {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod sketch_block_import_multiple {
@@ -5483,7 +5483,7 @@ mod sketch_block_import_multiple {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod sketch_block_get_common_edge_fillet {
@@ -5504,7 +5504,7 @@ mod sketch_block_get_common_edge_fillet {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod crab_mirror_region {
@@ -5525,7 +5525,7 @@ mod crab_mirror_region {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod sketch_on_face_loft_subtract {
@@ -5546,7 +5546,7 @@ mod sketch_on_face_loft_subtract {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod get_common_edge_of_segment_edge_tag {
@@ -5567,7 +5567,7 @@ mod get_common_edge_of_segment_edge_tag {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod pos_literals {
@@ -5588,7 +5588,7 @@ mod pos_literals {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod runtime_exit {
@@ -5609,7 +5609,7 @@ mod runtime_exit {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, false).await
+        super::execute(TEST_NAME).await
     }
 }
 mod extrude_closes {
@@ -5630,7 +5630,7 @@ mod extrude_closes {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod implicit_close {
@@ -5651,7 +5651,7 @@ mod implicit_close {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod extrude_face {
@@ -5671,7 +5671,7 @@ mod extrude_face {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 
@@ -5693,7 +5693,7 @@ mod sketch_block_lines_coincident_collinear {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod face_api_fillet_edge_refs_variant_1 {
@@ -5711,7 +5711,7 @@ mod face_api_fillet_edge_refs_variant_1 {
 
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod face_api_fillet_edge_refs_variant_2 {
@@ -5729,7 +5729,7 @@ mod face_api_fillet_edge_refs_variant_2 {
 
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod face_api_fillet_edge_refs_variant_3 {
@@ -5747,7 +5747,7 @@ mod face_api_fillet_edge_refs_variant_3 {
 
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod face_api_fillet_edge_refs_variant_4 {
@@ -5765,7 +5765,7 @@ mod face_api_fillet_edge_refs_variant_4 {
 
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod face_api_fillet_edge_refs_variant_5 {
@@ -5783,7 +5783,7 @@ mod face_api_fillet_edge_refs_variant_5 {
 
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod face_api_fillet_edge_refs_variant_6 {
@@ -5801,7 +5801,7 @@ mod face_api_fillet_edge_refs_variant_6 {
 
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod face_api_fillet_edge_refs_variant_7 {
@@ -5819,7 +5819,7 @@ mod face_api_fillet_edge_refs_variant_7 {
 
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod face_api_fillet_chamfer_tags_and_edge_refs {
@@ -5837,7 +5837,7 @@ mod face_api_fillet_chamfer_tags_and_edge_refs {
 
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod sketch_on_face_index {
@@ -5858,7 +5858,7 @@ mod sketch_on_face_index {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod delete_face_by_index {
@@ -5879,7 +5879,7 @@ mod delete_face_by_index {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod delete_face_by_id {
@@ -5900,7 +5900,7 @@ mod delete_face_by_id {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod sketch_block_angle_constraint {
@@ -5921,7 +5921,7 @@ mod sketch_block_angle_constraint {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod tangent_line_arc {
@@ -5942,7 +5942,7 @@ mod tangent_line_arc {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod tangent_line_circle {
@@ -5963,7 +5963,7 @@ mod tangent_line_circle {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod tangent_line_arc_reversed_line {
@@ -5984,7 +5984,7 @@ mod tangent_line_arc_reversed_line {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod tangent_arc_arc {
@@ -6005,7 +6005,7 @@ mod tangent_arc_arc {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod tangent_line_line_error {
@@ -6026,7 +6026,7 @@ mod tangent_line_line_error {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, false).await
+        super::execute(TEST_NAME).await
     }
 }
 mod tangent_circle_circle {
@@ -6047,7 +6047,7 @@ mod tangent_circle_circle {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod tangent_circle_circle_native {
@@ -6068,7 +6068,7 @@ mod tangent_circle_circle_native {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod equal_radius_circle_circle_native {
@@ -6086,7 +6086,7 @@ mod equal_radius_circle_circle_native {
 
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, false).await
+        super::execute(TEST_NAME).await
     }
 }
 mod equal_radius_arc_arc_native {
@@ -6104,7 +6104,7 @@ mod equal_radius_arc_arc_native {
 
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, false).await
+        super::execute(TEST_NAME).await
     }
 }
 mod equal_radius_arc_circle_native {
@@ -6122,7 +6122,7 @@ mod equal_radius_arc_circle_native {
 
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, false).await
+        super::execute(TEST_NAME).await
     }
 }
 mod tangent_arc_arc_math_only {
@@ -6143,7 +6143,7 @@ mod tangent_arc_arc_math_only {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod endless_impeller {
@@ -6164,7 +6164,7 @@ mod endless_impeller {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod consumed_solid_subtract_reuse_target {
@@ -6185,7 +6185,7 @@ mod consumed_solid_subtract_reuse_target {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod consumed_solid_subtract_use_result_success {
@@ -6206,7 +6206,7 @@ mod consumed_solid_subtract_use_result_success {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, false).await
+        super::execute(TEST_NAME).await
     }
 }
 mod consumed_solid_join_surfaces_reuse_input {
@@ -6227,7 +6227,7 @@ mod consumed_solid_join_surfaces_reuse_input {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, false).await
+        super::execute(TEST_NAME).await
     }
 }
 mod consumed_solid_join_surfaces_consumed_input {
@@ -6248,7 +6248,7 @@ mod consumed_solid_join_surfaces_consumed_input {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, false).await
+        super::execute(TEST_NAME).await
     }
 }
 mod consumed_solid_clone {
@@ -6269,7 +6269,7 @@ mod consumed_solid_clone {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod consumed_solid_appearance {
@@ -6290,7 +6290,7 @@ mod consumed_solid_appearance {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod consumed_solid_binary_add {
@@ -6311,7 +6311,7 @@ mod consumed_solid_binary_add {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod consumed_solid_binary_subtract {
@@ -6332,7 +6332,7 @@ mod consumed_solid_binary_subtract {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod join_surfaces_single_input_does_not_consume {
@@ -6353,7 +6353,7 @@ mod join_surfaces_single_input_does_not_consume {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod kcl_v2 {
@@ -6374,7 +6374,7 @@ mod kcl_v2 {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod inconsistent_sketch {
@@ -6395,7 +6395,7 @@ mod inconsistent_sketch {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod inconsistent_sketch_converge {
@@ -6416,7 +6416,7 @@ mod inconsistent_sketch_converge {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod consumed_solid_original_issue {
@@ -6437,7 +6437,7 @@ mod consumed_solid_original_issue {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod zds_extrude_fillet_top_edge {
@@ -6458,7 +6458,7 @@ mod zds_extrude_fillet_top_edge {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod regression_test_hide_flatten_consumed {
@@ -6479,7 +6479,7 @@ mod regression_test_hide_flatten_consumed {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 
@@ -6501,7 +6501,7 @@ mod christmas_tree_mirror3d_union {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod delete_body {
@@ -6522,7 +6522,7 @@ mod delete_body {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod solid_edge_cut_using_edge_ref_csg {
@@ -6543,7 +6543,7 @@ mod solid_edge_cut_using_edge_ref_csg {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod extrude_split {
@@ -6564,7 +6564,7 @@ mod extrude_split {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod loft_arc_subtract {
@@ -6585,7 +6585,7 @@ mod loft_arc_subtract {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod hide_offset_plane {
@@ -6606,7 +6606,7 @@ mod hide_offset_plane {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod clone_a_mirror3d {
@@ -6627,7 +6627,7 @@ mod clone_a_mirror3d {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod surface_extrude_edge_from_solid {
@@ -6648,7 +6648,7 @@ mod surface_extrude_edge_from_solid {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod sketch_block_circle_constants {
@@ -6669,7 +6669,7 @@ mod sketch_block_circle_constants {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod surface_extrude_edge_from_surface {
@@ -6690,7 +6690,7 @@ mod surface_extrude_edge_from_surface {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod radius_circle_native {
@@ -6711,7 +6711,7 @@ mod radius_circle_native {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod surface_extrude_edge_direction {
@@ -6732,7 +6732,7 @@ mod surface_extrude_edge_direction {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod surface_extrude_edge_symmetric {
@@ -6753,7 +6753,7 @@ mod surface_extrude_edge_symmetric {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod surface_extrude_edge_bidirectional {
@@ -6774,7 +6774,7 @@ mod surface_extrude_edge_bidirectional {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod surface_extrude_edge_to {
@@ -6795,7 +6795,7 @@ mod surface_extrude_edge_to {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod surface_extrude_edge_merge_error {
@@ -6816,7 +6816,7 @@ mod surface_extrude_edge_merge_error {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, false).await
+        super::execute(TEST_NAME).await
     }
 }
 mod sweep_mirror {
@@ -6837,7 +6837,7 @@ mod sweep_mirror {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod beam_sweeps {
@@ -6858,7 +6858,7 @@ mod beam_sweeps {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod truss_bridge {
@@ -6879,7 +6879,7 @@ mod truss_bridge {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod fillet_ambiguous_region_edge_specifier {
@@ -6900,7 +6900,7 @@ mod fillet_ambiguous_region_edge_specifier {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod fillet_ambiguous_region_edge_specifier_broad {
@@ -6921,7 +6921,7 @@ mod fillet_ambiguous_region_edge_specifier_broad {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod chamfer_multiple_auto_hole_region_face_api {
@@ -6939,7 +6939,7 @@ mod chamfer_multiple_auto_hole_region_face_api {
 
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod gdt_face_api_edge_specifier {
@@ -6960,7 +6960,7 @@ mod gdt_face_api_edge_specifier {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod error_large_fillet_radius {
@@ -6981,7 +6981,7 @@ mod error_large_fillet_radius {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod clone_w_face_tags {
@@ -7002,7 +7002,7 @@ mod clone_w_face_tags {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod surface_extrude_edge_specifier_input {
@@ -7023,7 +7023,7 @@ mod surface_extrude_edge_specifier_input {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod sketch_block_exit {
@@ -7044,7 +7044,7 @@ mod sketch_block_exit {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod surface_extrude_edge_specifier_direction {
@@ -7065,7 +7065,7 @@ mod surface_extrude_edge_specifier_direction {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod mirror3d_edge_specifier {
@@ -7083,7 +7083,7 @@ mod mirror3d_edge_specifier {
 
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod mirror3d_edge_specifier_after_subtract {
@@ -7101,7 +7101,7 @@ mod mirror3d_edge_specifier_after_subtract {
 
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod fail_user_defined_error {
@@ -7122,7 +7122,7 @@ mod fail_user_defined_error {
     /// Test that KCL execution fails.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, false).await
+        super::execute(TEST_NAME).await
     }
 }
 mod runtime_exit_in_map {
@@ -7143,7 +7143,7 @@ mod runtime_exit_in_map {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, false).await
+        super::execute(TEST_NAME).await
     }
 }
 mod runtime_exit_in_reduce {
@@ -7164,7 +7164,7 @@ mod runtime_exit_in_reduce {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, false).await
+        super::execute(TEST_NAME).await
     }
 }
 mod runtime_exit_in_pattern_transform {
@@ -7185,7 +7185,7 @@ mod runtime_exit_in_pattern_transform {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, false).await
+        super::execute(TEST_NAME).await
     }
 }
 mod runtime_exit_in_imported_module {
@@ -7206,7 +7206,7 @@ mod runtime_exit_in_imported_module {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, false).await
+        super::execute(TEST_NAME).await
     }
 }
 mod runtime_exit_in_index {
@@ -7227,7 +7227,7 @@ mod runtime_exit_in_index {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, false).await
+        super::execute(TEST_NAME).await
     }
 }
 mod scale_helix {
@@ -7248,7 +7248,7 @@ mod scale_helix {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod translate_helix {
@@ -7269,7 +7269,7 @@ mod translate_helix {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod rotate_helix {
@@ -7290,7 +7290,7 @@ mod rotate_helix {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod sketch_block_arc_direction_cw {
@@ -7311,7 +7311,7 @@ mod sketch_block_arc_direction_cw {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod clone_a_pattern {
@@ -7332,7 +7332,7 @@ mod clone_a_pattern {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod rolling_ball_chamfer_interacting_edges {
@@ -7353,7 +7353,7 @@ mod rolling_ball_chamfer_interacting_edges {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, false).await
+        super::execute(TEST_NAME).await
     }
 }
 mod sketch_block_arc_direction_invalid {
@@ -7374,7 +7374,7 @@ mod sketch_block_arc_direction_invalid {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod clone_an_import {
@@ -7395,7 +7395,7 @@ mod clone_an_import {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod named_views_hide_extrude_v1 {
@@ -7416,7 +7416,7 @@ mod named_views_hide_extrude_v1 {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod named_views_hide_sweep_v1 {
@@ -7437,7 +7437,7 @@ mod named_views_hide_sweep_v1 {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod named_views_hide_sketch_v1 {
@@ -7458,7 +7458,7 @@ mod named_views_hide_sketch_v1 {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod named_views_hide_helix {
@@ -7479,7 +7479,7 @@ mod named_views_hide_helix {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod named_views_hide_imported {
@@ -7500,7 +7500,7 @@ mod named_views_hide_imported {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod named_views_hide_plane {
@@ -7521,7 +7521,7 @@ mod named_views_hide_plane {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod named_views_hide_extrude {
@@ -7542,7 +7542,7 @@ mod named_views_hide_extrude {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod named_views_hide_revolve {
@@ -7563,7 +7563,7 @@ mod named_views_hide_revolve {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod named_views_hide_sweep {
@@ -7584,7 +7584,7 @@ mod named_views_hide_sweep {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod named_views_hide_loft {
@@ -7605,7 +7605,7 @@ mod named_views_hide_loft {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod named_views_hide_sketch {
@@ -7626,7 +7626,7 @@ mod named_views_hide_sketch {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod named_views_hide_pattern {
@@ -7647,7 +7647,7 @@ mod named_views_hide_pattern {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod named_views_hide_gdt {
@@ -7668,7 +7668,7 @@ mod named_views_hide_gdt {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod named_views_module_explicit_import {
@@ -7689,7 +7689,7 @@ mod named_views_module_explicit_import {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, false).await
+        super::execute(TEST_NAME).await
     }
 }
 mod named_views_module_prelude {
@@ -7710,7 +7710,7 @@ mod named_views_module_prelude {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, false).await
+        super::execute(TEST_NAME).await
     }
 }
 mod named_views_module_requires_opt_in {
@@ -7731,7 +7731,7 @@ mod named_views_module_requires_opt_in {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, false).await
+        super::execute(TEST_NAME).await
     }
 }
 mod named_views_oriented {
@@ -7752,7 +7752,7 @@ mod named_views_oriented {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, false).await
+        super::execute(TEST_NAME).await
     }
 }
 mod named_views_directed {
@@ -7773,7 +7773,7 @@ mod named_views_directed {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, false).await
+        super::execute(TEST_NAME).await
     }
 }
 mod named_views_directed_zero_direction {
@@ -7794,7 +7794,7 @@ mod named_views_directed_zero_direction {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, false).await
+        super::execute(TEST_NAME).await
     }
 }
 mod named_views_units_are_millimeters {
@@ -7815,7 +7815,7 @@ mod named_views_units_are_millimeters {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, false).await
+        super::execute(TEST_NAME).await
     }
 }
 mod named_views_units_in_inch_default_file {
@@ -7836,7 +7836,7 @@ mod named_views_units_in_inch_default_file {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, false).await
+        super::execute(TEST_NAME).await
     }
 }
 mod named_views_negative_distance {
@@ -7857,7 +7857,7 @@ mod named_views_negative_distance {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, false).await
+        super::execute(TEST_NAME).await
     }
 }
 mod named_views_baseline_show {
@@ -7878,7 +7878,7 @@ mod named_views_baseline_show {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, false).await
+        super::execute(TEST_NAME).await
     }
 }
 mod named_views_baseline_hide {
@@ -7899,7 +7899,7 @@ mod named_views_baseline_hide {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, false).await
+        super::execute(TEST_NAME).await
     }
 }
 mod named_views_duplicate_name {
@@ -7920,7 +7920,7 @@ mod named_views_duplicate_name {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, false).await
+        super::execute(TEST_NAME).await
     }
 }
 mod named_views_duplicate_across_modules {
@@ -7941,7 +7941,7 @@ mod named_views_duplicate_across_modules {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, false).await
+        super::execute(TEST_NAME).await
     }
 }
 mod named_views_duplicate_from_a_function {
@@ -7962,7 +7962,7 @@ mod named_views_duplicate_from_a_function {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, false).await
+        super::execute(TEST_NAME).await
     }
 }
 mod named_views_except_a_sketch_block {
@@ -7983,7 +7983,7 @@ mod named_views_except_a_sketch_block {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, false).await
+        super::execute(TEST_NAME).await
     }
 }
 mod clone_dodecahedron {
@@ -8004,7 +8004,7 @@ mod clone_dodecahedron {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod mirror3d_and_boolean {
@@ -8025,7 +8025,7 @@ mod mirror3d_and_boolean {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod use_point_from_other_sketch {
@@ -8046,7 +8046,7 @@ mod use_point_from_other_sketch {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod import_nested_foreign_error {
@@ -8067,7 +8067,7 @@ mod import_nested_foreign_error {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod import_error_in_other_module_with_overflow {
@@ -8088,7 +8088,7 @@ mod import_error_in_other_module_with_overflow {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod early_return_v3 {
@@ -8109,7 +8109,7 @@ mod early_return_v3 {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, false).await
+        super::execute(TEST_NAME).await
     }
 }
 mod early_return_cross_module {
@@ -8130,7 +8130,7 @@ mod early_return_cross_module {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, false).await
+        super::execute(TEST_NAME).await
     }
 }
 mod early_return_geometry {
@@ -8151,7 +8151,7 @@ mod early_return_geometry {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod if_else_scoped {
@@ -8172,7 +8172,7 @@ mod if_else_scoped {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, false).await
+        super::execute(TEST_NAME).await
     }
 }
 mod if_arm_scoped_geometry {
@@ -8193,7 +8193,7 @@ mod if_arm_scoped_geometry {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod clone_a_blend {
@@ -8214,7 +8214,7 @@ mod clone_a_blend {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod chamfer_multiple_tags_v3 {
@@ -8235,7 +8235,7 @@ mod chamfer_multiple_tags_v3 {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod sketch_on_chamfer_two_times_v3 {
@@ -8256,7 +8256,7 @@ mod sketch_on_chamfer_two_times_v3 {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod sketch_on_chamfer_two_times_different_order_v3 {
@@ -8277,7 +8277,7 @@ mod sketch_on_chamfer_two_times_different_order_v3 {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod get_opposite_edge_after_fillet_v3 {
@@ -8298,7 +8298,7 @@ mod get_opposite_edge_after_fillet_v3 {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod sweep_profile_defaults_v3 {
@@ -8319,7 +8319,7 @@ mod sweep_profile_defaults_v3 {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod member_expression_order_v3 {
@@ -8340,7 +8340,7 @@ mod member_expression_order_v3 {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute(TEST_NAME).await
     }
 }
 mod import_kcl_version_mismatch_v3 {
@@ -8361,7 +8361,7 @@ mod import_kcl_version_mismatch_v3 {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, false).await
+        super::execute(TEST_NAME).await
     }
 }
 mod import_kcl_version_mismatch_undeclared_entry_point {
@@ -8382,7 +8382,7 @@ mod import_kcl_version_mismatch_undeclared_entry_point {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, false).await
+        super::execute(TEST_NAME).await
     }
 }
 mod diagnostics_attribute_v3 {
@@ -8403,6 +8403,6 @@ mod diagnostics_attribute_v3 {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, false).await
+        super::execute(TEST_NAME).await
     }
 }
