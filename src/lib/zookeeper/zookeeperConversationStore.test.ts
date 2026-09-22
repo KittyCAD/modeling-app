@@ -29,6 +29,11 @@ const zookeeperConversationStore = makeZookeeperConversationStore(
   fsMocks as unknown as FileOperationsRegistryService
 )
 
+beforeEach(() => {
+  fsMocks.readFile.mockReset()
+  fsMocks.writeFile.mockReset()
+})
+
 function deferred<T>() {
   let resolve!: (value: T) => void
   const promise = new Promise<T>((resolvePromise) => {
@@ -132,7 +137,6 @@ describe('project-backed Zookeeper conversations', () => {
     )
 
   beforeEach(() => {
-    vi.clearAllMocks()
     files = new Map([
       [projectTomlPath, initialToml],
       ['/tmp/ml-conversations.json', '{}'],
