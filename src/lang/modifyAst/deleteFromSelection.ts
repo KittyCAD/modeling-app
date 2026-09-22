@@ -245,6 +245,12 @@ export async function deleteFromSelection(
       typeof pipeItemIndex === 'number' &&
       varDecNodeInit.body.length > 1
     ) {
+      if (
+        pipeItem.start !== selection.codeRef.range[0] ||
+        pipeItem.end !== selection.codeRef.range[1]
+      ) {
+        return new Error('Cannot delete a nested call as a pipe stage')
+      }
       const varDecClone = getNodeFromPath<VariableDeclarator>(
         astClone,
         selection.codeRef.pathToNode,
