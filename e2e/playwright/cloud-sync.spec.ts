@@ -308,6 +308,14 @@ test(
         ].join('\n')
         return personalCloudProject
       },
+      updateProject: ({ projectId, url }) => {
+        expect(projectId).toBe(personalCloudProject.id)
+        expect(new URL(url).searchParams.get('expected_revision')).toBe(
+          personalCloudProject.revision
+        )
+        personalCloudProject.revision = 'personal-cloud-copy-rev-2'
+        return { status: 200, body: cloudProjectResponse(personalCloudProject) }
+      },
     })
 
     await setup(context, page, testInfo, [OPFS_CLOUD_FEATURE_FLAG], {
@@ -333,6 +341,26 @@ test(
         )
       )
       .toBe(true)
+    await expect
+      .poll(
+        () =>
+          readCloudSyncProjectMetadata(
+            page,
+            `${PROJECT_DIR}/${publicProjectDirectoryName}`
+          ),
+        { timeout: CLOUD_SYNC_E2E_TIMEOUT }
+      )
+      .toMatchObject({
+        remoteProjectId: personalCloudProject.id,
+        lastSyncedAt: expect.any(String),
+        pendingCount: 0,
+        conflict: undefined,
+        lastFailure: undefined,
+      })
+    await expect(
+      page.getByTestId('project-sidebar-cloud-conflict-badge')
+    ).toHaveCount(0)
+    await expect(page.getByTestId('cloud-conflict-dialog')).toHaveCount(0)
     const files = await readOpfsTextFiles(page, {
       main: `${PROJECT_DIR}/${publicProjectDirectoryName}/main.kcl`,
       projectToml: `${PROJECT_DIR}/${publicProjectDirectoryName}/project.toml`,

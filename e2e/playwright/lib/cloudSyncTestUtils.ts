@@ -495,24 +495,35 @@ export async function readCloudSyncProjectMetadata(
       request.onerror = () => reject(request.error)
       request.onsuccess = () => resolve(request.result)
     })
+    const transaction = db.transaction(['projects', 'outbox'], 'readonly')
+    const pendingCount = new Promise<number>((resolve, reject) => {
+      const request = transaction.objectStore('outbox').getAll()
+      request.onerror = () => reject(request.error)
+      request.onsuccess = () =>
+        resolve(
+          request.result.filter(
+            (entry: { projectPath: string }) =>
+              entry.projectPath === localProjectPath
+          ).length
+        )
+    })
     const project = await new Promise<
       | {
           localProjectPath: string
           remoteProjectId?: string
           remoteRevision?: string
           conflict?: unknown
+          lastFailure?: unknown
+          lastSyncedAt?: string
         }
       | undefined
     >((resolve, reject) => {
-      const request = db
-        .transaction('projects', 'readonly')
-        .objectStore('projects')
-        .get(localProjectPath)
+      const request = transaction.objectStore('projects').get(localProjectPath)
       request.onerror = () => reject(request.error)
       request.onsuccess = () => resolve(request.result)
     })
     db.close()
-    return project
+    return project && { ...project, pendingCount: await pendingCount }
   }, projectPath)
 }
 
