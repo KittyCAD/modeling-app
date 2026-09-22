@@ -163,12 +163,20 @@ export class InteractionRecorder {
       event.type === 'click'
         ? (control?.getAttribute('data-interaction-id') ?? null)
         : null
+    const timestamps =
+      event instanceof PointerEvent
+        ? (this.pointerTimestamps.get(event.pointerId) ?? [])
+        : []
+    if (event instanceof PointerEvent)
+      this.pointerTimestamps.delete(event.pointerId)
     const sample: InteractionSample = {
       sequence: ++this.sequence,
       id,
       targetTag:
         target instanceof Element ? target.tagName.toLowerCase() : 'unknown',
-      startTime: event.timeStamp,
+      // Include pointerdown work even when Event Timing arrives after capture
+      // stops. This response span also includes time holding the button down.
+      startTime: timestamps[0] ?? event.timeStamp,
       renderOpportunityMs: null,
       outcomeMs: null,
       eventTiming: null,
@@ -180,16 +188,10 @@ export class InteractionRecorder {
       this.droppedSamples++
     }
     this.samples.push(sample)
-    const timestamps =
-      event instanceof PointerEvent
-        ? (this.pointerTimestamps.get(event.pointerId) ?? [])
-        : []
-    if (event instanceof PointerEvent)
-      this.pointerTimestamps.delete(event.pointerId)
     // The click entry may be filtered out when it is fast, even though its
     // pointerdown blocked for hundreds of milliseconds. Join using captured
     // input timestamps as well as the browser's interaction ID.
-    for (const timestamp of [...timestamps, sample.startTime]) {
+    for (const timestamp of [...timestamps, event.timeStamp]) {
       this.samplesByTimestamp.set(timestamp, sample)
       const interactionId = this.interactionByTimestamp.get(timestamp)
       if (interactionId !== undefined) this.attachTiming(interactionId, sample)

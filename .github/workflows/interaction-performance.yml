@@ -59,6 +59,7 @@ jobs:
   measure:
     name: Interaction performance budgets
     needs: build-app
+    # A failed dependency must fail this check instead of leaving it skipped.
     if: ${{ !cancelled() }}
     # Keep compilation in a separate job, and score one browser at a time.
     runs-on: namespace-profile-ubuntu-8-cores;overrides.cache-tag=modeling-app-general-v2

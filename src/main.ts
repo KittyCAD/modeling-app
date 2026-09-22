@@ -875,7 +875,6 @@ ipcMain.handle('loginWithDeviceFlow', async (event) => {
     console.log('Polling for token')
     const tokenSet = await deviceFlowSession.handle.poll()
     console.log('Received token set')
-    console.log(tokenSet)
     return tokenSet.access_token
   } catch (e) {
     console.log(e)

@@ -27,11 +27,15 @@ errors; adding mandatory coverage is a later stage.
 
 The recorder captures trusted clicks during an explicitly started session:
 
-- **Outcome latency** runs from the click timestamp until its declared result is
-  ready after a rendering opportunity, including UI transitions and async work.
+- **Outcome latency** runs from pointerdown (or the activation click when no
+  pointerdown was captured) until its declared result is ready after a rendering
+  opportunity, including UI transitions and async work. It includes button dwell;
+  scored clicks have no intentional hold. This is an observation of usable DOM,
+  not a guarantee that the compositor presented that frame.
 - **Event Timing** reports browser input delay, handler processing, and presentation
   delay. It also captures slow pointer handlers preceding a fast click. Browser
   durations are rounded to 8 ms; filtered or late entries remain unreported.
+  Observed breaches fail, but missing entries are not proof of a fast presentation.
 
 The registered outcomes cover command-palette search becoming usable and the
 palette closing, plus Code Editor and Project Files sidebar toggles. Code Editor

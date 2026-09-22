@@ -54,9 +54,11 @@ export async function finishCapture(
   })
   const report = reportInteractions(snapshot, expected)
   if (!tronApp) throw new Error('Interaction measurements require Electron.')
-  const runtime = await tronApp.electron.evaluate(() => ({
+  const runtime = await tronApp.electron.evaluate(async ({ app }) => ({
     browser: process.versions.chrome,
     electron: process.versions.electron,
+    gpu: await app.getGPUInfo('basic'),
+    gpuFeatures: app.getGPUFeatureStatus(),
   }))
   const metadata = {
     scenario,
@@ -75,7 +77,7 @@ export async function finishCapture(
     ...runtime,
     viewport: page.viewportSize(),
     motion: 'no-preference',
-    timing: 'input-to-outcome-observed-after-render',
+    timing: 'pointerdown-to-outcome-observed-after-render',
   }
   // Preserve raw records before assertions so a failed collection is inspectable.
   await testInfo.attach('interaction-measurements', {
