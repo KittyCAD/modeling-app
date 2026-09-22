@@ -1,4 +1,5 @@
 use std::collections::HashMap;
+use std::collections::HashSet;
 use std::sync::Arc;
 
 use async_recursion::async_recursion;
@@ -4657,6 +4658,9 @@ impl Node<BinaryExpression> {
     ) -> Result<KclValue, KclError> {
         let mut meta = left_value.metadata();
         meta.extend(right_value.metadata());
+        // Repeated arithmetic must not multiply copies of the same source range.
+        let mut seen = HashSet::new();
+        meta.retain(|metadata| seen.insert(metadata.source_range));
 
         // First check if we are doing string concatenation.
         if self.operator == BinaryOperator::Add
@@ -7124,6 +7128,31 @@ mod test {
     use crate::execution::ContextType;
     use crate::execution::machine::ExecutorKind;
     use crate::execution::parse_execute;
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn repeated_arithmetic_preserves_unique_source_ranges() {
+        let code = r#"@settings(kclVersion = 2.0)
+first = 1
+second = 2
+result = reduce([0..11], initial = second + first + second, f = fn(@index, accum) {
+    return accum + accum
+})
+"#;
+        // A small iteration count catches exponential growth without exhausting memory on regression.
+        for executor in [ExecutorKind::Recursive, ExecutorKind::Machine] {
+            let result = crate::execution::parse_execute_with_executor_kind(code, None, executor)
+                .await
+                .unwrap();
+            let mut expected = result.variable("second").metadata();
+            expected.extend(result.variable("first").metadata());
+            let KclValue::Number { value, meta, .. } = result.variable("result") else {
+                panic!("expected a number");
+            };
+            assert_eq!(value, 20480.0);
+            assert_eq!(meta.len(), expected.len(), "{executor}");
+            assert_eq!(meta, expected, "{executor}");
+        }
+    }
 
     fn assert_angle_degrees(actual: ezpz::datatypes::Angle, expected: f64) {
         assert!(
