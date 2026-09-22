@@ -10,6 +10,7 @@ import {
 } from '@src/clientSideScene/localRenderer/config'
 import { EdgeRenderer } from '@src/clientSideScene/localRenderer/EdgeRenderer'
 import { DefaultPlaneRenderer } from '@src/clientSideScene/localRenderer/DefaultPlaneRenderer'
+import { OffsetPlaneRenderer } from '@src/clientSideScene/localRenderer/OffsetPlaneRenderer'
 import { EnvMapLoader } from '@src/clientSideScene/localRenderer/EnvMapLoader'
 import {
   IntegerIdPicker,
@@ -99,6 +100,7 @@ export class LocalRenderer {
   private envMapLoader: EnvMapLoader | null = null
   private edgeRenderer: EdgeRenderer | null = null
   private defaultPlaneRenderer: DefaultPlaneRenderer | null = null
+  private offsetPlaneRenderer: OffsetPlaneRenderer | null = null
   private integerIdPicker: IntegerIdPicker | null = null
   private selectionHighlightRenderer: SelectionHighlightRenderer | null = null
   private performanceMonitor: LocalRendererPerformanceMonitor | null = null
@@ -168,7 +170,7 @@ export class LocalRenderer {
       }
     )
     this.unregisterBaseUnitListener = kclManager.sceneInfra.baseUnitChange.add(
-      this.syncDefaultPlaneScale
+      this.syncPlaneScale
     )
     void this.initialize().catch(this.handleInitializationError)
   }
@@ -176,7 +178,7 @@ export class LocalRenderer {
   setFixedSizeGrid(fixedSizeGrid: boolean) {
     if (this.fixedSizeGrid === fixedSizeGrid) return
     this.fixedSizeGrid = fixedSizeGrid
-    this.syncDefaultPlaneScale()
+    this.syncPlaneScale()
   }
 
   setPlaneInteractionEnabled(enabled: boolean) {
@@ -391,6 +393,8 @@ export class LocalRenderer {
     this.clearModel()
     this.defaultPlaneRenderer?.dispose()
     this.defaultPlaneRenderer = null
+    this.offsetPlaneRenderer?.dispose()
+    this.offsetPlaneRenderer = null
     this.edgeRenderer?.dispose()
     this.edgeRenderer = null
     this.integerIdPicker?.dispose()
@@ -427,17 +431,16 @@ export class LocalRenderer {
     this.scheduleRender()
   }
 
-  private readonly syncDefaultPlaneScale = () => {
+  private readonly syncPlaneScale = () => {
     const { camControls, baseUnitMultiplier } = this.kclManager.sceneInfra
     // Match the engine's fixed grid: ten file units, expressed in decimeters.
     // baseUnitMultiplier converts one file unit to mm; 100 mm = one dm.
     const fixedGridScale = this.fixedSizeGrid
       ? (10 * baseUnitMultiplier) / 100
       : undefined
-    this.defaultPlaneRenderer?.updateScale(
-      camControls.camera.position.distanceTo(camControls.target),
-      fixedGridScale
-    )
+    const distance = camControls.camera.position.distanceTo(camControls.target)
+    this.defaultPlaneRenderer?.updateScale(distance, fixedGridScale)
+    this.offsetPlaneRenderer?.updateScale(distance, fixedGridScale)
     this.integerIdPicker?.invalidate()
     this.invalidateBaseRender()
   }
@@ -447,7 +450,7 @@ export class LocalRenderer {
     const cameraControls = this.kclManager.sceneInfra.camControls
     const sharedCamera = cameraControls.camera
     const sharedTarget = cameraControls.target
-    this.syncDefaultPlaneScale()
+    this.syncPlaneScale()
     if (!this.previewCamera) {
       return
     }
@@ -876,6 +879,8 @@ export class LocalRenderer {
     // Keep reference planes separate from the GLB and its fit-to-model bounds.
     this.defaultPlaneRenderer = new DefaultPlaneRenderer(this.theme)
     this.defaultPlaneRenderer.addTo(scene)
+    this.offsetPlaneRenderer = new OffsetPlaneRenderer()
+    this.offsetPlaneRenderer.addTo(scene)
     this.integerIdPicker = new IntegerIdPicker(renderer)
     this.integerIdPicker.setEdgesVisible(this.highlightEdges)
     this.selectionHighlightRenderer = new SelectionHighlightRenderer(
@@ -974,6 +979,9 @@ export class LocalRenderer {
     const generation = ++this.modelLoadGeneration
     const isCurrent = () =>
       !this.disposed && generation === this.modelLoadGeneration
+    // Reference planes do not depend on a successful GLB export.
+    this.offsetPlaneRenderer?.update(this.kclManager.artifactGraph)
+    this.syncPlaneScale()
     // An empty execution has no GLB to export, but must clear the old model.
     if (this.kclManager.artifactGraph.size === 0) {
       this.clearModel()

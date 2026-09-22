@@ -1,4 +1,5 @@
 import { getLocalCameraSceneScale } from '@src/clientSideScene/cameraSceneScale'
+import { createPlaneMaterials } from '@src/clientSideScene/localRenderer/planeMaterials'
 import { type ResolvedTheme, Themes } from '@src/lib/theme'
 import type { PlaneVisibilityMap } from '@src/machines/modelingSharedTypes'
 import {
@@ -14,7 +15,7 @@ import {
 } from 'three'
 import { LineSegmentsGeometry } from 'three/examples/jsm/lines/LineSegmentsGeometry.js'
 import { LineSegments2 } from 'three/examples/jsm/lines/webgpu/LineSegments2.js'
-import { Line2NodeMaterial, MeshBasicNodeMaterial } from 'three/webgpu'
+import { type Line2NodeMaterial, MeshBasicNodeMaterial } from 'three/webgpu'
 
 const PLANE_SIZE_MM = 100
 const MILLIMETERS_TO_METERS = 1 / 1000
@@ -72,41 +73,19 @@ export class DefaultPlaneRenderer {
       if (name === 'YZ') plane.rotation.set(Math.PI / 2, Math.PI / 2, 0)
       if (name === 'XZ') plane.rotation.x = Math.PI / 2
 
-      const fillMaterial = new MeshBasicNodeMaterial({
-        color: color.clone().convertSRGBToLinear(),
-        opacity: 0.1,
-        transparent: true,
-        side: DoubleSide,
-        forceSinglePass: true,
-        depthWrite: false,
-        toneMapped: false,
-        polygonOffset: true,
-        polygonOffsetFactor: -1,
-        polygonOffsetUnits: -1,
-      })
+      const { fillMaterial, borderMaterial } = createPlaneMaterials(color, 0.1)
       const fill = new Mesh(this.planeGeometry, fillMaterial)
       fill.name = `${name}-fill`
       this.materials.push(fillMaterial)
       plane.add(fill)
 
-      // Reduce saturation in sRGB before converting to linear for the material.
-      const borderColor = color
-        .clone()
-        .lerp(new Color(0.7, 0.7, 0.7), 1 / 3)
-        .convertSRGBToLinear()
-      const borderMaterial = new Line2NodeMaterial({
-        color: borderColor,
-        linewidth: 2,
-        worldUnits: false,
-        toneMapped: false,
-      })
       const border = new LineSegments2(this.borderGeometry, borderMaterial)
       border.name = `${name}-border`
       this.materials.push(borderMaterial)
       plane.add(border)
 
-      plane.add(this.createLabel(name, borderColor, true))
-      plane.add(this.createLabel(label, borderColor, false))
+      plane.add(this.createLabel(name, borderMaterial.color, true))
+      plane.add(this.createLabel(label, borderMaterial.color, false))
       this.planes.set(key, { group: plane, fill })
       this.group.add(plane)
     }
