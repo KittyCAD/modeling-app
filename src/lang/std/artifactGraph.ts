@@ -381,7 +381,7 @@ export function getSweepFromSuspectedSweepSurface(
 }
 
 /** Resolve face-merged extrusions back to their shared body. */
-export function getSweepBodyArtifact(
+export function getMergedSweepBodyArtifact(
   sweep: Extract<Artifact, { type: 'sweep' }>,
   artifactGraph: ArtifactGraph,
   followFaceMerges = true

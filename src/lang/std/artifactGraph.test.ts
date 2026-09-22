@@ -5,7 +5,7 @@ import {
   getCommonFacesForEdge,
   getSketchBlockForArtifact,
   getSweepArtifactFromSelection,
-  getSweepBodyArtifact,
+  getMergedSweepBodyArtifact,
   isFaceFromLegacySketch,
 } from '@src/lang/std/artifactGraph'
 import type { ArtifactGraph, PathToNode } from '@src/lang/wasm'
@@ -115,7 +115,7 @@ function addMappedRegion(
   }
 }
 
-describe('getSweepBodyArtifact', () => {
+describe('getMergedSweepBodyArtifact', () => {
   function createFaceMergeGraph(faceType: 'cap' | 'wall' = 'cap') {
     const { artifactGraph, sourceSegment } = createSourceSegmentGraph()
     const sweeps = ['base', 'first', 'second'].map((suffix) => {
@@ -141,11 +141,15 @@ describe('getSweepBodyArtifact', () => {
       const { artifactGraph, base, first, second } =
         createFaceMergeGraph(faceType)
 
-      expect(getSweepBodyArtifact(first.sweep, artifactGraph)).toBe(base.sweep)
-      expect(getSweepBodyArtifact(second.sweep, artifactGraph)).toBe(base.sweep)
-      expect(getSweepBodyArtifact(first.sweep, artifactGraph, false)).toBe(
-        first.sweep
+      expect(getMergedSweepBodyArtifact(first.sweep, artifactGraph)).toBe(
+        base.sweep
       )
+      expect(getMergedSweepBodyArtifact(second.sweep, artifactGraph)).toBe(
+        base.sweep
+      )
+      expect(
+        getMergedSweepBodyArtifact(first.sweep, artifactGraph, false)
+      ).toBe(first.sweep)
     }
   )
 
@@ -154,8 +158,12 @@ describe('getSweepBodyArtifact', () => {
     first.sweep.method = 'new'
     second.sweep.sourceSweepId = 'sweep-base'
 
-    expect(getSweepBodyArtifact(first.sweep, artifactGraph)).toBe(first.sweep)
-    expect(getSweepBodyArtifact(second.sweep, artifactGraph)).toBe(second.sweep)
+    expect(getMergedSweepBodyArtifact(first.sweep, artifactGraph)).toBe(
+      first.sweep
+    )
+    expect(getMergedSweepBodyArtifact(second.sweep, artifactGraph)).toBe(
+      second.sweep
+    )
   })
 
   it.each(['loft', 'sweep', 'extrusionTwist'] as const)(
@@ -164,7 +172,9 @@ describe('getSweepBodyArtifact', () => {
       const { artifactGraph, first } = createFaceMergeGraph()
       first.sweep.subType = subType
 
-      expect(getSweepBodyArtifact(first.sweep, artifactGraph)).toBe(first.sweep)
+      expect(getMergedSweepBodyArtifact(first.sweep, artifactGraph)).toBe(
+        first.sweep
+      )
     }
   )
 
@@ -185,10 +195,12 @@ describe('getSweepBodyArtifact', () => {
       const path = location === 'selected' ? first.path : base.path
       path.compositeSolidId = composite.id
 
-      expect(getSweepBodyArtifact(first.sweep, artifactGraph)).toBe(composite)
-      expect(getSweepBodyArtifact(first.sweep, artifactGraph, false)).toBe(
-        location === 'selected' ? composite : first.sweep
+      expect(getMergedSweepBodyArtifact(first.sweep, artifactGraph)).toBe(
+        composite
       )
+      expect(
+        getMergedSweepBodyArtifact(first.sweep, artifactGraph, false)
+      ).toBe(location === 'selected' ? composite : first.sweep)
     }
   )
 
@@ -196,7 +208,7 @@ describe('getSweepBodyArtifact', () => {
     const { artifactGraph, base, first } = createFaceMergeGraph()
     base.path.planeId = 'cap-first'
 
-    expect(getSweepBodyArtifact(first.sweep, artifactGraph)).toEqual(
+    expect(getMergedSweepBodyArtifact(first.sweep, artifactGraph)).toEqual(
       new Error('Cycle detected while resolving sweep body')
     )
   })

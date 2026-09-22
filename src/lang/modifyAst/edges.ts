@@ -44,7 +44,7 @@ import {
   getArtifactOfTypes,
   getCodeRefsByArtifactId,
   getSweepArtifactFromSelection,
-  getSweepBodyArtifact,
+  getMergedSweepBodyArtifact,
 } from '@src/lang/std/artifactGraph'
 import { findKwArg } from '@src/lang/util'
 import type {
@@ -2651,7 +2651,10 @@ export function insertPrimitiveEdgeVariablesAndOffsetPathToNode({
     }
 
     if (bodySelection.artifact.type === 'sweep') {
-      const body = getSweepBodyArtifact(bodySelection.artifact, artifactGraph)
+      const body = getMergedSweepBodyArtifact(
+        bodySelection.artifact,
+        artifactGraph
+      )
       if (err(body)) return body
       bodySelection.artifact = body
       bodySelection.codeRef = body.codeRef

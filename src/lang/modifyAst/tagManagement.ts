@@ -40,7 +40,7 @@ import {
   getCommonFacesForEdge,
   getSourceSegmentArtifact,
   getSweepArtifactFromSelection,
-  getSweepBodyArtifact,
+  getMergedSweepBodyArtifact,
 } from '@src/lang/std/artifactGraph'
 import {
   addTagForSketchOnFace,
@@ -245,7 +245,7 @@ function resolveSweepSelectionContext(
   }
 
   // Direct profile lookups need the sketch owner, not the shared merge body.
-  const selectedBody = getSweepBodyArtifact(
+  const selectedBody = getMergedSweepBodyArtifact(
     selectedSweep,
     artifactGraph,
     lastChildLookup
