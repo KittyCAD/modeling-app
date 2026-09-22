@@ -181,8 +181,9 @@ export class Connection extends EventTarget {
     const webrtcQuery = webrtc ? '' : '&webrtc=false'
     // The API derives the engine's geometry_only setting from the CPU pool.
     const poolQuery = pool ? `&pool=${pool}` : ''
+    const postEffectQuery = pool ? '' : '&post_effect=ssao'
     const url = withKittycadWebSocketURL(
-      `?video_res_width=${256}&video_res_height=${256}&post_effect=ssao${webrtcQuery}${poolQuery}`
+      `?video_res_width=${256}&video_res_height=${256}${postEffectQuery}${webrtcQuery}${poolQuery}`
     )
     this.websocket = new WebSocket(url, [])
     this.websocket.binaryType = 'arraybuffer'
@@ -209,6 +210,13 @@ export class Connection extends EventTarget {
             callback('auth_token_invalid')
           }
         }
+
+        if (!this.handleMessage) {
+          console.warn('unable to process message, handleMessage is missing')
+          return
+        }
+        this.handleMessage(event)
+        return
       }
 
       if (!('resp' in message)) return
