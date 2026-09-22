@@ -88,6 +88,7 @@ use crate::execution::types::CoercionMode;
 use crate::execution::types::NumericTypeExt;
 use crate::execution::types::PrimitiveType;
 use crate::execution::types::RuntimeType;
+use crate::execution::types::resolve_named_type_def;
 use crate::execution::types::type_value_named_by_segment;
 use crate::front::ArcDirection;
 use crate::front::LineCtor;
@@ -934,6 +935,11 @@ impl ExecutorContext {
     ) -> Result<bool, KclError> {
         let mut no_prelude = false;
         for annotation in annotations {
+            // The attribute that customizes diagnostics is `@warnings` before
+            // KCL 3.0 and `@diagnostics` in KCL 3.0 and later. Look it up per
+            // annotation since a preceding `@settings` may have changed the
+            // version.
+            let diagnostics_attr = annotations::diagnostics_attr_name(exec_state.kcl_version());
             if annotation.name() == Some(annotations::SETTINGS) {
                 if matches!(body_type, BodyType::Root) {
                     let (updated_len, updated_angle) =
@@ -972,16 +978,17 @@ impl ExecutorContext {
                         "The standard library can only be skipped at the top level scope of a file",
                     ));
                 }
-            } else if annotation.name() == Some(annotations::WARNINGS) {
+            } else if annotation.name() == Some(diagnostics_attr) {
                 // TODO we should support setting warnings for the whole project, not just one file
                 if matches!(body_type, BodyType::Root) {
-                    let props = annotations::expect_properties(annotations::WARNINGS, annotation)?;
+                    let props = annotations::expect_properties(diagnostics_attr, annotation)?;
                     for p in props {
                         match &*p.inner.key.name {
                             annotations::WARN_ALLOW => {
                                 let allowed = annotations::many_of(
                                     &p.inner.value,
                                     &annotations::WARN_VALUES,
+                                    diagnostics_attr,
                                     annotation.as_source_range(),
                                 )?;
                                 exec_state.mod_local.allowed_warnings = allowed;
@@ -990,6 +997,7 @@ impl ExecutorContext {
                                 let denied = annotations::many_of(
                                     &p.inner.value,
                                     &annotations::WARN_VALUES,
+                                    diagnostics_attr,
                                     annotation.as_source_range(),
                                 )?;
                                 exec_state.mod_local.denied_warnings = denied;
@@ -997,7 +1005,7 @@ impl ExecutorContext {
                             name => {
                                 return Err(KclError::new_semantic(KclErrorDetails::new(
                                     format!(
-                                        "Unexpected warnings key: `{name}`; expected one of `{}`, `{}`",
+                                        "Unexpected {diagnostics_attr} key: `{name}`; expected one of `{}`, `{}`",
                                         annotations::WARN_ALLOW,
                                         annotations::WARN_DENY,
                                     ),
@@ -1007,11 +1015,36 @@ impl ExecutorContext {
                         }
                     }
                 } else {
-                    exec_state.err(CompilationIssue::err(
-                        annotation.as_source_range(),
-                        "Warnings can only be customized at the top level scope of a file",
-                    ));
+                    let message = match diagnostics_attr {
+                        annotations::WARNINGS => "Warnings can only be customized at the top level scope of a file",
+                        _ => "Diagnostics can only be customized at the top level scope of a file",
+                    };
+                    exec_state.err(CompilationIssue::err(annotation.as_source_range(), message));
                 }
+            } else if annotation.name() == Some(annotations::WARNINGS) {
+                // KCL 3.0 renamed `@warnings` to `@diagnostics`. This is only
+                // reached in KCL 3.0-preview or later, since before that the
+                // attribute is handled above. Report a non-fatal error with
+                // the fix, and ignore the attribute.
+                let mut issue = CompilationIssue::err(
+                    annotation.as_source_range(),
+                    format!(
+                        "The `@{old}` attribute was renamed to `@{new}` in KCL 3.0, so this attribute is ignored. Replace `@{old}` with `@{new}`; its `{allow}` and `{deny}` properties are unchanged.",
+                        old = annotations::WARNINGS,
+                        new = annotations::DIAGNOSTICS,
+                        allow = annotations::WARN_ALLOW,
+                        deny = annotations::WARN_DENY,
+                    ),
+                );
+                if let Some(name) = &annotation.name {
+                    issue = issue.with_suggestion(
+                        format!("Rename to `@{}`", annotations::DIAGNOSTICS),
+                        annotations::DIAGNOSTICS,
+                        Some(name.as_source_range()),
+                        crate::errors::Tag::None,
+                    );
+                }
+                exec_state.err(issue);
             } else {
                 exec_state.warn(
                     CompilationIssue::err(annotation.as_source_range(), "Unknown annotation"),
@@ -1523,10 +1556,16 @@ impl ExecutorContext {
             annotations::Impl::Primitive => {}
             annotations::Impl::Kcl | annotations::Impl::KclConstrainable => match &ty.definition {
                 TypeDeclarationDefinition::Alias { ty: alias } => {
-                    let value = KclValue::Type {
-                        value: TypeDef::Alias(
+                    let type_def = match alias.inner.clone() {
+                        Type::Named { name } => {
+                            match resolve_named_type_def(&name, exec_state, self, metadata.source_range, false).await? {
+                                def @ TypeDef::Enum(_) => def,
+                                def => TypeDef::Alias(def.into_runtime_type()),
+                            }
+                        }
+                        alias => TypeDef::Alias(
                             RuntimeType::from_parsed(
-                                alias.inner.clone(),
+                                alias,
                                 exec_state,
                                 self,
                                 metadata.source_range,
@@ -1535,6 +1574,12 @@ impl ExecutorContext {
                             )
                             .await?,
                         ),
+                    };
+                    if matches!(&type_def, TypeDef::Enum(_)) {
+                        reject_enum_clashing_with_module(exec_state, &ty.name.name, metadata.source_range)?;
+                    }
+                    let value = KclValue::Type {
+                        value: type_def,
                         meta: vec![metadata],
                         experimental: attrs.experimental,
                     };
@@ -2163,8 +2208,9 @@ impl ExecutorContext {
 /// the clash where the second name is introduced keeps every `X::y` use site
 /// unambiguous, so no check is needed at the use site.
 ///
-/// Type aliases and bare types are exempt, since neither can head a `::` path.
-/// They may continue to share a name with a module.
+/// Type aliases that resolve to enums participate in this rule because they can
+/// head a `::` path. Other aliases and bare types may continue to share a name
+/// with a module.
 fn module_enum_clash(name: &str, source_range: SourceRange) -> KclError {
     KclError::new_semantic(KclErrorDetails::new(
         format!(
@@ -2180,11 +2226,8 @@ fn reject_enum_clashing_with_module(
     name: &str,
     source_range: SourceRange,
 ) -> Result<(), KclError> {
-    if exec_state
-        .stack()
-        .get(&format!("{}{}", memory::MODULE_PREFIX, name), source_range)
-        .is_err()
-    {
+    let key = format!("{}{}", memory::MODULE_PREFIX, name);
+    if !exec_state.stack().cur_frame_contains(&key)? {
         return Ok(());
     }
 
@@ -2198,12 +2241,15 @@ fn reject_module_clashing_with_enum(
     name: &str,
     source_range: SourceRange,
 ) -> Result<(), KclError> {
+    let key = format!("{}{}", memory::TYPE_PREFIX, name);
+    if !exec_state.stack().cur_frame_contains(&key)? {
+        return Ok(());
+    }
+
     let Ok(KclValue::Type {
         value: TypeDef::Enum(_),
         ..
-    }) = exec_state
-        .stack()
-        .get(&format!("{}{}", memory::TYPE_PREFIX, name), source_range)
+    }) = exec_state.stack().get(&key, source_range)
     else {
         return Ok(());
     };
@@ -2257,24 +2303,40 @@ fn type_used_as_value(exec_state: &ExecState, name: &Node<Identifier>) -> Option
     )))
 }
 
-/// Looks up the enum named by a `::` path segment: `Color` in both `Color::Red`
-/// and `colors::Color::Red`.
+enum EnumPathHead {
+    Enum(Arc<EnumTypeDef>),
+    NonEnumType,
+}
+
+/// Classifies the type named by a `::` path segment: `Color` in both
+/// `Color::Red` and `colors::Color::Red`.
 ///
-/// Returns `None` when the segment does not name an enum, including when it
-/// names a type alias, since only an enum can head a `::` path. The caller then
-/// resolves the segment as a module instead.
+/// A non-enum type is retained until module lookup has also failed because a
+/// type alias and a module may share a name. The module remains the valid path
+/// head in that case.
 fn enum_named_by_segment(
     exec_state: &ExecState,
     segment: &Node<Identifier>,
     within: Option<&(EnvironmentRef, Vec<String>)>,
-) -> Option<Arc<EnumTypeDef>> {
+) -> Option<EnumPathHead> {
     match type_value_named_by_segment(exec_state, segment, within)? {
         KclValue::Type {
             value: TypeDef::Enum(def),
             ..
-        } => Some(def),
+        } => Some(EnumPathHead::Enum(def)),
+        KclValue::Type { .. } => Some(EnumPathHead::NonEnumType),
         _ => None,
     }
+}
+
+fn non_enum_type_in_path(segment: &Node<Identifier>) -> KclError {
+    KclError::new_semantic(KclErrorDetails::new(
+        format!(
+            "`{}` is a type that does not resolve to an enum, so it cannot be used as the head of a `::` path.",
+            segment.name
+        ),
+        segment.as_source_ranges(),
+    ))
 }
 
 /// `Red` in `Color::Red`.
@@ -3334,23 +3396,30 @@ impl Node<Name> {
         for (index, p) in self.path.iter().enumerate() {
             // Only the last segment can name an enum, because what follows an
             // enum is a variant rather than something to traverse into.
-            if let Some(def) = enum_named_by_segment(exec_state, p, mem_spec.as_ref()) {
-                if let Some(next) = self.path.get(index + 1) {
-                    return Err(KclError::new_semantic(KclErrorDetails::new(
-                        format!(
-                            "`{}` is an enum, so only a variant name can follow it. There is nothing to reach through `{}::{}`.",
-                            p.name, p.name, next.name
-                        ),
-                        p.as_source_ranges(),
-                    )));
-                }
+            let non_enum_type = match enum_named_by_segment(exec_state, p, mem_spec.as_ref()) {
+                Some(EnumPathHead::Enum(def)) => {
+                    if let Some(next) = self.path.get(index + 1) {
+                        return Err(KclError::new_semantic(KclErrorDetails::new(
+                            format!(
+                                "`{}` is an enum, so only a variant name can follow it. There is nothing to reach through `{}::{}`.",
+                                p.name, p.name, next.name
+                            ),
+                            p.as_source_ranges(),
+                        )));
+                    }
 
-                return enum_variant_value(def, &self.name, exec_state);
-            }
+                    return enum_variant_value(def, &self.name, exec_state);
+                }
+                Some(EnumPathHead::NonEnumType) => true,
+                None => false,
+            };
 
             let value = match mem_spec {
                 Some((env, exports)) => {
                     if !exports.contains(&p.name) {
+                        if non_enum_type {
+                            return Err(non_enum_type_in_path(p));
+                        }
                         return Err(KclError::new_semantic(KclErrorDetails::new(
                             format!("Item {} not found in module's exported items", p.name),
                             p.as_source_ranges(),
@@ -3362,9 +3431,14 @@ impl Node<Name> {
                         .memory
                         .get_from_owned(&p.name, env, p.as_source_range(), 0)?
                 }
-                None => exec_state
+                None => match exec_state
                     .stack()
-                    .get(&format!("{}{}", memory::MODULE_PREFIX, p.name), self.into())?,
+                    .get(&format!("{}{}", memory::MODULE_PREFIX, p.name), self.into())
+                {
+                    Ok(value) => value,
+                    Err(_) if non_enum_type => return Err(non_enum_type_in_path(p)),
+                    Err(err) => return Err(err),
+                },
             };
 
             let module_id = match value {
@@ -7982,6 +8056,147 @@ a = PI * 2
         let result = parse_execute(deny).await.unwrap();
         assert_eq!(result.exec_state.issues().len(), 1);
         assert_eq!(result.exec_state.issues()[0].severity, Severity::Error);
+    }
+
+    /// KCL 3.0 renamed `@warnings` to `@diagnostics`. Under KCL 3.0-preview
+    /// or later, `@diagnostics` customizes diagnostics the way `@warnings`
+    /// does in earlier versions.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn diagnostics_attribute_in_v3() {
+        let warn = "@settings(kclVersion = \"3.0-preview\")\na = PI * 2\n";
+        let result = parse_execute(warn).await.unwrap();
+        let issues = result.exec_state.issues();
+        assert_eq!(issues.len(), 1, "{issues:#?}");
+        assert_eq!(issues[0].severity, Severity::Warning);
+        assert_eq!(issues[0].tag, crate::errors::Tag::UnknownNumericUnits);
+
+        let allow = "@settings(kclVersion = \"3.0-preview\")\n@diagnostics(allow = unknownUnits)\na = PI * 2\n";
+        let result = parse_execute(allow).await.unwrap();
+        assert!(
+            result.exec_state.issues().is_empty(),
+            "{:#?}",
+            result.exec_state.issues()
+        );
+
+        let deny = "@settings(kclVersion = \"3.0-preview\")\n@diagnostics(deny = [unknownUnits])\na = PI * 2\n";
+        let result = parse_execute(deny).await.unwrap();
+        let issues = result.exec_state.issues();
+        assert_eq!(issues.len(), 1, "{issues:#?}");
+        assert_eq!(issues[0].severity, Severity::Error);
+        assert_eq!(issues[0].tag, crate::errors::Tag::UnknownNumericUnits);
+    }
+
+    /// Before KCL 3.0, `@diagnostics` is not an attribute: it gets the usual
+    /// unknown-annotation warning and has no effect, while `@warnings` keeps
+    /// working.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn diagnostics_attribute_is_unknown_before_v3() {
+        for version in ["1.0", "2.0"] {
+            let code = format!("@settings(kclVersion = {version})\n@diagnostics(allow = unknownUnits)\na = PI * 2\n");
+            let result = parse_execute(&code).await.unwrap();
+            let issues = result.exec_state.issues();
+            assert_eq!(issues.len(), 2, "code={code}, issues={issues:#?}");
+            assert_eq!(issues[0].severity, Severity::Warning);
+            assert_eq!(issues[0].message, "Unknown annotation");
+            assert_eq!(
+                &code[issues[0].source_range.start()..issues[0].source_range.end()],
+                "@diagnostics(allow = unknownUnits)"
+            );
+            assert_eq!(issues[1].severity, Severity::Warning);
+            assert_eq!(issues[1].tag, crate::errors::Tag::UnknownNumericUnits);
+
+            let code = format!("@settings(kclVersion = {version})\n@warnings(allow = unknownUnits)\na = PI * 2\n");
+            let result = parse_execute(&code).await.unwrap();
+            assert!(
+                result.exec_state.issues().is_empty(),
+                "code={code}, issues={:#?}",
+                result.exec_state.issues()
+            );
+        }
+    }
+
+    /// Errors for a malformed attribute name the attribute that was written:
+    /// `warnings` before KCL 3.0 and `diagnostics` in KCL 3.0-preview or
+    /// later.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn diagnostics_attribute_errors_use_the_attribute_name() {
+        for (version, attr, noun) in [
+            ("1.0", "warnings", "warning"),
+            ("2.0", "warnings", "warning"),
+            ("\"3.0-preview\"", "diagnostics", "diagnostic"),
+        ] {
+            let settings = format!("@settings(kclVersion = {version})\n");
+
+            let code = format!("{settings}@{attr}\n");
+            let error = parse_execute(&code).await.unwrap_err();
+            assert_eq!(error.message(), format!("Empty `{attr}` annotation"), "code={code}");
+
+            let code = format!("{settings}@{attr}(warn = unknownUnits)\n");
+            let error = parse_execute(&code).await.unwrap_err();
+            assert_eq!(
+                error.message(),
+                format!("Unexpected {attr} key: `warn`; expected one of `allow`, `deny`"),
+                "code={code}"
+            );
+
+            let code = format!("{settings}@{attr}(allow = 1)\n");
+            let error = parse_execute(&code).await.unwrap_err();
+            assert_eq!(
+                error.message(),
+                format!(
+                    "Unexpected {attr} value, expected a name or array of names, e.g., `unknownUnits` or `[unknownUnits, deprecated]`"
+                ),
+                "code={code}"
+            );
+
+            let code = format!("{settings}@{attr}(allow = bogus)\n");
+            let error = parse_execute(&code).await.unwrap_err();
+            let expected_prefix = format!("Unexpected {noun} value: `bogus`; accepted values: unknownUnits, ");
+            assert!(
+                error.message().starts_with(&expected_prefix),
+                "code={code}, message={}",
+                error.message()
+            );
+        }
+    }
+
+    /// KCL 3.0: using the old `@warnings` name is a non-fatal error that
+    /// explains the rename and offers the fix. The attribute is ignored, so
+    /// the warning it tried to allow is still reported.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn warnings_attribute_is_renamed_in_v3() {
+        let code = "@settings(kclVersion = \"3.0-preview\")\n@warnings(allow = unknownUnits)\na = PI * 2\n";
+        let result = parse_execute(code).await.unwrap();
+        let issues = result.exec_state.issues();
+        assert_eq!(issues.len(), 2, "{issues:#?}");
+
+        let renamed = &issues[0];
+        assert_eq!(renamed.severity, Severity::Error);
+        assert_eq!(
+            renamed.message,
+            "The `@warnings` attribute was renamed to `@diagnostics` in KCL 3.0, so this attribute is ignored. Replace `@warnings` with `@diagnostics`; its `allow` and `deny` properties are unchanged."
+        );
+        assert_eq!(
+            &code[renamed.source_range.start()..renamed.source_range.end()],
+            "@warnings(allow = unknownUnits)"
+        );
+        let suggestion = renamed.suggestion.as_ref().unwrap();
+        assert_eq!(suggestion.title, "Rename to `@diagnostics`");
+        assert_eq!(
+            suggestion.apply(code),
+            "@settings(kclVersion = \"3.0-preview\")\n@diagnostics(allow = unknownUnits)\na = PI * 2\n"
+        );
+
+        assert_eq!(issues[1].severity, Severity::Warning);
+        assert_eq!(issues[1].tag, crate::errors::Tag::UnknownNumericUnits);
+
+        // Since the attribute is ignored, its properties aren't checked.
+        let code = "@settings(kclVersion = \"3.0-preview\")\n@warnings(allow = bogus)\n";
+        let result = parse_execute(code).await.unwrap();
+        let issues = result.exec_state.issues();
+        assert_eq!(issues.len(), 1, "{issues:#?}");
+        assert_eq!(issues[0].severity, Severity::Error);
+        assert!(issues[0].message.starts_with("The `@warnings` attribute was renamed"));
     }
 
     #[tokio::test(flavor = "multi_thread")]

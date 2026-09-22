@@ -238,15 +238,32 @@ test.describe('Sketch grid settings', { tag: ['@desktop', '@web'] }, () => {
     await scene.settled()
 
     const commands = page.getByRole('button', { name: 'Commands' })
-    const setBooleanSetting = async (setting: string, value: 'On' | 'Off') => {
+    const setBooleanSetting = async (
+      setting: 'fixedSizeGrid' | 'highlightEdges' | 'showSketchGrid',
+      value: 'On' | 'Off'
+    ) => {
+      const expectedValue = value === 'On'
+      const currentValue = () =>
+        page.evaluate(
+          (setting) => window.app.settings.get().modeling[setting].current,
+          setting
+        )
       await waitForSettingsIdle(page)
+      if ((await currentValue()) === expectedValue) {
+        return
+      }
+
       await commands.click()
       await page
         .getByRole('option', {
-          name: `Settings · modeling · ${setting}`,
+          name: `Settings · modeling · ${setting.replace(
+            /[A-Z]/g,
+            (letter) => ` ${letter.toLowerCase()}`
+          )}`,
         })
         .click()
       await page.getByRole('option', { name: value }).click()
+      await expect.poll(currentValue).toBe(expectedValue)
       await waitForSettingsIdle(page)
     }
     const setOrthographicCamera = async () => {
@@ -277,10 +294,8 @@ test.describe('Sketch grid settings', { tag: ['@desktop', '@web'] }, () => {
         )
       )
       .toBe('orthographic')
-    await setBooleanSetting('show sketch grid', 'Off')
-    await expect.poll(sketchGridEnabled).toBe(false)
-    await setBooleanSetting('fixed size grid', 'On')
-    await expect.poll(fixedSizeGridEnabled).toBe(true)
+    await setBooleanSetting('showSketchGrid', 'Off')
+    await setBooleanSetting('fixedSizeGrid', 'On')
 
     await toolbar.openFeatureTreePane()
     const sketchOperation = await toolbar.getFeatureTreeOperation(
@@ -353,16 +368,15 @@ test.describe('Sketch grid settings', { tag: ['@desktop', '@web'] }, () => {
       await kclManager.sceneEntitiesManager.onCamChange()
     })
     await expect.poll(sketchGridVisible).toBe(false)
-    await setBooleanSetting('highlight edges', 'Off')
+    await setBooleanSetting('highlightEdges', 'Off')
     await expect(toolbar.exitSketchBtn).toBeEnabled()
     await expect.poll(sketchGridVisible).toBe(false)
 
-    await setBooleanSetting('fixed size grid', 'Off')
-    await expect.poll(fixedSizeGridEnabled).toBe(false)
+    await setBooleanSetting('fixedSizeGrid', 'Off')
     await expect(toolbar.exitSketchBtn).toBeEnabled()
     await expect.poll(sketchGridVisible).toBe(true)
 
-    await setBooleanSetting('highlight edges', 'On')
+    await setBooleanSetting('highlightEdges', 'On')
     await expect(toolbar.exitSketchBtn).toBeEnabled()
     await expect.poll(sketchGridVisible).toBe(true)
 

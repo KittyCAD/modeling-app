@@ -36,14 +36,14 @@ export const FeatureTreeMenu = () => {
               type: 'Find and select command',
               data: {
                 groupId: 'code',
-                name: 'Insert',
+                name: 'Import',
               },
             })
           }
           disabled={!isDesktop()}
           className={styles.button}
         >
-          <span>Insert from a file</span>
+          <span>Import from a file</span>
           {!isDesktop() && (
             <Tooltip position="right">
               Available only in the desktop app

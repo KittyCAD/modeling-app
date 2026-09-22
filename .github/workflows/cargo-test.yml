@@ -24,7 +24,7 @@ jobs:
     runs-on: namespace-profile-ubuntu-8-cores;overrides.cache-tag=modeling-app-rust-host-v2
     steps:
       - uses: runs-on/action@v2.3.1
-      - uses: actions/create-github-app-token@v3.2.0
+      - uses: actions/create-github-app-token@v3
         id: app-token
         with:
           app-id: ${{ secrets.MODELING_APP_GH_APP_ID }}
@@ -182,7 +182,7 @@ jobs:
         partitionTotal: [3]
     steps:
       - uses: runs-on/action@v2.3.1
-      - uses: actions/create-github-app-token@v3.2.0
+      - uses: actions/create-github-app-token@v3
         id: app-token
         with:
           app-id: ${{ secrets.MODELING_APP_GH_APP_ID }}
@@ -229,16 +229,25 @@ jobs:
             --partition count:${{ matrix.partitionIndex}}/${{ matrix.partitionTotal }} \
             2>&1 | tee /tmp/github-actions.log || true  # let TAB determine failure
           popd
+          .github/ci-cd-scripts/extend-junit.py
           .github/ci-cd-scripts/upload-results.sh
         env:
           ZOO_API_TOKEN: ${{secrets.ZOO_API_TOKEN}}
           ZOO_HOST: https://api.dev.zoo.dev
           RUST_MIN_STACK: 10485760000
+          TWENTY_TWENTY: store-artifact-on-mismatch
           TAB_API_URL: ${{ vars.TAB_API_URL }}
           TAB_API_KEY: ${{ secrets.TAB_API_KEY }}
           CI_COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
           CI_PR_NUMBER: ${{ github.event.pull_request.number }}
           CI_SUITE: e2e:kcl
+      - name: Upload snapshot mismatches
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: kcl-snapshot-mismatches-${{ matrix.partitionIndex }}-${{ github.run_attempt }}
+          path: rust/**/artifacts/**/*.png
+          if-no-files-found: ignore
       - name: Track teardown
         if: always()
         run: .github/ci-cd-scripts/track-step.sh

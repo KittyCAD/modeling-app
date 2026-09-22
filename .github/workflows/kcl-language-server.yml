@@ -55,9 +55,20 @@ jobs:
         uses: actions/setup-node@v7.0.0
         with:
           node-version-file: .nvmrc
+      - name: Select Rust toolchain
+        shell: bash
+        run: cp rust/rust-toolchain.toml rust-toolchain.toml
+      - name: Install Rust
+        uses: actions-rust-lang/setup-rust-toolchain@v1.17.0
+        with:
+          cache-workspaces: rust
+          rustflags: ""
+      - name: Build language server
+        working-directory: rust
+        run: cargo build -p kcl-language-server
       - name: Install dependencies
         run: |
-          npm install
+          npm ci
       - name: Run tests
         run: |
           cd rust/kcl-language-server
@@ -175,7 +186,7 @@ jobs:
       - name: Install dependencies
         run: |
           cd rust/kcl-language-server
-          npm install --ignore-scripts
+          npm ci --ignore-scripts
       - name: Package Extension (release)
         if: startsWith(github.event.ref, 'refs/tags/')
         run: |
@@ -273,7 +284,7 @@ jobs:
       - name: Install dependencies
         run: |
           cd rust/kcl-language-server
-          npm install --ignore-scripts
+          npm ci --ignore-scripts
       - name: Package Extension (release)
         if: startsWith(github.event.ref, 'refs/tags/')
         run: |

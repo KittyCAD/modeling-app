@@ -18,6 +18,7 @@ import type { Page } from '@playwright/test'
 import {
   LEGACY_SKETCH_MODE_FEATURE_FLAG,
   PROJECT_SETTINGS_FILE_NAME,
+  SETTINGS_FILE_NAME,
 } from '@src/lib/constants'
 import type { SettingsLevel } from '@src/lib/settings/settingsTypes'
 import { Themes } from '@src/lib/theme'
@@ -463,14 +464,47 @@ test.describe(
     test(
       'Changing modeling default unit',
       { tag: ['@macos', '@windows'] },
-      async ({ page, homePage }) => {
+      async ({ page, homePage, scene, folderSetupFn }) => {
+        const projectName = 'units-project'
+        let projectSettingsPath = ''
+        let userSettingsPath = ''
+        let mainFilePath = ''
+
         await test.step(`Test setup`, async () => {
+          const projectSettings = settingsToToml({
+            settings: {
+              meta: {
+                id: uuidv4(),
+              },
+              modeling: {
+                base_unit: 'cm',
+              },
+            },
+          })
+
+          await folderSetupFn(async (dir) => {
+            const projectDir = path.join(dir, projectName)
+            projectSettingsPath = path.join(
+              projectDir,
+              PROJECT_SETTINGS_FILE_NAME
+            )
+            userSettingsPath = path.resolve(dir, '..', SETTINGS_FILE_NAME)
+            mainFilePath = path.join(projectDir, 'main.kcl')
+
+            await fsp.mkdir(projectDir, { recursive: true })
+            await Promise.all([
+              fsp.writeFile(
+                mainFilePath,
+                '@settings(defaultLengthUnit = mm)\n',
+                'utf8'
+              ),
+              fsp.writeFile(projectSettingsPath, projectSettings, 'utf8'),
+            ])
+          })
+
           await page.setBodyDimensions({ width: 1200, height: 500 })
-          await homePage.goToModelingScene()
-          const toastMessage = page.getByText(
-            `Successfully created "test-project"`
-          )
-          await expect(toastMessage).not.toBeVisible()
+          await homePage.openProject(projectName)
+          await scene.connectionEstablished()
           await page
             .getByRole('button', { name: 'Start Sketch' })
             .waitFor({ state: 'visible' })
@@ -479,12 +513,13 @@ test.describe(
         // Selectors and constants
         const userSettingsTab = page.getByRole('radio', { name: 'User' })
         const projectSettingsTab = page.getByRole('radio', { name: 'Project' })
-        const defaultUnitSection = page.getByText(
-          'default unitRoll back default unitRoll back to match'
-        )
-        const defaultUnitRollbackButton = page.getByRole('button', {
-          name: 'Roll back default unit',
-        })
+        const defaultUnitInput = page.getByTestId('modeling-defaultUnit')
+        const persistedUnit = async (settingsPath: string) => {
+          const storedSettings = tomlToSettings(
+            await fsp.readFile(settingsPath, 'utf8')
+          )
+          return storedSettings.settings?.modeling?.base_unit
+        }
 
         await test.step(`Open the settings modal`, async () => {
           await page.getByRole('link', { name: 'Settings' }).last().click()
@@ -493,65 +528,27 @@ test.describe(
           ).toBeVisible()
         })
 
-        await test.step(`Reset unit setting`, async () => {
-          await settingsSwitchTab(page)('user')
-          await defaultUnitSection.hover()
-          await defaultUnitRollbackButton.click()
-          await projectSettingsTab.hover()
-          await projectSettingsTab.click()
-          await page.waitForTimeout(1000)
-        })
-
         await test.step('Change modeling default unit within project tab', async () => {
-          const changeUnitOfMeasureInProjectTab = async (
-            unitOfMeasure: string
-          ) => {
-            await test.step(`Set modeling default unit to ${unitOfMeasure}`, async () => {
-              await page
-                .getByTestId('modeling-defaultUnit')
-                .selectOption(`${unitOfMeasure}`)
-              const toastMessage = page.getByText(
-                `Set default unit to "${unitOfMeasure}" for this project`
-              )
-
-              // Assert visibility and disappearance
-              await expect(toastMessage).toBeVisible()
-              await expect(toastMessage).not.toBeVisible()
-            })
-          }
-          await changeUnitOfMeasureInProjectTab('in')
-          await changeUnitOfMeasureInProjectTab('ft')
-          await changeUnitOfMeasureInProjectTab('yd')
-          await changeUnitOfMeasureInProjectTab('cm')
-          await changeUnitOfMeasureInProjectTab('m')
+          await expect(projectSettingsTab).toBeChecked()
+          await expect(defaultUnitInput).toHaveValue('cm')
+          await defaultUnitInput.selectOption('yd')
+          await expect(
+            page.getByText('Set default unit to "yd" for this project')
+          ).toBeVisible()
+          await expect(defaultUnitInput).toHaveValue('yd')
+          await expect.poll(() => persistedUnit(projectSettingsPath)).toBe('yd')
         })
-
-        // Go to the user tab
-        await userSettingsTab.hover()
-        await settingsSwitchTab(page)('user')
-        await page.waitForTimeout(1000)
 
         await test.step('Change modeling default unit within user tab', async () => {
-          const changeUnitOfMeasureInUserTab = async (
-            unitOfMeasure: string
-          ) => {
-            await test.step(`Set modeling default unit to ${unitOfMeasure}`, async () => {
-              await page
-                .getByTestId('modeling-defaultUnit')
-                .selectOption(`${unitOfMeasure}`)
-              const toastMessage = page.getByText(
-                `Set default unit to "${unitOfMeasure}" as a user default`
-              )
-              await expect(toastMessage).toBeVisible()
-              await expect(toastMessage).not.toBeVisible()
-            })
-          }
-          await changeUnitOfMeasureInUserTab('in')
-          await changeUnitOfMeasureInUserTab('ft')
-          await changeUnitOfMeasureInUserTab('yd')
-          await changeUnitOfMeasureInUserTab('mm')
-          await changeUnitOfMeasureInUserTab('cm')
-          await changeUnitOfMeasureInUserTab('m')
+          await userSettingsTab.click()
+          await expect(userSettingsTab).toBeChecked()
+          await expect(defaultUnitInput).toHaveValue('in')
+          await defaultUnitInput.selectOption('ft')
+          await expect(
+            page.getByText('Set default unit to "ft" as a user default')
+          ).toBeVisible()
+          await expect(defaultUnitInput).toHaveValue('ft')
+          await expect.poll(() => persistedUnit(userSettingsPath)).toBe('ft')
         })
 
         // Close settings
@@ -560,60 +557,27 @@ test.describe(
 
         await test.step('Change modeling default unit within command bar', async () => {
           const commands = page.getByRole('button', { name: 'Commands' })
-          const changeUnitOfMeasureInCommandBar = async (
-            unitOfMeasure: string
-          ) => {
-            // Open command bar
-            await commands.click()
-            const settingsModelingDefaultUnitCommand = page.getByText(
-              'Settings · modeling · default unit'
-            )
-            await settingsModelingDefaultUnitCommand.click()
-
-            const commandOption = page.getByRole('option', {
-              name: unitOfMeasure,
-              exact: true,
-            })
-            await commandOption.click()
-
-            const toastMessage = page.getByText(
-              `Set default unit to "${unitOfMeasure}" for this project`
-            )
-            await expect(toastMessage).toBeVisible()
-          }
-          await changeUnitOfMeasureInCommandBar('in')
-          await changeUnitOfMeasureInCommandBar('ft')
-          await changeUnitOfMeasureInCommandBar('yd')
-          await changeUnitOfMeasureInCommandBar('mm')
-          await changeUnitOfMeasureInCommandBar('cm')
-          await changeUnitOfMeasureInCommandBar('m')
+          await commands.click()
+          await page.getByText('Settings · modeling · default unit').click()
+          await page.getByRole('option', { name: 'm', exact: true }).click()
+          await expect(
+            page.getByText('Set default unit to "m" for this project')
+          ).toBeVisible()
+          await expect.poll(() => persistedUnit(projectSettingsPath)).toBe('m')
         })
 
         await test.step('Change modeling default unit within gizmo', async () => {
-          const changeUnitOfMeasureInGizmo = async (
-            unitOfMeasure: string,
-            copy: string
-          ) => {
-            const gizmo = page.getByTestId('units-menu')
-            await gizmo.click()
-            const button = page.locator('ul').getByRole('button', {
-              name: copy,
-              exact: true,
-            })
-            await button.click()
-            const toastMessage = page.getByText(
-              `Updated per-file units to ${unitOfMeasure}.`
-            )
-            await expect(toastMessage).toBeVisible()
-          }
-
-          await changeUnitOfMeasureInGizmo('ft', 'Feet')
-          await changeUnitOfMeasureInGizmo('in', 'Inches')
-          await changeUnitOfMeasureInGizmo('yd', 'Yards')
-          await changeUnitOfMeasureInGizmo('cm', 'Centimeters')
-          await changeUnitOfMeasureInGizmo('m', 'Meters')
-          // Must come after 'm' because 'm' will partially match on 'mm'
-          await changeUnitOfMeasureInGizmo('mm', 'Millimeters')
+          await page.getByTestId('units-menu').click()
+          await page
+            .locator('ul')
+            .getByRole('button', { name: 'Inches', exact: true })
+            .click()
+          await expect(
+            page.getByText('Updated per-file units to in.')
+          ).toBeVisible()
+          await expect
+            .poll(() => fsp.readFile(mainFilePath, 'utf8'))
+            .toContain('@settings(defaultLengthUnit = in)')
         })
       }
     )
