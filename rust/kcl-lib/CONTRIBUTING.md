@@ -35,12 +35,6 @@ OK, let's start. Let's assume we're adding a new stdlib function called `cube`.
   ```
   Note that its body is empty because the body will be defined in Rust.
   If you don't want this to show up in the ZDS feature tree, set `feature_tree = false` instead.
-  `added_in = "3.0"` hides the function from programs whose `kclVersion` is earlier than 3.0:
-  to them it is as if the declaration did not exist, and referring to it reports which version
-  added it. The value is a dotted integer version such as `"3.0"`; a program on `3.0-preview`
-  counts as 3.0. The same attribute works on `type` declarations and constants, and any type
-  named in a function's signature must have been added no later than the function itself. If
-  the function should exist on every version, leave `added_in` out.
  - Add one or more examples of how to use it, in a docstring above the function.
   ```
   /// Document your function here in this docstring.
