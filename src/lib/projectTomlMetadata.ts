@@ -223,13 +223,11 @@ export function preserveProjectTomlMetadataInProjectSettingsContents(
   }
 
   const nextTable = parseProjectToml(nextProjectSettingsContents) ?? {}
-  for (const [key, value] of Object.entries(existingTable)) {
-    if (key !== 'settings' && !(key in nextTable)) {
-      nextTable[key] = value
-    }
-  }
-
-  return stringifyProjectToml(nextTable)
+  // Settings may have been serialized before a title or cloud identity update.
+  return stringifyProjectToml({
+    ...existingTable,
+    settings: nextTable.settings ?? {},
+  })
 }
 
 export function setCloudProjectIdInProjectTomlContents(

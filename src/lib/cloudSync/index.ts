@@ -72,9 +72,8 @@ export function installCloudSyncFileSystemObserver(
     return
   }
 
-  const localFs = configureCloudSyncLocalFileSystem(
-    bindLocalFileSystem(activeFs)
-  )
+  const localFs = bindLocalFileSystem(activeFs)
+  configureCloudSyncLocalFileSystem(localFs)
 
   const writeFile: IZooDesignStudioFS['writeFile'] = async (
     targetPath,
@@ -115,7 +114,6 @@ export function installCloudSyncFileSystemObserver(
   }
 
   Object.assign(activeFs, {
-    readFile: localFs.readFile,
     writeFile,
     mkdir,
     cp,

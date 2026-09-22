@@ -39,7 +39,6 @@ import {
   createProjectReplacementAttempt,
   type ProjectReplacementAttempt,
 } from '@src/lib/cloudSync/replacementAttempt'
-import { coordinateCloudSyncFileSystem } from '@src/lib/cloudSync/fileSystem'
 import { parseAcknowledgedSyncBase } from '@src/lib/cloudSync/syncBase'
 import {
   appendOutboxEntry as appendSyncDbOutboxEntry,
@@ -100,6 +99,7 @@ import {
   setProjectTitleInProjectTomlContents,
 } from '@src/lib/projectTomlMetadata'
 import { isErr, reportRejection } from '@src/lib/trap'
+import { updateProjectToml } from '@src/lib/updateProjectToml'
 import { v4 } from 'uuid'
 
 export {
@@ -153,7 +153,7 @@ const SYNC_NOW_MAX_PASSES = 4
 const REMOTE_UPLOAD_FORBIDDEN_MESSAGE =
   'Cloud sync cannot upload local changes because this account does not have edit access to the linked cloud project. Local changes are safe on this device.'
 
-let localFs = coordinateCloudSyncFileSystem(opfs.impl)
+let localFs: IZooDesignStudioFS = opfs.impl
 
 let config: CloudSyncConfig = {
   enabled: false,
@@ -1168,17 +1168,15 @@ async function writeLocalProjectCloudProjectId(
     return false
   }
 
-  return localFs.updateFile(
-    localFs.join(projectPath, PROJECT_SETTINGS_FILE_NAME),
-    (projectToml) =>
-      getCloudProjectIdFromProjectTomlContents(projectToml, environmentName) ===
-      projectId
-        ? projectToml
-        : setCloudProjectIdInProjectTomlContents(
-            projectToml,
-            environmentName,
-            projectId
-          )
+  return updateLocalProjectToml(projectPath, (projectToml) =>
+    getCloudProjectIdFromProjectTomlContents(projectToml, environmentName) ===
+    projectId
+      ? projectToml
+      : setCloudProjectIdInProjectTomlContents(
+          projectToml,
+          environmentName,
+          projectId
+        )
   )
 }
 
@@ -1198,23 +1196,25 @@ async function updateLocalProjectToml(
   update: (contents: string) => string
 ) {
   const projectTomlPath = localFs.join(projectPath, PROJECT_SETTINGS_FILE_NAME)
-  let projectToml = ''
-  if (await exists(projectTomlPath)) {
-    projectToml = await localFs.readFile(projectTomlPath, {
-      encoding: 'utf-8',
-    })
-  }
+  return updateProjectToml(projectTomlPath, async () => {
+    let projectToml = ''
+    if (await exists(projectTomlPath)) {
+      projectToml = await localFs.readFile(projectTomlPath, {
+        encoding: 'utf-8',
+      })
+    }
 
-  const nextProjectToml = update(projectToml)
-  if (nextProjectToml === projectToml) {
-    return false
-  }
+    const nextProjectToml = update(projectToml)
+    if (nextProjectToml === projectToml) {
+      return false
+    }
 
-  await localFs.writeFile(
-    projectTomlPath,
-    new TextEncoder().encode(nextProjectToml)
-  )
-  return true
+    await localFs.writeFile(
+      projectTomlPath,
+      new TextEncoder().encode(nextProjectToml)
+    )
+    return true
+  })
 }
 
 async function appendOutboxEntry(entry: Omit<OutboxEntry, 'id'>) {
@@ -1384,10 +1384,13 @@ async function replaceLocalProjectWithFiles(
     }
     const targetPath = localFs.join(projectPath, file.relativePath)
     await localFs.mkdir(localFs.dirname(targetPath), { recursive: true })
-    await localFs.writeFile(
-      targetPath,
-      new Uint8Array(toArrayBuffer(file.data))
-    )
+    const write = () =>
+      localFs.writeFile(targetPath, new Uint8Array(toArrayBuffer(file.data)))
+    if (file.relativePath === PROJECT_SETTINGS_FILE_NAME) {
+      await updateProjectToml(targetPath, write)
+    } else {
+      await write()
+    }
   }
 }
 
@@ -4518,8 +4521,7 @@ async function getObservedDeletedPaths(
 export function configureCloudSyncLocalFileSystem(
   nextLocalFs: IZooDesignStudioFS
 ) {
-  localFs = coordinateCloudSyncFileSystem(nextLocalFs)
-  return localFs
+  localFs = nextLocalFs
 }
 
 export async function notifyCloudSyncWriteLikeMutation(targetPath: string) {
