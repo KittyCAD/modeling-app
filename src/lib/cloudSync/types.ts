@@ -105,13 +105,6 @@ export type RemoteProjectSummary = {
 /** Full remote project metadata used by cloud sync before archive download. */
 export type RemoteProject = RemoteProjectSummary
 
-/**
- * Minimal partial of the project API response returned after creation.
- * Cloud sync requires each accepted file's fingerprint to establish the
- * initial sync baseline.
- *
- * @see https://zoo.dev/docs/developer-tools/api/projects/get-one-of-the-authenticated-user's-projects#files
- */
 export type CreatedRemoteProject = RemoteProject &
   Pick<ProjectResponse, 'revision'> & {
     files: Required<
