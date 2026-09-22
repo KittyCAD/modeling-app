@@ -221,6 +221,13 @@ pub struct Plane {
     pub id: ArtifactId,
     pub path_ids: Vec<ArtifactId>,
     pub code_ref: CodeRef,
+    /// The evaluated transform from plane creation. Origin is in millimeters;
+    /// axes are unitless. Absent for planes only referenced by sketch commands.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub plane_info: Option<ArtifactPlaneInfo>,
+    /// The unscaled plane size in millimeters, before view-dependent scaling.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub size: Option<f64>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, JsonSchema, PartialEq, ts_rs::TS)]

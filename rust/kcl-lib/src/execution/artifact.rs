@@ -2,6 +2,7 @@ use ahash::AHashMap;
 use ahash::AHashSet;
 use indexmap::IndexMap;
 use kcl_api::NodePath;
+use kcl_api::UnitLength;
 use kcl_api::artifact::*;
 use kittycad_modeling_cmds::EnableSketchMode;
 use kittycad_modeling_cmds::FaceIsPlanar;
@@ -25,6 +26,7 @@ use crate::execution::CameraLook;
 use crate::execution::CameraView;
 use crate::execution::NamedViewValue;
 use crate::execution::Orientation;
+use crate::execution::Point3d;
 use crate::execution::Projection;
 use crate::execution::Visibility;
 use crate::execution::cmd_id_ref_to_artifact_id;
@@ -288,6 +290,12 @@ fn merge_composite_solid(old: &mut CompositeSolid, new: Artifact) -> Option<Arti
 fn merge_plane(old: &mut Plane, new: Artifact) -> Option<Artifact> {
     let Artifact::Plane(new) = new else { return Some(new) };
     merge_ids(&mut old.path_ids, new.path_ids);
+    if new.plane_info.is_some() {
+        old.plane_info = new.plane_info;
+    }
+    if new.size.is_some() {
+        old.size = new.size;
+    }
     None
 }
 
@@ -841,6 +849,7 @@ fn remap_artifact_for_clone(
             id: remap_id_for_clone(source.id, entity_id_map),
             path_ids: remap_ids_for_clone(&source.path_ids, entity_id_map),
             code_ref: clone_code_ref.clone(),
+            ..source.clone()
         }),
         Artifact::Path(source) => Artifact::Path(Path {
             id: remap_id_for_clone(source.id, entity_id_map),
@@ -1380,17 +1389,32 @@ fn artifacts_to_update(
                 consumed: false,
             })]);
         }
-        ModelingCmd::MakePlane(_) => {
+        ModelingCmd::MakePlane(plane) => {
             if range.is_synthetic() {
                 return Ok(Vec::new());
             }
             // If we're calling `make_plane` and the code range doesn't end at
             // `0` it's not a default plane, but a custom one from the
             // offsetPlane standard library function.
+            let x_axis = Point3d::new(plane.x_axis.x, plane.x_axis.y, plane.x_axis.z, None);
+            let y_axis = Point3d::new(plane.y_axis.x, plane.y_axis.y, plane.y_axis.z, None);
             return Ok(vec![Artifact::Plane(Plane {
                 id,
                 path_ids: Vec::new(),
                 code_ref,
+                plane_info: Some(artifact_plane_info(&PlaneInfo {
+                    // KCL converts lengths to millimeters before sending engine commands.
+                    origin: Point3d::new(
+                        plane.origin.x.0,
+                        plane.origin.y.0,
+                        plane.origin.z.0,
+                        Some(UnitLength::Millimeters),
+                    ),
+                    x_axis,
+                    y_axis,
+                    z_axis: x_axis.axes_cross_product(&y_axis),
+                })),
+                size: Some(plane.size.0),
             })]);
         }
         ModelingCmd::FaceIsPlanar(FaceIsPlanar { object_id, .. }) => {
@@ -1429,15 +1453,18 @@ fn artifacts_to_update(
                     })]);
                 }
                 Some(_) | None => {
-                    let path_ids = match existing_plane {
-                        Some(Artifact::Plane(Plane { path_ids, .. })) => path_ids.clone(),
-                        _ => Vec::new(),
-                    };
-                    // Create an entirely new plane
-                    return Ok(vec![Artifact::Plane(Plane {
-                        id: entity_id.into(),
-                        path_ids,
-                        code_ref,
+                    return Ok(vec![Artifact::Plane(match existing_plane {
+                        Some(Artifact::Plane(plane)) => Plane {
+                            code_ref,
+                            ..plane.clone()
+                        },
+                        _ => Plane {
+                            id: entity_id.into(),
+                            path_ids: Vec::new(),
+                            code_ref,
+                            plane_info: None,
+                            size: None,
+                        },
                     })]);
                 }
             }
@@ -1483,11 +1510,9 @@ fn artifacts_to_update(
             }));
             let plane = artifacts.get(&ArtifactId::new(*current_plane_id));
             if let Some(Artifact::Plane(plane)) = plane {
-                let plane_code_ref = plane.code_ref.clone();
                 return_arr.push(Artifact::Plane(Plane {
-                    id: (*current_plane_id).into(),
                     path_ids: vec![id],
-                    code_ref: plane_code_ref,
+                    ..plane.clone()
                 }));
             }
             if let Some(Artifact::Wall(wall)) = plane {

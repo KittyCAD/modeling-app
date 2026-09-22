@@ -2,6 +2,112 @@
 
 use super::*;
 
+#[tokio::test]
+async fn offset_plane_artifact_transform_includes_function_local_planes_and_units() {
+    let result = crate::execution::parse_execute(
+        r#"
+@settings(kclVersion = 2.0, defaultLengthUnit = in)
+fn makePlanes() {
+    first = offsetPlane(XZ, offset = 1in)
+    second = offsetPlane(first, offset = 20mm)
+    return 0
+}
+result = makePlanes()
+"#,
+    )
+    .await
+    .unwrap();
+    let outcome = result
+        .exec_state
+        .into_exec_outcome(result.mem_env, &result.exec_ctxt)
+        .await
+        .unwrap();
+    let planes: Vec<_> = outcome
+        .artifact_graph
+        .values()
+        .filter_map(|artifact| match artifact {
+            Artifact::Plane(plane) => Some(plane),
+            _ => None,
+        })
+        .collect();
+    assert_eq!(planes.len(), 2, "Planes do not have to be returned from the function");
+    for (plane, offset) in planes.into_iter().zip([25.4, 45.4]) {
+        let info = plane.plane_info.as_ref().unwrap();
+        assert_eq!(info.origin.units, Some(UnitLength::Millimeters));
+        assert_eq!(info.origin.x, 0.0);
+        assert!((info.origin.y + offset).abs() < 1e-10);
+        assert_eq!(info.origin.z, 0.0);
+        assert_eq!(info.x_axis, artifact_point3d(Point3d::new(1.0, 0.0, 0.0, None)));
+        assert_eq!(info.y_axis, artifact_point3d(Point3d::new(0.0, 0.0, 1.0, None)));
+        assert_eq!(info.z_axis, artifact_point3d(Point3d::new(0.0, -1.0, 0.0, None)));
+        assert_eq!(plane.size, Some(100.0));
+    }
+}
+
+#[tokio::test]
+async fn offset_plane_artifact_transform_survives_sketch_commands_merge_and_clone() {
+    let result = crate::execution::parse_execute(
+        r#"
+@settings(kclVersion = 2.0)
+plane = offsetPlane(XY, offset = 20mm)
+sketch(on = plane) {
+    segment = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
+}
+"#,
+    )
+    .await
+    .unwrap();
+    let outcome = result
+        .exec_state
+        .into_exec_outcome(result.mem_env, &result.exec_ctxt)
+        .await
+        .unwrap();
+    let plane = outcome
+        .artifact_graph
+        .values()
+        .find_map(|artifact| match artifact {
+            Artifact::Plane(plane) => Some(plane),
+            _ => None,
+        })
+        .unwrap();
+    assert!(!plane.path_ids.is_empty(), "StartPath must have updated the plane");
+    assert_eq!(
+        plane.plane_info.as_ref().unwrap().origin,
+        artifact_point3d(Point3d::new(0.0, 0.0, 20.0, Some(UnitLength::Millimeters)))
+    );
+    assert_eq!(plane.size, Some(100.0));
+
+    let mut merged = plane.clone();
+    let additional_path_id = ArtifactId::new(Uuid::new_v4());
+    merge_plane(
+        &mut merged,
+        Artifact::Plane(Plane {
+            path_ids: vec![additional_path_id],
+            plane_info: None,
+            size: None,
+            ..plane.clone()
+        }),
+    );
+    assert_eq!(merged.plane_info, plane.plane_info);
+    assert_eq!(merged.size, plane.size);
+    assert!(merged.path_ids.contains(&additional_path_id));
+
+    let clone_id = ArtifactId::new(Uuid::new_v4());
+    let cloned = remap_artifact_for_clone(
+        &Artifact::Plane(plane.clone()),
+        &AHashMap::from_iter([(plane.id, clone_id)]),
+        &plane.code_ref,
+        clone_id.into(),
+        plane.id,
+    );
+    let Artifact::Plane(cloned) = cloned else {
+        panic!("Expected a cloned plane artifact");
+    };
+    assert_eq!(cloned.id, clone_id);
+    assert_eq!(cloned.plane_info, plane.plane_info);
+    assert_eq!(cloned.size, plane.size);
+}
+
 #[test]
 fn gdt_annotation_artifacts_get_node_paths() {
     let code = r#"gdt::annotation(annotation = "NOTE", faces = [], edges = [])"#;
