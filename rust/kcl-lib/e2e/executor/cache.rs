@@ -41,6 +41,8 @@ async fn cache_test(
 
     bust_cache().await;
     let mut img_results = Vec::new();
+    // Variations edit one project; switching projects deliberately invalidates the cache.
+    let project_dir = tempfile::tempdir().unwrap();
     for (index, variation) in variations.iter().enumerate() {
         let program = kcl_lib::Program::parse_no_errs(variation.code).unwrap();
 
@@ -48,19 +50,14 @@ async fn cache_test(
         ctx.settings = variation.settings.clone();
 
         if !variation.other_files.is_empty() {
-            let tmp_dir = std::env::temp_dir();
-            let tmp_dir = tmp_dir
-                .join(format!("kcl_test_{test_name}"))
-                .join(uuid::Uuid::new_v4().to_string());
-
             // Create a temporary file for each of the other files.
             for (variant_path, variant_code) in &variation.other_files {
-                let tmp_file = tmp_dir.join(variant_path);
+                let tmp_file = project_dir.path().join(variant_path);
                 std::fs::create_dir_all(tmp_file.parent().unwrap()).unwrap();
                 std::fs::write(tmp_file, variant_code).unwrap();
             }
 
-            ctx.settings.project_directory = Some(kcl_lib::TypedPath(tmp_dir.clone()));
+            ctx.settings.project_directory = Some(kcl_lib::TypedPath(project_dir.path().to_path_buf()));
         }
 
         let outcome = match ctx.run_with_caching(program).await {
