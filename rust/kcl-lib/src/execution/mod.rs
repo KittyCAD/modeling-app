@@ -1529,6 +1529,11 @@ impl ExecutorContext {
 
         let use_prev_memory = mock_config.use_prev_memory;
         let mut exec_state = ExecState::new_mock(self, mock_config);
+        // Before the prelude runs below, so that `added_in` gating in std sees
+        // the program's version rather than the default.
+        exec_state
+            .set_entry_point_kcl_version(program)
+            .map_err(KclErrorWithOutputs::no_outputs)?;
         if use_prev_memory {
             match cache::read_old_memory().await {
                 Some(mem) => Self::restore_mock_memory(&mut exec_state, mem, mock_config)?,
