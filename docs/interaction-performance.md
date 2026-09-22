@@ -1,8 +1,9 @@
 # Interaction performance
 
-This milestone collects latency. Measurements at or above an interaction's
-expectation produce warnings. Missing or unfinished outcomes, invalid data, and
-dropped input records fail CI. Runs have no retries or Test Analysis Bot override.
+The controlled performance suite fails when a scored interaction meets or exceeds
+its registered budget. First-use and repeated-use scenarios both enforce the
+under-150-ms limit. Missing or unfinished outcomes, invalid data, and dropped input
+records also fail CI. Runs have no retries or Test Analysis Bot override.
 
 ## Registering an interaction
 
@@ -85,21 +86,21 @@ is measured close-then-open. First-use means the first click on each control in
 that renderer, not the first time a default-open pane mounted. These small-project
 results do not establish performance in large projects.
 
-Harness probes inject 250 ms click and pointerdown stalls, verify missing-data
-errors, and check that secondary clicks remain unattributed across recorder
+Harness probes inject 250 ms click and pointerdown stalls, verify that the same
+budget assertion rejects them, verify missing-data errors, and check that secondary clicks remain unattributed across recorder
 restart. Another probe delays pane-content visibility to verify that mounting an
 empty pane cannot complete a measurement. Their 10 ms polling interval controls
 when tests read completed records; the recorder owns the measurement timestamps.
 
 The CI job summary shows every scenario's measurements and errors. Raw samples,
-environment metadata, coverage, and all warnings are also retained in
+environment metadata, coverage, and all budget breaches are also retained in
 `test-results/interaction-performance/` and `playwright-report/interaction-performance/`.
 GitHub retains these artifacts for 30 days. After all scenarios finish, the TAB
 reporter publishes one result per scenario containing every repetition, the
 measurement summaries, raw measurement JSON, and workflow run/attempt identifiers.
 TAB's duration field remains the total scenario runtime, not click latency.
 Earlier workflow attempts remain in history; TAB uses the latest as its current
-result. Its responses never override this workflow's collection failures.
+result. Its responses never override this workflow's collection or latency failures.
 Publication failures are logged and leave the local reports and test result intact.
 Inspect the HTML report with:
 
@@ -143,14 +144,14 @@ competing recording sessions.
 
 ## Calibration and rollout
 
-Repeat unchanged commits on a consistent runner before enforcing latency:
+Calibrate additional scenarios on a consistent runner before making them blocking:
 
 ```sh
 NODE_ENV=production TARGET=desktop npm exec -- playwright test \
   --config=playwright.performance.config.ts --repeat-each=20
 ```
 
-Compare first-use and repeated-use separately: maxima, p50/p95, every warning,
+Compare first-use and repeated-use separately: maxima, p50/p95, every breach,
 collection failures, and environment metadata. Investigate variation instead of
 adding retries or widening timeouts. The injected-delay probes must keep detecting
 the regression.
@@ -160,8 +161,8 @@ same commit. Preserve the failed attempt and rerun the complete workflow, not
 individual tests or only failed jobs. A slow but valid sample is a measurement,
 not a reason to rerun until it disappears.
 
-Expand the interaction inventory and its scenarios first. Existing slow actions
-remain warnings while they are improved; there are no higher-budget exceptions.
-Then require registration and executed scenarios for new controls, resolve Event
-Timing delivery gaps, and enforce the under-150-ms target. A PR must not be able to
-raise its own passing threshold.
+Expand the interaction inventory through discovery, improve slow actions, then
+add them to the controlled suite. Discovery remains report-only; scored scenarios
+have no higher-budget exceptions. Mandatory registration and executed scenarios
+for every new control are a later stage. A PR cannot raise an interaction budget
+above 150 ms.

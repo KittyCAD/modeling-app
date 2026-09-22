@@ -1,4 +1,10 @@
+import { startDiagnosticTrace } from '@e2e/performance/diagnostic-trace'
 import {
+  startInteractionDiagnostics,
+  stopInteractionDiagnostics,
+} from '@e2e/performance/diagnostics'
+import {
+  expectInteractionBudget,
   finishCapture,
   readCapture,
   startCapture,
@@ -70,6 +76,12 @@ for (const scenario of [
       await expect(page.getByTestId('command-bar-wrapper')).toBeHidden()
     }
 
+    const diagnostics = !scenario.warm
+      ? await startInteractionDiagnostics(page)
+      : undefined
+    const stopTrace = !scenario.warm
+      ? await startDiagnosticTrace(tronApp, testInfo)
+      : undefined
     await startCapture(page)
     let report: InteractionReport
     try {
@@ -89,12 +101,16 @@ for (const scenario of [
         { [OPEN]: scenario.repetitions, [CLOSE]: scenario.repetitions },
         tronApp
       )
+      if (diagnostics) {
+        // Diagnostic tail only: observe entries that arrive after capture stops.
+        await page.evaluate(
+          () => new Promise<void>((resolve) => setTimeout(resolve, 500))
+        )
+        await stopInteractionDiagnostics(diagnostics, testInfo)
+      }
+      await stopTrace?.()
     }
-    expect(
-      report.errors,
-      'Invalid collection is not a passing measurement'
-    ).toEqual([])
-    // The first milestone collects debt; it does not enforce the latency budget.
+    expectInteractionBudget(report)
   })
 }
 
@@ -134,6 +150,9 @@ test('harness detects a delayed real command-palette click', async ({
     )
   }
   expect(report.errors).toEqual([])
+  expect(() => expectInteractionBudget(report)).toThrow(
+    'Interaction latency budget exceeded'
+  )
   const outcomeViolation = report.violations.find(
     (violation) => violation.metric === 'outcome'
   )
@@ -197,6 +216,9 @@ test('harness detects a delayed pointerdown before the command-palette click', a
     )
   }
   expect(report.errors).toEqual([])
+  expect(() => expectInteractionBudget(report)).toThrow(
+    'Interaction latency budget exceeded'
+  )
   const responsivenessViolation = report.violations.find(
     (violation) => violation.metric === 'responsiveness'
   )
@@ -217,6 +239,9 @@ test('harness rejects a missing measurement', async ({
     'harness.missing-click',
     { [OPEN]: 1 },
     tronApp
+  )
+  expect(() => expectInteractionBudget(report)).toThrow(
+    'Invalid collection is not a passing measurement'
   )
   expect(report.errors).toContain(`Expected 1 samples for ${OPEN}; received 0.`)
   expect(report.coverage.find((row) => row.id === OPEN)?.maximumMs).toBeNull()
@@ -275,7 +300,7 @@ test('recorder does not attribute secondary clicks and restart clears prior samp
       tronApp
     )
   }
-  expect(report.errors).toEqual([])
+  expectInteractionBudget(report)
   expect(report.unattributed).toBe(0)
   expect(report.coverage.find((row) => row.id === OPEN)?.measured).toBe(1)
 })

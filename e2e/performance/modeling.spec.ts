@@ -1,6 +1,12 @@
+import { startDiagnosticTrace } from '@e2e/performance/diagnostic-trace'
+import {
+  startInteractionDiagnostics,
+  stopInteractionDiagnostics,
+} from '@e2e/performance/diagnostics'
 import { readFile } from 'node:fs/promises'
 import path from 'node:path'
 import {
+  expectInteractionBudget,
   finishCapture,
   startCapture,
   waitForSample,
@@ -103,6 +109,12 @@ for (const scenario of [
       }
     }
 
+    const diagnostics = !scenario.warm
+      ? await startInteractionDiagnostics(page)
+      : undefined
+    const stopTrace = !scenario.warm
+      ? await startDiagnosticTrace(tronApp, testInfo)
+      : undefined
     await startCapture(page)
     let report: InteractionReport
     try {
@@ -123,11 +135,16 @@ for (const scenario of [
         ),
         tronApp
       )
+      if (diagnostics) {
+        // Diagnostic tail only: observe entries that arrive after capture stops.
+        await page.evaluate(
+          () => new Promise<void>((resolve) => setTimeout(resolve, 500))
+        )
+        await stopInteractionDiagnostics(diagnostics, testInfo)
+      }
+      await stopTrace?.()
     }
-    expect(
-      report.errors,
-      'Invalid collection is not a passing measurement'
-    ).toEqual([])
+    expectInteractionBudget(report)
   })
 }
 
@@ -185,6 +202,9 @@ test('harness waits for usable pane content', async ({
     )
   }
   expect(report.errors).toEqual([])
+  expect(() => expectInteractionBudget(report)).toThrow(
+    'Interaction latency budget exceeded'
+  )
   for (const definition of [
     interactions.codePaneOpen,
     interactions.filesPaneOpen,

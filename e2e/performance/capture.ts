@@ -1,6 +1,7 @@
 import { arch, cpus, platform, release, totalmem } from 'node:os'
 import type { ElectronZoo } from '@e2e/playwright/fixtures/fixtureSetup'
 import type { Page, TestInfo } from '@playwright/test'
+import { expect } from '@playwright/test'
 import { reportInteractions } from '@src/lib/interactionPerformance/report'
 import type { InteractionReport } from '@src/lib/interactionPerformance/report'
 
@@ -87,7 +88,7 @@ export async function finishCapture(
     body: [
       `Scenario: ${scenario}`,
       `Collection errors: ${report.errors.length}`,
-      `Observed expectation breaches: ${report.violations.length} (warnings)`,
+      `Observed budget breaches: ${report.violations.length}`,
       `Unattributed clicks: ${report.unattributed}`,
       ...report.coverage.map(
         (row) =>
@@ -98,4 +99,12 @@ export async function finishCapture(
     contentType: 'text/plain',
   })
   return report
+}
+
+export function expectInteractionBudget(report: InteractionReport) {
+  expect(
+    report.errors,
+    'Invalid collection is not a passing measurement'
+  ).toEqual([])
+  expect(report.violations, 'Interaction latency budget exceeded').toEqual([])
 }

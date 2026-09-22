@@ -31,8 +31,8 @@ export default class InteractionSummaryReporter implements Reporter {
       path,
       [
         '## Interaction measurements',
-        `Collection suite: **${result.status}**. Latency breaches are warnings.`,
-        'Harness probes intentionally generate latency warnings or collection errors.',
+        `Performance suite: **${result.status}**. Scored interactions must stay below their registered budgets.`,
+        'Harness probes intentionally exceed budgets or omit measurements and verify rejection.',
         ...this.sections,
         '',
       ].join('\n\n')

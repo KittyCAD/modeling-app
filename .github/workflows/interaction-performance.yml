@@ -57,10 +57,9 @@ jobs:
           retention-days: 7
 
   measure:
-    name: Interaction measurements (report only)
+    name: Interaction performance budgets
     needs: build-app
     # Keep compilation in a separate job, and score one browser at a time.
-    # This existing runner profile must be calibrated before enforcing latency.
     runs-on: namespace-profile-ubuntu-8-cores;overrides.cache-tag=modeling-app-general-v2
     timeout-minutes: 15
     steps:
@@ -91,7 +90,7 @@ jobs:
       - name: Install Electron runtime libraries
         run: npm exec -- playwright install-deps chromium
 
-      - name: Collect interaction measurements
+      - name: Enforce interaction budgets
         run: xvfb-run --auto-servernum --server-args="-screen 0 1280x960x24" -- npm exec -- playwright test --config=playwright.performance.config.ts
         env:
           NODE_ENV: production
