@@ -872,9 +872,9 @@ export const doExport = async (
   if (exportFrom === 'dropdown') {
     await page.getByTestId('project-sidebar-toggle').click()
 
-    const exportMenuButton = page.getByRole('button', {
-      name: 'Export current part',
-    })
+    const exportMenuButton = page
+      .getByTestId('project-sidebar-menu')
+      .getByRole('button', { name: 'Export' })
     await expect(exportMenuButton).toBeVisible()
     await exportMenuButton.click()
   } else if (exportFrom === 'sidebarButton') {
