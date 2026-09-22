@@ -9,23 +9,31 @@ import { err } from '@src/lib/trap'
 import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
 import { expect, it } from 'vitest'
 
-it('removes piped appearance without deleting its extrusion', async () => {
+it.each([
+  ['appearance', 'appearance(color = "#7093ad", roughness = 55)'],
+  ['translate', 'translate(x = 10mm, global = true)'],
+  ['extrude', 'translate(x = 10mm, global = true)'],
+  [
+    'patternLinear3d',
+    'patternLinear3d(instances = 2, distance = 20mm, axis = X)',
+  ],
+])('deletes the selected %s operation from a pipe', async (name, call) => {
   const { instance, rustContext } = await buildTheWorldAndNoEngineConnection()
-  const base = `@settings(defaultLengthUnit = mm, kclVersion = 2.0)
+  const sketch = `@settings(defaultLengthUnit = mm, kclVersion = 2.0)
 
 profile = sketch(on = XY) {
   ring = circle(center = [var 0mm, var 0mm], start = [var 5mm, var 0mm])
 }
-profileRegion = region(point = [1mm, 0mm], sketch = profile)
-solid = extrude(profileRegion, length = 12mm)`
-  const appearance = '\n  |> appearance(color = "#7093ad", roughness = 55)'
-  const ast = assertParse(base + appearance, instance)
+profileRegion = region(point = [1mm, 0mm], sketch = profile)`
+  const base = `${sketch}\nsolid = extrude(profileRegion, length = 12mm)`
+  const suffix = '\n  |> translate(y = 20mm, global = true)'
+  const ast = assertParse(`${base}\n  |> ${call}${suffix}`, instance)
   const execState = await enginelessExecutor(ast, rustContext)
   const operation = getAllOperations(execState.operations).find(
-    (op) => op.type === 'StdLibCall' && op.name === 'appearance'
+    (op) => op.type === 'StdLibCall' && op.name === name
   )
   if (!operation || operation.type !== 'StdLibCall') {
-    throw new Error('Could not find appearance operation')
+    throw new Error(`Could not find ${name} operation`)
   }
   const result = await deleteFromSelection(
     ast,
@@ -42,6 +50,7 @@ solid = extrude(profileRegion, length = 12mm)`
   if (err(result)) throw result
   const codeAfter = recast(result, instance)
   if (err(codeAfter)) throw codeAfter
-  expect(codeAfter).toBe(recast(assertParse(base, instance), instance))
+  const expected = name === 'extrude' ? sketch : base + suffix
+  expect(codeAfter).toBe(recast(assertParse(expected, instance), instance))
   await enginelessExecutor(assertParse(codeAfter, instance), rustContext)
 })

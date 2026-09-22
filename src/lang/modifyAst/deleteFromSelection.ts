@@ -233,11 +233,15 @@ export async function deleteFromSelection(
       typeof pipeItemIndex === 'number' && pipeItemIndex > 0
         ? varDecNodeInit.body[pipeItemIndex]
         : undefined
-    const isPipedAppearance =
-      pipeItem?.type === 'CallExpressionKw' &&
-      pipeItem.callee.name.name === 'appearance'
+    // Geometry selections retain their feature-specific deletion behavior.
+    const isGeometrySelection =
+      selection.artifact?.type === 'segment' ||
+      selection.artifact?.type === 'wall' ||
+      selection.artifact?.type === 'cap' ||
+      selection.artifact?.type === 'edgeCut'
     if (
-      (selection.artifact?.type === 'pattern' || isPipedAppearance) &&
+      !isGeometrySelection &&
+      pipeItem?.type === 'CallExpressionKw' &&
       typeof pipeItemIndex === 'number' &&
       varDecNodeInit.body.length > 1
     ) {
