@@ -99,7 +99,11 @@ function CommandBarBasicInput({
           placeholder="Enter a value"
           defaultValue={defaultValue}
           onKeyDown={(event) => {
-            if (event.key === 'Backspace' && event.metaKey) {
+            if (
+              event.key === 'Backspace' &&
+              (event.metaKey || event.currentTarget.value.length === 0)
+            ) {
+              event.preventDefault()
               stepBack()
             }
           }}
