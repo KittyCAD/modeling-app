@@ -1,3 +1,5 @@
+kcl_versions = ["2.0"]
 redact_uuids = true
+
 [test_graphics.EngineRender]
 reason = "GLB fails to export. 'Error exporting: internal error: unknown'"
