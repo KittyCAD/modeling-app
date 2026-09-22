@@ -20,7 +20,6 @@ export async function startDiagnosticTrace(
   )
   return async () => {
     const profile: unknown = await session.send('Profiler.stop')
-    await session.detach()
     await testInfo.attach('cpu-profile', {
       body: JSON.stringify(profile),
       contentType: 'application/json',
@@ -33,5 +32,6 @@ export async function startDiagnosticTrace(
       path,
       contentType: 'application/json',
     })
+    await session.detach()
   }
 }
