@@ -96,6 +96,7 @@ test(
       await setup(context, page, testInfo, [], {
         cloudSyncEnabled: true,
       })
+      await expectCloudSyncHomeReady(page)
       // The shared CI account has thousands of projects. Filter their cards
       // through the UI without replacing the real project-list response.
       await page.getByPlaceholder(/^Search projects/).fill(projectName)
