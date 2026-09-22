@@ -245,6 +245,8 @@ export async function deleteFromSelection(
       typeof pipeItemIndex === 'number' &&
       varDecNodeInit.body.length > 1
     ) {
+      // Match the whole pipe stage so selecting a nested call (e.g. translate
+      // inside union) cannot delete the enclosing operation instead.
       if (
         pipeItem.start !== selection.codeRef.range[0] ||
         pipeItem.end !== selection.codeRef.range[1]
