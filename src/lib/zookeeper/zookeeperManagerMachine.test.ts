@@ -3,7 +3,11 @@ import type {
   ClientErrorReport,
   MlCopilotFile,
 } from '@kittycad/lib'
-import { resetReportedClientErrorsForTests } from '@src/lib/clientErrors'
+import { signal } from '@preact/signals-core'
+import {
+  initializeClientErrorReporting,
+  resetReportedClientErrorsForTests,
+} from '@src/lib/clientErrors'
 import type { FileMeta } from '@src/lib/types'
 import {
   type Conversation,
@@ -33,8 +37,10 @@ import { S } from '@src/machines/utils'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { createActor, fromPromise, waitFor } from 'xstate'
 
+let stopClientErrorReporting: (() => void) | undefined
 function stubClientErrorFetch() {
   resetReportedClientErrorsForTests()
+  stopClientErrorReporting = initializeClientErrorReporting(signal(true))
   const reports: ClientErrorReport[] = []
   const fetchMock = vi
     .spyOn(globalThis, 'fetch')
@@ -255,6 +261,8 @@ describe('zookeeperManagerMachine', () => {
   })
 
   afterEach(() => {
+    stopClientErrorReporting?.()
+    stopClientErrorReporting = undefined
     vi.useRealTimers()
     vi.restoreAllMocks()
     vi.unstubAllGlobals()
