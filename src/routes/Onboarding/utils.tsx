@@ -1,3 +1,5 @@
+import { signal } from '@preact/signals-core'
+import { useSignals } from '@preact/signals-react/runtime'
 import { useCallback, useEffect, useState } from 'react'
 import {
   type NavigateFunction,
@@ -322,7 +324,12 @@ export interface OnboardingUtilDeps {
   navigate: NavigateFunction
 }
 
-let pendingOnboardingStart: Promise<void> | undefined
+const pendingOnboardingStart = signal<Promise<void> | undefined>(undefined)
+
+export function useOnboardingStartPending() {
+  useSignals()
+  return pendingOnboardingStart.value !== undefined
+}
 
 async function createOnboardingProject(
   deps: OnboardingUtilDeps,
@@ -395,17 +402,18 @@ export function acceptOnboarding(deps: OnboardingUtilDeps): Promise<void> {
     ? onboardingStartPath
     : deps.onboardingStatus
 
-  if (pendingOnboardingStart) {
-    return pendingOnboardingStart
+  const pendingStart = pendingOnboardingStart.peek()
+  if (pendingStart) {
+    return pendingStart
   }
 
   const start = createOnboardingProject(deps, onboardingStatus)
   const trackedStart = start.finally(() => {
-    if (pendingOnboardingStart === trackedStart) {
-      pendingOnboardingStart = undefined
+    if (pendingOnboardingStart.peek() === trackedStart) {
+      pendingOnboardingStart.value = undefined
     }
   })
-  pendingOnboardingStart = trackedStart
+  pendingOnboardingStart.value = trackedStart
   return trackedStart
 }
 

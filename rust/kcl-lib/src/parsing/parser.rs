@@ -39,14 +39,18 @@ use crate::TypedPath;
 use crate::errors::CompilationIssue;
 use crate::errors::Severity;
 use crate::errors::Tag;
+use crate::execution::annotations::ADDED_IN;
 use crate::execution::annotations::DEPRECATED;
 use crate::execution::annotations::DEPRECATED_SINCE;
 use crate::execution::annotations::EXPERIMENTAL;
+use crate::execution::annotations::REMOVED_IN;
 use crate::execution::annotations::VersionConstraint;
 use crate::execution::annotations::{self};
 use crate::execution::types::ArrayLen;
+use crate::import_format::import_format_from_path;
 use crate::parsing::PIPE_OPERATOR;
 use crate::parsing::PIPE_SUBSTITUTION_OPERATOR;
+use crate::parsing::ast::types::ABSOLUTE_PATHS_NOT_SUPPORTED;
 use crate::parsing::ast::types::Annotation;
 use crate::parsing::ast::types::ArrayExpression;
 use crate::parsing::ast::types::ArrayRangeExpression;
@@ -294,7 +298,7 @@ impl ParseContext {
                     let _ = ctxt.as_mut().unwrap().settings.update_from_annotation(attr);
                 });
             }
-            Some(annotations::WARNINGS) => {
+            Some(annotations::WARNINGS) | Some(annotations::DIAGNOSTICS) => {
                 // TODO https://github.com/KittyCAD/modeling-app/issues/8021
             }
             _ => {}
@@ -596,17 +600,6 @@ fn annotation(i: &mut TokenSlice) -> ModalResult<Node<Annotation>> {
         end,
         at.module_id,
     );
-
-    if let Some(property) = value.properties.as_deref().and_then(|properties| {
-        properties
-            .iter()
-            .find(|property| property.key.name == annotations::IMPORT_TARGET_REPRESENTATION)
-    }) {
-        ParseContext::experimental(
-            "the `targetRepresentation` import annotation",
-            property.as_source_range(),
-        );
-    }
 
     ParseContext::handle_attribute(&value);
 
@@ -2454,7 +2447,7 @@ fn validate_path_string(path_string: String, var_name: bool, path_range: SourceR
             return Err(ErrMode::Cut(
                 CompilationIssue::fatal(
                     path_range,
-                    "import path may not start with '..'. Cannot traverse to something outside the bounds of your project. If this path is inside your project please find a better way to reference it.",
+                    "import path may not start with '..'. Cannot reference a parent module or anything outside the bounds of your project.",
                 )
                 .into(),
             ));
@@ -2470,7 +2463,7 @@ fn validate_path_string(path_string: String, var_name: bool, path_range: SourceR
             return Err(ErrMode::Cut(
                 CompilationIssue::fatal(
                     path_range,
-                    "import path may not start with '/' or '\\'. Cannot traverse to something outside the bounds of your project. If this path is inside your project please find a better way to reference it.",
+                    "import path may not start with '/' or '\\'. Cannot traverse to something outside the bounds of your project. If this path is inside your project, use a relative path.",
                 )
                 .into(),
             ));
@@ -2523,8 +2516,7 @@ fn validate_path_string(path_string: String, var_name: bool, path_range: SourceR
 
         ImportPath::Std { path: segments }
     } else if path_string.contains('.') {
-        let extn = std::path::Path::new(&path_string).extension().unwrap_or_default();
-        if !IMPORT_FILE_EXTENSIONS.contains(&extn.to_string_lossy().to_lowercase()) {
+        if import_format_from_path(&path_string).is_none() {
             ParseContext::warn(CompilationIssue::err(
                 path_range,
                 format!(
@@ -3345,6 +3337,12 @@ fn identifier_or_keyword(i: &mut TokenSlice) -> ModalResult<Token> {
 fn nameable_identifier(i: &mut TokenSlice) -> ModalResult<Node<Identifier>> {
     let result = identifier.parse_next(i)?;
 
+    report_unnameable_identifier(&result);
+
+    Ok(result)
+}
+
+fn report_unnameable_identifier(result: &Node<Identifier>) {
     if !result.is_nameable() {
         let desc = if result.name == "_" {
             "Underscores"
@@ -3356,13 +3354,11 @@ fn nameable_identifier(i: &mut TokenSlice) -> ModalResult<Node<Identifier>> {
             format!("{desc} cannot be referred to, only declared."),
         ));
     }
-
-    Ok(result)
 }
 
-fn name(i: &mut TokenSlice) -> ModalResult<Node<Name>> {
+fn unvalidated_name(i: &mut TokenSlice) -> ModalResult<Node<Name>> {
     let abs_path = opt(double_colon).parse_next(i)?;
-    let mut idents: NodeList<Identifier> = separated(1.., nameable_identifier, double_colon)
+    let mut idents: NodeList<Identifier> = separated(1.., identifier, double_colon)
         .parse_next(i)
         .map_err(|e| e.backtrack())?;
 
@@ -3375,7 +3371,7 @@ fn name(i: &mut TokenSlice) -> ModalResult<Node<Name>> {
     let name = idents.pop().unwrap();
     let end = name.end;
     let module_id = name.module_id;
-    let result = Node::new(
+    Ok(Node::new(
         Name {
             name,
             path: idents,
@@ -3385,7 +3381,15 @@ fn name(i: &mut TokenSlice) -> ModalResult<Node<Name>> {
         start,
         end,
         module_id,
-    );
+    ))
+}
+
+fn name(i: &mut TokenSlice) -> ModalResult<Node<Name>> {
+    let result = unvalidated_name.parse_next(i)?;
+
+    for ident in result.path.iter().chain(std::iter::once(&result.name)) {
+        report_unnameable_identifier(ident);
+    }
 
     if let Some(suggestion) = super::deprecation(&result.to_string(), DeprecationKind::Const) {
         ParseContext::warn(
@@ -3853,13 +3857,13 @@ fn type_not_union(i: &mut TokenSlice) -> ModalResult<Node<Type>> {
             }),
         // Array types
         array_type,
-        // Primitive types
-        primitive_type.map(|t| t.map(Type::Primitive)),
+        // Primary types
+        primary_type,
     ))
     .parse_next(i)
 }
 
-fn primitive_type(i: &mut TokenSlice) -> ModalResult<Node<PrimitiveType>> {
+fn primary_type(i: &mut TokenSlice) -> ModalResult<Node<Type>> {
     alt((
         // A function type: `fn` (`(` type?, (id: type,)* `)` (`:` type)?)?
         (
@@ -3912,24 +3916,46 @@ fn primitive_type(i: &mut TokenSlice) -> ModalResult<Node<PrimitiveType>> {
                     }
                 }
 
-                Node::new(PrimitiveType::Function(ft), t.start, t.end, t.module_id)
+                Node::new(
+                    Type::Primitive(PrimitiveType::Function(ft)),
+                    t.start,
+                    t.end,
+                    t.module_id,
+                )
             }),
         // A named type, possibly with a numeric suffix.
-        (identifier, opt(delimited(open_paren, uom_for_type, close_paren))).map(|(ident, suffix)| {
-            let start = ident.start;
-            let end = ident.end;
-            let module_id = ident.module_id;
-            let result = Node::new(
-                PrimitiveType::primitive_from_str(&ident.name, suffix).unwrap_or(PrimitiveType::Named { id: ident }),
-                start,
-                end,
-                module_id,
-            );
+        (unvalidated_name, opt(delimited(open_paren, uom_for_type, close_paren))).map(|(name, suffix)| {
+            if name.abs_path {
+                ParseContext::err(CompilationIssue::fatal(
+                    name.as_source_range(),
+                    ABSOLUTE_PATHS_NOT_SUPPORTED,
+                ));
+            }
+            if !name.path.is_empty() && suffix.is_some() {
+                ParseContext::err(CompilationIssue::fatal(
+                    name.as_source_range(),
+                    "Numeric suffixes cannot be applied to qualified type names",
+                ));
+            }
 
-            if *result == PrimitiveType::None {
+            let start = name.start;
+            let end = name.end;
+            let module_id = name.module_id;
+            let primitive = if name.path.is_empty() && !name.abs_path {
+                PrimitiveType::primitive_from_str(&name.name.name, suffix)
+            } else {
+                None
+            };
+            let result = if let Some(primitive) = primitive {
+                Node::new(Type::Primitive(primitive), start, end, module_id)
+            } else {
+                Node::new(Type::Named { name }, start, end, module_id)
+            };
+
+            if *result == Type::Primitive(PrimitiveType::None) {
                 ParseContext::experimental("none type", result.as_source_range());
             }
-            if *result == PrimitiveType::Never {
+            if *result == Type::Primitive(PrimitiveType::Never) {
                 ParseContext::experimental("never type", result.as_source_range());
             }
 
@@ -4081,13 +4107,48 @@ fn parameters(i: &mut TokenSlice) -> ModalResult<Vec<Parameter>> {
                     identifier.pre_comments = comments.inner;
                 }
                 let mut experimental = false;
+                let mut added_in = None;
                 let mut deprecated = false;
                 let mut deprecated_since = None;
+                let mut removed_in = None;
                 if let Some(attr) = attr {
                     if let Some(property) = attr.property(EXPERIMENTAL)
                         && let Some(value) = property.value.literal_bool()
                     {
                         experimental = value;
+                    }
+                    if let Some(property) = attr.property(ADDED_IN) {
+                        if let Some(s) = property.value.literal_str()
+                            && let Some(version) = VersionConstraint::parse(s)
+                        {
+                            added_in = Some(version);
+                        } else {
+                            ParseContext::err(CompilationIssue::fatal(
+                                SourceRange::from(&property.value),
+                                format!(
+                                    "Invalid value for `{ADDED_IN}`; expected a dotted integer version string, e.g., \"3.0\"",
+                                ),
+                            ));
+                        }
+                        if !labeled {
+                            ParseContext::err(CompilationIssue::fatal(
+                                SourceRange::from(&attr),
+                                format!(
+                                    "`{ADDED_IN}` cannot be used on the unlabeled parameter; only labeled parameters can be added in a later version"
+                                ),
+                            ));
+                        } else if default_value.is_none() {
+                            // A caller on an older version cannot pass the
+                            // parameter, so the function body must be able to
+                            // run with its default value.
+                            ParseContext::err(CompilationIssue::fatal(
+                                SourceRange::from(&identifier),
+                                format!(
+                                    "A parameter with `{ADDED_IN}` must be optional; add `?` after `{}`",
+                                    identifier.name
+                                ),
+                            ));
+                        }
                     }
                     if let Some(property) = attr.property(DEPRECATED)
                         && let Some(value) = property.value.literal_bool()
@@ -4114,13 +4175,74 @@ fn parameters(i: &mut TokenSlice) -> ModalResult<Vec<Parameter>> {
                             format!("A parameter cannot set both `{DEPRECATED}` and `{DEPRECATED_SINCE}`; only one may be specified"),
                         ));
                     }
+                    if let Some(property) = attr.property(REMOVED_IN) {
+                        if let Some(s) = property.value.literal_str()
+                            && let Some(version) = VersionConstraint::parse(s)
+                        {
+                            removed_in = Some(version);
+                        } else {
+                            ParseContext::err(CompilationIssue::fatal(
+                                SourceRange::from(&property.value),
+                                format!(
+                                    "Invalid value for `{REMOVED_IN}`; expected a dotted integer version string, e.g., \"3.0\"",
+                                ),
+                            ));
+                        }
+                        if !labeled {
+                            ParseContext::err(CompilationIssue::fatal(
+                                SourceRange::from(&attr),
+                                format!(
+                                    "`{REMOVED_IN}` cannot be used on the unlabeled parameter; only labeled parameters can be removed"
+                                ),
+                            ));
+                        } else if default_value.is_none() {
+                            // A caller on the removed version cannot pass the
+                            // parameter, so the function body must be able to
+                            // run with its default value.
+                            ParseContext::err(CompilationIssue::fatal(
+                                SourceRange::from(&identifier),
+                                format!(
+                                    "A parameter with `{REMOVED_IN}` must be optional; add `?` after `{}`",
+                                    identifier.name
+                                ),
+                            ));
+                        }
+                    }
+                    // A parameter cannot be deprecated before it exists, nor
+                    // removed in the version that added it. These are mistakes
+                    // in the declaration's metadata that do not prevent the
+                    // program from running, so they are not fatal.
+                    if let Some(added) = &added_in {
+                        if let Some(since) = &deprecated_since
+                            && since.is_before(added)
+                            && let Some(property) = attr.property(DEPRECATED_SINCE)
+                        {
+                            ParseContext::err(CompilationIssue::err(
+                                SourceRange::from(&property.value),
+                                format!(
+                                    "`{DEPRECATED_SINCE}` (KCL {since}) must not be earlier than `{ADDED_IN}` (KCL {added})"
+                                ),
+                            ));
+                        }
+                        if let Some(removed) = &removed_in
+                            && !added.is_before(removed)
+                            && let Some(property) = attr.property(REMOVED_IN)
+                        {
+                            ParseContext::err(CompilationIssue::err(
+                                SourceRange::from(&property.value),
+                                format!("`{REMOVED_IN}` (KCL {removed}) must be later than `{ADDED_IN}` (KCL {added})"),
+                            ));
+                        }
+                    }
                     identifier.outer_attrs.push(attr);
                 }
 
                 Ok(Parameter {
                     experimental,
+                    added_in,
                     deprecated,
                     deprecated_since,
+                    removed_in,
                     identifier,
                     param_type: type_,
                     default_value,
@@ -5925,6 +6047,204 @@ height = [obj["a"] -1, 0]"#;
     }
 
     #[test]
+    fn test_param_removed_in_annotation() {
+        let tokens = crate::parsing::token::lex(
+            r#"fn foo(
+  @(deprecated_since = "2.0", removed_in = "3.0")
+  x?: number,
+) {
+  return x
+}"#,
+            ModuleId::default(),
+        )
+        .unwrap();
+        let mut body = in_ctx(|| program.parse(tokens.as_slice())).unwrap().inner.body;
+        let BodyItem::VariableDeclaration(item) = body.remove(0) else {
+            panic!("expected function declaration");
+        };
+        let Expr::FunctionExpression(func) = item.into_node().inner.declaration.inner.init else {
+            panic!("expected function expression");
+        };
+        let param = &func.params[0];
+        assert_eq!(param.deprecated_since, VersionConstraint::parse("2.0"));
+        assert_eq!(param.removed_in, VersionConstraint::parse("3.0"));
+    }
+
+    #[test]
+    fn test_param_removed_in_invalid_value() {
+        assert_err_contains(
+            r#"fn foo(
+  @(removed_in = "3.x")
+  x?: number,
+) {
+  return x
+}"#,
+            "Invalid value for `removed_in`",
+        );
+    }
+
+    #[test]
+    fn test_param_removed_in_on_unlabeled_param() {
+        assert_err_contains(
+            r#"fn foo(
+  @(removed_in = "3.0")
+  @x: number,
+) {
+  return x
+}"#,
+            "`removed_in` cannot be used on the unlabeled parameter",
+        );
+    }
+
+    #[test]
+    fn test_param_removed_in_requires_optional_param() {
+        assert_err(
+            r#"fn foo(
+  @(removed_in = "3.0")
+  x: number,
+) {
+  return x
+}"#,
+            "A parameter with `removed_in` must be optional; add `?` after `x`",
+            [34, 35],
+        );
+    }
+
+    #[test]
+    fn test_param_removed_in_allows_optional_param_with_default() {
+        crate::parsing::top_level_parse(
+            r#"fn foo(
+  @(removed_in = "3.0")
+  x?: number = 7,
+) {
+  return x
+}"#,
+        )
+        .unwrap();
+    }
+
+    /// The first parameter of the function declared by the program's first
+    /// statement.
+    fn first_fn_param(mut program: Node<Program>) -> Parameter {
+        let BodyItem::VariableDeclaration(item) = program.inner.body.remove(0) else {
+            panic!("expected function declaration");
+        };
+        let Expr::FunctionExpression(func) = item.into_node().inner.declaration.inner.init else {
+            panic!("expected function expression");
+        };
+        func.params[0].clone()
+    }
+
+    #[test]
+    fn test_param_added_in_annotation() {
+        // `added_in` may equal `deprecated_since`: a parameter can arrive
+        // already deprecated.
+        let (program, _) = assert_no_err(
+            r#"fn foo(
+  @(added_in = "2.0", deprecated_since = "2.0", removed_in = "3.0")
+  x?: number,
+) {
+  return x
+}"#,
+        );
+        let param = first_fn_param(program);
+        assert_eq!(param.added_in, VersionConstraint::parse("2.0"));
+        assert_eq!(param.deprecated_since, VersionConstraint::parse("2.0"));
+        assert_eq!(param.removed_in, VersionConstraint::parse("3.0"));
+    }
+
+    #[test]
+    fn test_param_added_in_invalid_value() {
+        assert_err_contains(
+            r#"fn foo(
+  @(added_in = "3.x")
+  x?: number,
+) {
+  return x
+}"#,
+            "Invalid value for `added_in`",
+        );
+    }
+
+    #[test]
+    fn test_param_added_in_on_unlabeled_param() {
+        assert_err_contains(
+            r#"fn foo(
+  @(added_in = "3.0")
+  @x: number,
+) {
+  return x
+}"#,
+            "`added_in` cannot be used on the unlabeled parameter",
+        );
+    }
+
+    #[test]
+    fn test_param_added_in_requires_optional_param() {
+        assert_err(
+            r#"fn foo(
+  @(added_in = "3.0")
+  x: number,
+) {
+  return x
+}"#,
+            "A parameter with `added_in` must be optional; add `?` after `x`",
+            [32, 33],
+        );
+    }
+
+    #[test]
+    fn test_param_added_in_allows_optional_param_with_default() {
+        assert_no_err(
+            r#"fn foo(
+  @(added_in = "3.0")
+  x?: number = 7,
+) {
+  return x
+}"#,
+        );
+    }
+
+    #[test]
+    fn test_param_added_in_later_than_deprecated_since_is_nonfatal_error() {
+        // The declaration's metadata is inconsistent, but the program can
+        // still run, so the error is not fatal and the AST is kept.
+        let (program, issues) = assert_no_fatal(
+            r#"fn foo(
+  @(added_in = "3.0", deprecated_since = "2.0")
+  x?: number,
+) {
+  return x
+}"#,
+        );
+        let errors: Vec<_> = issues.iter().filter(|e| e.severity == Severity::Error).collect();
+        assert_eq!(errors.len(), 1, "found: {issues:#?}");
+        assert_eq!(
+            errors[0].message,
+            "`deprecated_since` (KCL 2.0) must not be earlier than `added_in` (KCL 3.0)"
+        );
+        assert_eq!(first_fn_param(program).added_in, VersionConstraint::parse("3.0"));
+    }
+
+    #[test]
+    fn test_param_added_in_not_before_removed_in_is_nonfatal_error() {
+        let (_, issues) = assert_no_fatal(
+            r#"fn foo(
+  @(added_in = "3.0", removed_in = "3.0")
+  x?: number,
+) {
+  return x
+}"#,
+        );
+        let errors: Vec<_> = issues.iter().filter(|e| e.severity == Severity::Error).collect();
+        assert_eq!(errors.len(), 1, "found: {issues:#?}");
+        assert_eq!(
+            errors[0].message,
+            "`removed_in` (KCL 3.0) must be later than `added_in` (KCL 3.0)"
+        );
+    }
+
+    #[test]
     fn test_anon_fn_no_fn() {
         assert_err_contains("foo(42, (x) { return x + 1 })", "Anonymous function requires `fn`");
     }
@@ -6045,8 +6365,10 @@ e
             (
                 vec![Parameter {
                     experimental: Default::default(),
+                    added_in: None,
                     deprecated: false,
                     deprecated_since: None,
+                    removed_in: None,
                     identifier: Node::no_src(Identifier {
                         name: "a".to_owned(),
                         digest: None,
@@ -6061,8 +6383,10 @@ e
             (
                 vec![Parameter {
                     experimental: Default::default(),
+                    added_in: None,
                     deprecated: false,
                     deprecated_since: None,
+                    removed_in: None,
                     identifier: Node::no_src(Identifier {
                         name: "a".to_owned(),
                         digest: None,
@@ -6078,8 +6402,10 @@ e
                 vec![
                     Parameter {
                         experimental: Default::default(),
+                        added_in: None,
                         deprecated: false,
                         deprecated_since: None,
+                        removed_in: None,
                         identifier: Node::no_src(Identifier {
                             name: "a".to_owned(),
                             digest: None,
@@ -6091,8 +6417,10 @@ e
                     },
                     Parameter {
                         experimental: Default::default(),
+                        added_in: None,
                         deprecated: false,
                         deprecated_since: None,
+                        removed_in: None,
                         identifier: Node::no_src(Identifier {
                             name: "b".to_owned(),
                             digest: None,
@@ -6109,8 +6437,10 @@ e
                 vec![
                     Parameter {
                         experimental: Default::default(),
+                        added_in: None,
                         deprecated: false,
                         deprecated_since: None,
+                        removed_in: None,
                         identifier: Node::no_src(Identifier {
                             name: "a".to_owned(),
                             digest: None,
@@ -6122,8 +6452,10 @@ e
                     },
                     Parameter {
                         experimental: Default::default(),
+                        added_in: None,
                         deprecated: false,
                         deprecated_since: None,
+                        removed_in: None,
                         identifier: Node::no_src(Identifier {
                             name: "b".to_owned(),
                             digest: None,
@@ -6202,17 +6534,17 @@ e
     fn bad_imports() {
         assert_err(
             r#"import cube from "../cube.kcl""#,
-            "import path may not start with '..'. Cannot traverse to something outside the bounds of your project. If this path is inside your project please find a better way to reference it.",
+            "import path may not start with '..'. Cannot reference a parent module or anything outside the bounds of your project.",
             [17, 30],
         );
         assert_err(
             r#"import cube from "/cube.kcl""#,
-            "import path may not start with '/' or '\\'. Cannot traverse to something outside the bounds of your project. If this path is inside your project please find a better way to reference it.",
+            "import path may not start with '/' or '\\'. Cannot traverse to something outside the bounds of your project. If this path is inside your project, use a relative path.",
             [17, 28],
         );
         assert_err(
             r#"import cube from "C:\cube.kcl""#,
-            "import path may not start with '/' or '\\'. Cannot traverse to something outside the bounds of your project. If this path is inside your project please find a better way to reference it.",
+            "import path may not start with '/' or '\\'. Cannot traverse to something outside the bounds of your project. If this path is inside your project, use a relative path.",
             [17, 30],
         );
         assert_err(
@@ -6255,6 +6587,13 @@ e
             "Import path is not a valid identifier and must be aliased using `as someName`. For example: `import \"my-part.kcl\" as myPart`",
             [7, 20],
         );
+    }
+
+    #[test]
+    fn creo_import_paths() {
+        for path in ["part.prt", "part.prt.1", "parts/part.PRT.23"] {
+            assert_no_err(&format!(r#"import "{path}" as part"#));
+        }
     }
 
     #[test]
@@ -6651,6 +6990,86 @@ type foo = fn([fn])
 type foo = fn(fn, f: fn(number(_))): [fn([any]): string]
     "#;
         assert_no_err(code);
+    }
+
+    #[test]
+    fn qualified_type_path_in_parameter_types() {
+        assert_no_err("fn labeled(@o: view::Orientation) {}\nfn unlabeled(o: view::Orientation) {}");
+    }
+
+    #[test]
+    fn qualified_type_path_in_return_type() {
+        assert_no_err("fn front(): view::Orientation {}");
+    }
+
+    #[test]
+    fn qualified_type_path_in_type_alias() {
+        assert_no_err("@settings(experimentalFeatures = allow)\ntype Front = view::Orientation");
+    }
+
+    #[test]
+    fn qualified_type_path_in_ascription() {
+        assert_no_err("front = orientation: view::Orientation");
+    }
+
+    #[test]
+    fn qualified_type_path_in_union_member() {
+        assert_no_err("@settings(experimentalFeatures = allow)\ntype Direction = view::Orientation | math::Axis");
+    }
+
+    #[test]
+    fn qualified_type_path_in_array_element() {
+        assert_no_err("@settings(experimentalFeatures = allow)\ntype Views = [view::Orientation; 3]");
+    }
+
+    #[test]
+    fn qualified_type_path_in_object_field() {
+        assert_no_err("@settings(experimentalFeatures = allow)\ntype View = { front: view::Orientation }");
+    }
+
+    #[test]
+    fn qualified_type_path_in_function_type() {
+        assert_no_err(
+            "@settings(experimentalFeatures = allow)\ntype Mapper = fn(view::Orientation, axis: math::Axis): view::Orientation",
+        );
+    }
+
+    #[test]
+    fn qualified_type_path_in_ascription_binary_lookahead() {
+        assert_no_err("x: a::b > 1");
+    }
+
+    #[test]
+    fn qualified_type_path_named_number_is_not_a_primitive() {
+        let tokens = crate::parsing::token::lex("view::number", ModuleId::default()).unwrap();
+        let ty = in_ctx(|| type_.parse(tokens.as_slice())).unwrap();
+
+        let Type::Named { name } = &*ty else {
+            panic!("expected a named type, found {ty:?}");
+        };
+        assert_eq!(name.path.iter().map(|p| p.name.as_str()).collect::<Vec<_>>(), ["view"]);
+        assert_eq!(name.name.name, "number");
+        assert_eq!(ty.to_string(), "view::number");
+        assert_eq!(ty.human_friendly_type(), "a value with type `view::number`");
+    }
+
+    #[test]
+    fn qualified_type_path_rejects_numeric_suffix() {
+        assert_err(
+            "fn front(@o: view::Orientation(mm)) {}",
+            "Numeric suffixes cannot be applied to qualified type names",
+            [13, 30],
+        );
+    }
+
+    #[test]
+    fn qualified_type_path_rejects_absolute_path() {
+        let code = "fn front(@o: ::view::Orientation) {}";
+        let result = crate::parsing::top_level_parse(code);
+        let errors = result.unwrap_errs().collect::<Vec<_>>();
+
+        assert_eq!(errors.len(), 1, "found errors: {errors:#?}");
+        assert_eq!(errors[0].message, ABSOLUTE_PATHS_NOT_SUPPORTED);
     }
 
     #[test]

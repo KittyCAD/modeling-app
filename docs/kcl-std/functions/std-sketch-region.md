@@ -35,6 +35,14 @@ To make a fallback point move with a parametric sketch, consider creating a
 construction point in the sketch and constraining it into place. You can then
 refer to that point to create the region.
 
+Operations such as `extrude`, `revolve`, and `sweep` consume the region
+passed to them. Each region can be used by only one consuming operation. To
+reuse the same profile, call `region(...)` again with the original sketch
+segments instead of cloning the sketch. For example, create
+`firstRegion = region(segments = [profile.circle])` and
+`secondRegion = region(segments = [profile.circle])`, then pass each region
+to a different consuming operation.
+
 ### Arguments
 
 | Name | Type | Description | Required |
@@ -76,7 +84,7 @@ extrude(r, length = 5)
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the region function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-region0_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-region0_output.glb"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-region0.png"
@@ -113,7 +121,7 @@ extrude(r, length = 3)
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the region function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-region1_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-region1_output.glb"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-region1.png"
@@ -140,7 +148,7 @@ extrude(r, length = 2)
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the region function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-region2_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-region2_output.glb"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-region2.png"

@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties engine-valve.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": 0.0,
+      "y": 32.499999997865714,
+      "z": 40.0
+    },
+    "dimensions": {
+      "x": 30.000000008537157,
+      "y": 95.00000000426856,
+      "z": 80.0
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 2976.623793012223
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 4.617689043436475
+  }
+}

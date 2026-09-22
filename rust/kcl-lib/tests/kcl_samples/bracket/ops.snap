@@ -12,8 +12,10 @@ description: Operations executed bracket.kcl
         "value": 35000.0,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -41,8 +43,10 @@ description: Operations executed bracket.kcl
         "value": 300.0,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -70,8 +74,10 @@ description: Operations executed bracket.kcl
         "value": 1.2,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -99,8 +105,10 @@ description: Operations executed bracket.kcl
         "value": 5.0,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -128,8 +136,10 @@ description: Operations executed bracket.kcl
         "value": 5.0,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -157,8 +167,10 @@ description: Operations executed bracket.kcl
         "value": 2.25,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -186,8 +198,10 @@ description: Operations executed bracket.kcl
         "value": 12.0,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -215,8 +229,10 @@ description: Operations executed bracket.kcl
         "value": 0.5,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -244,8 +260,10 @@ description: Operations executed bracket.kcl
         "value": 0.625,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -273,8 +291,10 @@ description: Operations executed bracket.kcl
         "value": 3600.0,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -302,8 +322,10 @@ description: Operations executed bracket.kcl
         "value": 0.3848561883538911,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -331,8 +353,10 @@ description: Operations executed bracket.kcl
         "value": 0.25,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -360,8 +384,10 @@ description: Operations executed bracket.kcl
         "value": 0.6348561883538911,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -389,8 +415,10 @@ description: Operations executed bracket.kcl
         "value": 0.5,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -418,8 +446,10 @@ description: Operations executed bracket.kcl
         "value": 0.5,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -447,8 +477,10 @@ description: Operations executed bracket.kcl
         "value": 1.0,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -476,8 +508,10 @@ description: Operations executed bracket.kcl
         "value": 0.8,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -505,8 +539,10 @@ description: Operations executed bracket.kcl
         "value": 1.0,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -534,8 +570,10 @@ description: Operations executed bracket.kcl
         "value": -1.5,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -563,8 +601,10 @@ description: Operations executed bracket.kcl
         "value": -4.0,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -592,8 +632,10 @@ description: Operations executed bracket.kcl
         "value": 1.5,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -621,8 +663,10 @@ description: Operations executed bracket.kcl
         "value": -1.5,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -650,8 +694,10 @@ description: Operations executed bracket.kcl
         "value": -1.5,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -679,8 +725,10 @@ description: Operations executed bracket.kcl
         "value": 1.5,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -708,8 +756,10 @@ description: Operations executed bracket.kcl
         "value": -1.5,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -764,18 +814,22 @@ description: Operations executed bracket.kcl
                 "type": "SketchVar",
                 "value": -0.28,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 3.34,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -790,18 +844,22 @@ description: Operations executed bracket.kcl
                 "type": "SketchVar",
                 "value": -0.29,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.23,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -851,18 +909,22 @@ description: Operations executed bracket.kcl
                 "type": "SketchVar",
                 "value": 4.69,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 3.79,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -877,18 +939,22 @@ description: Operations executed bracket.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -982,18 +1048,22 @@ description: Operations executed bracket.kcl
                 "type": "SketchVar",
                 "value": 4.66,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 3.4,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -1008,18 +1078,22 @@ description: Operations executed bracket.kcl
                 "type": "SketchVar",
                 "value": 4.69,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 3.79,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -1113,18 +1187,22 @@ description: Operations executed bracket.kcl
                 "type": "SketchVar",
                 "value": -0.39,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -0.39,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -1139,18 +1217,22 @@ description: Operations executed bracket.kcl
                 "type": "SketchVar",
                 "value": 4.66,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 3.4,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -1244,18 +1326,22 @@ description: Operations executed bracket.kcl
                 "type": "SketchVar",
                 "value": -0.38,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -2.25,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -1270,18 +1356,22 @@ description: Operations executed bracket.kcl
                 "type": "SketchVar",
                 "value": 1.93,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -0.68,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -1375,18 +1465,22 @@ description: Operations executed bracket.kcl
                 "type": "SketchVar",
                 "value": -0.29,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.23,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -1401,18 +1495,22 @@ description: Operations executed bracket.kcl
                 "type": "SketchVar",
                 "value": 1.6,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -2.15,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -1554,18 +1652,22 @@ description: Operations executed bracket.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -2087,8 +2189,10 @@ description: Operations executed bracket.kcl
             "value": 5.0,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -2178,8 +2282,10 @@ description: Operations executed bracket.kcl
             "value": 0.25,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -2248,8 +2354,10 @@ description: Operations executed bracket.kcl
             "value": 0.6348561883538911,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -2378,8 +2486,10 @@ description: Operations executed bracket.kcl
             "value": 0.5,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -2416,8 +2526,10 @@ description: Operations executed bracket.kcl
                 "value": -1.5,
                 "ty": {
                   "type": "Default",
-                  "len": "in",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "in",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -2425,8 +2537,10 @@ description: Operations executed bracket.kcl
                 "value": 1.5,
                 "ty": {
                   "type": "Default",
-                  "len": "in",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "in",
+                    "angle": "degrees"
+                  }
                 }
               }
             ]
@@ -2482,8 +2596,10 @@ description: Operations executed bracket.kcl
                 "value": -4.0,
                 "ty": {
                   "type": "Default",
-                  "len": "in",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "in",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -2491,8 +2607,10 @@ description: Operations executed bracket.kcl
                 "value": 1.5,
                 "ty": {
                   "type": "Default",
-                  "len": "in",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "in",
+                    "angle": "degrees"
+                  }
                 }
               }
             ]
@@ -2548,8 +2666,10 @@ description: Operations executed bracket.kcl
                 "value": -1.5,
                 "ty": {
                   "type": "Default",
-                  "len": "in",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "in",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -2557,8 +2677,10 @@ description: Operations executed bracket.kcl
                 "value": -1.5,
                 "ty": {
                   "type": "Default",
-                  "len": "in",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "in",
+                    "angle": "degrees"
+                  }
                 }
               }
             ]
@@ -2614,8 +2736,10 @@ description: Operations executed bracket.kcl
                 "value": -4.0,
                 "ty": {
                   "type": "Default",
-                  "len": "in",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "in",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -2623,8 +2747,10 @@ description: Operations executed bracket.kcl
                 "value": -1.5,
                 "ty": {
                   "type": "Default",
-                  "len": "in",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "in",
+                    "angle": "degrees"
+                  }
                 }
               }
             ]
@@ -2690,8 +2816,10 @@ description: Operations executed bracket.kcl
                     "value": -1.5,
                     "ty": {
                       "type": "Default",
-                      "len": "in",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "in",
+                        "angle": "degrees"
+                      }
                     }
                   },
                   {
@@ -2699,8 +2827,10 @@ description: Operations executed bracket.kcl
                     "value": 1.5,
                     "ty": {
                       "type": "Default",
-                      "len": "in",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "in",
+                        "angle": "degrees"
+                      }
                     }
                   }
                 ]
@@ -2713,8 +2843,10 @@ description: Operations executed bracket.kcl
                     "value": -4.0,
                     "ty": {
                       "type": "Default",
-                      "len": "in",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "in",
+                        "angle": "degrees"
+                      }
                     }
                   },
                   {
@@ -2722,8 +2854,10 @@ description: Operations executed bracket.kcl
                     "value": 1.5,
                     "ty": {
                       "type": "Default",
-                      "len": "in",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "in",
+                        "angle": "degrees"
+                      }
                     }
                   }
                 ]
@@ -2736,8 +2870,10 @@ description: Operations executed bracket.kcl
                     "value": -1.5,
                     "ty": {
                       "type": "Default",
-                      "len": "in",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "in",
+                        "angle": "degrees"
+                      }
                     }
                   },
                   {
@@ -2745,8 +2881,10 @@ description: Operations executed bracket.kcl
                     "value": -1.5,
                     "ty": {
                       "type": "Default",
-                      "len": "in",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "in",
+                        "angle": "degrees"
+                      }
                     }
                   }
                 ]
@@ -2759,8 +2897,10 @@ description: Operations executed bracket.kcl
                     "value": -4.0,
                     "ty": {
                       "type": "Default",
-                      "len": "in",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "in",
+                        "angle": "degrees"
+                      }
                     }
                   },
                   {
@@ -2768,8 +2908,10 @@ description: Operations executed bracket.kcl
                     "value": -1.5,
                     "ty": {
                       "type": "Default",
-                      "len": "in",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "in",
+                        "angle": "degrees"
+                      }
                     }
                   }
                 ]
@@ -2795,8 +2937,10 @@ description: Operations executed bracket.kcl
                 "value": 1.0,
                 "ty": {
                   "type": "Default",
-                  "len": "in",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "in",
+                    "angle": "degrees"
+                  }
                 }
               },
               "diameter": {
@@ -2804,8 +2948,10 @@ description: Operations executed bracket.kcl
                 "value": 0.5,
                 "ty": {
                   "type": "Default",
-                  "len": "in",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "in",
+                    "angle": "degrees"
+                  }
                 }
               }
             }
@@ -2820,9 +2966,11 @@ description: Operations executed bracket.kcl
                 "type": "Number",
                 "value": 180.0,
                 "ty": {
-                  "degrees": null,
                   "type": "Known",
-                  "type": "Angle"
+                  "value": {
+                    "type": "Angle",
+                    "value": "degrees"
+                  }
                 }
               }
             }
@@ -2838,8 +2986,10 @@ description: Operations executed bracket.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               }
             }
@@ -2878,8 +3028,10 @@ description: Operations executed bracket.kcl
                 "value": -1.5,
                 "ty": {
                   "type": "Default",
-                  "len": "in",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "in",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -2887,8 +3039,10 @@ description: Operations executed bracket.kcl
                 "value": 1.5,
                 "ty": {
                   "type": "Default",
-                  "len": "in",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "in",
+                    "angle": "degrees"
+                  }
                 }
               }
             ]
@@ -2944,8 +3098,10 @@ description: Operations executed bracket.kcl
                 "value": -1.5,
                 "ty": {
                   "type": "Default",
-                  "len": "in",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "in",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -2953,8 +3109,10 @@ description: Operations executed bracket.kcl
                 "value": -1.5,
                 "ty": {
                   "type": "Default",
-                  "len": "in",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "in",
+                    "angle": "degrees"
+                  }
                 }
               }
             ]
@@ -3020,8 +3178,10 @@ description: Operations executed bracket.kcl
                     "value": -1.5,
                     "ty": {
                       "type": "Default",
-                      "len": "in",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "in",
+                        "angle": "degrees"
+                      }
                     }
                   },
                   {
@@ -3029,8 +3189,10 @@ description: Operations executed bracket.kcl
                     "value": 1.5,
                     "ty": {
                       "type": "Default",
-                      "len": "in",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "in",
+                        "angle": "degrees"
+                      }
                     }
                   }
                 ]
@@ -3043,8 +3205,10 @@ description: Operations executed bracket.kcl
                     "value": -1.5,
                     "ty": {
                       "type": "Default",
-                      "len": "in",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "in",
+                        "angle": "degrees"
+                      }
                     }
                   },
                   {
@@ -3052,8 +3216,10 @@ description: Operations executed bracket.kcl
                     "value": -1.5,
                     "ty": {
                       "type": "Default",
-                      "len": "in",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "in",
+                        "angle": "degrees"
+                      }
                     }
                   }
                 ]
@@ -3079,8 +3245,10 @@ description: Operations executed bracket.kcl
                 "value": 1.0,
                 "ty": {
                   "type": "Default",
-                  "len": "in",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "in",
+                    "angle": "degrees"
+                  }
                 }
               },
               "diameter": {
@@ -3088,8 +3256,10 @@ description: Operations executed bracket.kcl
                 "value": 0.8,
                 "ty": {
                   "type": "Default",
-                  "len": "in",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "in",
+                    "angle": "degrees"
+                  }
                 }
               }
             }
@@ -3104,9 +3274,11 @@ description: Operations executed bracket.kcl
                 "type": "Number",
                 "value": 180.0,
                 "ty": {
-                  "degrees": null,
                   "type": "Known",
-                  "type": "Angle"
+                  "value": {
+                    "type": "Angle",
+                    "value": "degrees"
+                  }
                 }
               }
             }
@@ -3122,8 +3294,10 @@ description: Operations executed bracket.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               }
             }
@@ -3157,8 +3331,10 @@ description: Operations executed bracket.kcl
         "value": 0.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -3186,8 +3362,10 @@ description: Operations executed bracket.kcl
         "value": 1.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -3215,8 +3393,10 @@ description: Operations executed bracket.kcl
         "value": 2.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -3273,7 +3453,9 @@ description: Operations executed bracket.kcl
         "value": 2.718281828459045,
         "ty": {
           "type": "Known",
-          "type": "Count"
+          "value": {
+            "type": "Count"
+          }
         }
       },
       "visibility": "export",
@@ -3301,7 +3483,9 @@ description: Operations executed bracket.kcl
         "value": 6.283185307179586,
         "ty": {
           "type": "Known",
-          "type": "Count"
+          "value": {
+            "type": "Count"
+          }
         }
       },
       "visibility": "export",
@@ -3335,7 +3519,7 @@ description: Operations executed bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 23
+            "index": 24
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3359,7 +3543,7 @@ description: Operations executed bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 24
+            "index": 25
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3383,7 +3567,7 @@ description: Operations executed bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 25
+            "index": 26
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3407,7 +3591,7 @@ description: Operations executed bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 26
+            "index": 27
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3431,7 +3615,7 @@ description: Operations executed bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 27
+            "index": 28
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3455,7 +3639,7 @@ description: Operations executed bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 28
+            "index": 29
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3479,7 +3663,7 @@ description: Operations executed bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 29
+            "index": 30
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3503,7 +3687,7 @@ description: Operations executed bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 30
+            "index": 31
           },
           {
             "type": "VariableDeclarationDeclaration"

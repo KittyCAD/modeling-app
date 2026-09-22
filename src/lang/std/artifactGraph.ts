@@ -28,7 +28,7 @@ import type {
   WallArtifact,
 } from '@src/lang/wasm'
 import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
-/** Legacy shape for sweep-edge-like artifact (sweepEdge removed from artifact graph). */
+/** Shape needed to recover a sweep edge's source segment. */
 type SweepEdgeLike = { segId: string; sweepId?: string }
 /**
  * Shared "resolved selection" shape used after resolving a SelectionV2 row back to code.
@@ -703,6 +703,9 @@ export function getCodeRefsByArtifactId(
     return err(extrusion) ? [codeRef] : [codeRef, extrusion.codeRef]
   } else if (artifact?.type === 'segment') {
     return [artifact.codeRef]
+  } else if (artifact?.type === 'sweepEdge') {
+    const codeRef = getSweepEdgeCodeRef(artifact, artifactGraph)
+    return err(codeRef) ? null : [codeRef]
   } else if (artifact?.type === 'edgeCut') {
     const codeRef = artifact.codeRef
     const consumedCodeRef = getEdgeCutConsumedCodeRef(artifact, artifactGraph)

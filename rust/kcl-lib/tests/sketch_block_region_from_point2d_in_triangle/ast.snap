@@ -1258,6 +1258,7 @@ description: Result of parsing sketch_block_region_from_point2d_in_triangle.kcl
       },
       "startNodes": []
     },
-    "start": 0
+    "start": 0,
+    "type": "Program"
   }
 }

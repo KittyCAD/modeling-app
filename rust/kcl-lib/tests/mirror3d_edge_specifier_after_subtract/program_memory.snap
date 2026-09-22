@@ -147,17 +147,17 @@ description: Variables in memory after executing mirror3d_edge_specifier_after_s
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 0,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -217,8 +217,8 @@ description: Variables in memory after executing mirror3d_edge_specifier_after_s
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "mm"
+      "units": "mm",
+      "isClosed": "explicitly"
     }
   },
   "baseSketch": {
@@ -239,16 +239,20 @@ description: Variables in memory after executing mirror3d_edge_specifier_after_s
                         "n": 7.0,
                         "ty": {
                           "type": "Default",
-                          "len": "mm",
-                          "angle": "degrees"
+                          "value": {
+                            "len": "mm",
+                            "angle": "degrees"
+                          }
                         }
                       },
                       {
                         "n": 12.0,
                         "ty": {
                           "type": "Default",
-                          "len": "mm",
-                          "angle": "degrees"
+                          "value": {
+                            "len": "mm",
+                            "angle": "degrees"
+                          }
                         }
                       }
                     ],
@@ -257,16 +261,20 @@ description: Variables in memory after executing mirror3d_edge_specifier_after_s
                         "n": 2.0,
                         "ty": {
                           "type": "Default",
-                          "len": "mm",
-                          "angle": "degrees"
+                          "value": {
+                            "len": "mm",
+                            "angle": "degrees"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
                           "type": "Default",
-                          "len": "mm",
-                          "angle": "degrees"
+                          "value": {
+                            "len": "mm",
+                            "angle": "degrees"
+                          }
                         }
                       }
                     ],
@@ -359,16 +367,20 @@ description: Variables in memory after executing mirror3d_edge_specifier_after_s
                         "n": 7.0,
                         "ty": {
                           "type": "Default",
-                          "len": "mm",
-                          "angle": "degrees"
+                          "value": {
+                            "len": "mm",
+                            "angle": "degrees"
+                          }
                         }
                       },
                       {
                         "n": 6.0,
                         "ty": {
                           "type": "Default",
-                          "len": "mm",
-                          "angle": "degrees"
+                          "value": {
+                            "len": "mm",
+                            "angle": "degrees"
+                          }
                         }
                       }
                     ],
@@ -377,16 +389,20 @@ description: Variables in memory after executing mirror3d_edge_specifier_after_s
                         "n": 7.0,
                         "ty": {
                           "type": "Default",
-                          "len": "mm",
-                          "angle": "degrees"
+                          "value": {
+                            "len": "mm",
+                            "angle": "degrees"
+                          }
                         }
                       },
                       {
                         "n": 12.0,
                         "ty": {
                           "type": "Default",
-                          "len": "mm",
-                          "angle": "degrees"
+                          "value": {
+                            "len": "mm",
+                            "angle": "degrees"
+                          }
                         }
                       }
                     ],
@@ -547,17 +563,17 @@ description: Variables in memory after executing mirror3d_edge_specifier_after_s
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 0,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -631,16 +647,20 @@ description: Variables in memory after executing mirror3d_edge_specifier_after_s
                         "n": 2.0,
                         "ty": {
                           "type": "Default",
-                          "len": "mm",
-                          "angle": "degrees"
+                          "value": {
+                            "len": "mm",
+                            "angle": "degrees"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
                           "type": "Default",
-                          "len": "mm",
-                          "angle": "degrees"
+                          "value": {
+                            "len": "mm",
+                            "angle": "degrees"
+                          }
                         }
                       }
                     ],
@@ -649,16 +669,20 @@ description: Variables in memory after executing mirror3d_edge_specifier_after_s
                         "n": 7.0,
                         "ty": {
                           "type": "Default",
-                          "len": "mm",
-                          "angle": "degrees"
+                          "value": {
+                            "len": "mm",
+                            "angle": "degrees"
+                          }
                         }
                       },
                       {
                         "n": 6.0,
                         "ty": {
                           "type": "Default",
-                          "len": "mm",
-                          "angle": "degrees"
+                          "value": {
+                            "len": "mm",
+                            "angle": "degrees"
+                          }
                         }
                       }
                     ],
@@ -744,6 +768,8 @@ description: Variables in memory after executing mirror3d_edge_specifier_after_s
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -906,17 +932,17 @@ description: Variables in memory after executing mirror3d_edge_specifier_after_s
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 0,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -976,8 +1002,8 @@ description: Variables in memory after executing mirror3d_edge_specifier_after_s
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "mm"
+        "units": "mm",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -990,6 +1016,8 @@ description: Variables in memory after executing mirror3d_edge_specifier_after_s
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -1152,17 +1180,17 @@ description: Variables in memory after executing mirror3d_edge_specifier_after_s
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 0,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -1222,8 +1250,8 @@ description: Variables in memory after executing mirror3d_edge_specifier_after_s
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "mm"
+        "units": "mm",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -1311,17 +1339,17 @@ description: Variables in memory after executing mirror3d_edge_specifier_after_s
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 11,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 0.0,
           "y": 1.0,
@@ -1373,8 +1401,8 @@ description: Variables in memory after executing mirror3d_edge_specifier_after_s
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "mm"
+      "units": "mm",
+      "isClosed": "explicitly"
     }
   },
   "cutSketch": {
@@ -1395,16 +1423,20 @@ description: Variables in memory after executing mirror3d_edge_specifier_after_s
                         "n": -3.29,
                         "ty": {
                           "type": "Default",
-                          "len": "mm",
-                          "angle": "degrees"
+                          "value": {
+                            "len": "mm",
+                            "angle": "degrees"
+                          }
                         }
                       },
                       {
                         "n": 4.75,
                         "ty": {
                           "type": "Default",
-                          "len": "mm",
-                          "angle": "degrees"
+                          "value": {
+                            "len": "mm",
+                            "angle": "degrees"
+                          }
                         }
                       }
                     ],
@@ -1413,16 +1445,20 @@ description: Variables in memory after executing mirror3d_edge_specifier_after_s
                         "n": 2.03,
                         "ty": {
                           "type": "Default",
-                          "len": "mm",
-                          "angle": "degrees"
+                          "value": {
+                            "len": "mm",
+                            "angle": "degrees"
+                          }
                         }
                       },
                       {
                         "n": 2.4,
                         "ty": {
                           "type": "Default",
-                          "len": "mm",
-                          "angle": "degrees"
+                          "value": {
+                            "len": "mm",
+                            "angle": "degrees"
+                          }
                         }
                       }
                     ],
@@ -1515,16 +1551,20 @@ description: Variables in memory after executing mirror3d_edge_specifier_after_s
                         "n": 2.03,
                         "ty": {
                           "type": "Default",
-                          "len": "mm",
-                          "angle": "degrees"
+                          "value": {
+                            "len": "mm",
+                            "angle": "degrees"
+                          }
                         }
                       },
                       {
                         "n": 2.44,
                         "ty": {
                           "type": "Default",
-                          "len": "mm",
-                          "angle": "degrees"
+                          "value": {
+                            "len": "mm",
+                            "angle": "degrees"
+                          }
                         }
                       }
                     ],
@@ -1533,16 +1573,20 @@ description: Variables in memory after executing mirror3d_edge_specifier_after_s
                         "n": -3.49,
                         "ty": {
                           "type": "Default",
-                          "len": "mm",
-                          "angle": "degrees"
+                          "value": {
+                            "len": "mm",
+                            "angle": "degrees"
+                          }
                         }
                       },
                       {
                         "n": 0.31,
                         "ty": {
                           "type": "Default",
-                          "len": "mm",
-                          "angle": "degrees"
+                          "value": {
+                            "len": "mm",
+                            "angle": "degrees"
+                          }
                         }
                       }
                     ],
@@ -1635,16 +1679,20 @@ description: Variables in memory after executing mirror3d_edge_specifier_after_s
                         "n": -3.49,
                         "ty": {
                           "type": "Default",
-                          "len": "mm",
-                          "angle": "degrees"
+                          "value": {
+                            "len": "mm",
+                            "angle": "degrees"
+                          }
                         }
                       },
                       {
                         "n": 0.31,
                         "ty": {
                           "type": "Default",
-                          "len": "mm",
-                          "angle": "degrees"
+                          "value": {
+                            "len": "mm",
+                            "angle": "degrees"
+                          }
                         }
                       }
                     ],
@@ -1653,16 +1701,20 @@ description: Variables in memory after executing mirror3d_edge_specifier_after_s
                         "n": -3.29,
                         "ty": {
                           "type": "Default",
-                          "len": "mm",
-                          "angle": "degrees"
+                          "value": {
+                            "len": "mm",
+                            "angle": "degrees"
+                          }
                         }
                       },
                       {
                         "n": 4.75,
                         "ty": {
                           "type": "Default",
-                          "len": "mm",
-                          "angle": "degrees"
+                          "value": {
+                            "len": "mm",
+                            "angle": "degrees"
+                          }
                         }
                       }
                     ],
@@ -1840,17 +1892,17 @@ description: Variables in memory after executing mirror3d_edge_specifier_after_s
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 11,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 0.0,
                   "y": 1.0,
@@ -1917,6 +1969,8 @@ description: Variables in memory after executing mirror3d_edge_specifier_after_s
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -2041,17 +2095,17 @@ description: Variables in memory after executing mirror3d_edge_specifier_after_s
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 11,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 0.0,
             "y": 1.0,
@@ -2103,8 +2157,8 @@ description: Variables in memory after executing mirror3d_edge_specifier_after_s
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "mm"
+        "units": "mm",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -2114,11 +2168,9 @@ description: Variables in memory after executing mirror3d_edge_specifier_after_s
   },
   "endCap": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "endCap"
   },
   "startCap": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "startCap"
   },
@@ -2127,8 +2179,10 @@ description: Variables in memory after executing mirror3d_edge_specifier_after_s
     "value": 2.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   }
 }

@@ -67,7 +67,7 @@ loft([triangleSketch, squareSketch])
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the loft function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-loft0_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-loft0_output.glb"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-loft0.png"
@@ -106,7 +106,7 @@ loft([
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the loft function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-loft1_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-loft1_output.glb"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-loft1.png"
@@ -150,7 +150,7 @@ loft(
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the loft function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-loft2_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-loft2_output.glb"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-loft2.png"
@@ -202,7 +202,7 @@ loft(
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the loft function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-loft3_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-loft3_output.glb"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-loft3.png"
@@ -233,7 +233,7 @@ loft([profile001, profile002, profile003], bodyType = SURFACE)
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the loft function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-loft4_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-loft4_output.glb"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-loft4.png"
@@ -277,7 +277,7 @@ lofted = loft([lowerRegion, upperRegion])
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the loft function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-loft5_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-loft5_output.glb"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-loft5.png"
@@ -320,7 +320,7 @@ shape = loft([squareRegion, circleRegion], bodyType = SURFACE)
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the loft function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-loft6_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-loft6_output.glb"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-loft6.png"
@@ -332,7 +332,7 @@ shape = loft([squareRegion, circleRegion], bodyType = SURFACE)
 
 ```kcl
 // Demonstrates surface lofting of segments from multiple sketch blocks.
-@settings(defaultLengthUnit = mm, kclVersion = 1.0)
+@settings(defaultLengthUnit = mm, kclVersion = 2.0)
 
 sketch002 = sketch(on = XY) {
   arc1 = arc(start = [var -2.02mm, var -3.05mm], end = [var 2.03mm, var -3.01mm], center = [var 0.01mm, var -3.05mm])
@@ -361,7 +361,7 @@ loft(
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the loft function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-loft7_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-loft7_output.glb"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-loft7.png"

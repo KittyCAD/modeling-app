@@ -81,7 +81,7 @@ pub fn format_number_literal(value: f64, suffix_json: &str, decimals: Option<usi
 pub fn format_number_value(value: f64, numeric_type_json: &str) -> Result<String, String> {
     console_error_panic_hook::set_once();
 
-    // ts-rs can't handle tuple types, so it mashes all of these types together.
+    // Accept unit-only inputs as well as complete numeric types.
     if let Ok(ty) = serde_json::from_str::<NumericType>(numeric_type_json)
         && let Ok(formatted) = kcl_lib::pretty::format_number_value(value, ty)
     {
@@ -112,7 +112,7 @@ pub fn format_number_value(value: f64, numeric_type_json: &str) -> Result<String
 pub fn human_display_number(value: f64, ty_json: &str) -> Result<String, String> {
     console_error_panic_hook::set_once();
 
-    // ts-rs can't handle tuple types, so it mashes all of these types together.
+    // Accept unit-only inputs as well as complete numeric types.
     if let Ok(ty) = serde_json::from_str::<NumericType>(ty_json) {
         return Ok(kcl_lib::pretty::human_display_number(value, ty));
     }

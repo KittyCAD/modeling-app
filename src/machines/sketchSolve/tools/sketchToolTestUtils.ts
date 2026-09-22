@@ -36,6 +36,7 @@ export function createSceneGraphDelta(
         project_directory: null,
         current_file: null,
         fixed_size_grid: true,
+        geometry_only: false,
       },
       sketch_mode: null,
     },
@@ -290,6 +291,7 @@ export function createMockRustContext(): RustContext {
     chainSegment: vi.fn(),
     editSegments: vi.fn(),
     editAngleConstraint: vi.fn(),
+    editDistanceConstraint: vi.fn(),
     editDistanceConstraintLabelPosition: vi.fn(),
     deleteObjects: vi.fn(),
     settingsActor: {

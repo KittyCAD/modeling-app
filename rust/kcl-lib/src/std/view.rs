@@ -2,6 +2,7 @@
 
 use kcl_api::UnitLength;
 
+use crate::SourceRange;
 use crate::errors::KclError;
 use crate::errors::KclErrorDetails;
 use crate::execution::Artifact;
@@ -83,7 +84,7 @@ pub async fn named(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 
     let except_ids = except
         .as_ref()
-        .map(|objects| except_artifact_ids(objects, &args))
+        .map(|objects| except_artifact_ids(objects, args.source_range))
         .transpose()?;
 
     // The id is taken before the existing views are read, because taking one
@@ -112,25 +113,36 @@ pub async fn named(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 
 /// Reads the artifact id of each object in an `except` list.
 ///
-/// The three accepted kinds carry their artifact id differently: a solid and a
-/// sketch each have an `artifact_id` field distinct from their engine id, while
-/// a GD&T annotation has one id used for both, which `gdt::datum` registers as
-/// `ArtifactId::new(annotation.id)`. Any other kind of value means coercion
-/// against the declared signature did not do its job, which is an internal
-/// error rather than something the author can act on.
-fn except_artifact_ids(objects: &[KclValue], args: &Args) -> Result<Vec<ArtifactId>, KclError> {
+/// The accepted kinds do not share a representation, so each arm reads the
+/// artifact id from the field that owns it. Any other kind of value means
+/// coercion against the declared signature did not do its job, which is an
+/// internal error rather than something the author can act on.
+fn except_artifact_ids(objects: &[KclValue], source_range: SourceRange) -> Result<Vec<ArtifactId>, KclError> {
     objects
         .iter()
         .map(|object| match object {
             KclValue::Solid { value } => Ok(value.artifact_id),
             KclValue::Sketch { value } => Ok(value.artifact_id),
             KclValue::GdtAnnotation { value } => Ok(ArtifactId::new(value.id)),
+            KclValue::Helix { value } => Ok(value.artifact_id),
+            KclValue::Plane { value } => {
+                if value.is_standard() || value.is_uninitialized() {
+                    Err(KclError::new_semantic(KclErrorDetails::new(
+                        "Named views cannot control default planes or other uninitialized planes because their ids do not identify independent engine objects. Use a standalone plane returned by `offsetPlane()`."
+                            .to_owned(),
+                        vec![source_range],
+                    )))
+                } else {
+                    Ok(value.artifact_id)
+                }
+            }
+            KclValue::ImportedGeometry(value) => Ok(ArtifactId::new(value.id)),
             other => Err(KclError::new_internal(KclErrorDetails::new(
                 format!(
                     "`except` cannot hold {}; the declared signature should have rejected it",
                     other.human_friendly_type()
                 ),
-                vec![args.source_range],
+                vec![source_range],
             ))),
         })
         .collect()
@@ -308,6 +320,60 @@ boss = extrude(bossRegion, length = 8mm)
         );
     }
 
+    /// An initialized custom plane and a helix each contribute their artifact
+    /// id. Mock execution is sufficient because both ids are assigned before
+    /// the engine processes their creation commands.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn named_excepts_a_custom_plane_and_helix_by_their_artifact_ids() {
+        let program = r#"@settings(experimentalFeatures = allow)
+inspectionPlane = offsetPlane(XY, offset = 20mm)
+spring = helix(
+  axis = Z,
+  radius = 5mm,
+  length = 20mm,
+  revolutions = 4,
+  angleStart = 0deg,
+)
+v = view::named(
+  "Construction geometry",
+  camera = view::oriented(view::Orientation::Isometric),
+  baseline = view::Visibility::Hide,
+  except = [inspectionPlane, spring],
+)
+"#;
+        let result = parse_execute(program).await.expect("the program executes");
+
+        let KclValue::Plane { value: plane } = result.variable("inspectionPlane") else {
+            panic!("`inspectionPlane` is not a plane");
+        };
+        let KclValue::Helix { value: helix } = result.variable("spring") else {
+            panic!("`spring` is not a helix");
+        };
+        let KclValue::NamedView { value } = result.variable("v") else {
+            panic!("`v` is not a named view");
+        };
+
+        assert!(plane.is_initialized());
+        assert_eq!(value.except_ids().to_vec(), vec![plane.artifact_id, helix.artifact_id]);
+    }
+
+    /// Imported geometry has one UUID for its runtime value, artifact and
+    /// engine object. The named view stores that UUID in the artifact-id domain.
+    #[test]
+    fn named_excepts_imported_geometry_by_its_artifact_id() {
+        let id = uuid::Uuid::from_u128(1);
+        let imported = KclValue::ImportedGeometry(crate::execution::ImportedGeometry::new(
+            id,
+            vec!["part.step".to_owned()],
+            Vec::new(),
+        ));
+
+        assert_eq!(
+            super::except_artifact_ids(&[imported], crate::SourceRange::default()).expect("the value is accepted"),
+            vec![ArtifactId::new(id)]
+        );
+    }
+
     /// Runs `code` with the experimental opt-in these functions require, and
     /// returns the message it fails with. Panics if the program succeeds.
     ///
@@ -407,8 +473,8 @@ boss = extrude(bossRegion, length = 8mm)
             "A view's name must not start or end with whitespace. Use `string::trim()` to remove it."
         );
         assert_eq!(
-            execution_error(&format!(r#"v = view::named("KCL Default", {showing})"#)).await,
-            "`KCL Default` is reserved for the view of the scene generated on successful execution of the program. Please give this view a different name."
+            execution_error(&format!(r#"v = view::named("Default View", {showing})"#)).await,
+            "`Default View` is reserved for the view of the scene generated on successful execution of the program. Please give this view a different name."
         );
         assert_eq!(
             execution_error(&format!(
@@ -542,7 +608,45 @@ boss = extrude(bossRegion, length = 8mm)
                 r#"v = view::named("Front", camera = view::oriented(view::Orientation::Front), baseline = view::Visibility::Hide, except = [])"#
             )
             .await,
-            "except requires one or more `Solid`s or `Sketch`s or `GdtAnnotation`s (`[Solid | Sketch | GdtAnnotation; 1+]`), but found an empty array (with type `[any; 0]`)."
+            "except requires one or more `Solid`s or `Sketch`s or `GdtAnnotation`s or `Helix`s or `Plane`s or imported geometries (`[Solid | Sketch | GdtAnnotation | Helix | Plane | ImportedGeometry; 1+]`), but found an empty array (with type `[any; 0]`)."
+        );
+    }
+
+    /// The six KCL default-plane values do not identify the six engine-owned
+    /// default-plane objects, so every spelling is rejected explicitly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn named_rejects_every_default_plane() {
+        for plane in ["XY", "XZ", "YZ", "-XY", "-XZ", "-YZ"] {
+            assert_eq!(
+                execution_error(&format!(
+                    "v = view::named(\"Front\", camera = view::oriented(view::Orientation::Front), baseline = view::Visibility::Hide, except = [{plane}])"
+                ))
+                .await,
+                "Named views cannot control default planes or other uninitialized planes because their ids do not identify independent engine objects. Use a standalone plane returned by `offsetPlane()`."
+            );
+        }
+    }
+
+    /// Structural plane coercion describes a plane but does not send one to the
+    /// engine, so its generated artifact id cannot be used for visibility.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn named_rejects_an_uninitialized_custom_plane() {
+        assert_eq!(
+            execution_error(
+                r#"customPlane = {
+  origin = { x = 0, y = 0, z = 0 },
+  xAxis = { x = 1, y = 0, z = 0 },
+  yAxis = { x = 0, y = 1, z = 0 },
+}
+v = view::named(
+  "Front",
+  camera = view::oriented(view::Orientation::Front),
+  baseline = view::Visibility::Hide,
+  except = [customPlane],
+)"#
+            )
+            .await,
+            "Named views cannot control default planes or other uninitialized planes because their ids do not identify independent engine objects. Use a standalone plane returned by `offsetPlane()`."
         );
     }
 
@@ -614,13 +718,9 @@ boss = extrude(bossRegion, length = 8mm)
         );
     }
 
-    /// The opaque `std::view` types resolve where a signature names them.
-    /// Resolution happens when the declaration executes, so executing these
-    /// declarations is the whole assertion; neither function is called.
-    ///
-    /// Type annotations parse only as bare identifiers, so the namespaced
-    /// spelling `view::CameraView` cannot appear in a signature and an
-    /// explicit import is the only route to these types from user code.
+    /// Imported opaque `std::view` types resolve by their bare names in signatures.
+    /// Resolution happens when each declaration executes, so neither function
+    /// needs to be called for this test to exercise signature resolution.
     #[tokio::test(flavor = "multi_thread")]
     async fn opaque_types_resolve_in_signatures() {
         let code = r#"@settings(experimentalFeatures = allow)
@@ -631,6 +731,21 @@ fn acceptsCamera(@camera: CameraView) {
 }
 
 fn passesNamed(@input: NamedView): NamedView {
+  return input
+}
+"#;
+        if let Err(err) = parse_execute(code).await {
+            panic!("expected the declarations to resolve, but got: {}", err.message());
+        }
+    }
+
+    /// A qualified `std::view` type resolves where a signature names it.
+    /// The signature is the first reference to the module, so this also verifies
+    /// that type resolution executes a registered standard-library module.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn qualified_type_path_resolves_in_signature() {
+        let code = r#"@settings(experimentalFeatures = allow)
+fn passesOrientation(@input: view::Orientation): view::Orientation {
   return input
 }
 "#;

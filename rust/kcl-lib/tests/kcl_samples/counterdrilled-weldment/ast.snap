@@ -25783,7 +25783,7 @@ description: Result of parsing counterdrilled-weldment.kcl
         "preComments": [
           "// Counterdrilled Weldment",
           "// A metal weldment consisting of a counterdrilled plate, a centrally mounted housing tube, and four structural support fins.",
-          "// Categories: Manufacturing, Construction",
+          "// Categories: Industrial & Manufacturing",
           "",
           "",
           "// Set units"
@@ -26161,6 +26161,7 @@ description: Result of parsing counterdrilled-weldment.kcl
       },
       "startNodes": []
     },
-    "start": 0
+    "start": 0,
+    "type": "Program"
   }
 }

@@ -11,6 +11,7 @@ import {
   toProjectRelativePath,
   toWebSafePath,
 } from '@src/lib/paths'
+import path from 'node:path'
 import { beforeAll, describe, expect, it } from 'vitest'
 
 beforeAll(async () => {
@@ -94,6 +95,89 @@ describe('testing parseProjectRoute', () => {
     })
   })
 
+  it('should parse a nested file relative to the active project directory', async () => {
+    const defaultProjectDirectory = absolutePath(
+      'home',
+      'somebody',
+      'local-projects'
+    )
+    const activeProjectDirectory = absolutePath(
+      'home',
+      'somebody',
+      'Zoo',
+      'personal'
+    )
+    const config = {
+      settings: {
+        project: {
+          directory: defaultProjectDirectory,
+        },
+      },
+    }
+    const projectPath = fsZds.join(activeProjectDirectory, 'assembly')
+    const route = fsZds.join(projectPath, 'parts', 'bolt.kcl')
+    expect(
+      parseProjectRoute(config, route, { activeProjectPath: projectPath })
+    ).toEqual({
+      projectName: 'assembly',
+      projectPath,
+      currentFileName: 'bolt.kcl',
+      currentFilePath: route,
+    })
+  })
+
+  it('should prefer the most specific candidate project directory', async () => {
+    const outerProjectDirectory = absolutePath('home', 'somebody', 'projects')
+    const nestedProjectDirectory = fsZds.join(outerProjectDirectory, 'client')
+    const config = {
+      settings: {
+        project: {
+          directory: outerProjectDirectory,
+        },
+      },
+    }
+    const projectPath = fsZds.join(nestedProjectDirectory, 'assembly')
+    const route = fsZds.join(projectPath, 'parts', 'bolt.kcl')
+    expect(
+      parseProjectRoute(config, route, {
+        candidateProjectDirectories: [
+          outerProjectDirectory,
+          nestedProjectDirectory,
+        ],
+      })
+    ).toEqual({
+      projectName: 'assembly',
+      projectPath,
+      currentFileName: 'bolt.kcl',
+      currentFilePath: route,
+    })
+  })
+
+  it('should keep the active project when it contains a nested library', async () => {
+    const projectDirectory = absolutePath('home', 'somebody', 'projects')
+    const projectPath = fsZds.join(projectDirectory, 'assembly')
+    const nestedLibraryPath = fsZds.join(projectPath, 'vendor')
+    const route = fsZds.join(nestedLibraryPath, 'parts', 'bolt.kcl')
+    const config = {
+      settings: {
+        project: {
+          directory: projectDirectory,
+        },
+      },
+    }
+    expect(
+      parseProjectRoute(config, route, {
+        activeProjectPath: projectPath,
+        candidateProjectDirectories: [nestedLibraryPath],
+      })
+    ).toEqual({
+      projectName: 'assembly',
+      projectPath,
+      currentFileName: 'bolt.kcl',
+      currentFilePath: route,
+    })
+  })
+
   it('should prefer the default directory library over the legacy project directory', async () => {
     const libraryProjectDirectory = absolutePath(
       'home',
@@ -124,6 +208,50 @@ describe('testing parseProjectRoute', () => {
       currentFileName: 'main.kcl',
       currentFilePath: route,
     })
+  })
+
+  it('should parse a Windows project route with mixed separators as the project root', async () => {
+    const originalFsPathFunctions = {
+      sep: fsZds.sep,
+      relative: fsZds.relative,
+      join: fsZds.join,
+      basename: fsZds.basename,
+      dirname: fsZds.dirname,
+      extname: fsZds.extname,
+      resolve: fsZds.resolve,
+    }
+    Object.assign(fsZds, {
+      sep: path.win32.sep,
+      relative: path.win32.relative.bind(path.win32),
+      join: path.win32.join.bind(path.win32),
+      basename: path.win32.basename.bind(path.win32),
+      dirname: path.win32.dirname.bind(path.win32),
+      extname: path.win32.extname.bind(path.win32),
+      resolve: path.win32.resolve.bind(path.win32),
+    })
+
+    try {
+      const projectDirectory =
+        'C:\\Users\\runneradmin\\work\\modeling-app\\test-results\\electron-test-projects-dir'
+      const route =
+        'C:/Users/runneradmin/work/modeling-app/test-results/electron-test-projects-dir\\testProject'
+      const config = {
+        settings: {
+          project: {
+            directory: projectDirectory,
+          },
+        },
+      }
+
+      expect(parseProjectRoute(config, route)).toEqual({
+        projectName: 'testProject',
+        projectPath: path.win32.join(projectDirectory, 'testProject'),
+        currentFileName: null,
+        currentFilePath: null,
+      })
+    } finally {
+      Object.assign(fsZds, originalFsPathFunctions)
+    }
   })
 
   it('should respect an explicit empty libraries setting', async () => {

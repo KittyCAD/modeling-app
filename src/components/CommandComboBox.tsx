@@ -1,10 +1,15 @@
 import { Combobox } from '@headlessui/react'
 import Fuse from 'fuse.js'
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 
 import { CustomIcon } from '@src/components/CustomIcon'
 import { noAutofillInputProps } from '@src/lib/autofill'
 import { useApp } from '@src/lib/boot'
+import {
+  rankCommandSearchResults,
+  readCommandPaletteUsage,
+  recordCommandPaletteUsage,
+} from '@src/lib/commandPaletteUsage'
 import type { Command } from '@src/lib/commandTypes'
 import { sortCommands } from '@src/lib/commandUtils'
 import { getActorNextEvents } from '@src/lib/utils'
@@ -17,8 +22,8 @@ function CommandComboBox({
   placeholder?: string
 }) {
   const [query, setQuery] = useState('')
-  const [filteredOptions, setFilteredOptions] = useState<typeof options>()
   const { commands } = useApp()
+  const usageHistory = useMemo(() => readCommandPaletteUsage(), [])
 
   const defaultOption =
     options.find((o) => 'isCurrent' in o && o.isCurrent) || null
@@ -35,19 +40,31 @@ function CommandComboBox({
     [options]
   )
 
-  const fuse = new Fuse(sortedOptions, {
-    keys: ['displayName', 'name', 'description'],
-    threshold: 0.3,
-    ignoreLocation: true,
-  })
+  const fuse = useMemo(
+    () =>
+      new Fuse(sortedOptions, {
+        keys: ['displayName', 'name', 'description'],
+        threshold: 0.3,
+        ignoreLocation: true,
+        includeScore: true,
+      }),
+    [sortedOptions]
+  )
 
-  useEffect(() => {
-    const results = fuse.search(query).map((result) => result.item)
-    setFilteredOptions(query.length > 0 ? results : sortedOptions)
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [query, sortedOptions])
+  const filteredOptions = useMemo(
+    () =>
+      query.length > 0
+        ? rankCommandSearchResults(
+            fuse.search(query),
+            usageHistory,
+            optionIsDisabled
+          )
+        : sortedOptions,
+    [fuse, query, sortedOptions, usageHistory]
+  )
 
   function handleSelection(command: Command) {
+    recordCommandPaletteUsage(command)
     commands.send({ type: 'Select command', data: { command } })
   }
 

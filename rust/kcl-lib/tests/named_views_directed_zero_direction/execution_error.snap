@@ -8,8 +8,7 @@ KCL Semantic error
    ╭─[6:7]
  5 │ 
  6 │ bad = view::directed([0, 0, 0])
-   ·       ────────────┬────────────┬
-   ·                   ╰── tests/named_views_directed_zero_direction/input.kcl
+   ·       ────────────┬────────────
    ·                   ╰── tests/named_views_directed_zero_direction/input.kcl
    ╰────
   ╰─▶ KCL Semantic error

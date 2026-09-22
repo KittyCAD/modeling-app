@@ -1,7 +1,7 @@
 // Impeller
 
 // Set units
-@settings(defaultLengthUnit = in, experimentalFeatures = allow)
+@settings(defaultLengthUnit = in, kclVersion = 2.0, experimentalFeatures = allow)
 
 // Define parameters
 impellerDiameter = 3
@@ -110,7 +110,7 @@ sketch003 = sketch(on = offsetPlane(XZ, offset = 0.4)) {
   coincident([line2.start, arc4.center])
 }
 hide(sketch003)
-region003 = region(point = [0.9542in, -0.7280643in], sketch = sketch003)
+region003 = region(segments = [sketch003.arc1, sketch003.arc2])
 
 vane = extrude(region003, length = vaneHeight)
   // Pattern the vane around the Z axis

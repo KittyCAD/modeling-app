@@ -46,7 +46,7 @@ Canonical selection prefers a clean cloud-library realization, then the newest c
 
 ### Moving projects between libraries
 
-- Directory -> Cloud: move the local project directory into the Personal Cloud storage directory. If cloud sync is enabled, explicitly enroll the moved project with `startProjectSync`. If the project already has a valid cloud project ID, the engine may bind to that remote project; otherwise the next sync creates one.
+- Directory -> Cloud: move the local project directory into the Personal Cloud storage directory. If cloud sync is enabled, explicitly enroll the moved project with `startProjectSync`. Workflows that need a cloud identity before continuing should enroll the project and then await `syncNow`. Otherwise, an existing cloud ID may be bound from project settings or the next sync creates the remote project.
 - Cloud -> Directory: treat this as "make local-only." Before the filesystem move, run the user-initiated disconnect flow: remove the local `project.toml` cloud project ID, clear pending cloud sync work, mark the local project `syncExcluded` with `reason: "user-disconnected"`, delete the remote cloud project, and update the remote project index. If remote deletion fails, the disconnect restores the local cloud link and the move should fail rather than leaving a half-detached project.
 - Cloud -> Cloud: if we add multiple cloud-type libraries, moving between them should preserve the cloud binding. Do not disconnect unless the target library type is not cloud.
 - Directory -> Directory: leave existing project metadata alone, but do not auto-enroll local-only projects. Directory-type libraries may discover projects that already carry cloud metadata, but they do not own cloud sync enrollment.
@@ -157,6 +157,15 @@ flowchart TD
 
 Cloud sync state is stored outside React state so it can survive page reloads and tab closes.
 
+OPFS and IndexedDB have deliberately different jobs:
+
+- OPFS holds the actual project files. It is the content the editor reads and the archive uploader snapshots.
+- A manifest is only a sorted inventory of normalized relative paths and content hashes. It can prove whether two project snapshots are equal and which acknowledged paths disappeared, but it cannot reconstruct a file.
+- IndexedDB's `projects` store holds the relationship and last acknowledged sync base: the remote project ID, remote revision, and manifest that were known to describe the same successful sync.
+- IndexedDB's `outbox` store is a durable wake-up signal for local work that still needs syncing. Repeated notifications coalesce to one row per project, while replacing that row advances its auto-incremented ID. The newest ID therefore acts as a persisted local mutation generation.
+
+A typical update moves from acknowledged base `(revision A, manifest A)` to an immutable upload attempt based on local `manifest B`. A successful response acknowledges `(revision B, manifest B)`. The worker clears the outbox only if its mutation generation has not advanced; otherwise the newer local work remains queued against the newly acknowledged base.
+
 - `ProjectMetadata.remoteProjectId` binds a local project directory to a cloud project.
 - `ProjectMetadata.remoteRevision` stores the last cloud-acknowledged remote revision for the local base.
 - `ProjectMetadata.remoteUpdatedAt` stores the cloud project's last updated timestamp for Home sorting while the local cache is clean.
@@ -185,5 +194,7 @@ If a remote project disappears from the cloud index, the local mirror is removed
 Remote hydration is only allowed to replace OPFS when the local project is clean relative to `baseManifest`, or when the caller explicitly materializes a remote-only project into a local library. If both local and remote changed since the base, the engine may auto-reconcile changes that touch independent file paths. Same-path divergent changes keep the local project primary and fetch the remote archive live when the user inspects or resolves the conflict.
 
 This implementation is whole-project archive based. It can auto-reconcile independent file-level changes by comparing local and remote manifests to `baseManifest`, but it does not attempt same-file line or syntax merges because the base stores file fingerprints instead of file contents. A remote revision must therefore change on every successful project archive update; otherwise a remote change can be missed.
+
+Whole-project updates include `deleted_paths`, derived as the acknowledged base manifest's paths that are absent from the exact upload manifest. Because deletion intent and uploaded bytes come from the same immutable replacement attempt, a recreated path is naturally present and is not declared deleted. This lets the API distinguish an intentional background deletion from an incomplete or stale replacement archive.
 
 When a cloud title changes, the title is written into `project.toml` only when that can be done without overwriting local edits. The local project directory name is treated as an implementation detail and may differ from the cloud title when uniqueness requires it.

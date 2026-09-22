@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties involute_circular_units.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": -0.05987528817645682,
+      "y": 0.08386532513296174,
+      "z": 1.5
+    },
+    "dimensions": {
+      "x": 137.9016244733531,
+      "y": 137.88632562681562,
+      "z": 3.0
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 19695.62892524973
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 26.598668324272023
+  }
+}

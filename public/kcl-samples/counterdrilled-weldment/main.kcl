@@ -1,6 +1,6 @@
 // Counterdrilled Weldment
 // A metal weldment consisting of a counterdrilled plate, a centrally mounted housing tube, and four structural support fins.
-// Categories: Manufacturing, Construction
+// Categories: Industrial & Manufacturing
 
 // Set units
 @settings(defaultLengthUnit = in, kclVersion = 2.0)

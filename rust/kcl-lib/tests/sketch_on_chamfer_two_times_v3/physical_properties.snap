@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties sketch_on_chamfer_two_times_v3.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": 224.87059638566,
+      "y": -59.93179205906308,
+      "z": 208.57
+    },
+    "dimensions": {
+      "x": 298.14119277132,
+      "y": 119.86358419261316,
+      "z": 260.7120000000002
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 211317.9988906495
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 5539.963974721711
+  }
+}

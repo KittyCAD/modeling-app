@@ -1,9 +1,9 @@
 // Ceiling Propeller
 // A twisted ceiling fan geometry made using boolean cutouts
-// Categories: Construction
+// Categories: Home & Lifestyle; Mechanical Components
 
 // Set units
-@settings(defaultLengthUnit = mm)
+@settings(defaultLengthUnit = mm, kclVersion = 2.0)
 
 // Define parameters
 bladeCount = 3

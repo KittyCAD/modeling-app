@@ -40,7 +40,7 @@ import lspIndentExt from './indent'
 import lspRenameExt from './rename'
 import type { SemanticToken } from './semantic-tokens'
 import lspSemanticTokensExt, { addToken } from './semantic-tokens'
-import lspSignatureHelpExt from './signature-help'
+import lspSignatureHelpExt, { setSignatureHelpTooltip } from './signature-help'
 import {
   formatContents,
   offsetToPos,
@@ -616,6 +616,7 @@ export class LanguageServerPlugin implements PluginValue {
           )
         } finally {
           popup.remove()
+          view.focus()
         }
       }
 
@@ -739,13 +740,32 @@ export class LanguageServerPlugin implements PluginValue {
       }
 
       // Position tooltip at cursor
-      let pos = posToOffset(view.state.doc, { line, character })
+      const pos = posToOffset(view.state.doc, { line, character })
       if (pos === null || pos === undefined) return null
 
       return {
         pos,
         end: pos,
-        create: (_view) => ({ dom }),
+        create: (view) => {
+          let timeout: ReturnType<typeof setTimeout> | undefined
+          const removeTooltip = () => {
+            view.dispatch({ effects: setSignatureHelpTooltip.of(null) })
+          }
+          return {
+            dom,
+            mount: () => {
+              // Preserve the existing timeout and editor-input dismissal.
+              timeout = setTimeout(removeTooltip, 10000)
+              view.dom.addEventListener('keydown', removeTooltip)
+              view.dom.addEventListener('mousedown', removeTooltip)
+            },
+            destroy: () => {
+              clearTimeout(timeout)
+              view.dom.removeEventListener('keydown', removeTooltip)
+              view.dom.removeEventListener('mousedown', removeTooltip)
+            },
+          }
+        },
         above: true,
       }
     } catch (error) {
@@ -769,42 +789,7 @@ export class LanguageServerPlugin implements PluginValue {
     )
 
     if (tooltip) {
-      // Create and show the tooltip manually
-      const { pos: tooltipPos } = tooltip
-      const tooltipView = tooltip.create(view)
-
-      const tooltipElement = document.createElement('div')
-      tooltipElement.className =
-        'documentation hover-tooltip cm-tooltip cm-signature-tooltip'
-      tooltipElement.style.position = 'absolute'
-      tooltipElement.style.zIndex = '99999999'
-
-      tooltipElement.appendChild(tooltipView.dom)
-
-      // Position the tooltip
-      const coords = view.coordsAtPos(tooltipPos)
-      if (coords) {
-        tooltipElement.style.left = `${coords.left}px`
-        tooltipElement.style.top = `${coords.bottom + 5}px`
-
-        // Add to DOM
-        document.body.appendChild(tooltipElement)
-
-        // Remove after a delay or on editor changes
-        setTimeout(() => {
-          removeTooltip() // Use the function that also cleans up event listeners
-        }, 10000) // Show for 10 seconds
-
-        // Also remove on any user input
-        const removeTooltip = () => {
-          tooltipElement.remove()
-          view.dom.removeEventListener('keydown', removeTooltip)
-          view.dom.removeEventListener('mousedown', removeTooltip)
-        }
-
-        view.dom.addEventListener('keydown', removeTooltip)
-        view.dom.addEventListener('mousedown', removeTooltip)
-      }
+      view.dispatch({ effects: setSignatureHelpTooltip.of(tooltip) })
     }
   }
 
@@ -813,7 +798,9 @@ export class LanguageServerPlugin implements PluginValue {
    */
   private createTooltipContainer(): HTMLElement {
     const dom = document.createElement('div')
-    dom.classList.add('cm-signature-help')
+    dom.className =
+      'documentation hover-tooltip cm-signature-help cm-signature-tooltip'
+    dom.style.zIndex = '99999999'
     return dom
   }
 

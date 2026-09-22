@@ -101,7 +101,6 @@ description: Variables in memory after executing inner-thread.kcl
   },
   "circle1": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "circle1"
   },
   "inner": {
@@ -109,6 +108,8 @@ description: Variables in memory after executing inner-thread.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -116,10 +117,10 @@ description: Variables in memory after executing inner-thread.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 602,
-            "end": 609,
+            "commentStart": 688,
+            "end": 695,
             "moduleId": 0,
-            "start": 602,
+            "start": 688,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -147,10 +148,10 @@ description: Variables in memory after executing inner-thread.kcl
             ],
             "radius": 4.0,
             "tag": {
-              "commentStart": 602,
-              "end": 609,
+              "commentStart": 688,
+              "end": 695,
               "moduleId": 0,
-              "start": 602,
+              "start": 688,
               "type": "TagDeclarator",
               "value": "circle1"
             },
@@ -163,17 +164,17 @@ description: Variables in memory after executing inner-thread.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 8,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -217,8 +218,8 @@ description: Variables in memory after executing inner-thread.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "mm"
+        "units": "mm",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -248,10 +249,10 @@ description: Variables in memory after executing inner-thread.kcl
           ],
           "radius": 4.0,
           "tag": {
-            "commentStart": 602,
-            "end": 609,
+            "commentStart": 688,
+            "end": 695,
             "moduleId": 0,
-            "start": 602,
+            "start": 688,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -264,17 +265,17 @@ description: Variables in memory after executing inner-thread.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 8,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -318,8 +319,8 @@ description: Variables in memory after executing inner-thread.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "mm"
+      "units": "mm",
+      "isClosed": "explicitly"
     }
   },
   "innerSketch": {
@@ -339,17 +340,21 @@ description: Variables in memory after executing inner-thread.kcl
                       {
                         "n": 4.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -357,17 +362,21 @@ description: Variables in memory after executing inner-thread.kcl
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -470,10 +479,10 @@ description: Variables in memory after executing inner-thread.kcl
                   ],
                   "radius": 4.0,
                   "tag": {
-                    "commentStart": 602,
-                    "end": 609,
+                    "commentStart": 688,
+                    "end": 695,
                     "moduleId": 0,
-                    "start": 602,
+                    "start": 688,
                     "type": "TagDeclarator",
                     "value": "circle1"
                   },
@@ -486,17 +495,17 @@ description: Variables in memory after executing inner-thread.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 8,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -555,6 +564,8 @@ description: Variables in memory after executing inner-thread.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -562,10 +573,10 @@ description: Variables in memory after executing inner-thread.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 159,
-            "end": 166,
+            "commentStart": 245,
+            "end": 252,
             "moduleId": 0,
-            "start": 159,
+            "start": 245,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -593,10 +604,10 @@ description: Variables in memory after executing inner-thread.kcl
             ],
             "radius": 5.0,
             "tag": {
-              "commentStart": 159,
-              "end": 166,
+              "commentStart": 245,
+              "end": 252,
               "moduleId": 0,
-              "start": 159,
+              "start": 245,
               "type": "TagDeclarator",
               "value": "circle1"
             },
@@ -609,17 +620,17 @@ description: Variables in memory after executing inner-thread.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 0,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -663,8 +674,8 @@ description: Variables in memory after executing inner-thread.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "mm"
+        "units": "mm",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -674,21 +685,17 @@ description: Variables in memory after executing inner-thread.kcl
   },
   "line1": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "line1"
   },
   "line2": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "line2"
   },
   "line3": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "line3"
   },
   "line4": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "line4"
   },
@@ -697,6 +704,8 @@ description: Variables in memory after executing inner-thread.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -704,10 +713,10 @@ description: Variables in memory after executing inner-thread.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 159,
-            "end": 166,
+            "commentStart": 245,
+            "end": 252,
             "moduleId": 0,
-            "start": 159,
+            "start": 245,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -735,10 +744,10 @@ description: Variables in memory after executing inner-thread.kcl
             ],
             "radius": 5.0,
             "tag": {
-              "commentStart": 159,
-              "end": 166,
+              "commentStart": 245,
+              "end": 252,
               "moduleId": 0,
-              "start": 159,
+              "start": 245,
               "type": "TagDeclarator",
               "value": "circle1"
             },
@@ -751,17 +760,17 @@ description: Variables in memory after executing inner-thread.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 0,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -805,8 +814,8 @@ description: Variables in memory after executing inner-thread.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "mm"
+        "units": "mm",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -818,9 +827,11 @@ description: Variables in memory after executing inner-thread.kcl
     "type": "Number",
     "value": 5.0,
     "ty": {
-      "mm": null,
       "type": "Known",
-      "type": "Length"
+      "value": {
+        "type": "Length",
+        "value": "mm"
+      }
     }
   },
   "outerCylinderRegion": {
@@ -845,10 +856,10 @@ description: Variables in memory after executing inner-thread.kcl
           ],
           "radius": 5.0,
           "tag": {
-            "commentStart": 159,
-            "end": 166,
+            "commentStart": 245,
+            "end": 252,
             "moduleId": 0,
-            "start": 159,
+            "start": 245,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -861,17 +872,17 @@ description: Variables in memory after executing inner-thread.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 0,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -915,8 +926,8 @@ description: Variables in memory after executing inner-thread.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "mm"
+      "units": "mm",
+      "isClosed": "explicitly"
     }
   },
   "outerCylinderSketch": {
@@ -936,17 +947,21 @@ description: Variables in memory after executing inner-thread.kcl
                       {
                         "n": 5.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -954,17 +969,21 @@ description: Variables in memory after executing inner-thread.kcl
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -1067,10 +1086,10 @@ description: Variables in memory after executing inner-thread.kcl
                   ],
                   "radius": 5.0,
                   "tag": {
-                    "commentStart": 159,
-                    "end": 166,
+                    "commentStart": 245,
+                    "end": 252,
                     "moduleId": 0,
-                    "start": 159,
+                    "start": 245,
                     "type": "TagDeclarator",
                     "value": "circle1"
                   },
@@ -1083,17 +1102,17 @@ description: Variables in memory after executing inner-thread.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 0,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -1151,18 +1170,22 @@ description: Variables in memory after executing inner-thread.kcl
     "type": "Number",
     "value": 0.5,
     "ty": {
-      "mm": null,
       "type": "Known",
-      "type": "Length"
+      "value": {
+        "type": "Length",
+        "value": "mm"
+      }
     }
   },
   "rectWidth": {
     "type": "Number",
     "value": 0.5,
     "ty": {
-      "mm": null,
       "type": "Known",
-      "type": "Length"
+      "value": {
+        "type": "Length",
+        "value": "mm"
+      }
     }
   },
   "thread": {
@@ -1170,6 +1193,8 @@ description: Variables in memory after executing inner-thread.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -1177,10 +1202,10 @@ description: Variables in memory after executing inner-thread.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1029,
-            "end": 1034,
+            "commentStart": 1115,
+            "end": 1120,
             "moduleId": 0,
-            "start": 1029,
+            "start": 1115,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -1191,10 +1216,10 @@ description: Variables in memory after executing inner-thread.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1108,
-            "end": 1113,
+            "commentStart": 1194,
+            "end": 1199,
             "moduleId": 0,
-            "start": 1108,
+            "start": 1194,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -1205,10 +1230,10 @@ description: Variables in memory after executing inner-thread.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1225,
-            "end": 1230,
+            "commentStart": 1311,
+            "end": 1316,
             "moduleId": 0,
-            "start": 1225,
+            "start": 1311,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -1219,10 +1244,10 @@ description: Variables in memory after executing inner-thread.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1341,
-            "end": 1346,
+            "commentStart": 1427,
+            "end": 1432,
             "moduleId": 0,
-            "start": 1341,
+            "start": 1427,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -1244,10 +1269,10 @@ description: Variables in memory after executing inner-thread.kcl
               -0.25
             ],
             "tag": {
-              "commentStart": 1029,
-              "end": 1034,
+              "commentStart": 1115,
+              "end": 1120,
               "moduleId": 0,
-              "start": 1029,
+              "start": 1115,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -1268,10 +1293,10 @@ description: Variables in memory after executing inner-thread.kcl
               -0.2500000001
             ],
             "tag": {
-              "commentStart": 1108,
-              "end": 1113,
+              "commentStart": 1194,
+              "end": 1199,
               "moduleId": 0,
-              "start": 1108,
+              "start": 1194,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -1292,10 +1317,10 @@ description: Variables in memory after executing inner-thread.kcl
               0.24999999954999996
             ],
             "tag": {
-              "commentStart": 1225,
-              "end": 1230,
+              "commentStart": 1311,
+              "end": 1316,
               "moduleId": 0,
-              "start": 1225,
+              "start": 1311,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -1316,10 +1341,10 @@ description: Variables in memory after executing inner-thread.kcl
               0.24999999929999997
             ],
             "tag": {
-              "commentStart": 1341,
-              "end": 1346,
+              "commentStart": 1427,
+              "end": 1432,
               "moduleId": 0,
-              "start": 1341,
+              "start": 1427,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -1332,17 +1357,17 @@ description: Variables in memory after executing inner-thread.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 16,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -1398,8 +1423,8 @@ description: Variables in memory after executing inner-thread.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "mm"
+        "units": "mm",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -1436,17 +1461,21 @@ description: Variables in memory after executing inner-thread.kcl
                       {
                         "n": 3.75,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": -0.25,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -1454,17 +1483,21 @@ description: Variables in memory after executing inner-thread.kcl
                       {
                         "n": 4.2500000002,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": -0.2500000001,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -1556,17 +1589,21 @@ description: Variables in memory after executing inner-thread.kcl
                       {
                         "n": 4.25000000035,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": -0.25000000025,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -1574,17 +1611,21 @@ description: Variables in memory after executing inner-thread.kcl
                       {
                         "n": 4.25000000045,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.24999999954999996,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -1676,17 +1717,21 @@ description: Variables in memory after executing inner-thread.kcl
                       {
                         "n": 4.2500000005,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.24999999939999998,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -1694,17 +1739,21 @@ description: Variables in memory after executing inner-thread.kcl
                       {
                         "n": 3.7499999997,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.24999999929999997,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -1796,17 +1845,21 @@ description: Variables in memory after executing inner-thread.kcl
                       {
                         "n": 3.74999999975,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.24999999924999997,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -1814,17 +1867,21 @@ description: Variables in memory after executing inner-thread.kcl
                       {
                         "n": 3.74999999985,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": -0.24999999995,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -1921,10 +1978,10 @@ description: Variables in memory after executing inner-thread.kcl
                     -0.25
                   ],
                   "tag": {
-                    "commentStart": 1029,
-                    "end": 1034,
+                    "commentStart": 1115,
+                    "end": 1120,
                     "moduleId": 0,
-                    "start": 1029,
+                    "start": 1115,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -1945,10 +2002,10 @@ description: Variables in memory after executing inner-thread.kcl
                     -0.2500000001
                   ],
                   "tag": {
-                    "commentStart": 1108,
-                    "end": 1113,
+                    "commentStart": 1194,
+                    "end": 1199,
                     "moduleId": 0,
-                    "start": 1108,
+                    "start": 1194,
                     "type": "TagDeclarator",
                     "value": "line2"
                   },
@@ -1969,10 +2026,10 @@ description: Variables in memory after executing inner-thread.kcl
                     0.24999999954999996
                   ],
                   "tag": {
-                    "commentStart": 1225,
-                    "end": 1230,
+                    "commentStart": 1311,
+                    "end": 1316,
                     "moduleId": 0,
-                    "start": 1225,
+                    "start": 1311,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
@@ -1993,10 +2050,10 @@ description: Variables in memory after executing inner-thread.kcl
                     0.24999999929999997
                   ],
                   "tag": {
-                    "commentStart": 1341,
-                    "end": 1346,
+                    "commentStart": 1427,
+                    "end": 1432,
                     "moduleId": 0,
-                    "start": 1341,
+                    "start": 1427,
                     "type": "TagDeclarator",
                     "value": "line4"
                   },
@@ -2009,17 +2066,17 @@ description: Variables in memory after executing inner-thread.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 16,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -2101,10 +2158,10 @@ description: Variables in memory after executing inner-thread.kcl
             -0.25
           ],
           "tag": {
-            "commentStart": 1029,
-            "end": 1034,
+            "commentStart": 1115,
+            "end": 1120,
             "moduleId": 0,
-            "start": 1029,
+            "start": 1115,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -2125,10 +2182,10 @@ description: Variables in memory after executing inner-thread.kcl
             -0.2500000001
           ],
           "tag": {
-            "commentStart": 1108,
-            "end": 1113,
+            "commentStart": 1194,
+            "end": 1199,
             "moduleId": 0,
-            "start": 1108,
+            "start": 1194,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -2149,10 +2206,10 @@ description: Variables in memory after executing inner-thread.kcl
             0.24999999954999996
           ],
           "tag": {
-            "commentStart": 1225,
-            "end": 1230,
+            "commentStart": 1311,
+            "end": 1316,
             "moduleId": 0,
-            "start": 1225,
+            "start": 1311,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -2173,10 +2230,10 @@ description: Variables in memory after executing inner-thread.kcl
             0.24999999929999997
           ],
           "tag": {
-            "commentStart": 1341,
-            "end": 1346,
+            "commentStart": 1427,
+            "end": 1432,
             "moduleId": 0,
-            "start": 1341,
+            "start": 1427,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -2189,17 +2246,17 @@ description: Variables in memory after executing inner-thread.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 16,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -2255,8 +2312,8 @@ description: Variables in memory after executing inner-thread.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "mm"
+      "units": "mm",
+      "isClosed": "explicitly"
     }
   }
 }

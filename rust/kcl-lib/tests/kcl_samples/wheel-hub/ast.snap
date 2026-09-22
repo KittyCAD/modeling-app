@@ -27008,7 +27008,7 @@ description: Result of parsing wheel-hub.kcl
         "preComments": [
           "// Hub",
           "// A wheel hub is the part that connects the wheel to the suspension",
-          "// Categories: Automotive",
+          "// Categories: Automotive & Transportation; Mechanical Components",
           "",
           "",
           "// Set units"
@@ -27326,6 +27326,7 @@ description: Result of parsing wheel-hub.kcl
       },
       "startNodes": []
     },
-    "start": 0
+    "start": 0,
+    "type": "Program"
   }
 }

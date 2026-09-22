@@ -26080,7 +26080,7 @@ description: Result of parsing enclosure.kcl
         "preComments": [
           "// Enclosure",
           "// An enclosure body and sealing lid for storing items",
-          "// Categories: Computer Hardware, Maker",
+          "// Categories: Electronics & Computing; 3D Printable",
           "",
           "",
           "// Set units"
@@ -26334,6 +26334,7 @@ description: Result of parsing enclosure.kcl
       },
       "startNodes": []
     },
-    "start": 0
+    "start": 0,
+    "type": "Program"
   }
 }

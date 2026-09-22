@@ -30,7 +30,10 @@ CONTRIBUTING.md                   @KittyCAD/frontend @KittyCAD/kcl
 /rust/**/kcl_samples/             @KittyCAD/frontend @KittyCAD/kcl
 
 # Other shared files
-/.github                          @KittyCAD/frontend @KittyCAD/kcl
+.github/                          @KittyCAD/frontend @KittyCAD/kcl
+.github/actions/                  @KittyCAD/frontend-release
+.github/ci-cd-scripts/            @KittyCAD/frontend-release
+.github/workflows/                @KittyCAD/frontend-release
 _typos.toml                       @KittyCAD/frontend @KittyCAD/kcl
 flake.nix                         @KittyCAD/frontend @KittyCAD/kcl
 flake.lock                        @KittyCAD/frontend @KittyCAD/kcl

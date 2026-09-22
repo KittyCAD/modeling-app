@@ -1,0 +1,19 @@
+[package]
+name = "glb-render"
+version = "0.1.0"
+edition = "2024"
+
+[[bin]]
+name = "kcl-render"
+path = "src/main.rs"
+
+[lints]
+workspace = true
+
+[dependencies]
+bevy_math = "0.19.1"
+gltf = { git = "https://github.com/KittyCAD/gltf-rs", rev = "176933c96e36f9dc56566a7e986f6a4edbf43b09", default-features = false, features = ["utils", "KITTYCAD_boundary_representation"] }
+image = { version = "0.25", default-features = false, features = ["png"] }
+
+[dev-dependencies]
+serde_json = { workspace = true }

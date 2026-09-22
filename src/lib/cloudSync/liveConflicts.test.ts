@@ -8,6 +8,8 @@ import {
   loadCloudSyncProjectConflictInspection,
   type ProjectArchiveFile,
   resolveCloudSyncProjectConflict,
+  startCloudSyncProject,
+  syncCloudSyncProjectNow,
 } from '@src/lib/cloudSync'
 import {
   normalizeProjectArchiveFilesForCloudSync,
@@ -64,6 +66,8 @@ function remoteProjectPayload(revision = 'rev-2') {
   return {
     id: remoteProjectId,
     title: 'Demo',
+    description: 'Existing description',
+    category_ids: ['existing-category'],
     revision,
     updated_at: remoteUpdatedAt,
   }
@@ -112,6 +116,10 @@ function installFetchMock({
 
     if (url === `${baseUrl}/user/projects` && method === 'GET') {
       return jsonResponse([remoteProjectPayload(remoteRevision)])
+    }
+
+    if (url === `${baseUrl}/user/projects` && method === 'POST') {
+      return jsonResponse(remoteProjectPayload('rev-1'))
     }
 
     if (url === remoteProjectUrl && method === 'GET') {
@@ -163,6 +171,76 @@ describe('cloud sync live conflicts', () => {
     await deleteCloudSyncTestDatabase()
   })
 
+  it('awaits initial project creation and exact API archive reconciliation', async () => {
+    const localProjectToml =
+      'title = "Demo"\ndefault_file = "main.kcl"\n\n[settings.app]\nunits = "mm"\n'
+    const remoteProjectToml = `${localProjectToml}\n[cloud."dev.zoo.dev"]\nproject_id = "${remoteProjectId}"\n`
+    const files = new Map([
+      [`${projectPath}/main.kcl`, 'base = 1\n'],
+      [`${projectPath}/${PROJECT_SETTINGS_FILE_NAME}`, localProjectToml],
+    ])
+    const cloudSyncFs = createCloudSyncTestFs(files, { projectDirectory })
+    const rm = vi.spyOn(cloudSyncFs, 'rm')
+    const writeFile = vi.spyOn(cloudSyncFs, 'writeFile')
+    configureCloudSyncLocalFileSystem(cloudSyncFs)
+    installFetchMock({
+      remoteFiles: [
+        { relativePath: 'main.kcl', contents: 'base = 1\n' },
+        {
+          relativePath: PROJECT_SETTINGS_FILE_NAME,
+          contents: remoteProjectToml,
+        },
+      ],
+    })
+    configureCloudSyncEngine({
+      enabled: true,
+      baseUrl,
+      environmentName: 'dev.zoo.dev',
+      cloudProjectDirectoryPaths: [projectDirectory],
+      autoEnrollCloudLibraryProjects: false,
+    })
+
+    await startCloudSyncProject(projectPath)
+    await expect(syncCloudSyncProjectNow(projectPath)).resolves.toEqual({
+      remoteProjectId,
+    })
+
+    await expect(
+      getCloudSyncProjectMetadata(projectPath)
+    ).resolves.toMatchObject({
+      remoteProjectId,
+      remoteRevision: 'rev-2',
+      conflict: undefined,
+      lastFailure: undefined,
+    })
+    expect(files.get(`${projectPath}/main.kcl`)).toBe('base = 1\n')
+    expect(files.get(`${projectPath}/${PROJECT_SETTINGS_FILE_NAME}`)).toBe(
+      remoteProjectToml
+    )
+    expect(rm).not.toHaveBeenCalledWith(
+      projectPath,
+      expect.objectContaining({ recursive: true })
+    )
+    expect(writeFile).not.toHaveBeenCalledWith(
+      `${projectPath}/main.kcl`,
+      expect.anything()
+    )
+    expect(
+      fetchMock.mock.calls.filter(
+        ([input, init]) =>
+          getFetchUrl(input) === `${baseUrl}/user/projects` &&
+          getFetchMethod(input, init) === 'POST'
+      )
+    ).toHaveLength(1)
+    expect(clientErrorsMock.reportClientError).not.toHaveBeenCalledWith(
+      expect.objectContaining({
+        code: expect.stringMatching(
+          /^cloud_sync_(?:conflict|untracked_local_changes)$/
+        ),
+      })
+    )
+  })
+
   it('marks conflicts without creating persisted conflict-copy projects', async () => {
     const files = new Map([
       [`${projectPath}/main.kcl`, 'local = 2\n'],
@@ -211,16 +289,37 @@ describe('cloud sync live conflicts', () => {
     await vi.waitFor(() =>
       expect(clientErrorsMock.reportClientError).toHaveBeenCalledWith(
         expect.objectContaining({
-          code: 'cloud_sync_conflict_copy_detected',
-          errorName: 'CloudSyncConflictCopyDetected',
-          message: 'Cloud sync "conflict copy" folder detected',
+          code: 'cloud_sync_conflict',
+          errorName: 'CloudSyncConflict',
+          message: 'Cloud sync conflict: local and remote both changed.',
           route: '/cloud-sync',
-          extra: {
+          dedupeKey: expect.stringContaining(
+            `CloudSync:conflict:remote-project-id:${remoteProjectId}:rev-1:rev-2:`
+          ),
+          extra: expect.objectContaining({
             source: 'CloudSyncEngine',
             operation: 'reconcile-project',
-          },
+            clientInstanceId: expect.any(String),
+            projectIdentityKind: 'remote-project-id',
+            projectIdentity: remoteProjectId,
+            remoteProjectId,
+            localProjectPathHash: expect.any(String),
+            syncBaseRemoteRevision: 'rev-1',
+            conflictRemoteRevision: 'rev-2',
+            conflictRemoteUpdatedAt: remoteUpdatedAt,
+            conflictAlreadyRecorded: false,
+            baseManifestFingerprint: expect.any(String),
+            localManifestFingerprint: expect.any(String),
+            remoteManifestFingerprint: expect.any(String),
+            divergentChangedFileCount: expect.any(Number),
+          }),
         })
       )
+    )
+    expect(clientErrorsMock.reportClientError).not.toHaveBeenCalledWith(
+      expect.objectContaining({
+        code: 'cloud_sync_conflict_copy_detected',
+      })
     )
     const metadata = await getCloudSyncProjectMetadata(projectPath)
     expect(metadata?.conflict?.conflictProjectPath).toBeUndefined()
@@ -279,6 +378,8 @@ describe('cloud sync live conflicts', () => {
       [`${projectPath}/${PROJECT_SETTINGS_FILE_NAME}`, projectToml],
     ])
     const updatePayloads: Array<{
+      categoryIds?: string[]
+      description?: string
       expectedRevision?: string
       main?: string
       remote?: string
@@ -318,8 +419,14 @@ describe('cloud sync live conflicts', () => {
         const formData = init?.body as FormData
         const body = JSON.parse(
           await (formData.get('body') as Blob).text()
-        ) as { expected_revision?: string }
+        ) as {
+          category_ids?: string[]
+          description?: string
+          expected_revision?: string
+        }
         updatePayloads.push({
+          categoryIds: body.category_ids,
+          description: body.description,
           expectedRevision: body.expected_revision,
           main: await (formData.get('main.kcl') as Blob).text(),
           remote: await (formData.get('remote.kcl') as Blob).text(),
@@ -345,6 +452,8 @@ describe('cloud sync live conflicts', () => {
 
     expect(updatePayloads).toEqual([
       {
+        categoryIds: ['existing-category'],
+        description: 'Existing description',
         expectedRevision: 'rev-2',
         main: 'local = 2\n',
         remote: 'cloud = 2\n',

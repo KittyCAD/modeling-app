@@ -27,6 +27,9 @@ description: Variables in memory after executing enclosure.kcl
         "creatorSketchId": "[uuid]",
         "creatorSketchIsClosed": "explicitly",
         "edgeCutIds": [
+          "[uuid]",
+          "[uuid]",
+          "[uuid]",
           "[uuid]"
         ]
       },
@@ -134,6 +137,8 @@ description: Variables in memory after executing enclosure.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -141,10 +146,10 @@ description: Variables in memory after executing enclosure.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 326,
-            "end": 331,
+            "commentStart": 357,
+            "end": 362,
             "moduleId": 0,
-            "start": 326,
+            "start": 357,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -155,10 +160,10 @@ description: Variables in memory after executing enclosure.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 397,
-            "end": 402,
+            "commentStart": 428,
+            "end": 433,
             "moduleId": 0,
-            "start": 397,
+            "start": 428,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -169,10 +174,10 @@ description: Variables in memory after executing enclosure.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 511,
-            "end": 516,
+            "commentStart": 542,
+            "end": 547,
             "moduleId": 0,
-            "start": 511,
+            "start": 542,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -183,10 +188,10 @@ description: Variables in memory after executing enclosure.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 625,
-            "end": 630,
+            "commentStart": 656,
+            "end": 661,
             "moduleId": 0,
-            "start": 625,
+            "start": 656,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -208,10 +213,10 @@ description: Variables in memory after executing enclosure.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 326,
-              "end": 331,
+              "commentStart": 357,
+              "end": 362,
               "moduleId": 0,
-              "start": 326,
+              "start": 357,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -232,10 +237,10 @@ description: Variables in memory after executing enclosure.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 397,
-              "end": 402,
+              "commentStart": 428,
+              "end": 433,
               "moduleId": 0,
-              "start": 397,
+              "start": 428,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -256,10 +261,10 @@ description: Variables in memory after executing enclosure.kcl
               175.0
             ],
             "tag": {
-              "commentStart": 511,
-              "end": 516,
+              "commentStart": 542,
+              "end": 547,
               "moduleId": 0,
-              "start": 511,
+              "start": 542,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -280,10 +285,10 @@ description: Variables in memory after executing enclosure.kcl
               175.0
             ],
             "tag": {
-              "commentStart": 625,
-              "end": 630,
+              "commentStart": 656,
+              "end": 661,
               "moduleId": 0,
-              "start": 625,
+              "start": 656,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -296,17 +301,17 @@ description: Variables in memory after executing enclosure.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 0,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -362,11 +367,77 @@ description: Variables in memory after executing enclosure.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "mm"
+        "units": "mm",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
+      "edgeCuts": [
+        {
+          "type": "fillet",
+          "id": "[uuid]",
+          "radius": {
+            "n": 12.0,
+            "ty": {
+              "type": "Default",
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
+            }
+          },
+          "edgeId": "[uuid]",
+          "tag": null
+        },
+        {
+          "type": "fillet",
+          "id": "[uuid]",
+          "radius": {
+            "n": 12.0,
+            "ty": {
+              "type": "Default",
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
+            }
+          },
+          "edgeId": "[uuid]",
+          "tag": null
+        },
+        {
+          "type": "fillet",
+          "id": "[uuid]",
+          "radius": {
+            "n": 12.0,
+            "ty": {
+              "type": "Default",
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
+            }
+          },
+          "edgeId": "[uuid]",
+          "tag": null
+        },
+        {
+          "type": "fillet",
+          "id": "[uuid]",
+          "radius": {
+            "n": 12.0,
+            "ty": {
+              "type": "Default",
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
+            }
+          },
+          "edgeId": "[uuid]",
+          "tag": null
+        }
+      ],
       "units": "mm",
       "sectional": false
     }
@@ -388,17 +459,21 @@ description: Variables in memory after executing enclosure.kcl
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -406,17 +481,21 @@ description: Variables in memory after executing enclosure.kcl
                       {
                         "n": 125.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -508,17 +587,21 @@ description: Variables in memory after executing enclosure.kcl
                       {
                         "n": 125.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -526,17 +609,21 @@ description: Variables in memory after executing enclosure.kcl
                       {
                         "n": 125.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 175.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -628,17 +715,21 @@ description: Variables in memory after executing enclosure.kcl
                       {
                         "n": 125.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 175.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -646,17 +737,21 @@ description: Variables in memory after executing enclosure.kcl
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 175.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -748,17 +843,21 @@ description: Variables in memory after executing enclosure.kcl
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 175.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -766,17 +865,21 @@ description: Variables in memory after executing enclosure.kcl
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -873,10 +976,10 @@ description: Variables in memory after executing enclosure.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 326,
-                    "end": 331,
+                    "commentStart": 357,
+                    "end": 362,
                     "moduleId": 0,
-                    "start": 326,
+                    "start": 357,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -897,10 +1000,10 @@ description: Variables in memory after executing enclosure.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 397,
-                    "end": 402,
+                    "commentStart": 428,
+                    "end": 433,
                     "moduleId": 0,
-                    "start": 397,
+                    "start": 428,
                     "type": "TagDeclarator",
                     "value": "line2"
                   },
@@ -921,10 +1024,10 @@ description: Variables in memory after executing enclosure.kcl
                     175.0
                   ],
                   "tag": {
-                    "commentStart": 511,
-                    "end": 516,
+                    "commentStart": 542,
+                    "end": 547,
                     "moduleId": 0,
-                    "start": 511,
+                    "start": 542,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
@@ -945,10 +1048,10 @@ description: Variables in memory after executing enclosure.kcl
                     175.0
                   ],
                   "tag": {
-                    "commentStart": 625,
-                    "end": 630,
+                    "commentStart": 656,
+                    "end": 661,
                     "moduleId": 0,
-                    "start": 625,
+                    "start": 656,
                     "type": "TagDeclarator",
                     "value": "line4"
                   },
@@ -961,17 +1064,17 @@ description: Variables in memory after executing enclosure.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 0,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -1053,10 +1156,10 @@ description: Variables in memory after executing enclosure.kcl
             0.0
           ],
           "tag": {
-            "commentStart": 326,
-            "end": 331,
+            "commentStart": 357,
+            "end": 362,
             "moduleId": 0,
-            "start": 326,
+            "start": 357,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -1077,10 +1180,10 @@ description: Variables in memory after executing enclosure.kcl
             0.0
           ],
           "tag": {
-            "commentStart": 397,
-            "end": 402,
+            "commentStart": 428,
+            "end": 433,
             "moduleId": 0,
-            "start": 397,
+            "start": 428,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -1101,10 +1204,10 @@ description: Variables in memory after executing enclosure.kcl
             175.0
           ],
           "tag": {
-            "commentStart": 511,
-            "end": 516,
+            "commentStart": 542,
+            "end": 547,
             "moduleId": 0,
-            "start": 511,
+            "start": 542,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -1125,10 +1228,10 @@ description: Variables in memory after executing enclosure.kcl
             175.0
           ],
           "tag": {
-            "commentStart": 625,
-            "end": 630,
+            "commentStart": 656,
+            "end": 661,
             "moduleId": 0,
-            "start": 625,
+            "start": 656,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -1141,17 +1244,17 @@ description: Variables in memory after executing enclosure.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 0,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -1207,8 +1310,8 @@ description: Variables in memory after executing enclosure.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "mm"
+      "units": "mm",
+      "isClosed": "explicitly"
     }
   },
   "height": {
@@ -1216,17 +1319,17 @@ description: Variables in memory after executing enclosure.kcl
     "value": 70.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "holeBackLeft": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "holeBackLeft"
   },
   "holeBackRight": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "holeBackRight"
   },
@@ -1235,17 +1338,17 @@ description: Variables in memory after executing enclosure.kcl
     "value": 4.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "holeFrontLeft": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "holeFrontLeft"
   },
   "holeFrontRight": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "holeFrontRight"
   },
@@ -1254,8 +1357,10 @@ description: Variables in memory after executing enclosure.kcl
     "value": 99.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "holeSpanY": {
@@ -1263,12 +1368,13 @@ description: Variables in memory after executing enclosure.kcl
     "value": 149.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "innerCircle": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "innerCircle"
   },
@@ -1277,8 +1383,10 @@ description: Variables in memory after executing enclosure.kcl
     "value": 13.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "length": {
@@ -1286,8 +1394,10 @@ description: Variables in memory after executing enclosure.kcl
     "value": 175.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "lidLip": {
@@ -1295,6 +1405,8 @@ description: Variables in memory after executing enclosure.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -1302,10 +1414,10 @@ description: Variables in memory after executing enclosure.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 8748,
-            "end": 8753,
+            "commentStart": 8591,
+            "end": 8596,
             "moduleId": 0,
-            "start": 8748,
+            "start": 8591,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -1316,10 +1428,10 @@ description: Variables in memory after executing enclosure.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 8821,
-            "end": 8826,
+            "commentStart": 8664,
+            "end": 8669,
             "moduleId": 0,
-            "start": 8821,
+            "start": 8664,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -1330,10 +1442,10 @@ description: Variables in memory after executing enclosure.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 8935,
-            "end": 8940,
+            "commentStart": 8778,
+            "end": 8783,
             "moduleId": 0,
-            "start": 8935,
+            "start": 8778,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -1344,10 +1456,10 @@ description: Variables in memory after executing enclosure.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 9051,
-            "end": 9056,
+            "commentStart": 8894,
+            "end": 8899,
             "moduleId": 0,
-            "start": 9051,
+            "start": 8894,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -1358,10 +1470,10 @@ description: Variables in memory after executing enclosure.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 10849,
-            "end": 10862,
+            "commentStart": 10692,
+            "end": 10705,
             "moduleId": 0,
-            "start": 10849,
+            "start": 10692,
             "type": "TagDeclarator",
             "value": "holeFrontLeft"
           },
@@ -1372,10 +1484,10 @@ description: Variables in memory after executing enclosure.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 11399,
-            "end": 11413,
+            "commentStart": 11242,
+            "end": 11256,
             "moduleId": 0,
-            "start": 11399,
+            "start": 11242,
             "type": "TagDeclarator",
             "value": "holeFrontRight"
           },
@@ -1386,10 +1498,10 @@ description: Variables in memory after executing enclosure.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 11950,
-            "end": 11963,
+            "commentStart": 11793,
+            "end": 11806,
             "moduleId": 0,
-            "start": 11950,
+            "start": 11793,
             "type": "TagDeclarator",
             "value": "holeBackRight"
           },
@@ -1400,10 +1512,10 @@ description: Variables in memory after executing enclosure.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 12491,
-            "end": 12503,
+            "commentStart": 12334,
+            "end": 12346,
             "moduleId": 0,
-            "start": 12491,
+            "start": 12334,
             "type": "TagDeclarator",
             "value": "holeBackLeft"
           },
@@ -1425,10 +1537,10 @@ description: Variables in memory after executing enclosure.kcl
               3.0
             ],
             "tag": {
-              "commentStart": 8748,
-              "end": 8753,
+              "commentStart": 8591,
+              "end": 8596,
               "moduleId": 0,
-              "start": 8748,
+              "start": 8591,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -1449,10 +1561,10 @@ description: Variables in memory after executing enclosure.kcl
               3.0
             ],
             "tag": {
-              "commentStart": 8821,
-              "end": 8826,
+              "commentStart": 8664,
+              "end": 8669,
               "moduleId": 0,
-              "start": 8821,
+              "start": 8664,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -1473,10 +1585,10 @@ description: Variables in memory after executing enclosure.kcl
               172.0
             ],
             "tag": {
-              "commentStart": 8935,
-              "end": 8940,
+              "commentStart": 8778,
+              "end": 8783,
               "moduleId": 0,
-              "start": 8935,
+              "start": 8778,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -1497,10 +1609,10 @@ description: Variables in memory after executing enclosure.kcl
               172.0
             ],
             "tag": {
-              "commentStart": 9051,
-              "end": 9056,
+              "commentStart": 8894,
+              "end": 8899,
               "moduleId": 0,
-              "start": 9051,
+              "start": 8894,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -1527,10 +1639,10 @@ description: Variables in memory after executing enclosure.kcl
             ],
             "radius": 7.0,
             "tag": {
-              "commentStart": 10849,
-              "end": 10862,
+              "commentStart": 10692,
+              "end": 10705,
               "moduleId": 0,
-              "start": 10849,
+              "start": 10692,
               "type": "TagDeclarator",
               "value": "holeFrontLeft"
             },
@@ -1557,10 +1669,10 @@ description: Variables in memory after executing enclosure.kcl
             ],
             "radius": 7.0,
             "tag": {
-              "commentStart": 11399,
-              "end": 11413,
+              "commentStart": 11242,
+              "end": 11256,
               "moduleId": 0,
-              "start": 11399,
+              "start": 11242,
               "type": "TagDeclarator",
               "value": "holeFrontRight"
             },
@@ -1587,10 +1699,10 @@ description: Variables in memory after executing enclosure.kcl
             ],
             "radius": 7.0,
             "tag": {
-              "commentStart": 11950,
-              "end": 11963,
+              "commentStart": 11793,
+              "end": 11806,
               "moduleId": 0,
-              "start": 11950,
+              "start": 11793,
               "type": "TagDeclarator",
               "value": "holeBackRight"
             },
@@ -1617,10 +1729,10 @@ description: Variables in memory after executing enclosure.kcl
             ],
             "radius": 7.0,
             "tag": {
-              "commentStart": 12491,
-              "end": 12503,
+              "commentStart": 12334,
+              "end": 12346,
               "moduleId": 0,
-              "start": 12491,
+              "start": 12334,
               "type": "TagDeclarator",
               "value": "holeBackLeft"
             },
@@ -1655,6 +1767,9 @@ description: Variables in memory after executing enclosure.kcl
             "creatorSketchId": "[uuid]",
             "creatorSketchIsClosed": "explicitly",
             "edgeCutIds": [
+              "[uuid]",
+              "[uuid]",
+              "[uuid]",
               "[uuid]"
             ]
           },
@@ -1712,11 +1827,77 @@ description: Variables in memory after executing enclosure.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "mm"
+        "units": "mm",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
+      "edgeCuts": [
+        {
+          "type": "fillet",
+          "id": "[uuid]",
+          "radius": {
+            "n": 9.0,
+            "ty": {
+              "type": "Default",
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
+            }
+          },
+          "edgeId": "[uuid]",
+          "tag": null
+        },
+        {
+          "type": "fillet",
+          "id": "[uuid]",
+          "radius": {
+            "n": 9.0,
+            "ty": {
+              "type": "Default",
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
+            }
+          },
+          "edgeId": "[uuid]",
+          "tag": null
+        },
+        {
+          "type": "fillet",
+          "id": "[uuid]",
+          "radius": {
+            "n": 9.0,
+            "ty": {
+              "type": "Default",
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
+            }
+          },
+          "edgeId": "[uuid]",
+          "tag": null
+        },
+        {
+          "type": "fillet",
+          "id": "[uuid]",
+          "radius": {
+            "n": 9.0,
+            "ty": {
+              "type": "Default",
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
+            }
+          },
+          "edgeId": "[uuid]",
+          "tag": null
+        }
+      ],
       "units": "mm",
       "sectional": false
     }
@@ -1726,8 +1907,10 @@ description: Variables in memory after executing enclosure.kcl
     "value": 7.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "lidLipHoleOffset": {
@@ -1735,8 +1918,10 @@ description: Variables in memory after executing enclosure.kcl
     "value": 10.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "lidLipLength": {
@@ -1744,8 +1929,10 @@ description: Variables in memory after executing enclosure.kcl
     "value": 169.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "lidLipRegion": {
@@ -1764,10 +1951,10 @@ description: Variables in memory after executing enclosure.kcl
             3.0
           ],
           "tag": {
-            "commentStart": 8748,
-            "end": 8753,
+            "commentStart": 8591,
+            "end": 8596,
             "moduleId": 0,
-            "start": 8748,
+            "start": 8591,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -1788,10 +1975,10 @@ description: Variables in memory after executing enclosure.kcl
             3.0
           ],
           "tag": {
-            "commentStart": 8821,
-            "end": 8826,
+            "commentStart": 8664,
+            "end": 8669,
             "moduleId": 0,
-            "start": 8821,
+            "start": 8664,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -1812,10 +1999,10 @@ description: Variables in memory after executing enclosure.kcl
             172.0
           ],
           "tag": {
-            "commentStart": 8935,
-            "end": 8940,
+            "commentStart": 8778,
+            "end": 8783,
             "moduleId": 0,
-            "start": 8935,
+            "start": 8778,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -1836,10 +2023,10 @@ description: Variables in memory after executing enclosure.kcl
             172.0
           ],
           "tag": {
-            "commentStart": 9051,
-            "end": 9056,
+            "commentStart": 8894,
+            "end": 8899,
             "moduleId": 0,
-            "start": 9051,
+            "start": 8894,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -1866,10 +2053,10 @@ description: Variables in memory after executing enclosure.kcl
           ],
           "radius": 7.0,
           "tag": {
-            "commentStart": 10849,
-            "end": 10862,
+            "commentStart": 10692,
+            "end": 10705,
             "moduleId": 0,
-            "start": 10849,
+            "start": 10692,
             "type": "TagDeclarator",
             "value": "holeFrontLeft"
           },
@@ -1896,10 +2083,10 @@ description: Variables in memory after executing enclosure.kcl
           ],
           "radius": 7.0,
           "tag": {
-            "commentStart": 11399,
-            "end": 11413,
+            "commentStart": 11242,
+            "end": 11256,
             "moduleId": 0,
-            "start": 11399,
+            "start": 11242,
             "type": "TagDeclarator",
             "value": "holeFrontRight"
           },
@@ -1926,10 +2113,10 @@ description: Variables in memory after executing enclosure.kcl
           ],
           "radius": 7.0,
           "tag": {
-            "commentStart": 11950,
-            "end": 11963,
+            "commentStart": 11793,
+            "end": 11806,
             "moduleId": 0,
-            "start": 11950,
+            "start": 11793,
             "type": "TagDeclarator",
             "value": "holeBackRight"
           },
@@ -1956,10 +2143,10 @@ description: Variables in memory after executing enclosure.kcl
           ],
           "radius": 7.0,
           "tag": {
-            "commentStart": 12491,
-            "end": 12503,
+            "commentStart": 12334,
+            "end": 12346,
             "moduleId": 0,
-            "start": 12491,
+            "start": 12334,
             "type": "TagDeclarator",
             "value": "holeBackLeft"
           },
@@ -1994,6 +2181,9 @@ description: Variables in memory after executing enclosure.kcl
           "creatorSketchId": "[uuid]",
           "creatorSketchIsClosed": "explicitly",
           "edgeCutIds": [
+            "[uuid]",
+            "[uuid]",
+            "[uuid]",
             "[uuid]"
           ]
         },
@@ -2051,8 +2241,8 @@ description: Variables in memory after executing enclosure.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "mm"
+      "units": "mm",
+      "isClosed": "explicitly"
     }
   },
   "lidLipSketch": {
@@ -2072,17 +2262,21 @@ description: Variables in memory after executing enclosure.kcl
                       {
                         "n": 170.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 162.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -2090,17 +2284,21 @@ description: Variables in memory after executing enclosure.kcl
                       {
                         "n": 163.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 162.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -2160,6 +2358,9 @@ description: Variables in memory after executing enclosure.kcl
                     "creatorSketchId": "[uuid]",
                     "creatorSketchIsClosed": "explicitly",
                     "edgeCutIds": [
+                      "[uuid]",
+                      "[uuid]",
+                      "[uuid]",
                       "[uuid]"
                     ]
                   },
@@ -2189,17 +2390,21 @@ description: Variables in memory after executing enclosure.kcl
                       {
                         "n": 269.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 162.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -2207,17 +2412,21 @@ description: Variables in memory after executing enclosure.kcl
                       {
                         "n": 262.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 162.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -2277,6 +2486,9 @@ description: Variables in memory after executing enclosure.kcl
                     "creatorSketchId": "[uuid]",
                     "creatorSketchIsClosed": "explicitly",
                     "edgeCutIds": [
+                      "[uuid]",
+                      "[uuid]",
+                      "[uuid]",
                       "[uuid]"
                     ]
                   },
@@ -2306,17 +2518,21 @@ description: Variables in memory after executing enclosure.kcl
                       {
                         "n": 170.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 13.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -2324,17 +2540,21 @@ description: Variables in memory after executing enclosure.kcl
                       {
                         "n": 163.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 13.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -2394,6 +2614,9 @@ description: Variables in memory after executing enclosure.kcl
                     "creatorSketchId": "[uuid]",
                     "creatorSketchIsClosed": "explicitly",
                     "edgeCutIds": [
+                      "[uuid]",
+                      "[uuid]",
+                      "[uuid]",
                       "[uuid]"
                     ]
                   },
@@ -2423,17 +2646,21 @@ description: Variables in memory after executing enclosure.kcl
                       {
                         "n": 269.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 13.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -2441,17 +2668,21 @@ description: Variables in memory after executing enclosure.kcl
                       {
                         "n": 262.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 13.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -2511,6 +2742,9 @@ description: Variables in memory after executing enclosure.kcl
                     "creatorSketchId": "[uuid]",
                     "creatorSketchIsClosed": "explicitly",
                     "edgeCutIds": [
+                      "[uuid]",
+                      "[uuid]",
+                      "[uuid]",
                       "[uuid]"
                     ]
                   },
@@ -2540,17 +2774,21 @@ description: Variables in memory after executing enclosure.kcl
                       {
                         "n": 163.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 162.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -2558,17 +2796,21 @@ description: Variables in memory after executing enclosure.kcl
                       {
                         "n": 170.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 162.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -2629,6 +2871,9 @@ description: Variables in memory after executing enclosure.kcl
                     "creatorSketchId": "[uuid]",
                     "creatorSketchIsClosed": "explicitly",
                     "edgeCutIds": [
+                      "[uuid]",
+                      "[uuid]",
+                      "[uuid]",
                       "[uuid]"
                     ]
                   },
@@ -2658,17 +2903,21 @@ description: Variables in memory after executing enclosure.kcl
                       {
                         "n": 262.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 162.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -2676,17 +2925,21 @@ description: Variables in memory after executing enclosure.kcl
                       {
                         "n": 269.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 162.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -2747,6 +3000,9 @@ description: Variables in memory after executing enclosure.kcl
                     "creatorSketchId": "[uuid]",
                     "creatorSketchIsClosed": "explicitly",
                     "edgeCutIds": [
+                      "[uuid]",
+                      "[uuid]",
+                      "[uuid]",
                       "[uuid]"
                     ]
                   },
@@ -2776,17 +3032,21 @@ description: Variables in memory after executing enclosure.kcl
                       {
                         "n": 163.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 13.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -2794,17 +3054,21 @@ description: Variables in memory after executing enclosure.kcl
                       {
                         "n": 170.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 13.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -2865,6 +3129,9 @@ description: Variables in memory after executing enclosure.kcl
                     "creatorSketchId": "[uuid]",
                     "creatorSketchIsClosed": "explicitly",
                     "edgeCutIds": [
+                      "[uuid]",
+                      "[uuid]",
+                      "[uuid]",
                       "[uuid]"
                     ]
                   },
@@ -2894,17 +3161,21 @@ description: Variables in memory after executing enclosure.kcl
                       {
                         "n": 262.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 13.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -2912,17 +3183,21 @@ description: Variables in memory after executing enclosure.kcl
                       {
                         "n": 269.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 13.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -2983,6 +3258,9 @@ description: Variables in memory after executing enclosure.kcl
                     "creatorSketchId": "[uuid]",
                     "creatorSketchIsClosed": "explicitly",
                     "edgeCutIds": [
+                      "[uuid]",
+                      "[uuid]",
+                      "[uuid]",
                       "[uuid]"
                     ]
                   },
@@ -3012,17 +3290,21 @@ description: Variables in memory after executing enclosure.kcl
                       {
                         "n": 163.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 13.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -3030,17 +3312,21 @@ description: Variables in memory after executing enclosure.kcl
                       {
                         "n": 262.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 13.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -3101,6 +3387,9 @@ description: Variables in memory after executing enclosure.kcl
                     "creatorSketchId": "[uuid]",
                     "creatorSketchIsClosed": "explicitly",
                     "edgeCutIds": [
+                      "[uuid]",
+                      "[uuid]",
+                      "[uuid]",
                       "[uuid]"
                     ]
                   },
@@ -3130,17 +3419,21 @@ description: Variables in memory after executing enclosure.kcl
                       {
                         "n": 163.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 162.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -3148,17 +3441,21 @@ description: Variables in memory after executing enclosure.kcl
                       {
                         "n": 163.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 13.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -3219,6 +3516,9 @@ description: Variables in memory after executing enclosure.kcl
                     "creatorSketchId": "[uuid]",
                     "creatorSketchIsClosed": "explicitly",
                     "edgeCutIds": [
+                      "[uuid]",
+                      "[uuid]",
+                      "[uuid]",
                       "[uuid]"
                     ]
                   },
@@ -3248,17 +3548,21 @@ description: Variables in memory after executing enclosure.kcl
                       {
                         "n": 262.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 13.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -3266,17 +3570,21 @@ description: Variables in memory after executing enclosure.kcl
                       {
                         "n": 262.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 162.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -3337,6 +3645,9 @@ description: Variables in memory after executing enclosure.kcl
                     "creatorSketchId": "[uuid]",
                     "creatorSketchIsClosed": "explicitly",
                     "edgeCutIds": [
+                      "[uuid]",
+                      "[uuid]",
+                      "[uuid]",
                       "[uuid]"
                     ]
                   },
@@ -3366,17 +3677,21 @@ description: Variables in memory after executing enclosure.kcl
                       {
                         "n": 262.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 162.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -3384,17 +3699,21 @@ description: Variables in memory after executing enclosure.kcl
                       {
                         "n": 163.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 162.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -3455,6 +3774,9 @@ description: Variables in memory after executing enclosure.kcl
                     "creatorSketchId": "[uuid]",
                     "creatorSketchIsClosed": "explicitly",
                     "edgeCutIds": [
+                      "[uuid]",
+                      "[uuid]",
+                      "[uuid]",
                       "[uuid]"
                     ]
                   },
@@ -3484,17 +3806,21 @@ description: Variables in memory after executing enclosure.kcl
                       {
                         "n": 153.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 3.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -3502,17 +3828,21 @@ description: Variables in memory after executing enclosure.kcl
                       {
                         "n": 272.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 3.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -3572,6 +3902,9 @@ description: Variables in memory after executing enclosure.kcl
                     "creatorSketchId": "[uuid]",
                     "creatorSketchIsClosed": "explicitly",
                     "edgeCutIds": [
+                      "[uuid]",
+                      "[uuid]",
+                      "[uuid]",
                       "[uuid]"
                     ]
                   },
@@ -3601,17 +3934,21 @@ description: Variables in memory after executing enclosure.kcl
                       {
                         "n": 272.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 3.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -3619,17 +3956,21 @@ description: Variables in memory after executing enclosure.kcl
                       {
                         "n": 272.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 172.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -3689,6 +4030,9 @@ description: Variables in memory after executing enclosure.kcl
                     "creatorSketchId": "[uuid]",
                     "creatorSketchIsClosed": "explicitly",
                     "edgeCutIds": [
+                      "[uuid]",
+                      "[uuid]",
+                      "[uuid]",
                       "[uuid]"
                     ]
                   },
@@ -3718,17 +4062,21 @@ description: Variables in memory after executing enclosure.kcl
                       {
                         "n": 272.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 172.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -3736,17 +4084,21 @@ description: Variables in memory after executing enclosure.kcl
                       {
                         "n": 153.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 172.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -3806,6 +4158,9 @@ description: Variables in memory after executing enclosure.kcl
                     "creatorSketchId": "[uuid]",
                     "creatorSketchIsClosed": "explicitly",
                     "edgeCutIds": [
+                      "[uuid]",
+                      "[uuid]",
+                      "[uuid]",
                       "[uuid]"
                     ]
                   },
@@ -3835,17 +4190,21 @@ description: Variables in memory after executing enclosure.kcl
                       {
                         "n": 153.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 172.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -3853,17 +4212,21 @@ description: Variables in memory after executing enclosure.kcl
                       {
                         "n": 153.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 3.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -3923,6 +4286,9 @@ description: Variables in memory after executing enclosure.kcl
                     "creatorSketchId": "[uuid]",
                     "creatorSketchIsClosed": "explicitly",
                     "edgeCutIds": [
+                      "[uuid]",
+                      "[uuid]",
+                      "[uuid]",
                       "[uuid]"
                     ]
                   },
@@ -3957,10 +4323,10 @@ description: Variables in memory after executing enclosure.kcl
                     3.0
                   ],
                   "tag": {
-                    "commentStart": 8748,
-                    "end": 8753,
+                    "commentStart": 8591,
+                    "end": 8596,
                     "moduleId": 0,
-                    "start": 8748,
+                    "start": 8591,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -3981,10 +4347,10 @@ description: Variables in memory after executing enclosure.kcl
                     3.0
                   ],
                   "tag": {
-                    "commentStart": 8821,
-                    "end": 8826,
+                    "commentStart": 8664,
+                    "end": 8669,
                     "moduleId": 0,
-                    "start": 8821,
+                    "start": 8664,
                     "type": "TagDeclarator",
                     "value": "line2"
                   },
@@ -4005,10 +4371,10 @@ description: Variables in memory after executing enclosure.kcl
                     172.0
                   ],
                   "tag": {
-                    "commentStart": 8935,
-                    "end": 8940,
+                    "commentStart": 8778,
+                    "end": 8783,
                     "moduleId": 0,
-                    "start": 8935,
+                    "start": 8778,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
@@ -4029,10 +4395,10 @@ description: Variables in memory after executing enclosure.kcl
                     172.0
                   ],
                   "tag": {
-                    "commentStart": 9051,
-                    "end": 9056,
+                    "commentStart": 8894,
+                    "end": 8899,
                     "moduleId": 0,
-                    "start": 9051,
+                    "start": 8894,
                     "type": "TagDeclarator",
                     "value": "line4"
                   },
@@ -4076,10 +4442,10 @@ description: Variables in memory after executing enclosure.kcl
                   ],
                   "radius": 7.0,
                   "tag": {
-                    "commentStart": 10849,
-                    "end": 10862,
+                    "commentStart": 10692,
+                    "end": 10705,
                     "moduleId": 0,
-                    "start": 10849,
+                    "start": 10692,
                     "type": "TagDeclarator",
                     "value": "holeFrontLeft"
                   },
@@ -4123,10 +4489,10 @@ description: Variables in memory after executing enclosure.kcl
                   ],
                   "radius": 7.0,
                   "tag": {
-                    "commentStart": 11399,
-                    "end": 11413,
+                    "commentStart": 11242,
+                    "end": 11256,
                     "moduleId": 0,
-                    "start": 11399,
+                    "start": 11242,
                     "type": "TagDeclarator",
                     "value": "holeFrontRight"
                   },
@@ -4170,10 +4536,10 @@ description: Variables in memory after executing enclosure.kcl
                   ],
                   "radius": 7.0,
                   "tag": {
-                    "commentStart": 11950,
-                    "end": 11963,
+                    "commentStart": 11793,
+                    "end": 11806,
                     "moduleId": 0,
-                    "start": 11950,
+                    "start": 11793,
                     "type": "TagDeclarator",
                     "value": "holeBackRight"
                   },
@@ -4217,10 +4583,10 @@ description: Variables in memory after executing enclosure.kcl
                   ],
                   "radius": 7.0,
                   "tag": {
-                    "commentStart": 12491,
-                    "end": 12503,
+                    "commentStart": 12334,
+                    "end": 12346,
                     "moduleId": 0,
-                    "start": 12491,
+                    "start": 12334,
                     "type": "TagDeclarator",
                     "value": "holeBackLeft"
                   },
@@ -4255,6 +4621,9 @@ description: Variables in memory after executing enclosure.kcl
                   "creatorSketchId": "[uuid]",
                   "creatorSketchIsClosed": "explicitly",
                   "edgeCutIds": [
+                    "[uuid]",
+                    "[uuid]",
+                    "[uuid]",
                     "[uuid]"
                   ]
                 },
@@ -4327,8 +4696,10 @@ description: Variables in memory after executing enclosure.kcl
     "value": 119.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "lidOffsetX": {
@@ -4336,8 +4707,10 @@ description: Variables in memory after executing enclosure.kcl
     "value": 150.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "lidPlane": {
@@ -4351,8 +4724,10 @@ description: Variables in memory after executing enclosure.kcl
             "value": 150.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -4360,8 +4735,10 @@ description: Variables in memory after executing enclosure.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -4369,8 +4746,10 @@ description: Variables in memory after executing enclosure.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           }
         ]
@@ -4383,8 +4762,10 @@ description: Variables in memory after executing enclosure.kcl
             "value": 1.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -4392,8 +4773,10 @@ description: Variables in memory after executing enclosure.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -4401,8 +4784,10 @@ description: Variables in memory after executing enclosure.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           }
         ]
@@ -4415,8 +4800,10 @@ description: Variables in memory after executing enclosure.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -4424,8 +4811,10 @@ description: Variables in memory after executing enclosure.kcl
             "value": 1.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -4433,8 +4822,10 @@ description: Variables in memory after executing enclosure.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           }
         ]
@@ -4447,6 +4838,8 @@ description: Variables in memory after executing enclosure.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -4454,10 +4847,10 @@ description: Variables in memory after executing enclosure.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3908,
-            "end": 3913,
+            "commentStart": 3834,
+            "end": 3839,
             "moduleId": 0,
-            "start": 3908,
+            "start": 3834,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -4468,10 +4861,10 @@ description: Variables in memory after executing enclosure.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3979,
-            "end": 3984,
+            "commentStart": 3905,
+            "end": 3910,
             "moduleId": 0,
-            "start": 3979,
+            "start": 3905,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -4482,10 +4875,10 @@ description: Variables in memory after executing enclosure.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4093,
-            "end": 4098,
+            "commentStart": 4019,
+            "end": 4024,
             "moduleId": 0,
-            "start": 4093,
+            "start": 4019,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -4496,10 +4889,10 @@ description: Variables in memory after executing enclosure.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4207,
-            "end": 4212,
+            "commentStart": 4133,
+            "end": 4138,
             "moduleId": 0,
-            "start": 4207,
+            "start": 4133,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -4510,10 +4903,10 @@ description: Variables in memory after executing enclosure.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 5892,
-            "end": 5905,
+            "commentStart": 5818,
+            "end": 5831,
             "moduleId": 0,
-            "start": 5892,
+            "start": 5818,
             "type": "TagDeclarator",
             "value": "holeFrontLeft"
           },
@@ -4524,10 +4917,10 @@ description: Variables in memory after executing enclosure.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 6426,
-            "end": 6440,
+            "commentStart": 6352,
+            "end": 6366,
             "moduleId": 0,
-            "start": 6426,
+            "start": 6352,
             "type": "TagDeclarator",
             "value": "holeFrontRight"
           },
@@ -4538,10 +4931,10 @@ description: Variables in memory after executing enclosure.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 6963,
-            "end": 6976,
+            "commentStart": 6889,
+            "end": 6902,
             "moduleId": 0,
-            "start": 6963,
+            "start": 6889,
             "type": "TagDeclarator",
             "value": "holeBackRight"
           },
@@ -4552,10 +4945,10 @@ description: Variables in memory after executing enclosure.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 7488,
-            "end": 7500,
+            "commentStart": 7414,
+            "end": 7426,
             "moduleId": 0,
-            "start": 7488,
+            "start": 7414,
             "type": "TagDeclarator",
             "value": "holeBackLeft"
           },
@@ -4577,10 +4970,10 @@ description: Variables in memory after executing enclosure.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 3908,
-              "end": 3913,
+              "commentStart": 3834,
+              "end": 3839,
               "moduleId": 0,
-              "start": 3908,
+              "start": 3834,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -4601,10 +4994,10 @@ description: Variables in memory after executing enclosure.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 3979,
-              "end": 3984,
+              "commentStart": 3905,
+              "end": 3910,
               "moduleId": 0,
-              "start": 3979,
+              "start": 3905,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -4625,10 +5018,10 @@ description: Variables in memory after executing enclosure.kcl
               175.0
             ],
             "tag": {
-              "commentStart": 4093,
-              "end": 4098,
+              "commentStart": 4019,
+              "end": 4024,
               "moduleId": 0,
-              "start": 4093,
+              "start": 4019,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -4649,10 +5042,10 @@ description: Variables in memory after executing enclosure.kcl
               175.0
             ],
             "tag": {
-              "commentStart": 4207,
-              "end": 4212,
+              "commentStart": 4133,
+              "end": 4138,
               "moduleId": 0,
-              "start": 4207,
+              "start": 4133,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -4679,10 +5072,10 @@ description: Variables in memory after executing enclosure.kcl
             ],
             "radius": 4.0,
             "tag": {
-              "commentStart": 5892,
-              "end": 5905,
+              "commentStart": 5818,
+              "end": 5831,
               "moduleId": 0,
-              "start": 5892,
+              "start": 5818,
               "type": "TagDeclarator",
               "value": "holeFrontLeft"
             },
@@ -4709,10 +5102,10 @@ description: Variables in memory after executing enclosure.kcl
             ],
             "radius": 4.0,
             "tag": {
-              "commentStart": 6426,
-              "end": 6440,
+              "commentStart": 6352,
+              "end": 6366,
               "moduleId": 0,
-              "start": 6426,
+              "start": 6352,
               "type": "TagDeclarator",
               "value": "holeFrontRight"
             },
@@ -4739,10 +5132,10 @@ description: Variables in memory after executing enclosure.kcl
             ],
             "radius": 4.0,
             "tag": {
-              "commentStart": 6963,
-              "end": 6976,
+              "commentStart": 6889,
+              "end": 6902,
               "moduleId": 0,
-              "start": 6963,
+              "start": 6889,
               "type": "TagDeclarator",
               "value": "holeBackRight"
             },
@@ -4769,10 +5162,10 @@ description: Variables in memory after executing enclosure.kcl
             ],
             "radius": 4.0,
             "tag": {
-              "commentStart": 7488,
-              "end": 7500,
+              "commentStart": 7414,
+              "end": 7426,
               "moduleId": 0,
-              "start": 7488,
+              "start": 7414,
               "type": "TagDeclarator",
               "value": "holeBackLeft"
             },
@@ -4785,17 +5178,17 @@ description: Variables in memory after executing enclosure.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 49,
+          "kind": "Custom",
           "origin": {
             "x": 150.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -4867,11 +5260,77 @@ description: Variables in memory after executing enclosure.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "mm"
+        "units": "mm",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
+      "edgeCuts": [
+        {
+          "type": "fillet",
+          "id": "[uuid]",
+          "radius": {
+            "n": 12.0,
+            "ty": {
+              "type": "Default",
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
+            }
+          },
+          "edgeId": "[uuid]",
+          "tag": null
+        },
+        {
+          "type": "fillet",
+          "id": "[uuid]",
+          "radius": {
+            "n": 12.0,
+            "ty": {
+              "type": "Default",
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
+            }
+          },
+          "edgeId": "[uuid]",
+          "tag": null
+        },
+        {
+          "type": "fillet",
+          "id": "[uuid]",
+          "radius": {
+            "n": 12.0,
+            "ty": {
+              "type": "Default",
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
+            }
+          },
+          "edgeId": "[uuid]",
+          "tag": null
+        },
+        {
+          "type": "fillet",
+          "id": "[uuid]",
+          "radius": {
+            "n": 12.0,
+            "ty": {
+              "type": "Default",
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
+            }
+          },
+          "edgeId": "[uuid]",
+          "tag": null
+        }
+      ],
       "units": "mm",
       "sectional": false
     }
@@ -4892,10 +5351,10 @@ description: Variables in memory after executing enclosure.kcl
             0.0
           ],
           "tag": {
-            "commentStart": 3908,
-            "end": 3913,
+            "commentStart": 3834,
+            "end": 3839,
             "moduleId": 0,
-            "start": 3908,
+            "start": 3834,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -4916,10 +5375,10 @@ description: Variables in memory after executing enclosure.kcl
             0.0
           ],
           "tag": {
-            "commentStart": 3979,
-            "end": 3984,
+            "commentStart": 3905,
+            "end": 3910,
             "moduleId": 0,
-            "start": 3979,
+            "start": 3905,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -4940,10 +5399,10 @@ description: Variables in memory after executing enclosure.kcl
             175.0
           ],
           "tag": {
-            "commentStart": 4093,
-            "end": 4098,
+            "commentStart": 4019,
+            "end": 4024,
             "moduleId": 0,
-            "start": 4093,
+            "start": 4019,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -4964,10 +5423,10 @@ description: Variables in memory after executing enclosure.kcl
             175.0
           ],
           "tag": {
-            "commentStart": 4207,
-            "end": 4212,
+            "commentStart": 4133,
+            "end": 4138,
             "moduleId": 0,
-            "start": 4207,
+            "start": 4133,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -4994,10 +5453,10 @@ description: Variables in memory after executing enclosure.kcl
           ],
           "radius": 4.0,
           "tag": {
-            "commentStart": 5892,
-            "end": 5905,
+            "commentStart": 5818,
+            "end": 5831,
             "moduleId": 0,
-            "start": 5892,
+            "start": 5818,
             "type": "TagDeclarator",
             "value": "holeFrontLeft"
           },
@@ -5024,10 +5483,10 @@ description: Variables in memory after executing enclosure.kcl
           ],
           "radius": 4.0,
           "tag": {
-            "commentStart": 6426,
-            "end": 6440,
+            "commentStart": 6352,
+            "end": 6366,
             "moduleId": 0,
-            "start": 6426,
+            "start": 6352,
             "type": "TagDeclarator",
             "value": "holeFrontRight"
           },
@@ -5054,10 +5513,10 @@ description: Variables in memory after executing enclosure.kcl
           ],
           "radius": 4.0,
           "tag": {
-            "commentStart": 6963,
-            "end": 6976,
+            "commentStart": 6889,
+            "end": 6902,
             "moduleId": 0,
-            "start": 6963,
+            "start": 6889,
             "type": "TagDeclarator",
             "value": "holeBackRight"
           },
@@ -5084,10 +5543,10 @@ description: Variables in memory after executing enclosure.kcl
           ],
           "radius": 4.0,
           "tag": {
-            "commentStart": 7488,
-            "end": 7500,
+            "commentStart": 7414,
+            "end": 7426,
             "moduleId": 0,
-            "start": 7488,
+            "start": 7414,
             "type": "TagDeclarator",
             "value": "holeBackLeft"
           },
@@ -5100,17 +5559,17 @@ description: Variables in memory after executing enclosure.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 49,
+        "kind": "Custom",
         "origin": {
           "x": 150.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -5182,8 +5641,8 @@ description: Variables in memory after executing enclosure.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "mm"
+      "units": "mm",
+      "isClosed": "explicitly"
     }
   },
   "lidSketch": {
@@ -5203,17 +5662,21 @@ description: Variables in memory after executing enclosure.kcl
                       {
                         "n": 17.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 162.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -5221,17 +5684,21 @@ description: Variables in memory after executing enclosure.kcl
                       {
                         "n": 13.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 162.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -5323,17 +5790,21 @@ description: Variables in memory after executing enclosure.kcl
                       {
                         "n": 116.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 162.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -5341,17 +5812,21 @@ description: Variables in memory after executing enclosure.kcl
                       {
                         "n": 112.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 162.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -5443,17 +5918,21 @@ description: Variables in memory after executing enclosure.kcl
                       {
                         "n": 17.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 13.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -5461,17 +5940,21 @@ description: Variables in memory after executing enclosure.kcl
                       {
                         "n": 13.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 13.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -5563,17 +6046,21 @@ description: Variables in memory after executing enclosure.kcl
                       {
                         "n": 116.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 13.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -5581,17 +6068,21 @@ description: Variables in memory after executing enclosure.kcl
                       {
                         "n": 112.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 13.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -5683,17 +6174,21 @@ description: Variables in memory after executing enclosure.kcl
                       {
                         "n": 13.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 162.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -5701,17 +6196,21 @@ description: Variables in memory after executing enclosure.kcl
                       {
                         "n": 17.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 162.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -5804,17 +6303,21 @@ description: Variables in memory after executing enclosure.kcl
                       {
                         "n": 112.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 162.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -5822,17 +6325,21 @@ description: Variables in memory after executing enclosure.kcl
                       {
                         "n": 116.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 162.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -5925,17 +6432,21 @@ description: Variables in memory after executing enclosure.kcl
                       {
                         "n": 13.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 13.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -5943,17 +6454,21 @@ description: Variables in memory after executing enclosure.kcl
                       {
                         "n": 17.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 13.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -6046,17 +6561,21 @@ description: Variables in memory after executing enclosure.kcl
                       {
                         "n": 112.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 13.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -6064,17 +6583,21 @@ description: Variables in memory after executing enclosure.kcl
                       {
                         "n": 116.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 13.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -6167,17 +6690,21 @@ description: Variables in memory after executing enclosure.kcl
                       {
                         "n": 13.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 13.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -6185,17 +6712,21 @@ description: Variables in memory after executing enclosure.kcl
                       {
                         "n": 112.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 13.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -6288,17 +6819,21 @@ description: Variables in memory after executing enclosure.kcl
                       {
                         "n": 13.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 162.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -6306,17 +6841,21 @@ description: Variables in memory after executing enclosure.kcl
                       {
                         "n": 13.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 13.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -6409,17 +6948,21 @@ description: Variables in memory after executing enclosure.kcl
                       {
                         "n": 112.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 13.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -6427,17 +6970,21 @@ description: Variables in memory after executing enclosure.kcl
                       {
                         "n": 112.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 162.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -6530,17 +7077,21 @@ description: Variables in memory after executing enclosure.kcl
                       {
                         "n": 112.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 162.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -6548,17 +7099,21 @@ description: Variables in memory after executing enclosure.kcl
                       {
                         "n": 13.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 162.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -6651,17 +7206,21 @@ description: Variables in memory after executing enclosure.kcl
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -6669,17 +7228,21 @@ description: Variables in memory after executing enclosure.kcl
                       {
                         "n": 125.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -6771,17 +7334,21 @@ description: Variables in memory after executing enclosure.kcl
                       {
                         "n": 125.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -6789,17 +7356,21 @@ description: Variables in memory after executing enclosure.kcl
                       {
                         "n": 125.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 175.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -6891,17 +7462,21 @@ description: Variables in memory after executing enclosure.kcl
                       {
                         "n": 125.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 175.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -6909,17 +7484,21 @@ description: Variables in memory after executing enclosure.kcl
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 175.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -7011,17 +7590,21 @@ description: Variables in memory after executing enclosure.kcl
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 175.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -7029,17 +7612,21 @@ description: Variables in memory after executing enclosure.kcl
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -7136,10 +7723,10 @@ description: Variables in memory after executing enclosure.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 3908,
-                    "end": 3913,
+                    "commentStart": 3834,
+                    "end": 3839,
                     "moduleId": 0,
-                    "start": 3908,
+                    "start": 3834,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -7160,10 +7747,10 @@ description: Variables in memory after executing enclosure.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 3979,
-                    "end": 3984,
+                    "commentStart": 3905,
+                    "end": 3910,
                     "moduleId": 0,
-                    "start": 3979,
+                    "start": 3905,
                     "type": "TagDeclarator",
                     "value": "line2"
                   },
@@ -7184,10 +7771,10 @@ description: Variables in memory after executing enclosure.kcl
                     175.0
                   ],
                   "tag": {
-                    "commentStart": 4093,
-                    "end": 4098,
+                    "commentStart": 4019,
+                    "end": 4024,
                     "moduleId": 0,
-                    "start": 4093,
+                    "start": 4019,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
@@ -7208,10 +7795,10 @@ description: Variables in memory after executing enclosure.kcl
                     175.0
                   ],
                   "tag": {
-                    "commentStart": 4207,
-                    "end": 4212,
+                    "commentStart": 4133,
+                    "end": 4138,
                     "moduleId": 0,
-                    "start": 4207,
+                    "start": 4133,
                     "type": "TagDeclarator",
                     "value": "line4"
                   },
@@ -7255,10 +7842,10 @@ description: Variables in memory after executing enclosure.kcl
                   ],
                   "radius": 4.0,
                   "tag": {
-                    "commentStart": 5892,
-                    "end": 5905,
+                    "commentStart": 5818,
+                    "end": 5831,
                     "moduleId": 0,
-                    "start": 5892,
+                    "start": 5818,
                     "type": "TagDeclarator",
                     "value": "holeFrontLeft"
                   },
@@ -7302,10 +7889,10 @@ description: Variables in memory after executing enclosure.kcl
                   ],
                   "radius": 4.0,
                   "tag": {
-                    "commentStart": 6426,
-                    "end": 6440,
+                    "commentStart": 6352,
+                    "end": 6366,
                     "moduleId": 0,
-                    "start": 6426,
+                    "start": 6352,
                     "type": "TagDeclarator",
                     "value": "holeFrontRight"
                   },
@@ -7349,10 +7936,10 @@ description: Variables in memory after executing enclosure.kcl
                   ],
                   "radius": 4.0,
                   "tag": {
-                    "commentStart": 6963,
-                    "end": 6976,
+                    "commentStart": 6889,
+                    "end": 6902,
                     "moduleId": 0,
-                    "start": 6963,
+                    "start": 6889,
                     "type": "TagDeclarator",
                     "value": "holeBackRight"
                   },
@@ -7396,10 +7983,10 @@ description: Variables in memory after executing enclosure.kcl
                   ],
                   "radius": 4.0,
                   "tag": {
-                    "commentStart": 7488,
-                    "end": 7500,
+                    "commentStart": 7414,
+                    "end": 7426,
                     "moduleId": 0,
-                    "start": 7488,
+                    "start": 7414,
                     "type": "TagDeclarator",
                     "value": "holeBackLeft"
                   },
@@ -7412,17 +7999,17 @@ description: Variables in memory after executing enclosure.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 49,
+                "kind": "Custom",
                 "origin": {
                   "x": 150.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -7506,26 +8093,21 @@ description: Variables in memory after executing enclosure.kcl
   },
   "line1": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "line1"
   },
   "line2": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "line2"
   },
   "line3": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "line3"
   },
   "line4": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "line4"
   },
   "outerCircle": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "outerCircle"
   },
@@ -7534,6 +8116,8 @@ description: Variables in memory after executing enclosure.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -7541,10 +8125,10 @@ description: Variables in memory after executing enclosure.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2497,
-            "end": 2508,
+            "commentStart": 2451,
+            "end": 2462,
             "moduleId": 0,
-            "start": 2497,
+            "start": 2451,
             "type": "TagDeclarator",
             "value": "outerCircle"
           },
@@ -7555,10 +8139,10 @@ description: Variables in memory after executing enclosure.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2910,
-            "end": 2921,
+            "commentStart": 2864,
+            "end": 2875,
             "moduleId": 0,
-            "start": 2910,
+            "start": 2864,
             "type": "TagDeclarator",
             "value": "innerCircle"
           },
@@ -7586,10 +8170,10 @@ description: Variables in memory after executing enclosure.kcl
             ],
             "radius": 7.0,
             "tag": {
-              "commentStart": 2497,
-              "end": 2508,
+              "commentStart": 2451,
+              "end": 2462,
               "moduleId": 0,
-              "start": 2497,
+              "start": 2451,
               "type": "TagDeclarator",
               "value": "outerCircle"
             },
@@ -7616,10 +8200,10 @@ description: Variables in memory after executing enclosure.kcl
             ],
             "radius": 4.0,
             "tag": {
-              "commentStart": 2910,
-              "end": 2921,
+              "commentStart": 2864,
+              "end": 2875,
               "moduleId": 0,
-              "start": 2910,
+              "start": 2864,
               "type": "TagDeclarator",
               "value": "innerCircle"
             },
@@ -7632,17 +8216,17 @@ description: Variables in memory after executing enclosure.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 25,
+          "kind": "Custom",
           "origin": {
             "x": 13.0,
             "y": 13.0,
             "z": 3.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -7690,8 +8274,8 @@ description: Variables in memory after executing enclosure.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "mm"
+        "units": "mm",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -7704,6 +8288,8 @@ description: Variables in memory after executing enclosure.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [],
       "sketch": {
@@ -7727,10 +8313,10 @@ description: Variables in memory after executing enclosure.kcl
             ],
             "radius": 7.0,
             "tag": {
-              "commentStart": 2497,
-              "end": 2508,
+              "commentStart": 2451,
+              "end": 2462,
               "moduleId": 0,
-              "start": 2497,
+              "start": 2451,
               "type": "TagDeclarator",
               "value": "outerCircle"
             },
@@ -7757,10 +8343,10 @@ description: Variables in memory after executing enclosure.kcl
             ],
             "radius": 4.0,
             "tag": {
-              "commentStart": 2910,
-              "end": 2921,
+              "commentStart": 2864,
+              "end": 2875,
               "moduleId": 0,
-              "start": 2910,
+              "start": 2864,
               "type": "TagDeclarator",
               "value": "innerCircle"
             },
@@ -7773,17 +8359,17 @@ description: Variables in memory after executing enclosure.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 25,
+          "kind": "Custom",
           "origin": {
             "x": 13.0,
             "y": 13.0,
             "z": 3.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -7831,8 +8417,8 @@ description: Variables in memory after executing enclosure.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "mm"
+        "units": "mm",
+        "isClosed": "explicitly"
       },
       "startCapId": null,
       "endCapId": null,
@@ -7845,6 +8431,8 @@ description: Variables in memory after executing enclosure.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -7852,10 +8440,10 @@ description: Variables in memory after executing enclosure.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2497,
-            "end": 2508,
+            "commentStart": 2451,
+            "end": 2462,
             "moduleId": 0,
-            "start": 2497,
+            "start": 2451,
             "type": "TagDeclarator",
             "value": "outerCircle"
           },
@@ -7866,10 +8454,10 @@ description: Variables in memory after executing enclosure.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2910,
-            "end": 2921,
+            "commentStart": 2864,
+            "end": 2875,
             "moduleId": 0,
-            "start": 2910,
+            "start": 2864,
             "type": "TagDeclarator",
             "value": "innerCircle"
           },
@@ -7897,10 +8485,10 @@ description: Variables in memory after executing enclosure.kcl
             ],
             "radius": 7.0,
             "tag": {
-              "commentStart": 2497,
-              "end": 2508,
+              "commentStart": 2451,
+              "end": 2462,
               "moduleId": 0,
-              "start": 2497,
+              "start": 2451,
               "type": "TagDeclarator",
               "value": "outerCircle"
             },
@@ -7927,10 +8515,10 @@ description: Variables in memory after executing enclosure.kcl
             ],
             "radius": 4.0,
             "tag": {
-              "commentStart": 2910,
-              "end": 2921,
+              "commentStart": 2864,
+              "end": 2875,
               "moduleId": 0,
-              "start": 2910,
+              "start": 2864,
               "type": "TagDeclarator",
               "value": "innerCircle"
             },
@@ -7943,17 +8531,17 @@ description: Variables in memory after executing enclosure.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 25,
+          "kind": "Custom",
           "origin": {
             "x": 13.0,
             "y": 13.0,
             "z": 3.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -8001,8 +8589,8 @@ description: Variables in memory after executing enclosure.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "mm"
+        "units": "mm",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -8015,6 +8603,8 @@ description: Variables in memory after executing enclosure.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -8022,10 +8612,10 @@ description: Variables in memory after executing enclosure.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2497,
-            "end": 2508,
+            "commentStart": 2451,
+            "end": 2462,
             "moduleId": 0,
-            "start": 2497,
+            "start": 2451,
             "type": "TagDeclarator",
             "value": "outerCircle"
           },
@@ -8036,10 +8626,10 @@ description: Variables in memory after executing enclosure.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2910,
-            "end": 2921,
+            "commentStart": 2864,
+            "end": 2875,
             "moduleId": 0,
-            "start": 2910,
+            "start": 2864,
             "type": "TagDeclarator",
             "value": "innerCircle"
           },
@@ -8067,10 +8657,10 @@ description: Variables in memory after executing enclosure.kcl
             ],
             "radius": 7.0,
             "tag": {
-              "commentStart": 2497,
-              "end": 2508,
+              "commentStart": 2451,
+              "end": 2462,
               "moduleId": 0,
-              "start": 2497,
+              "start": 2451,
               "type": "TagDeclarator",
               "value": "outerCircle"
             },
@@ -8097,10 +8687,10 @@ description: Variables in memory after executing enclosure.kcl
             ],
             "radius": 4.0,
             "tag": {
-              "commentStart": 2910,
-              "end": 2921,
+              "commentStart": 2864,
+              "end": 2875,
               "moduleId": 0,
-              "start": 2910,
+              "start": 2864,
               "type": "TagDeclarator",
               "value": "innerCircle"
             },
@@ -8113,17 +8703,17 @@ description: Variables in memory after executing enclosure.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 25,
+          "kind": "Custom",
           "origin": {
             "x": 13.0,
             "y": 13.0,
             "z": 3.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -8171,8 +8761,8 @@ description: Variables in memory after executing enclosure.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "mm"
+        "units": "mm",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -8185,8 +8775,10 @@ description: Variables in memory after executing enclosure.kcl
     "value": 67.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "pillarOuterRadius": {
@@ -8194,8 +8786,10 @@ description: Variables in memory after executing enclosure.kcl
     "value": 7.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "pillarPlane": {
@@ -8209,8 +8803,10 @@ description: Variables in memory after executing enclosure.kcl
             "value": 13.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -8218,8 +8814,10 @@ description: Variables in memory after executing enclosure.kcl
             "value": 13.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -8227,8 +8825,10 @@ description: Variables in memory after executing enclosure.kcl
             "value": 3.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           }
         ]
@@ -8241,8 +8841,10 @@ description: Variables in memory after executing enclosure.kcl
             "value": 1.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -8250,8 +8852,10 @@ description: Variables in memory after executing enclosure.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -8259,8 +8863,10 @@ description: Variables in memory after executing enclosure.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           }
         ]
@@ -8273,8 +8879,10 @@ description: Variables in memory after executing enclosure.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -8282,8 +8890,10 @@ description: Variables in memory after executing enclosure.kcl
             "value": 1.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -8291,8 +8901,10 @@ description: Variables in memory after executing enclosure.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           }
         ]
@@ -8322,10 +8934,10 @@ description: Variables in memory after executing enclosure.kcl
           ],
           "radius": 7.0,
           "tag": {
-            "commentStart": 2497,
-            "end": 2508,
+            "commentStart": 2451,
+            "end": 2462,
             "moduleId": 0,
-            "start": 2497,
+            "start": 2451,
             "type": "TagDeclarator",
             "value": "outerCircle"
           },
@@ -8352,10 +8964,10 @@ description: Variables in memory after executing enclosure.kcl
           ],
           "radius": 4.0,
           "tag": {
-            "commentStart": 2910,
-            "end": 2921,
+            "commentStart": 2864,
+            "end": 2875,
             "moduleId": 0,
-            "start": 2910,
+            "start": 2864,
             "type": "TagDeclarator",
             "value": "innerCircle"
           },
@@ -8368,17 +8980,17 @@ description: Variables in memory after executing enclosure.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 25,
+        "kind": "Custom",
         "origin": {
           "x": 13.0,
           "y": 13.0,
           "z": 3.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -8426,8 +9038,8 @@ description: Variables in memory after executing enclosure.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "mm"
+      "units": "mm",
+      "isClosed": "explicitly"
     }
   },
   "pillarSketch": {
@@ -8447,17 +9059,21 @@ description: Variables in memory after executing enclosure.kcl
                       {
                         "n": 4.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -8465,17 +9081,21 @@ description: Variables in memory after executing enclosure.kcl
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -8567,17 +9187,21 @@ description: Variables in memory after executing enclosure.kcl
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -8585,17 +9209,21 @@ description: Variables in memory after executing enclosure.kcl
                       {
                         "n": 4.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -8699,10 +9327,10 @@ description: Variables in memory after executing enclosure.kcl
                   ],
                   "radius": 7.0,
                   "tag": {
-                    "commentStart": 2497,
-                    "end": 2508,
+                    "commentStart": 2451,
+                    "end": 2462,
                     "moduleId": 0,
-                    "start": 2497,
+                    "start": 2451,
                     "type": "TagDeclarator",
                     "value": "outerCircle"
                   },
@@ -8746,10 +9374,10 @@ description: Variables in memory after executing enclosure.kcl
                   ],
                   "radius": 4.0,
                   "tag": {
-                    "commentStart": 2910,
-                    "end": 2921,
+                    "commentStart": 2864,
+                    "end": 2875,
                     "moduleId": 0,
-                    "start": 2910,
+                    "start": 2864,
                     "type": "TagDeclarator",
                     "value": "innerCircle"
                   },
@@ -8762,17 +9390,17 @@ description: Variables in memory after executing enclosure.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 25,
+                "kind": "Custom",
                 "origin": {
                   "x": 13.0,
                   "y": 13.0,
                   "z": 3.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -8841,17 +9469,21 @@ description: Variables in memory after executing enclosure.kcl
                       {
                         "n": 7.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -8859,17 +9491,21 @@ description: Variables in memory after executing enclosure.kcl
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -8961,17 +9597,21 @@ description: Variables in memory after executing enclosure.kcl
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -8979,17 +9619,21 @@ description: Variables in memory after executing enclosure.kcl
                       {
                         "n": 7.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -9076,8 +9720,10 @@ description: Variables in memory after executing enclosure.kcl
     "value": 3.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "width": {
@@ -9085,8 +9731,10 @@ description: Variables in memory after executing enclosure.kcl
     "value": 125.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "xSpread": {
@@ -9094,8 +9742,10 @@ description: Variables in memory after executing enclosure.kcl
     "value": 99.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "ySpread": {
@@ -9103,8 +9753,10 @@ description: Variables in memory after executing enclosure.kcl
     "value": 149.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   }
 }

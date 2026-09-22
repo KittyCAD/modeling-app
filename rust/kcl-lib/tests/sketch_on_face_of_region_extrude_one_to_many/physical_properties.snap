@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties sketch_on_face_of_region_extrude_one_to_many.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": 15.159242590597383,
+      "y": 9.300843305321054,
+      "z": 1.0
+    },
+    "dimensions": {
+      "x": 41.34117116840347,
+      "y": 22.60168661064211,
+      "z": 2.0
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 980.058555882124
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 0.8086154511255383
+  }
+}

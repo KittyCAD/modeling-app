@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties cycloidal-gear.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": 0.27898777894521487,
+      "y": -0.7484718774538806,
+      "z": 19.049999999999997
+    },
+    "dimensions": {
+      "x": 46.72859908568111,
+      "y": 43.92264398405216,
+      "z": 38.099999999999994
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 6714.575912003084
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 26.331933907983164
+  }
+}

@@ -89,14 +89,17 @@ beforeEach(async () => {
   }
 
   const { instance, engineCommandManager, rustContext } =
-    await buildTheWorldAndConnectToEngine()
+    await buildTheWorldAndConnectToEngine({ webrtc: false, pool: 'cpu' })
   instanceInThisFile = instance
   engineCommandManagerInThisFile = engineCommandManager
   rustContextInThisFile = rustContext
 })
 
 afterAll(() => {
-  engineCommandManagerInThisFile.tearDown()
+  engineCommandManagerInThisFile.tearDown({
+    route: 'user-requested',
+    initiatedBy: 'client',
+  })
 })
 
 it('can execute parsed AST', async () => {
@@ -348,6 +351,11 @@ describe('relevantFileExtensions', () => {
       expect(actual).toBe(expected)
     })
 
+    it('contains prt', () => {
+      const extensions = relevantFileExtensions(instanceInThisFile)
+      expect(extensions).toContain('prt')
+    })
+
     it('contains stl', () => {
       const expected = true
       const actual = relevantFileExtensions(instanceInThisFile).some(
@@ -381,6 +389,13 @@ describe('importFileExtensions', () => {
   })
 
   describe('check for each known extension', () => {
+    it.each(['sat', 'sab', 'catpart', 'prt', 'ipt', 'x_t', 'x_b', 'sldprt'])(
+      'contains proprietary part extension %s',
+      (extension) => {
+        expect(importFileExtensions(instanceInThisFile)).toContain(extension)
+      }
+    )
+
     it('contains stp', () => {
       const expected = true
       const actual = importFileExtensions(instanceInThisFile).some(
@@ -469,6 +484,11 @@ describe('importFileExtensions', () => {
       expect(actual).toBe(expected)
     })
 
+    it('contains prt', () => {
+      const extensions = importFileExtensions(instanceInThisFile)
+      expect(extensions).toContain('prt')
+    })
+
     it('contains stl', () => {
       const expected = true
       const actual = importFileExtensions(instanceInThisFile).some(
@@ -506,6 +526,26 @@ describe('isExtensionAnImportExtension', () => {
     const actual = isExtensionAnImportExtension('steP', extensions)
     expect(actual).toBe(expected)
   })
+
+  it.each([
+    'bracket.prt',
+    'bracket.prt.1',
+    'parts/bracket.PRT.23',
+    String.raw`parts\bracket.PrT.3`,
+  ])('recognizes Creo import path %s', (filePath) => {
+    const extensions = importFileExtensions(instanceInThisFile)
+    expect(isExtensionAnImportExtension(filePath, extensions)).toBe(true)
+  })
+
+  it.each([
+    'bracket.prt.0',
+    'bracket.prt.01',
+    'bracket.prt.-1',
+    'bracket.prt.1.bak',
+  ])('rejects invalid Creo import path %s', (filePath) => {
+    const extensions = importFileExtensions(instanceInThisFile)
+    expect(isExtensionAnImportExtension(filePath, extensions)).toBe(false)
+  })
 })
 
 describe('isExtensionARelevantExtension', () => {
@@ -532,6 +572,13 @@ describe('isExtensionARelevantExtension', () => {
     const expected = true
     const actual = isExtensionARelevantExtension('steP', extensions)
     expect(actual).toBe(expected)
+  })
+
+  it('recognizes a versioned Creo path', () => {
+    const extensions = relevantFileExtensions(instanceInThisFile)
+    expect(isExtensionARelevantExtension('bracket.prt.2', extensions)).toBe(
+      true
+    )
   })
 })
 

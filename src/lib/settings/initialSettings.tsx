@@ -561,6 +561,14 @@ function createCoreSettings() {
         },
         hideOnLevel: 'project',
       }),
+      showSketchGrid: new Setting<boolean>({
+        defaultValue: false,
+        description: 'Whether to show a grid while sketching.',
+        validate: (v) => typeof v === 'boolean',
+        commandConfig: {
+          inputType: 'boolean',
+        },
+      }),
       fixedSizeGrid: new Setting<boolean>({
         defaultValue: true,
         description:

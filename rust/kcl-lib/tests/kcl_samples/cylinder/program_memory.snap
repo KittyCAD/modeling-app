@@ -37,7 +37,6 @@ description: Variables in memory after executing cylinder.kcl
   },
   "circle1": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "circle1"
   },
   "cylinder": {
@@ -45,6 +44,8 @@ description: Variables in memory after executing cylinder.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -52,10 +53,10 @@ description: Variables in memory after executing cylinder.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 269,
-            "end": 276,
+            "commentStart": 313,
+            "end": 320,
             "moduleId": 0,
-            "start": 269,
+            "start": 313,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -83,10 +84,10 @@ description: Variables in memory after executing cylinder.kcl
             ],
             "radius": 5.0,
             "tag": {
-              "commentStart": 269,
-              "end": 276,
+              "commentStart": 313,
+              "end": 320,
               "moduleId": 0,
-              "start": 269,
+              "start": 313,
               "type": "TagDeclarator",
               "value": "circle1"
             },
@@ -99,17 +100,17 @@ description: Variables in memory after executing cylinder.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 0,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -153,8 +154,8 @@ description: Variables in memory after executing cylinder.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "mm"
+        "units": "mm",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -167,8 +168,10 @@ description: Variables in memory after executing cylinder.kcl
     "value": 10.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "length": {
@@ -176,8 +179,10 @@ description: Variables in memory after executing cylinder.kcl
     "value": 10.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "region": {
@@ -202,10 +207,10 @@ description: Variables in memory after executing cylinder.kcl
           ],
           "radius": 5.0,
           "tag": {
-            "commentStart": 269,
-            "end": 276,
+            "commentStart": 313,
+            "end": 320,
             "moduleId": 0,
-            "start": 269,
+            "start": 313,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -218,17 +223,17 @@ description: Variables in memory after executing cylinder.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 0,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -272,8 +277,8 @@ description: Variables in memory after executing cylinder.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "mm"
+      "units": "mm",
+      "isClosed": "explicitly"
     }
   },
   "sketch": {
@@ -293,17 +298,21 @@ description: Variables in memory after executing cylinder.kcl
                       {
                         "n": 5.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -311,17 +320,21 @@ description: Variables in memory after executing cylinder.kcl
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -424,10 +437,10 @@ description: Variables in memory after executing cylinder.kcl
                   ],
                   "radius": 5.0,
                   "tag": {
-                    "commentStart": 269,
-                    "end": 276,
+                    "commentStart": 313,
+                    "end": 320,
                     "moduleId": 0,
-                    "start": 269,
+                    "start": 313,
                     "type": "TagDeclarator",
                     "value": "circle1"
                   },
@@ -440,17 +453,17 @@ description: Variables in memory after executing cylinder.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 0,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,

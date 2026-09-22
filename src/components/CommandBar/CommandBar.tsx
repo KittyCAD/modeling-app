@@ -1,5 +1,6 @@
 import { Dialog, Popover, Transition } from '@headlessui/react'
-import { Fragment, useEffect } from 'react'
+import { Fragment, useEffect, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { useLocation } from 'react-router-dom'
 
 import CommandBarArgument from '@src/components/CommandBar/CommandBarArgument'
@@ -12,14 +13,45 @@ import Tooltip from '@src/components/Tooltip'
 import { useApp } from '@src/lib/boot'
 import type { Command, CommandArgument } from '@src/lib/commandTypes'
 import useHotkeyWrapper from '@src/lib/hotkeyWrapper'
-import { keymapService } from '@src/registry/contracts/keymap'
+import {
+  commandScopeService,
+  commandScopesValueSpec,
+  getCommandPaletteScopes,
+  getEffectiveCommandScopeSet,
+  isCommandSearchable,
+} from '@src/registry/contracts/commands'
+import { isCommandVisibleInSearch } from '@src/components/CommandBar/commandSearchVisibility'
 
 export const CommandBar = () => {
   const { pathname } = useLocation()
   const { commands: cmd, project, registry } = useApp()
-  const keymap = registry.optional(keymapService)
+  const commandScopes = registry.optional(commandScopeService)
   const commandBarState = cmd.useState()
   const isCommandBarOpen = !commandBarState.matches('Closed')
+  const [modalCommandBarHost, setModalCommandBarHost] =
+    useState<HTMLElement | null>(null)
+  const [commandPaletteSession, setCommandPaletteSession] = useState(() => ({
+    isOpen: isCommandBarOpen,
+    scopes: isCommandBarOpen
+      ? getCommandPaletteScopes(commandScopes?.getCurrentScopes() ?? [])
+      : [],
+  }))
+  let commandPaletteScopes = commandPaletteSession.scopes
+  if (commandPaletteSession.isOpen !== isCommandBarOpen) {
+    // Capture the launch context before the palette input's autofocus changes
+    // the active focus scope. React applies this update before committing.
+    commandPaletteScopes = isCommandBarOpen
+      ? getCommandPaletteScopes(commandScopes?.getCurrentScopes() ?? [])
+      : []
+    setCommandPaletteSession({
+      isOpen: isCommandBarOpen,
+      scopes: commandPaletteScopes,
+    })
+  }
+  const effectiveCommandScopes = getEffectiveCommandScopeSet(
+    commandPaletteScopes,
+    registry.signal(commandScopesValueSpec).value
+  )
   const {
     context: {
       selectedCommand,
@@ -43,6 +75,14 @@ export const CommandBar = () => {
     ? Popover
     : Dialog
 
+  // Keep the global command bar inside the active route modal's focus boundary.
+  // biome-ignore lint/correctness/useExhaustiveDependencies: pathname changes which modal host is mounted.
+  useEffect(() => {
+    setModalCommandBarHost(
+      document.querySelector<HTMLElement>('[data-command-bar-host]')
+    )
+  }, [pathname])
+
   // Close the command bar when navigating
   // but importantly not when the query parameters change.
   // Do not close when a command is selected (e.g. edit flow from feature tree)
@@ -53,18 +93,6 @@ export const CommandBar = () => {
     cmd.send({ type: 'Close' })
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [pathname])
-
-  useEffect(() => {
-    if (!keymap || !isCommandBarOpen) {
-      return
-    }
-
-    keymap.applyScope('cmd-palette-open')
-
-    return () => {
-      keymap.removeScope('cmd-palette-open')
-    }
-  }, [isCommandBarOpen, keymap])
 
   // Hook up keyboard shortcuts
   useHotkeyWrapper(
@@ -131,7 +159,7 @@ export const CommandBar = () => {
     }
   }
 
-  return (
+  const commandBar = (
     <Transition.Root
       show={!commandBarState.matches('Closed') || false}
       afterLeave={() => {
@@ -171,14 +199,11 @@ export const CommandBar = () => {
           >
             {commandBarState.matches('Selecting command') ? (
               <CommandComboBox
-                options={commands.filter((command: Command) => {
-                  return (
-                    // By default everything is undefined
-                    // If marked explicitly as false hide
-                    command.hideFromSearch === undefined ||
-                    command.hideFromSearch === false
-                  )
-                })}
+                options={commands.filter(
+                  (command: Command) =>
+                    isCommandVisibleInSearch(command) &&
+                    isCommandSearchable(command, effectiveCommandScopes)
+                )}
               />
             ) : commandBarState.matches('Gathering arguments') ? (
               <CommandBarArgument stepBack={stepBack} />
@@ -218,4 +243,8 @@ export const CommandBar = () => {
       </WrapperComponent>
     </Transition.Root>
   )
+
+  return modalCommandBarHost
+    ? createPortal(commandBar, modalCommandBarHost)
+    : commandBar
 }

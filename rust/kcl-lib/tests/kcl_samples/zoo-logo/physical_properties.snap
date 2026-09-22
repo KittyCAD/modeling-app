@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties zoo-logo.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": 40.745494551477776,
+      "y": 12.700000000000092,
+      "z": 1.27
+    },
+    "dimensions": {
+      "x": 84.71678910295554,
+      "y": 39.21340219736892,
+      "z": 2.54
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 3008.284159250252
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 2.478913481873679
+  }
+}

@@ -8,6 +8,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -194,17 +196,17 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "XZ",
           "objectId": 0,
+          "kind": "XZ",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -264,7 +266,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": "mm"
+        "units": "mm",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -276,8 +279,10 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
             "n": 20.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "edgeId": "[uuid]",
@@ -290,8 +295,10 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
             "n": 50.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "edgeId": "[uuid]",
@@ -311,8 +318,10 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
             "n": 50.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "edgeId": "[uuid]",
@@ -335,6 +344,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -544,7 +555,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": "mm"
+        "units": "mm",
+        "isClosed": "explicitly"
       },
       "startCapId": null,
       "endCapId": "[uuid]",
@@ -554,56 +566,45 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
   },
   "rectangleSegmentA001": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "rectangleSegmentA001"
   },
   "rectangleSegmentA002": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "rectangleSegmentA002"
   },
   "rectangleSegmentA003": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "rectangleSegmentA003"
   },
   "rectangleSegmentB001": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "rectangleSegmentB001"
   },
   "rectangleSegmentB002": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "rectangleSegmentB002"
   },
   "rectangleSegmentC001": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "rectangleSegmentC001"
   },
   "rectangleSegmentC002": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "rectangleSegmentC002"
   },
   "seg01": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "seg01"
   },
   "seg02": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "seg02"
   },
   "seg03": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "seg03"
   },
   "seg04": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "seg04"
   },
@@ -704,17 +705,17 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "XZ",
         "objectId": 0,
+        "kind": "XZ",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -774,7 +775,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": "mm"
+      "units": "mm",
+      "isClosed": "explicitly"
     }
   },
   "sketch002": {
@@ -935,7 +937,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": "mm"
+      "units": "mm",
+      "isClosed": "explicitly"
     }
   },
   "sketch003": {
@@ -1096,7 +1099,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": "mm"
+      "units": "mm",
+      "isClosed": "explicitly"
     }
   }
 }

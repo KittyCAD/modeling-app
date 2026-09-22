@@ -1,5 +1,6 @@
 import type { Diagnostic } from '@codemirror/lint'
 import { lspCodeActionEvent } from '@kittycad/codemirror-lsp-client'
+import type { Feature } from '@kittycad/lib'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { LegacyAngleRefactorMeta } from '@rust/kcl-lib/bindings/LegacyAngleRefactorMeta'
 
@@ -18,7 +19,10 @@ import type {
   Program,
 } from '@src/lang/wasm'
 import { emptyExecState, kclLint } from '@src/lang/wasm'
-import { EXECUTE_AST_INTERRUPT_ERROR_STRING } from '@src/lib/constants'
+import {
+  ENABLE_Z0006_LINT_FLAG,
+  EXECUTE_AST_INTERRUPT_ERROR_STRING,
+} from '@src/lib/constants'
 import type RustContext from '@src/lib/rustContext'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import { isArray } from '@src/lib/utils'
@@ -28,6 +32,12 @@ import type { EditorView } from 'codemirror'
 export type { ToolTip } from '@src/lang/toolTips'
 export { isToolTip, toolTips } from '@src/lang/toolTips'
 
+function userHasFeature(featureFlagId: string, defaultValue: boolean): boolean {
+  return (
+    window.app?.userFeatures.has(featureFlagId as Feature, defaultValue) ??
+    defaultValue
+  )
+}
 interface ExecutionResult {
   logs: string[]
   errors: KCLError[]
@@ -175,11 +185,10 @@ export async function lintAst({
       )
     }
 
-    // Process findings - for Z0005 without suggestion, we'll create actions async
+    // Process findings and add any available async refactor actions.
     const z0006RefactorCache: Z0006RefactorCache = {}
     const diagnosticsPromises = discovered_findings.map(async (lint) => {
       let actions
-      let message = lint.finding.title
       const suggestion = lint.suggestion
 
       if (suggestion) {
@@ -204,8 +213,6 @@ export async function lintAst({
           ast,
           sourceCode,
           instance,
-          rustContext,
-          shouldShowZ0005,
           edgeRefactorMetadata,
           directTagFilletMetadata,
           legacyAngleRefactorMetadata,
@@ -213,15 +220,12 @@ export async function lintAst({
           z0006RefactorCache,
         })
         actions = refactorResult.actions
-        if (refactorResult.messageOverride) {
-          message = refactorResult.messageOverride
-        }
       }
 
       const diagnostic = {
         from: toUtf16(lint.pos[0], sourceCode),
         to: toUtf16(lint.pos[1], sourceCode),
-        message,
+        message: lint.finding.title,
         severity: 'info',
         actions,
       } as const

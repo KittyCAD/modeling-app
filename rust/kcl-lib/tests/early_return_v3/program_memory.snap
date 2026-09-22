@@ -1,0 +1,18 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Variables in memory after executing early_return_v3.kcl
+---
+{
+  "firstReturnWins": {
+    "type": "Function"
+  },
+  "fromIfArm": {
+    "type": "Function"
+  },
+  "simple": {
+    "type": "Function"
+  },
+  "viaClosure": {
+    "type": "Function"
+  }
+}

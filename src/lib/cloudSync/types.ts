@@ -14,10 +14,27 @@ export type ProjectManifest = {
   files: Record<string, ProjectManifestEntry>
 }
 
+/**
+ * The cloud revision and local manifest acknowledged by that revision.
+ *
+ * IndexedDB records created by older releases store these as separate optional
+ * fields on ProjectMetadata. Cloud operations must parse that persistence shape
+ * into this type before using either value as a synchronization base.
+ */
+export type AcknowledgedSyncBase = {
+  revision: Revision
+  manifest: ProjectManifest
+}
+
 /** One normalized file payload included in a cloud project archive upload. */
 export type ProjectArchiveFile = {
   relativePath: string
   data: Uint8Array
+}
+
+/** Result of synchronizing one explicitly enrolled project to convergence. */
+export type CloudSyncProjectNowResult = {
+  remoteProjectId: string
 }
 
 /** Durable per-project sync metadata stored locally in the cloud sync DB. */
@@ -26,14 +43,17 @@ export type ProjectMetadata = {
   localProjectPath: string
   projectName: string
   remoteProjectId?: string
+  /** Legacy IndexedDB field; consume through parseAcknowledgedSyncBase. */
   remoteRevision?: Revision
   remoteUpdatedAt?: string
+  /** Legacy IndexedDB field; consume through parseAcknowledgedSyncBase. */
   baseManifest?: ProjectManifest
   tombstone?: boolean
   conflict?: {
     remoteRevision?: Revision
     remoteUpdatedAt?: string
     createdAt: string
+    reason?: 'divergent-changes' | 'remote-replacement-rejected'
     /**
      * Legacy conflict copies were persisted as sibling project folders. New
      * conflicts fetch the cloud version on demand instead; this path is retained
@@ -51,7 +71,9 @@ export type ProjectMetadata = {
   lastSyncedAt?: string
 }
 
-export type ProjectSyncFailureKind = 'remote-upload-forbidden'
+export type ProjectSyncFailureKind =
+  | 'remote-upload-forbidden'
+  | 'remote-replacement-rejected'
 
 export type ProjectSyncFailure = {
   message: string
@@ -66,6 +88,7 @@ export type OutboxEntry = {
   kind: 'upsert' | 'delete'
   targetPath: string
   sourcePath?: string
+  deletedPaths?: string[]
   createdAt: string
 }
 
@@ -89,6 +112,13 @@ export type ProjectUploadBody = {
   entrypoint_path: string
   project_toml_path: string
   expected_revision?: Revision
+  deleted_paths?: string[]
+}
+
+/** Publication metadata that whole-project replacements must preserve. */
+export type ProjectUploadPublicationMetadata = {
+  description: string
+  category_ids: string[]
 }
 
 /** Runtime configuration for enabling and targeting cloud sync replication. */
@@ -142,6 +172,7 @@ export type CloudSyncLocalProject = {
 /** Project metadata index entry enriched with pending local-change state. */
 export type CloudSyncProjectMetadataIndexEntry = ProjectMetadata & {
   hasPendingChanges: boolean
+  pendingSince?: string
 }
 
 /** Remote revision/update metadata extracted from cloud API responses. */

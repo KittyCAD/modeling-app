@@ -7,6 +7,7 @@ import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type { ConstraintResources } from '@src/machines/sketchSolve/constraints/ConstraintResources'
 import {
   createDimensionLine,
+  createGuideLine,
   updateConstraintLinePositions,
   updateDimensionLine,
 } from '@src/machines/sketchSolve/constraints/DimensionLine'
@@ -25,6 +26,16 @@ import { LineGeometry } from 'three/examples/jsm/lines/LineGeometry'
 
 const SEGMENT_OFFSET_PX = 30 // Distances are placed 30 pixels from the segment
 const LEADER_LINE_OVERHANG = 2 // Leader lines have 2px overhang past arrows
+const DISTANCE_CONSTRAINT_GUIDE_BODY_ROLE = 'distance-constraint-guide-body'
+
+type LinePoints = { start: Vector3; end: Vector3 }
+type DistanceEndpointPositions = {
+  p1: Vector3
+  p2: Vector3
+  leaderStart1?: Vector3
+  leaderStart2?: Vector3
+  guideSegment?: readonly [Vector3, Vector3]
+}
 
 export class DistanceConstraintBuilder {
   private readonly resources: ConstraintResources
@@ -36,6 +47,7 @@ export class DistanceConstraintBuilder {
   public init(obj: DistanceConstraint) {
     const group = createDimensionLine(obj, this.resources)
     this.createLeaderLines(group)
+    createGuideLine(group, this.resources, DISTANCE_CONSTRAINT_GUIDE_BODY_ROLE)
     return group
   }
 
@@ -50,7 +62,14 @@ export class DistanceConstraintBuilder {
   ) {
     const points = getDistanceEndPoints(obj, objects)
     if (points) {
-      const { p1, p2, distance } = points
+      const {
+        p1,
+        p2,
+        distance,
+        leaderStart1 = p1,
+        leaderStart2 = p2,
+        guideSegment,
+      } = points
       const labelPosition = getDistanceLabelPosition(obj)
       const { start, end, perp } = getDirections(
         obj,
@@ -89,13 +108,42 @@ export class DistanceConstraintBuilder {
         start,
         end,
         perp,
-        p1,
-        p2,
+        leaderStart1,
+        leaderStart2,
         group,
         scale,
         isCollapsedZeroAxisDistance
       )
+      this.updateGuideLine(group, guideSegment)
     }
+  }
+
+  private updateGuideLine(
+    group: Group,
+    guideSegment?: readonly [Vector3, Vector3]
+  ) {
+    const guideLine = group.children.find(
+      (child) =>
+        child.userData.type === DISTANCE_CONSTRAINT_BODY &&
+        child.userData.role === DISTANCE_CONSTRAINT_GUIDE_BODY_ROLE
+    ) as Line2 | undefined
+    if (!guideLine) {
+      return
+    }
+
+    guideLine.visible = guideSegment !== undefined
+    if (!guideSegment) {
+      return
+    }
+
+    updateConstraintLinePositions(guideLine, [
+      guideSegment[0].x,
+      guideSegment[0].y,
+      0,
+      guideSegment[1].x,
+      guideSegment[1].y,
+      0,
+    ])
   }
 
   private createLeaderLines(group: Group) {
@@ -234,14 +282,17 @@ export function getDistanceEndPoints(
   objects: ApiObject[]
 ) {
   const constraint = obj.kind.constraint
-  const [p1Id, p2Id] = constraint.points
-  const endpoints = getDistanceConstraintEndpointPositions(p1Id, p2Id, objects)
+  const [p1Id, p2Id] = constraint.segments
+  const endpoints = getDistanceConstraintEndpointPositions(
+    p1Id,
+    p2Id,
+    objects,
+    getDistanceLabelPosition(obj)
+  )
 
   if (endpoints) {
-    const { p1, p2 } = endpoints
     return {
-      p1,
-      p2,
+      ...endpoints,
       distance: constraint.distance,
     }
   }
@@ -251,8 +302,9 @@ export function getDistanceEndPoints(
 function getDistanceConstraintEndpointPositions(
   firstId: number | 'ORIGIN',
   secondId: number | 'ORIGIN',
-  objects: ApiObject[]
-) {
+  objects: ApiObject[],
+  labelPosition?: Vector3
+): DistanceEndpointPositions | null {
   const firstPoint = getDistanceConstraintPointPosition(firstId, objects)
   const secondPoint = getDistanceConstraintPointPosition(secondId, objects)
   if (firstPoint && secondPoint) {
@@ -265,16 +317,20 @@ function getDistanceConstraintEndpointPositions(
   const secondCircular = getDistanceConstraintCircular(secondId, objects)
 
   if (firstPoint && secondLine) {
+    const p2 = projectPointToLine(firstPoint, secondLine)
     return {
       p1: firstPoint,
-      p2: projectPointToLine(firstPoint, secondLine),
+      p2,
+      guideSegment: getLineGuideSegment(secondLine, p2),
     }
   }
 
   if (firstLine && secondPoint) {
+    const p1 = projectPointToLine(secondPoint, firstLine)
     return {
-      p1: projectPointToLine(secondPoint, firstLine),
+      p1,
       p2: secondPoint,
+      guideSegment: getLineGuideSegment(firstLine, p1),
     }
   }
 
@@ -316,9 +372,15 @@ function getDistanceConstraintEndpointPositions(
   }
 
   if (firstLine && secondLine) {
+    const p1 = labelPosition
+      ? projectPointToLine(labelPosition, firstLine)
+      : firstLine.start
+    const p2 = projectPointToLine(p1, secondLine)
     return {
-      p1: firstLine.start,
-      p2: projectPointToLine(firstLine.start, secondLine),
+      p1,
+      p2,
+      leaderStart1: projectPointToLineSegment(p1, firstLine),
+      leaderStart2: projectPointToLineSegment(p2, secondLine),
     }
   }
 
@@ -389,10 +451,7 @@ function getDistanceConstraintCircular(
   }
 }
 
-function projectPointToLine(
-  point: Vector3,
-  line: { start: Vector3; end: Vector3 }
-) {
+function projectPointToLine(point: Vector3, line: LinePoints) {
   const lineVector = line.end.clone().sub(line.start)
   const lengthSq = lineVector.lengthSq()
   if (lengthSq === 0) {
@@ -401,6 +460,37 @@ function projectPointToLine(
 
   const t = point.clone().sub(line.start).dot(lineVector) / lengthSq
   return line.start.clone().add(lineVector.multiplyScalar(t))
+}
+
+function projectPointToLineSegment(point: Vector3, line: LinePoints) {
+  const lineVector = line.end.clone().sub(line.start)
+  const lengthSq = lineVector.lengthSq()
+  if (lengthSq === 0) {
+    return line.start.clone()
+  }
+
+  const t = point.clone().sub(line.start).dot(lineVector) / lengthSq
+  return line.start
+    .clone()
+    .add(lineVector.multiplyScalar(Math.max(0, Math.min(1, t))))
+}
+
+export function getLineGuideSegment(
+  line: LinePoints,
+  target: Vector3
+): readonly [Vector3, Vector3] | undefined {
+  const lineVector = line.end.clone().sub(line.start)
+  const lengthSq = lineVector.lengthSq()
+  if (lengthSq === 0) {
+    return undefined
+  }
+
+  const t = target.clone().sub(line.start).dot(lineVector) / lengthSq
+  if (t >= 0 && t <= 1) {
+    return undefined
+  }
+
+  return [t < 0 ? line.start : line.end, target]
 }
 
 function projectPointToCircular(

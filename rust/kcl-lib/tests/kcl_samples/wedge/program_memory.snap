@@ -40,8 +40,10 @@ description: Variables in memory after executing wedge.kcl
     "value": 10.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "length": {
@@ -49,8 +51,10 @@ description: Variables in memory after executing wedge.kcl
     "value": 10.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "profile": {
@@ -70,17 +74,21 @@ description: Variables in memory after executing wedge.kcl
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 10.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -88,17 +96,21 @@ description: Variables in memory after executing wedge.kcl
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -190,17 +202,21 @@ description: Variables in memory after executing wedge.kcl
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -208,17 +224,21 @@ description: Variables in memory after executing wedge.kcl
                       {
                         "n": 10.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -310,17 +330,21 @@ description: Variables in memory after executing wedge.kcl
                       {
                         "n": 10.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -328,17 +352,21 @@ description: Variables in memory after executing wedge.kcl
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 10.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -435,10 +463,10 @@ description: Variables in memory after executing wedge.kcl
                     10.0
                   ],
                   "tag": {
-                    "commentStart": 282,
-                    "end": 287,
+                    "commentStart": 319,
+                    "end": 324,
                     "moduleId": 0,
-                    "start": 282,
+                    "start": 319,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -459,10 +487,10 @@ description: Variables in memory after executing wedge.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 352,
-                    "end": 357,
+                    "commentStart": 389,
+                    "end": 394,
                     "moduleId": 0,
-                    "start": 352,
+                    "start": 389,
                     "type": "TagDeclarator",
                     "value": "line2"
                   },
@@ -483,10 +511,10 @@ description: Variables in memory after executing wedge.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 461,
-                    "end": 466,
+                    "commentStart": 498,
+                    "end": 503,
                     "moduleId": 0,
-                    "start": 461,
+                    "start": 498,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
@@ -499,17 +527,17 @@ description: Variables in memory after executing wedge.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 0,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -587,10 +615,10 @@ description: Variables in memory after executing wedge.kcl
             10.0
           ],
           "tag": {
-            "commentStart": 282,
-            "end": 287,
+            "commentStart": 319,
+            "end": 324,
             "moduleId": 0,
-            "start": 282,
+            "start": 319,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -611,10 +639,10 @@ description: Variables in memory after executing wedge.kcl
             0.0
           ],
           "tag": {
-            "commentStart": 352,
-            "end": 357,
+            "commentStart": 389,
+            "end": 394,
             "moduleId": 0,
-            "start": 352,
+            "start": 389,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -635,10 +663,10 @@ description: Variables in memory after executing wedge.kcl
             0.0
           ],
           "tag": {
-            "commentStart": 461,
-            "end": 466,
+            "commentStart": 498,
+            "end": 503,
             "moduleId": 0,
-            "start": 461,
+            "start": 498,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -651,17 +679,17 @@ description: Variables in memory after executing wedge.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 0,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -713,8 +741,8 @@ description: Variables in memory after executing wedge.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "mm"
+      "units": "mm",
+      "isClosed": "explicitly"
     }
   },
   "wedge": {
@@ -722,6 +750,8 @@ description: Variables in memory after executing wedge.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -729,10 +759,10 @@ description: Variables in memory after executing wedge.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 282,
-            "end": 287,
+            "commentStart": 319,
+            "end": 324,
             "moduleId": 0,
-            "start": 282,
+            "start": 319,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -743,10 +773,10 @@ description: Variables in memory after executing wedge.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 352,
-            "end": 357,
+            "commentStart": 389,
+            "end": 394,
             "moduleId": 0,
-            "start": 352,
+            "start": 389,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -757,10 +787,10 @@ description: Variables in memory after executing wedge.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 461,
-            "end": 466,
+            "commentStart": 498,
+            "end": 503,
             "moduleId": 0,
-            "start": 461,
+            "start": 498,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -782,10 +812,10 @@ description: Variables in memory after executing wedge.kcl
               10.0
             ],
             "tag": {
-              "commentStart": 282,
-              "end": 287,
+              "commentStart": 319,
+              "end": 324,
               "moduleId": 0,
-              "start": 282,
+              "start": 319,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -806,10 +836,10 @@ description: Variables in memory after executing wedge.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 352,
-              "end": 357,
+              "commentStart": 389,
+              "end": 394,
               "moduleId": 0,
-              "start": 352,
+              "start": 389,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -830,10 +860,10 @@ description: Variables in memory after executing wedge.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 461,
-              "end": 466,
+              "commentStart": 498,
+              "end": 503,
               "moduleId": 0,
-              "start": 461,
+              "start": 498,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -846,17 +876,17 @@ description: Variables in memory after executing wedge.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 0,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -908,8 +938,8 @@ description: Variables in memory after executing wedge.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "mm"
+        "units": "mm",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -922,8 +952,10 @@ description: Variables in memory after executing wedge.kcl
     "value": 10.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   }
 }

@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties blend_with_edge_specifier_objects.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": -0.92,
+      "y": -0.46499999999999986,
+      "z": 2.78
+    },
+    "dimensions": {
+      "x": 8.16,
+      "y": 9.07,
+      "z": 2.04
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 79.0725151889049
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 0.020732126702604586
+  }
+}

@@ -22,7 +22,7 @@ type ConstraintEditActorEvent =
       }
     }
 
-type ConstraintEditSettings = Parameters<RustContext['editConstraint']>[4]
+type ConstraintEditSettings = Parameters<RustContext['editConstraintValue']>[4]
 
 export async function submitConstraintEdit({
   sketchSolveActor,
@@ -32,13 +32,13 @@ export async function submitConstraintEdit({
   settings,
 }: {
   sketchSolveActor?: ConstraintEditActor
-  rustContext: Pick<RustContext, 'editConstraint'>
+  rustContext: Pick<RustContext, 'editConstraintValue'>
   editingConstraintId: number
   value: string
   settings: ConstraintEditSettings
 }) {
   try {
-    const result = await rustContext.editConstraint(
+    const result = await rustContext.editConstraintValue(
       SKETCH_FILE_VERSION,
       getSketchIdFromSnapshot(sketchSolveActor?.getSnapshot()),
       editingConstraintId,

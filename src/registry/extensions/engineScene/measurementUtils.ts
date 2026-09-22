@@ -6,6 +6,8 @@ import type {
   UnitVolume,
 } from '@kittycad/lib'
 import type { Artifact } from '@src/lang/std/artifactGraph'
+import { engineIdForArtifact } from '@src/lang/std/kclNamedViews'
+import type { ArtifactGraph } from '@src/lang/wasm'
 import {
   isDefaultPlaneSelection,
   isEnginePrimitiveSelection,
@@ -120,19 +122,69 @@ function getMeasurementKindForEntityType(
   return 'other'
 }
 
+function getBodyEntityIdForSelection(
+  selection: Selection,
+  artifactGraph?: ArtifactGraph
+): string | null {
+  const artifact = selection.artifact
+  if (!artifactGraph || !artifact) {
+    return selection.engineEntityId ?? artifact?.id ?? null
+  }
+
+  if (artifact.type === 'sweep' || artifact.type === 'compositeSolid') {
+    return engineIdForArtifact({
+      id: artifact.id,
+      artifact,
+      artifactGraph,
+    })
+  }
+
+  if (artifact.type === 'pattern') {
+    if (!selection.engineEntityId) {
+      return null
+    }
+
+    const sourceArtifact = artifactGraph.get(selection.engineEntityId)
+    if (
+      sourceArtifact?.type === 'sweep' ||
+      sourceArtifact?.type === 'compositeSolid'
+    ) {
+      return engineIdForArtifact({
+        id: sourceArtifact.id,
+        artifact: sourceArtifact,
+        artifactGraph,
+      })
+    }
+
+    return selection.engineEntityId
+  }
+
+  return selection.engineEntityId ?? artifact.id
+}
+
 function getEntitiesForGraphSelection(
-  selection: Selection
+  selection: Selection,
+  artifactGraph?: ArtifactGraph
 ): MeasurementEntity[] {
+  const artifact = selection.artifact
+  const kind = getMeasurementKindForArtifact(selection.artifact)
+  if (
+    kind === 'body' ||
+    (artifact?.type === 'pattern' && selection.engineEntityId)
+  ) {
+    const id = getBodyEntityIdForSelection(selection, artifactGraph)
+    return id ? [{ id, kind: 'body' }] : []
+  }
+
   if (selection.engineEntityId) {
     return [
       {
         id: selection.engineEntityId,
-        kind: getMeasurementKindForArtifact(selection.artifact),
+        kind,
       },
     ]
   }
 
-  const artifact = selection.artifact
   if (!artifact?.id) {
     return []
   }
@@ -166,10 +218,13 @@ function dedupeMeasurementEntities(
 }
 
 export function getMeasurementEntities(
-  selectionRanges: Selections
+  selectionRanges: Selections,
+  artifactGraph?: ArtifactGraph
 ): MeasurementEntity[] {
   return dedupeMeasurementEntities([
-    ...selectionRanges.graphSelections.flatMap(getEntitiesForGraphSelection),
+    ...selectionRanges.graphSelections.flatMap((selection) =>
+      getEntitiesForGraphSelection(selection, artifactGraph)
+    ),
     ...selectionRanges.otherSelections.flatMap(
       (selection): MeasurementEntity[] => {
         if (isEnginePrimitiveSelection(selection)) {
@@ -192,8 +247,26 @@ export function getMeasurementEntities(
   ])
 }
 
-export function getMeasurementEntityIds(selectionRanges: Selections): string[] {
-  return getMeasurementEntities(selectionRanges).map((entity) => entity.id)
+export function graphSelectionsReferenceCurrentArtifacts(
+  selectionRanges: Selections,
+  artifactGraph: ArtifactGraph
+): boolean {
+  return selectionRanges.graphSelections.every((selection) => {
+    if (!selection.artifact) {
+      return true
+    }
+
+    return artifactGraph.get(selection.artifact.id) === selection.artifact
+  })
+}
+
+export function getMeasurementEntityIds(
+  selectionRanges: Selections,
+  artifactGraph?: ArtifactGraph
+): string[] {
+  return getMeasurementEntities(selectionRanges, artifactGraph).map(
+    (entity) => entity.id
+  )
 }
 
 export function getDistanceTypeForMode(mode: DistanceMode): DistanceType {
@@ -201,6 +274,35 @@ export function getDistanceTypeForMode(mode: DistanceMode): DistanceType {
     return { type: 'euclidean' }
   }
   return { type: 'on_axis', axis: mode }
+}
+
+/**
+ * Display labels for the analysis panel. These carry Unicode superscripts
+ * because the unit dropdowns are native selects and an <option> cannot hold
+ * <sup> markup. The engine still receives the plain union values.
+ */
+export const unitAreaLabels: Record<UnitArea, string> = {
+  mm2: 'mm\u00b2',
+  cm2: 'cm\u00b2',
+  dm2: 'dm\u00b2',
+  m2: 'm\u00b2',
+  km2: 'km\u00b2',
+  in2: 'in\u00b2',
+  ft2: 'ft\u00b2',
+  yd2: 'yd\u00b2',
+}
+
+export const unitVolumeLabels: Record<UnitVolume, string> = {
+  mm3: 'mm\u00b3',
+  cm3: 'cm\u00b3',
+  m3: 'm\u00b3',
+  in3: 'in\u00b3',
+  ft3: 'ft\u00b3',
+  yd3: 'yd\u00b3',
+  ml: 'mL',
+  l: 'L',
+  usfloz: 'US fl oz',
+  usgal: 'US gal',
 }
 
 export function getAreaUnit(unit: UnitLength): UnitArea {

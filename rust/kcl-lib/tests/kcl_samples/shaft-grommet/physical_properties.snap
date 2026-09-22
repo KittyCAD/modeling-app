@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties shaft-grommet.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": 0.25354511957023096,
+      "y": 0.06251543488288558,
+      "z": 2.032
+    },
+    "dimensions": {
+      "x": 7.810541406561585,
+      "y": 8.002969130234227,
+      "z": 4.064
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 150.74022414651722
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 0.046437595411965425
+  }
+}

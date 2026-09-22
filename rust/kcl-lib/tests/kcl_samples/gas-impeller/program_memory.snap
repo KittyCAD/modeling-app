@@ -69,7 +69,6 @@ description: Variables in memory after executing gas-impeller.kcl
   },
   "baseFloor": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "baseFloor"
   },
   "bladeCutter": {
@@ -77,6 +76,8 @@ description: Variables in memory after executing gas-impeller.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -84,10 +85,10 @@ description: Variables in memory after executing gas-impeller.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 6463,
-            "end": 6484,
+            "commentStart": 6488,
+            "end": 6509,
             "moduleId": 0,
-            "start": 6463,
+            "start": 6488,
             "type": "TagDeclarator",
             "value": "bladeCutterBottomEdge"
           },
@@ -98,10 +99,10 @@ description: Variables in memory after executing gas-impeller.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 6553,
-            "end": 6573,
+            "commentStart": 6578,
+            "end": 6598,
             "moduleId": 0,
-            "start": 6553,
+            "start": 6578,
             "type": "TagDeclarator",
             "value": "bladeCutterOuterEdge"
           },
@@ -112,10 +113,10 @@ description: Variables in memory after executing gas-impeller.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 6726,
-            "end": 6744,
+            "commentStart": 6751,
+            "end": 6769,
             "moduleId": 0,
-            "start": 6726,
+            "start": 6751,
             "type": "TagDeclarator",
             "value": "bladeCutterTopEdge"
           },
@@ -126,10 +127,10 @@ description: Variables in memory after executing gas-impeller.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 6893,
-            "end": 6913,
+            "commentStart": 6918,
+            "end": 6938,
             "moduleId": 0,
-            "start": 6893,
+            "start": 6918,
             "type": "TagDeclarator",
             "value": "bladeCutterInnerEdge"
           },
@@ -151,10 +152,10 @@ description: Variables in memory after executing gas-impeller.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 6463,
-              "end": 6484,
+              "commentStart": 6488,
+              "end": 6509,
               "moduleId": 0,
-              "start": 6463,
+              "start": 6488,
               "type": "TagDeclarator",
               "value": "bladeCutterBottomEdge"
             },
@@ -175,10 +176,10 @@ description: Variables in memory after executing gas-impeller.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 6553,
-              "end": 6573,
+              "commentStart": 6578,
+              "end": 6598,
               "moduleId": 0,
-              "start": 6553,
+              "start": 6578,
               "type": "TagDeclarator",
               "value": "bladeCutterOuterEdge"
             },
@@ -199,10 +200,10 @@ description: Variables in memory after executing gas-impeller.kcl
               2.0
             ],
             "tag": {
-              "commentStart": 6726,
-              "end": 6744,
+              "commentStart": 6751,
+              "end": 6769,
               "moduleId": 0,
-              "start": 6726,
+              "start": 6751,
               "type": "TagDeclarator",
               "value": "bladeCutterTopEdge"
             },
@@ -223,10 +224,10 @@ description: Variables in memory after executing gas-impeller.kcl
               2.0
             ],
             "tag": {
-              "commentStart": 6893,
-              "end": 6913,
+              "commentStart": 6918,
+              "end": 6938,
               "moduleId": 0,
-              "start": 6893,
+              "start": 6918,
               "type": "TagDeclarator",
               "value": "bladeCutterInnerEdge"
             },
@@ -239,17 +240,17 @@ description: Variables in memory after executing gas-impeller.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 102,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -305,8 +306,8 @@ description: Variables in memory after executing gas-impeller.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "mm"
+        "units": "mm",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -316,16 +317,13 @@ description: Variables in memory after executing gas-impeller.kcl
   },
   "bladeCutterBottomEdge": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "bladeCutterBottomEdge"
   },
   "bladeCutterInnerEdge": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "bladeCutterInnerEdge"
   },
   "bladeCutterOuterEdge": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "bladeCutterOuterEdge"
   },
@@ -345,10 +343,10 @@ description: Variables in memory after executing gas-impeller.kcl
             0.0
           ],
           "tag": {
-            "commentStart": 6463,
-            "end": 6484,
+            "commentStart": 6488,
+            "end": 6509,
             "moduleId": 0,
-            "start": 6463,
+            "start": 6488,
             "type": "TagDeclarator",
             "value": "bladeCutterBottomEdge"
           },
@@ -369,10 +367,10 @@ description: Variables in memory after executing gas-impeller.kcl
             0.0
           ],
           "tag": {
-            "commentStart": 6553,
-            "end": 6573,
+            "commentStart": 6578,
+            "end": 6598,
             "moduleId": 0,
-            "start": 6553,
+            "start": 6578,
             "type": "TagDeclarator",
             "value": "bladeCutterOuterEdge"
           },
@@ -393,10 +391,10 @@ description: Variables in memory after executing gas-impeller.kcl
             2.0
           ],
           "tag": {
-            "commentStart": 6726,
-            "end": 6744,
+            "commentStart": 6751,
+            "end": 6769,
             "moduleId": 0,
-            "start": 6726,
+            "start": 6751,
             "type": "TagDeclarator",
             "value": "bladeCutterTopEdge"
           },
@@ -417,10 +415,10 @@ description: Variables in memory after executing gas-impeller.kcl
             2.0
           ],
           "tag": {
-            "commentStart": 6893,
-            "end": 6913,
+            "commentStart": 6918,
+            "end": 6938,
             "moduleId": 0,
-            "start": 6893,
+            "start": 6918,
             "type": "TagDeclarator",
             "value": "bladeCutterInnerEdge"
           },
@@ -433,17 +431,17 @@ description: Variables in memory after executing gas-impeller.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 102,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -499,8 +497,8 @@ description: Variables in memory after executing gas-impeller.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "mm"
+      "units": "mm",
+      "isClosed": "explicitly"
     }
   },
   "bladeCutterSketch": {
@@ -520,17 +518,21 @@ description: Variables in memory after executing gas-impeller.kcl
                       {
                         "n": 4.4,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -538,17 +540,21 @@ description: Variables in memory after executing gas-impeller.kcl
                       {
                         "n": 84.4,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -640,17 +646,21 @@ description: Variables in memory after executing gas-impeller.kcl
                       {
                         "n": 4.4,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 2.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -658,17 +668,21 @@ description: Variables in memory after executing gas-impeller.kcl
                       {
                         "n": 4.4,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -760,17 +774,21 @@ description: Variables in memory after executing gas-impeller.kcl
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -778,17 +796,21 @@ description: Variables in memory after executing gas-impeller.kcl
                       {
                         "n": 4.4,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -881,17 +903,21 @@ description: Variables in memory after executing gas-impeller.kcl
                       {
                         "n": 84.4,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -899,17 +925,21 @@ description: Variables in memory after executing gas-impeller.kcl
                       {
                         "n": 84.4,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 2.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -1001,17 +1031,21 @@ description: Variables in memory after executing gas-impeller.kcl
                       {
                         "n": 84.4,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 2.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -1019,17 +1053,21 @@ description: Variables in memory after executing gas-impeller.kcl
                       {
                         "n": 4.4,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 2.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -1126,10 +1164,10 @@ description: Variables in memory after executing gas-impeller.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 6463,
-                    "end": 6484,
+                    "commentStart": 6488,
+                    "end": 6509,
                     "moduleId": 0,
-                    "start": 6463,
+                    "start": 6488,
                     "type": "TagDeclarator",
                     "value": "bladeCutterBottomEdge"
                   },
@@ -1150,10 +1188,10 @@ description: Variables in memory after executing gas-impeller.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 6553,
-                    "end": 6573,
+                    "commentStart": 6578,
+                    "end": 6598,
                     "moduleId": 0,
-                    "start": 6553,
+                    "start": 6578,
                     "type": "TagDeclarator",
                     "value": "bladeCutterOuterEdge"
                   },
@@ -1174,10 +1212,10 @@ description: Variables in memory after executing gas-impeller.kcl
                     2.0
                   ],
                   "tag": {
-                    "commentStart": 6726,
-                    "end": 6744,
+                    "commentStart": 6751,
+                    "end": 6769,
                     "moduleId": 0,
-                    "start": 6726,
+                    "start": 6751,
                     "type": "TagDeclarator",
                     "value": "bladeCutterTopEdge"
                   },
@@ -1198,10 +1236,10 @@ description: Variables in memory after executing gas-impeller.kcl
                     2.0
                   ],
                   "tag": {
-                    "commentStart": 6893,
-                    "end": 6913,
+                    "commentStart": 6918,
+                    "end": 6938,
                     "moduleId": 0,
-                    "start": 6893,
+                    "start": 6918,
                     "type": "TagDeclarator",
                     "value": "bladeCutterInnerEdge"
                   },
@@ -1214,17 +1252,17 @@ description: Variables in memory after executing gas-impeller.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 102,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -1292,7 +1330,6 @@ description: Variables in memory after executing gas-impeller.kcl
   },
   "bladeCutterTopEdge": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "bladeCutterTopEdge"
   },
   "bladeEnvelope": {
@@ -1300,6 +1337,8 @@ description: Variables in memory after executing gas-impeller.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -1307,10 +1346,10 @@ description: Variables in memory after executing gas-impeller.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 970,
-            "end": 989,
+            "commentStart": 995,
+            "end": 1014,
             "moduleId": 0,
-            "start": 970,
+            "start": 995,
             "type": "TagDeclarator",
             "value": "hubShoulderBlendArc"
           },
@@ -1321,10 +1360,10 @@ description: Variables in memory after executing gas-impeller.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2178,
-            "end": 2194,
+            "commentStart": 2203,
+            "end": 2219,
             "moduleId": 0,
-            "start": 2178,
+            "start": 2203,
             "type": "TagDeclarator",
             "value": "outerEnvelopeArc"
           },
@@ -1335,10 +1374,10 @@ description: Variables in memory after executing gas-impeller.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3970,
-            "end": 3990,
+            "commentStart": 3995,
+            "end": 4015,
             "moduleId": 0,
-            "start": 3970,
+            "start": 3995,
             "type": "TagDeclarator",
             "value": "bladeEnvelopeTopEdge"
           },
@@ -1349,10 +1388,10 @@ description: Variables in memory after executing gas-impeller.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4132,
-            "end": 4154,
+            "commentStart": 4157,
+            "end": 4179,
             "moduleId": 0,
-            "start": 4132,
+            "start": 4157,
             "type": "TagDeclarator",
             "value": "bladeEnvelopeOuterWall"
           },
@@ -1363,10 +1402,10 @@ description: Variables in memory after executing gas-impeller.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4313,
-            "end": 4332,
+            "commentStart": 4338,
+            "end": 4357,
             "moduleId": 0,
-            "start": 4313,
+            "start": 4338,
             "type": "TagDeclarator",
             "value": "bladeEnvelopeTipArc"
           },
@@ -1394,10 +1433,10 @@ description: Variables in memory after executing gas-impeller.kcl
             ],
             "radius": 1.000000000137227,
             "tag": {
-              "commentStart": 970,
-              "end": 989,
+              "commentStart": 995,
+              "end": 1014,
               "moduleId": 0,
-              "start": 970,
+              "start": 995,
               "type": "TagDeclarator",
               "value": "hubShoulderBlendArc"
             },
@@ -1424,10 +1463,10 @@ description: Variables in memory after executing gas-impeller.kcl
             ],
             "radius": 73.52105204104507,
             "tag": {
-              "commentStart": 2178,
-              "end": 2194,
+              "commentStart": 2203,
+              "end": 2219,
               "moduleId": 0,
-              "start": 2178,
+              "start": 2203,
               "type": "TagDeclarator",
               "value": "outerEnvelopeArc"
             },
@@ -1448,10 +1487,10 @@ description: Variables in memory after executing gas-impeller.kcl
               60.0
             ],
             "tag": {
-              "commentStart": 3970,
-              "end": 3990,
+              "commentStart": 3995,
+              "end": 4015,
               "moduleId": 0,
-              "start": 3970,
+              "start": 3995,
               "type": "TagDeclarator",
               "value": "bladeEnvelopeTopEdge"
             },
@@ -1472,10 +1511,10 @@ description: Variables in memory after executing gas-impeller.kcl
               1.9999999999999998
             ],
             "tag": {
-              "commentStart": 4132,
-              "end": 4154,
+              "commentStart": 4157,
+              "end": 4179,
               "moduleId": 0,
-              "start": 4132,
+              "start": 4157,
               "type": "TagDeclarator",
               "value": "bladeEnvelopeOuterWall"
             },
@@ -1502,10 +1541,10 @@ description: Variables in memory after executing gas-impeller.kcl
             ],
             "radius": 12.0,
             "tag": {
-              "commentStart": 4313,
-              "end": 4332,
+              "commentStart": 4338,
+              "end": 4357,
               "moduleId": 0,
-              "start": 4313,
+              "start": 4338,
               "type": "TagDeclarator",
               "value": "bladeEnvelopeTipArc"
             },
@@ -1518,17 +1557,17 @@ description: Variables in memory after executing gas-impeller.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 0,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 0.0,
             "y": 1.0,
@@ -1608,8 +1647,8 @@ description: Variables in memory after executing gas-impeller.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "mm"
+        "units": "mm",
+        "isClosed": "explicitly"
       },
       "startCapId": null,
       "endCapId": null,
@@ -1618,7 +1657,6 @@ description: Variables in memory after executing gas-impeller.kcl
     }
   },
   "bladeEnvelopeOuterWall": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "bladeEnvelopeOuterWall"
   },
@@ -1644,10 +1682,10 @@ description: Variables in memory after executing gas-impeller.kcl
           ],
           "radius": 1.000000000137227,
           "tag": {
-            "commentStart": 970,
-            "end": 989,
+            "commentStart": 995,
+            "end": 1014,
             "moduleId": 0,
-            "start": 970,
+            "start": 995,
             "type": "TagDeclarator",
             "value": "hubShoulderBlendArc"
           },
@@ -1674,10 +1712,10 @@ description: Variables in memory after executing gas-impeller.kcl
           ],
           "radius": 73.52105204104507,
           "tag": {
-            "commentStart": 2178,
-            "end": 2194,
+            "commentStart": 2203,
+            "end": 2219,
             "moduleId": 0,
-            "start": 2178,
+            "start": 2203,
             "type": "TagDeclarator",
             "value": "outerEnvelopeArc"
           },
@@ -1698,10 +1736,10 @@ description: Variables in memory after executing gas-impeller.kcl
             60.0
           ],
           "tag": {
-            "commentStart": 3970,
-            "end": 3990,
+            "commentStart": 3995,
+            "end": 4015,
             "moduleId": 0,
-            "start": 3970,
+            "start": 3995,
             "type": "TagDeclarator",
             "value": "bladeEnvelopeTopEdge"
           },
@@ -1722,10 +1760,10 @@ description: Variables in memory after executing gas-impeller.kcl
             1.9999999999999998
           ],
           "tag": {
-            "commentStart": 4132,
-            "end": 4154,
+            "commentStart": 4157,
+            "end": 4179,
             "moduleId": 0,
-            "start": 4132,
+            "start": 4157,
             "type": "TagDeclarator",
             "value": "bladeEnvelopeOuterWall"
           },
@@ -1752,10 +1790,10 @@ description: Variables in memory after executing gas-impeller.kcl
           ],
           "radius": 12.0,
           "tag": {
-            "commentStart": 4313,
-            "end": 4332,
+            "commentStart": 4338,
+            "end": 4357,
             "moduleId": 0,
-            "start": 4313,
+            "start": 4338,
             "type": "TagDeclarator",
             "value": "bladeEnvelopeTipArc"
           },
@@ -1768,17 +1806,17 @@ description: Variables in memory after executing gas-impeller.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 0,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 0.0,
           "y": 1.0,
@@ -1858,17 +1896,15 @@ description: Variables in memory after executing gas-impeller.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "mm"
+      "units": "mm",
+      "isClosed": "explicitly"
     }
   },
   "bladeEnvelopeTipArc": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "bladeEnvelopeTipArc"
   },
   "bladeEnvelopeTopEdge": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "bladeEnvelopeTopEdge"
   },
@@ -1877,8 +1913,10 @@ description: Variables in memory after executing gas-impeller.kcl
     "value": 9.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "bladeSectionThickness": {
@@ -1886,17 +1924,21 @@ description: Variables in memory after executing gas-impeller.kcl
     "value": 2.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "bladeTwistAngle": {
     "type": "Number",
     "value": 65.0,
     "ty": {
-      "degrees": null,
       "type": "Known",
-      "type": "Angle"
+      "value": {
+        "type": "Angle",
+        "value": "degrees"
+      }
     }
   },
   "blades": {
@@ -1907,6 +1949,8 @@ description: Variables in memory after executing gas-impeller.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -1914,10 +1958,10 @@ description: Variables in memory after executing gas-impeller.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 970,
-                "end": 989,
+                "commentStart": 995,
+                "end": 1014,
                 "moduleId": 0,
-                "start": 970,
+                "start": 995,
                 "type": "TagDeclarator",
                 "value": "hubShoulderBlendArc"
               },
@@ -1928,10 +1972,10 @@ description: Variables in memory after executing gas-impeller.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2178,
-                "end": 2194,
+                "commentStart": 2203,
+                "end": 2219,
                 "moduleId": 0,
-                "start": 2178,
+                "start": 2203,
                 "type": "TagDeclarator",
                 "value": "outerEnvelopeArc"
               },
@@ -1942,10 +1986,10 @@ description: Variables in memory after executing gas-impeller.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3970,
-                "end": 3990,
+                "commentStart": 3995,
+                "end": 4015,
                 "moduleId": 0,
-                "start": 3970,
+                "start": 3995,
                 "type": "TagDeclarator",
                 "value": "bladeEnvelopeTopEdge"
               },
@@ -1956,10 +2000,10 @@ description: Variables in memory after executing gas-impeller.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 4132,
-                "end": 4154,
+                "commentStart": 4157,
+                "end": 4179,
                 "moduleId": 0,
-                "start": 4132,
+                "start": 4157,
                 "type": "TagDeclarator",
                 "value": "bladeEnvelopeOuterWall"
               },
@@ -1970,10 +2014,10 @@ description: Variables in memory after executing gas-impeller.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 4313,
-                "end": 4332,
+                "commentStart": 4338,
+                "end": 4357,
                 "moduleId": 0,
-                "start": 4313,
+                "start": 4338,
                 "type": "TagDeclarator",
                 "value": "bladeEnvelopeTipArc"
               },
@@ -2001,10 +2045,10 @@ description: Variables in memory after executing gas-impeller.kcl
                 ],
                 "radius": 1.000000000137227,
                 "tag": {
-                  "commentStart": 970,
-                  "end": 989,
+                  "commentStart": 995,
+                  "end": 1014,
                   "moduleId": 0,
-                  "start": 970,
+                  "start": 995,
                   "type": "TagDeclarator",
                   "value": "hubShoulderBlendArc"
                 },
@@ -2031,10 +2075,10 @@ description: Variables in memory after executing gas-impeller.kcl
                 ],
                 "radius": 73.52105204104507,
                 "tag": {
-                  "commentStart": 2178,
-                  "end": 2194,
+                  "commentStart": 2203,
+                  "end": 2219,
                   "moduleId": 0,
-                  "start": 2178,
+                  "start": 2203,
                   "type": "TagDeclarator",
                   "value": "outerEnvelopeArc"
                 },
@@ -2055,10 +2099,10 @@ description: Variables in memory after executing gas-impeller.kcl
                   60.0
                 ],
                 "tag": {
-                  "commentStart": 3970,
-                  "end": 3990,
+                  "commentStart": 3995,
+                  "end": 4015,
                   "moduleId": 0,
-                  "start": 3970,
+                  "start": 3995,
                   "type": "TagDeclarator",
                   "value": "bladeEnvelopeTopEdge"
                 },
@@ -2079,10 +2123,10 @@ description: Variables in memory after executing gas-impeller.kcl
                   1.9999999999999998
                 ],
                 "tag": {
-                  "commentStart": 4132,
-                  "end": 4154,
+                  "commentStart": 4157,
+                  "end": 4179,
                   "moduleId": 0,
-                  "start": 4132,
+                  "start": 4157,
                   "type": "TagDeclarator",
                   "value": "bladeEnvelopeOuterWall"
                 },
@@ -2109,10 +2153,10 @@ description: Variables in memory after executing gas-impeller.kcl
                 ],
                 "radius": 12.0,
                 "tag": {
-                  "commentStart": 4313,
-                  "end": 4332,
+                  "commentStart": 4338,
+                  "end": 4357,
                   "moduleId": 0,
-                  "start": 4313,
+                  "start": 4338,
                   "type": "TagDeclarator",
                   "value": "bladeEnvelopeTipArc"
                 },
@@ -2125,17 +2169,17 @@ description: Variables in memory after executing gas-impeller.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 0,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -2215,8 +2259,8 @@ description: Variables in memory after executing gas-impeller.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": null,
           "endCapId": null,
@@ -2229,6 +2273,8 @@ description: Variables in memory after executing gas-impeller.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -2236,10 +2282,10 @@ description: Variables in memory after executing gas-impeller.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 970,
-                "end": 989,
+                "commentStart": 995,
+                "end": 1014,
                 "moduleId": 0,
-                "start": 970,
+                "start": 995,
                 "type": "TagDeclarator",
                 "value": "hubShoulderBlendArc"
               },
@@ -2250,10 +2296,10 @@ description: Variables in memory after executing gas-impeller.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2178,
-                "end": 2194,
+                "commentStart": 2203,
+                "end": 2219,
                 "moduleId": 0,
-                "start": 2178,
+                "start": 2203,
                 "type": "TagDeclarator",
                 "value": "outerEnvelopeArc"
               },
@@ -2264,10 +2310,10 @@ description: Variables in memory after executing gas-impeller.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3970,
-                "end": 3990,
+                "commentStart": 3995,
+                "end": 4015,
                 "moduleId": 0,
-                "start": 3970,
+                "start": 3995,
                 "type": "TagDeclarator",
                 "value": "bladeEnvelopeTopEdge"
               },
@@ -2278,10 +2324,10 @@ description: Variables in memory after executing gas-impeller.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 4132,
-                "end": 4154,
+                "commentStart": 4157,
+                "end": 4179,
                 "moduleId": 0,
-                "start": 4132,
+                "start": 4157,
                 "type": "TagDeclarator",
                 "value": "bladeEnvelopeOuterWall"
               },
@@ -2292,10 +2338,10 @@ description: Variables in memory after executing gas-impeller.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 4313,
-                "end": 4332,
+                "commentStart": 4338,
+                "end": 4357,
                 "moduleId": 0,
-                "start": 4313,
+                "start": 4338,
                 "type": "TagDeclarator",
                 "value": "bladeEnvelopeTipArc"
               },
@@ -2323,10 +2369,10 @@ description: Variables in memory after executing gas-impeller.kcl
                 ],
                 "radius": 1.000000000137227,
                 "tag": {
-                  "commentStart": 970,
-                  "end": 989,
+                  "commentStart": 995,
+                  "end": 1014,
                   "moduleId": 0,
-                  "start": 970,
+                  "start": 995,
                   "type": "TagDeclarator",
                   "value": "hubShoulderBlendArc"
                 },
@@ -2353,10 +2399,10 @@ description: Variables in memory after executing gas-impeller.kcl
                 ],
                 "radius": 73.52105204104507,
                 "tag": {
-                  "commentStart": 2178,
-                  "end": 2194,
+                  "commentStart": 2203,
+                  "end": 2219,
                   "moduleId": 0,
-                  "start": 2178,
+                  "start": 2203,
                   "type": "TagDeclarator",
                   "value": "outerEnvelopeArc"
                 },
@@ -2377,10 +2423,10 @@ description: Variables in memory after executing gas-impeller.kcl
                   60.0
                 ],
                 "tag": {
-                  "commentStart": 3970,
-                  "end": 3990,
+                  "commentStart": 3995,
+                  "end": 4015,
                   "moduleId": 0,
-                  "start": 3970,
+                  "start": 3995,
                   "type": "TagDeclarator",
                   "value": "bladeEnvelopeTopEdge"
                 },
@@ -2401,10 +2447,10 @@ description: Variables in memory after executing gas-impeller.kcl
                   1.9999999999999998
                 ],
                 "tag": {
-                  "commentStart": 4132,
-                  "end": 4154,
+                  "commentStart": 4157,
+                  "end": 4179,
                   "moduleId": 0,
-                  "start": 4132,
+                  "start": 4157,
                   "type": "TagDeclarator",
                   "value": "bladeEnvelopeOuterWall"
                 },
@@ -2431,10 +2477,10 @@ description: Variables in memory after executing gas-impeller.kcl
                 ],
                 "radius": 12.0,
                 "tag": {
-                  "commentStart": 4313,
-                  "end": 4332,
+                  "commentStart": 4338,
+                  "end": 4357,
                   "moduleId": 0,
-                  "start": 4313,
+                  "start": 4338,
                   "type": "TagDeclarator",
                   "value": "bladeEnvelopeTipArc"
                 },
@@ -2447,17 +2493,17 @@ description: Variables in memory after executing gas-impeller.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 0,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -2537,8 +2583,8 @@ description: Variables in memory after executing gas-impeller.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": null,
           "endCapId": null,
@@ -2551,6 +2597,8 @@ description: Variables in memory after executing gas-impeller.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -2558,10 +2606,10 @@ description: Variables in memory after executing gas-impeller.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 970,
-                "end": 989,
+                "commentStart": 995,
+                "end": 1014,
                 "moduleId": 0,
-                "start": 970,
+                "start": 995,
                 "type": "TagDeclarator",
                 "value": "hubShoulderBlendArc"
               },
@@ -2572,10 +2620,10 @@ description: Variables in memory after executing gas-impeller.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2178,
-                "end": 2194,
+                "commentStart": 2203,
+                "end": 2219,
                 "moduleId": 0,
-                "start": 2178,
+                "start": 2203,
                 "type": "TagDeclarator",
                 "value": "outerEnvelopeArc"
               },
@@ -2586,10 +2634,10 @@ description: Variables in memory after executing gas-impeller.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3970,
-                "end": 3990,
+                "commentStart": 3995,
+                "end": 4015,
                 "moduleId": 0,
-                "start": 3970,
+                "start": 3995,
                 "type": "TagDeclarator",
                 "value": "bladeEnvelopeTopEdge"
               },
@@ -2600,10 +2648,10 @@ description: Variables in memory after executing gas-impeller.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 4132,
-                "end": 4154,
+                "commentStart": 4157,
+                "end": 4179,
                 "moduleId": 0,
-                "start": 4132,
+                "start": 4157,
                 "type": "TagDeclarator",
                 "value": "bladeEnvelopeOuterWall"
               },
@@ -2614,10 +2662,10 @@ description: Variables in memory after executing gas-impeller.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 4313,
-                "end": 4332,
+                "commentStart": 4338,
+                "end": 4357,
                 "moduleId": 0,
-                "start": 4313,
+                "start": 4338,
                 "type": "TagDeclarator",
                 "value": "bladeEnvelopeTipArc"
               },
@@ -2645,10 +2693,10 @@ description: Variables in memory after executing gas-impeller.kcl
                 ],
                 "radius": 1.000000000137227,
                 "tag": {
-                  "commentStart": 970,
-                  "end": 989,
+                  "commentStart": 995,
+                  "end": 1014,
                   "moduleId": 0,
-                  "start": 970,
+                  "start": 995,
                   "type": "TagDeclarator",
                   "value": "hubShoulderBlendArc"
                 },
@@ -2675,10 +2723,10 @@ description: Variables in memory after executing gas-impeller.kcl
                 ],
                 "radius": 73.52105204104507,
                 "tag": {
-                  "commentStart": 2178,
-                  "end": 2194,
+                  "commentStart": 2203,
+                  "end": 2219,
                   "moduleId": 0,
-                  "start": 2178,
+                  "start": 2203,
                   "type": "TagDeclarator",
                   "value": "outerEnvelopeArc"
                 },
@@ -2699,10 +2747,10 @@ description: Variables in memory after executing gas-impeller.kcl
                   60.0
                 ],
                 "tag": {
-                  "commentStart": 3970,
-                  "end": 3990,
+                  "commentStart": 3995,
+                  "end": 4015,
                   "moduleId": 0,
-                  "start": 3970,
+                  "start": 3995,
                   "type": "TagDeclarator",
                   "value": "bladeEnvelopeTopEdge"
                 },
@@ -2723,10 +2771,10 @@ description: Variables in memory after executing gas-impeller.kcl
                   1.9999999999999998
                 ],
                 "tag": {
-                  "commentStart": 4132,
-                  "end": 4154,
+                  "commentStart": 4157,
+                  "end": 4179,
                   "moduleId": 0,
-                  "start": 4132,
+                  "start": 4157,
                   "type": "TagDeclarator",
                   "value": "bladeEnvelopeOuterWall"
                 },
@@ -2753,10 +2801,10 @@ description: Variables in memory after executing gas-impeller.kcl
                 ],
                 "radius": 12.0,
                 "tag": {
-                  "commentStart": 4313,
-                  "end": 4332,
+                  "commentStart": 4338,
+                  "end": 4357,
                   "moduleId": 0,
-                  "start": 4313,
+                  "start": 4338,
                   "type": "TagDeclarator",
                   "value": "bladeEnvelopeTipArc"
                 },
@@ -2769,17 +2817,17 @@ description: Variables in memory after executing gas-impeller.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 0,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -2859,8 +2907,8 @@ description: Variables in memory after executing gas-impeller.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": null,
           "endCapId": null,
@@ -2873,6 +2921,8 @@ description: Variables in memory after executing gas-impeller.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -2880,10 +2930,10 @@ description: Variables in memory after executing gas-impeller.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 970,
-                "end": 989,
+                "commentStart": 995,
+                "end": 1014,
                 "moduleId": 0,
-                "start": 970,
+                "start": 995,
                 "type": "TagDeclarator",
                 "value": "hubShoulderBlendArc"
               },
@@ -2894,10 +2944,10 @@ description: Variables in memory after executing gas-impeller.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2178,
-                "end": 2194,
+                "commentStart": 2203,
+                "end": 2219,
                 "moduleId": 0,
-                "start": 2178,
+                "start": 2203,
                 "type": "TagDeclarator",
                 "value": "outerEnvelopeArc"
               },
@@ -2908,10 +2958,10 @@ description: Variables in memory after executing gas-impeller.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3970,
-                "end": 3990,
+                "commentStart": 3995,
+                "end": 4015,
                 "moduleId": 0,
-                "start": 3970,
+                "start": 3995,
                 "type": "TagDeclarator",
                 "value": "bladeEnvelopeTopEdge"
               },
@@ -2922,10 +2972,10 @@ description: Variables in memory after executing gas-impeller.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 4132,
-                "end": 4154,
+                "commentStart": 4157,
+                "end": 4179,
                 "moduleId": 0,
-                "start": 4132,
+                "start": 4157,
                 "type": "TagDeclarator",
                 "value": "bladeEnvelopeOuterWall"
               },
@@ -2936,10 +2986,10 @@ description: Variables in memory after executing gas-impeller.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 4313,
-                "end": 4332,
+                "commentStart": 4338,
+                "end": 4357,
                 "moduleId": 0,
-                "start": 4313,
+                "start": 4338,
                 "type": "TagDeclarator",
                 "value": "bladeEnvelopeTipArc"
               },
@@ -2967,10 +3017,10 @@ description: Variables in memory after executing gas-impeller.kcl
                 ],
                 "radius": 1.000000000137227,
                 "tag": {
-                  "commentStart": 970,
-                  "end": 989,
+                  "commentStart": 995,
+                  "end": 1014,
                   "moduleId": 0,
-                  "start": 970,
+                  "start": 995,
                   "type": "TagDeclarator",
                   "value": "hubShoulderBlendArc"
                 },
@@ -2997,10 +3047,10 @@ description: Variables in memory after executing gas-impeller.kcl
                 ],
                 "radius": 73.52105204104507,
                 "tag": {
-                  "commentStart": 2178,
-                  "end": 2194,
+                  "commentStart": 2203,
+                  "end": 2219,
                   "moduleId": 0,
-                  "start": 2178,
+                  "start": 2203,
                   "type": "TagDeclarator",
                   "value": "outerEnvelopeArc"
                 },
@@ -3021,10 +3071,10 @@ description: Variables in memory after executing gas-impeller.kcl
                   60.0
                 ],
                 "tag": {
-                  "commentStart": 3970,
-                  "end": 3990,
+                  "commentStart": 3995,
+                  "end": 4015,
                   "moduleId": 0,
-                  "start": 3970,
+                  "start": 3995,
                   "type": "TagDeclarator",
                   "value": "bladeEnvelopeTopEdge"
                 },
@@ -3045,10 +3095,10 @@ description: Variables in memory after executing gas-impeller.kcl
                   1.9999999999999998
                 ],
                 "tag": {
-                  "commentStart": 4132,
-                  "end": 4154,
+                  "commentStart": 4157,
+                  "end": 4179,
                   "moduleId": 0,
-                  "start": 4132,
+                  "start": 4157,
                   "type": "TagDeclarator",
                   "value": "bladeEnvelopeOuterWall"
                 },
@@ -3075,10 +3125,10 @@ description: Variables in memory after executing gas-impeller.kcl
                 ],
                 "radius": 12.0,
                 "tag": {
-                  "commentStart": 4313,
-                  "end": 4332,
+                  "commentStart": 4338,
+                  "end": 4357,
                   "moduleId": 0,
-                  "start": 4313,
+                  "start": 4338,
                   "type": "TagDeclarator",
                   "value": "bladeEnvelopeTipArc"
                 },
@@ -3091,17 +3141,17 @@ description: Variables in memory after executing gas-impeller.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 0,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -3181,8 +3231,8 @@ description: Variables in memory after executing gas-impeller.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": null,
           "endCapId": null,
@@ -3195,6 +3245,8 @@ description: Variables in memory after executing gas-impeller.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -3202,10 +3254,10 @@ description: Variables in memory after executing gas-impeller.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 970,
-                "end": 989,
+                "commentStart": 995,
+                "end": 1014,
                 "moduleId": 0,
-                "start": 970,
+                "start": 995,
                 "type": "TagDeclarator",
                 "value": "hubShoulderBlendArc"
               },
@@ -3216,10 +3268,10 @@ description: Variables in memory after executing gas-impeller.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2178,
-                "end": 2194,
+                "commentStart": 2203,
+                "end": 2219,
                 "moduleId": 0,
-                "start": 2178,
+                "start": 2203,
                 "type": "TagDeclarator",
                 "value": "outerEnvelopeArc"
               },
@@ -3230,10 +3282,10 @@ description: Variables in memory after executing gas-impeller.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3970,
-                "end": 3990,
+                "commentStart": 3995,
+                "end": 4015,
                 "moduleId": 0,
-                "start": 3970,
+                "start": 3995,
                 "type": "TagDeclarator",
                 "value": "bladeEnvelopeTopEdge"
               },
@@ -3244,10 +3296,10 @@ description: Variables in memory after executing gas-impeller.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 4132,
-                "end": 4154,
+                "commentStart": 4157,
+                "end": 4179,
                 "moduleId": 0,
-                "start": 4132,
+                "start": 4157,
                 "type": "TagDeclarator",
                 "value": "bladeEnvelopeOuterWall"
               },
@@ -3258,10 +3310,10 @@ description: Variables in memory after executing gas-impeller.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 4313,
-                "end": 4332,
+                "commentStart": 4338,
+                "end": 4357,
                 "moduleId": 0,
-                "start": 4313,
+                "start": 4338,
                 "type": "TagDeclarator",
                 "value": "bladeEnvelopeTipArc"
               },
@@ -3289,10 +3341,10 @@ description: Variables in memory after executing gas-impeller.kcl
                 ],
                 "radius": 1.000000000137227,
                 "tag": {
-                  "commentStart": 970,
-                  "end": 989,
+                  "commentStart": 995,
+                  "end": 1014,
                   "moduleId": 0,
-                  "start": 970,
+                  "start": 995,
                   "type": "TagDeclarator",
                   "value": "hubShoulderBlendArc"
                 },
@@ -3319,10 +3371,10 @@ description: Variables in memory after executing gas-impeller.kcl
                 ],
                 "radius": 73.52105204104507,
                 "tag": {
-                  "commentStart": 2178,
-                  "end": 2194,
+                  "commentStart": 2203,
+                  "end": 2219,
                   "moduleId": 0,
-                  "start": 2178,
+                  "start": 2203,
                   "type": "TagDeclarator",
                   "value": "outerEnvelopeArc"
                 },
@@ -3343,10 +3395,10 @@ description: Variables in memory after executing gas-impeller.kcl
                   60.0
                 ],
                 "tag": {
-                  "commentStart": 3970,
-                  "end": 3990,
+                  "commentStart": 3995,
+                  "end": 4015,
                   "moduleId": 0,
-                  "start": 3970,
+                  "start": 3995,
                   "type": "TagDeclarator",
                   "value": "bladeEnvelopeTopEdge"
                 },
@@ -3367,10 +3419,10 @@ description: Variables in memory after executing gas-impeller.kcl
                   1.9999999999999998
                 ],
                 "tag": {
-                  "commentStart": 4132,
-                  "end": 4154,
+                  "commentStart": 4157,
+                  "end": 4179,
                   "moduleId": 0,
-                  "start": 4132,
+                  "start": 4157,
                   "type": "TagDeclarator",
                   "value": "bladeEnvelopeOuterWall"
                 },
@@ -3397,10 +3449,10 @@ description: Variables in memory after executing gas-impeller.kcl
                 ],
                 "radius": 12.0,
                 "tag": {
-                  "commentStart": 4313,
-                  "end": 4332,
+                  "commentStart": 4338,
+                  "end": 4357,
                   "moduleId": 0,
-                  "start": 4313,
+                  "start": 4338,
                   "type": "TagDeclarator",
                   "value": "bladeEnvelopeTipArc"
                 },
@@ -3413,17 +3465,17 @@ description: Variables in memory after executing gas-impeller.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 0,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -3503,8 +3555,8 @@ description: Variables in memory after executing gas-impeller.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": null,
           "endCapId": null,
@@ -3517,6 +3569,8 @@ description: Variables in memory after executing gas-impeller.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -3524,10 +3578,10 @@ description: Variables in memory after executing gas-impeller.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 970,
-                "end": 989,
+                "commentStart": 995,
+                "end": 1014,
                 "moduleId": 0,
-                "start": 970,
+                "start": 995,
                 "type": "TagDeclarator",
                 "value": "hubShoulderBlendArc"
               },
@@ -3538,10 +3592,10 @@ description: Variables in memory after executing gas-impeller.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2178,
-                "end": 2194,
+                "commentStart": 2203,
+                "end": 2219,
                 "moduleId": 0,
-                "start": 2178,
+                "start": 2203,
                 "type": "TagDeclarator",
                 "value": "outerEnvelopeArc"
               },
@@ -3552,10 +3606,10 @@ description: Variables in memory after executing gas-impeller.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3970,
-                "end": 3990,
+                "commentStart": 3995,
+                "end": 4015,
                 "moduleId": 0,
-                "start": 3970,
+                "start": 3995,
                 "type": "TagDeclarator",
                 "value": "bladeEnvelopeTopEdge"
               },
@@ -3566,10 +3620,10 @@ description: Variables in memory after executing gas-impeller.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 4132,
-                "end": 4154,
+                "commentStart": 4157,
+                "end": 4179,
                 "moduleId": 0,
-                "start": 4132,
+                "start": 4157,
                 "type": "TagDeclarator",
                 "value": "bladeEnvelopeOuterWall"
               },
@@ -3580,10 +3634,10 @@ description: Variables in memory after executing gas-impeller.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 4313,
-                "end": 4332,
+                "commentStart": 4338,
+                "end": 4357,
                 "moduleId": 0,
-                "start": 4313,
+                "start": 4338,
                 "type": "TagDeclarator",
                 "value": "bladeEnvelopeTipArc"
               },
@@ -3611,10 +3665,10 @@ description: Variables in memory after executing gas-impeller.kcl
                 ],
                 "radius": 1.000000000137227,
                 "tag": {
-                  "commentStart": 970,
-                  "end": 989,
+                  "commentStart": 995,
+                  "end": 1014,
                   "moduleId": 0,
-                  "start": 970,
+                  "start": 995,
                   "type": "TagDeclarator",
                   "value": "hubShoulderBlendArc"
                 },
@@ -3641,10 +3695,10 @@ description: Variables in memory after executing gas-impeller.kcl
                 ],
                 "radius": 73.52105204104507,
                 "tag": {
-                  "commentStart": 2178,
-                  "end": 2194,
+                  "commentStart": 2203,
+                  "end": 2219,
                   "moduleId": 0,
-                  "start": 2178,
+                  "start": 2203,
                   "type": "TagDeclarator",
                   "value": "outerEnvelopeArc"
                 },
@@ -3665,10 +3719,10 @@ description: Variables in memory after executing gas-impeller.kcl
                   60.0
                 ],
                 "tag": {
-                  "commentStart": 3970,
-                  "end": 3990,
+                  "commentStart": 3995,
+                  "end": 4015,
                   "moduleId": 0,
-                  "start": 3970,
+                  "start": 3995,
                   "type": "TagDeclarator",
                   "value": "bladeEnvelopeTopEdge"
                 },
@@ -3689,10 +3743,10 @@ description: Variables in memory after executing gas-impeller.kcl
                   1.9999999999999998
                 ],
                 "tag": {
-                  "commentStart": 4132,
-                  "end": 4154,
+                  "commentStart": 4157,
+                  "end": 4179,
                   "moduleId": 0,
-                  "start": 4132,
+                  "start": 4157,
                   "type": "TagDeclarator",
                   "value": "bladeEnvelopeOuterWall"
                 },
@@ -3719,10 +3773,10 @@ description: Variables in memory after executing gas-impeller.kcl
                 ],
                 "radius": 12.0,
                 "tag": {
-                  "commentStart": 4313,
-                  "end": 4332,
+                  "commentStart": 4338,
+                  "end": 4357,
                   "moduleId": 0,
-                  "start": 4313,
+                  "start": 4338,
                   "type": "TagDeclarator",
                   "value": "bladeEnvelopeTipArc"
                 },
@@ -3735,17 +3789,17 @@ description: Variables in memory after executing gas-impeller.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 0,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -3825,8 +3879,8 @@ description: Variables in memory after executing gas-impeller.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": null,
           "endCapId": null,
@@ -3839,6 +3893,8 @@ description: Variables in memory after executing gas-impeller.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -3846,10 +3902,10 @@ description: Variables in memory after executing gas-impeller.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 970,
-                "end": 989,
+                "commentStart": 995,
+                "end": 1014,
                 "moduleId": 0,
-                "start": 970,
+                "start": 995,
                 "type": "TagDeclarator",
                 "value": "hubShoulderBlendArc"
               },
@@ -3860,10 +3916,10 @@ description: Variables in memory after executing gas-impeller.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2178,
-                "end": 2194,
+                "commentStart": 2203,
+                "end": 2219,
                 "moduleId": 0,
-                "start": 2178,
+                "start": 2203,
                 "type": "TagDeclarator",
                 "value": "outerEnvelopeArc"
               },
@@ -3874,10 +3930,10 @@ description: Variables in memory after executing gas-impeller.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3970,
-                "end": 3990,
+                "commentStart": 3995,
+                "end": 4015,
                 "moduleId": 0,
-                "start": 3970,
+                "start": 3995,
                 "type": "TagDeclarator",
                 "value": "bladeEnvelopeTopEdge"
               },
@@ -3888,10 +3944,10 @@ description: Variables in memory after executing gas-impeller.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 4132,
-                "end": 4154,
+                "commentStart": 4157,
+                "end": 4179,
                 "moduleId": 0,
-                "start": 4132,
+                "start": 4157,
                 "type": "TagDeclarator",
                 "value": "bladeEnvelopeOuterWall"
               },
@@ -3902,10 +3958,10 @@ description: Variables in memory after executing gas-impeller.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 4313,
-                "end": 4332,
+                "commentStart": 4338,
+                "end": 4357,
                 "moduleId": 0,
-                "start": 4313,
+                "start": 4338,
                 "type": "TagDeclarator",
                 "value": "bladeEnvelopeTipArc"
               },
@@ -3933,10 +3989,10 @@ description: Variables in memory after executing gas-impeller.kcl
                 ],
                 "radius": 1.000000000137227,
                 "tag": {
-                  "commentStart": 970,
-                  "end": 989,
+                  "commentStart": 995,
+                  "end": 1014,
                   "moduleId": 0,
-                  "start": 970,
+                  "start": 995,
                   "type": "TagDeclarator",
                   "value": "hubShoulderBlendArc"
                 },
@@ -3963,10 +4019,10 @@ description: Variables in memory after executing gas-impeller.kcl
                 ],
                 "radius": 73.52105204104507,
                 "tag": {
-                  "commentStart": 2178,
-                  "end": 2194,
+                  "commentStart": 2203,
+                  "end": 2219,
                   "moduleId": 0,
-                  "start": 2178,
+                  "start": 2203,
                   "type": "TagDeclarator",
                   "value": "outerEnvelopeArc"
                 },
@@ -3987,10 +4043,10 @@ description: Variables in memory after executing gas-impeller.kcl
                   60.0
                 ],
                 "tag": {
-                  "commentStart": 3970,
-                  "end": 3990,
+                  "commentStart": 3995,
+                  "end": 4015,
                   "moduleId": 0,
-                  "start": 3970,
+                  "start": 3995,
                   "type": "TagDeclarator",
                   "value": "bladeEnvelopeTopEdge"
                 },
@@ -4011,10 +4067,10 @@ description: Variables in memory after executing gas-impeller.kcl
                   1.9999999999999998
                 ],
                 "tag": {
-                  "commentStart": 4132,
-                  "end": 4154,
+                  "commentStart": 4157,
+                  "end": 4179,
                   "moduleId": 0,
-                  "start": 4132,
+                  "start": 4157,
                   "type": "TagDeclarator",
                   "value": "bladeEnvelopeOuterWall"
                 },
@@ -4041,10 +4097,10 @@ description: Variables in memory after executing gas-impeller.kcl
                 ],
                 "radius": 12.0,
                 "tag": {
-                  "commentStart": 4313,
-                  "end": 4332,
+                  "commentStart": 4338,
+                  "end": 4357,
                   "moduleId": 0,
-                  "start": 4313,
+                  "start": 4338,
                   "type": "TagDeclarator",
                   "value": "bladeEnvelopeTipArc"
                 },
@@ -4057,17 +4113,17 @@ description: Variables in memory after executing gas-impeller.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 0,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -4147,8 +4203,8 @@ description: Variables in memory after executing gas-impeller.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": null,
           "endCapId": null,
@@ -4161,6 +4217,8 @@ description: Variables in memory after executing gas-impeller.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -4168,10 +4226,10 @@ description: Variables in memory after executing gas-impeller.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 970,
-                "end": 989,
+                "commentStart": 995,
+                "end": 1014,
                 "moduleId": 0,
-                "start": 970,
+                "start": 995,
                 "type": "TagDeclarator",
                 "value": "hubShoulderBlendArc"
               },
@@ -4182,10 +4240,10 @@ description: Variables in memory after executing gas-impeller.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2178,
-                "end": 2194,
+                "commentStart": 2203,
+                "end": 2219,
                 "moduleId": 0,
-                "start": 2178,
+                "start": 2203,
                 "type": "TagDeclarator",
                 "value": "outerEnvelopeArc"
               },
@@ -4196,10 +4254,10 @@ description: Variables in memory after executing gas-impeller.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3970,
-                "end": 3990,
+                "commentStart": 3995,
+                "end": 4015,
                 "moduleId": 0,
-                "start": 3970,
+                "start": 3995,
                 "type": "TagDeclarator",
                 "value": "bladeEnvelopeTopEdge"
               },
@@ -4210,10 +4268,10 @@ description: Variables in memory after executing gas-impeller.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 4132,
-                "end": 4154,
+                "commentStart": 4157,
+                "end": 4179,
                 "moduleId": 0,
-                "start": 4132,
+                "start": 4157,
                 "type": "TagDeclarator",
                 "value": "bladeEnvelopeOuterWall"
               },
@@ -4224,10 +4282,10 @@ description: Variables in memory after executing gas-impeller.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 4313,
-                "end": 4332,
+                "commentStart": 4338,
+                "end": 4357,
                 "moduleId": 0,
-                "start": 4313,
+                "start": 4338,
                 "type": "TagDeclarator",
                 "value": "bladeEnvelopeTipArc"
               },
@@ -4255,10 +4313,10 @@ description: Variables in memory after executing gas-impeller.kcl
                 ],
                 "radius": 1.000000000137227,
                 "tag": {
-                  "commentStart": 970,
-                  "end": 989,
+                  "commentStart": 995,
+                  "end": 1014,
                   "moduleId": 0,
-                  "start": 970,
+                  "start": 995,
                   "type": "TagDeclarator",
                   "value": "hubShoulderBlendArc"
                 },
@@ -4285,10 +4343,10 @@ description: Variables in memory after executing gas-impeller.kcl
                 ],
                 "radius": 73.52105204104507,
                 "tag": {
-                  "commentStart": 2178,
-                  "end": 2194,
+                  "commentStart": 2203,
+                  "end": 2219,
                   "moduleId": 0,
-                  "start": 2178,
+                  "start": 2203,
                   "type": "TagDeclarator",
                   "value": "outerEnvelopeArc"
                 },
@@ -4309,10 +4367,10 @@ description: Variables in memory after executing gas-impeller.kcl
                   60.0
                 ],
                 "tag": {
-                  "commentStart": 3970,
-                  "end": 3990,
+                  "commentStart": 3995,
+                  "end": 4015,
                   "moduleId": 0,
-                  "start": 3970,
+                  "start": 3995,
                   "type": "TagDeclarator",
                   "value": "bladeEnvelopeTopEdge"
                 },
@@ -4333,10 +4391,10 @@ description: Variables in memory after executing gas-impeller.kcl
                   1.9999999999999998
                 ],
                 "tag": {
-                  "commentStart": 4132,
-                  "end": 4154,
+                  "commentStart": 4157,
+                  "end": 4179,
                   "moduleId": 0,
-                  "start": 4132,
+                  "start": 4157,
                   "type": "TagDeclarator",
                   "value": "bladeEnvelopeOuterWall"
                 },
@@ -4363,10 +4421,10 @@ description: Variables in memory after executing gas-impeller.kcl
                 ],
                 "radius": 12.0,
                 "tag": {
-                  "commentStart": 4313,
-                  "end": 4332,
+                  "commentStart": 4338,
+                  "end": 4357,
                   "moduleId": 0,
-                  "start": 4313,
+                  "start": 4338,
                   "type": "TagDeclarator",
                   "value": "bladeEnvelopeTipArc"
                 },
@@ -4379,17 +4437,17 @@ description: Variables in memory after executing gas-impeller.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 0,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -4469,8 +4527,8 @@ description: Variables in memory after executing gas-impeller.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": null,
           "endCapId": null,
@@ -4483,6 +4541,8 @@ description: Variables in memory after executing gas-impeller.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -4490,10 +4550,10 @@ description: Variables in memory after executing gas-impeller.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 970,
-                "end": 989,
+                "commentStart": 995,
+                "end": 1014,
                 "moduleId": 0,
-                "start": 970,
+                "start": 995,
                 "type": "TagDeclarator",
                 "value": "hubShoulderBlendArc"
               },
@@ -4504,10 +4564,10 @@ description: Variables in memory after executing gas-impeller.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2178,
-                "end": 2194,
+                "commentStart": 2203,
+                "end": 2219,
                 "moduleId": 0,
-                "start": 2178,
+                "start": 2203,
                 "type": "TagDeclarator",
                 "value": "outerEnvelopeArc"
               },
@@ -4518,10 +4578,10 @@ description: Variables in memory after executing gas-impeller.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3970,
-                "end": 3990,
+                "commentStart": 3995,
+                "end": 4015,
                 "moduleId": 0,
-                "start": 3970,
+                "start": 3995,
                 "type": "TagDeclarator",
                 "value": "bladeEnvelopeTopEdge"
               },
@@ -4532,10 +4592,10 @@ description: Variables in memory after executing gas-impeller.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 4132,
-                "end": 4154,
+                "commentStart": 4157,
+                "end": 4179,
                 "moduleId": 0,
-                "start": 4132,
+                "start": 4157,
                 "type": "TagDeclarator",
                 "value": "bladeEnvelopeOuterWall"
               },
@@ -4546,10 +4606,10 @@ description: Variables in memory after executing gas-impeller.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 4313,
-                "end": 4332,
+                "commentStart": 4338,
+                "end": 4357,
                 "moduleId": 0,
-                "start": 4313,
+                "start": 4338,
                 "type": "TagDeclarator",
                 "value": "bladeEnvelopeTipArc"
               },
@@ -4577,10 +4637,10 @@ description: Variables in memory after executing gas-impeller.kcl
                 ],
                 "radius": 1.000000000137227,
                 "tag": {
-                  "commentStart": 970,
-                  "end": 989,
+                  "commentStart": 995,
+                  "end": 1014,
                   "moduleId": 0,
-                  "start": 970,
+                  "start": 995,
                   "type": "TagDeclarator",
                   "value": "hubShoulderBlendArc"
                 },
@@ -4607,10 +4667,10 @@ description: Variables in memory after executing gas-impeller.kcl
                 ],
                 "radius": 73.52105204104507,
                 "tag": {
-                  "commentStart": 2178,
-                  "end": 2194,
+                  "commentStart": 2203,
+                  "end": 2219,
                   "moduleId": 0,
-                  "start": 2178,
+                  "start": 2203,
                   "type": "TagDeclarator",
                   "value": "outerEnvelopeArc"
                 },
@@ -4631,10 +4691,10 @@ description: Variables in memory after executing gas-impeller.kcl
                   60.0
                 ],
                 "tag": {
-                  "commentStart": 3970,
-                  "end": 3990,
+                  "commentStart": 3995,
+                  "end": 4015,
                   "moduleId": 0,
-                  "start": 3970,
+                  "start": 3995,
                   "type": "TagDeclarator",
                   "value": "bladeEnvelopeTopEdge"
                 },
@@ -4655,10 +4715,10 @@ description: Variables in memory after executing gas-impeller.kcl
                   1.9999999999999998
                 ],
                 "tag": {
-                  "commentStart": 4132,
-                  "end": 4154,
+                  "commentStart": 4157,
+                  "end": 4179,
                   "moduleId": 0,
-                  "start": 4132,
+                  "start": 4157,
                   "type": "TagDeclarator",
                   "value": "bladeEnvelopeOuterWall"
                 },
@@ -4685,10 +4745,10 @@ description: Variables in memory after executing gas-impeller.kcl
                 ],
                 "radius": 12.0,
                 "tag": {
-                  "commentStart": 4313,
-                  "end": 4332,
+                  "commentStart": 4338,
+                  "end": 4357,
                   "moduleId": 0,
-                  "start": 4313,
+                  "start": 4338,
                   "type": "TagDeclarator",
                   "value": "bladeEnvelopeTipArc"
                 },
@@ -4701,17 +4761,17 @@ description: Variables in memory after executing gas-impeller.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 0,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -4791,8 +4851,8 @@ description: Variables in memory after executing gas-impeller.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": null,
           "endCapId": null,
@@ -4819,17 +4879,21 @@ description: Variables in memory after executing gas-impeller.kcl
                       {
                         "n": 80.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": -0.00000000000000014976429341093822,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -4837,17 +4901,21 @@ description: Variables in memory after executing gas-impeller.kcl
                       {
                         "n": 4.4,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": -0.00000000000000013593532780969027,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -4939,17 +5007,21 @@ description: Variables in memory after executing gas-impeller.kcl
                       {
                         "n": 80.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 1.9999999999999998,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -4957,17 +5029,21 @@ description: Variables in memory after executing gas-impeller.kcl
                       {
                         "n": 80.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 48.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -5059,17 +5135,21 @@ description: Variables in memory after executing gas-impeller.kcl
                       {
                         "n": 80.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 48.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -5077,17 +5157,21 @@ description: Variables in memory after executing gas-impeller.kcl
                       {
                         "n": 68.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 60.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -5095,17 +5179,21 @@ description: Variables in memory after executing gas-impeller.kcl
                       {
                         "n": 68.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 48.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -5211,17 +5299,21 @@ description: Variables in memory after executing gas-impeller.kcl
                       {
                         "n": 68.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 60.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -5229,17 +5321,21 @@ description: Variables in memory after executing gas-impeller.kcl
                       {
                         "n": 68.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 48.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -5332,17 +5428,21 @@ description: Variables in memory after executing gas-impeller.kcl
                       {
                         "n": 80.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 48.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -5350,17 +5450,21 @@ description: Variables in memory after executing gas-impeller.kcl
                       {
                         "n": 68.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 48.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -5453,17 +5557,21 @@ description: Variables in memory after executing gas-impeller.kcl
                       {
                         "n": 7.333333333333334,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 60.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -5471,17 +5579,21 @@ description: Variables in memory after executing gas-impeller.kcl
                       {
                         "n": 68.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 60.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -5573,17 +5685,21 @@ description: Variables in memory after executing gas-impeller.kcl
                       {
                         "n": 8.308484376942259,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 59.22161398656003,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -5591,17 +5707,21 @@ description: Variables in memory after executing gas-impeller.kcl
                       {
                         "n": 7.333333333333334,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 59.99999999999905,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -5609,17 +5729,21 @@ description: Variables in memory after executing gas-impeller.kcl
                       {
                         "n": 7.333349899984599,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 58.99999999999905,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -5725,17 +5849,21 @@ description: Variables in memory after executing gas-impeller.kcl
                       {
                         "n": 7.333349899984599,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 58.99999999999905,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -5743,17 +5871,21 @@ description: Variables in memory after executing gas-impeller.kcl
                       {
                         "n": 7.333333333333334,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 59.99999999999905,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -5845,17 +5977,21 @@ description: Variables in memory after executing gas-impeller.kcl
                       {
                         "n": 4.4,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 60.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -5863,17 +5999,21 @@ description: Variables in memory after executing gas-impeller.kcl
                       {
                         "n": 7.333333333333334,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 60.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -5970,10 +6110,10 @@ description: Variables in memory after executing gas-impeller.kcl
                     -0.00000000000000016741813814460606
                   ],
                   "tag": {
-                    "commentStart": 762,
-                    "end": 771,
+                    "commentStart": 787,
+                    "end": 796,
                     "moduleId": 0,
-                    "start": 762,
+                    "start": 787,
                     "type": "TagDeclarator",
                     "value": "shaftWall"
                   },
@@ -5994,10 +6134,10 @@ description: Variables in memory after executing gas-impeller.kcl
                     60.0
                   ],
                   "tag": {
-                    "commentStart": 840,
-                    "end": 850,
+                    "commentStart": 865,
+                    "end": 875,
                     "moduleId": 0,
-                    "start": 840,
+                    "start": 865,
                     "type": "TagDeclarator",
                     "value": "hubTopLand"
                   },
@@ -6024,10 +6164,10 @@ description: Variables in memory after executing gas-impeller.kcl
                   ],
                   "radius": 1.000000000137227,
                   "tag": {
-                    "commentStart": 970,
-                    "end": 989,
+                    "commentStart": 995,
+                    "end": 1014,
                     "moduleId": 0,
-                    "start": 970,
+                    "start": 995,
                     "type": "TagDeclarator",
                     "value": "hubShoulderBlendArc"
                   },
@@ -6065,10 +6205,10 @@ description: Variables in memory after executing gas-impeller.kcl
                     1.9999999999999998
                   ],
                   "tag": {
-                    "commentStart": 1165,
-                    "end": 1177,
+                    "commentStart": 1190,
+                    "end": 1202,
                     "moduleId": 0,
-                    "start": 1165,
+                    "start": 1190,
                     "type": "TagDeclarator",
                     "value": "outerLipDrop"
                   },
@@ -6089,10 +6229,10 @@ description: Variables in memory after executing gas-impeller.kcl
                     -0.00000000000000016359325901190258
                   ],
                   "tag": {
-                    "commentStart": 1243,
-                    "end": 1252,
+                    "commentStart": 1268,
+                    "end": 1277,
                     "moduleId": 0,
-                    "start": 1243,
+                    "start": 1268,
                     "type": "TagDeclarator",
                     "value": "baseFloor"
                   },
@@ -6136,10 +6276,10 @@ description: Variables in memory after executing gas-impeller.kcl
                   ],
                   "radius": 73.52105204104507,
                   "tag": {
-                    "commentStart": 2178,
-                    "end": 2194,
+                    "commentStart": 2203,
+                    "end": 2219,
                     "moduleId": 0,
-                    "start": 2178,
+                    "start": 2203,
                     "type": "TagDeclarator",
                     "value": "outerEnvelopeArc"
                   },
@@ -6177,10 +6317,10 @@ description: Variables in memory after executing gas-impeller.kcl
                     60.0
                   ],
                   "tag": {
-                    "commentStart": 3970,
-                    "end": 3990,
+                    "commentStart": 3995,
+                    "end": 4015,
                     "moduleId": 0,
-                    "start": 3970,
+                    "start": 3995,
                     "type": "TagDeclarator",
                     "value": "bladeEnvelopeTopEdge"
                   },
@@ -6218,10 +6358,10 @@ description: Variables in memory after executing gas-impeller.kcl
                     1.9999999999999998
                   ],
                   "tag": {
-                    "commentStart": 4132,
-                    "end": 4154,
+                    "commentStart": 4157,
+                    "end": 4179,
                     "moduleId": 0,
-                    "start": 4132,
+                    "start": 4157,
                     "type": "TagDeclarator",
                     "value": "bladeEnvelopeOuterWall"
                   },
@@ -6248,10 +6388,10 @@ description: Variables in memory after executing gas-impeller.kcl
                   ],
                   "radius": 12.0,
                   "tag": {
-                    "commentStart": 4313,
-                    "end": 4332,
+                    "commentStart": 4338,
+                    "end": 4357,
                     "moduleId": 0,
-                    "start": 4313,
+                    "start": 4338,
                     "type": "TagDeclarator",
                     "value": "bladeEnvelopeTipArc"
                   },
@@ -6289,10 +6429,10 @@ description: Variables in memory after executing gas-impeller.kcl
                     58.99999999999905
                   ],
                   "tag": {
-                    "commentStart": 5496,
-                    "end": 5518,
+                    "commentStart": 5521,
+                    "end": 5543,
                     "moduleId": 0,
-                    "start": 5496,
+                    "start": 5521,
                     "type": "TagDeclarator",
                     "value": "hubShoulderRadiusGuide"
                   },
@@ -6305,17 +6445,17 @@ description: Variables in memory after executing gas-impeller.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 0,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 0.0,
                   "y": 1.0,
@@ -6416,17 +6556,21 @@ description: Variables in memory after executing gas-impeller.kcl
                       {
                         "n": 8.308484376942472,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 59.22161398656007,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -6434,17 +6578,21 @@ description: Variables in memory after executing gas-impeller.kcl
                       {
                         "n": 80.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 1.9999999999999998,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -6452,17 +6600,21 @@ description: Variables in memory after executing gas-impeller.kcl
                       {
                         "n": 80.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 75.52105204101323,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -6568,17 +6720,21 @@ description: Variables in memory after executing gas-impeller.kcl
                       {
                         "n": 80.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 75.52105204101323,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -6586,17 +6742,21 @@ description: Variables in memory after executing gas-impeller.kcl
                       {
                         "n": 80.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 1.9999999999999998,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -6689,17 +6849,21 @@ description: Variables in memory after executing gas-impeller.kcl
                       {
                         "n": 8.308484376942259,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 59.22161398656003,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -6707,17 +6871,21 @@ description: Variables in memory after executing gas-impeller.kcl
                       {
                         "n": 80.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 1.9999999999999998,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -6810,17 +6978,21 @@ description: Variables in memory after executing gas-impeller.kcl
                       {
                         "n": 80.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 75.52105204101323,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -6828,17 +7000,21 @@ description: Variables in memory after executing gas-impeller.kcl
                       {
                         "n": 44.154242188471294,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 30.61080699327987,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -6931,17 +7107,21 @@ description: Variables in memory after executing gas-impeller.kcl
                       {
                         "n": 8.308484376942259,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 59.22161398656003,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -6949,17 +7129,21 @@ description: Variables in memory after executing gas-impeller.kcl
                       {
                         "n": 80.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 75.52105204101323,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -7052,17 +7236,21 @@ description: Variables in memory after executing gas-impeller.kcl
                       {
                         "n": 80.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 1.9999999999999998,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -7070,17 +7258,21 @@ description: Variables in memory after executing gas-impeller.kcl
                       {
                         "n": 80.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": -0.00000000000000016359325901190258,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -7172,17 +7364,21 @@ description: Variables in memory after executing gas-impeller.kcl
                       {
                         "n": 0.00000000000000001907933210484619,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": -0.000000000000000045311775936677974,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -7190,17 +7386,21 @@ description: Variables in memory after executing gas-impeller.kcl
                       {
                         "n": 4.4,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": -0.00000000000000009062355187326976,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -7293,17 +7493,21 @@ description: Variables in memory after executing gas-impeller.kcl
                       {
                         "n": 4.4,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": -0.00000000000000016741813814460606,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -7311,17 +7515,21 @@ description: Variables in memory after executing gas-impeller.kcl
                       {
                         "n": 4.4,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 60.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -7418,10 +7626,10 @@ description: Variables in memory after executing gas-impeller.kcl
             -0.00000000000000016741813814460606
           ],
           "tag": {
-            "commentStart": 762,
-            "end": 771,
+            "commentStart": 787,
+            "end": 796,
             "moduleId": 0,
-            "start": 762,
+            "start": 787,
             "type": "TagDeclarator",
             "value": "shaftWall"
           },
@@ -7442,10 +7650,10 @@ description: Variables in memory after executing gas-impeller.kcl
             60.0
           ],
           "tag": {
-            "commentStart": 840,
-            "end": 850,
+            "commentStart": 865,
+            "end": 875,
             "moduleId": 0,
-            "start": 840,
+            "start": 865,
             "type": "TagDeclarator",
             "value": "hubTopLand"
           },
@@ -7472,10 +7680,10 @@ description: Variables in memory after executing gas-impeller.kcl
           ],
           "radius": 1.000000000137227,
           "tag": {
-            "commentStart": 970,
-            "end": 989,
+            "commentStart": 995,
+            "end": 1014,
             "moduleId": 0,
-            "start": 970,
+            "start": 995,
             "type": "TagDeclarator",
             "value": "hubShoulderBlendArc"
           },
@@ -7496,10 +7704,10 @@ description: Variables in memory after executing gas-impeller.kcl
             1.9999999999999998
           ],
           "tag": {
-            "commentStart": 1165,
-            "end": 1177,
+            "commentStart": 1190,
+            "end": 1202,
             "moduleId": 0,
-            "start": 1165,
+            "start": 1190,
             "type": "TagDeclarator",
             "value": "outerLipDrop"
           },
@@ -7520,10 +7728,10 @@ description: Variables in memory after executing gas-impeller.kcl
             -0.00000000000000016359325901190258
           ],
           "tag": {
-            "commentStart": 1243,
-            "end": 1252,
+            "commentStart": 1268,
+            "end": 1277,
             "moduleId": 0,
-            "start": 1243,
+            "start": 1268,
             "type": "TagDeclarator",
             "value": "baseFloor"
           },
@@ -7550,10 +7758,10 @@ description: Variables in memory after executing gas-impeller.kcl
           ],
           "radius": 73.52105204104507,
           "tag": {
-            "commentStart": 2178,
-            "end": 2194,
+            "commentStart": 2203,
+            "end": 2219,
             "moduleId": 0,
-            "start": 2178,
+            "start": 2203,
             "type": "TagDeclarator",
             "value": "outerEnvelopeArc"
           },
@@ -7574,10 +7782,10 @@ description: Variables in memory after executing gas-impeller.kcl
             58.99999999999905
           ],
           "tag": {
-            "commentStart": 5496,
-            "end": 5518,
+            "commentStart": 5521,
+            "end": 5543,
             "moduleId": 0,
-            "start": 5496,
+            "start": 5521,
             "type": "TagDeclarator",
             "value": "hubShoulderRadiusGuide"
           },
@@ -7598,10 +7806,10 @@ description: Variables in memory after executing gas-impeller.kcl
             58.99999999999905
           ],
           "tag": {
-            "commentStart": 5496,
-            "end": 5518,
+            "commentStart": 5521,
+            "end": 5543,
             "moduleId": 0,
-            "start": 5496,
+            "start": 5521,
             "type": "TagDeclarator",
             "value": "hubShoulderRadiusGuide"
           },
@@ -7614,17 +7822,17 @@ description: Variables in memory after executing gas-impeller.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 0,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 0.0,
           "y": 1.0,
@@ -7704,22 +7912,19 @@ description: Variables in memory after executing gas-impeller.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "mm"
+      "units": "mm",
+      "isClosed": "explicitly"
     }
   },
   "hubShoulderBlendArc": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "hubShoulderBlendArc"
   },
   "hubShoulderRadiusGuide": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "hubShoulderRadiusGuide"
   },
   "hubTopLand": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "hubTopLand"
   },
@@ -7728,8 +7933,10 @@ description: Variables in memory after executing gas-impeller.kcl
     "value": 160.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "impellerHeight": {
@@ -7737,8 +7944,10 @@ description: Variables in memory after executing gas-impeller.kcl
     "value": 60.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "impellerHub": {
@@ -7746,6 +7955,8 @@ description: Variables in memory after executing gas-impeller.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -7753,10 +7964,10 @@ description: Variables in memory after executing gas-impeller.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 762,
-            "end": 771,
+            "commentStart": 787,
+            "end": 796,
             "moduleId": 0,
-            "start": 762,
+            "start": 787,
             "type": "TagDeclarator",
             "value": "shaftWall"
           },
@@ -7767,10 +7978,10 @@ description: Variables in memory after executing gas-impeller.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 840,
-            "end": 850,
+            "commentStart": 865,
+            "end": 875,
             "moduleId": 0,
-            "start": 840,
+            "start": 865,
             "type": "TagDeclarator",
             "value": "hubTopLand"
           },
@@ -7781,10 +7992,10 @@ description: Variables in memory after executing gas-impeller.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 970,
-            "end": 989,
+            "commentStart": 995,
+            "end": 1014,
             "moduleId": 0,
-            "start": 970,
+            "start": 995,
             "type": "TagDeclarator",
             "value": "hubShoulderBlendArc"
           },
@@ -7795,10 +8006,10 @@ description: Variables in memory after executing gas-impeller.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1165,
-            "end": 1177,
+            "commentStart": 1190,
+            "end": 1202,
             "moduleId": 0,
-            "start": 1165,
+            "start": 1190,
             "type": "TagDeclarator",
             "value": "outerLipDrop"
           },
@@ -7809,10 +8020,10 @@ description: Variables in memory after executing gas-impeller.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1243,
-            "end": 1252,
+            "commentStart": 1268,
+            "end": 1277,
             "moduleId": 0,
-            "start": 1243,
+            "start": 1268,
             "type": "TagDeclarator",
             "value": "baseFloor"
           },
@@ -7823,10 +8034,10 @@ description: Variables in memory after executing gas-impeller.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2178,
-            "end": 2194,
+            "commentStart": 2203,
+            "end": 2219,
             "moduleId": 0,
-            "start": 2178,
+            "start": 2203,
             "type": "TagDeclarator",
             "value": "outerEnvelopeArc"
           },
@@ -7837,10 +8048,10 @@ description: Variables in memory after executing gas-impeller.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 5496,
-            "end": 5518,
+            "commentStart": 5521,
+            "end": 5543,
             "moduleId": 0,
-            "start": 5496,
+            "start": 5521,
             "type": "TagDeclarator",
             "value": "hubShoulderRadiusGuide"
           },
@@ -7851,10 +8062,10 @@ description: Variables in memory after executing gas-impeller.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 5496,
-            "end": 5518,
+            "commentStart": 5521,
+            "end": 5543,
             "moduleId": 0,
-            "start": 5496,
+            "start": 5521,
             "type": "TagDeclarator",
             "value": "hubShoulderRadiusGuide"
           },
@@ -7876,10 +8087,10 @@ description: Variables in memory after executing gas-impeller.kcl
               -0.00000000000000016741813814460606
             ],
             "tag": {
-              "commentStart": 762,
-              "end": 771,
+              "commentStart": 787,
+              "end": 796,
               "moduleId": 0,
-              "start": 762,
+              "start": 787,
               "type": "TagDeclarator",
               "value": "shaftWall"
             },
@@ -7900,10 +8111,10 @@ description: Variables in memory after executing gas-impeller.kcl
               60.0
             ],
             "tag": {
-              "commentStart": 840,
-              "end": 850,
+              "commentStart": 865,
+              "end": 875,
               "moduleId": 0,
-              "start": 840,
+              "start": 865,
               "type": "TagDeclarator",
               "value": "hubTopLand"
             },
@@ -7930,10 +8141,10 @@ description: Variables in memory after executing gas-impeller.kcl
             ],
             "radius": 1.000000000137227,
             "tag": {
-              "commentStart": 970,
-              "end": 989,
+              "commentStart": 995,
+              "end": 1014,
               "moduleId": 0,
-              "start": 970,
+              "start": 995,
               "type": "TagDeclarator",
               "value": "hubShoulderBlendArc"
             },
@@ -7954,10 +8165,10 @@ description: Variables in memory after executing gas-impeller.kcl
               1.9999999999999998
             ],
             "tag": {
-              "commentStart": 1165,
-              "end": 1177,
+              "commentStart": 1190,
+              "end": 1202,
               "moduleId": 0,
-              "start": 1165,
+              "start": 1190,
               "type": "TagDeclarator",
               "value": "outerLipDrop"
             },
@@ -7978,10 +8189,10 @@ description: Variables in memory after executing gas-impeller.kcl
               -0.00000000000000016359325901190258
             ],
             "tag": {
-              "commentStart": 1243,
-              "end": 1252,
+              "commentStart": 1268,
+              "end": 1277,
               "moduleId": 0,
-              "start": 1243,
+              "start": 1268,
               "type": "TagDeclarator",
               "value": "baseFloor"
             },
@@ -8008,10 +8219,10 @@ description: Variables in memory after executing gas-impeller.kcl
             ],
             "radius": 73.52105204104507,
             "tag": {
-              "commentStart": 2178,
-              "end": 2194,
+              "commentStart": 2203,
+              "end": 2219,
               "moduleId": 0,
-              "start": 2178,
+              "start": 2203,
               "type": "TagDeclarator",
               "value": "outerEnvelopeArc"
             },
@@ -8032,10 +8243,10 @@ description: Variables in memory after executing gas-impeller.kcl
               58.99999999999905
             ],
             "tag": {
-              "commentStart": 5496,
-              "end": 5518,
+              "commentStart": 5521,
+              "end": 5543,
               "moduleId": 0,
-              "start": 5496,
+              "start": 5521,
               "type": "TagDeclarator",
               "value": "hubShoulderRadiusGuide"
             },
@@ -8056,10 +8267,10 @@ description: Variables in memory after executing gas-impeller.kcl
               58.99999999999905
             ],
             "tag": {
-              "commentStart": 5496,
-              "end": 5518,
+              "commentStart": 5521,
+              "end": 5543,
               "moduleId": 0,
-              "start": 5496,
+              "start": 5521,
               "type": "TagDeclarator",
               "value": "hubShoulderRadiusGuide"
             },
@@ -8072,17 +8283,17 @@ description: Variables in memory after executing gas-impeller.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 0,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 0.0,
             "y": 1.0,
@@ -8162,8 +8373,8 @@ description: Variables in memory after executing gas-impeller.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "mm"
+        "units": "mm",
+        "isClosed": "explicitly"
       },
       "startCapId": null,
       "endCapId": null,
@@ -8173,11 +8384,9 @@ description: Variables in memory after executing gas-impeller.kcl
   },
   "outerEnvelopeArc": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "outerEnvelopeArc"
   },
   "outerLipDrop": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "outerLipDrop"
   },
@@ -8186,12 +8395,13 @@ description: Variables in memory after executing gas-impeller.kcl
     "value": 8.8,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "shaftWall": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "shaftWall"
   }

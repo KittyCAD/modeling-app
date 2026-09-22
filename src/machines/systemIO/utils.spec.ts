@@ -1,13 +1,26 @@
 import type { MlToolResult } from '@kittycad/lib'
-import { StorageName, moduleFsViaModuleImport } from '@src/lib/fs-zds'
-import fsZds from '@src/lib/fs-zds'
+import { testFileOperations } from '@src/lib/fileSystem/testRuntime'
+import fsZds, { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
 import type { ZookeeperEditPatch } from '@src/lib/zookeeper/zookeeperEditPatch'
 import {
-  collectProjectFiles,
+  collectProjectFiles as collectProjectFilesWithFileOperations,
   normalizeKCLFileDeletePath,
   prepareZookeeperNewFileRequest,
+  type SystemIOActor,
+  waitForIdleState,
 } from '@src/machines/systemIO/utils'
-import { beforeAll, describe, expect, it } from 'vitest'
+import { beforeAll, describe, expect, it, vi } from 'vitest'
+
+const collectProjectFiles = (
+  args: Omit<
+    Parameters<typeof collectProjectFilesWithFileOperations>[0],
+    'fileOperations'
+  >
+) =>
+  collectProjectFilesWithFileOperations({
+    ...args,
+    fileOperations: testFileOperations,
+  })
 
 type EditKclCodeToolResultWithPatch = Extract<
   MlToolResult,
@@ -33,6 +46,24 @@ beforeAll(async () => {
 })
 
 describe('System IO Utils', () => {
+  it('cancels an idle-state subscription', async () => {
+    const unsubscribe = vi.fn()
+    const systemIOActor = {
+      getSnapshot: () => ({ matches: () => false }),
+      subscribe: () => ({ unsubscribe }),
+    } as unknown as SystemIOActor
+    const abortController = new AbortController()
+
+    const waiting = waitForIdleState({
+      abortSignal: abortController.signal,
+      systemIOActor,
+    })
+    abortController.abort()
+    await waiting
+
+    expect(unsubscribe).toHaveBeenCalledOnce()
+  })
+
   it('Properly reconstructs paths from Zookeeper new file requests', () => {
     const preparedPayload = prepareZookeeperNewFileRequest({
       projectNameCurrentlyOpened: 'some-project',

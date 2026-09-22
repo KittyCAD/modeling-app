@@ -14,7 +14,7 @@ view::named(
   @name: string,
   camera: CameraView,
   baseline: Visibility,
-  except?: [Solid | Sketch | GdtAnnotation; 1+],
+  except?: [Solid | Sketch | GdtAnnotation | Helix | Plane | ImportedGeometry; 1+],
 ): NamedView
 ```
 
@@ -33,7 +33,7 @@ and `front` two different views. Four names are rejected:
 - a name of nothing but whitespace, which displays as nothing;
 - a name that starts or ends with whitespace, which a reader cannot see but
   the exact comparison above counts;
-- `KCL Default`, which is reserved for the view of the scene generated on
+- `Default View`, which is reserved for the view of the scene generated on
   successful execution of the program.
 
 `baseline` and `except` together decide what the view shows. You start from a
@@ -51,6 +51,44 @@ what a view shows can be read from the call alone:
 Duplicates in `except` are dropped, so listing an object twice does the same
 as listing it once.
 
+## Plane support
+
+A named view can control only an independently visible plane.
+
+Supported planes:
+
+- A plane returned by `offsetPlane()` that has not been used as the support
+  plane for a sketch.
+
+Unsupported planes:
+
+- The default planes:
+  - `XY`.
+  - `-XY`.
+  - `XZ`.
+  - `-XZ`.
+  - `YZ`.
+  - `-YZ`.
+- A plane returned by `offsetPlane()` after it has been used as the support
+  plane for a sketch. The executor hides that plane as sketch support.
+- A plane returned by `planeOf()`, whether it remains unused or is used as
+  sketch support. The engine creates it as hidden construction geometry.
+- An object coerced to [`Plane`](/docs/kcl-std/types/std-types-Plane). It describes a plane but does not have the
+  internal properties of a plane object that can be used by a named view.
+
+Unsupported planes are handled in two ways:
+
+- Passing a default plane or an object coerced to [`Plane`](/docs/kcl-std/types/std-types-Plane) causes
+  `view::named()` to return an error.
+- Passing a `planeOf()` result or an offset plane used as sketch support
+  still creates the named view. That plane is omitted when the view is
+  activated, so listing it in `except` has no effect and does not reveal the
+  construction geometry that the executor hid.
+
+Passing a `planeOf()` result to `offsetPlane()` creates a new plane. That new
+result is supported if it is not subsequently used as sketch support; the
+original `planeOf()` result remains unsupported.
+
 ### Arguments
 
 | Name | Type | Description | Required |
@@ -58,7 +96,7 @@ as listing it once.
 | `name` | [`string`](/docs/kcl-std/types/std-types-string) | The name of the view, as a reader should see it. Required, unique within the file, and compared exactly. | Yes |
 | `camera` | [`CameraView`](/docs/kcl-std/types/std-view-CameraView) | The camera the view activates. Call `view::oriented()` or `view::directed()` to build one. | Yes |
 | `baseline` | [`Visibility`](/docs/kcl-std/types/std-view-Visibility) | The default visibility of every object the program creates: visible under `Visibility::Show`, hidden under `Visibility::Hide`. Use `except` below to override that default for individual objects. | Yes |
-| `except` | [[`Solid`](/docs/kcl-std/types/std-types-Solid) or [`Sketch`](/docs/kcl-std/types/std-types-Sketch) or [`GdtAnnotation`](/docs/kcl-std/types/std-types-GdtAnnotation); 1+] | The objects the baseline does not apply to: the hidden ones under a `Show` baseline, and the only visible ones under `Hide`. | No |
+| `except` | [[`Solid`](/docs/kcl-std/types/std-types-Solid) or [`Sketch`](/docs/kcl-std/types/std-types-Sketch) or [`GdtAnnotation`](/docs/kcl-std/types/std-types-GdtAnnotation) or [`Helix`](/docs/kcl-std/types/std-types-Helix) or [`Plane`](/docs/kcl-std/types/std-types-Plane) or [`ImportedGeometry`](/docs/kcl-std/types/std-types-ImportedGeometry); 1+] | The objects the baseline does not apply to: the hidden ones under a `Show` baseline, and the only visible ones under `Hide`. | No |
 
 ### Returns
 
@@ -100,15 +138,15 @@ hide(boss)
 
 // 1. Everything visible.
 //
-// This is NOT the same as `KCL Default`, the view of the scene generated on
+// This is NOT the same as `Default View`, the view of the scene generated on
 // successful execution of the program. A `Show` baseline shows every object
 // the program built, including the boss that `hide(boss)` took out of that
 // scene.
-everything = view::named("Everything", camera = view::oriented(view::Orientation::Isometric), baseline = view::Visibility::Show)
+overview = view::named("Everything", camera = view::oriented(view::Orientation::Isometric), baseline = view::Visibility::Show)
 
 // 2. Visible by default, with one object hidden. Add to `except` to hide
 // more.
-plateOnly = view::named(
+plateInspection = view::named(
   "Plate only",
   camera = view::oriented(view::Orientation::Front, distance = 200mm),
   baseline = view::Visibility::Show,
@@ -118,7 +156,10 @@ plateOnly = view::named(
 // 3. Hidden by default, with one object shown. This is the form to reach for
 // when a view should isolate a few objects out of many, because `except`
 // then lists what you want rather than everything you do not.
-bossOnly = view::named(
+//
+// This one is not assigned to a variable, which a view never requires: the
+// display name is what identifies it.
+view::named(
   "Boss only",
   camera = view::oriented(view::Orientation::Top, distance = 150mm),
   baseline = view::Visibility::Hide,

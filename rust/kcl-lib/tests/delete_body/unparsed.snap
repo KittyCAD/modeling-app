@@ -2,7 +2,7 @@
 source: kcl-lib/src/simulation_tests.rs
 description: Result of unparsing delete_body.kcl
 ---
-@settings(experimentalFeatures = allow)
+@settings(kclVersion = 2.0)
 
 // Make a cylinder
 sketch001 = sketch(on = XY) {

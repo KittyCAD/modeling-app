@@ -296,15 +296,16 @@ function buildConstraintToolPayloads(
       return [symmetricInput]
     }
     case 'parallelConstraintTool': {
-      const [anchorLineId, ...otherLineIds] = objectSelectionIds
-      if (anchorLineId === undefined || otherLineIds.length === 0) {
+      if (objectSelectionIds.length < 2) {
         return null
       }
 
-      return otherLineIds.map((lineId) => ({
-        type: 'Parallel',
-        lines: [anchorLineId, lineId],
-      }))
+      return [
+        {
+          type: 'Parallel',
+          lines: objectSelectionIds,
+        },
+      ]
     }
     case 'equalLengthConstraintTool': {
       const equalLengthInput = buildEqualLengthConstraintInput(

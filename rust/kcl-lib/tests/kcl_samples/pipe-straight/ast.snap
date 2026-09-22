@@ -4811,7 +4811,7 @@ description: Result of parsing pipe-straight.kcl
           "type": "NonCodeNode",
           "value": {
             "type": "blockComment",
-            "value": "Categories: Manufacturing, Construction",
+            "value": "Categories: Architecture & Construction; Mechanical Components",
             "style": "line"
           }
         },
@@ -4827,6 +4827,7 @@ description: Result of parsing pipe-straight.kcl
         }
       ]
     },
-    "start": 0
+    "start": 0,
+    "type": "Program"
   }
 }

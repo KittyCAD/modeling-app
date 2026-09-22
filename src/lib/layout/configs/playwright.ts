@@ -91,6 +91,13 @@ export const playwrightLayoutConfig = {
           areaType: 'ttc',
           icon: 'sparkles',
         },
+        {
+          id: 'named-views',
+          label: 'Views',
+          type: 'simple',
+          areaType: 'namedViews',
+          icon: 'namedView',
+        },
       ],
       actions: [
         {

@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties crazy_multi_profile.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": -0.08000000000000185,
+      "y": -0.3717357951397773,
+      "z": 4.223555838091645
+    },
+    "dimensions": {
+      "x": 38.58,
+      "y": 39.256528409720445,
+      "z": 29.567111676183288
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 1434.2204335378028
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 1.0768354851512878
+  }
+}

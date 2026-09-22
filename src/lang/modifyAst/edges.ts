@@ -1,4 +1,3 @@
-import type { EntityReference } from '@kittycad/lib'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { OpArg, OpKclValue } from '@rust/kcl-lib/bindings/Operation'
 import {
@@ -21,6 +20,7 @@ import {
 } from '@src/lang/modifyAst'
 import { deleteNodeInExtrudePipe } from '@src/lang/modifyAst/deleteNodeInExtrudePipe'
 import {
+  getEdgeBodyKey,
   modifyAstWithTagsForSelection,
   mutateAstWithTagForSketchSegment,
   resolveEdgeSelectionContext,
@@ -78,18 +78,19 @@ import { isArray } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type {
   EnginePrimitiveSelection,
+  EntityReference,
   Selection,
   Selections,
 } from '@src/machines/modelingSharedTypes'
 
-function insertCommandVariables(
-  values: (KclCommandValue | undefined)[],
-  ast: Node<Program>,
-  pathToNode?: PathToNode
+function insertKclVariables(
+  variables: Array<KclCommandValue | undefined>,
+  modifiedAst: Node<Program>,
+  nodeToEdit?: PathToNode
 ) {
-  for (const value of values) {
-    if (value) {
-      insertVariableAndOffsetPathToNode(value, ast, pathToNode)
+  for (const variable of variables) {
+    if (variable) {
+      insertVariableAndOffsetPathToNode(variable, modifiedAst, nodeToEdit)
     }
   }
 }
@@ -125,129 +126,88 @@ export function addFillet({
   const mNodeToEdit = structuredClone(nodeToEdit)
   const variableValues = [radius, version, tolerance]
 
-  // When editing an existing fillet that already has edgeRefs, only update labeled args.
-  // This avoids rebuilding from selection, which can fall back to deprecated tags/getCommonEdge.
+  const nonSelectionArgs = [
+    createLabeledArg('radius', valueOrVariable(radius)),
+    ...(tolerance
+      ? [createLabeledArg('tolerance', valueOrVariable(tolerance))]
+      : []),
+    ...(tag ? [createLabeledArg('tag', createTagDeclarator(tag))] : []),
+    ...(version ? [createLabeledArg('version', valueOrVariable(version))] : []),
+  ]
+
   if (mNodeToEdit) {
-    const existingResult = getNodeFromPath(
-      modifiedAst,
-      mNodeToEdit,
+    insertKclVariables(variableValues, modifiedAst, mNodeToEdit)
+    const pathToNode = setCallInAst({
+      ast: modifiedAst,
+      call: createCallExpressionStdLibKw(
+        modelingStdLibCommandName('Fillet'),
+        null,
+        nonSelectionArgs
+      ),
+      pathToEdit: mNodeToEdit,
+      labeledSelectionArgNames: ['tags', 'edges', 'edgeRefs'],
       wasmInstance,
-      'CallExpressionKw'
-    )
-    if (!err(existingResult)) {
-      const existingCall = existingResult.node as Node<CallExpressionKw>
-      const hasEdgeRefs =
-        findKwArg('edges', existingCall) !== undefined ||
-        findKwArg('edgeRefs', existingCall) !== undefined
-      if (hasEdgeRefs) {
-        insertCommandVariables(variableValues, modifiedAst, mNodeToEdit)
-        const newArgs = (existingCall.arguments ?? [])
-          .filter((a) => getLabelName(a) !== 'tags')
-          .map((a) => {
-            const name = getLabelName(a)
-            if (name === 'radius')
-              return createLabeledArg('radius', valueOrVariable(radius))
-            if (name === 'tolerance' && tolerance)
-              return createLabeledArg('tolerance', valueOrVariable(tolerance))
-            if (name === 'version' && version)
-              return createLabeledArg('version', valueOrVariable(version))
-            if (name === 'tag' && tag)
-              return createLabeledArg('tag', createTagDeclarator(tag))
-            return a
-          })
-        const call = createCallExpressionStdLibKw(
-          modelingStdLibCommandName('Fillet'),
-          existingCall.unlabeled,
-          newArgs
-        )
-        const pathToNode = setCallInAst({
-          ast: modifiedAst,
-          call,
-          pathToEdit: mNodeToEdit,
-          wasmInstance,
-        })
-        if (err(pathToNode)) return pathToNode
-        return { modifiedAst, pathToNode: [pathToNode] }
-      }
-    }
+    })
+    if (err(pathToNode)) return pathToNode
+    return { modifiedAst, pathToNode: [pathToNode] }
   }
 
+  // Resolve selections before inserting argument variables, which can shift
+  // the AST paths recorded in the artifact graph.
   const edgeRefsBodyData = groupSelectionsByBodyAndCreateEdgeRefs(
     selection,
     artifactGraph,
     modifiedAst,
-    wasmInstance,
-    mNodeToEdit
+    wasmInstance
   )
-
-  let useEdgeRefs = false
-  let bodyData: ReturnType<typeof groupSelectionsByBodyAndAddTags> | null = null
-
+  let unhandledSelections = selection
   if (!err(edgeRefsBodyData)) {
-    useEdgeRefs = edgeRefsBodyData.bodies.size > 0
     modifiedAst = edgeRefsBodyData.modifiedAst
-    const unhandledSelections = edgeRefsBodyData.unhandledSelections
-    if (
-      unhandledSelections.graphSelections.length > 0 ||
-      unhandledSelections.otherSelections.length > 0
-    ) {
-      bodyData = groupSelectionsByBodyAndAddTags(
-        unhandledSelections,
-        artifactGraph,
-        modifiedAst,
-        wasmInstance,
-        mNodeToEdit,
-        { includePrimitiveEdgeIndices: true }
-      )
-      if (err(bodyData)) return bodyData
-      modifiedAst = bodyData.modifiedAst
-    }
-  } else {
+    unhandledSelections = edgeRefsBodyData.unhandledSelections
+  }
+
+  let bodyData: ReturnType<typeof groupSelectionsByBodyAndAddTags> | null = null
+  if (
+    unhandledSelections.graphSelections.length > 0 ||
+    unhandledSelections.otherSelections.length > 0
+  ) {
     bodyData = groupSelectionsByBodyAndAddTags(
-      selection,
+      unhandledSelections,
       artifactGraph,
       modifiedAst,
       wasmInstance,
-      mNodeToEdit,
+      undefined,
       { includePrimitiveEdgeIndices: true }
     )
     if (err(bodyData)) return bodyData
     modifiedAst = bodyData.modifiedAst
   }
+  if (
+    (!bodyData || bodyData.bodies.size === 0) &&
+    (err(edgeRefsBodyData) || edgeRefsBodyData.bodies.size === 0)
+  ) {
+    return new Error('No edges found in the selection')
+  }
 
-  insertCommandVariables(variableValues, modifiedAst, mNodeToEdit)
+  insertKclVariables(variableValues, modifiedAst)
 
   const pathToNodes: PathToNode[] = []
 
-  // Primitive indices describe the topology at selection time, so apply
-  // legacy-only selections before face references mutate that topology.
+  // KCL requires separate calls for tags and edges. Primitive indices describe
+  // the topology at selection time, so apply them before face-reference calls.
   if (bodyData) {
     for (const data of bodyData.bodies.values()) {
-      const tagArgs = tag
-        ? [createLabeledArg('tag', createTagDeclarator(tag))]
-        : []
-      const toleranceArgs = tolerance
-        ? [createLabeledArg('tolerance', valueOrVariable(tolerance))]
-        : []
-      const versionArgs = version
-        ? [createLabeledArg('version', valueOrVariable(version))]
-        : []
       const call = createCallExpressionStdLibKw(
         modelingStdLibCommandName('Fillet'),
         data.solidsExpr,
         [
           createLabeledArg('tags', data.tagsExpr),
-          createLabeledArg('radius', valueOrVariable(radius)),
-          ...toleranceArgs,
-          ...tagArgs,
-          ...versionArgs,
+          ...structuredClone(nonSelectionArgs),
         ]
       )
-
       const pathToNode = setCallInAst({
         ast: modifiedAst,
         call,
-        pathToEdit: mNodeToEdit,
         pathIfNewPipe: data.pathIfPipe,
         variableIfNewDecl: KCL_DEFAULT_CONSTANT_PREFIXES.FILLET,
         wasmInstance,
@@ -257,33 +217,19 @@ export function addFillet({
     }
   }
 
-  if (useEdgeRefs && !err(edgeRefsBodyData)) {
+  if (!err(edgeRefsBodyData)) {
     for (const data of edgeRefsBodyData.bodies.values()) {
-      const tagArgs = tag
-        ? [createLabeledArg('tag', createTagDeclarator(tag))]
-        : []
-      const toleranceArgs = tolerance
-        ? [createLabeledArg('tolerance', valueOrVariable(tolerance))]
-        : []
-      const versionArgs = version
-        ? [createLabeledArg('version', valueOrVariable(version))]
-        : []
       const call = createCallExpressionStdLibKw(
         modelingStdLibCommandName('Fillet'),
         data.solidsExpr,
         [
           createLabeledArg('edges', data.edgeRefsExpr),
-          createLabeledArg('radius', valueOrVariable(radius)),
-          ...toleranceArgs,
-          ...tagArgs,
-          ...versionArgs,
+          ...structuredClone(nonSelectionArgs),
         ]
       )
-
       const pathToNode = setCallInAst({
         ast: modifiedAst,
         call,
-        pathToEdit: mNodeToEdit,
         pathIfNewPipe: data.pathIfPipe,
         variableIfNewDecl: KCL_DEFAULT_CONSTANT_PREFIXES.FILLET,
         wasmInstance,
@@ -329,66 +275,38 @@ export function addChamfer({
   const mNodeToEdit = structuredClone(nodeToEdit)
   const variableValues = [length, secondLength, angle, version]
 
-  // When editing an existing chamfer that already has edgeRefs, only update labeled arguments.
+  const nonSelectionArgs = [
+    createLabeledArg('length', valueOrVariable(length)),
+    ...(secondLength
+      ? [createLabeledArg('secondLength', valueOrVariable(secondLength))]
+      : []),
+    ...(angle ? [createLabeledArg('angle', valueOrVariable(angle))] : []),
+    ...(tag ? [createLabeledArg('tag', createTagDeclarator(tag))] : []),
+    ...(version ? [createLabeledArg('version', valueOrVariable(version))] : []),
+  ]
+
   if (mNodeToEdit) {
-    const existingResult = getNodeFromPath(
-      modifiedAst,
-      mNodeToEdit,
+    insertKclVariables(variableValues, modifiedAst, mNodeToEdit)
+    const pathToNode = setCallInAst({
+      ast: modifiedAst,
+      call: createCallExpressionStdLibKw(
+        modelingStdLibCommandName('Chamfer'),
+        null,
+        nonSelectionArgs
+      ),
+      pathToEdit: mNodeToEdit,
+      labeledSelectionArgNames: ['tags', 'edges', 'edgeRefs'],
       wasmInstance,
-      'CallExpressionKw'
-    )
-    if (!err(existingResult)) {
-      const existingCall = existingResult.node as Node<CallExpressionKw>
-      const hasEdgeRefs =
-        findKwArg('edges', existingCall) !== undefined ||
-        findKwArg('edgeRefs', existingCall) !== undefined
-      if (hasEdgeRefs) {
-        insertCommandVariables(variableValues, modifiedAst, mNodeToEdit)
-        const newArgs = (existingCall.arguments ?? [])
-          .filter((a) => getLabelName(a) !== 'tags')
-          .map((a) => {
-            const name = getLabelName(a)
-            if (name === 'length')
-              return createLabeledArg('length', valueOrVariable(length))
-            if (name === 'secondLength' && secondLength != null)
-              return createLabeledArg(
-                'secondLength',
-                valueOrVariable(secondLength)
-              )
-            if (name === 'angle' && angle != null)
-              return createLabeledArg('angle', valueOrVariable(angle))
-            if (name === 'version' && version != null)
-              return createLabeledArg('version', valueOrVariable(version))
-            if (name === 'tag' && tag)
-              return createLabeledArg('tag', createTagDeclarator(tag))
-            return a
-          })
-        if (version && findKwArg('version', existingCall) === undefined) {
-          newArgs.push(createLabeledArg('version', valueOrVariable(version)))
-        }
-        const call = createCallExpressionStdLibKw(
-          'chamfer',
-          existingCall.unlabeled,
-          newArgs
-        )
-        const pathToNode = setCallInAst({
-          ast: modifiedAst,
-          call,
-          pathToEdit: mNodeToEdit,
-          wasmInstance,
-        })
-        if (err(pathToNode)) return pathToNode
-        return { modifiedAst, pathToNode: [pathToNode] }
-      }
-    }
+    })
+    if (err(pathToNode)) return pathToNode
+    return { modifiedAst, pathToNode: [pathToNode] }
   }
 
   const edgeRefsBodyData = groupSelectionsByBodyAndCreateEdgeRefs(
     selection,
     artifactGraph,
     modifiedAst,
-    wasmInstance,
-    mNodeToEdit
+    wasmInstance
   )
 
   let useEdgeRefs = false
@@ -407,7 +325,7 @@ export function addChamfer({
         artifactGraph,
         modifiedAst,
         wasmInstance,
-        mNodeToEdit,
+        undefined,
         { includePrimitiveEdgeIndices: true }
       )
       if (err(bodyData)) return bodyData
@@ -419,46 +337,36 @@ export function addChamfer({
       artifactGraph,
       modifiedAst,
       wasmInstance,
-      mNodeToEdit,
+      undefined,
       { includePrimitiveEdgeIndices: true }
     )
     if (err(bodyData)) return bodyData
     modifiedAst = bodyData.modifiedAst
   }
 
-  insertCommandVariables(variableValues, modifiedAst, mNodeToEdit)
+  insertKclVariables(variableValues, modifiedAst)
 
   const pathToNodes: PathToNode[] = []
-  const secondLengthArgs = secondLength
-    ? [createLabeledArg('secondLength', valueOrVariable(secondLength))]
-    : []
-  const angleArgs = angle
-    ? [createLabeledArg('angle', valueOrVariable(angle))]
-    : []
-  const tagArgs = tag ? [createLabeledArg('tag', createTagDeclarator(tag))] : []
-  const versionArgs = version
-    ? [createLabeledArg('version', valueOrVariable(version))]
-    : []
 
   // Primitive indices describe the topology at selection time, so apply
   // legacy-only selections before face references mutate that topology.
   if (bodyData) {
     for (const data of bodyData.bodies.values()) {
-      const call = createCallExpressionStdLibKw('chamfer', data.solidsExpr, [
-        createLabeledArg('tags', data.tagsExpr),
-        createLabeledArg('length', valueOrVariable(length)),
-        ...secondLengthArgs,
-        ...angleArgs,
-        ...tagArgs,
-        ...versionArgs,
-      ])
+      const call = createCallExpressionStdLibKw(
+        modelingStdLibCommandName('Chamfer'),
+        data.solidsExpr,
+        [
+          createLabeledArg('tags', data.tagsExpr),
+          ...structuredClone(nonSelectionArgs),
+        ]
+      )
 
       const pathToNode = setCallInAst({
         ast: modifiedAst,
         call,
-        pathToEdit: mNodeToEdit,
         pathIfNewPipe: data.pathIfPipe,
         variableIfNewDecl: KCL_DEFAULT_CONSTANT_PREFIXES.CHAMFER,
+        labeledSelectionArgNames: ['tags', 'edges', 'edgeRefs'],
         wasmInstance,
       })
       if (err(pathToNode)) return pathToNode
@@ -468,21 +376,21 @@ export function addChamfer({
 
   if (useEdgeRefs && !err(edgeRefsBodyData)) {
     for (const data of edgeRefsBodyData.bodies.values()) {
-      const call = createCallExpressionStdLibKw('chamfer', data.solidsExpr, [
-        createLabeledArg('edges', data.edgeRefsExpr),
-        createLabeledArg('length', valueOrVariable(length)),
-        ...secondLengthArgs,
-        ...angleArgs,
-        ...tagArgs,
-        ...versionArgs,
-      ])
+      const call = createCallExpressionStdLibKw(
+        modelingStdLibCommandName('Chamfer'),
+        data.solidsExpr,
+        [
+          createLabeledArg('edges', data.edgeRefsExpr),
+          ...structuredClone(nonSelectionArgs),
+        ]
+      )
 
       const pathToNode = setCallInAst({
         ast: modifiedAst,
         call,
-        pathToEdit: mNodeToEdit,
         pathIfNewPipe: data.pathIfPipe,
         variableIfNewDecl: KCL_DEFAULT_CONSTANT_PREFIXES.CHAMFER,
+        labeledSelectionArgNames: ['tags', 'edges', 'edgeRefs'],
         wasmInstance,
       })
       if (err(pathToNode)) return pathToNode
@@ -2771,7 +2679,7 @@ function groupSelectionsByBodyAndCreateEdgeRefs(
     }
 
     // Process each body
-    for (const [bodyKey, bodyData] of bodyToV2Selections.entries()) {
+    for (const bodyData of bodyToV2Selections.values()) {
       const solids: Selections = {
         graphSelections: [
           {
@@ -2787,7 +2695,10 @@ function groupSelectionsByBodyAndCreateEdgeRefs(
         modifiedAst,
         wasmInstance,
         nodeToEdit,
-        { lastChildLookup: true }
+        {
+          lastChildLookup: true,
+          artifactTypeFilter: ['compositeSolid', 'sweep'],
+        }
       )
       if (err(vars)) return vars
       if (vars.exprs.length !== 1) {
@@ -2821,20 +2732,25 @@ function groupSelectionsByBodyAndCreateEdgeRefs(
       if (bodyEdgeRefs.length === 0) continue
 
       const solidsExpr = createVariableExpressionsArray(vars.exprs)
-      const edgeRefsExpr = createArrayExpression(bodyEdgeRefs)
-
-      bodies.set(bodyKey, {
-        solidsExpr,
-        edgeRefsExpr,
-        pathIfPipe: vars.pathIfPipe,
-      })
+      // Different source sweeps can resolve to the same Boolean or derived body.
+      const resolvedBodyKey = getEdgeBodyKey(vars.exprs[0], vars.pathIfPipe)
+      const existing = bodies.get(resolvedBodyKey)
+      if (existing?.edgeRefsExpr.type === 'ArrayExpression') {
+        existing.edgeRefsExpr.elements.push(...bodyEdgeRefs)
+      } else {
+        bodies.set(resolvedBodyKey, {
+          solidsExpr,
+          edgeRefsExpr: createArrayExpression(bodyEdgeRefs),
+          pathIfPipe: vars.pathIfPipe,
+        })
+      }
     }
   } else {
     // V1 path or mixed: Group selections by body first (same logic as tags path)
     const selectionsByBody = groupSelectionsByBody(selections, artifactGraph)
     if (err(selectionsByBody)) return selectionsByBody
 
-    for (const [bodyKey, bodySelections] of selectionsByBody.entries()) {
+    for (const bodySelections of selectionsByBody.values()) {
       // Get edgeRefs for edges in this body
       // Prefer V2 selections if available, otherwise convert V1
       const bodyEdgeRefs: Expr[] = []
@@ -2922,18 +2838,29 @@ function groupSelectionsByBodyAndCreateEdgeRefs(
         modifiedAst,
         wasmInstance,
         nodeToEdit,
-        { lastChildLookup: true }
+        {
+          lastChildLookup: true,
+          artifactTypeFilter: ['compositeSolid', 'sweep'],
+        }
       )
       if (err(vars)) return vars
+      if (vars.exprs.length !== 1) {
+        return new Error('Could not resolve the selected body')
+      }
 
       const solidsExpr = createVariableExpressionsArray(vars.exprs)
-      const edgeRefsExpr = createArrayExpression(bodyEdgeRefs)
-
-      bodies.set(bodyKey, {
-        solidsExpr,
-        edgeRefsExpr,
-        pathIfPipe: vars.pathIfPipe,
-      })
+      // Different source sweeps can resolve to the same Boolean or derived body.
+      const resolvedBodyKey = getEdgeBodyKey(vars.exprs[0], vars.pathIfPipe)
+      const existing = bodies.get(resolvedBodyKey)
+      if (existing?.edgeRefsExpr.type === 'ArrayExpression') {
+        existing.edgeRefsExpr.elements.push(...bodyEdgeRefs)
+      } else {
+        bodies.set(resolvedBodyKey, {
+          solidsExpr,
+          edgeRefsExpr: createArrayExpression(bodyEdgeRefs),
+          pathIfPipe: vars.pathIfPipe,
+        })
+      }
     }
   }
 
@@ -3261,13 +3188,22 @@ export function groupSelectionsByBodyAndAddTags(
       nodeToEdit,
       {
         lastChildLookup: true,
+        artifactTypeFilter: ['compositeSolid', 'sweep'],
       }
     )
     if (err(vars)) return vars
+    if (vars.exprs.length !== 1) {
+      return new Error('Could not resolve the selected body')
+    }
 
     const solidsExpr = createVariableExpressionsArray(vars.exprs)
-
-    const tagsExprsCombined = [...tagsExprs]
+    const resolvedBodyKey = getEdgeBodyKey(vars.exprs[0], vars.pathIfPipe)
+    const existing = bodies.get(resolvedBodyKey)
+    const tagsExprsCombined: Expr[] = existing
+      ? existing.tagsExpr.type === 'ArrayExpression'
+        ? [...existing.tagsExpr.elements, ...tagsExprs]
+        : [existing.tagsExpr, ...tagsExprs]
+      : [...tagsExprs]
     const primForBody = primitiveSelectionsByBody.get(bodyKey)
     if (primForBody?.primitiveIndices.length && solidsExpr) {
       let insertIndex = modifiedAst.body.length
@@ -3316,7 +3252,7 @@ export function groupSelectionsByBodyAndAddTags(
       continue
     }
 
-    bodies.set(bodyKey, {
+    bodies.set(resolvedBodyKey, {
       solidsExpr,
       tagsExpr,
       pathIfPipe: vars.pathIfPipe,
@@ -3520,7 +3456,7 @@ export function retrieveEdgeSelectionsFromOpArgs(
     }
 
     const artifact = getArtifactOfTypes(
-      { key, types: ['segment', 'edgeCut'] },
+      { key, types: ['segment', 'sweepEdge', 'edgeCut'] },
       artifactGraph
     )
     if (err(artifact)) {
@@ -3534,11 +3470,15 @@ export function retrieveEdgeSelectionsFromOpArgs(
       continue
     }
 
-    const pathId =
-      artifact.type === 'segment'
-        ? (artifact as { pathId?: string }).pathId
-        : undefined
-    const entityRef = artifactToEntityRef(artifact.type, artifact.id, pathId)
+    let entityRef: EntityReference | undefined
+    if (artifact.type === 'sweepEdge') {
+      const sideFaces = artifact.commonSurfaceIds
+      if (!sideFaces || sideFaces.length < 2) continue
+      entityRef = { type: 'edge', side_faces: sideFaces }
+    } else {
+      const pathId = artifact.type === 'segment' ? artifact.pathId : undefined
+      entityRef = artifactToEntityRef(artifact.type, artifact.id, pathId)
+    }
     if (!entityRef) continue
     graphSelections.push({ entityRef, codeRef: codeRefs[0] })
   }
@@ -3846,50 +3786,41 @@ export function insertPrimitiveEdgeVariablesAndOffsetPathToNode({
   // Step 2. Create an array of variable references to bodies
   const updatedBodies = new Map(bodies)
   let insertIndex = modifiedAst.body.length
-  for (const [bodyKey, primitiveData] of primitiveSelectionsByBody.entries()) {
-    let bodyData = updatedBodies.get(bodyKey)
-    let tagsExprs: Expr[] = []
-    let solidsExpr: Expr | null = null
-    let pathIfPipe: PathToNode | undefined
-
-    if (bodyData) {
-      tagsExprs =
-        bodyData.tagsExpr.type === 'ArrayExpression'
-          ? [...bodyData.tagsExpr.elements]
-          : [bodyData.tagsExpr]
-      solidsExpr = bodyData.solidsExpr
-      pathIfPipe = bodyData.pathIfPipe
-    } else {
-      const art = primitiveData.bodySelection.artifact
-      const pathId =
-        art?.type === 'segment'
-          ? (art as { pathId?: string }).pathId
-          : undefined
-      const entityRef = artifactToEntityRef(
-        art?.type ?? 'sweep',
-        art?.id ?? '',
-        pathId
+  for (const primitiveData of primitiveSelectionsByBody.values()) {
+    const vars = getVariableExprsFromSelection(
+      {
+        graphSelections: [primitiveData.bodySelection],
+        otherSelections: [],
+      },
+      artifactGraph,
+      modifiedAst,
+      wasmInstance,
+      nodeToEdit,
+      {
+        lastChildLookup: true,
+        artifactTypeFilter: ['compositeSolid', 'sweep'],
+      }
+    )
+    if (err(vars)) return vars
+    const resolvedSolidsExpr = createVariableExpressionsArray(vars.exprs)
+    if (!resolvedSolidsExpr) {
+      return new Error(
+        'Could not resolve selected primitive edge bodies in code.'
       )
-      if (!entityRef) continue
-      const vars = getVariableExprsFromSelection(
-        {
-          graphSelections: [
-            { entityRef, codeRef: primitiveData.bodySelection.codeRef },
-          ],
-          otherSelections: [],
-        },
-        artifactGraph,
-        modifiedAst,
-        wasmInstance,
-        nodeToEdit,
-        {
-          lastChildLookup: true,
-        }
-      )
-      if (err(vars)) return vars
-      solidsExpr = createVariableExpressionsArray(vars.exprs)
-      pathIfPipe = vars.pathIfPipe
     }
+
+    // Graph-backed and engine-primitive edges arrive through separate
+    // selection collections. Resolve both to the same body identity before
+    // adding edgeId references so one body produces one edge treatment call.
+    const resolvedBodyKey = getEdgeBodyKey(resolvedSolidsExpr, vars.pathIfPipe)
+    const bodyData = updatedBodies.get(resolvedBodyKey)
+    const tagsExprs: Expr[] = bodyData
+      ? bodyData.tagsExpr.type === 'ArrayExpression'
+        ? [...bodyData.tagsExpr.elements]
+        : [bodyData.tagsExpr]
+      : []
+    const solidsExpr = bodyData?.solidsExpr ?? resolvedSolidsExpr
+    const pathIfPipe = bodyData?.pathIfPipe ?? vars.pathIfPipe
 
     if (!solidsExpr) {
       return new Error(
@@ -3935,12 +3866,12 @@ export function insertPrimitiveEdgeVariablesAndOffsetPathToNode({
       )
     }
 
-    bodyData = {
+    const updatedBodyData = {
       solidsExpr,
       tagsExpr,
       pathIfPipe,
     }
-    updatedBodies.set(bodyKey, bodyData)
+    updatedBodies.set(resolvedBodyKey, updatedBodyData)
   }
 
   return { bodies: updatedBodies }

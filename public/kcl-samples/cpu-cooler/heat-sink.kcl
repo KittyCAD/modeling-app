@@ -1,0 +1,392 @@
+// Heat Sink
+// Conductive metal device made from brazed tubes and fins
+
+// Set units
+@settings(defaultLengthUnit = mm, kclVersion = 2.0, experimentalFeatures = allow)
+
+// Import parameters
+import * from "parameters.kcl"
+
+// Draw the sweep path for the outermost tubes
+endTubePath = sketch(on = offsetPlane(YZ, offset = -20)) {
+  line1 = line(start = [var 30mm, var 158mm], end = [var 30mm, var 25mm])
+  arc2 = arc(start = [var 15mm, var 10mm], end = [var 30mm, var 25mm], center = [var 15mm, var 25mm])
+  coincident([line1.end, arc2.end])
+  line3 = line(start = [var 15mm, var 10mm], end = [var 0mm, var 10mm])
+  coincident([arc2.start, line3.start])
+  line4 = line(start = [var 0mm, var 10mm], end = [var -15mm, var 10mm])
+  coincident([line3.end, line4.start])
+  arc5 = arc(start = [var -30mm, var 25mm], end = [var -15mm, var 10mm], center = [var -15mm, var 25mm])
+  coincident([line4.end, arc5.end])
+  line6 = line(start = [var -30mm, var 25mm], end = [var -30mm, var 158mm])
+  coincident([arc5.start, line6.start])
+  horizontal(line4)
+}
+
+// Sweep and translate the outermost tube on each end
+sketch001 = sketch(on = offsetPlane(XY, offset = fanSize + 38)) {
+  circle1 = circle(start = [var -17mm, var 30mm], center = [var -20mm, var 30mm])
+  innerCircle = circle(start = [var -17.5mm, var 30mm], center = [var -20mm, var 30mm])
+}
+region001 = region(segments = [sketch001.circle1])
+export endTube = sweep(region001, path = endTubePath)
+  |> patternCircular3d(
+       instances = 2,
+       axis = [0, 0, 1],
+       center = [0, 0, 0],
+       arcDegrees = 360,
+       rotateDuplicates = false,
+     )
+
+// Draw the sweep path for the 4 interior tubes
+centerTubePath = sketch(on = offsetPlane(YZ, offset = -4)) {
+  line1 = line(start = [var 44.94mm, var 158mm], end = [var 44.94mm, var 40mm])
+  arc2 = arc(start = [var 40.55mm, var 29.39mm], end = [var 44.94mm, var 40mm], center = [var 29.94mm, var 40mm])
+  coincident([line1.end, arc2.end])
+  line3 = line(start = [var 40.55mm, var 29.39mm], end = [var 25.55mm, var 14.39mm])
+  coincident([arc2.start, line3.start])
+  arc4 = arc(start = [var 14.94mm, var 10mm], end = [var 25.55mm, var 14.39mm], center = [var 14.94mm, var 25mm])
+  coincident([line3.end, arc4.end])
+  line5 = line(start = [var 14.94mm, var 10mm], end = [var 0mm, var 10mm])
+  coincident([arc4.start, line5.start])
+  line6 = line(start = [var 0mm, var 10mm], end = [var -14.94mm, var 10mm])
+  coincident([line5.end, line6.start])
+  arc7 = arc(start = [var -21.28mm, var 38.59mm], end = [var -14.94mm, var 10mm], center = [var -14.94mm, var 25mm])
+  coincident([line6.end, arc7.end])
+  arc8 = arc(start = [var -21.28mm, var 38.59mm], end = [var -12.62mm, var 52.19mm], center = [var -27.62mm, var 52.19mm])
+  coincident([arc7.start, arc8.start])
+  line9 = line(start = [var -12.62mm, var 52.19mm], end = [var -12.62mm, var 158mm])
+  coincident([arc8.end, line9.start])
+  horizontal(line6)
+  tangent([arc7, arc8])
+  radius(arc8) == 15mm
+}
+
+// Draw the profile and sweep the 4 interior tubes
+sketch002 = sketch(on = offsetPlane(XY, offset = fanSize + 38)) {
+  circle1 = circle(start = [var -1mm, var 44.94mm], center = [var -4mm, var 44.94mm])
+  innerCircle = circle(start = [var -1.5mm, var 44.94mm], center = [var -4mm, var 44.94mm])
+}
+region002 = region(segments = [sketch002.circle1])
+export centerTube = sweep(region002, path = centerTubePath)
+  |> patternCircular3d(
+       instances = 2,
+       axis = [0, 0, 1],
+       center = [-4 * 2, 0, 0],
+       arcDegrees = 360,
+       rotateDuplicates = true,
+     )
+  |> patternLinear3d(instances = 2, distance = 4 * 4, axis = [1, 0, 0])
+
+// Draw a heat fin with built-in clips to secure the mounting wire. Pattern the fin upwards by the height of the fan
+sketch003 = sketch(on = offsetPlane(XY, offset = 45)) {
+  line1 = line(start = [var 0mm, var -60mm], end = [var 9mm, var -60mm])
+  line2 = line(start = [var 9mm, var -60mm], end = [var 10.25mm, var -62.16506351mm])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 10.25mm, var -62.16506351mm], end = [var 11mm, var -62.16506351mm])
+  coincident([line2.end, line3.start])
+  arc4 = arc(start = [var 13mm, var -62.16506351mm], end = [var 11mm, var -62.16506351mm], center = [var 12mm, var -61.98173018mm])
+  coincident([line3.end, arc4.end])
+  line5 = line(start = [var 13mm, var -62.16506351mm], end = [var 13.75mm, var -62.16506351mm])
+  coincident([arc4.start, line5.start])
+  line6 = line(start = [var 13.75mm, var -62.16506351mm], end = [var 15mm, var -60mm])
+  coincident([line5.end, line6.start])
+  line7 = line(start = [var 15mm, var -60mm], end = [var 24.5mm, var -60mm])
+  coincident([line6.end, line7.start])
+  arc8 = arc(start = [var 24.5mm, var -60mm], end = [var 27.5mm, var -57mm], center = [var 24.5mm, var -57mm])
+  coincident([line7.end, arc8.start])
+  line9 = line(start = [var 27.5mm, var -57mm], end = [var 27.5mm, var 0mm])
+  coincident([arc8.end, line9.start])
+  line10 = line(start = [var 27.5mm, var 0mm], end = [var 27.5mm, var 57mm])
+  coincident([line9.end, line10.start])
+  arc11 = arc(start = [var 27.5mm, var 57mm], end = [var 24.5mm, var 60mm], center = [var 24.5mm, var 57mm])
+  coincident([line10.end, arc11.start])
+  line12 = line(start = [var 24.5mm, var 60mm], end = [var 15mm, var 60mm])
+  coincident([arc11.end, line12.start])
+  line13 = line(start = [var 15mm, var 60mm], end = [var 13.75mm, var 62.16506351mm])
+  coincident([line12.end, line13.start])
+  line14 = line(start = [var 13.75mm, var 62.16506351mm], end = [var 13mm, var 62.16506351mm])
+  coincident([line13.end, line14.start])
+  arc15 = arc(start = [var 13mm, var 62.16506351mm], end = [var 11mm, var 62.16506351mm], center = [var 12mm, var 61.98173018mm])
+  coincident([line14.end, arc15.start])
+  line16 = line(start = [var 11mm, var 62.16506351mm], end = [var 10.25mm, var 62.16506351mm])
+  coincident([arc15.end, line16.start])
+  line17 = line(start = [var 10.25mm, var 62.16506351mm], end = [var 9mm, var 60mm])
+  coincident([line16.end, line17.start])
+  line18 = line(start = [var 9mm, var 60mm], end = [var -9mm, var 60mm])
+  coincident([line17.end, line18.start])
+  line19 = line(start = [var -9mm, var 60mm], end = [var -10.25mm, var 62.16506351mm])
+  coincident([line18.end, line19.start])
+  line20 = line(start = [var -10.25mm, var 62.16506351mm], end = [var -11mm, var 62.16506351mm])
+  coincident([line19.end, line20.start])
+  arc21 = arc(start = [var -11mm, var 62.16506351mm], end = [var -13mm, var 62.16506351mm], center = [var -12mm, var 61.98173018mm])
+  coincident([line20.end, arc21.start])
+  line22 = line(start = [var -13mm, var 62.16506351mm], end = [var -13.75mm, var 62.16506351mm])
+  coincident([arc21.end, line22.start])
+  line23 = line(start = [var -13.75mm, var 62.16506351mm], end = [var -15mm, var 60mm])
+  coincident([line22.end, line23.start])
+  line24 = line(start = [var -15mm, var 60mm], end = [var -24.5mm, var 60mm])
+  coincident([line23.end, line24.start])
+  arc25 = arc(start = [var -24.5mm, var 60mm], end = [var -27.5mm, var 57mm], center = [var -24.5mm, var 57mm])
+  coincident([line24.end, arc25.start])
+  line26 = line(start = [var -27.5mm, var 57mm], end = [var -27.5mm, var -57mm])
+  coincident([arc25.end, line26.start])
+  arc27 = arc(start = [var -27.5mm, var -57mm], end = [var -24.5mm, var -60mm], center = [var -24.5mm, var -57mm])
+  coincident([line26.end, arc27.start])
+  line28 = line(start = [var -24.5mm, var -60mm], end = [var -15mm, var -60mm])
+  coincident([arc27.end, line28.start])
+  line29 = line(start = [var -15mm, var -60mm], end = [var -13.75mm, var -62.16506351mm])
+  coincident([line28.end, line29.start])
+  line30 = line(start = [var -13.75mm, var -62.16506351mm], end = [var -13mm, var -62.16506351mm])
+  coincident([line29.end, line30.start])
+  arc31 = arc(start = [var -13mm, var -62.16506351mm], end = [var -11mm, var -62.16506351mm], center = [var -12mm, var -61.98173018mm])
+  coincident([line30.end, arc31.start])
+  line32 = line(start = [var -11mm, var -62.16506351mm], end = [var -10.25mm, var -62.16506351mm])
+  coincident([arc31.end, line32.start])
+  line33 = line(start = [var -10.25mm, var -62.16506351mm], end = [var -9mm, var -60mm])
+  coincident([line32.end, line33.start])
+  line34 = line(start = [var -9mm, var -60mm], end = [var 0mm, var -60mm])
+  coincident([line33.end, line34.start])
+  coincident([line34.end, line1.start])
+}
+region003 = region(segments = [sketch003.line1, sketch003.line2])
+export heatFins = extrude(region003, length = 1)
+  |> patternLinear3d(instances = 31, distance = (fanSize - 10) / 30, axis = [0, 0, 1])
+
+// Create the mounting base for the CPU cooler. The base should consist of two pieces that secure around each of the tubes at the bottom
+sketch004 = sketch(on = -XZ) {
+  line1 = line(start = [var 0mm, var 10mm], end = [var -0.9mm, var 10mm])
+  arc2 = arc(start = [var -7.1mm, var 10mm], end = [var -0.9mm, var 10mm], center = [var -4mm, var 10mm])
+  coincident([line1.end, arc2.end])
+  line3 = line(start = [var -7.1mm, var 10mm], end = [var -8.9mm, var 10mm])
+  coincident([arc2.start, line3.start])
+  arc4 = arc(start = [var -14.9mm, var 10mm], end = [var -8.9mm, var 10mm], center = [var -11.9mm, var 10mm])
+  coincident([line3.end, arc4.end])
+  line5 = line(start = [var -14.9mm, var 10mm], end = [var -16.7mm, var 10mm])
+  coincident([arc4.start, line5.start])
+  arc6 = arc(start = [var -22.7mm, var 10mm], end = [var -16.7mm, var 10mm], center = [var -19.7mm, var 10mm])
+  coincident([line5.end, arc6.end])
+  line7 = line(start = [var -22.7mm, var 10mm], end = [var -24.5mm, var 10mm])
+  coincident([arc6.start, line7.start])
+  line8 = line(start = [var -24.5mm, var 10mm], end = [var -26.5mm, var 10mm])
+  coincident([line7.end, line8.start])
+  line9 = line(start = [var -26.5mm, var 10mm], end = [var -26.5mm, var 0mm])
+  coincident([line8.end, line9.start])
+  line10 = line(start = [var -26.5mm, var 0mm], end = [var 0mm, var 0mm])
+  coincident([line9.end, line10.start])
+  line11 = line(start = [var 0mm, var 0mm], end = [var 0mm, var 10mm])
+  coincident([line10.end, line11.start])
+  coincident([line11.end, line1.start])
+}
+region004 = region(segments = [sketch004.line1, sketch004.arc2])
+baseLowerHalf = extrude(region004, length = 30, symmetric = true)
+export baseLower = union([
+  baseLowerHalf,
+  mirror3d(baseLowerHalf, across = YZ)
+])
+
+sketch005 = sketch(on = -XZ) {
+  line1 = line(start = [var 0mm, var 10mm], end = [var -0.9mm, var 10mm])
+  arc2 = arc(start = [var -0.9mm, var 10mm], end = [var -7.1mm, var 10mm], center = [var -4mm, var 10mm])
+  coincident([line1.end, arc2.start])
+  line3 = line(start = [var -7.1mm, var 10mm], end = [var -8.9mm, var 10mm])
+  coincident([arc2.end, line3.start])
+  arc4 = arc(start = [var -8.9mm, var 10mm], end = [var -14.9mm, var 10mm], center = [var -11.9mm, var 10mm])
+  coincident([line3.end, arc4.start])
+  line5 = line(start = [var -14.9mm, var 10mm], end = [var -16.7mm, var 10mm])
+  coincident([arc4.end, line5.start])
+  arc6 = arc(start = [var -16.7mm, var 10mm], end = [var -22.7mm, var 10mm], center = [var -19.7mm, var 10mm])
+  coincident([line5.end, arc6.start])
+  line7 = line(start = [var -22.7mm, var 10mm], end = [var -24.5mm, var 10mm])
+  coincident([arc6.end, line7.start])
+  line8 = line(start = [var -24.5mm, var 10mm], end = [var -25.5mm, var 10mm])
+  coincident([line7.end, line8.start])
+  line9 = line(start = [var -25.5mm, var 10mm], end = [var -25.5mm, var 14mm])
+  coincident([line8.end, line9.start])
+  arc10 = arc(start = [var -23.5mm, var 16mm], end = [var -25.5mm, var 14mm], center = [var -23.5mm, var 14mm])
+  coincident([line9.end, arc10.end])
+  line11 = line(start = [var -23.5mm, var 16mm], end = [var 0mm, var 16mm])
+  coincident([arc10.start, line11.start])
+  line12 = line(start = [var 0mm, var 16mm], end = [var 0mm, var 10mm])
+  coincident([line11.end, line12.start])
+  coincident([line12.end, line1.start])
+}
+region005 = region(segments = [sketch005.line1, sketch005.arc2])
+baseUpperHalf = extrude(region005, length = 22.5, symmetric = true)
+export baseUpper = union([
+  baseUpperHalf,
+  mirror3d(baseUpperHalf, across = YZ)
+])
+
+// Create a flexible mounting bracket to secure the heat sink to the motherboard once adhered
+sketch006 = sketch(on = XZ) {
+  line1 = line(start = [var -10mm, var 16mm], end = [var -30mm, var 16mm])
+  arc2 = arc(
+    start = [var -30mm, var 16mm],
+    end = [
+      var -35.130302149885mm,
+      var 15.095389311789mm
+    ],
+    center = [var -30mm, var 1mm],
+  )
+  coincident([line1.end, arc2.start])
+  line3 = line(
+    start = [
+      var -35.130302149885mm,
+      var 15.095389311789mm
+    ],
+    end = [
+      var -48.285998840888mm,
+      var 10.307107305229mm
+    ],
+  )
+  coincident([arc2.end, line3.start])
+  arc4 = arc(
+    start = [
+      var -57.116818837886mm,
+      var 9.534510665854mm
+    ],
+    end = [
+      var -48.285998840888mm,
+      var 10.307107305229mm
+    ],
+    center = [
+      var -54.14309379534mm,
+      var 26.399343436188mm
+    ],
+  )
+  coincident([line3.end, arc4.end])
+  line5 = line(
+    start = [
+      var -57.116818837886mm,
+      var 9.534510665854mm
+    ],
+    end = [
+      var -78.290185527648mm,
+      var 13.267946485693mm
+    ],
+  )
+  coincident([arc4.start, line5.start])
+  line6 = line(
+    start = [
+      var -78.290185527648mm,
+      var 13.267946485693mm
+    ],
+    end = [
+      var -77.921183150106mm,
+      var 15.360662960844mm
+    ],
+  )
+  coincident([line5.end, line6.start])
+  line7 = line(
+    start = [
+      var -77.921183150106mm,
+      var 15.360662960844mm
+    ],
+    end = [
+      var -56.747816460344mm,
+      var 11.627227141005mm
+    ],
+  )
+  coincident([line6.end, line7.start])
+  arc8 = arc(
+    start = [
+      var -56.747816460344mm,
+      var 11.627227141005mm
+    ],
+    end = [
+      var -49.012791645455mm,
+      var 12.303954124399mm
+    ],
+    center = [
+      var -54.14309379534mm,
+      var 26.399343436188mm
+    ],
+  )
+  coincident([line7.end, arc8.start])
+  line9 = line(
+    start = [
+      var -49.012791645455mm,
+      var 12.303954124399mm
+    ],
+    end = [
+      var -35.857094954452mm,
+      var 17.092236130959mm
+    ],
+  )
+  coincident([arc8.end, line9.start])
+  arc10 = arc(
+    start = [var -30mm, var 18.125mm],
+    end = [
+      var -35.857094954452mm,
+      var 17.092236130959mm
+    ],
+    center = [var -30mm, var 1mm],
+  )
+  coincident([line9.end, arc10.end])
+  line11 = line(start = [var -30mm, var 18.125mm], end = [var -10mm, var 18.125mm])
+  coincident([arc10.start, line11.start])
+  line12 = line(start = [var -10mm, var 18.125mm], end = [var -10mm, var 16mm])
+  coincident([line11.end, line12.start])
+  vertical(line12)
+}
+region006 = region(segments = [sketch006.line1, sketch006.arc2])
+mountingBracket = extrude(
+  region006,
+  length = 16,
+  symmetric = true,
+  tagEnd = $capEnd001,
+  tagStart = $capStart001,
+)
+  |> fillet(
+       radius = 2,
+       edges = [
+         {
+           sideFaces = [region006.tags.line12, capEnd001]
+         },
+         {
+           sideFaces = [region006.tags.line6, capEnd001]
+         },
+         {
+           sideFaces = [region006.tags.line6, capStart001]
+         },
+         {
+           sideFaces = [region006.tags.line12, capStart001]
+         }
+       ],
+     )
+
+// Create a clearance hole in the bracket for an M3 screw and countersink the hole
+sketch007 = sketch(on = faceOf(mountingBracket, face = region006.tags.line7)) {
+  circle1 = circle(start = [var 71.7mm, var 0mm], center = [var 70mm, var 0mm])
+}
+region007 = region(segments = [sketch007.circle1])
+export thruHole = extrude(region007, length = -sheetThickness)
+  |> chamfer(
+       length = sheetThickness * 0.75,
+       edges = [
+         {
+           sideFaces = [
+             region006.tags.line7,
+             region007.tags.circle1
+           ]
+         }
+       ],
+     )
+  |> patternCircular3d(
+       instances = 2,
+       axis = [0, 0, 1],
+       center = [0, 0, 0],
+       arcDegrees = 360deg,
+       rotateDuplicates = true,
+     )
+
+hide(endTubePath)
+hide(sketch001)
+hide(centerTubePath)
+hide(sketch002)
+hide(sketch003)
+hide(sketch004)
+hide(sketch005)
+hide(sketch006)
+hide(sketch007)

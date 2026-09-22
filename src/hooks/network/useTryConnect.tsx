@@ -2,8 +2,13 @@ import type { useAppState } from '@src/AppState'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type { KclManager } from '@src/lang/KclManager'
 import { useSingletons } from '@src/lib/boot'
+import { ClientErrorCode, reportClientError } from '@src/lib/clientErrors'
 import { NUMBER_OF_ENGINE_RETRIES } from '@src/lib/constants'
 import { EngineDebugger } from '@src/lib/debugger'
+import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
+import { getDimensions } from '@src/lib/engineConnection/utils'
+import { preflightEngineVideoCodecSupport } from '@src/lib/engineConnection/videoCodecSupport'
+import { reapplyActiveViewAfterReconnect } from '@src/lib/kclNamedViewActivation'
 import { resetCameraPosition } from '@src/lib/resetCameraPosition'
 import type RustContext from '@src/lib/rustContext'
 import {
@@ -12,8 +17,6 @@ import {
 } from '@src/lib/settings/settingsUtils'
 import { reportRejection } from '@src/lib/trap'
 import type { SettingsActorType } from '@src/machines/settingsMachine'
-import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
-import { getDimensions } from '@src/lib/engineConnection/utils'
 import { useRef } from 'react'
 
 /**
@@ -38,6 +41,21 @@ const attemptToConnectToEngine = async ({
   engineCommandManager: ConnectionManager
   rustContext: RustContext
 }) => {
+  const codecError = await preflightEngineVideoCodecSupport()
+  if (codecError) {
+    engineCommandManager.lastConnectionError = codecError
+    void reportClientError({
+      code: ClientErrorCode.EngineUnsupportedVideoCodec,
+      error: codecError,
+      dedupeKey: ClientErrorCode.EngineUnsupportedVideoCodec,
+      extra: {
+        browserVideoCodecs: codecError.browserCodecs,
+        engineVideoCodecs: codecError.engineCodecs,
+      },
+    })
+    return Promise.reject(codecError)
+  }
+
   const connection = new Promise<boolean>((resolve, reject) => {
     const cancelTimeout = setTimeout(() => {
       EngineDebugger.addLog({
@@ -80,7 +98,10 @@ const attemptToConnectToEngine = async ({
             label: 'ConnectionStream.tsx',
             message: 'Unable to reference the video. Calling tearDown()',
           })
-          engineCommandManager.tearDown()
+          engineCommandManager.tearDown({
+            route: 'connection-attempt-failed',
+            initiatedBy: 'client',
+          })
           return reject('Unable to reference the video, calling tearDown()')
         }
 
@@ -89,7 +110,10 @@ const attemptToConnectToEngine = async ({
             label: 'ConnectionStream.tsx',
             message: 'Unable to reference the mediaStream, calling tearDown()',
           })
-          engineCommandManager.tearDown()
+          engineCommandManager.tearDown({
+            route: 'connection-attempt-failed',
+            initiatedBy: 'client',
+          })
           return reject(
             'Unable to reference the mediaStream, calling tearDown()'
           )
@@ -149,15 +173,23 @@ const setupSceneAndExecuteCodeAfterOpenedEngineConnection = async ({
   // Once zoom to fit and view isometric work on empty scenes (only grid planes) we can improve the functions
   // business logic
 
-  // This means you idled, otherwise you use the reset camera position
-  if (sceneInfra.camControls.oldCameraState) {
-    await sceneInfra.camControls.restoreRemoteCameraStateAndTriggerSync()
-  } else {
-    await resetCameraPosition({
-      sceneInfra,
-      engineCommandManager,
-      settingsActor,
-    })
+  // A named view outlives the connection that showed it, and the new connection
+  // has neither its visibility nor its camera.
+  const restoredNamedViewCamera =
+    await reapplyActiveViewAfterReconnect(kclManager)
+
+  // Skipped when the view placed the camera, which both branches would undo.
+  if (!restoredNamedViewCamera) {
+    // This means you idled, otherwise you use the reset camera position
+    if (sceneInfra.camControls.oldCameraState) {
+      await sceneInfra.camControls.restoreRemoteCameraStateAndTriggerSync()
+    } else {
+      await resetCameraPosition({
+        sceneInfra,
+        engineCommandManager,
+        settingsActor,
+      })
+    }
   }
 
   // Since you reconnected you are not idle, clear the old camera state
@@ -177,7 +209,8 @@ const setupSceneAndExecuteCodeAfterOpenedEngineConnection = async ({
  * No part of the system should be trying to directly connect. This file wraps multiple levels of business logic and state management to provide
  * a single safe location to connect to the engine.
  */
-async function tryConnecting({
+export async function tryConnecting({
+  abnormalCloseRetries,
   isConnecting,
   numberOfConnectionAttempts,
   authToken,
@@ -193,6 +226,7 @@ async function tryConnecting({
   kclManager,
   rustContext,
 }: {
+  abnormalCloseRetries: React.RefObject<number>
   isConnecting: React.RefObject<boolean>
   numberOfConnectionAttempts: React.RefObject<number>
   authToken: string
@@ -258,6 +292,7 @@ async function tryConnecting({
             )
           }
 
+          abnormalCloseRetries.current = 0
           isConnecting.current = false
           setAppState({ isStreamAcceptingInput: true })
           numberOfConnectionAttempts.current = 0
@@ -268,14 +303,28 @@ async function tryConnecting({
           })
           resolve('connected')
         } catch (e) {
-          isConnecting.current = false
           setAppState({ isStreamAcceptingInput: false })
+          const terminalConnectionError =
+            engineCommandManager.lastConnectionError?.terminal === true
+              ? engineCommandManager.lastConnectionError
+              : undefined
           EngineDebugger.addLog({
             label: 'useTryConnect.tsx',
-            message: `Attempt ${numberOfConnectionAttempts.current}/${NUMBER_OF_ENGINE_RETRIES} failed, calling tearDown()`,
+            message: `Attempt ${numberOfConnectionAttempts.current}/${NUMBER_OF_ENGINE_RETRIES} failed`,
+            metadata: { terminalConnectionError },
           })
-          engineCommandManager.tearDown()
+          if (terminalConnectionError) {
+            isConnecting.current = false
+            numberOfConnectionAttempts.current = 0
+            setShowManualConnect(true)
+            return reject(terminalConnectionError)
+          }
+          engineCommandManager.tearDown({
+            route: 'connection-attempt-failed',
+            initiatedBy: 'client',
+          })
           if (numberOfConnectionAttempts.current >= NUMBER_OF_ENGINE_RETRIES) {
+            isConnecting.current = false
             numberOfConnectionAttempts.current = 0
             return reject(e)
           }
@@ -291,9 +340,13 @@ export const useTryConnect = () => {
   const { kclManager } = useSingletons()
   const isConnecting = useRef(false)
   const numberOfConnectionAttempts = useRef(0)
+  const abnormalCloseRetries = useRef(0)
   type TryConnectingArgs = Omit<
     Parameters<typeof tryConnecting>[0],
-    'engineCommandManager' | 'kclManager' | 'rustContext'
+    | 'engineCommandManager'
+    | 'kclManager'
+    | 'rustContext'
+    | 'abnormalCloseRetries'
   >
 
   return {
@@ -303,8 +356,10 @@ export const useTryConnect = () => {
         engineCommandManager: kclManager.engineCommandManager,
         kclManager,
         rustContext: kclManager.rustContext,
+        abnormalCloseRetries,
       }),
     isConnecting,
     numberOfConnectionAttempts,
+    abnormalCloseRetries,
   }
 }

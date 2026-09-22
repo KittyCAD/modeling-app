@@ -9,8 +9,7 @@ KCL Semantic error
     ╭─[12:6]
  11 │   |> extrude(length = 5, tagEnd = $capEnd001)
  12 │   |> fillet(radius = 1, tags = [e1], edges = [{ sideFaces = [e1, capEnd001] }])
-    ·      ─────────────────────────────────────┬────────────────────────────────────┬
-    ·                                           ╰── tests/face_api_fillet_chamfer_tags_and_edge_refs/input.kcl
+    ·      ─────────────────────────────────────┬────────────────────────────────────
     ·                                           ╰── tests/face_api_fillet_chamfer_tags_and_edge_refs/input.kcl
  13 │ yo2 = startProfile(body, at = [15, 0])
     ╰────

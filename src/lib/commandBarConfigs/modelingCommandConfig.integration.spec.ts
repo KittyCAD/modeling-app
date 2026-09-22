@@ -28,6 +28,10 @@ import {
   KCL_DEFAULT_SCALE_FACTOR,
   KCL_DEFAULT_TRANSLATE_X,
 } from '@src/lib/constants'
+import {
+  canSubmitSelectionArg,
+  type ResolvedSelectionType,
+} from '@src/lib/selections'
 import { isArray } from '@src/lib/utils'
 import type { ModelingMachineContext } from '@src/machines/modelingSharedTypes'
 import type { Selections } from '@src/machines/modelingSharedTypes'
@@ -341,6 +345,32 @@ describe('Extrude surface arguments', () => {
   })
 })
 
+describe('Helix cylinder selection', () => {
+  it('accepts a region-backed cylinder', () => {
+    const commandConfig = modelingMachineCommandConfig.Helix
+    if (!commandConfig || isArray(commandConfig)) {
+      throw new Error('Helix should have a single command config')
+    }
+
+    const cylinderArg = commandConfig.args?.cylinder
+    if (!cylinderArg || cylinderArg.inputType !== 'selection') {
+      throw new Error('Helix should expose a cylinder selection argument')
+    }
+
+    expect(
+      canSubmitSelectionArg(
+        new Map<ResolvedSelectionType, number>([['pathRegion', 1]]),
+        {
+          inputType: 'selection',
+          selectionTypes: cylinderArg.selectionTypes,
+          multiple: cylinderArg.multiple,
+          required: true,
+        }
+      )
+    ).toBe(true)
+  })
+})
+
 describe('Sweep-like bodyType argument', () => {
   it('marks the legacy relativeTo argument as deprecated', () => {
     const commandConfig = modelingMachineCommandConfig.Sweep
@@ -449,6 +479,34 @@ describe('Transform arguments', () => {
       }
     }
   })
+
+  it('does not require or show Clone variableName while editing an existing clone', () => {
+    const commandConfig = modelingMachineCommandConfig.Clone
+    if (!commandConfig || isArray(commandConfig)) {
+      throw new Error('Clone should have a single command config')
+    }
+
+    const variableNameArg = commandConfig.args?.variableName
+    if (!variableNameArg) {
+      throw new Error('Clone.variableName should exist')
+    }
+
+    const creatingContext = { argumentsToSubmit: {} }
+    const editingContext = { argumentsToSubmit: { nodeToEdit: [] } }
+    const required =
+      typeof variableNameArg.required === 'function'
+        ? variableNameArg.required
+        : () => variableNameArg.required
+    const hidden =
+      typeof variableNameArg.hidden === 'function'
+        ? variableNameArg.hidden
+        : () => variableNameArg.hidden
+
+    expect(required(creatingContext)).toBe(true)
+    expect(hidden(creatingContext)).toBeFalsy()
+    expect(required(editingContext)).toBe(false)
+    expect(hidden(editingContext)).toBe(true)
+  })
 })
 
 const uniqueSorted = (values: string[]) => [...new Set(values)].sort()
@@ -498,6 +556,7 @@ describe('stdlib command arg derivation', () => {
 
   it('derives command status from KCL stdlib metadata', () => {
     expect(modelingStdLibCommandStatus('Helical Gear')).toBe('experimental')
+    expect(modelingStdLibCommandStatus('Delete')).toBeUndefined()
     expect(modelingStdLibCommandStatus('Extrude')).toBeUndefined()
     expect(stdLibCommandStatus('startSketchOn')).toBe('deprecated')
   })

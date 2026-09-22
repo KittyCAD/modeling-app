@@ -5,16 +5,13 @@ description: Variables in memory after executing extrude_face.kcl
 {
   "a": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "a"
   },
   "b": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "b"
   },
   "c": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "c"
   },
@@ -98,17 +95,17 @@ description: Variables in memory after executing extrude_face.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "XY",
         "objectId": 0,
+        "kind": "XY",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -160,7 +157,8 @@ description: Variables in memory after executing extrude_face.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": "mm"
+      "units": "mm",
+      "isClosed": "explicitly"
     }
   },
   "sketch001": {
@@ -168,8 +166,8 @@ description: Variables in memory after executing extrude_face.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "kind": "XY",
       "objectId": 0,
+      "kind": "XY",
       "origin": {
         "x": 0.0,
         "y": 0.0,
@@ -201,6 +199,8 @@ description: Variables in memory after executing extrude_face.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -325,17 +325,17 @@ description: Variables in memory after executing extrude_face.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "XY",
           "objectId": 0,
+          "kind": "XY",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -387,7 +387,8 @@ description: Variables in memory after executing extrude_face.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": "mm"
+        "units": "mm",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",

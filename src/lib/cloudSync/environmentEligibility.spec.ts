@@ -3,6 +3,7 @@ import {
   cloudSyncStatus,
   configureCloudSyncEngine,
   configureCloudSyncLocalFileSystem,
+  disableCloudSyncEngineForTest,
 } from '@src/lib/cloudSync'
 import {
   getAllOutboxEntries,
@@ -39,7 +40,7 @@ describe('cloud sync environment eligibility', () => {
   })
 
   afterEach(async () => {
-    configureCloudSyncEngine({ enabled: false })
+    await disableCloudSyncEngineForTest()
     vi.unstubAllGlobals()
     await deleteCloudSyncTestDatabase()
     cloudSyncStatus.value = {

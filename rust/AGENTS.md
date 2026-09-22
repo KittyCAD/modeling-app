@@ -2,7 +2,7 @@
 
 ## Scope
 
-This file applies to Rust development under `rust/`. It complements the repo root `CONTRIBUTING.md` and `rust/kcl-lib/README.md`.
+This file applies to Rust development under `rust/`. It supplements the repo root `AGENTS.md`, `CONTRIBUTING.md`, and `rust/kcl-lib/README.md`.
 
 ## Project overview
 
@@ -31,13 +31,15 @@ This file applies to Rust development under `rust/`. It complements the repo roo
 - Run KCL snapshot tests (requires a Zoo dev token):
   - `export ZOO_API_TOKEN=your-token-here`
   - `TWENTY_TWENTY=update cargo nextest run --workspace --no-fail-fast`
-- Generate stdlib markdown docs (from `rust/`): `just redo-kcl-stdlib-docs`
+- Generate stdlib markdown docs (from `rust/`): `just redo-kcl-stdlib-docs-no-imgs`
+- Run `npm run bindings:update` before pushing.
 
 ## Simulation tests
 
 - Create a new sim test: `just new-sim-test foo_bar` (this creates a directory for your sim test like `kcl-lib/tests/foo/`, with an empty `input.kcl` that you should put code in).
 - Run/update the sim test: `just overwrite-sim-test foo_bar`
 - Inspect generated outputs and check for `execution_error.snap` before committing.
+- Optionally execute one `input.kcl` under multiple KCL versions via `config.toml`: `kcl_versions = ["2.0", "3.0-preview"]`. Shared snapshots go in `output/`; execution snapshots go in `output/kcl-<version>/`.
 
 ## Trim tool smoke tests
 

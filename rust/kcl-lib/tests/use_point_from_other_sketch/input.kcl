@@ -1,0 +1,29 @@
+// Sim test for https://github.com/KittyCAD/modeling-app/issues/13035
+// showing how to use a point from a previously-solved sketch as a fixed point
+// in constraints in a following sketch.
+@settings(defaultLengthUnit = mm, kclVersion = 2.0)
+
+sketch1 = sketch(on = XY) {
+  reference = point(at = [var 10mm, var 20mm])
+  fixed([reference, [10mm, 20mm]])
+}
+
+sketch2 = sketch(on = XY) {
+  coincidentPoint = point(at = [var 0mm, var 0mm])
+  coincident([coincidentPoint, sketch1.reference])
+
+  distancePoint = point(at = [var 15mm, var 20mm])
+  horizontal([distancePoint, sketch1.reference])
+  distance([sketch1.reference, distancePoint]) == 5mm
+
+  horizontalDistancePoint = point(at = [var 17mm, var 20mm])
+  horizontal([sketch1.reference, horizontalDistancePoint])
+  horizontalDistance([sketch1.reference, horizontalDistancePoint]) == 7mm
+
+  verticalDistancePoint = point(at = [var 10mm, var 29mm])
+  vertical([verticalDistancePoint, sketch1.reference])
+  verticalDistance([sketch1.reference, verticalDistancePoint]) == 9mm
+
+  midpointLine = line(start = [var 0mm, var 0mm], end = [var 20mm, var 40mm])
+  midpoint(midpointLine, point = sketch1.reference)
+}

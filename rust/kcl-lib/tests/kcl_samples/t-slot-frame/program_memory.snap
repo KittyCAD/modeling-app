@@ -1,0 +1,53 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Variables in memory after executing t-slot-frame.kcl
+---
+{
+  "frameDepth": {
+    "type": "Number",
+    "value": 2.0,
+    "ty": {
+      "type": "Known",
+      "value": {
+        "type": "Length",
+        "value": "ft"
+      }
+    }
+  },
+  "frameHeight": {
+    "type": "Number",
+    "value": 8.0,
+    "ty": {
+      "type": "Known",
+      "value": {
+        "type": "Length",
+        "value": "ft"
+      }
+    }
+  },
+  "frameWidth": {
+    "type": "Number",
+    "value": 3.0,
+    "ty": {
+      "type": "Known",
+      "value": {
+        "type": "Length",
+        "value": "ft"
+      }
+    }
+  },
+  "railHeight": {
+    "type": "Number",
+    "value": 1.5,
+    "ty": {
+      "type": "Default",
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
+    }
+  },
+  "railTslot": {
+    "type": "Function"
+  }
+}

@@ -1,0 +1,49 @@
+// Walkie Talkie Button
+// Button for the walkie talkie
+
+@settings(defaultLengthUnit = in, kclVersion = 2.0, experimentalFeatures = allow)
+
+import buttonWidth, buttonHeight, buttonThickness from "parameters.kcl"
+
+export fn button() {
+  buttonSketch = sketch(on = XZ) {
+    line1 = line(start = [var 0in, var 0in], end = [var -0.15in, var 0in])
+    line2 = line(start = [var -0.15in, var 0in], end = [var -0.15in, var -0.48in])
+    coincident([line1.end, line2.start])
+    line3 = line(start = [var -0.15in, var -0.48in], end = [var 0in, var -0.48in])
+    coincident([line2.end, line3.start])
+    line4 = line(start = [var 0in, var -0.48in], end = [var 0in, var 0in])
+    coincident([line3.end, line4.start])
+    coincident([line4.end, line1.start])
+    coincident([line1.start, ORIGIN])
+    horizontal(line1)
+    vertical(line2)
+    horizontal(line3)
+    vertical(line4)
+    horizontalDistance([line1.end, line1.start]) == buttonWidth
+    verticalDistance([line2.end, line2.start]) == buttonHeight
+  }
+  buttonRegion = region(segments = [buttonSketch.line1, buttonSketch.line2])
+  buttonBlank = extrude(buttonRegion, length = buttonThickness)
+  result = chamfer(
+    buttonBlank,
+    length = .050,
+    edges = [
+      {
+        sideFaces = [
+          buttonRegion.tags.line1,
+          buttonRegion.tags.line2
+        ]
+      },
+      {
+        sideFaces = [
+          buttonRegion.tags.line2,
+          buttonRegion.tags.line3
+        ]
+      }
+    ],
+  )
+    |> appearance(color = "#ff0000")
+  hide(buttonSketch)
+  return result
+}

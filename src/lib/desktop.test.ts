@@ -4,6 +4,7 @@ import {
   createNewProjectDirectory,
   overwriteProjectTomlWithNewSettings,
 } from '@src/lib/desktop'
+import { testFileOperations } from '@src/lib/fileSystem/testRuntime'
 import fsZds, { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest'
@@ -45,6 +46,7 @@ describe('createNewProjectDirectory', () => {
     createdProjectDirectoryPaths.push(projectDirectoryPath)
 
     const project = await createNewProjectDirectory(
+      testFileOperations,
       'Human Project',
       wasmInstance,
       undefined,
@@ -72,6 +74,7 @@ describe('createNewProjectDirectory', () => {
     createdProjectDirectoryPaths.push(projectDirectoryPath)
 
     const project = await createNewProjectDirectory(
+      testFileOperations,
       'human-project',
       wasmInstance,
       undefined,
@@ -104,6 +107,7 @@ describe('createNewProjectDirectory', () => {
     createdProjectDirectoryPaths.push(legacyProjectDirectoryPath)
 
     const project = await createNewProjectDirectory(
+      testFileOperations,
       'library-project',
       wasmInstance,
       undefined,
@@ -133,6 +137,9 @@ describe('createNewProjectDirectory', () => {
   it('treats serialized ENOENT strings as missing project.toml metadata', async () => {
     const projectDirectoryPath = createTempDirectoryPath()
     createdProjectDirectoryPaths.push(projectDirectoryPath)
+    await fsZds.mkdir(fsZds.join(projectDirectoryPath, 'Serialized ENOENT'), {
+      recursive: true,
+    })
 
     const originalReadFile = fsZds.readFile
     let hasThrownSerializedEnoent = false
@@ -152,6 +159,7 @@ describe('createNewProjectDirectory', () => {
 
     try {
       const project = await createNewProjectDirectory(
+        testFileOperations,
         'Serialized ENOENT',
         wasmInstance,
         undefined,
@@ -180,6 +188,9 @@ describe('createNewProjectDirectory', () => {
   it('treats Electron ENOENT errors as missing project.toml metadata', async () => {
     const projectDirectoryPath = createTempDirectoryPath()
     createdProjectDirectoryPaths.push(projectDirectoryPath)
+    await fsZds.mkdir(fsZds.join(projectDirectoryPath, 'Electron ENOENT'), {
+      recursive: true,
+    })
 
     const originalReadFile = fsZds.readFile
     let hasThrownElectronEnoent = false
@@ -199,6 +210,7 @@ describe('createNewProjectDirectory', () => {
 
     try {
       const project = await createNewProjectDirectory(
+        testFileOperations,
         'Electron ENOENT',
         wasmInstance,
         undefined,
@@ -224,6 +236,54 @@ describe('createNewProjectDirectory', () => {
     }
   })
 
+  it('does not read project.toml before writing metadata for newly created project directories', async () => {
+    const projectDirectoryPath = createTempDirectoryPath()
+    createdProjectDirectoryPaths.push(projectDirectoryPath)
+
+    const originalReadFile = fsZds.readFile
+    let attemptedProjectTomlRead = false
+    fsZds.readFile = (async (filePath: string, options?: unknown) => {
+      if (fsZds.basename(filePath) === PROJECT_SETTINGS_FILE_NAME) {
+        attemptedProjectTomlRead = true
+        return Promise.reject(
+          new Error(`UNKNOWN: unknown error, open '${filePath}'`)
+        )
+      }
+
+      return originalReadFile(filePath, options as never)
+    }) as typeof fsZds.readFile
+
+    let projectPath = ''
+    try {
+      const project = await createNewProjectDirectory(
+        testFileOperations,
+        'Windows Dropbox',
+        wasmInstance,
+        undefined,
+        {
+          settings: {
+            project: {
+              directory: projectDirectoryPath,
+            },
+          },
+        }
+      )
+      projectPath = project.path
+
+      expect(attemptedProjectTomlRead).toBe(false)
+      expect(project.title).toBe('Windows Dropbox')
+    } finally {
+      fsZds.readFile = originalReadFile
+    }
+
+    const projectToml = await fsZds.readFile(
+      fsZds.join(projectPath, PROJECT_SETTINGS_FILE_NAME),
+      { encoding: 'utf-8' }
+    )
+
+    expect(projectToml).toContain('title = "Windows Dropbox"')
+  })
+
   it('preserves project metadata when writing project settings', async () => {
     const projectDirectoryPath = createTempDirectoryPath()
     const projectPath = fsZds.join(projectDirectoryPath, 'test-1')
@@ -238,6 +298,7 @@ describe('createNewProjectDirectory', () => {
     )
 
     await overwriteProjectTomlWithNewSettings(
+      testFileOperations,
       projectPath,
       '[settings.meta]\nid = "new-settings-id"\n'
     )

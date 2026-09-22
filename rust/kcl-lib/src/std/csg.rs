@@ -90,6 +90,15 @@ fn subtract_output_ids(
     output_ids
 }
 
+fn inherit_face_tags(output: &mut Solid, inputs: &[Solid]) {
+    for input in inputs {
+        for (name, tag) in &input.faces {
+            // Preserve the first input's tag when multiple bodies use the same name.
+            output.faces.entry(name.clone()).or_insert_with(|| tag.clone());
+        }
+    }
+}
+
 pub(crate) async fn inner_union(
     solids: Vec<Solid>,
     tolerance: Option<TyF64>,
@@ -102,6 +111,7 @@ pub(crate) async fn inner_union(
     let solid_out_id = exec_state.next_uuid();
 
     let mut solid = solids[0].clone();
+    inherit_face_tags(&mut solid, &solids);
     solid.set_id(solid_out_id);
     solid.become_new_body(solid_out_id, solid_out_id.into());
     let mut new_solids = vec![solid.clone()];
@@ -197,6 +207,7 @@ pub(crate) async fn inner_intersect(
     let solid_out_id = exec_state.next_uuid();
 
     let mut solid = solids[0].clone();
+    inherit_face_tags(&mut solid, &solids);
     solid.set_id(solid_out_id);
     solid.become_new_body(solid_out_id, solid_out_id.into());
     let mut new_solids = vec![solid.clone()];
@@ -289,10 +300,24 @@ pub(crate) async fn inner_subtract(
     let tool_ids = tools.iter().map(|s| s.id).collect::<Vec<_>>();
 
     if args.ctx.no_engine_commands().await {
-        let mut solid = solids[0].clone();
-        solid.set_id(solid_out_id);
-        solid.become_new_body(solid_out_id, solid_out_id.into());
-        let new_solids = vec![solid];
+        // Output N new bodies, where N is the number of input target bodies.
+        let new_solids = solids
+            .iter()
+            .enumerate()
+            .map(|(index, solid)| {
+                // The first ID is set by the user, subsequent IDs are not.
+                // This matches the usual production normal execution path.
+                let output_id = if index == 0 {
+                    solid_out_id
+                } else {
+                    exec_state.next_uuid()
+                };
+                let mut new_solid = solid.clone();
+                new_solid.set_id(output_id);
+                new_solid.become_new_body(output_id, output_id.into());
+                new_solid
+            })
+            .collect::<Vec<_>>();
         record_consumed_solids(exec_state, &solids, ConsumedSolidOperation::Subtract, &new_solids);
         record_consumed_solids(exec_state, &tools, ConsumedSolidOperation::Subtract, &[]);
         return Ok(new_solids);
@@ -502,7 +527,95 @@ mod tests {
 
     use super::subtract_output_ids;
     use crate::errors::KclError;
+    use crate::execution::KclValue;
     use crate::execution::MockConfig;
+    use crate::execution::parse_execute;
+
+    async fn assert_csg_inherits_face_tags(operation: &str) {
+        let inputs = r#"@settings(kclVersion = 2.0)
+fn profile(@plane) {
+  return sketch(on = plane) {
+    bottom = line(start = [-10mm, -10mm], end = [10mm, -10mm])
+    right = line(start = [10mm, -10mm], end = [10mm, 10mm])
+    top = line(start = [10mm, 10mm], end = [-10mm, 10mm])
+    left = line(start = [-10mm, 10mm], end = [-10mm, -10mm])
+  }
+}
+firstProfile = profile(XY)
+secondProfile = profile(YZ)
+thirdProfile = profile(XZ)
+firstRegion = region(segments = [firstProfile.bottom])
+secondRegion = region(segments = [secondProfile.bottom])
+thirdRegion = region(segments = [thirdProfile.bottom])
+first = extrude(firstRegion, length = 5mm, symmetric = true, tagEnd = $firstEnd)
+second = extrude(secondRegion, length = 5mm, symmetric = true, tagEnd = $secondEnd)
+third = extrude(thirdRegion, length = 5mm, symmetric = true, tagEnd = $thirdEnd)
+untagged = extrude(region(segments = [firstProfile.bottom]), length = 5mm, symmetric = true)
+"#;
+        for (input_names, tag_names) in [
+            ("first, second", &["first", "second"][..]),
+            ("first, second, third", &["first", "second", "third"]),
+            ("third, second, first", &["third", "second", "first"]),
+            ("untagged, second", &["second"]),
+        ] {
+            let mut code = inputs.to_owned();
+            for name in tag_names {
+                code.push_str(&format!("{name}Original = {name}.faces.{name}End\n"));
+            }
+            code.push_str(&format!("body = {operation}([{input_names}])\n"));
+            for name in tag_names {
+                code.push_str(&format!("{name}FromBody = body.faces.{name}End\n"));
+            }
+            let result = parse_execute(&code).await.unwrap();
+            for name in tag_names {
+                let output_tag = result.variable(&format!("{name}FromBody"));
+                assert!(matches!(&output_tag, KclValue::TagIdentifier(_)));
+                assert_eq!(
+                    output_tag,
+                    result.variable(&format!("{name}Original")),
+                    "{operation}: {name}"
+                );
+            }
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn union_inherits_face_tags_from_all_inputs() {
+        assert_csg_inherits_face_tags("union").await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn intersect_inherits_face_tags_from_all_inputs() {
+        assert_csg_inherits_face_tags("intersect").await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn csg_keeps_first_input_for_duplicate_face_tag_names() {
+        let inputs = r#"@settings(kclVersion = 2.0)
+fn body(@plane) {
+  profile = sketch(on = plane) {
+    circle1 = circle(center = [0mm, 0mm], start = [10mm, 0mm])
+  }
+  return extrude(region(segments = [profile.circle1]), length = 5mm, tagEnd = $cap)
+}
+first = body(XY)
+second = body(YZ)
+firstCap = first.faces.cap
+secondCap = second.faces.cap
+"#;
+        for operation in ["union", "intersect"] {
+            for (inputs_order, expected, other) in [
+                ("first, second", "firstCap", "secondCap"),
+                ("second, first", "secondCap", "firstCap"),
+            ] {
+                let code =
+                    format!("{inputs}\ncombined = {operation}([{inputs_order}])\nselected = combined.faces.cap\n");
+                let result = parse_execute(&code).await.unwrap();
+                assert_eq!(result.variable("selected"), result.variable(expected));
+                assert_ne!(result.variable("selected"), result.variable(other));
+            }
+        }
+    }
 
     fn test_uuid(id: u128) -> Uuid {
         Uuid::from_u128(id)

@@ -53,14 +53,17 @@ beforeEach(async () => {
   }
 
   const { instance, kclManager, engineCommandManager, rustContext } =
-    await buildTheWorldAndConnectToEngine()
+    await buildTheWorldAndConnectToEngine({ webrtc: false, pool: 'cpu' })
   instanceInThisFile = instance
   kclManagerInThisFile = kclManager
   engineCommandManagerInThisFile = engineCommandManager
   rustContextInThisFile = rustContext
 })
 afterAll(() => {
-  engineCommandManagerInThisFile?.tearDown()
+  engineCommandManagerInThisFile?.tearDown({
+    route: 'user-requested',
+    initiatedBy: 'client',
+  })
 })
 
 describe('transforms.test.ts', () => {
@@ -161,7 +164,7 @@ pattern001 = patternLinear3d(extrude001, instances = 3, distance = 10, axis = [0
     })
 
     it('adds an indexed delete call for one body from a multi-output extrude', async () => {
-      const code = `@settings(kclVersion = 2.0, experimentalFeatures = allow)
+      const code = `@settings(kclVersion = 2.0)
 
 sketch001 = sketch(on = XY) {
   line1 = line(start = [var -0.34mm, var 0.84mm], end = [var 0.26mm, var 0.84mm])
@@ -1358,12 +1361,10 @@ appearance(extrude001, color = "#00FF00")`
         ast,
         rustContextInThisFile
       )
-      const bodyArtifacts = artifactGraph
-        .values()
-        .filter((artifact) => artifact.type === bodyType)
-        .toArray()
-      const acrossArtifacts = artifactGraph
-        .values()
+      const bodyArtifacts = Array.from(artifactGraph.values()).filter(
+        (artifact) => artifact.type === bodyType
+      )
+      const acrossArtifacts = Array.from(artifactGraph.values())
         .filter((artifact) => artifact.type === acrossType)
         .filter((artifact) => {
           if (artifact.type !== 'plane') {
@@ -1382,7 +1383,6 @@ appearance(extrude001, color = "#00FF00")`
             variable.node.declaration.init.callee.name.name === 'offsetPlane'
           )
         })
-        .toArray()
 
       const bodies: Selections = {
         graphSelections: bodyIds.map((id) => {
@@ -1504,9 +1504,9 @@ extrude001 = extrude(profile001, length = 1)`
         ast,
         rustContextInThisFile
       )
-      const bodyArtifact = artifactGraph
-        .values()
-        .find((artifact) => artifact.type === 'sweep')
+      const bodyArtifact = Array.from(artifactGraph.values()).find(
+        (artifact) => artifact.type === 'sweep'
+      )
       if (!bodyArtifact || !('codeRef' in bodyArtifact)) {
         throw new Error('Body artifact not found')
       }
@@ -1549,9 +1549,9 @@ extrude001 = extrude(profile001, length = 10)`
         ast,
         rustContextInThisFile
       )
-      const bodyArtifact = artifactGraph
-        .values()
-        .find((artifact) => artifact.type === 'sweep')
+      const bodyArtifact = Array.from(artifactGraph.values()).find(
+        (artifact) => artifact.type === 'sweep'
+      )
       if (!bodyArtifact || !('codeRef' in bodyArtifact)) {
         throw new Error('Body artifact not found')
       }
@@ -1617,9 +1617,9 @@ shell001 = shell(extrude001, faces = rectangleSegmentA001, thickness = 1)`
         ast,
         rustContextInThisFile
       )
-      const bodyArtifact = artifactGraph
-        .values()
-        .find((artifact) => artifact.type === 'sweep')
+      const bodyArtifact = Array.from(artifactGraph.values()).find(
+        (artifact) => artifact.type === 'sweep'
+      )
       if (!bodyArtifact || !('codeRef' in bodyArtifact)) {
         throw new Error('Body artifact not found')
       }
