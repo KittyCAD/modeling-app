@@ -70,7 +70,6 @@ test.describe('Face API selection regressions', { tag: '@web' }, () => {
   test('2.9 fillets a generated Chamfer boundary edge', async ({
     context,
     page,
-    homePage,
     scene,
     cmdBar,
     editor,
@@ -82,7 +81,6 @@ test.describe('Face API selection regressions', { tag: '@web' }, () => {
       localStorage.setItem('persistCode', code)
     }, edgeTreatmentCode)
     await page.setBodyDimensions({ width: 1200, height: 800 })
-    await homePage.goToModelingScene()
     await scene.settled(cmdBar)
     await scene.waitForExecutionDoneAfter(() =>
       editor.replaceCode('', edgeTreatmentCode)
@@ -114,7 +112,6 @@ test.describe('Face API selection regressions', { tag: '@web' }, () => {
   test('2.10 fillets an outer Shell rim edge', async ({
     context,
     page,
-    homePage,
     scene,
     cmdBar,
     editor,
@@ -126,7 +123,6 @@ test.describe('Face API selection regressions', { tag: '@web' }, () => {
       localStorage.setItem('persistCode', code)
     }, shellCode)
     await page.setBodyDimensions({ width: 1200, height: 800 })
-    await homePage.goToModelingScene()
     await scene.settled(cmdBar)
     await scene.waitForExecutionDoneAfter(() =>
       editor.replaceCode('', shellCode)
@@ -174,7 +170,6 @@ test.describe('Face API selection regressions', { tag: '@web' }, () => {
   test('2.12 surface-extrudes an untouched outer CSG edge', async ({
     context,
     page,
-    homePage,
     scene,
     cmdBar,
     editor,
@@ -186,7 +181,6 @@ test.describe('Face API selection regressions', { tag: '@web' }, () => {
       localStorage.setItem('persistCode', code)
     }, csgSurfaceExtrudeCode)
     await page.setBodyDimensions({ width: 1200, height: 800 })
-    await homePage.goToModelingScene()
     await scene.settled(cmdBar)
     await scene.waitForExecutionDoneAfter(() =>
       editor.replaceCode('', csgSurfaceExtrudeCode)
@@ -236,7 +230,6 @@ test.describe('Face API selection regressions', { tag: '@web' }, () => {
   test('selects a standalone helix from the viewport', async ({
     context,
     page,
-    homePage,
     scene,
     cmdBar,
     editor,
@@ -247,7 +240,6 @@ test.describe('Face API selection regressions', { tag: '@web' }, () => {
       localStorage.setItem('persistCode', code)
     }, standaloneHelixCode)
     await page.setBodyDimensions({ width: 1200, height: 800 })
-    await homePage.goToModelingScene()
     await scene.settled(cmdBar)
     await scene.waitForExecutionDoneAfter(() =>
       editor.replaceCode('', standaloneHelixCode)

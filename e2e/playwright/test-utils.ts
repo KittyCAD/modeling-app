@@ -109,10 +109,10 @@ async function waitForPageLoad(page: Page) {
   })
 }
 
-async function waitForHomeLoad(page: Page) {
-  await expect(page.getByTestId('home-section')).toBeVisible({
-    timeout: 20_000,
-  })
+async function waitForAppLoad(page: Page) {
+  const home = page.getByTestId('home-section')
+  const modelingScene = page.getByRole('button', { name: 'Start Sketch' })
+  await expect(home.or(modelingScene)).toBeVisible({ timeout: 20_000 })
 }
 
 export async function waitForWebKitBillingToSettle(page: Page) {
@@ -431,12 +431,12 @@ async function waitForAuthAndLsp(page: Page) {
     if (token) {
       // Vercel is external to Playwright, so the token is provided in the URL
       await page.goto(`/?${VERCEL_PLAYWRIGHT_TOKEN_QUERY_PARAM}=${token}`)
-      await waitForHomeLoad(page)
+      await waitForAppLoad(page)
     }
   }
 
   await page.goto('/')
-  await waitForHomeLoad(page)
+  await waitForAppLoad(page)
   return waitForLspPromise
 }
 

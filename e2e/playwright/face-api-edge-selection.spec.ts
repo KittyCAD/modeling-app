@@ -49,7 +49,6 @@ const testCode = `sketch001 = startSketchOn(YZ)
 test.describe('Face API edge selection', { tag: '@web' }, () => {
   test('Can select Solid3D edges and Surface edges for revolve', async ({
     context,
-    homePage,
     scene,
     cmdBar,
     page,
@@ -60,7 +59,6 @@ test.describe('Face API edge selection', { tag: '@web' }, () => {
       localStorage.setItem('persistCode', code)
     }, testCode)
 
-    await homePage.goToModelingScene()
     await scene.settled(cmdBar)
     await scene.waitForExecutionDoneAfter(() =>
       editor.replaceCode('', testCode)
@@ -271,7 +269,6 @@ test.describe('Face API edge selection', { tag: '@web' }, () => {
 
   test('Can select split edges for fillet', async ({
     context,
-    homePage,
     scene,
     cmdBar,
     page,
@@ -285,7 +282,6 @@ test.describe('Face API edge selection', { tag: '@web' }, () => {
       localStorage.setItem('persistCode', code)
     }, testCode)
 
-    await homePage.goToModelingScene()
     await scene.settled(cmdBar)
     await scene.waitForExecutionDoneAfter(() =>
       editor.replaceCode('', testCode)
@@ -350,7 +346,6 @@ test.describe('Face API edge selection', { tag: '@web' }, () => {
   test('Can use an edge-extruded surface boundary as a Helix axis', async ({
     context,
     page,
-    homePage,
     scene,
     cmdBar,
     editor,
@@ -397,7 +392,6 @@ hide(sketch001)`
       }
     )
     await page.setBodyDimensions({ width: 1200, height: 800 })
-    await homePage.goToModelingScene()
     await scene.settled(cmdBar)
     await scene.waitForExecutionDoneAfter(() => editor.replaceCode('', code))
     await editor.expectEditor.toContain('surface001 = extrude')

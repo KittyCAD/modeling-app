@@ -1071,8 +1071,8 @@ region001 = region(segments = [sketch001.circle1])`
 hide(sketch001)
 region001 = region(segments = [sketch001.line1, sketch001.line2])
 extrude001 = extrude(region001, length = -12)`
-    const firstFilletDeclaration = `fillet001 = fillet(extrude001, edges=[{sideFaces=[extrude001.faces.capEnd001,region001.tags.line2],endFaces=[region001.tags.line4,region001.tags.line1]}], radius=5,)`
-    const secondFilletDeclaration = `fillet002 = fillet(extrude001, edges=[{sideFaces=[extrude001.faces.capStart001,region001.tags.line2],endFaces=[region001.tags.line1,region001.tags.line4]}], radius=5,)`
+    const firstFilletDeclaration = `fillet001 = fillet(extrude001, edges=[{sideFaces=[region001.tags.line2,extrude001.faces.capEnd001],endFaces=[region001.tags.line1,region001.tags.line4]}], radius=5,)`
+    const secondFilletDeclaration = `fillet002 = fillet(extrude001, edges=[{sideFaces=[region001.tags.line2,extrude001.faces.capStart001],endFaces=[region001.tags.line1,region001.tags.line4]}], radius=5,)`
 
     // Locators
     // TODO: find a way to not have hardcoded pixel values for region edges and sweepEdges
@@ -1885,7 +1885,7 @@ extrude001 = extrude(region001, length = 5)`
 
       expect(normalizedCode).toContain('fillet001=fillet(extrude001,')
       expect(normalizedCode).toContain(
-        'edges=[{sideFaces=[region001.tags.line3,region001.tags.line1],endFaces=[capEnd001,capStart001]}]'
+        'edges=[{sideFaces=[region001.tags.line1,region001.tags.line3],endFaces=[capStart001,capEnd001]}]'
       )
       expect(normalizedCode).toContain('radius=1000,')
       expect(normalizedCode).not.toContain('tags=[')
@@ -2778,11 +2778,9 @@ hide(sketch001)`
     await cmdBar.submit()
     await scene.settled(cmdBar)
 
+    await editor.expectEditor.toContain('tag = $seg01')
     await editor.expectEditor.toContain(
-      'face001 = faceId(fillet001, index = 7)'
-    )
-    await editor.expectEditor.toContain(
-      'surface001 = deleteFace(fillet001, faces = face001)'
+      'surface001 = deleteFace(fillet001, faces = seg01)'
     )
   })
 
@@ -2817,10 +2815,10 @@ region002 = region(point = [-20.0275mm, 10mm], sketch = sketch002)`
   region002,
   angle = 360deg,
   axis = {
-    sideFaces = [capEnd001, region001.tags.line1],
+    sideFaces = [region001.tags.line1, capEnd001],
     endFaces = [
-      region001.tags.line3,
-      region001.tags.line2
+      region001.tags.line2,
+      region001.tags.line3
     ]
   },
   bodyType = SURFACE,
@@ -2829,10 +2827,10 @@ region002 = region(point = [-20.0275mm, 10mm], sketch = sketch002)`
   region002,
   angle = 360deg,
   axis = {
-    sideFaces = [capEnd001, region001.tags.line1],
+    sideFaces = [region001.tags.line1, capEnd001],
     endFaces = [
-      region001.tags.line3,
-      region001.tags.line2
+      region001.tags.line2,
+      region001.tags.line3
     ]
   },
   bodyType = SURFACE,
