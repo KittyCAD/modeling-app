@@ -2617,6 +2617,38 @@ function projectArchiveFileMap(files: ProjectArchiveFile[]) {
   return filesByPath
 }
 
+function getCreatedProjectSyncBase(
+  project: RemoteProject,
+  uploadedManifest: ProjectManifest
+) {
+  if (!project.revision || !project.files?.length) {
+    return undefined
+  }
+  const manifest: ProjectManifest = { files: {} }
+  for (const file of project.files) {
+    const relativePath = normalizeRelativePath(file.relative_path)
+    if (
+      isCloudSyncExcludedPath(relativePath) ||
+      isCloudSyncGeneratedArtifactPath(relativePath)
+    ) {
+      continue
+    }
+    if (!file.sha256) {
+      return undefined
+    }
+    manifest.files[relativePath] = {
+      byteSize: file.byte_size,
+      sha256: file.sha256,
+    }
+  }
+  if (
+    Object.keys(uploadedManifest.files).some((path) => !manifest.files[path])
+  ) {
+    return undefined
+  }
+  return { revision: String(project.revision), manifest }
+}
+
 async function remoteArchiveMatchesUploadedManifest(
   metadata: ProjectMetadata,
   remoteFiles: ProjectArchiveFile[]
@@ -3164,27 +3196,35 @@ async function syncProject(
         throttleProjectApiRequest,
         () => createRemoteProject(config, metadata.localProjectPath, localFiles)
       )
+      // The response hashes include the API's changes to project.toml.
+      const createdSyncBase = getCreatedProjectSyncBase(created, localManifest)
+      metadata = {
+        ...metadata,
+        remoteProjectId: created.id,
+        remoteRevision: createdSyncBase?.revision,
+        remoteUpdatedAt: getRemoteUpdatedAt(created),
+        baseManifest: createdSyncBase?.manifest ?? localManifest,
+        conflict: undefined,
+        lastFailure: undefined,
+      }
+      await putProjectMetadata(metadata)
+      publishScopedProjectCloudProjectId(metadata)
       await clearProjectOutboxIfCheckpointCurrent(
         metadata.localProjectPath,
         syncCheckpoint
       )
-      const uploadedMetadata: ProjectMetadata = {
-        ...metadata,
-        remoteProjectId: created.id,
-        remoteRevision: undefined,
-        remoteUpdatedAt: undefined,
-        baseManifest: localManifest,
-        conflict: undefined,
-        lastFailure: undefined,
-      }
-      await putProjectMetadata(uploadedMetadata)
-      publishScopedProjectCloudProjectId(uploadedMetadata)
       await appendOutboxEntry({
         projectPath: metadata.localProjectPath,
         kind: 'upsert',
         targetPath: metadata.localProjectPath,
         createdAt: nowIso(),
       })
+      if (createdSyncBase) {
+        await writeLocalProjectCloudProjectId(
+          metadata.localProjectPath,
+          created.id
+        )
+      }
       scheduleSync(0)
       return
     }
