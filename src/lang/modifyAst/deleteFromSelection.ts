@@ -233,14 +233,13 @@ export async function deleteFromSelection(
       typeof pipeItemIndex === 'number' && pipeItemIndex > 0
         ? varDecNodeInit.body[pipeItemIndex]
         : undefined
-    // Geometry selections retain their feature-specific deletion behavior.
+    // Legacy Sketch 1 segments and faces can reference sketch pipe stages.
+    // Keep their sketch/extrusion deletion paths instead of removing those stages.
+    // Remove these exclusions when Sketch 1 support and its tests are retired.
     const isGeometrySelection =
-      // Preserve legacy Sketch 1 pipe deletion; remove this segment exclusion
-      // when Sketch 1 support and its tests are retired.
       selection.artifact?.type === 'segment' ||
       selection.artifact?.type === 'wall' ||
-      selection.artifact?.type === 'cap' ||
-      selection.artifact?.type === 'edgeCut'
+      selection.artifact?.type === 'cap'
     if (
       !isGeometrySelection &&
       pipeItem?.type === 'CallExpressionKw' &&
