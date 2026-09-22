@@ -2473,10 +2473,32 @@ pub(crate) async fn parse_execute_with_executor_kind(
     project_directory: Option<TypedPath>,
     executor_kind: machine::ExecutorKind,
 ) -> Result<ExecTestResults, KclError> {
+    parse_execute_inner(code, project_directory, executor_kind, false).await
+}
+
+/// Like [`parse_execute_with_project_dir`], but missing names are explained
+/// for user declarations too, not only std's. Only for tests of the `added_in`
+/// hint itself, which std gives no declaration to exercise yet.
+#[cfg(test)]
+pub(crate) async fn parse_execute_hinting_all(
+    code: &str,
+    project_directory: Option<TypedPath>,
+) -> Result<ExecTestResults, KclError> {
+    parse_execute_inner(code, project_directory, machine::ExecutorKind::resolve(), true).await
+}
+
+#[cfg(test)]
+async fn parse_execute_inner(
+    code: &str,
+    project_directory: Option<TypedPath>,
+    executor_kind: machine::ExecutorKind,
+    hint_all_not_yet_added: bool,
+) -> Result<ExecTestResults, KclError> {
     let program = crate::Program::parse_no_errs(code)?;
 
     let exec_ctxt = new_mock_executor_context(project_directory, executor_kind);
     let mut exec_state = ExecState::new(&exec_ctxt);
+    exec_state.global.hint_all_not_yet_added = hint_all_not_yet_added;
     let result = exec_ctxt.run(&program, &mut exec_state).await?;
 
     Ok(ExecTestResults {
@@ -7516,6 +7538,20 @@ type Color { | Red | Green | Red }
         parse_execute_with_project_dir(main, Some(crate::TypedPath(tmpdir.path().into()))).await
     }
 
+    /// Like [`execute_with_modules`], with hints enabled for user declarations;
+    /// see [`parse_execute_hinting_all`].
+    async fn execute_with_modules_hinting_all(
+        main: &str,
+        modules: &[(&str, &str)],
+    ) -> Result<ExecTestResults, KclError> {
+        let tmpdir = tempfile::TempDir::with_prefix("zma_kcl_added_in").unwrap();
+        for (name, source) in modules {
+            tokio::fs::write(tmpdir.path().join(name), source).await.unwrap();
+        }
+
+        parse_execute_hinting_all(main, Some(crate::TypedPath(tmpdir.path().into()))).await
+    }
+
     /// Runs `main` with an empty imported module named `m.kcl` in mock
     /// execution and returns the recorded compilation issues; the run may
     /// end in an error (e.g. from operating on the module's missing return
@@ -8815,10 +8851,11 @@ type Color { | Green }
 
     /// Runs `body` under `kcl_version` and returns the fatal error message, or
     /// `None` if it ran without issues. Experimental features are allowed
-    /// because user type aliases are experimental.
+    /// because user type aliases are experimental, and hints are enabled for
+    /// user declarations, since in production only std gets them.
     async fn added_in_error(kcl_version: &str, body: &str) -> Option<String> {
         let program = format!("@settings(kclVersion = {kcl_version}, experimentalFeatures = allow)\n{body}");
-        match parse_execute(&program).await {
+        match parse_execute_hinting_all(&program, None).await {
             Ok(result) => {
                 assert!(
                     result.issues().is_empty(),
@@ -8882,7 +8919,7 @@ fn newFn() { return 1 }
 x = newFn()
 "#;
         assert_eq!(
-            parse_execute(program).await.unwrap_err().message(),
+            parse_execute_hinting_all(program, None).await.unwrap_err().message(),
             "`newFn` is not defined; it was added in KCL 2.0, but this program uses KCL 1.0"
         );
     }
@@ -8953,7 +8990,7 @@ x = [1, 2]: NewT
         // An explicit import fails with the version help.
         let main = "@settings(kclVersion = 2.0)\nimport newFn from \"dep.kcl\"\nx = newFn()\n";
         assert_eq!(
-            execute_with_modules(main, &[("dep.kcl", dep)])
+            execute_with_modules_hinting_all(main, &[("dep.kcl", dep)])
                 .await
                 .unwrap_err()
                 .message(),
@@ -8963,7 +9000,7 @@ x = [1, 2]: NewT
         // So does a qualified path.
         let main = "@settings(kclVersion = 2.0)\nimport \"dep.kcl\"\nx = dep::newFn()\n";
         assert_eq!(
-            execute_with_modules(main, &[("dep.kcl", dep)])
+            execute_with_modules_hinting_all(main, &[("dep.kcl", dep)])
                 .await
                 .unwrap_err()
                 .message(),
@@ -8973,7 +9010,7 @@ x = [1, 2]: NewT
         // A glob import silently omits it while the rest of the module works.
         let main = "@settings(kclVersion = 2.0)\nimport * from \"dep.kcl\"\nx = oldFn()\ny = newFn()\n";
         assert_eq!(
-            execute_with_modules(main, &[("dep.kcl", dep)])
+            execute_with_modules_hinting_all(main, &[("dep.kcl", dep)])
                 .await
                 .unwrap_err()
                 .message(),
@@ -8982,8 +9019,31 @@ x = [1, 2]: NewT
 
         // On a new enough program the import works.
         let main = "@settings(kclVersion = \"3.0-preview\")\nimport newFn from \"dep.kcl\"\nx = newFn()\n";
-        let result = execute_with_modules(main, &[("dep.kcl", dep)]).await.unwrap();
+        let result = execute_with_modules_hinting_all(main, &[("dep.kcl", dep)])
+            .await
+            .unwrap();
         assert_eq!(variable_f64(&result, "x"), 1.0);
+    }
+
+    /// In production only std declarations get the version help; user
+    /// declarations keep the plain message.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn not_yet_added_user_declarations_get_no_hint() {
+        let program = "@settings(kclVersion = 2.0)\n@(added_in = \"3.0\")\nfn newFn() { return 1 }\nx = newFn()\n";
+        assert_eq!(
+            parse_execute(program).await.unwrap_err().message(),
+            "`newFn` is not defined"
+        );
+
+        let dep = "@(added_in = \"3.0\")\nexport fn newFn() { return 1 }\n";
+        let main = "@settings(kclVersion = 2.0)\nimport newFn from \"dep.kcl\"\n";
+        assert_eq!(
+            execute_with_modules(main, &[("dep.kcl", dep)])
+                .await
+                .unwrap_err()
+                .message(),
+            "newFn is not defined in module"
+        );
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -9015,13 +9075,19 @@ x = [1, 2]: NewT
 
         let main = "@settings(kclVersion = 2.0)\nimport * from \"mid.kcl\"\nx = newFn()\n";
         assert_eq!(
-            execute_with_modules(main, &modules).await.unwrap_err().message(),
+            execute_with_modules_hinting_all(main, &modules)
+                .await
+                .unwrap_err()
+                .message(),
             "`newFn` is not defined; it was added in KCL 3.0, but this program uses KCL 2.0"
         );
 
         let main = "@settings(kclVersion = 2.0)\nimport newFn from \"mid.kcl\"\nx = newFn()\n";
         assert_eq!(
-            execute_with_modules(main, &modules).await.unwrap_err().message(),
+            execute_with_modules_hinting_all(main, &modules)
+                .await
+                .unwrap_err()
+                .message(),
             "newFn is not defined in module; it was added in KCL 3.0, but this program uses KCL 2.0"
         );
     }
@@ -9033,7 +9099,7 @@ x = [1, 2]: NewT
 
         let main = "@settings(kclVersion = 2.0)\nimport * from \"dep.kcl\"\nx = privateFn()\n";
         assert_eq!(
-            execute_with_modules(main, &[("dep.kcl", dep)])
+            execute_with_modules_hinting_all(main, &[("dep.kcl", dep)])
                 .await
                 .unwrap_err()
                 .message(),
@@ -9042,7 +9108,7 @@ x = [1, 2]: NewT
 
         let main = "@settings(kclVersion = 2.0)\nimport privateFn from \"dep.kcl\"\n";
         assert_eq!(
-            execute_with_modules(main, &[("dep.kcl", dep)])
+            execute_with_modules_hinting_all(main, &[("dep.kcl", dep)])
                 .await
                 .unwrap_err()
                 .message(),
@@ -9054,7 +9120,7 @@ x = [1, 2]: NewT
         let mid = "import * from \"dep.kcl\"\nexport fn other() { return 2 }\n";
         let main = "@settings(kclVersion = 2.0)\nimport * from \"mid.kcl\"\nx = newFn()\n";
         assert_eq!(
-            execute_with_modules(main, &[("dep.kcl", dep), ("mid.kcl", mid)])
+            execute_with_modules_hinting_all(main, &[("dep.kcl", dep), ("mid.kcl", mid)])
                 .await
                 .unwrap_err()
                 .message(),
@@ -9093,6 +9159,15 @@ x = [1, 2]: NewT
         assert_eq!(
             restored.not_yet_added_in_scope("cube").map(|r| &r.added_in),
             Some(&version("3.0"))
+        );
+        // A std record explains a failed lookup without any test override.
+        let err = KclError::new_undefined_value(
+            KclErrorDetails::new("`cube` is not defined".to_owned(), Vec::new()),
+            None,
+        );
+        assert_eq!(
+            restored.with_not_yet_added_hint(&["cube"], err).message(),
+            "`cube` is not defined; it was added in KCL 3.0, but this program uses KCL 1.0"
         );
         ctx.close().await;
     }

@@ -128,6 +128,10 @@ pub(super) struct GlobalState {
     /// `eval_prelude`, since root environments reach the prelude without an
     /// import statement; the mock memory cache carries it like `module_infos`.
     pub std_not_yet_added: IndexMap<String, NotYetAdded>,
+    /// Test-only: explain missing names for user declarations too, so tests
+    /// can cover the hint path while std declares nothing gated.
+    #[cfg(test)]
+    pub(crate) hint_all_not_yet_added: bool,
 }
 
 /// A declaration skipped because the program's KCL version predates its
@@ -137,7 +141,7 @@ pub(super) struct GlobalState {
 pub struct NotYetAdded {
     /// The KCL version the declaration is available from.
     pub added_in: annotations::VersionConstraint,
-    /// Whether the declaration belongs to std, for future error guidance.
+    /// Whether the declaration belongs to std. Only std declarations get the hint.
     pub is_std: bool,
 }
 
@@ -711,12 +715,13 @@ impl ExecState {
             .or_else(|| self.global.std_not_yet_added.get(key))
     }
 
-    /// Append the version help to `err` if one of `keys` was skipped in the
-    /// current scope, mirroring the not-yet-added parameter message.
+    /// Append the version help to `err` if one of `keys` is a std declaration
+    /// skipped in the current scope, mirroring the not-yet-added parameter
+    /// message.
     pub(crate) fn with_not_yet_added_hint(&self, keys: &[&str], err: KclError) -> KclError {
         match keys.iter().find_map(|key| self.not_yet_added_in_scope(key)) {
-            Some(item) => self.not_yet_added_hint(item, err),
-            None => err,
+            Some(item) if self.hints_for(item) => self.not_yet_added_hint(item, err),
+            _ => err,
         }
     }
 
@@ -729,9 +734,21 @@ impl ExecState {
         err: KclError,
     ) -> KclError {
         match keys.iter().find_map(|key| records.get(*key)) {
-            Some(item) => self.not_yet_added_hint(item, err),
-            None => err,
+            Some(item) if self.hints_for(item) => self.not_yet_added_hint(item, err),
+            _ => err,
         }
+    }
+
+    /// Whether a failed lookup should mention `item`. Only std declarations
+    /// qualify, so a mismatch with the library is explained while user code
+    /// keeps the plain message; hints for user code would also have to follow
+    /// lexical scope, which these records do not.
+    fn hints_for(&self, item: &NotYetAdded) -> bool {
+        #[cfg(test)]
+        if self.global.hint_all_not_yet_added {
+            return true;
+        }
+        item.is_std
     }
 
     fn not_yet_added_hint(&self, item: &NotYetAdded, mut err: KclError) -> KclError {
@@ -1643,6 +1660,8 @@ impl GlobalState {
             sketch_mode: false,
             geometry_only: settings.geometry_only,
             std_not_yet_added: Default::default(),
+            #[cfg(test)]
+            hint_all_not_yet_added: false,
         };
 
         let root_id = ModuleId::default();
