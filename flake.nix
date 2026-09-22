@@ -118,7 +118,7 @@
             lockFile = ./rust/Cargo.lock;
             outputHashes = {
             "gltf-1.3.0" = "sha256-V9OwzwqXhGzjZhCmbszGv5jLkSwYUo5lZYg4TQ0xA4A=";
-            "kittycad-modeling-cmds-0.2.233" = "sha256-Q62YyapH7IOWStbQmRv0Xfq6Lv7uQysfZ+HoFkSoT9c=";
+            "kittycad-modeling-cmds-0.2.235" = "sha256-pwt6k5ACQx3bPTTsilBpf819QqkQktccEobmvKP0A3s=";
             };
           };
           cargoBuildFlags = [

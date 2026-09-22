@@ -1451,7 +1451,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "39cab71617ae0d63f51a36d69f866391735b51691dbda63cf6f96d042b63efeb"
 dependencies = [
  "libc",
- "windows-sys 0.52.0",
+ "windows-sys 0.59.0",
 ]
 
 [[package]]
@@ -2568,7 +2568,7 @@ checksum = "3640c1c38b8e4e43584d8df18be5fc6b0aa314ce6ebf51b53313d4306cca8e46"
 dependencies = [
  "hermit-abi",
  "libc",
- "windows-sys 0.52.0",
+ "windows-sys 0.59.0",
 ]
 
 [[package]]
@@ -3021,8 +3021,8 @@ dependencies = [
 
 [[package]]
 name = "kittycad-modeling-cmds"
-version = "0.2.233"
-source = "git+https://github.com/KittyCAD/modeling-api?rev=2e02395ec2702f466688cce9002ef0ab7542be26#2e02395ec2702f466688cce9002ef0ab7542be26"
+version = "0.2.235"
+source = "git+https://github.com/KittyCAD/modeling-api?rev=9f54c6c3d01b727dbc2c0f135d4cf8d6078810c9#9f54c6c3d01b727dbc2c0f135d4cf8d6078810c9"
 dependencies = [
  "anyhow",
  "bon",
@@ -3052,7 +3052,7 @@ dependencies = [
 [[package]]
 name = "kittycad-modeling-cmds-macros"
 version = "0.1.14"
-source = "git+https://github.com/KittyCAD/modeling-api?rev=2e02395ec2702f466688cce9002ef0ab7542be26#2e02395ec2702f466688cce9002ef0ab7542be26"
+source = "git+https://github.com/KittyCAD/modeling-api?rev=9f54c6c3d01b727dbc2c0f135d4cf8d6078810c9#9f54c6c3d01b727dbc2c0f135d4cf8d6078810c9"
 dependencies = [
  "kittycad-modeling-cmds-macros-impl",
  "proc-macro2",
@@ -3063,7 +3063,7 @@ dependencies = [
 [[package]]
 name = "kittycad-modeling-cmds-macros-impl"
 version = "0.1.15"
-source = "git+https://github.com/KittyCAD/modeling-api?rev=2e02395ec2702f466688cce9002ef0ab7542be26#2e02395ec2702f466688cce9002ef0ab7542be26"
+source = "git+https://github.com/KittyCAD/modeling-api?rev=9f54c6c3d01b727dbc2c0f135d4cf8d6078810c9#9f54c6c3d01b727dbc2c0f135d4cf8d6078810c9"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -4757,7 +4757,7 @@ dependencies = [
  "errno",
  "libc",
  "linux-raw-sys 0.12.1",
- "windows-sys 0.52.0",
+ "windows-sys 0.59.0",
 ]
 
 [[package]]
@@ -4814,7 +4814,7 @@ dependencies = [
  "security-framework",
  "security-framework-sys",
  "webpki-root-certs",
- "windows-sys 0.52.0",
+ "windows-sys 0.59.0",
 ]
 
 [[package]]
@@ -5601,7 +5601,7 @@ dependencies = [
  "getrandom 0.4.3",
  "once_cell",
  "rustix 1.1.4",
- "windows-sys 0.52.0",
+ "windows-sys 0.59.0",
 ]
 
 [[package]]
@@ -6558,7 +6558,7 @@ version = "0.1.11"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c2a7b1c03c876122aa43f3020e6c3c3ee5c05081c9a00739faf7503aeba10d22"
 dependencies = [
- "windows-sys 0.52.0",
+ "windows-sys 0.59.0",
 ]
 
 [[package]]
