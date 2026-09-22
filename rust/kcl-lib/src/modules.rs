@@ -101,6 +101,8 @@ pub(crate) fn read_std(mod_name: &str) -> Option<&'static str> {
         "vector" => Some(include_str!("../std/vector.kcl")),
         "hole" => Some(include_str!("../std/hole.kcl")),
         "gear" => Some(include_str!("../std/gear.kcl")),
+        "sprocket" => Some(include_str!("../std/sprocket.kcl")),
+        "rail" => Some(include_str!("../std/rail.kcl")),
         "view" => Some(include_str!("../std/view.kcl")),
         "operation" => Some(include_str!("../std/operation.kcl")),
         _ => None,
@@ -312,7 +314,10 @@ pub struct ModuleSource {
 
 #[cfg(test)]
 mod tests {
+    use kittycad_modeling_cmds::ModelingCmd;
+
     use super::*;
+    use crate::execution::Path;
 
     #[test]
     fn import_name_prefers_the_path_as_written() {
@@ -327,5 +332,229 @@ mod tests {
             original_import_path: None,
         };
         assert_eq!(without_original.import_name(), "/project/model.obj");
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn airfoil_builds_supported_profiles_with_finite_geometry() {
+        let code = r#"
+@settings(defaultLengthUnit = in, kclVersion = 2.0, experimentalFeatures = allow)
+
+naca0012 = airfoil(
+  sketchPlane = XY,
+  chordLength = 4in,
+  naca4Code = 12,
+)
+
+airfoilRegion = region(point = [2in, 0in], sketch = naca0012)
+extrude(airfoilRegion, length = 0.25in)
+
+naca2412 = airfoil(
+  sketchPlane = XZ,
+  chordLength = 100mm,
+  naca4Code = 2412,
+)
+camberedAirfoilRegion = region(point = [50mm, 0mm], sketch = naca2412)
+extrude(camberedAirfoilRegion, length = 10mm)
+
+thickCambered = airfoil(
+  sketchPlane = YZ,
+  chordLength = 1m,
+  naca4Code = 9436,
+)
+thickCamberedRegion = region(point = [500mm, 0mm], sketch = thickCambered)
+"#;
+
+        let result = crate::execution::parse_execute(code).await.unwrap();
+        assert!(result.issues().is_empty(), "{:#?}", result.issues());
+        for name in ["airfoilRegion", "camberedAirfoilRegion", "thickCamberedRegion"] {
+            let KclValue::Sketch { value } = result.variable(name) else {
+                panic!("{name} should be a sketch");
+            };
+            assert_eq!(value.synthetic_jump_path_ids.len(), 1);
+            let mut arc_count = 0;
+            for path in &value.paths {
+                assert!(path.get_base().from.iter().all(|coordinate| coordinate.is_finite()));
+                assert!(path.get_base().to.iter().all(|coordinate| coordinate.is_finite()));
+                match path {
+                    Path::Arc { center, radius, .. } => {
+                        arc_count += 1;
+                        assert!(center.iter().all(|coordinate| coordinate.is_finite()));
+                        assert!(radius.is_finite());
+                    }
+                    Path::ToPoint { .. } if value.synthetic_jump_path_ids.contains(&path.get_id()) => {}
+                    path => panic!("{name} should contain only arcs and a solver pen jump, found {path:?}"),
+                }
+            }
+            assert_eq!(arc_count, 32);
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn airfoil_does_not_depend_on_solver_seed_guesses() {
+        // These valid designations produced solver failures or conflicting constraints
+        // when the analytic coordinates were reconstructed from tiny fixed seed guesses.
+        for code in [4, 1104, 1904, 9104, 9140, 9904, 9940] {
+            for chord in ["1mm", "4in", "1m"] {
+                let source = format!(
+                    r#"@settings(defaultLengthUnit = mm, kclVersion = 2.0, experimentalFeatures = allow)
+profile = airfoil(sketchPlane = XY, chordLength = {chord}, naca4Code = {code})
+"#
+                );
+                let result = crate::execution::parse_execute(&source).await.unwrap();
+                assert!(
+                    result.issues().is_empty(),
+                    "NACA {code:04}, chord {chord}: {:#?}",
+                    result.issues()
+                );
+            }
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn roller_chain_validates_dimensions_in_mixed_units() {
+        for (pitch, roller, bore, error) in [
+            ("0.25in", "3.302mm", "15.875mm", None),
+            (
+                "6.35mm",
+                "0.3in",
+                "1mm",
+                Some("rollerDiameter must be less than chainPitch"),
+            ),
+            (
+                "6.35mm",
+                "3.302mm",
+                "2in",
+                Some("bore must fit inside the sprocket root diameter"),
+            ),
+        ] {
+            let source = format!(
+                r#"@settings(defaultLengthUnit = mm, kclVersion = 1.0)
+sprocket::rollerChain(nTeeth = 24, chainPitch = {pitch}, rollerWidth = 0.125in, rollerDiameter = {roller}, bore = {bore})
+"#
+            );
+            let result = crate::execution::parse_execute(&source).await;
+            if let Some(message) = error {
+                assert!(result.unwrap_err().to_string().contains(message));
+            } else {
+                assert!(result.unwrap().issues().is_empty());
+            }
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn roller_chain_rejects_degenerate_and_overlapping_teeth() {
+        for (teeth, roller, message) in [
+            (3, "0.52in", "nTeeth must be at least 5"),
+            (4, "0.52in", "nTeeth must be at least 5"),
+            (24, "0.99in", "rollerDiameter is too large"),
+        ] {
+            let source = format!(
+                r#"@settings(defaultLengthUnit = in, kclVersion = 1.0)
+sprocket::rollerChain(nTeeth = {teeth}, chainPitch = 1in, rollerWidth = 0.5in, rollerDiameter = {roller}, bore = 0.1in)
+"#
+            );
+            let error = crate::execution::parse_execute(&source).await.unwrap_err();
+            assert!(error.to_string().contains(message), "{error}");
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn roller_chain_tip_uses_the_short_arc() {
+        // A fixed interior angle of 170 / nTeeth falls behind the flank for
+        // five- and six-tooth sprockets, selecting almost a full circle.
+        for teeth in [5, 6, 24] {
+            let source = format!(
+                r#"@settings(defaultLengthUnit = in, kclVersion = 1.0)
+body = sprocket::rollerChain(nTeeth = {teeth}, chainPitch = 1in, rollerWidth = 0.5in, rollerDiameter = 0.52in, bore = 0.1in)
+"#
+            );
+            let result = crate::execution::parse_execute(&source).await.unwrap();
+            let KclValue::Solid { value } = result.variable("body") else {
+                panic!("the sprocket should be a solid");
+            };
+            let sketch = value.sketch().unwrap();
+            let Path::ArcThreePoint { p1, p2, p3, .. } = &sketch.paths[2] else {
+                panic!("the third segment should be the tooth-tip arc");
+            };
+            let angle = |point: &[f64; 2]| point[1].atan2(point[0]);
+            assert!(angle(p1) < angle(p2) && angle(p2) < angle(p3));
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn roller_chain_is_not_experimental() {
+        let code = r#"
+@settings(defaultLengthUnit = in, kclVersion = 1.0)
+
+sprocket::rollerChain(
+  nTeeth = 24,
+  chainPitch = 0.25in,
+  rollerWidth = 0.125in,
+  rollerDiameter = 0.13in,
+  bore = 0.625in,
+)
+"#;
+
+        let result = crate::execution::parse_execute(code)
+            .await
+            .expect("the sprocket should execute");
+        assert!(
+            !result.issues().iter().any(|issue| {
+                issue.message.contains("sprocket::rollerChain") && issue.message.contains("experimental")
+            }),
+            "the stable sprocket API should not emit an experimental warning: {:#?}",
+            result.issues()
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn t_slot_rail_builds_a_closed_profile_with_a_bore() {
+        let code = r#"
+@settings(defaultLengthUnit = mm, kclVersion = 1.0)
+
+railBody = rail::tSlot(
+  railHeight = 38.1mm,
+  length = 2ft,
+)
+"#;
+
+        let result = crate::execution::parse_execute(code)
+            .await
+            .expect("the T-slot rail should execute");
+        let KclValue::Solid { value } = result.variable("railBody") else {
+            panic!("rail::tSlot should return a solid");
+        };
+        let sketch = value.sketch().expect("the rail solid should retain its profile");
+        assert!(!sketch.paths.is_empty(), "the rail should have an outer profile");
+        assert_eq!(sketch.inner_paths.len(), 1, "the rail should have one central bore");
+        assert!(sketch.paths.iter().chain(&sketch.inner_paths).all(|path| {
+            path.get_base().from.iter().all(|coordinate| coordinate.is_finite())
+                && path.get_base().to.iter().all(|coordinate| coordinate.is_finite())
+        }));
+        assert!(
+            !result
+                .issues()
+                .iter()
+                .any(|issue| { issue.message.contains("rail::tSlot") && issue.message.contains("experimental") }),
+            "the stable rail API should not emit an experimental warning: {:#?}",
+            result.issues()
+        );
+
+        let scale = result
+            .root_module_artifact_commands()
+            .iter()
+            .find_map(|artifact_command| match &artifact_command.command {
+                ModelingCmd::SetObjectTransform(command) => {
+                    command.transforms.iter().find_map(|transform| transform.scale.as_ref())
+                }
+                _ => None,
+            })
+            .expect("the rail profile should be scaled to railHeight");
+        for factor in [scale.property.x, scale.property.y, scale.property.z] {
+            assert!(
+                (factor - 1.5).abs() < 1e-9,
+                "38.1mm should scale a 1in profile by 1.5, got {factor}"
+            );
+        }
     }
 }
