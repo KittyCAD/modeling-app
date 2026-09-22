@@ -157,7 +157,7 @@ impl TestGraphicsArtifact {
 }
 
 #[cfg(test)]
-#[derive(Deserialize, serde::Serialize, Debug, Clone, Default)]
+#[derive(Deserialize, Debug, Clone, Default)]
 pub enum TestGraphicsParams {
     /// use the 3d engine scene to render an image
     EngineRender { reason: String },
