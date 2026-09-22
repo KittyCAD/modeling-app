@@ -710,7 +710,7 @@ async fn physical_properties(ctx: &ExecutorContext) -> Option<serde_json::Value>
     {
         Ok(response) => response,
         Err(err)
-            if err.message() == "Nothing to export"
+            if err.message().starts_with("Nothing to export")
                 // Surface bodies have area and bounds, but no volume from
                 // which the engine can calculate mass.
                 || err.message() == "internal error: unknown" =>
