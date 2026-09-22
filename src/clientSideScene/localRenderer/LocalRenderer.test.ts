@@ -84,6 +84,7 @@ function fixture(
   )
 ) {
   const manager = Object.assign(new EventTarget(), {
+    artifactGraph: new Map([['triangle', { type: 'sweep' }]]),
     isExecutingSignal: signal(false),
     get isExecuting() {
       return this.isExecutingSignal.value
@@ -470,6 +471,64 @@ describe('local GLB loading', () => {
     referencePlane.material.dispose()
   })
 
+  it('clears an empty execution without exporting, while preserving default planes', async () => {
+    const f = planeFixture()
+    const referencePlane =
+      f.state.defaultPlaneRenderer?.planes?.get('xy')?.group
+    if (!referencePlane) throw new Error('Missing reference plane')
+    f.state.scene?.add(referencePlane)
+    f.done()
+    await vi.waitFor(() => expect(f.state.currentModel).not.toBeNull())
+    const mesh = f.state.currentModel?.children[0]
+    if (!(mesh instanceof Mesh)) throw new Error('Missing mesh')
+    const disposeGeometry = vi.spyOn(mesh.geometry, 'dispose')
+    const disposeMaterial = vi.spyOn(mesh.material, 'dispose')
+    const disposePlane = vi.spyOn(f.target.object.geometry, 'dispose')
+
+    f.manager.isExecutingSignal.value = true
+    f.manager.artifactGraph.clear()
+    f.done()
+
+    expect(f.state.currentModel).toBeNull()
+    expect(f.manager.rustContext.export).toHaveBeenCalledOnce()
+    expect(disposeGeometry).toHaveBeenCalledOnce()
+    expect(disposeMaterial).toHaveBeenCalledOnce()
+    expect(disposePlane).not.toHaveBeenCalled()
+    expect(f.state.scene?.children).toEqual([referencePlane])
+    expect(f.picker.setTargets).toHaveBeenLastCalledWith([f.target], null)
+    expect(f.highlights.setTargets).toHaveBeenLastCalledWith([f.target])
+    expect(f.state.baseRenderDirty).toBe(true)
+    expect(f.state.modelLoadSettledAfterRender).toBe(true)
+    f.renderer.dispose()
+    f.target.object.geometry.dispose()
+  })
+
+  it('does not restore a stale GLB after an empty execution completes', async () => {
+    const f = fixture()
+    const gltf = await new GLTFLoader().parseAsync(
+      new Uint8Array(triangleGlb().contents).buffer,
+      ''
+    )
+    const mesh = gltf.scene.children[0]
+    if (!(mesh instanceof Mesh)) throw new Error('Missing mesh')
+    const disposeGeometry = vi.spyOn(mesh.geometry, 'dispose')
+    const pending = Promise.withResolvers<typeof gltf>()
+    const parse = vi
+      .spyOn(GLTFLoader.prototype, 'parseAsync')
+      .mockReturnValueOnce(pending.promise)
+    f.done()
+    await vi.waitFor(() => expect(parse).toHaveBeenCalledOnce())
+    f.manager.isExecutingSignal.value = true
+    f.manager.artifactGraph.clear()
+    f.done()
+    pending.resolve(gltf)
+    await vi.waitFor(() => expect(disposeGeometry).toHaveBeenCalledOnce())
+    expect(f.state.currentModel).toBeNull()
+    expect(f.manager.rustContext.export).toHaveBeenCalledOnce()
+    expect(f.state.modelLoadSettledAfterRender).toBe(true)
+    f.renderer.dispose()
+  })
+
   it('discards an export if a newer execution starts before it arrives', async () => {
     const f = fixture()
     const pending = Promise.withResolvers<ModelingAppFile[]>()
@@ -506,6 +565,68 @@ describe('local GLB loading', () => {
     pending.resolve(gltf)
     await vi.waitFor(() => expect(disposeGeometry).toHaveBeenCalledOnce())
     expect(f.state.currentModel).toBeNull()
+  })
+
+  it.each(['missing GLB', 'export rejection', 'parse rejection'])(
+    'clears the old model on %s, preserving default planes',
+    async (failure) => {
+      const f = planeFixture()
+      const referencePlane =
+        f.state.defaultPlaneRenderer?.planes?.get('xy')?.group
+      if (!referencePlane) throw new Error('Missing reference plane')
+      f.state.scene?.add(referencePlane)
+      f.done()
+      await vi.waitFor(() => expect(f.state.currentModel).not.toBeNull())
+      const mesh = f.state.currentModel?.children[0]
+      if (!(mesh instanceof Mesh)) throw new Error('Missing mesh')
+      const disposeGeometry = vi.spyOn(mesh.geometry, 'dispose')
+      const disposeMaterial = vi.spyOn(mesh.material, 'dispose')
+      const errorLog = vi.spyOn(console, 'error').mockImplementation(() => {})
+      if (failure === 'missing GLB') {
+        f.manager.rustContext.export.mockResolvedValueOnce(undefined)
+      } else if (failure === 'export rejection') {
+        f.manager.rustContext.export.mockRejectedValueOnce(
+          new Error('Export failed')
+        )
+      } else {
+        vi.spyOn(GLTFLoader.prototype, 'parseAsync').mockRejectedValueOnce(
+          new Error('Invalid GLB')
+        )
+      }
+      f.manager.isExecutingSignal.value = true
+      f.done()
+      await vi.waitFor(() => expect(errorLog).toHaveBeenCalledOnce())
+
+      expect(f.state.currentModel).toBeNull()
+      expect(disposeGeometry).toHaveBeenCalledOnce()
+      expect(disposeMaterial).toHaveBeenCalledOnce()
+      expect(f.state.scene?.children).toEqual([referencePlane])
+      expect(f.picker.setTargets).toHaveBeenLastCalledWith([f.target], null)
+      expect(f.highlights.setTargets).toHaveBeenLastCalledWith([f.target])
+      expect(f.state.baseRenderDirty).toBe(true)
+      expect(f.onModelLoadSettled).toHaveBeenCalledOnce()
+      expect(f.manager.rustContext.export).toHaveBeenCalledTimes(2)
+      f.renderer.dispose()
+      f.target.object.geometry.dispose()
+    }
+  )
+
+  it('ignores an old export failure after a newer model has loaded', async () => {
+    const f = fixture()
+    const pending = Promise.withResolvers<ModelingAppFile[]>()
+    f.manager.rustContext.export.mockReturnValueOnce(pending.promise)
+    f.done()
+    f.manager.isExecutingSignal.value = true
+    f.done()
+    await vi.waitFor(() => expect(f.state.currentModel).not.toBeNull())
+    const current = f.state.currentModel
+    const errorLog = vi.spyOn(console, 'error').mockImplementation(() => {})
+    pending.reject(new Error('Old export failed'))
+    await pending.promise.catch(() => {})
+    expect(f.state.currentModel).toBe(current)
+    expect(errorLog).not.toHaveBeenCalled()
+    expect(f.onModelLoadSettled).not.toHaveBeenCalled()
+    f.renderer.dispose()
   })
 
   it('does not export failed executions and settles failed exports without retrying', async () => {

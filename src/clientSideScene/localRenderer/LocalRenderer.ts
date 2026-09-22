@@ -974,6 +974,13 @@ export class LocalRenderer {
     const generation = ++this.modelLoadGeneration
     const isCurrent = () =>
       !this.disposed && generation === this.modelLoadGeneration
+    // An empty execution has no GLB to export, but must clear the old model.
+    if (this.kclManager.artifactGraph.size === 0) {
+      this.clearModel()
+      this.rebuildPlaneTargets()
+      this.modelLoadSettledAfterRender = true
+      return
+    }
     const startedAt = performance.now()
     try {
       // Like viewer2: one whole-scene binary glTF export, without UUID extras.
@@ -1022,6 +1029,8 @@ export class LocalRenderer {
   }
 
   private handleModelLoadError(error: unknown) {
+    this.clearModel()
+    this.rebuildPlaneTargets()
     console.error('[LocalWebGPUScene] GLB model load failed', error)
     reportRejection(error)
     this.onModelLoadSettled?.()

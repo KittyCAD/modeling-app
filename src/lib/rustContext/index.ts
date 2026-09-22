@@ -202,6 +202,7 @@ export default class RustContext {
         JSON.stringify(settings)
       )
     } catch (e: any) {
+      console.error('[RustContext] Scene export failed', { format, error: e })
       const parsed: RustKclError = JSON.parse(e.toString())
       if (toastId) {
         toast.error(parsed.details.msg, { id: toastId })
