@@ -9,7 +9,6 @@ import { defaultStatusBarItemClassNames } from '@src/components/StatusBar/Status
 import Tooltip from '@src/components/Tooltip'
 import {
   type BillingContext,
-  BillingTransition,
   getEstimatedBillingBalance,
 } from '@src/lib/billing'
 import { useApp } from '@src/lib/boot'
@@ -85,32 +84,7 @@ function BillingStatusBarItem(props: { billingContext: BillingContext }) {
 }
 
 export function ZookeeperCreditsMenu() {
-  const { auth, billing } = useApp()
+  const { billing } = useApp()
   const billingContext = billing.useContext()
-  const apiToken = auth.useToken()
-  const refreshAt =
-    billingContext.userPaymentBalance?.monthly_api_credits_refresh_at
-  const hasMonthlyCredits =
-    !billingContext.error &&
-    Number.isFinite(billingContext.balance) &&
-    (billingContext.allowance ?? 0) > 0
-
-  useEffect(() => {
-    const refreshTime = refreshAt ? Date.parse(refreshAt) : Number.NaN
-    if (!apiToken || !hasMonthlyCredits || !Number.isFinite(refreshTime)) return
-
-    // Keep a pending refresh visible until the API supplies the new balance
-    // and schedule. The server may apply it after the scheduled time.
-    const updateIfDue = () => {
-      if (Date.now() >= refreshTime) {
-        billing.send({ type: BillingTransition.Update, apiToken })
-      }
-    }
-    updateIfDue()
-    const id = setInterval(updateIfDue, 60_000)
-
-    return () => clearInterval(id)
-  }, [apiToken, billing, hasMonthlyCredits, refreshAt])
-
   return <BillingStatusBarItem billingContext={billingContext} />
 }

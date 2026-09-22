@@ -2,7 +2,6 @@ import type { CustomerBalance } from '@kittycad/lib'
 import { useEffect, useState } from 'react'
 import type { BillingError } from '../../lib/billing'
 import { classNames } from '../../lib/classNames'
-import { BillingCreditRefresh } from '../Billing/BillingCreditRefresh'
 import { BillingIcon } from '../Billing/BillingIcon'
 import { Spinner } from '../Billing/Spinner'
 
@@ -124,9 +123,6 @@ export function BillingRemaining(props: BillingRemainingProps) {
   const totalDue = props.userPaymentBalance?.total_due ?? 0
   const totalDueString = getCurrencyAmountString(totalDue)
   const hasOverrun = Number(totalDue) > 0
-  const showCreditRefresh =
-    !props.error && Number.isFinite(props.balance) && (props.allowance ?? 0) > 0
-  const refreshAt = props.userPaymentBalance?.monthly_api_credits_refresh_at
   const [showSpinner, setShowSpinner] = useState<boolean>(true)
 
   useEffect(() => {
@@ -198,9 +194,6 @@ export function BillingRemaining(props: BillingRemainingProps) {
             </>
           )}
         </div>
-      )}
-      {isFlex && showCreditRefresh && (
-        <BillingCreditRefresh refreshAt={refreshAt} />
       )}
     </div>
   )

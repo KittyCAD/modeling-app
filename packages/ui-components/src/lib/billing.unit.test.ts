@@ -28,7 +28,6 @@ function createUserPaymentBalanceResponse(opts: {
 }): CustomerBalance {
   return {
     created_at: '2025-05-05T16:05:47.317Z',
-    monthly_api_credits_refresh_at: '2026-10-05T00:00:00Z',
     monthly_api_credits_remaining: 0,
     monthly_api_credits_remaining_monetary_value:
       opts.monthlyApiBalanceRemainingMonthlyValue,
@@ -124,9 +123,6 @@ test('Requests total due in user payment balance', async () => {
   expect(includeTotalDue).toBe('true')
   expect(didRequestPaymentMethods).toBe(false)
   expect(billing.userPaymentBalance?.total_due).toEqual(100.08)
-  expect(billing.userPaymentBalance?.monthly_api_credits_refresh_at).toBe(
-    '2026-10-05T00:00:00Z'
-  )
 })
 
 test('Finds the credits of Free subscription', async () => {
