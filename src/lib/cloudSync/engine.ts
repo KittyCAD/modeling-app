@@ -2619,11 +2619,11 @@ function projectArchiveFileMap(files: ProjectArchiveFile[]) {
 
 async function remoteArchiveMatchesUploadedManifest(
   metadata: ProjectMetadata,
-  remoteFiles: ProjectArchiveFile[],
-  uploadedManifest = metadata.baseManifest
+  remoteFiles: ProjectArchiveFile[]
 ) {
   const environmentName = getEnvironmentName()
   const remoteProjectId = metadata.remoteProjectId
+  const uploadedManifest = metadata.baseManifest
   if (!environmentName || !remoteProjectId || !uploadedManifest) {
     return false
   }
@@ -2650,7 +2650,7 @@ async function remoteArchiveMatchesUploadedManifest(
     candidates.push(remoteContents.slice(0, -serverStamp.length))
   }
 
-  for (const contents of new Set(candidates)) {
+  for (const contents of candidates) {
     const candidateFiles = remoteFiles.map((file) =>
       file === projectToml
         ? { ...file, data: new TextEncoder().encode(contents) }
@@ -3258,6 +3258,7 @@ async function syncProject(
       await parseProjectArchive(remoteArchive)
     )
     const remoteManifest = await projectManifestFromFiles(remoteFiles)
+
     const localMatchesRemote = projectManifestsEqual(
       localManifest,
       remoteManifest
@@ -3267,9 +3268,8 @@ async function syncProject(
         projectManifestsEqual(localManifest, metadata.baseManifest)
     )
 
-    // The API adds its cloud id to project.toml before the create response
-    // returns. If that is the only remote change, use its current revision as
-    // a guarded base for local work that arrived during the create request.
+    // Recognize the first upload before sending edits made during creation.
+    // Keep the local files and queued edits for the normal guarded upload.
     if (
       !localClean &&
       !metadata.remoteRevision &&
@@ -3278,76 +3278,23 @@ async function syncProject(
         metadata.conflict.remoteRevision === remoteRevision) &&
       (await remoteArchiveMatchesUploadedManifest(metadata, remoteFiles))
     ) {
-      const replacementAttempt = await createProjectReplacementAttempt({
-        projectPath: metadata.localProjectPath,
-        project: remoteProject,
-        files: localFiles,
-        syncBase: {
-          revision: remoteRevision,
-          manifest: remoteManifest,
-        },
-      })
-      const updated = await submitProjectReplacement(
-        metadata,
-        replacementAttempt,
-        throttleProjectApiRequest
-      )
-      if (!updated) {
-        return
-      }
-
-      const updatedRevision = getRevision(updated)
-      const updatedRemoteFiles = filterCloudSyncProjectFilesForSync(
-        await parseProjectArchive(
-          await runCloudSyncProjectApiRequest(throttleProjectApiRequest, () =>
-            downloadRemoteProjectArchive(config, remoteProjectId)
-          )
-        )
-      )
-      const currentRemoteProject = await runCloudSyncProjectApiRequest(
-        throttleProjectApiRequest,
-        () => getRemoteProject(config, remoteProjectId)
-      )
-      const currentRemoteRevision = getRevision(currentRemoteProject)
-      const downloadedArchiveMatchesReplacement =
-        await remoteArchiveMatchesUploadedManifest(
-          metadata,
-          updatedRemoteFiles,
-          replacementAttempt.manifest
-        )
-      if (
-        !updatedRevision ||
-        !currentRemoteRevision ||
-        currentRemoteRevision !== updatedRevision ||
-        !downloadedArchiveMatchesReplacement
-      ) {
-        await markProjectConflict(
-          metadata,
-          currentRemoteRevision,
-          getRemoteUpdatedAt(currentRemoteProject)
-        )
-        return
-      }
-
-      const checkpointCurrent = await projectSyncCheckpointIsCurrent(
-        metadata.localProjectPath,
-        syncCheckpoint
-      )
-      if (checkpointCurrent) {
-        await clearOutboxEntriesForProjectAtGeneration(
-          metadata.localProjectPath,
-          syncCheckpoint.outboxGeneration
-        )
-      }
-      await markProjectSynced(
-        metadata,
-        checkpointCurrent
-          ? replacementAttempt.manifest
-          : await projectManifestFromFiles(updatedRemoteFiles),
-        remoteSyncMetadata(currentRemoteProject, {
-          useNowAsUpdatedAtFallback: true,
+      if (entries.length === 0) {
+        await appendOutboxEntry({
+          projectPath: metadata.localProjectPath,
+          kind: 'upsert',
+          targetPath: metadata.localProjectPath,
+          createdAt: nowIso(),
         })
-      )
+      }
+      await putProjectMetadata({
+        ...metadata,
+        baseManifest: remoteManifest,
+        remoteRevision,
+        remoteUpdatedAt: getRemoteUpdatedAt(remoteProject),
+        conflict: undefined,
+        lastFailure: undefined,
+      })
+      scheduleSync(0)
       return
     }
     const autoReconciledFiles =
