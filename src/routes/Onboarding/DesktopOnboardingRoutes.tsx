@@ -640,9 +640,8 @@ function Exports() {
       <OnboardingCard>
         <h1 className="text-xl font-bold">Exporting</h1>
         <p className="my-4">
-          You can export the currently-opened part by clicking the Export button
-          in the left sidebar. We support exporting to STEP, gLTF, STL, OBJ, and
-          more.
+          You can export the current model by clicking the Export button in the
+          left sidebar. We support exporting to STEP, gLTF, STL, OBJ, and more.
         </p>
         <OnboardingButtons
           currentSlug={thisOnboardingStatus}
