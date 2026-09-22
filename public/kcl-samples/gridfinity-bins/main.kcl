@@ -1,6 +1,6 @@
 // Gridfinity Bins
 // Gridfinity is a system to help you work more efficiently. This is a system invented by Zack Freedman. There are two main components the baseplate and the bins. The components are comprised of a matrix of squares. Allowing easy stacking and expansion
-// Categories: Maker
+// Categories: Home & Lifestyle; 3D Printable; Parametric
 
 // Set units in millimeters (mm)
 @settings(defaultLengthUnit = mm, kclVersion = 2.0)

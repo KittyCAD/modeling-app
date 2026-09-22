@@ -2,13 +2,14 @@ import { relevantFileExtensions } from '@src/lang/wasmUtils'
 import { FILE_EXT, INDEX_IDENTIFIER, MAX_PADDING } from '@src/lib/constants'
 import fsZds from '@src/lib/fs-zds'
 import {
-  getEXTNoPeriod,
   getEXTWithPeriod,
+  getVersionedCreoExtensionWithPeriod,
   isExtensionARelevantExtension,
 } from '@src/lib/paths'
 import type { FileEntry } from '@src/lib/project'
 import { getUniqueProjectNameFromExistingNames } from '@src/lib/projectName'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
 
 export const isHidden = (fileOrDir: FileEntry) =>
   !!fileOrDir.name?.startsWith('.')
@@ -127,25 +128,25 @@ export async function getSettingsFolderPaths(projectPath?: string) {
  * Get the next available file name by appending a hyphen and number to the end of the name
  */
 export async function getNextFileName({
+  fileOperations,
   entryName,
   baseDir,
   wasmInstance,
   preserveUnknownExtension = false,
 }: {
+  fileOperations: FileOperationsRegistryService
   entryName: string
   baseDir: string
   wasmInstance: ModuleType
   preserveUnknownExtension?: boolean
 }) {
-  // Check if the file is relevantFile by not using the period
-  const extensionNoPeriod = getEXTNoPeriod(entryName)
   const extensions = relevantFileExtensions(wasmInstance)
-  const isRelevantFile =
-    extensionNoPeriod &&
-    isExtensionARelevantExtension(extensionNoPeriod, extensions)
+  const isRelevantFile = isExtensionARelevantExtension(entryName, extensions)
 
   // Do the following business logic with the period in the extension
-  let extension = getEXTWithPeriod(entryName)
+  let extension =
+    getVersionedCreoExtensionWithPeriod(entryName) ||
+    getEXTWithPeriod(entryName)
   if (!preserveUnknownExtension && (!isRelevantFile || !extension)) {
     extension = FILE_EXT
   }
@@ -156,7 +157,7 @@ export async function getNextFileName({
   let createdPath = fsZds.join(baseDir, createdName)
   let i = 1
   try {
-    while (await fsZds.stat(createdPath)) {
+    while (await fileOperations.exists(createdPath)) {
       const matchOnIndexAndExtension = new RegExp(`(-\\d+)?(${extension})?$`)
       createdName =
         entryName.replace(matchOnIndexAndExtension, '') + `-${i}` + extension
@@ -181,9 +182,11 @@ export async function getNextFileName({
  * Get the next available directory name by appending a hyphen and number to the end of the name
  */
 export async function getNextDirName({
+  fileOperations,
   entryName,
   baseDir,
 }: {
+  fileOperations: FileOperationsRegistryService
   entryName: string
   baseDir: string
 }) {
@@ -191,16 +194,10 @@ export async function getNextDirName({
   let createdPath = fsZds.join(baseDir, createdName)
   let i = 1
 
-  // This code is fucking cursed -- lee
-  try {
-    while (true) {
-      await fsZds.stat(createdPath)
-      createdName = entryName.replace(/-\d+$/, '') + `-${i}`
-      createdPath = fsZds.join(baseDir, createdName)
-      i++
-    }
-  } catch (e) {
-    console.error(e)
+  while (await fileOperations.exists(createdPath)) {
+    createdName = entryName.replace(/-\d+$/, '') + `-${i}`
+    createdPath = fsZds.join(baseDir, createdName)
+    i++
   }
   return {
     name: createdName,

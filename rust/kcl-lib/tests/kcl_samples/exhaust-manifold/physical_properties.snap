@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties exhaust-manifold.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": 76.56391684900001,
+      "y": 132.85735749829672,
+      "z": 195.8168201542004
+    },
+    "dimensions": {
+      "x": 259.50779868719997,
+      "y": 343.01461132270276,
+      "z": 391.6336403084008
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 595467.7689093301
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 318.1051921027726
+  }
+}

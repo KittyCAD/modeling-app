@@ -2,7 +2,9 @@
   description = "zoo.dev modeling-app";
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
+    # Keep x86_64-darwin support while using a nixpkgs release with the
+    # identifying User-Agent fix for crates.io downloads.
+    nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-26.05-darwin";
     rust-overlay.url = "github:oxalica/rust-overlay";
   };
 
@@ -112,7 +114,12 @@
 
           src = ./rust;
 
-          cargoLock.lockFile = ./rust/Cargo.lock;
+          cargoLock = {
+            lockFile = ./rust/Cargo.lock;
+            outputHashes = {
+            "gltf-1.3.0" = "sha256-V9OwzwqXhGzjZhCmbszGv5jLkSwYUo5lZYg4TQ0xA4A=";
+            };
+          };
           cargoBuildFlags = [
             "-p"
             "kcl-language-server"

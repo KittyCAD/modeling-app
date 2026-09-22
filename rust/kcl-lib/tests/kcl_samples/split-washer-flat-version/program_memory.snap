@@ -8,8 +8,8 @@ description: Variables in memory after executing split-washer-flat-version.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "kind": "Custom",
       "objectId": 14,
+      "kind": "Custom",
       "origin": {
         "x": 0.0,
         "y": 0.0,
@@ -70,7 +70,6 @@ description: Variables in memory after executing split-washer-flat-version.kcl
   },
   "bottomEdge": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "bottomEdge"
   },
   "clearance": {
@@ -78,22 +77,21 @@ description: Variables in memory after executing split-washer-flat-version.kcl
     "value": 0.5,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "innerCircle": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "innerCircle"
   },
   "leftEdge": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "leftEdge"
   },
   "outerCircle": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "outerCircle"
   },
@@ -119,10 +117,10 @@ description: Variables in memory after executing split-washer-flat-version.kcl
           ],
           "radius": 4.0,
           "tag": {
-            "commentStart": 349,
-            "end": 360,
+            "commentStart": 361,
+            "end": 372,
             "moduleId": 0,
-            "start": 349,
+            "start": 361,
             "type": "TagDeclarator",
             "value": "outerCircle"
           },
@@ -149,10 +147,10 @@ description: Variables in memory after executing split-washer-flat-version.kcl
           ],
           "radius": 2.0,
           "tag": {
-            "commentStart": 429,
-            "end": 440,
+            "commentStart": 441,
+            "end": 452,
             "moduleId": 0,
-            "start": 429,
+            "start": 441,
             "type": "TagDeclarator",
             "value": "innerCircle"
           },
@@ -165,17 +163,17 @@ description: Variables in memory after executing split-washer-flat-version.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 0,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -223,12 +221,11 @@ description: Variables in memory after executing split-washer-flat-version.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "mm"
+      "units": "mm",
+      "isClosed": "explicitly"
     }
   },
   "rightEdge": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "rightEdge"
   },
@@ -237,6 +234,8 @@ description: Variables in memory after executing split-washer-flat-version.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -244,10 +243,10 @@ description: Variables in memory after executing split-washer-flat-version.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 349,
-            "end": 360,
+            "commentStart": 361,
+            "end": 372,
             "moduleId": 0,
-            "start": 349,
+            "start": 361,
             "type": "TagDeclarator",
             "value": "outerCircle"
           },
@@ -258,10 +257,10 @@ description: Variables in memory after executing split-washer-flat-version.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 429,
-            "end": 440,
+            "commentStart": 441,
+            "end": 452,
             "moduleId": 0,
-            "start": 429,
+            "start": 441,
             "type": "TagDeclarator",
             "value": "innerCircle"
           },
@@ -289,10 +288,10 @@ description: Variables in memory after executing split-washer-flat-version.kcl
             ],
             "radius": 4.0,
             "tag": {
-              "commentStart": 349,
-              "end": 360,
+              "commentStart": 361,
+              "end": 372,
               "moduleId": 0,
-              "start": 349,
+              "start": 361,
               "type": "TagDeclarator",
               "value": "outerCircle"
             },
@@ -319,10 +318,10 @@ description: Variables in memory after executing split-washer-flat-version.kcl
             ],
             "radius": 2.0,
             "tag": {
-              "commentStart": 429,
-              "end": 440,
+              "commentStart": 441,
+              "end": 452,
               "moduleId": 0,
-              "start": 429,
+              "start": 441,
               "type": "TagDeclarator",
               "value": "innerCircle"
             },
@@ -335,17 +334,17 @@ description: Variables in memory after executing split-washer-flat-version.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 0,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -393,8 +392,8 @@ description: Variables in memory after executing split-washer-flat-version.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "mm"
+        "units": "mm",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -404,7 +403,6 @@ description: Variables in memory after executing split-washer-flat-version.kcl
   },
   "topEdge": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "topEdge"
   },
   "washerHoleDiameter": {
@@ -412,8 +410,10 @@ description: Variables in memory after executing split-washer-flat-version.kcl
     "value": 4.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "washerOuterDiameter": {
@@ -421,8 +421,10 @@ description: Variables in memory after executing split-washer-flat-version.kcl
     "value": 8.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "washerRing": {
@@ -430,6 +432,8 @@ description: Variables in memory after executing split-washer-flat-version.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -437,10 +441,10 @@ description: Variables in memory after executing split-washer-flat-version.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 349,
-            "end": 360,
+            "commentStart": 361,
+            "end": 372,
             "moduleId": 0,
-            "start": 349,
+            "start": 361,
             "type": "TagDeclarator",
             "value": "outerCircle"
           },
@@ -451,10 +455,10 @@ description: Variables in memory after executing split-washer-flat-version.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 429,
-            "end": 440,
+            "commentStart": 441,
+            "end": 452,
             "moduleId": 0,
-            "start": 429,
+            "start": 441,
             "type": "TagDeclarator",
             "value": "innerCircle"
           },
@@ -482,10 +486,10 @@ description: Variables in memory after executing split-washer-flat-version.kcl
             ],
             "radius": 4.0,
             "tag": {
-              "commentStart": 349,
-              "end": 360,
+              "commentStart": 361,
+              "end": 372,
               "moduleId": 0,
-              "start": 349,
+              "start": 361,
               "type": "TagDeclarator",
               "value": "outerCircle"
             },
@@ -512,10 +516,10 @@ description: Variables in memory after executing split-washer-flat-version.kcl
             ],
             "radius": 2.0,
             "tag": {
-              "commentStart": 429,
-              "end": 440,
+              "commentStart": 441,
+              "end": 452,
               "moduleId": 0,
-              "start": 429,
+              "start": 441,
               "type": "TagDeclarator",
               "value": "innerCircle"
             },
@@ -528,17 +532,17 @@ description: Variables in memory after executing split-washer-flat-version.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 0,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -586,8 +590,8 @@ description: Variables in memory after executing split-washer-flat-version.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "mm"
+        "units": "mm",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -612,17 +616,21 @@ description: Variables in memory after executing split-washer-flat-version.kcl
                       {
                         "n": 2.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -630,17 +638,21 @@ description: Variables in memory after executing split-washer-flat-version.kcl
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -743,10 +755,10 @@ description: Variables in memory after executing split-washer-flat-version.kcl
                   ],
                   "radius": 4.0,
                   "tag": {
-                    "commentStart": 349,
-                    "end": 360,
+                    "commentStart": 361,
+                    "end": 372,
                     "moduleId": 0,
-                    "start": 349,
+                    "start": 361,
                     "type": "TagDeclarator",
                     "value": "outerCircle"
                   },
@@ -790,10 +802,10 @@ description: Variables in memory after executing split-washer-flat-version.kcl
                   ],
                   "radius": 2.0,
                   "tag": {
-                    "commentStart": 429,
-                    "end": 440,
+                    "commentStart": 441,
+                    "end": 452,
                     "moduleId": 0,
-                    "start": 429,
+                    "start": 441,
                     "type": "TagDeclarator",
                     "value": "innerCircle"
                   },
@@ -806,17 +818,17 @@ description: Variables in memory after executing split-washer-flat-version.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 0,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -885,17 +897,21 @@ description: Variables in memory after executing split-washer-flat-version.kcl
                       {
                         "n": 4.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -903,17 +919,21 @@ description: Variables in memory after executing split-washer-flat-version.kcl
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -999,8 +1019,10 @@ description: Variables in memory after executing split-washer-flat-version.kcl
     "value": 1.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "washerThickness": {
@@ -1008,8 +1030,10 @@ description: Variables in memory after executing split-washer-flat-version.kcl
     "value": 1.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "wedgeBody": {
@@ -1017,6 +1041,8 @@ description: Variables in memory after executing split-washer-flat-version.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -1024,10 +1050,10 @@ description: Variables in memory after executing split-washer-flat-version.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1115,
-            "end": 1123,
+            "commentStart": 1127,
+            "end": 1135,
             "moduleId": 0,
-            "start": 1115,
+            "start": 1127,
             "type": "TagDeclarator",
             "value": "leftEdge"
           },
@@ -1038,10 +1064,10 @@ description: Variables in memory after executing split-washer-flat-version.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1192,
-            "end": 1199,
+            "commentStart": 1204,
+            "end": 1211,
             "moduleId": 0,
-            "start": 1192,
+            "start": 1204,
             "type": "TagDeclarator",
             "value": "topEdge"
           },
@@ -1052,10 +1078,10 @@ description: Variables in memory after executing split-washer-flat-version.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1269,
-            "end": 1278,
+            "commentStart": 1281,
+            "end": 1290,
             "moduleId": 0,
-            "start": 1269,
+            "start": 1281,
             "type": "TagDeclarator",
             "value": "rightEdge"
           },
@@ -1066,10 +1092,10 @@ description: Variables in memory after executing split-washer-flat-version.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1351,
-            "end": 1361,
+            "commentStart": 1363,
+            "end": 1373,
             "moduleId": 0,
-            "start": 1351,
+            "start": 1363,
             "type": "TagDeclarator",
             "value": "bottomEdge"
           },
@@ -1091,10 +1117,10 @@ description: Variables in memory after executing split-washer-flat-version.kcl
               -0.5
             ],
             "tag": {
-              "commentStart": 1115,
-              "end": 1123,
+              "commentStart": 1127,
+              "end": 1135,
               "moduleId": 0,
-              "start": 1115,
+              "start": 1127,
               "type": "TagDeclarator",
               "value": "leftEdge"
             },
@@ -1115,10 +1141,10 @@ description: Variables in memory after executing split-washer-flat-version.kcl
               0.5
             ],
             "tag": {
-              "commentStart": 1192,
-              "end": 1199,
+              "commentStart": 1204,
+              "end": 1211,
               "moduleId": 0,
-              "start": 1192,
+              "start": 1204,
               "type": "TagDeclarator",
               "value": "topEdge"
             },
@@ -1139,10 +1165,10 @@ description: Variables in memory after executing split-washer-flat-version.kcl
               0.5
             ],
             "tag": {
-              "commentStart": 1269,
-              "end": 1278,
+              "commentStart": 1281,
+              "end": 1290,
               "moduleId": 0,
-              "start": 1269,
+              "start": 1281,
               "type": "TagDeclarator",
               "value": "rightEdge"
             },
@@ -1163,10 +1189,10 @@ description: Variables in memory after executing split-washer-flat-version.kcl
               -0.5
             ],
             "tag": {
-              "commentStart": 1351,
-              "end": 1361,
+              "commentStart": 1363,
+              "end": 1373,
               "moduleId": 0,
-              "start": 1351,
+              "start": 1363,
               "type": "TagDeclarator",
               "value": "bottomEdge"
             },
@@ -1179,17 +1205,17 @@ description: Variables in memory after executing split-washer-flat-version.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 14,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": -0.5,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -1245,8 +1271,8 @@ description: Variables in memory after executing split-washer-flat-version.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "mm"
+        "units": "mm",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -1259,8 +1285,10 @@ description: Variables in memory after executing split-washer-flat-version.kcl
     "value": 2.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "wedgeLength": {
@@ -1268,8 +1296,10 @@ description: Variables in memory after executing split-washer-flat-version.kcl
     "value": 4.5,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "wedgeRegion": {
@@ -1288,10 +1318,10 @@ description: Variables in memory after executing split-washer-flat-version.kcl
             -0.5
           ],
           "tag": {
-            "commentStart": 1115,
-            "end": 1123,
+            "commentStart": 1127,
+            "end": 1135,
             "moduleId": 0,
-            "start": 1115,
+            "start": 1127,
             "type": "TagDeclarator",
             "value": "leftEdge"
           },
@@ -1312,10 +1342,10 @@ description: Variables in memory after executing split-washer-flat-version.kcl
             0.5
           ],
           "tag": {
-            "commentStart": 1192,
-            "end": 1199,
+            "commentStart": 1204,
+            "end": 1211,
             "moduleId": 0,
-            "start": 1192,
+            "start": 1204,
             "type": "TagDeclarator",
             "value": "topEdge"
           },
@@ -1336,10 +1366,10 @@ description: Variables in memory after executing split-washer-flat-version.kcl
             0.5
           ],
           "tag": {
-            "commentStart": 1269,
-            "end": 1278,
+            "commentStart": 1281,
+            "end": 1290,
             "moduleId": 0,
-            "start": 1269,
+            "start": 1281,
             "type": "TagDeclarator",
             "value": "rightEdge"
           },
@@ -1360,10 +1390,10 @@ description: Variables in memory after executing split-washer-flat-version.kcl
             -0.5
           ],
           "tag": {
-            "commentStart": 1351,
-            "end": 1361,
+            "commentStart": 1363,
+            "end": 1373,
             "moduleId": 0,
-            "start": 1351,
+            "start": 1363,
             "type": "TagDeclarator",
             "value": "bottomEdge"
           },
@@ -1376,17 +1406,17 @@ description: Variables in memory after executing split-washer-flat-version.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 14,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": -0.5,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -1442,8 +1472,8 @@ description: Variables in memory after executing split-washer-flat-version.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "mm"
+      "units": "mm",
+      "isClosed": "explicitly"
     }
   },
   "wedgeSketch": {
@@ -1463,17 +1493,21 @@ description: Variables in memory after executing split-washer-flat-version.kcl
                       {
                         "n": 4.5,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": -0.5,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -1481,17 +1515,21 @@ description: Variables in memory after executing split-washer-flat-version.kcl
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": -0.5,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -1583,17 +1621,21 @@ description: Variables in memory after executing split-washer-flat-version.kcl
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": -0.5,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -1601,17 +1643,21 @@ description: Variables in memory after executing split-washer-flat-version.kcl
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.5,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -1708,10 +1754,10 @@ description: Variables in memory after executing split-washer-flat-version.kcl
                     -0.5
                   ],
                   "tag": {
-                    "commentStart": 1115,
-                    "end": 1123,
+                    "commentStart": 1127,
+                    "end": 1135,
                     "moduleId": 0,
-                    "start": 1115,
+                    "start": 1127,
                     "type": "TagDeclarator",
                     "value": "leftEdge"
                   },
@@ -1732,10 +1778,10 @@ description: Variables in memory after executing split-washer-flat-version.kcl
                     0.5
                   ],
                   "tag": {
-                    "commentStart": 1192,
-                    "end": 1199,
+                    "commentStart": 1204,
+                    "end": 1211,
                     "moduleId": 0,
-                    "start": 1192,
+                    "start": 1204,
                     "type": "TagDeclarator",
                     "value": "topEdge"
                   },
@@ -1756,10 +1802,10 @@ description: Variables in memory after executing split-washer-flat-version.kcl
                     0.5
                   ],
                   "tag": {
-                    "commentStart": 1269,
-                    "end": 1278,
+                    "commentStart": 1281,
+                    "end": 1290,
                     "moduleId": 0,
-                    "start": 1269,
+                    "start": 1281,
                     "type": "TagDeclarator",
                     "value": "rightEdge"
                   },
@@ -1780,10 +1826,10 @@ description: Variables in memory after executing split-washer-flat-version.kcl
                     -0.5
                   ],
                   "tag": {
-                    "commentStart": 1351,
-                    "end": 1361,
+                    "commentStart": 1363,
+                    "end": 1373,
                     "moduleId": 0,
-                    "start": 1351,
+                    "start": 1363,
                     "type": "TagDeclarator",
                     "value": "bottomEdge"
                   },
@@ -1796,17 +1842,17 @@ description: Variables in memory after executing split-washer-flat-version.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 14,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": -0.5,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -1883,17 +1929,21 @@ description: Variables in memory after executing split-washer-flat-version.kcl
                       {
                         "n": 4.5,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.5,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -1901,17 +1951,21 @@ description: Variables in memory after executing split-washer-flat-version.kcl
                       {
                         "n": 4.5,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": -0.5,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -2003,17 +2057,21 @@ description: Variables in memory after executing split-washer-flat-version.kcl
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.5,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -2021,17 +2079,21 @@ description: Variables in memory after executing split-washer-flat-version.kcl
                       {
                         "n": 4.5,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.5,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],

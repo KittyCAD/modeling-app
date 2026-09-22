@@ -133,6 +133,8 @@ pub async fn fillet(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
     let legacy_csg: Option<bool> = args.get_kw_arg_opt("legacyMethod", &RuntimeType::bool(), exec_state)?;
     let csg_algorithm = CsgAlgorithm::legacy(legacy_csg.unwrap_or_default());
     let edge_cut_number: Option<u32> = args.get_kw_arg_opt("version", &RuntimeType::count(), exec_state)?;
+    let tangent_chain: Option<bool> = args.get_kw_arg_opt("tangentChain", &RuntimeType::bool(), exec_state)?;
+    let tangent_chain = tangent_chain.unwrap_or(exec_state.kcl_version() >= KclVersion::V3Preview);
     let edge_cut_version: EdgeCutVersion = edge_cut_number
         .map(|num| {
             num.try_into().map_err(|()| {
@@ -168,6 +170,7 @@ pub async fn fillet(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
                 tolerance,
                 csg_algorithm,
                 edge_cut_version,
+                tangent_chain,
                 tag,
             };
             let value = inner_fillet_with_engine_refs(solid, edge_refs, params, exec_state, args).await?;
@@ -182,6 +185,7 @@ pub async fn fillet(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
                 csg_algorithm,
                 tag,
                 edge_cut_version,
+                tangent_chain,
                 exec_state,
                 args,
             )
@@ -209,6 +213,7 @@ async fn inner_fillet(
     csg_algorithm: CsgAlgorithm,
     tag: Option<TagNode>,
     edge_cut_version: EdgeCutVersion,
+    tangent_chain: bool,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Box<Solid>, KclError> {
@@ -240,7 +245,8 @@ async fn inner_fillet(
             EdgeReference::Uuid(_) => String::new(),
         };
         for edge_id in ids {
-            if let Ok(face_ids) = super::edge::get_face_ids_for_edge(exec_state, solid.id, edge_id, &args).await
+            if crate::runtime_flags::z0006_refactor_metadata_enabled()
+                && let Ok(face_ids) = super::edge::get_face_ids_for_edge(exec_state, solid.id, edge_id, &args).await
                 && let [a, b] = face_ids.as_slice()
             {
                 if !tag_identifier.is_empty() {
@@ -269,7 +275,7 @@ async fn inner_fillet(
         extra_face_ids.push(exec_state.next_uuid());
     }
     exec_state
-        .batch_end_cmd(
+        .batch_edge_cut_cmd(
             ModelingCmdMeta::from_args_id(exec_state, &args, id),
             ModelingCmd::from(
                 mcmd::Solid3dCutEdges::builder()
@@ -279,6 +285,7 @@ async fn inner_fillet(
                     .strategy(Default::default())
                     .object_id(solid.id)
                     .version(edge_cut_version)
+                    .tangent_chain(tangent_chain)
                     .tolerance(LengthUnit(
                         tolerance.as_ref().map(|t| t.to_mm()).unwrap_or(DEFAULT_TOLERANCE_MM),
                     ))
@@ -318,6 +325,7 @@ struct FilletEdgeRefParams {
     tolerance: Option<TyF64>,
     csg_algorithm: CsgAlgorithm,
     edge_cut_version: EdgeCutVersion,
+    tangent_chain: bool,
     tag: Option<TagNode>,
 }
 
@@ -354,7 +362,7 @@ async fn inner_fillet_with_engine_refs(
     }
 
     exec_state
-        .batch_end_cmd(
+        .batch_edge_cut_cmd(
             ModelingCmdMeta::from_args_id(exec_state, &args, id),
             ModelingCmd::from(
                 mcmd::Solid3dCutEdgeReferences::builder()
@@ -375,6 +383,7 @@ async fn inner_fillet_with_engine_refs(
                     .extra_face_ids(extra_face_ids)
                     .use_legacy(params.csg_algorithm.is_legacy())
                     .version(params.edge_cut_version)
+                    .tangent_chain(params.tangent_chain)
                     .build(),
             ),
         )
@@ -399,6 +408,7 @@ async fn inner_fillet_with_engine_refs(
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::execution::ExecTestResults;
     use crate::execution::parse_execute;
 
     /// Test what version of fillet each KCL version uses by default.
@@ -416,33 +426,131 @@ mod tests {
     /// and not use that KCL version's default fillet algorithm version.
     #[tokio::test(flavor = "multi_thread")]
     async fn explicit_fillet_version_overrides_kcl_default() {
-        assert_eq!(
-            emitted_fillet_version("\"3.0-preview\"", Some(1)).await,
-            EdgeCutVersion::V1
+        assert_eq!(emitted_fillet_version("2.0", Some(2)).await, EdgeCutVersion::V2);
+    }
+
+    /// KCL 3.0 removed `fillet(version = )`. Passing it is reported like any
+    /// other unknown argument, and the default algorithm is used.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn fillet_version_is_removed_in_kcl_3() {
+        let result = run_fillet("\"3.0-preview\"", Some(1)).await;
+        assert!(
+            result
+                .issues()
+                .iter()
+                .any(|issue| {
+                    issue.message
+                        == "`version` is not an argument of `fillet`; it was removed in KCL 3.0, but this program uses KCL 3.0-preview"
+                }),
+            "issues: {:#?}",
+            result.issues()
         );
+        assert_eq!(emitted_cut_edges_version(&result), EdgeCutVersion::V2);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn tangent_chain_requires_kcl_3_and_is_sent_to_engine() {
+        let body = r#"
+profile = sketch(on = XY) {
+  edge1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
+  edge2 = line(start = [var 10mm, var 0mm], end = [var 10mm, var 10mm])
+  edge3 = line(start = [var 10mm, var 10mm], end = [var 0mm, var 10mm])
+  edge4 = line(start = [var 0mm, var 10mm], end = [var 0mm, var 0mm])
+  coincident([edge1.end, edge2.start])
+  coincident([edge2.end, edge3.start])
+  coincident([edge3.end, edge4.start])
+  coincident([edge4.end, edge1.start])
+}
+profileRegion = region(point = [5mm, 5mm], sketch = profile)
+solid = extrude(profileRegion, length = 10mm, tagEnd = $top)
+fillet(solid, tags = [getCommonEdge(faces = [profileRegion.tags.edge1, top])], radius = 1mm, tangentChain = true)
+"#;
+
+        let result = parse_execute(&format!("@settings(kclVersion = 2.0)\n{body}"))
+            .await
+            .unwrap();
+        assert!(result.issues().iter().any(|issue| {
+            issue.message
+                == "`tangentChain` is not an argument of `fillet`; it was added in KCL 3.0, but this program uses KCL 2.0"
+        }));
+
+        let result = parse_execute(&format!("@settings(kclVersion = \"3.0-preview\")\n{body}"))
+            .await
+            .unwrap();
+        let tangent_chain = result
+            .root_module_artifact_commands()
+            .iter()
+            .find_map(|artifact_command| match &artifact_command.command {
+                ModelingCmd::Solid3dCutEdges(command) => Some(command.tangent_chain),
+                _ => None,
+            })
+            .expect("fillet should emit a Solid3dCutEdges command");
+        assert!(tangent_chain);
+
+        let default_body = body.replace(", tangentChain = true", "");
+        let result = parse_execute(&format!("@settings(kclVersion = \"3.0-preview\")\n{default_body}"))
+            .await
+            .unwrap();
+        let tangent_chain = result
+            .root_module_artifact_commands()
+            .iter()
+            .find_map(|artifact_command| match &artifact_command.command {
+                ModelingCmd::Solid3dCutEdges(command) => Some(command.tangent_chain),
+                _ => None,
+            })
+            .expect("fillet should emit a Solid3dCutEdges command");
+        assert!(tangent_chain, "tangentChain should default to true after KCL 2");
+
+        let disabled_body = body.replace("tangentChain = true", "tangentChain = false");
+        let result = parse_execute(&format!("@settings(kclVersion = \"3.0-preview\")\n{disabled_body}"))
+            .await
+            .unwrap();
+        let tangent_chain = result
+            .root_module_artifact_commands()
+            .iter()
+            .find_map(|artifact_command| match &artifact_command.command {
+                ModelingCmd::Solid3dCutEdges(command) => Some(command.tangent_chain),
+                _ => None,
+            })
+            .expect("fillet should emit a Solid3dCutEdges command");
+        assert!(!tangent_chain, "an explicit false should override the default");
     }
 
     /// For a given KCL version, and optional `fillet(version = )` version,
     /// show what fillet algorithm version the runtime sent to the engine.
     async fn emitted_fillet_version(kcl_version: &str, explicit_version: Option<u32>) -> EdgeCutVersion {
+        emitted_cut_edges_version(&run_fillet(kcl_version, explicit_version).await)
+    }
+
+    /// Fillet one edge of a box under the given KCL version, optionally
+    /// passing `fillet(version = )`.
+    async fn run_fillet(kcl_version: &str, explicit_version: Option<u32>) -> ExecTestResults {
         let version_arg = explicit_version
             .map(|version| format!(", version = {version}"))
             .unwrap_or_default();
         let code = format!(
             r#"@settings(kclVersion = {kcl_version}, experimentalFeatures = allow)
 
-profile = startSketchOn(XY)
-  |> startProfile(at = [0, 0])
-  |> line(end = [10, 0], tag = $edge)
-  |> line(end = [0, 10])
-  |> line(end = [-10, 0])
-  |> close()
-solid = extrude(profile, length = 10)
-fillet(solid, tags = [edge], radius = 1{version_arg})
+profile = sketch(on = XY) {{
+  edge1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
+  edge2 = line(start = [var 10mm, var 0mm], end = [var 10mm, var 10mm])
+  edge3 = line(start = [var 10mm, var 10mm], end = [var 0mm, var 10mm])
+  edge4 = line(start = [var 0mm, var 10mm], end = [var 0mm, var 0mm])
+  coincident([edge1.end, edge2.start])
+  coincident([edge2.end, edge3.start])
+  coincident([edge3.end, edge4.start])
+  coincident([edge4.end, edge1.start])
+}}
+profileRegion = region(point = [5mm, 5mm], sketch = profile)
+solid = extrude(profileRegion, length = 10mm, tagEnd = $top)
+fillet(solid, tags = [getCommonEdge(faces = [profileRegion.tags.edge1, top])], radius = 1mm{version_arg})
 "#
         );
+        parse_execute(&code).await.unwrap()
+    }
 
-        let result = parse_execute(&code).await.unwrap();
+    /// The fillet algorithm version the runtime sent to the engine.
+    fn emitted_cut_edges_version(result: &ExecTestResults) -> EdgeCutVersion {
         result
             .root_module_artifact_commands()
             .iter()

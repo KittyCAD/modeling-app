@@ -6017,7 +6017,7 @@ description: Result of parsing scrub-daddy-holder.kcl
           "type": "NonCodeNode",
           "value": {
             "type": "blockComment",
-            "value": "Categories: Maker",
+            "value": "Categories: Home & Lifestyle; 3D Printable",
             "style": "line"
           }
         },
@@ -6033,6 +6033,7 @@ description: Result of parsing scrub-daddy-holder.kcl
         }
       ]
     },
-    "start": 0
+    "start": 0,
+    "type": "Program"
   }
 }

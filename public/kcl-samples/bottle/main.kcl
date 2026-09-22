@@ -1,6 +1,6 @@
 // Bottle
 // A simple bottle with a hollow, watertight interior
-// Categories: Maker
+// Categories: Home & Lifestyle
 
 // Set Units
 @settings(defaultLengthUnit = mm, kclVersion = 2.0)

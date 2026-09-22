@@ -370,20 +370,54 @@ const rm = async (targetPath: string, options?: { recursive: boolean }) => {
 const writeFile = async (
   targetPath: string,
   data: Uint8Array<ArrayBuffer>,
-  options?: any
+  options?: { flag?: 'w' | 'wx' }
+) => {
+  const write = () => writeFileUnlocked(targetPath, data, options)
+  if (navigator.locks) {
+    // All writers share the lock so checking for existence and creating a file
+    // is exclusive across tabs, including when a normal write races creation.
+    return navigator.locks.request(
+      `zds-opfs-write:${path.resolve(targetPath)}`,
+      write
+    )
+  }
+  if (options?.flag === 'wx') {
+    return Promise.reject(
+      new Error('Exclusive OPFS file creation requires Web Locks')
+    )
+  }
+  return write()
+}
+
+const writeFileUnlocked = async (
+  targetPath: string,
+  data: Uint8Array<ArrayBuffer>,
+  options?: { flag?: 'w' | 'wx' }
 ) => {
   const parts = targetPath.split(path.sep)
   const parent = parts.slice(0, -1).join(path.sep)
   const handle = await walk(parent)
   if (handle === undefined) return Promise.reject('ENOENT')
   if (handle instanceof FileSystemFileHandle) return Promise.reject('EISFILE')
+  if (options?.flag === 'wx') {
+    let exists = false
+    try {
+      await handle.getFileHandle(parts.slice(-1)[0])
+      exists = true
+    } catch (error: unknown) {
+      if (!(error instanceof DOMException) || error.name !== 'NotFoundError') {
+        return Promise.reject(error)
+      }
+    }
+    if (exists) return Promise.reject('EEXIST')
+  }
   const fileHandle = await handle.getFileHandle(parts.slice(-1)[0], {
     create: true,
   })
   const writableMethod = (
     fileHandle as FileSystemFileHandle & {
       createWritable?: () => Promise<{
-        write: (data: Blob) => Promise<void>
+        write: (data: Uint8Array<ArrayBuffer>) => Promise<void>
         close: () => Promise<void>
       }>
     }
@@ -391,7 +425,7 @@ const writeFile = async (
 
   if (typeof writableMethod === 'function') {
     const writer = await writableMethod.call(fileHandle)
-    await writer.write(new Blob([data], { type: 'application/octet-stream' }))
+    await writer.write(data)
     await writer.close()
   } else {
     void reportClientError({
@@ -466,7 +500,7 @@ const rename = async (
     await rm(sourcePath)
   } else {
     await mkdir(targetPath)
-    await cp(sourcePath, targetPath)
+    await cp(sourcePath, targetPath, { recursive: true })
     await rm(sourcePath, { recursive: true })
   }
   return undefined
@@ -475,14 +509,18 @@ const rename = async (
 // OPFS takes a very minimal approach to its API surface via primitives.
 // cp is not a primitive, since you can implement `cp` with `read` and `write`.
 // https://chromestatus.com/feature/5640802622504960
-const cp = async (
-  sourcePath: string,
-  targetPath: string
-): Promise<undefined> => {
+const cp: IZooDesignStudioFS['cp'] = async (
+  sourcePath,
+  targetPath,
+  options
+) => {
   const handleSource = await walk(sourcePath)
   if (handleSource === undefined) return Promise.reject('ENOENT')
 
   if (handleSource instanceof FileSystemFileHandle) {
+    if (options?.force === false && (await walk(targetPath)) !== undefined) {
+      return undefined
+    }
     const data = await readFile(sourcePath)
 
     if (typeof data === 'string') {
@@ -491,6 +529,7 @@ const cp = async (
       await writeFile(targetPath, Uint8Array.from(data))
     }
   } else {
+    if (options?.recursive !== true) return Promise.reject('EISDIR')
     await scan(sourcePath, async (cwd, handle) => {
       const relativePathToSourcePath = path.relative(sourcePath, cwd)
       const absolutePath = path.resolve(
@@ -501,6 +540,12 @@ const cp = async (
       if (handle[1] instanceof FileSystemDirectoryHandle) {
         await mkdir(absolutePath)
       } else {
+        if (
+          options.force === false &&
+          (await walk(absolutePath)) !== undefined
+        ) {
+          return
+        }
         const sourceFile = await handle[1].getFile()
         const data = await sourceFile.arrayBuffer()
         await writeFile(absolutePath, new Uint8Array(data))

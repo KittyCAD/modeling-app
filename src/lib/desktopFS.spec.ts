@@ -1,6 +1,6 @@
 import { getNextFileName, getUniqueProjectName } from '@src/lib/desktopFS'
-import { StorageName, moduleFsViaModuleImport } from '@src/lib/fs-zds'
-import fsZds from '@src/lib/fs-zds'
+import { testFileOperations } from '@src/lib/fileSystem/testRuntime'
+import fsZds, { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
 import type { FileEntry } from '@src/lib/project'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { beforeAll, describe, expect, it } from 'vitest'
@@ -13,7 +13,7 @@ beforeAll(async () => {
 })
 
 const wasmInstance = {
-  relevant_file_extensions: () => ['kcl', 'stp', 'step'],
+  relevant_file_extensions: () => ['kcl', 'prt', 'stp', 'step'],
 } as ModuleType
 
 /** Create a dummy project */
@@ -82,6 +82,7 @@ describe(`Getting unique project names`, () => {
       )
 
       const nextFile = await getNextFileName({
+        fileOperations: testFileOperations,
         entryName: 'notes.pdf',
         baseDir,
         wasmInstance,
@@ -89,6 +90,29 @@ describe(`Getting unique project names`, () => {
       })
 
       expect(nextFile.name).toBe('notes-1.pdf')
+    } finally {
+      await fsZds.rm(baseDir, { recursive: true, force: true })
+    }
+  })
+
+  it('preserves a versioned Creo extension when resolving a collision', async () => {
+    const baseDir = `/tmp/opencode/desktopfs-${crypto.randomUUID()}`
+    await fsZds.mkdir(baseDir, { recursive: true })
+
+    try {
+      await fsZds.writeFile(
+        fsZds.join(baseDir, 'bracket.prt.2'),
+        new TextEncoder().encode('a')
+      )
+
+      const nextFile = await getNextFileName({
+        fileOperations: testFileOperations,
+        entryName: 'bracket.prt.2',
+        baseDir,
+        wasmInstance,
+      })
+
+      expect(nextFile.name).toBe('bracket-1.prt.2')
     } finally {
       await fsZds.rm(baseDir, { recursive: true, force: true })
     }

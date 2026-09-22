@@ -226,7 +226,7 @@ async fn inner_offset_plane(
 
 // Engine-side effectful creation of an actual plane object.
 // offset planes are shown by default, and hidden by default if they
-// are used as a sketch plane. That hiding command is sent within inner_start_profile_at
+// are used as a sketch plane. That hiding command is sent within create_sketch.
 async fn make_offset_plane_in_engine(
     plane: &mut Plane,
     exec_state: &mut ExecState,
@@ -265,12 +265,15 @@ async fn make_offset_plane_in_engine(
         .await?;
 
     // Set the color.
-    exec_state
-        .batch_modeling_cmd(
-            ModelingCmdMeta::from_args(exec_state, args),
-            ModelingCmd::from(mcmd::PlaneSetColor::builder().color(color).plane_id(plane.id).build()),
-        )
-        .await?;
+    // PlaneSetColor is blocked on CPU engines until https://github.com/KittyCAD/engine/pull/5127 or similar is merged
+    if !exec_state.geometry_only() {
+        exec_state
+            .batch_modeling_cmd(
+                ModelingCmdMeta::from_args(exec_state, args),
+                ModelingCmd::from(mcmd::PlaneSetColor::builder().color(color).plane_id(plane.id).build()),
+            )
+            .await?;
+    }
 
     // Though offset planes might be derived from standard planes, they are
     // not standard planes themselves.

@@ -1,6 +1,6 @@
 // Shaft Grommet
 // Made of slippery plastic, these grommets allow shafts and bearings to spin freely in metal panels. The split construction lets you snap them around shafts you’ve already installed.
-// Categories: Manufacturing
+// Categories: Mechanical Components
 
 // Set units in inches (in)
 @settings(defaultLengthUnit = in, kclVersion = 2.0)

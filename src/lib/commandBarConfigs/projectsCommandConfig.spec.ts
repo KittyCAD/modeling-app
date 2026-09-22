@@ -1,3 +1,4 @@
+import { isCommandVisibleInSearch } from '@src/components/CommandBar/commandSearchVisibility'
 import { createProjectCommands } from '@src/lib/commandBarConfigs/projectsCommandConfig'
 import type { CommandArgumentOption } from '@src/lib/commandTypes'
 import type { Project } from '@src/lib/project'
@@ -89,12 +90,14 @@ function createHomeProjectActions(
   overrides: Partial<HomeProjectActionsService> = {}
 ): HomeProjectActionsService {
   return {
+    watchRemoteThumbnail: vi.fn(() => vi.fn()),
     canOpen: vi.fn(() => true),
     canDuplicate: vi.fn(() => true),
     canRename: vi.fn(() => true),
     canDelete: vi.fn(() => true),
     canMoveToLibrary: vi.fn(() => false),
     canReviewDuplicateRealizations: vi.fn(() => false),
+    canSeparateProjectCopies: vi.fn(() => false),
     open: vi.fn(async (project) => ({
       defaultFile: project.defaultFile ?? '',
     })),
@@ -104,6 +107,7 @@ function createHomeProjectActions(
     getMoveToLibraryTargets: vi.fn(() => []),
     moveToLibrary: vi.fn(async () => undefined),
     deleteDuplicateRealizations: vi.fn(async () => undefined),
+    separateProjectCopies: vi.fn(async () => undefined),
     ...overrides,
   }
 }
@@ -120,6 +124,19 @@ function projectOptions(
 }
 
 describe('project command config', () => {
+  it('keeps URL import registered but hidden from search', () => {
+    const commands = createProjectCommands({
+      systemIOActor: createSystemIOActor(),
+    })
+    const importCommand = commands.find(
+      (command) => command.name === 'Import file from URL'
+    )
+    if (!importCommand) throw new Error('URL import command is missing')
+
+    expect(isCommandVisibleInSearch(importCommand, false)).toBe(false)
+    expect(isCommandVisibleInSearch(importCommand, true)).toBe(false)
+  })
+
   it('keeps project directory mutation commands disabled by default on web', () => {
     const commands = createProjectCommands({
       systemIOActor: createSystemIOActor(),

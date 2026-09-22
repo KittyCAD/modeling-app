@@ -3828,7 +3828,7 @@ description: Result of parsing box.kcl
           "type": "NonCodeNode",
           "value": {
             "type": "blockComment",
-            "value": "Categories: Maker",
+            "value": "Categories: Science & Education; Parametric",
             "style": "line"
           }
         },
@@ -3844,6 +3844,7 @@ description: Result of parsing box.kcl
         }
       ]
     },
-    "start": 0
+    "start": 0,
+    "type": "Program"
   }
 }

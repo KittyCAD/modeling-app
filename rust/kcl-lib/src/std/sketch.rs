@@ -1267,7 +1267,7 @@ pub(crate) async fn create_sketch(
             // Hide whatever plane we are sketching on.
             // This is especially helpful for offset planes, which would be visible otherwise.
             exec_state
-                .batch_end_cmd(
+                .batch_modeling_cmd(
                     ModelingCmdMeta::new(exec_state, ctx, source_range),
                     ModelingCmd::from(mcmd::ObjectVisible::builder().object_id(plane.id).hidden(true).build()),
                 )

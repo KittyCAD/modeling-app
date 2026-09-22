@@ -102,7 +102,7 @@ fn de_boor_point(parameter: f64, degree: usize, knots: &[f64], controls: &[[f64;
     points[degree]
 }
 
-fn sample_control_point_spline_points(controls: &[[f64; 2]], degree: usize) -> Vec<[f64; 2]> {
+pub(crate) fn sample_control_point_spline_points(controls: &[[f64; 2]], degree: usize) -> Vec<[f64; 2]> {
     let knots = build_open_uniform_knot_vector(controls.len(), degree);
     let span_count = controls.len().saturating_sub(degree);
     let mut samples = Vec::with_capacity(span_count * CONTROL_POINT_SPLINE_SAMPLES_PER_SPAN + 1);

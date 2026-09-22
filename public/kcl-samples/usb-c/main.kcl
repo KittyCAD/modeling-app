@@ -1,6 +1,6 @@
 // USB-C Connector Assembly
 // Parametric model of a USB-C style connector shell, rear housing, and swept cable.
-// Categories: Electronics, Connector, Consumer Hardware
+// Categories: Electronics & Computing; Parametric
 
 @settings(defaultLengthUnit = mm, kclVersion = 2.0)
 

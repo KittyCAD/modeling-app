@@ -1,6 +1,6 @@
 // Saturn V Rocket
 // Modular construction of the iconic multi-stage rocket using parametric and revolve-based shapes
-// Categories: Aerospace, Maker
+// Categories: Aerospace; Science & Education; Parametric
 
 @settings(defaultLengthUnit = m, kclVersion = 2.0)
 

@@ -30,6 +30,7 @@ export type AreaTypeComponentProps = {
 export type AreaTypeDefinition = {
   hide: () => boolean
   shortcut?: string
+  icon?: CustomIconName
   /** I decided this is where impure stuff like the Zookeeper button's custom styling should live */
   cssClassOverrides?: PaneChildCssOverrides
   useNotifications?: () => ReturnType<

@@ -13,8 +13,8 @@ description: Lints gridfinity-baseplate-magnets.kcl
     },
     "description": "fillet uses 'tags'; prefer edges",
     "pos": [
-      7312,
-      7827,
+      7349,
+      7864,
       0
     ],
     "overridden": false,
@@ -30,8 +30,8 @@ description: Lints gridfinity-baseplate-magnets.kcl
     },
     "description": "fillet uses 'tags'; prefer edges",
     "pos": [
-      11128,
-      11687,
+      11165,
+      11724,
       0
     ],
     "overridden": false,

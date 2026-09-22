@@ -1,6 +1,6 @@
 // Wind Turbine Blade
 // A 52 m hollow composite blade with sixteen root inserts for its pitch-bearing interface.
-// Categories: Construction
+// Categories: Industrial & Manufacturing; Mechanical Components
 
 @settings(defaultLengthUnit = m, kclVersion = 2.0, experimentalFeatures = allow)
 

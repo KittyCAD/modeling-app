@@ -100,6 +100,7 @@ test.describe(
 
           // Select second object
           await clickSecondObject({ pixelDiff: 50 })
+          await page.keyboard.up('Shift')
 
           await page.waitForTimeout(1000)
 

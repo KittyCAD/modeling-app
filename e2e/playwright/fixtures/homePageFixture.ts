@@ -104,6 +104,18 @@ export class HomePageFixture {
     ).toBeVisible()
   }
 
+  waitForAuthentication = async () => {
+    // A document reload can finish while Auth still hides the Home route.
+    await this.page.waitForFunction(() => {
+      const snapshot = window.app?.auth.actor.getSnapshot()
+      return snapshot !== undefined && !snapshot.matches('checkIfLoggedIn')
+    })
+    expect(
+      await this.page.evaluate(() => window.app.auth.actor.getSnapshot().value),
+      'Home startup requires loggedIn authentication'
+    ).toBe('loggedIn')
+  }
+
   projectsLoaded = async () => {
     const projectLink = this.page.getByTestId('project-link').first()
     const noProjects = this.page.getByTestId('projects-none')
@@ -127,15 +139,9 @@ export class HomePageFixture {
     await projectCard.click()
   }
 
-  /** Returns the project name in case caller has used the default and needs it */
-  goToModelingScene = async (name = 'testDefault') => {
-    // On web this is a no-op. There is no project view.
-    if (process.env.TARGET === 'web') return ''
-
+  goToModelingScene = async (name = 'test-project') => {
     await this.createAndGoToProject(name)
     await closeOnboardingModalIfPresent(this.page)
-
-    return name
   }
 
   isNativeFileMenuCreated = async () => {

@@ -1,3 +1,4 @@
+import { throwTronAppMissing } from '@e2e/playwright/lib/electron-helpers'
 import { expect, test } from '@e2e/playwright/zoo-test'
 
 test.describe('Authentication tests', { tag: '@desktop' }, () => {
@@ -8,7 +9,7 @@ test.describe('Authentication tests', { tag: '@desktop' }, () => {
     toolbar,
     tronApp,
   }) => {
-    if (!tronApp) throw new Error('tronApp is missing.')
+    if (!tronApp) throwTronAppMissing()
 
     await page.setBodyDimensions({ width: 1000, height: 500 })
     await homePage.projectSection.waitFor()

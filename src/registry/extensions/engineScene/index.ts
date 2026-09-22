@@ -5,18 +5,22 @@ import {
 } from '@kittycad/registry'
 import { computed } from '@preact/signals-core'
 import type { Command } from '@src/lib/commandTypes'
-import { provideCommand } from '@src/registry/contracts/commands'
 import {
-  type EngineSceneExtensionContext,
+  FILE_COMMAND_SCOPES,
+  MODE_MODELING_COMMAND_SCOPE,
+  provideCommand,
+} from '@src/registry/contracts/commands'
+import {
   defineEngineSceneStreamClassName,
   defineEngineSceneViewExtension,
+  type EngineSceneExtensionContext,
   engineSceneStreamClassNamesValueSpec,
   engineSceneViewExtensionsValueSpec,
 } from '@src/registry/contracts/engineScene'
 import { executingEditorService } from '@src/registry/contracts/executingEditor'
+import { fileOperationsService } from '@src/registry/contracts/fileOperations'
 import {
   type KeymapItem,
-  MODE_MODELING_KEYMAP_SCOPE,
   provideKeymapItem,
 } from '@src/registry/contracts/keymap'
 import {
@@ -24,7 +28,7 @@ import {
   statusBarGlobalItemsValueSpec,
   statusBarLocalItemsValueSpec,
 } from '@src/registry/contracts/statusBar'
-import { Suspense, createElement, lazy } from 'react'
+import { createElement, lazy, Suspense } from 'react'
 import executionIndicator from './executionIndicator'
 import { measurementToolService } from './measurementToolService'
 import { physicalAnalysisService } from './physicalAnalysis/physicalAnalysisService'
@@ -45,7 +49,8 @@ export const ENGINE_SCENE_COMMAND_IDS = Object.freeze({
   openPhysicalAnalysisTool: 'zds.engineScene.openPhysicalAnalysisTool',
 } as const)
 
-const captureScreenshotCommand: Command = {
+const captureScreenshotCommand = (onSubmit: Command['onSubmit']): Command => ({
+  scopes: FILE_COMMAND_SCOPES,
   id: ENGINE_SCENE_COMMAND_IDS.captureScreenshot,
   name: ENGINE_SCENE_COMMAND_IDS.captureScreenshot,
   groupId: ENGINE_SCENE_COMMAND_GROUP_ID,
@@ -53,10 +58,11 @@ const captureScreenshotCommand: Command = {
   description: 'Save the current modeling viewport as a PNG image.',
   icon: 'camera',
   needsReview: false,
-  onSubmit: saveViewportScreenshot,
-}
+  onSubmit,
+})
 
 const openMeasureToolCommand: Command = {
+  scopes: [MODE_MODELING_COMMAND_SCOPE],
   id: ENGINE_SCENE_COMMAND_IDS.openMeasureTool,
   name: ENGINE_SCENE_COMMAND_IDS.openMeasureTool,
   groupId: ENGINE_SCENE_COMMAND_GROUP_ID,
@@ -71,6 +77,7 @@ const openMeasureToolCommand: Command = {
 }
 
 const openPhysicalAnalysisToolCommand: Command = {
+  scopes: [MODE_MODELING_COMMAND_SCOPE],
   id: ENGINE_SCENE_COMMAND_IDS.openPhysicalAnalysisTool,
   name: ENGINE_SCENE_COMMAND_IDS.openPhysicalAnalysisTool,
   groupId: ENGINE_SCENE_COMMAND_GROUP_ID,
@@ -88,7 +95,7 @@ const openMeasureToolKeymapItem: KeymapItem = {
   id: 'engine-scene.measure.open',
   title: 'Open measure tool',
   source: ENGINE_SCENE_KEYMAP_SOURCE,
-  scopes: [MODE_MODELING_KEYMAP_SCOPE],
+  when: [MODE_MODELING_COMMAND_SCOPE],
   keystrokes: ['shift+m'],
   command: ENGINE_SCENE_COMMAND_IDS.openMeasureTool,
 }
@@ -97,7 +104,7 @@ const openPhysicalAnalysisToolKeymapItem: KeymapItem = {
   id: 'engine-scene.physical-analysis.open',
   title: 'Open physical analysis tool',
   source: ENGINE_SCENE_KEYMAP_SOURCE,
-  scopes: [MODE_MODELING_KEYMAP_SCOPE],
+  when: [MODE_MODELING_COMMAND_SCOPE],
   keystrokes: ['shift+p'],
   command: ENGINE_SCENE_COMMAND_IDS.openPhysicalAnalysisTool,
 }
@@ -348,7 +355,11 @@ const engineSceneExtension = defineRegistryItemFactory((ctx) => {
     item: defineRuntimeRegistryItem({
       id: 'engine-scene-extension',
       provides: [
-        provideCommand(captureScreenshotCommand),
+        provideCommand(
+          captureScreenshotCommand(() =>
+            saveViewportScreenshot(ctx.services.get(fileOperationsService))
+          )
+        ),
         provideCommand(openMeasureToolCommand),
         provideCommand(openPhysicalAnalysisToolCommand),
         provideKeymapItem(openMeasureToolKeymapItem),

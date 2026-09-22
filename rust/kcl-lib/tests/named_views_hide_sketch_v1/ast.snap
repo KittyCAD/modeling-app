@@ -924,6 +924,7 @@ description: Result of parsing named_views_hide_sketch_v1.kcl
       },
       "startNodes": []
     },
-    "start": 0
+    "start": 0,
+    "type": "Program"
   }
 }

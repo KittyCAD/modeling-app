@@ -12989,6 +12989,7 @@ description: Result of parsing subtract_regression10.kcl
       },
       "startNodes": []
     },
-    "start": 0
+    "start": 0,
+    "type": "Program"
   }
 }

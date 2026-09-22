@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties split-washer-spring-version.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": -0.0007415964537109687,
+      "y": -0.0003628310029499815,
+      "z": 1.0
+    },
+    "dimensions": {
+      "x": 8.001483192907422,
+      "y": 8.004026311512696,
+      "z": 2.0
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 111.60138267740648
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 0.0358235085811873
+  }
+}

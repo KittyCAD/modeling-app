@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties bike-hub-washer.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": -0.0000000000000017763568394002505,
+      "y": -0.0000000000000017763568394002505,
+      "z": 2.75
+    },
+    "dimensions": {
+      "x": 29.000000000000004,
+      "y": 29.000000000000004,
+      "z": 9.5
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 2011.6153253120217
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 2.3758538786518755
+  }
+}

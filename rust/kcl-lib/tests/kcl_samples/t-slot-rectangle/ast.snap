@@ -6740,7 +6740,8 @@ description: Result of parsing t-slot-rectangle.kcl
                 },
                 "startNodes": []
               },
-              "start": 0
+              "start": 0,
+              "type": "Program"
             },
             "commentStart": 0,
             "end": 0,
@@ -7447,7 +7448,7 @@ description: Result of parsing t-slot-rectangle.kcl
         "preComments": [
           "// T-Slotted Rectangle Frame",
           "// A rectangular frame made up of T-slotted rails",
-          "// Categories: Manufacturing, Construction",
+          "// Categories: Industrial & Manufacturing; Mechanical Components; Parametric",
           "",
           "",
           "// Set units"
@@ -7561,6 +7562,7 @@ description: Result of parsing t-slot-rectangle.kcl
       },
       "startNodes": []
     },
-    "start": 0
+    "start": 0,
+    "type": "Program"
   }
 }

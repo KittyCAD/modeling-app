@@ -38,7 +38,10 @@ export const engineConnectionExtension = defineRegistryItemFactory((ctx) => {
         }),
       ],
       dispose: () => {
-        service?.manager.tearDown()
+        service?.manager.tearDown({
+          route: 'service-disposed',
+          initiatedBy: 'client',
+        })
       },
     }),
   }

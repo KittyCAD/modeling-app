@@ -1,6 +1,7 @@
 import { REGEXP_UUIDV4 } from '@src/lib/constants'
 import { getAppSettingsFilePath } from '@src/lib/desktop'
 import fsZds from '@src/lib/fs-zds'
+import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
 
 const ZOOKEEPER_CONVERSATIONS_FILE_NAME = 'ml-conversations.json'
 
@@ -51,44 +52,60 @@ const getZookeeperConversationsFilePath = async () =>
     ZOOKEEPER_CONVERSATIONS_FILE_NAME
   )
 
-const readZookeeperConversations =
-  async (): Promise<ZookeeperConversations> => {
-    try {
-      const json = await fsZds.readFile(
-        await getZookeeperConversationsFilePath(),
-        {
-          encoding: 'utf-8',
-        }
-      )
-      return jsonToZookeeperConversations(json ?? '')
-    } catch (error) {
-      console.warn('Cannot get Zookeeper conversations', error)
-      return new Map()
-    }
+const readZookeeperConversations = async (
+  fileOperations: FileOperationsRegistryService
+): Promise<ZookeeperConversations> => {
+  try {
+    const json = new TextDecoder().decode(
+      await fileOperations.readFile(await getZookeeperConversationsFilePath())
+    )
+    return jsonToZookeeperConversations(json ?? '')
+  } catch (error) {
+    console.warn('Cannot get Zookeeper conversations', error)
+    return new Map()
   }
+}
 
 const writeZookeeperConversations = async (
+  fileOperations: FileOperationsRegistryService,
   conversations: ZookeeperConversations
 ) => {
-  const te = new TextEncoder()
-  await fsZds.writeFile(
+  await fileOperations.writeFile(
     await getZookeeperConversationsFilePath(),
-    te.encode(zookeeperConversationsToJson(conversations))
+    zookeeperConversationsToJson(conversations)
   )
 }
 
-export const zookeeperConversationStore: ZookeeperConversationStore = {
-  async getProjectConversationId(projectId) {
-    return (await readZookeeperConversations()).get(projectId)
-  },
-  async saveProjectConversationId({ projectId, conversationId }) {
-    const conversations = await readZookeeperConversations()
-    conversations.set(projectId, conversationId)
-    await writeZookeeperConversations(conversations)
-  },
-  async deleteProjectConversationId(projectId) {
-    const conversations = await readZookeeperConversations()
-    conversations.delete(projectId)
-    await writeZookeeperConversations(conversations)
-  },
+let pendingOperation = Promise.resolve<unknown>(undefined)
+
+const serialize = <T>(operation: () => Promise<T>): Promise<T> => {
+  const result = pendingOperation.then(operation, operation)
+  pendingOperation = result.catch(() => undefined)
+  return result
+}
+
+export const makeZookeeperConversationStore = (
+  fileOperations: FileOperationsRegistryService
+): ZookeeperConversationStore => {
+  return {
+    getProjectConversationId(projectId) {
+      return serialize(async () =>
+        (await readZookeeperConversations(fileOperations)).get(projectId)
+      )
+    },
+    saveProjectConversationId({ projectId, conversationId }) {
+      return serialize(async () => {
+        const conversations = await readZookeeperConversations(fileOperations)
+        conversations.set(projectId, conversationId)
+        await writeZookeeperConversations(fileOperations, conversations)
+      })
+    },
+    deleteProjectConversationId(projectId) {
+      return serialize(async () => {
+        const conversations = await readZookeeperConversations(fileOperations)
+        conversations.delete(projectId)
+        await writeZookeeperConversations(fileOperations, conversations)
+      })
+    },
+  }
 }

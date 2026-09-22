@@ -11,6 +11,8 @@ description: Variables in memory after executing user_reported_union_2_bug.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -117,17 +119,17 @@ description: Variables in memory after executing user_reported_union_2_bug.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "XY",
           "objectId": 0,
+          "kind": "XY",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -165,7 +167,8 @@ description: Variables in memory after executing user_reported_union_2_bug.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": "mm"
+        "units": "mm",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -178,8 +181,10 @@ description: Variables in memory after executing user_reported_union_2_bug.kcl
     "value": 45.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "cubeSize": {
@@ -187,8 +192,10 @@ description: Variables in memory after executing user_reported_union_2_bug.kcl
     "value": 5.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "cubeSpacing": {
@@ -196,8 +203,10 @@ description: Variables in memory after executing user_reported_union_2_bug.kcl
     "value": 30.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "delta": {
@@ -205,22 +214,21 @@ description: Variables in memory after executing user_reported_union_2_bug.kcl
     "value": 1.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "edge1": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "edge1"
   },
   "edge2": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "edge2"
   },
   "edge3": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "edge3"
   },
@@ -229,6 +237,8 @@ description: Variables in memory after executing user_reported_union_2_bug.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -353,17 +363,17 @@ description: Variables in memory after executing user_reported_union_2_bug.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "XY",
           "objectId": 1,
+          "kind": "XY",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -415,7 +425,8 @@ description: Variables in memory after executing user_reported_union_2_bug.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": "mm"
+        "units": "mm",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -428,6 +439,8 @@ description: Variables in memory after executing user_reported_union_2_bug.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -552,17 +565,17 @@ description: Variables in memory after executing user_reported_union_2_bug.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "XY",
           "objectId": 1,
+          "kind": "XY",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -614,7 +627,8 @@ description: Variables in memory after executing user_reported_union_2_bug.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": "mm"
+        "units": "mm",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -627,8 +641,10 @@ description: Variables in memory after executing user_reported_union_2_bug.kcl
     "value": 3.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "triangleHeight": {
@@ -636,8 +652,10 @@ description: Variables in memory after executing user_reported_union_2_bug.kcl
     "value": 60.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "triangleSide": {
@@ -645,8 +663,10 @@ description: Variables in memory after executing user_reported_union_2_bug.kcl
     "value": 140.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "triangleSketch": {
@@ -729,17 +749,17 @@ description: Variables in memory after executing user_reported_union_2_bug.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "XY",
         "objectId": 1,
+        "kind": "XY",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -791,7 +811,8 @@ description: Variables in memory after executing user_reported_union_2_bug.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": "mm"
+      "units": "mm",
+      "isClosed": "explicitly"
     }
   }
 }

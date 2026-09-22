@@ -17,8 +17,11 @@ import {
   getCloudSyncStatusBarPresentation,
 } from '@src/lib/cloudSync/registry/plugin'
 import { OPFS_CLOUD_FEATURE_FLAG } from '@src/lib/constants'
+import { testFileOperations } from '@src/lib/fileSystem/testRuntime'
 import fsZds from '@src/lib/fs-zds'
+import { fsZdsConstants } from '@src/lib/fs-zds/constants'
 import { homeProjectEntryFromProject } from '@src/lib/homeProjects'
+import { webSafeJoin, webSafePathSplit } from '@src/lib/pathUtils'
 import type { Project } from '@src/lib/project'
 import {
   CLOUD_PROJECT_LIBRARY_TYPE,
@@ -34,6 +37,7 @@ import {
   cloudProjectRelationshipsService,
   cloudSyncService,
 } from '@src/registry/contracts/cloudSync'
+import { fileOperationsService } from '@src/registry/contracts/fileOperations'
 import type { HomeProjectEntry } from '@src/registry/contracts/homeProjects'
 import {
   getProjectLibraryCreateProjectOperation,
@@ -198,6 +202,10 @@ const projectWellFormed = {
 
 const CLOUD_SYNC_PLUGIN_ID = 'cloud-sync'
 const originalElectron = window.electron
+const fileOperationsTestItem = defineRegistryItem({
+  id: 'test-file-operations',
+  providesServices: [provideService(fileOperationsService, testFileOperations)],
+})
 
 type TestSettings = {
   app: {
@@ -243,6 +251,7 @@ function createCloudSyncService(): CloudSyncRegistryService {
     retry: vi.fn(),
     setOpenedProject: vi.fn(),
     startProjectSync: vi.fn().mockResolvedValue(undefined),
+    syncNow: vi.fn().mockResolvedValue({ remoteProjectId: 'remote-123' }),
     disconnectProjectSync: vi.fn().mockResolvedValue(undefined),
     deleteRemoteProject: vi.fn().mockResolvedValue(undefined),
     deleteLocalProjectRealizations: vi.fn().mockResolvedValue(undefined),
@@ -429,7 +438,7 @@ function enableCloudSyncPlugin(registry: Registry) {
     return
   }
 
-  registry.get(pluginService).enable()
+  void registry.get(pluginService).enable()
 }
 
 afterEach(() => {
@@ -587,6 +596,63 @@ describe('cloud sync library home summary', () => {
       expect(cloudConflictDialogMocks.dialogProjectPaths).not.toContain(
         '/some/path/other'
       )
+    } finally {
+      registry[Symbol.dispose]()
+    }
+  })
+
+  test('keeps the project title when conflict metadata uses the directory name', async () => {
+    const projectPath = projectWellFormed.path
+    cloudSyncStatus.value = {
+      enabled: true,
+      state: 'conflict',
+      pendingCount: 0,
+      activeProjectPath: projectPath,
+    }
+    cloudConflictDialogMocks.conflicts = [
+      {
+        localProjectPath: projectPath,
+        projectName: projectWellFormed.name,
+      },
+    ]
+    const registry = new Registry()
+
+    registry.configure([cloudSyncProjectLibraryType, cloudSyncPlugin])
+    enableCloudSyncPlugin(registry)
+
+    try {
+      const cloudLibraryType = registry
+        .get(projectLibraryTypesValueSpec)
+        .get(CLOUD_PROJECT_LIBRARY_TYPE)
+      const HomeSummary = cloudLibraryType?.homeSummary
+      expect(HomeSummary).toBeDefined()
+      if (!HomeSummary) {
+        return
+      }
+
+      const cloudLibrary = {
+        ...getDefaultCloudProjectLibrarySetting(),
+        id: PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
+      }
+      const project = {
+        ...homeProjectEntryFromProject(projectWellFormed),
+        id: `local:${projectPath}`,
+        libraryIds: [PERSONAL_CLOUD_PROJECT_LIBRARY_ID],
+        status: 'conflicted',
+        conflict: {},
+      } satisfies HomeProjectEntry
+      renderWithRouter(
+        <HomeSummary library={cloudLibrary} projects={[project]} />
+      )
+
+      fireEvent.click(screen.getByTestId('cloud-library-sync-status'))
+
+      expect(
+        await screen.findByRole('button', { name: projectWellFormed.title })
+      ).toBeInTheDocument()
+      expect(
+        screen.queryByRole('button', { name: projectWellFormed.name })
+      ).not.toBeInTheDocument()
     } finally {
       registry[Symbol.dispose]()
     }
@@ -1032,14 +1098,14 @@ describe('cloud sync project library', () => {
           .has(CLOUD_PROJECT_LIBRARY_TYPE)
       ).toBe(true)
 
-      pluginToggle.enable()
+      void pluginToggle.enable()
       expect(
         registry
           .get(projectLibraryTypesValueSpec)
           .has(CLOUD_PROJECT_LIBRARY_TYPE)
       ).toBe(true)
 
-      pluginToggle.disable()
+      void pluginToggle.disable()
       expect(
         registry
           .get(projectLibraryTypesValueSpec)
@@ -1095,6 +1161,86 @@ describe('cloud sync project library', () => {
       ).toEqual({ defaultFile: '/cloud/moved-project/main.kcl' })
       expect(cloudLibraryType.operations?.moveProjectFrom).toBeDefined()
       expect(cloudLibraryType.operations?.moveProjectTo).toBeDefined()
+    } finally {
+      registry[Symbol.dispose]()
+    }
+  })
+
+  test('uses the project title for a moved cloud directory', async () => {
+    const registry = new Registry()
+    registry.configure([fileOperationsTestItem, cloudSyncProjectLibraryType])
+    vi.spyOn(fsZds, 'readFile').mockResolvedValue(
+      new TextEncoder().encode('title = "Aquarium Test Project"\n')
+    )
+    vi.spyOn(fsZds, 'readdir').mockResolvedValue([])
+    vi.spyOn(fsZds, 'mkdir').mockResolvedValue(undefined)
+    vi.spyOn(fsZds, 'join').mockImplementation((...parts) =>
+      webSafeJoin(parts).replace(/\/{2,}/g, '/')
+    )
+    vi.spyOn(fsZds, 'dirname').mockImplementation((path) =>
+      webSafeJoin(webSafePathSplit(path).slice(0, -1))
+    )
+    vi.spyOn(fsZds, 'relative').mockReturnValue('main.kcl')
+    vi.spyOn(fsZds, 'resolve').mockImplementation((path) => `/${path}`)
+    vi.spyOn(fsZds, 'stat').mockImplementation(async (path) => {
+      if (path === '/projects/untitled-3') {
+        return { mode: fsZdsConstants.S_IFDIR } as never
+      }
+      return Promise.reject('ENOENT')
+    })
+    const rename = vi.spyOn(fsZds, 'rename').mockResolvedValue(undefined)
+
+    try {
+      const cloudLibrary = {
+        id: 'personal-cloud-test',
+        title: 'Personal Cloud',
+        path: '/cloud',
+        type: CLOUD_PROJECT_LIBRARY_TYPE,
+        order: 0,
+      }
+      const moveProjectTo = registry
+        .get(projectLibraryTypesValueSpec)
+        .get(CLOUD_PROJECT_LIBRARY_TYPE)?.operations?.moveProjectTo
+      expect(moveProjectTo).toBeDefined()
+      if (!moveProjectTo) {
+        return
+      }
+
+      await expect(
+        moveProjectTo.run({
+          library: cloudLibrary,
+          sourceLibrary: {
+            id: 'directory-test',
+            title: 'Directory',
+            path: '/projects',
+            type: DIRECTORY_PROJECT_LIBRARY_TYPE,
+            order: 0,
+          },
+          project: {
+            id: 'local:/projects/untitled-3',
+            source: 'local',
+            status: 'local',
+            libraryIds: ['directory-test'],
+            name: 'untitled-3',
+            localProjectPath: '/projects/untitled-3',
+            localProjectName: 'untitled-3',
+            defaultFile: '/projects/untitled-3/main.kcl',
+            readWriteAccess: true,
+          },
+          source: {
+            localProjectPath: '/projects/untitled-3',
+            localProjectName: 'untitled-3',
+            defaultFile: '/projects/untitled-3/main.kcl',
+          },
+        })
+      ).resolves.toEqual({
+        localProjectPath: '/cloud/aquarium-test-project',
+        defaultFile: '/cloud/aquarium-test-project/main.kcl',
+      })
+      expect(rename).toHaveBeenCalledWith(
+        '/projects/untitled-3',
+        '/cloud/aquarium-test-project'
+      )
     } finally {
       registry[Symbol.dispose]()
     }
@@ -1305,7 +1451,7 @@ describe('cloud sync project library', () => {
         return
       }
 
-      registry.get(pluginService).enable()
+      void registry.get(pluginService).enable()
 
       expect(
         projectLibrariesFromSettings(
@@ -1390,7 +1536,7 @@ describe('cloud sync project library', () => {
         return
       }
 
-      registry.get(pluginService).enable()
+      await registry.get(pluginService).enable()
       await Promise.resolve()
       await Promise.resolve()
 
@@ -1403,6 +1549,29 @@ describe('cloud sync project library', () => {
 })
 
 describe('cloud sync project relationships', () => {
+  function createThumbnailRegistry() {
+    cloudSyncStatus.value = { enabled: true, state: 'idle', pendingCount: 0 }
+    cloudSyncRemoteProjects.value = [
+      { id: 'remote-123', title: 'Visible project', revision: 'rev-1' },
+      { id: 'remote-hidden', title: 'Hidden project', revision: 'rev-1' },
+    ]
+    const cloudSync = createCloudSyncService()
+    const registry = new Registry()
+    registry.configure([
+      defineRegistryItem({
+        id: 'test-cloud-sync-service',
+        providesServices: [provideService(cloudSyncService, cloudSync)],
+      }),
+      cloudSyncPlugin,
+    ])
+    enableCloudSyncPlugin(registry)
+    return {
+      registry,
+      cloudSync,
+      relationships: registry.get(cloudProjectRelationshipsService),
+    }
+  }
+
   test('does not manufacture a relationship while waiting for a remote id', async () => {
     cloudSyncStatus.value = {
       enabled: true,
@@ -1444,46 +1613,133 @@ describe('cloud sync project relationships', () => {
     }
   })
 
-  test('contributes remote thumbnails for remote-only cloud relationships', async () => {
-    cloudSyncStatus.value = {
-      enabled: true,
-      state: 'idle',
-      pendingCount: 0,
-    }
-    cloudSyncRemoteProjects.value = [
-      {
-        id: 'remote-123',
-        title: 'Remote title',
-        revision: 'remote-rev-2',
-        updated_at: '2026-06-02T20:00:00.000Z',
-      },
-    ]
-    const cloudSync = createCloudSyncService()
+  test('only fetches remote thumbnails while their cards are in view', async () => {
+    const { registry, cloudSync, relationships } = createThumbnailRegistry()
     vi.mocked(cloudSync.getRemoteProjectThumbnailUrl).mockResolvedValue(
       'https://example.test/remote-123-thumbnail.png'
     )
-    const registry = new Registry()
-    const cloudSyncServiceExtension = defineRegistryItem({
-      id: 'test-cloud-sync-service',
-      providesServices: [provideService(cloudSyncService, cloudSync)],
-    })
-
-    registry.configure([cloudSyncServiceExtension, cloudSyncPlugin])
-    enableCloudSyncPlugin(registry)
-
     try {
       await waitFor(() =>
-        expect(
-          registry.get(cloudProjectRelationshipsService).relationships.value
-        ).toEqual([
+        expect(cloudSync.getProjectMetadataIndex).toHaveBeenCalled()
+      )
+      expect(cloudSync.getRemoteProjectThumbnailUrl).not.toHaveBeenCalled()
+      const metadataReads = vi.mocked(cloudSync.getProjectMetadataIndex).mock
+        .calls.length
+      const stopWatching = relationships.watchRemoteThumbnail('remote-123')
+      await waitFor(() =>
+        expect(relationships.relationships.value).toEqual([
           expect.objectContaining({
             remoteProjectId: 'remote-123',
             remoteThumbnailUrl: 'https://example.test/remote-123-thumbnail.png',
             canonicalRealization: undefined,
             duplicateRealizations: [],
           }),
+          expect.objectContaining({
+            remoteProjectId: 'remote-hidden',
+            remoteThumbnailUrl: undefined,
+          }),
         ])
       )
+      expect(cloudSync.getRemoteProjectThumbnailUrl).toHaveBeenCalledTimes(1)
+      expect(cloudSync.getProjectMetadataIndex).toHaveBeenCalledTimes(
+        metadataReads
+      )
+      stopWatching()
+
+      cloudSyncRemoteProjects.value = cloudSyncRemoteProjects.value.map(
+        (project) => ({ ...project, revision: 'remote-rev-3' })
+      )
+      await Promise.resolve()
+      expect(cloudSync.getRemoteProjectThumbnailUrl).toHaveBeenCalledTimes(1)
+
+      const stopWatchingAgain = registry
+        .get(cloudProjectRelationshipsService)
+        .watchRemoteThumbnail('remote-123')
+      await waitFor(() =>
+        expect(cloudSync.getRemoteProjectThumbnailUrl).toHaveBeenCalledTimes(2)
+      )
+      stopWatchingAgain()
+    } finally {
+      registry[Symbol.dispose]()
+    }
+  })
+
+  test('shares requests and cached missing thumbnails across visible cards', async () => {
+    const { registry, cloudSync, relationships } = createThumbnailRegistry()
+    try {
+      const stopFirst = relationships.watchRemoteThumbnail('remote-123')
+      const stopSecond = relationships.watchRemoteThumbnail('remote-123')
+      await waitFor(() =>
+        expect(cloudSync.getRemoteProjectThumbnailUrl).toHaveBeenCalledTimes(1)
+      )
+      stopFirst()
+      stopFirst()
+      cloudSyncRemoteProjects.value = cloudSyncRemoteProjects.value.map(
+        (project) => ({ ...project, revision: 'rev-2' })
+      )
+      await waitFor(() =>
+        expect(cloudSync.getRemoteProjectThumbnailUrl).toHaveBeenCalledTimes(2)
+      )
+      stopSecond()
+      const stopThird = relationships.watchRemoteThumbnail('remote-123')
+      await Promise.resolve()
+      expect(cloudSync.getRemoteProjectThumbnailUrl).toHaveBeenCalledTimes(2)
+      stopThird()
+    } finally {
+      registry[Symbol.dispose]()
+    }
+  })
+
+  test('retries failed thumbnails when their card comes back into view', async () => {
+    const { registry, cloudSync, relationships } = createThumbnailRegistry()
+    const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {})
+    vi.mocked(cloudSync.getRemoteProjectThumbnailUrl)
+      .mockRejectedValueOnce(new Error('Thumbnail request failed'))
+      .mockResolvedValue('https://example.test/retried.png')
+    try {
+      const stopWatching = relationships.watchRemoteThumbnail('remote-123')
+      await waitFor(() => expect(consoleError).toHaveBeenCalled())
+      stopWatching()
+      relationships.watchRemoteThumbnail('remote-123')
+      await waitFor(() =>
+        expect(relationships.relationships.value[0]?.remoteThumbnailUrl).toBe(
+          'https://example.test/retried.png'
+        )
+      )
+      expect(cloudSync.getRemoteProjectThumbnailUrl).toHaveBeenCalledTimes(2)
+    } finally {
+      registry[Symbol.dispose]()
+    }
+  })
+
+  test('ignores stale requests after cloud sync is disabled and reenabled', async () => {
+    const { registry, cloudSync, relationships } = createThumbnailRegistry()
+    const oldRequest = Promise.withResolvers<string>()
+    vi.mocked(cloudSync.getRemoteProjectThumbnailUrl)
+      .mockReturnValueOnce(oldRequest.promise)
+      .mockResolvedValue('https://example.test/current.png')
+    try {
+      relationships.watchRemoteThumbnail('remote-123')
+      await waitFor(() =>
+        expect(cloudSync.getRemoteProjectThumbnailUrl).toHaveBeenCalledTimes(1)
+      )
+      cloudSyncStatus.value = {
+        enabled: false,
+        state: 'disabled',
+        pendingCount: 0,
+      }
+      cloudSyncStatus.value = { enabled: true, state: 'idle', pendingCount: 0 }
+      await waitFor(() =>
+        expect(relationships.relationships.value[0]?.remoteThumbnailUrl).toBe(
+          'https://example.test/current.png'
+        )
+      )
+      oldRequest.resolve('https://example.test/stale.png')
+      await oldRequest.promise
+      expect(relationships.relationships.value[0]?.remoteThumbnailUrl).toBe(
+        'https://example.test/current.png'
+      )
+      expect(cloudSync.getRemoteProjectThumbnailUrl).toHaveBeenCalledTimes(2)
     } finally {
       registry[Symbol.dispose]()
     }
@@ -1548,6 +1804,7 @@ describe('cloud sync project relationships', () => {
     })
 
     registry.configure([
+      fileOperationsTestItem,
       cloudSyncServiceExtension,
       projectRealizationsExtension,
       cloudSyncPlugin,
@@ -1657,10 +1914,7 @@ describe('cloud sync project relationships', () => {
 
     try {
       await waitFor(() =>
-        expect(
-          registry.get(cloudProjectRelationshipsService).relationships.value[0]
-            ?.remoteThumbnailUrl
-        ).toBe('https://example.test/remote-123-thumbnail.png')
+        expect(cloudSync.getProjectMetadataIndex).toHaveBeenCalled()
       )
       await Promise.resolve()
       await Promise.resolve()

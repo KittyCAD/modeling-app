@@ -38,18 +38,24 @@ fn lint_lower_camel_case_var(decl: &VariableDeclarator, prog: &AstNode<Program>)
 
     if new_name != *name {
         let mut prog = prog.clone();
-        prog.rename_symbol(&new_name, ident.start);
-        let recast = prog.recast_top(&Default::default(), 0);
-
-        let suggestion = Suggestion {
-            title: format!("rename '{name}' to '{new_name}'"),
-            insert: recast,
-            source_range: prog.as_source_range(),
+        // We can't rename nested declarations yet (e.g. a local in a function
+        // body or an if-expression arm). A suggestion whose insert is the
+        // unchanged source would make auto-fix apply it forever, so only
+        // suggest a fix when the rename actually changed something.
+        let suggestion = if prog.rename_symbol(&new_name, ident.start) {
+            let recast = prog.recast_top(&Default::default(), 0);
+            Some(Suggestion {
+                title: format!("rename '{name}' to '{new_name}'"),
+                insert: recast,
+                source_range: prog.as_source_range(),
+            })
+        } else {
+            None
         };
         findings.push(Z0001.at(
             format!("found '{name}'"),
             SourceRange::new(ident.start, ident.end, ident.module_id),
-            Some(suggestion),
+            suggestion,
         ));
         return Ok(findings);
     }
@@ -215,6 +221,41 @@ part001 = startSketchOn(XY)
 circ = {angle_start = 0, angle_end = 360, radius = 5}
 ",
         "found 'angle_start'",
+        None
+    );
+
+    // A declaration in an if-expression arm is reported, but rename_symbol
+    // can't rename nested declarations, so there must be no suggestion: a
+    // suggestion with the unchanged source would make auto-fix loop forever.
+    test_finding!(
+        z0001_local_in_if_arm_has_no_suggestion,
+        lint_variables,
+        Z0001,
+        "\
+x = if true {
+  local_value = 1
+  local_value
+} else {
+  0
+}
+",
+        "found 'local_value'",
+        None
+    );
+
+    // Same for a declaration in a function body.
+    test_finding!(
+        z0001_local_in_fn_body_has_no_suggestion,
+        lint_variables,
+        Z0001,
+        "\
+fn foo() {
+  local_value = 1
+  return local_value
+}
+y = foo()
+",
+        "found 'local_value'",
         None
     );
 

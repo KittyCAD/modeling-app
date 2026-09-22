@@ -4,8 +4,8 @@ description: Error from executing consumed_solid_original_issue.kcl
 ---
 KCL Engine error
 
-  × engine: The Zoo engine cannot handle this 3D intersection yet.  Please
-  │ report this as an issue
+  × engine: command BooleanIntersection resulted in errors:
+  │  The Zoo engine cannot handle this 3D intersection yet.
     ╭─[66:17]
  65 │ 
  66 │ ballEndHandle = intersect([ballEnd, rawHandle])
@@ -14,8 +14,8 @@ KCL Engine error
     ╰────
   ╰─▶ KCL Engine error
       
-        × engine: The Zoo engine cannot handle this 3D intersection yet.
-        │ Please report this as an issue
+        × engine: command BooleanIntersection resulted in errors:
+        │  The Zoo engine cannot handle this 3D intersection yet.
           ╭─[66:17]
        65 │
        66 │ ballEndHandle = intersect([ballEnd, rawHandle])

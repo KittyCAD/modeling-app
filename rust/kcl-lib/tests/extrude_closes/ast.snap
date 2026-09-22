@@ -654,6 +654,7 @@ description: Result of parsing extrude_closes.kcl
     "commentStart": 0,
     "end": 0,
     "moduleId": 0,
-    "start": 0
+    "start": 0,
+    "type": "Program"
   }
 }

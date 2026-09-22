@@ -24,13 +24,16 @@ beforeEach(async () => {
   }
 
   const { instance, kclManager, engineCommandManager } =
-    await buildTheWorldAndConnectToEngine()
+    await buildTheWorldAndConnectToEngine({ webrtc: false, pool: 'cpu' })
   instanceInThisFile = instance
   kclManagerInThisFile = kclManager
   engineCommandManagerInThisFile = engineCommandManager
 })
 afterAll(() => {
-  engineCommandManagerInThisFile.tearDown()
+  engineCommandManagerInThisFile.tearDown({
+    route: 'user-requested',
+    initiatedBy: 'client',
+  })
 })
 
 const executeCode = async (

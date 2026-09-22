@@ -1,6 +1,6 @@
 // Food Service Spatula
 // Use these spatulas for mixing, flipping, and scraping.
-// Categories: Maker
+// Categories: Home & Lifestyle; Tools
 
 @settings(defaultLengthUnit = mm, kclVersion = 2.0, experimentalFeatures = allow)
 

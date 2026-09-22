@@ -6,6 +6,7 @@ import type { EditorFixture } from '@e2e/playwright/fixtures/editorFixture'
 import type { HomePageFixture } from '@e2e/playwright/fixtures/homePageFixture'
 import type { SceneFixture } from '@e2e/playwright/fixtures/sceneFixture'
 import type { ToolbarFixture } from '@e2e/playwright/fixtures/toolbarFixture'
+import { throwTronAppMissing } from '@e2e/playwright/lib/electron-helpers'
 import {
   doAndWaitForImageDiff,
   executorInputPath,
@@ -13,6 +14,7 @@ import {
 } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 import type { BrowserContext, Page } from '@playwright/test'
+import { isStepFile } from '@src/lib/fileExtensions'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 
 async function insertPartIntoAssembly(
@@ -22,22 +24,67 @@ async function insertPartIntoAssembly(
   cmdBar: CmdBarFixture,
   page: Page
 ) {
+  const insertingStepFile = isStepFile(path)
+
   await toolbar.insertButton.click()
   await cmdBar.selectOption({ name: path }).click()
   await cmdBar.expectState({
     stage: 'arguments',
     currentArgKey: 'localName',
     currentArgValue: '',
-    headerArguments: { Path: path, LocalName: '' },
+    headerArguments: {
+      Path: path,
+      LocalName: '',
+      ...(insertingStepFile ? { Representation: '' } : {}),
+    },
     highlightedHeaderArg: 'localName',
-    commandName: 'Insert',
+    commandName: 'Import',
   })
   await page.keyboard.insertText(alias)
   await cmdBar.progressCmdBar()
+
+  if (insertingStepFile) {
+    await cmdBar.expectState({
+      stage: 'arguments',
+      currentArgKey: 'Representation',
+      currentArgValue: '',
+      headerArguments: {
+        Path: path,
+        LocalName: alias,
+        Representation: '',
+      },
+      highlightedHeaderArg: 'Representation',
+      commandName: 'Import',
+    })
+    await expect(
+      page.getByText(
+        'Choose how this STEP file should be represented in your model.'
+      )
+    ).toBeVisible()
+    await expect(
+      page.getByText(
+        'Faster to import. Best when you only need visual reference geometry.'
+      )
+    ).toBeVisible()
+    await expect(
+      page.getByText('B-rep (experimental)', { exact: true })
+    ).toBeVisible()
+    await expect(
+      page.getByText(
+        'Under development and currently supports only simple shapes. Imported geometry is not editable; use Mesh for now.'
+      )
+    ).toBeVisible()
+    await cmdBar.progressCmdBar()
+  }
+
   await cmdBar.expectState({
     stage: 'review',
-    headerArguments: { Path: path, LocalName: alias },
-    commandName: 'Insert',
+    headerArguments: {
+      Path: path,
+      LocalName: alias,
+      ...(insertingStepFile ? { Representation: 'mesh' } : {}),
+    },
+    commandName: 'Import',
   })
   await cmdBar.progressCmdBar()
 }
@@ -47,7 +94,7 @@ test.describe(
   'Point-and-click assemblies tests',
   { tag: ['@desktop', '@macos', '@windows'] },
   () => {
-    test(`Insert kcl parts into assembly as whole module import`, async ({
+    test(`Import kcl parts into assembly as whole module import`, async ({
       folderSetupFn,
       page,
       homePage,
@@ -57,7 +104,7 @@ test.describe(
       cmdBar,
       tronApp,
     }) => {
-      if (!tronApp) throw new Error('tronApp is missing.')
+      if (!tronApp) throwTronAppMissing()
 
       await test.step('Setup parts and expect empty assembly scene', async () => {
         const projectName = 'assembly'
@@ -91,7 +138,7 @@ test.describe(
         await scene.settled()
       })
 
-      await test.step('Insert kcl as first part as module', async () => {
+      await test.step('Import kcl as first part as module', async () => {
         await insertPartIntoAssembly(
           'cylinder.kcl',
           'cylinder',
@@ -109,7 +156,7 @@ test.describe(
         await scene.settled()
       })
 
-      await test.step('Insert a second part with the same name and expect error', async () => {
+      await test.step('Import a second part with the same name and expect error', async () => {
         await toolbar.insertButton.click()
         await cmdBar.selectOption({ name: 'bracket.kcl' }).click()
         await cmdBar.expectState({
@@ -118,7 +165,7 @@ test.describe(
           currentArgValue: '',
           headerArguments: { Path: 'bracket.kcl', LocalName: '' },
           highlightedHeaderArg: 'localName',
-          commandName: 'Insert',
+          commandName: 'Import',
         })
         await page.keyboard.insertText('cylinder')
         await cmdBar.progressCmdBar()
@@ -134,7 +181,7 @@ test.describe(
         await cmdBar.expectState({
           stage: 'review',
           headerArguments: { Path: 'bracket.kcl', LocalName: 'bracket' },
-          commandName: 'Insert',
+          commandName: 'Import',
         })
         await cmdBar.progressCmdBar()
         await editor.expectEditor.toContain(
@@ -147,7 +194,7 @@ test.describe(
         await scene.settled()
       })
 
-      await test.step('Insert a second time and expect error', async () => {
+      await test.step('Import a second time and expect error', async () => {
         await toolbar.insertButton.click()
         await cmdBar.selectOption({ name: 'bracket.kcl' }).click()
         await expect(
@@ -156,7 +203,7 @@ test.describe(
         await cmdBar.closeCmdBar()
       })
 
-      await test.step('Insert a nested kcl part', async () => {
+      await test.step('Import a nested kcl part', async () => {
         await insertPartIntoAssembly(
           'nested/twice/main.kcl',
           'main',
@@ -224,7 +271,7 @@ test.describe(
         await toolbar.closePane(DefaultLayoutPaneID.Code)
       })
 
-      await test.step('Insert kcl as module', async () => {
+      await test.step('Import kcl as module', async () => {
         await insertPartIntoAssembly(
           'bracket.kcl',
           'bracket',
@@ -552,7 +599,7 @@ test.describe(
       tronApp,
       folderSetupFn,
     }) => {
-      if (!tronApp) throw new Error('tronApp is missing.')
+      if (!tronApp) throwTronAppMissing()
       test.slow()
 
       const projectName = 'assembly'
@@ -580,6 +627,16 @@ test.describe(
         page
       )
 
+      await toolbar.openPane(DefaultLayoutPaneID.Code)
+      await editor.expectEditor.toContain(
+        `
+          import "bracket.kcl" as bracket
+        `,
+        { shouldNormalise: true }
+      )
+      await scene.settled()
+      await toolbar.closePane(DefaultLayoutPaneID.Code)
+
       await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
       const op = await toolbar.getFeatureTreeOperation('bracket', 0)
       await op.click({ button: 'right' })
@@ -596,7 +653,7 @@ test.describe(
       await expect(page.getByTestId('context-menu-set-scale')).not.toBeVisible()
     })
 
-    test(`Insert the bracket part into an assembly and transform it (scene selection)`, async ({
+    test(`Import the bracket part into an assembly and transform it (scene selection)`, async ({
       context,
       page,
       homePage,
@@ -607,7 +664,7 @@ test.describe(
       tronApp,
       folderSetupFn,
     }) => {
-      if (!tronApp) throw new Error('tronApp is missing.')
+      if (!tronApp) throwTronAppMissing()
       test.slow()
       await testBracketInsertionThenTransformsThenDeletion(
         context,
@@ -622,7 +679,7 @@ test.describe(
       )
     })
 
-    test(`Insert foreign parts into assembly and delete them`, async ({
+    test(`Import foreign parts into assembly and delete them`, async ({
       folderSetupFn,
       page,
       homePage,
@@ -632,7 +689,7 @@ test.describe(
       cmdBar,
       tronApp,
     }) => {
-      if (!tronApp) throw new Error('tronApp is missing.')
+      if (!tronApp) throwTronAppMissing()
 
       const complexPlmFileName = 'cube_Complex-PLM_Name_-001.sldprt'
       const camelCasedSolidworksFileName = 'cubeComplexPLMName001'
@@ -658,11 +715,12 @@ test.describe(
         await scene.settled()
       })
 
-      await test.step('Insert step part as module', async () => {
+      await test.step('Import step part as module', async () => {
         await insertPartIntoAssembly('cube.step', 'cube', toolbar, cmdBar, page)
         await toolbar.openPane(DefaultLayoutPaneID.Code)
         await editor.expectEditor.toContain(
           `
+          @(targetRepresentation = mesh)
           import "cube.step" as cube
         `,
           { shouldNormalise: true }
@@ -673,7 +731,7 @@ test.describe(
         await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
       })
 
-      await test.step('Insert second foreign part by clicking', async () => {
+      await test.step('Import second foreign part by clicking', async () => {
         await toolbar.openPane(DefaultLayoutPaneID.Files)
         await toolbar.expectFileTreeState([
           complexPlmFileName,
@@ -683,7 +741,7 @@ test.describe(
         await toolbar.openFile(complexPlmFileName)
 
         // Go through the ToastInsert prompt
-        await page.getByText('Insert into my current file').click()
+        await page.getByText('Import into my current file').click()
 
         // Check getPathFilenameInVariableCase output
         const parsedValueFromFile =
@@ -696,7 +754,7 @@ test.describe(
         await cmdBar.expectState({
           stage: 'review',
           headerArguments: { Path: complexPlmFileName, LocalName: 'cubeSw' },
-          commandName: 'Insert',
+          commandName: 'Import',
         })
         await cmdBar.progressCmdBar()
         await toolbar.closePane(DefaultLayoutPaneID.Files)
@@ -731,7 +789,7 @@ test.describe(
       cmdBar,
       tronApp,
     }) => {
-      if (!tronApp) throw new Error('tronApp is missing.')
+      if (!tronApp) throwTronAppMissing()
 
       const projectName = 'assembly'
 
@@ -813,7 +871,7 @@ foreign
       cmdBar,
       tronApp,
     }) => {
-      if (!tronApp) throw new Error('tronApp is missing.')
+      if (!tronApp) throwTronAppMissing()
 
       const projectName = 'assembly'
       const cloneLine = `clone001 = clone(washer)`

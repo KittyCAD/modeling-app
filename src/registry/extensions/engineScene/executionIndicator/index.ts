@@ -19,19 +19,24 @@ const executionIndicator = defineRegistryItemFactory((ctx) => {
     nullableStatusBarItem(
       (() => {
         const service = executionService.value
+        if (!service) return null
 
-        return service?.isExecuting.value
+        const isExecuting = service.isExecuting.value
+        return isExecuting || service.executionElapsedMs.value !== null
           ? {
               id: EXECUTION_INDICATOR_STATUS_BAR_ITEM_ID,
               'data-testid': 'engine-executing-status',
               element: 'text' as const,
-              icon: 'loading' as const,
-              label: 'Engine executing',
+              icon: isExecuting ? ('loading' as const) : ('checkmark' as const),
+              label: isExecuting
+                ? 'Engine executing'
+                : 'Engine execution finished',
               hideLabel: true,
               order: 0,
               scopes: ['file'],
               toolTip: {
                 children: createElement(EngineExecutionStatusTooltip, {
+                  isExecuting,
                   executionElapsedMs: service.executionElapsedMs,
                   getPendingCommandCount: () =>
                     executionService.value?.getPendingCommandCount() ?? 0,

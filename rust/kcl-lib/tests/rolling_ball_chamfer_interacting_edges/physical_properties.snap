@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties rolling_ball_chamfer_interacting_edges.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": 0.0,
+      "y": 0.0,
+      "z": -0.0004999999999881766
+    },
+    "dimensions": {
+      "x": 22.860000000000007,
+      "y": 22.860000000000007,
+      "z": 304.80099999999993
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 23059.685991711376
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 82.78122748113977
+  }
+}

@@ -1,4 +1,6 @@
 import type {
+  AttachmentRef,
+  MlCopilotAccessDeniedCode,
   MlCopilotClientMessage,
   MlCopilotFile,
   MlCopilotServerMessage,
@@ -11,15 +13,13 @@ import {
 import { ClientErrorCode, reportClientError } from '@src/lib/clientErrors'
 import { getKclVersion } from '@src/lib/kclVersion'
 import { Socket, SocketConnectionError } from '@src/lib/socket'
-import { isErr } from '@src/lib/trap'
-import { isArray, uuidv4 } from '@src/lib/utils'
+import { cleanErrs, isErr } from '@src/lib/trap'
+import { isArray, isRecord, uuidv4 } from '@src/lib/utils'
 import { withZookeeperWebSocketURL } from '@src/lib/withBaseURL'
-import { isZookeeperBillingError } from '@src/lib/zookeeper/zookeeperBilling'
 import { S, transitions, xstateEventError } from '@src/machines/utils'
-import { createActorContext } from '@xstate/react'
 import ms from 'ms'
 import type { ActorRefFrom } from 'xstate'
-import { assertEvent, assign, fromPromise, setup } from 'xstate'
+import { assertEvent, assign, createActor, fromPromise, setup } from 'xstate'
 
 // Uncomment and switch WebSocket below with this MockSocket for development.
 // import { MockSocket } from '@src/mocks/copilot'
@@ -45,6 +45,43 @@ export enum ZookeeperSetupErrors {
 }
 
 type TypeVariant<T, U = T> = U extends T ? keyof U : never
+type MlCopilotAccessDeniedMessage = Extract<
+  MlCopilotServerMessage,
+  { access_denied: unknown }
+>
+
+// Keep the runtime guard exhaustive with the generated union. A new access
+// denial code in @kittycad/lib must be handled here before TypeScript passes.
+const ML_COPILOT_ACCESS_DENIED_CODES = {
+  missing_payment_method: true,
+  payment_method_failed: true,
+  billing_threshold_reached: true,
+  pay_as_you_go_disabled: true,
+  upgrade_downgrade_abuse: true,
+  admin: true,
+} as const satisfies Record<MlCopilotAccessDeniedCode, true>
+
+function isMlCopilotAccessDeniedCode(
+  value: unknown
+): value is MlCopilotAccessDeniedCode {
+  return (
+    typeof value === 'string' &&
+    Object.hasOwn(ML_COPILOT_ACCESS_DENIED_CODES, value)
+  )
+}
+
+function isMlCopilotAccessDeniedMessage(
+  response: unknown
+): response is MlCopilotAccessDeniedMessage {
+  if (!isRecord(response) || !isRecord(response.access_denied)) return false
+
+  const { access_denied: accessDenied } = response
+  return (
+    isMlCopilotAccessDeniedCode(accessDenied.code) &&
+    typeof accessDenied.detail === 'string' &&
+    typeof accessDenied.retryable === 'boolean'
+  )
+}
 
 type MlCopilotListModesRequest = { type: 'list_modes' }
 export type MlCopilotModeId = string
@@ -201,6 +238,7 @@ export enum ZookeeperManagerTransitions {
   CacheSetupAndConnect = 'cache-setup-and-connect',
   BackendShutdown = 'backend-shutdown',
   SetupProgress = 'setup-progress',
+  AttachmentFetch = 'attachment-fetch',
 }
 
 export const NUMBER_OF_ZOOKEEPER_SETUP_ATTEMPTS = 3
@@ -216,11 +254,20 @@ const ZOOKEEPER_PROJECT_TOO_LARGE_CLOSE_REASON =
 
 class ZookeeperSetupConnectionError extends Error {
   closeReason?: string
+  accessDeniedCode?: MlCopilotAccessDeniedCode
+  retryable: boolean
 
-  constructor(message: string, closeReason?: string) {
+  constructor(
+    message: string,
+    closeReason?: string,
+    accessDeniedCode?: MlCopilotAccessDeniedCode,
+    retryable = true
+  ) {
     super(message)
     this.name = 'ZookeeperSetupConnectionError'
     this.closeReason = closeReason
+    this.accessDeniedCode = accessDeniedCode
+    this.retryable = retryable
   }
 }
 
@@ -245,6 +292,37 @@ function getSetupFailureReason(event: unknown): string | undefined {
     return ZOOKEEPER_PROJECT_TOO_LARGE_CLOSE_REASON
   }
   return undefined
+}
+
+function getSetupAccessDeniedCode(
+  event: unknown
+): MlCopilotAccessDeniedCode | undefined {
+  if (typeof event !== 'object' || event === null) {
+    return undefined
+  }
+  if (
+    'accessDeniedCode' in event &&
+    isMlCopilotAccessDeniedCode(event.accessDeniedCode)
+  ) {
+    return event.accessDeniedCode
+  }
+  if (
+    'error' in event &&
+    event.error instanceof ZookeeperSetupConnectionError
+  ) {
+    return event.error.accessDeniedCode
+  }
+  return undefined
+}
+
+function isNonRetryableSetupFailure(event: unknown): boolean {
+  return (
+    typeof event === 'object' &&
+    event !== null &&
+    'error' in event &&
+    event.error instanceof ZookeeperSetupConnectionError &&
+    !event.error.retryable
+  )
 }
 
 export type ZookeeperManagerEvents =
@@ -315,6 +393,7 @@ export type ZookeeperManagerEvents =
   | {
       type: ZookeeperManagerTransitions.AbruptClose
       closeReason?: string
+      accessDeniedCode?: MlCopilotAccessDeniedCode
     }
   | {
       type: ZookeeperManagerTransitions.ResumeSuperseded
@@ -328,6 +407,10 @@ export type ZookeeperManagerEvents =
     }
   | {
       type: ZookeeperManagerTransitions.SetupProgress
+    }
+  | {
+      type: ZookeeperManagerTransitions.AttachmentFetch
+      attachmentRef: AttachmentRef
     }
 
 export interface Exchange {
@@ -354,6 +437,16 @@ export type Conversation = {
   exchanges: Exchange[]
 }
 
+export type ZookeeperAttachmentFetchState =
+  | { status: 'loading' }
+  | { status: 'loaded'; file: MlCopilotFile }
+  | { status: 'error'; message: string }
+
+export const getZookeeperAttachmentKey = (
+  attachmentRef: AttachmentRef
+): string =>
+  `${attachmentRef.prompt_id}:${attachmentRef.seq}:${attachmentRef.index}`
+
 export interface ZookeeperManagerContext {
   apiToken: string
   ws?: WebSocket
@@ -361,6 +454,7 @@ export interface ZookeeperManagerContext {
   setupFailed: boolean
   setupAttempt: number
   setupFailureReason?: string
+  accessDeniedCode?: MlCopilotAccessDeniedCode
   closeReason?: string
   conversation?: Conversation
   conversationId?: string
@@ -370,6 +464,7 @@ export interface ZookeeperManagerContext {
   projectNameCurrentlyOpened?: string
   awaitingResponse: boolean
   attachmentsLoadedForCurrentPrompt: boolean
+  attachmentFetches: Record<string, ZookeeperAttachmentFetchState>
   pendingBackendShutdown: boolean
   defaultMode?: MlCopilotModeId
   modeOptions?: MlCopilotModeOption[]
@@ -391,6 +486,7 @@ export const zookeeperDefaultContext = (args: {
   setupFailed: false,
   setupAttempt: 0,
   setupFailureReason: undefined,
+  accessDeniedCode: undefined,
   closeReason: undefined,
   conversation: undefined,
   cachedSetup: undefined,
@@ -400,6 +496,7 @@ export const zookeeperDefaultContext = (args: {
   projectNameCurrentlyOpened: undefined,
   awaitingResponse: false,
   attachmentsLoadedForCurrentPrompt: true,
+  attachmentFetches: {},
   pendingBackendShutdown: false,
   defaultMode: undefined,
   modeOptions: undefined,
@@ -517,7 +614,7 @@ function isBackendShutdownMessage(
   return typeof candidate.backend_shutdown === 'object'
 }
 
-function isResponseComplete(response: MlCopilotServerMessage): boolean {
+export function isResponseComplete(response: MlCopilotServerMessage): boolean {
   return 'end_of_stream' in response || 'error' in response
 }
 
@@ -531,11 +628,35 @@ function isAttachmentsLoadedMessage(
   )
 }
 
-async function toMlCopilotFile(file: File): Promise<MlCopilotFile> {
+const ZOOKEEPER_ATTACHMENT_READ_ERROR_MESSAGE =
+  "We couldn't read the attachment. It may have been moved, deleted, or become unavailable. Reattach it and try again."
+
+class ZookeeperAttachmentReadError extends Error {
+  constructor(cause: unknown) {
+    super(ZOOKEEPER_ATTACHMENT_READ_ERROR_MESSAGE, { cause })
+    this.name = 'ZookeeperAttachmentReadError'
+  }
+}
+
+export async function toMlCopilotFile(
+  file: File
+): Promise<MlCopilotFile | Error> {
+  let data: ArrayBuffer
+  try {
+    data = await file.arrayBuffer()
+  } catch (error) {
+    if (isErr(error) && error.name === 'NotFoundError') {
+      return new ZookeeperAttachmentReadError(error)
+    }
+    return isErr(error)
+      ? error
+      : new Error('Unknown attachment read error', { cause: error })
+  }
+
   return {
     name: file.name,
     mimetype: file.type || 'application/octet-stream',
-    data: Array.from(new Uint8Array(await file.arrayBuffer())),
+    data: Array.from(new Uint8Array(data)),
   }
 }
 
@@ -655,15 +776,14 @@ function isMlCopilotServerMessage(
   return true
 }
 
-const hasBeenInterruptedOnLast = (exchanges: Exchange[]) => {
-  const lastExchange = exchanges.slice(-1)[0]
-  const lastResponse = lastExchange?.responses.slice(-1)[0]
-  return (
-    (lastExchange?.responses?.length > 0 &&
-      lastResponse !== undefined &&
-      !('end_of_stream' in lastResponse)) ||
-    lastExchange?.responses?.length === 0
-  )
+export const hasBeenInterruptedOnLast = (exchanges: Exchange[]) => {
+  const lastExchange = exchanges.at(-1)
+  if (lastExchange === undefined) {
+    return false
+  }
+
+  const lastResponse = lastExchange.responses.at(-1)
+  return lastResponse === undefined || !isResponseComplete(lastResponse)
 }
 
 type XSInput<T> = {
@@ -680,7 +800,8 @@ export const zookeeperManagerMachine = setup({
     events: {} as ZookeeperManagerEvents,
   },
   guards: {
-    canRetrySetup: ({ context }) =>
+    canRetrySetup: ({ context, event }) =>
+      !isNonRetryableSetupFailure(event) &&
       context.setupAttempt < NUMBER_OF_ZOOKEEPER_SETUP_ATTEMPTS,
     hasApiToken: ({ context }) => context.apiToken.trim().length > 0,
     canResumeSetupWithApiToken: ({ context, event }) => {
@@ -700,6 +821,19 @@ export const zookeeperManagerMachine = setup({
     isCurrentZookeeperWebSocket: ({ context, event }) => {
       assertEvent(event, ZookeeperManagerTransitions.ResumeSuperseded)
       return context.ws === event.webSocket
+    },
+    canFetchAttachment: ({ context, event }) => {
+      assertEvent(event, ZookeeperManagerTransitions.AttachmentFetch)
+
+      const key = getZookeeperAttachmentKey(event.attachmentRef)
+      const found = context.attachmentFetches[key]
+
+      // prevent duplicate requests
+      return (
+        context.ws?.readyState === WebSocket.OPEN &&
+        found?.status !== 'loading' &&
+        found?.status !== 'loaded'
+      )
     },
   },
   actions: {
@@ -741,6 +875,8 @@ export const zookeeperManagerMachine = setup({
           setupAttempt: context.setupAttempt,
           setupFailureReason:
             getSetupFailureReason(event) ?? context.setupFailureReason,
+          accessDeniedCode:
+            getSetupAccessDeniedCode(event) ?? context.accessDeniedCode,
           rejectedValue:
             rejectedValue !== undefined && !isErr(rejectedValue)
               ? String(rejectedValue)
@@ -758,19 +894,24 @@ export const zookeeperManagerMachine = setup({
         event.type === ZookeeperManagerTransitions.AbruptClose
           ? event.closeReason
           : undefined
+      const accessDeniedCode =
+        event.type === ZookeeperManagerTransitions.AbruptClose
+          ? event.accessDeniedCode
+          : undefined
       logZookeeperDisconnect('machine handling abrupt websocket close', {
         closeReason,
         resumeSuperseded:
           event.type === ZookeeperManagerTransitions.ResumeSuperseded,
         ...zookeeperErrorContext(context),
       })
-      if (closeReason && !isZookeeperBillingError(closeReason)) {
+      if (closeReason && accessDeniedCode === undefined) {
         toast.error(closeReason)
       }
       return {
         abruptlyClosed: true,
-        setupFailed: false,
+        setupFailed: accessDeniedCode !== undefined,
         setupFailureReason: undefined,
+        accessDeniedCode,
         closeReason,
       }
     }),
@@ -782,6 +923,7 @@ export const zookeeperManagerMachine = setup({
         abruptlyClosed: true,
         setupFailed: false,
         setupFailureReason: undefined,
+        accessDeniedCode: undefined,
         closeReason: 'No internet connection.',
       }
     }),
@@ -790,6 +932,8 @@ export const zookeeperManagerMachine = setup({
         setupAttempt: context.setupAttempt + 1,
         setupFailureReason:
           getSetupFailureReason(event) ?? context.setupFailureReason,
+        accessDeniedCode:
+          getSetupAccessDeniedCode(event) ?? context.accessDeniedCode,
         cachedSetup: {
           refParentSend: context.cachedSetup?.refParentSend,
           conversationId: context.cachedSetup?.conversationId,
@@ -800,16 +944,20 @@ export const zookeeperManagerMachine = setup({
     markSetupFailed: assign(({ context, event }) => {
       const setupFailureReason =
         getSetupFailureReason(event) ?? context.setupFailureReason
+      const accessDeniedCode =
+        getSetupAccessDeniedCode(event) ?? context.accessDeniedCode
       const closeReason = terminalSetupFailureMessage(context, event)
       logZookeeperDisconnect('conversation setup attempts exhausted', {
         ...zookeeperErrorContext(context),
         setupAttempt: context.setupAttempt,
         setupFailureReason,
+        accessDeniedCode,
       })
       return {
         abruptlyClosed: true,
         setupFailed: true,
         setupFailureReason,
+        accessDeniedCode,
         closeReason,
       }
     }),
@@ -873,6 +1021,7 @@ export const zookeeperManagerMachine = setup({
         setupFailed: false,
         setupAttempt: 1,
         setupFailureReason: undefined,
+        accessDeniedCode: undefined,
         closeReason: undefined,
         lastMessageId: undefined,
         lastMessageType: undefined,
@@ -882,6 +1031,7 @@ export const zookeeperManagerMachine = setup({
         modeOptions: undefined,
         awaitingResponse: false,
         attachmentsLoadedForCurrentPrompt: true,
+        attachmentFetches: {},
         pendingBackendShutdown: false,
         cachedSetup: {
           refParentSend: event.refParentSend,
@@ -893,6 +1043,40 @@ export const zookeeperManagerMachine = setup({
         },
       }
     }),
+    markAttachmentLoading: assign(({ context, event }) => {
+      assertEvent(event, ZookeeperManagerTransitions.AttachmentFetch)
+
+      const key = getZookeeperAttachmentKey(event.attachmentRef)
+
+      return {
+        attachmentFetches: {
+          ...context.attachmentFetches,
+          [key]: { status: 'loading' as const },
+        },
+      }
+    }),
+
+    sendAttachmentFetch: ({ context, event }) => {
+      assertEvent(event, ZookeeperManagerTransitions.AttachmentFetch)
+
+      if (context.ws?.readyState !== WebSocket.OPEN) {
+        return
+      }
+
+      const { prompt_id, seq, index } = event.attachmentRef
+
+      const request: Extract<
+        MlCopilotClientMessage,
+        { type: 'fetch_attachments' }
+      > = {
+        type: 'fetch_attachments',
+        prompt_id,
+        seq,
+        indices: [index],
+      }
+
+      context.ws.send(JSON.stringify(request))
+    },
     clearCacheSetup: assign({
       cachedSetup: undefined,
     }),
@@ -919,6 +1103,7 @@ export const zookeeperManagerMachine = setup({
       if (maybeConversationId) {
         queryParams.set('conversation_id', maybeConversationId)
         queryParams.set('replay', 'true')
+        queryParams.set('replay_attachment_mode', 'metadata_only')
       }
       const querystring = queryParams.toString()
         ? `?${queryParams.toString()}`
@@ -1104,6 +1289,28 @@ export const zookeeperManagerMachine = setup({
               return
             }
 
+            if (isMlCopilotAccessDeniedMessage(response)) {
+              const { access_denied: accessDenied } = response
+              if (setupResolved) {
+                theRefParentSend({
+                  type: ZookeeperManagerTransitions.AbruptClose,
+                  closeReason: accessDenied.detail,
+                  accessDeniedCode: accessDenied.code,
+                })
+              } else {
+                cancelSetupAttempt()
+                onRejected(
+                  new ZookeeperSetupConnectionError(
+                    accessDenied.detail,
+                    accessDenied.detail,
+                    accessDenied.code,
+                    accessDenied.retryable
+                  )
+                )
+              }
+              return
+            }
+
             if (!isMlCopilotServerMessage(response)) return
 
             // Ignore the authorization bug
@@ -1121,27 +1328,6 @@ export const zookeeperManagerMachine = setup({
 
             // Ignore pong
             if ('pong' in response) {
-              return
-            }
-
-            if (
-              'error' in response &&
-              isZookeeperBillingError(response.error.detail)
-            ) {
-              if (setupResolved) {
-                theRefParentSend({
-                  type: ZookeeperManagerTransitions.AbruptClose,
-                  closeReason: response.error.detail,
-                })
-              } else {
-                cancelSetupAttempt()
-                onRejected(
-                  new ZookeeperSetupConnectionError(
-                    response.error.detail,
-                    response.error.detail
-                  )
-                )
-              }
               return
             }
 
@@ -1357,10 +1543,15 @@ export const zookeeperManagerMachine = setup({
         )
       }
 
-      const additionalFiles =
-        event.additionalFiles && event.additionalFiles.length > 0
-          ? await Promise.all(event.additionalFiles.map(toMlCopilotFile))
-          : undefined
+      let additionalFiles: MlCopilotFile[] | undefined
+      if (event.additionalFiles && event.additionalFiles.length > 0) {
+        const [, convertedFiles, conversionErrors] = cleanErrs(
+          await Promise.all(event.additionalFiles.map(toMlCopilotFile))
+        )
+        const conversionError = conversionErrors[0]
+        if (conversionError) return Promise.reject(conversionError)
+        additionalFiles = convertedFiles
+      }
 
       const request: MlCopilotUserRequest = {
         type: 'user',
@@ -1603,6 +1794,7 @@ export const zookeeperManagerMachine = setup({
               setupFailed: false,
               setupAttempt: 0,
               setupFailureReason: undefined,
+              accessDeniedCode: undefined,
               awaitingResponse: false,
               attachmentsLoadedForCurrentPrompt: true,
               pendingBackendShutdown: false,
@@ -1711,6 +1903,10 @@ export const zookeeperManagerMachine = setup({
         [ZookeeperManagerTransitions.BackendShutdown]: {
           actions: ['handleBackendShutdown', 'disconnectIfIdle'],
         },
+        [ZookeeperManagerTransitions.AttachmentFetch]: {
+          guard: 'canFetchAttachment',
+          actions: ['markAttachmentLoading', 'sendAttachmentFetch'],
+        },
       },
       states: {
         [ZookeeperManagerStates.Response]: {
@@ -1744,6 +1940,35 @@ export const zookeeperManagerMachine = setup({
                     assertEvent(event, [
                       ZookeeperManagerTransitions.ResponseReceive,
                     ])
+
+                    if ('attachments' in event.response) {
+                      const attachmentFetches: Record<
+                        string,
+                        ZookeeperAttachmentFetchState
+                      > = {
+                        ...context.attachmentFetches,
+                      }
+
+                      for (const file of event.response.attachments.files) {
+                        if (file.attachment_ref === undefined) {
+                          continue
+                        }
+
+                        const key = getZookeeperAttachmentKey(
+                          file.attachment_ref
+                        )
+
+                        attachmentFetches[key] = {
+                          status: 'loaded',
+                          file,
+                        }
+                      }
+                      // This early return is needed because attachment response
+                      // is just a bookkeeping, not a message.
+                      // It should not create a conversation exchange, increment lastMessageId,
+                      // change awaitingResponse, or affect active Zookeeper generation.
+                      return { attachmentFetches }
+                    }
 
                     const lastMessageId = (context.lastMessageId ?? -1) + 1
                     const responseComplete = isResponseComplete(event.response)
@@ -1958,6 +2183,7 @@ export const zookeeperManagerMachine = setup({
               setupFailed: false,
               setupAttempt: 0,
               setupFailureReason: undefined,
+              accessDeniedCode: undefined,
               conversation: undefined,
               conversationId: undefined,
               cachedSetup: undefined,
@@ -1965,6 +2191,7 @@ export const zookeeperManagerMachine = setup({
               lastMessageType: undefined,
               awaitingResponse: false,
               attachmentsLoadedForCurrentPrompt: true,
+              attachmentFetches: {},
               pendingBackendShutdown: false,
               closeReason: undefined,
               ws: undefined,
@@ -1977,6 +2204,23 @@ export const zookeeperManagerMachine = setup({
 })
 
 export type ZookeeperManagerActor = ActorRefFrom<typeof zookeeperManagerMachine>
-export const ZookeeperManagerReactContext = createActorContext(
-  zookeeperManagerMachine
-)
+
+export function createZookeeperManagerActor(
+  apiToken: string
+): ZookeeperManagerActor {
+  return createActor(zookeeperManagerMachine, {
+    input: { apiToken },
+  }).start()
+}
+
+/**
+ * Stop a project-owned Zookeeper session and close its live transport.
+ *
+ * XState does not run root exit actions when an actor is stopped directly, so
+ * runtime owners must close the resolved socket before stopping the actor.
+ * Connecting sockets are still closed by the setup actor's abort handler.
+ */
+export function stopZookeeperManagerActor(actor: ZookeeperManagerActor) {
+  closeZookeeperWebSocket(actor.getSnapshot().context.ws)
+  actor.stop()
+}

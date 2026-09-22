@@ -2,6 +2,7 @@ import 'fake-indexeddb/auto'
 import {
   cloudSyncRemoteProjects,
   configureCloudSyncEngine,
+  disableCloudSyncEngineForTest,
   duplicateRemoteCloudProject,
 } from '@src/lib/cloudSync'
 import {
@@ -39,8 +40,8 @@ describe('duplicateRemoteCloudProject', () => {
     vi.stubGlobal('fetch', fetchMock)
   })
 
-  afterEach(() => {
-    configureCloudSyncEngine({ enabled: false })
+  afterEach(async () => {
+    await disableCloudSyncEngineForTest()
     vi.useRealTimers()
     vi.unstubAllGlobals()
   })

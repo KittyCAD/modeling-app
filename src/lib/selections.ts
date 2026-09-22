@@ -323,7 +323,7 @@ const BODY_REFERENCE_ARTIFACT_TYPES: Artifact['type'][] = [
   'helix',
 ]
 
-function isReferenceablePrimitiveSelection(
+export function isReferenceableEnginePrimitiveSelection(
   selection: EnginePrimitiveSelection
 ): selection is ReferenceablePrimitiveSelection {
   return (
@@ -365,6 +365,7 @@ function isPrimitiveReferenceArtifact(artifact: Artifact | undefined): boolean {
 function recastExpr(expr: Expr, wasmInstance: ModuleType) {
   const code = recast(
     {
+      type: 'Program',
       start: 0,
       end: 0,
       moduleId: 0,
@@ -1013,7 +1014,7 @@ export async function getSelectionReferences({
     )
     if (
       primitiveSelection &&
-      isReferenceablePrimitiveSelection(primitiveSelection)
+      isReferenceableEnginePrimitiveSelection(primitiveSelection)
     ) {
       primitiveSelections.push({
         ...primitiveSelection,
@@ -1023,7 +1024,7 @@ export async function getSelectionReferences({
   }
 
   for (const selection of enginePrimitives) {
-    if (isReferenceablePrimitiveSelection(selection)) {
+    if (isReferenceableEnginePrimitiveSelection(selection)) {
       primitiveSelections.push({
         ...selection,
         graphSelection: graphSelectionByEntityId.get(selection.entityId),
@@ -1072,6 +1073,20 @@ export async function getSelectionReferences({
   ]
 }
 
+export function getUnresolvedEnginePrimitiveSelections(
+  enginePrimitives: EnginePrimitiveSelection[],
+  references: SelectionReference[]
+): EnginePrimitiveSelection[] {
+  return enginePrimitives.filter(
+    (selection) =>
+      isReferenceableEnginePrimitiveSelection(selection) &&
+      !references.some(
+        (reference) =>
+          reference.enginePrimitiveSelection?.entityId === selection.entityId
+      )
+  )
+}
+
 function isSameCodeRange(left: Selection, right: Selection) {
   return (
     left.codeRef.range[0] === right.codeRef.range[0] &&
@@ -1103,6 +1118,25 @@ function isSameDefaultPlaneSelection(
   right: DefaultPlaneSelection
 ) {
   return left.id === right.id
+}
+
+export function removeEnginePrimitiveSelectionFromSelections(
+  selections: Selections,
+  enginePrimitiveSelectionToRemove: EnginePrimitiveSelection
+): Selections {
+  return {
+    graphSelections: selections.graphSelections,
+    otherSelections: selections.otherSelections.filter(
+      (selection) =>
+        !(
+          isEnginePrimitiveSelection(selection) &&
+          isSameEnginePrimitiveSelection(
+            selection,
+            enginePrimitiveSelectionToRemove
+          )
+        )
+    ),
+  }
 }
 
 export function removeReferenceFromSelections(

@@ -78,7 +78,7 @@ pub fn parse_tokens(mut tokens: TokenStream) -> ParseResult {
 /// - if there are no errors, then the Option will be Some
 /// - if the Option is None, then there will be at least one error in the ParseContext.
 #[derive(Debug, Clone)]
-pub(crate) struct ParseResult(pub Result<(Option<Node<Program>>, Vec<CompilationIssue>), KclError>);
+pub struct ParseResult(pub Result<(Option<Node<Program>>, Vec<CompilationIssue>), KclError>);
 
 impl ParseResult {
     #[cfg(test)]

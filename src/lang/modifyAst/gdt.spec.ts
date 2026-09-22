@@ -1,4 +1,5 @@
 import type { KclManager } from '@src/lang/KclManager'
+import { createPathToNodeForLastVariable } from '@src/lang/modifyAst'
 import {
   addAngularityGdt,
   addAnnotationGdt,
@@ -58,14 +59,17 @@ beforeEach(async () => {
   }
 
   const { instance, kclManager, engineCommandManager, rustContext } =
-    await buildTheWorldAndConnectToEngine()
+    await buildTheWorldAndConnectToEngine({ webrtc: false, pool: 'cpu' })
   instanceInThisFile = instance
   kclManagerInThisFile = kclManager
   engineCommandManagerInThisFile = engineCommandManager
   rustContextInThisFile = rustContext
 })
 afterAll(() => {
-  engineCommandManagerInThisFile.tearDown()
+  engineCommandManagerInThisFile.tearDown({
+    route: 'user-requested',
+    initiatedBy: 'client',
+  })
 })
 
 const executeCode = async (
@@ -110,6 +114,33 @@ async function getKclCommandValue(
 }
 
 describe('gdt.spec.ts', () => {
+  it('edits scalar arguments when target reconstruction is unavailable', async () => {
+    const code =
+      'annotation001 = gdt::straightness(edges = [edgeRef], tolerance = 0.1)'
+    const ast = assertParse(code, instanceInThisFile)
+    const tolerance = await getKclCommandValue(
+      '0.2',
+      instanceInThisFile,
+      rustContextInThisFile
+    )
+
+    const result = addStraightnessGdt({
+      ast,
+      artifactGraph: new Map(),
+      objects: { graphSelections: [], otherSelections: [] },
+      tolerance,
+      nodeToEdit: createPathToNodeForLastVariable(ast),
+      wasmInstance: instanceInThisFile,
+    })
+    if (err(result)) throw result
+
+    const newCode = recast(result.modifiedAst, instanceInThisFile)
+    if (err(newCode)) throw newCode
+    expect(newCode.trim()).toBe(
+      code.replace('tolerance = 0.1', 'tolerance = 0.2')
+    )
+  })
+
   const boxWithOneTagAndChamfer = `sketch001 = startSketchOn(XY)
 profile001 = startProfile(sketch001, at = [0, 0])
   |> xLine(length = 10, tag = $seg01)
@@ -1396,6 +1427,40 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
   })
 
   describe('Testing addDistanceGdt', () => {
+    it('should omit an unspecified tolerance', async () => {
+      const { artifactGraph, ast } = await executeCode(
+        box,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const edge = [...artifactGraph.values()].find(
+        (artifact) => artifact.type === 'sweepEdge'
+      )
+      if (!edge) {
+        throw new Error('Expected a sweep edge')
+      }
+
+      const result = addDistanceGdt({
+        ast,
+        artifactGraph,
+        objects: createSelectionFromArtifacts([edge], artifactGraph),
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) {
+        throw result
+      }
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      if (err(newCode)) {
+        throw newCode
+      }
+
+      expect(newCode).toContain('gdt::distance(')
+      expect(newCode).not.toContain('tolerance =')
+
+      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
+    })
+
     it('should add a distance annotation to a selected edge', async () => {
       const { artifactGraph, ast } = await executeCode(
         box,

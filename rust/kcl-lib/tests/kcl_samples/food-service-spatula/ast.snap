@@ -14989,7 +14989,7 @@ description: Result of parsing food-service-spatula.kcl
           "type": "NonCodeNode",
           "value": {
             "type": "blockComment",
-            "value": "Categories: Maker",
+            "value": "Categories: Home & Lifestyle; Tools",
             "style": "line"
           }
         },
@@ -15005,6 +15005,7 @@ description: Result of parsing food-service-spatula.kcl
         }
       ]
     },
-    "start": 0
+    "start": 0,
+    "type": "Program"
   }
 }

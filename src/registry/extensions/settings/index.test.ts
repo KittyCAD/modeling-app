@@ -45,6 +45,11 @@ describe('settings extension', () => {
     expect(settingsItem.href(location(`${filePath}/settings`))).toBe(
       `${filePath}/settings?tab=project`
     )
+    expect(
+      settingsItem.href(location('/file/%2Fdocuments%2Fdemo-project'), {
+        activeFileRoutePath: filePath,
+      })
+    ).toBe(`${filePath}/settings?tab=project`)
 
     registry[Symbol.dispose]()
   })

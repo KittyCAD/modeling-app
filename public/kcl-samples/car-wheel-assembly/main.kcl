@@ -1,6 +1,6 @@
 // Car Wheel Assembly
 // A car wheel assembly with a rotor, tire, and lug nuts.
-// Categories: Automotive
+// Categories: Automotive & Transportation; Mechanical Components
 
 // Set units and version
 @settings(defaultLengthUnit = in, kclVersion = 2.0)

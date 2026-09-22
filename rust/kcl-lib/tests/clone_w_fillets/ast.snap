@@ -1428,6 +1428,7 @@ description: Result of parsing clone_w_fillets.kcl
       },
       "startNodes": []
     },
-    "start": 0
+    "start": 0,
+    "type": "Program"
   }
 }

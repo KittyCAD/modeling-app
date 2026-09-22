@@ -10,6 +10,7 @@ type DeleteConfirmationDialogProps = React.PropsWithChildren<{
   onDismiss: () => void
   confirmButtonText?: string
   dismissButtonText?: string
+  confirmDisabled?: boolean
 }>
 
 export function DeleteConfirmationDialog({
@@ -18,6 +19,7 @@ export function DeleteConfirmationDialog({
   onDismiss,
   confirmButtonText = 'Delete',
   dismissButtonText = 'Cancel',
+  confirmDisabled,
   children,
 }: DeleteConfirmationDialogProps) {
   const dismissButtonRef = useRef<HTMLButtonElement>(null)
@@ -57,6 +59,7 @@ export function DeleteConfirmationDialog({
       tabIndex={0}
       onClick={onConfirm}
       aria-label={confirmButtonText}
+      disabled={confirmDisabled}
       iconStart={{
         icon: 'trash',
         bgClassName: 'bg-destroy-10 dark:bg-destroy-80',

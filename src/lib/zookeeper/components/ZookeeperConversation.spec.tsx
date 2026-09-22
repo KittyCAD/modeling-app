@@ -192,15 +192,149 @@ describe('ZookeeperConversation', () => {
     expect(screen.getByRole('alert')).not.toHaveTextContent('a last resort')
   })
 
+  test('requires confirmation before resuming an interrupted request', () => {
+    const onResumeInterruptedTurn = vi.fn()
+    const interruptedConversation: Conversation = {
+      exchanges: [
+        {
+          request: {
+            type: 'user',
+            content: 'finish the bracket',
+          },
+          responses: [
+            {
+              info: {
+                text: 'Temporary connection issue. Retrying automatically…',
+              },
+            },
+          ],
+          deltasAggregated: '',
+        },
+      ],
+    }
+
+    render(
+      <ZookeeperConversation
+        isLoading={false}
+        conversation={interruptedConversation}
+        interruptedTurnAwaitingResume={true}
+        onResumeInterruptedTurn={onResumeInterruptedTurn}
+        onProcess={() => {}}
+        onClickClearChat={() => {}}
+        onReconnect={() => {}}
+        onCancel={() => {}}
+        needsReconnect={false}
+        contexts={[]}
+        disabled={true}
+        hasPromptCompleted={false}
+        isProcessing={false}
+        queue={[]}
+        onRemoveFromQueue={() => {}}
+        onSteer={() => {}}
+      />
+    )
+
+    expect(screen.getByRole('status')).toHaveTextContent(
+      'Zookeeper stopped before finishing this request.'
+    )
+    const resumeButton = screen.getByRole('button', {
+      name: 'Resume interrupted request',
+    })
+    fireEvent.click(resumeButton)
+    expect(onResumeInterruptedTurn).toHaveBeenCalledOnce()
+    expect(
+      screen.getByTestId('ml-ephant-conversation-input-button')
+    ).toBeDisabled()
+  })
+
   test('shows billing recovery without offering to clear the chat', () => {
-    const billingError = 'no API credits available'
+    const onCheckBilling = vi.fn()
+    const onOpenBilling = vi.fn()
+    const billingError = 'Update your payment method.'
 
     render(
       <ZookeeperConversation
         isLoading={false}
         connectionError={billingError}
+        accessDeniedCode="payment_method_failed"
         connectionFailed={true}
         canClearChat={true}
+        onProcess={() => {}}
+        onClickClearChat={() => {}}
+        onReconnect={() => {}}
+        onCheckBilling={onCheckBilling}
+        onOpenBilling={onOpenBilling}
+        onCancel={() => {}}
+        needsReconnect={true}
+        contexts={[]}
+        disabled={true}
+        hasPromptCompleted={true}
+        isProcessing={false}
+        queue={[]}
+        onRemoveFromQueue={() => {}}
+        onSteer={() => {}}
+      />
+    )
+
+    const alert = screen.getByRole('alert')
+    expect(alert).toHaveClass('border-ml-green', 'bg-ml-green/10')
+    expect(alert).toHaveTextContent('Your payment needs attention.')
+    expect(alert).toHaveTextContent('Update or confirm your payment method')
+    expect(
+      screen.queryByRole('button', { name: 'Clear chat' })
+    ).not.toBeInTheDocument()
+    const billingLink = screen.getByRole('link', { name: 'Update payment' })
+    expect(billingLink).toHaveAttribute(
+      'href',
+      withSiteBaseURL('/account/billing')
+    )
+    expect(
+      billingLink.querySelector('svg[aria-label="link"]')?.parentElement
+    ).toHaveClass('!bg-transparent', 'ml-1')
+    billingLink.addEventListener('click', (event) => event.preventDefault())
+    fireEvent.click(billingLink)
+    expect(onOpenBilling).toHaveBeenCalledOnce()
+
+    const reconnectButton = screen.getByRole('button', {
+      name: 'Check again',
+    })
+    expect(reconnectButton).toBeEnabled()
+    expect(
+      reconnectButton.querySelector('svg[aria-label="refresh"]')?.parentElement
+    ).toHaveClass('!bg-transparent', 'ml-1')
+    fireEvent.click(reconnectButton)
+    expect(onCheckBilling).toHaveBeenCalledOnce()
+  })
+
+  test.each([
+    [
+      'missing_payment_method' as const,
+      'Add a payment method to continue.',
+      'Add payment method',
+    ],
+    [
+      'billing_threshold_reached' as const,
+      'An outstanding invoice needs payment.',
+      'Open billing',
+    ],
+    [
+      'pay_as_you_go_disabled' as const,
+      "You're out of Zookeeper credits.",
+      'Manage billing',
+    ],
+    [
+      'upgrade_downgrade_abuse' as const,
+      'Plan changes temporarily locked.',
+      'Contact support',
+    ],
+    ['admin' as const, 'Your account is blocked.', 'Contact support'],
+  ])('maps %s to its specific recovery', (code, title, actionLabel) => {
+    render(
+      <ZookeeperConversation
+        isLoading={false}
+        connectionError="Account access denied."
+        accessDeniedCode={code}
+        connectionFailed={true}
         onProcess={() => {}}
         onClickClearChat={() => {}}
         onReconnect={() => {}}
@@ -216,26 +350,8 @@ describe('ZookeeperConversation', () => {
       />
     )
 
-    const alert = screen.getByRole('alert')
-    expect(alert).toHaveClass('border-ml-green', 'bg-ml-green/10')
-    expect(alert).toHaveTextContent("You're out of Zookeeper credits.")
-    expect(alert).toHaveTextContent('Enable pay as you go')
-    expect(
-      screen.queryByRole('button', { name: 'Clear chat' })
-    ).not.toBeInTheDocument()
-    const billingLink = screen.getByRole('link', { name: 'Upgrade' })
-    expect(billingLink).toHaveAttribute(
-      'href',
-      withSiteBaseURL('/account/billing')
-    )
-    expect(
-      billingLink.querySelector('svg[aria-label="link"]')?.parentElement
-    ).toHaveClass('!bg-transparent', 'ml-1')
-    const reconnectButton = screen.getByRole('button', { name: 'Reconnect' })
-    expect(reconnectButton).toBeEnabled()
-    expect(
-      reconnectButton.querySelector('svg[aria-label="refresh"]')?.parentElement
-    ).toHaveClass('!bg-transparent', 'ml-1')
+    expect(screen.getByRole('alert')).toHaveTextContent(title)
+    expect(screen.getByRole('link', { name: actionLabel })).toBeInTheDocument()
   })
 
   test('shows setup progress while loading a conversation', () => {
@@ -954,41 +1070,6 @@ describe('ZookeeperConversation', () => {
       within(attachments).queryByText('side-view.jpg')
     ).not.toBeInTheDocument()
     expect(within(attachments).getByText('+ more')).toBeInTheDocument()
-  })
-
-  test('renders the blocked reason from the API response without extra copy', () => {
-    const blockedReason = `You need a payment method to keep using Zookeeper. Go to your [account](${withSiteBaseURL('/account')}) to fix this.`
-
-    render(
-      <ZookeeperConversation
-        isLoading={false}
-        onProcess={vi.fn()}
-        onClickClearChat={() => {}}
-        onReconnect={() => {}}
-        onCancel={() => {}}
-        needsReconnect={false}
-        disabled={false}
-        hasPromptCompleted={true}
-        contexts={[]}
-        blockedReason={blockedReason}
-        isProcessing={false}
-        queue={[]}
-        onRemoveFromQueue={() => {}}
-        onSteer={() => {}}
-      />
-    )
-
-    expect(
-      screen.getByText(/You need a payment method to keep using Zookeeper/i)
-    ).toBeInTheDocument()
-    expect(screen.getByRole('link', { name: 'account' })).toHaveAttribute(
-      'href',
-      withSiteBaseURL('/account')
-    )
-    expect(screen.queryByText(/The user/i)).not.toBeInTheDocument()
-    expect(
-      screen.getByTestId('ml-ephant-conversation-input-button')
-    ).toBeDisabled()
   })
 
   test('renders a provided welcome message when the conversation is empty', () => {

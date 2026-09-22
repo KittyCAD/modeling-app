@@ -206,7 +206,8 @@ description: Result of parsing named_views_duplicate_from_a_function.kcl
               "commentStart": 0,
               "end": 0,
               "moduleId": 0,
-              "start": 0
+              "start": 0,
+              "type": "Program"
             },
             "commentStart": 0,
             "end": 0,
@@ -420,6 +421,7 @@ description: Result of parsing named_views_duplicate_from_a_function.kcl
       },
       "startNodes": []
     },
-    "start": 0
+    "start": 0,
+    "type": "Program"
   }
 }

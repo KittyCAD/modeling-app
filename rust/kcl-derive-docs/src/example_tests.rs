@@ -44,6 +44,7 @@ pub fn do_for_all_example_test(item: proc_macro2::TokenStream) -> proc_macro2::T
 }
 
 pub const TEST_NAMES: &[&str] = &[
+    "std-operation-facing-0",
     "std-appearance-hexString-0",
     "std-appearance-hexString-1",
     "std-appearance-hexString-2",
@@ -75,6 +76,7 @@ pub const TEST_NAMES: &[&str] = &[
     "std-clone-9",
     "std-clone-10",
     "std-clone-11",
+    "std-clone-12",
     "std-gdt-datum-0",
     "std-gdt-datum-1",
     "std-gdt-flatness-0",
@@ -103,6 +105,7 @@ pub const TEST_NAMES: &[&str] = &[
     "std-gdt-note-1",
     "std-gdt-distance-0",
     "std-gdt-distance-1",
+    "std-gdt-distance-2",
     "std-gdt-perpendicularity-0",
     "std-gdt-perpendicularity-1",
     "std-gdt-parallelism-0",
@@ -275,6 +278,7 @@ pub const TEST_NAMES: &[&str] = &[
     "std-solver-circle-0",
     "std-solver-controlPointSpline-0",
     "std-solver-coincident-0",
+    "std-solver-fixed-0",
     "std-solver-midpoint-0",
     "std-solver-distance-0",
     "std-solver-radius-0",
