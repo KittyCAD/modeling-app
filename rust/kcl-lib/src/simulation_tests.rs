@@ -555,7 +555,7 @@ fn physical_properties_snapshot_preserves_stored_decimal_text() {
     let mut test = Test::new("holes_cube");
     test.output_dir = directory.path().to_owned();
     let snapshot_path = test.output_dir.join("physical_properties.snap");
-    let original = include_str!("../tests/holes_cube/physical_properties.snap");
+    let original = include_str!("../tests/holes_cube/output/kcl-1.0/physical_properties.snap");
     std::fs::write(&snapshot_path, original).unwrap();
     let snapshot = insta::Snapshot::from_file(&snapshot_path).unwrap();
     let actual = serde_json::from_str(&snapshot.as_text().unwrap().to_string()).unwrap();
