@@ -151,6 +151,29 @@ fn is_writing() -> bool {
     matches!(std::env::var("ZOO_SIM_UPDATE").as_deref(), Ok("always"))
 }
 
+fn remove_api_call_id_for_snapshot(error: &mut KclError) {
+    let message = &mut error.details_mut().message;
+    let Some((base, suffix)) = message.rsplit_once(" (API call ID: ") else {
+        return;
+    };
+    let Some(api_call_id) = suffix.strip_suffix(')') else {
+        return;
+    };
+    if !api_call_id.is_empty() {
+        message.truncate(base.len());
+    }
+}
+
+#[test]
+fn snapshot_errors_omit_api_call_id() {
+    let mut error = KclError::new_engine(crate::errors::KclErrorDetails::new(
+        "engine failure (API call ID: 70fd17fc-f92f-4e5e-9750-55d3d3fa37d9)".to_owned(),
+        vec![],
+    ));
+    remove_api_call_id_for_snapshot(&mut error);
+    assert_eq!(error.message(), "engine failure");
+}
+
 #[derive(Deserialize, Clone, Debug)]
 #[serde(deny_unknown_fields)]
 struct TestConfig {
@@ -932,10 +955,12 @@ async fn execute_once(test: &Test, render_to_png: bool, kcl_version: Option<&str
             let ok_path = test.output_dir.join("execution_success.snap");
             let previously_passed = std::fs::exists(&ok_path).unwrap();
             match e.error {
-                crate::errors::ExecError::Kcl(error) => {
+                crate::errors::ExecError::Kcl(mut error) => {
                     // Snapshot the KCL error with a fancy graphical report.
                     // This looks like a Cargo compile error, with arrows pointing
                     // to source code, underlines, etc.
+                    // The API call ID is useful in real failures but changes every run.
+                    remove_api_call_id_for_snapshot(&mut error.error);
                     let report = error.clone().into_miette_report_with_outputs(&input).unwrap();
                     let report = miette::Report::new(report);
                     if previously_passed {

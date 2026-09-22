@@ -152,6 +152,39 @@ fn region_liveness_changed(case_name: &str, expected: &str, actual: &str) -> ! {
     )
 }
 
+fn engine_message_before_api_call_id(message: &str) -> &str {
+    let (message, api_call_id) = message
+        .rsplit_once(" (API call ID: ")
+        .expect("engine error should include an API call ID");
+    let api_call_id = api_call_id
+        .strip_suffix(')')
+        .expect("API call ID suffix should end with a closing parenthesis");
+    assert!(!api_call_id.is_empty(), "API call ID should not be empty");
+    message
+}
+
+fn describe_engine_result<T: std::fmt::Debug>(result: &Result<T, crate::errors::KclError>) -> String {
+    match result {
+        Ok(response) => format!("Ok({response:?})"),
+        Err(error) => format!("Err({})", error.message()),
+    }
+}
+
+fn exec_error_message(error: &ExecError) -> String {
+    match error {
+        ExecError::Kcl(error) => error.error.message().to_owned(),
+        other => other.to_string(),
+    }
+}
+
+#[test]
+fn engine_message_api_call_id_matching() {
+    assert_eq!(
+        engine_message_before_api_call_id("engine error (API call ID: test-api-call-id)"),
+        "engine error"
+    );
+}
+
 fn read_fixture(file_name: &str) -> (PathBuf, String, Program) {
     let path = input_path(file_name);
     let input = std::fs::read_to_string(&path)
@@ -200,8 +233,12 @@ async fn assert_region_is_consumed(
     expected_engine_message: &str,
 ) {
     let prepared = execute_with_retries(&RetryConfig::default(), || execute_first_operation(file_name)).await;
-    let (ctx, exec_state) = prepared
-        .unwrap_or_else(|error| panic!("region-liveness engine contract setup failed for `{case_name}`: {error}"));
+    let (ctx, exec_state) = prepared.unwrap_or_else(|error| {
+        panic!(
+            "region-liveness engine contract setup failed for `{case_name}`: {}",
+            exec_error_message(&error)
+        )
+    });
     let artifact_command = exec_state
         .root_module_artifact_state()
         .commands
@@ -224,9 +261,12 @@ async fn assert_region_is_consumed(
     ctx.close().await;
 
     match second_result {
-        Err(error) if error.message() == expected_engine_message => {}
+        Err(error) if engine_message_before_api_call_id(error.message()) == expected_engine_message => {}
         Err(error) if error.is_retryable() => {
-            panic!("region-liveness engine contract transport failed for `{case_name}`: {error}")
+            panic!(
+                "region-liveness engine contract transport failed for `{case_name}`: {}",
+                error.message()
+            )
         }
         Err(error) => region_liveness_changed(
             case_name,
@@ -243,8 +283,12 @@ async fn assert_region_is_consumed(
 
 async fn prepare_live_region(case_name: &str, file_name: &str) -> (ExecutorContext, Uuid) {
     let prepared = execute_with_retries(&RetryConfig::default(), || execute_first_operation(file_name)).await;
-    let (ctx, exec_state) = prepared
-        .unwrap_or_else(|error| panic!("region-liveness engine contract setup failed for `{case_name}`: {error}"));
+    let (ctx, exec_state) = prepared.unwrap_or_else(|error| {
+        panic!(
+            "region-liveness engine contract setup failed for `{case_name}`: {}",
+            exec_error_message(&error)
+        )
+    });
     let region_id = exec_state
         .root_module_artifact_state()
         .commands
@@ -265,12 +309,15 @@ async fn prepare_consuming_command_matrix(
     let (ctx, exec_state) = match prepared {
         Ok(prepared) => prepared,
         Err(error) if error.is_retryable() => {
-            panic!("region-liveness engine contract transport failed for `{case_name}`: {error}")
+            panic!(
+                "region-liveness engine contract transport failed for `{case_name}`: {}",
+                exec_error_message(&error)
+            )
         }
         Err(error) => region_liveness_changed(
             case_name,
             "the consuming-command fixture to execute successfully",
-            &format!("fixture execution failed with `{error}`"),
+            &format!("fixture execution failed with `{}`", exec_error_message(&error)),
         ),
     };
     let commands = &exec_state.root_module_artifact_state().commands;
@@ -328,14 +375,23 @@ async fn same_region_as_extrude_target_and_reference_is_rejected() {
 
     match result {
         Err(error)
-            if error.message() == "Failed to extrude the profile curve. Possible 0-length sections may be present" => {}
+            if engine_message_before_api_call_id(error.message())
+                == "Failed to extrude the profile curve. Possible 0-length sections may be present" => {}
         Err(error) if error.is_retryable() => {
-            panic!("region-liveness engine contract transport failed for `{case_name}`: {error}")
+            panic!(
+                "region-liveness engine contract transport failed for `{case_name}`: {}",
+                error.message()
+            )
         }
-        result => region_liveness_changed(
+        Err(error) => region_liveness_changed(
             case_name,
-            "the aliased ExtrudeToReference command to fail with `Failed to extrude the profile curve. Possible 0-length sections may be present`",
-            &format!("the engine returned `{result:?}`"),
+            "the aliased ExtrudeToReference command to fail with `Failed to extrude the profile curve. Possible 0-length sections may be present (API call ID: <id>)`",
+            &format!("the engine returned error `{}`", error.message()),
+        ),
+        Ok(response) => region_liveness_changed(
+            case_name,
+            "the aliased ExtrudeToReference command to fail with `Failed to extrude the profile curve. Possible 0-length sections may be present (API call ID: <id>)`",
+            &format!("the engine returned success `{response:?}`"),
         ),
     }
 }
@@ -368,14 +424,17 @@ async fn same_region_as_sweep_profile_and_trajectory_is_a_successful_no_op() {
         }) if response.bodies_created.bodies.is_empty() && response.bodies_updated.bodies.is_empty() => {}
         Err(error) if error.is_retryable() => {
             ctx.close().await;
-            panic!("region-liveness engine contract transport failed for `{case_name}`: {error}")
+            panic!(
+                "region-liveness engine contract transport failed for `{case_name}`: {}",
+                error.message()
+            )
         }
         result => {
             ctx.close().await;
             region_liveness_changed(
                 case_name,
                 "the aliased Sweep command to report success with no created or updated bodies",
-                &format!("the engine returned `{result:?}`"),
+                &format!("the engine returned `{}`", describe_engine_result(&result)),
             )
         }
     }
@@ -396,14 +455,17 @@ async fn same_region_as_sweep_profile_and_trajectory_is_a_successful_no_op() {
         }) => {}
         Err(error) if error.is_retryable() => {
             ctx.close().await;
-            panic!("region-liveness engine contract transport failed for `{case_name}`: {error}")
+            panic!(
+                "region-liveness engine contract transport failed for `{case_name}`: {}",
+                error.message()
+            )
         }
         result => {
             ctx.close().await;
             region_liveness_changed(
                 case_name,
                 "the aliased Sweep command to leave its source Region live",
-                &format!("the source lookup returned `{result:?}`"),
+                &format!("the source lookup returned `{}`", describe_engine_result(&result)),
             )
         }
     }
@@ -420,22 +482,29 @@ async fn same_region_as_sweep_profile_and_trajectory_is_a_successful_no_op() {
     ctx.close().await;
 
     match destination_lookup {
-        Err(error) if error.message() == "No such entity exists" => {}
+        Err(error) if engine_message_before_api_call_id(error.message()) == "No such entity exists" => {}
         Err(error) if error.is_retryable() => {
-            panic!("region-liveness engine contract transport failed for `{case_name}`: {error}")
+            panic!(
+                "region-liveness engine contract transport failed for `{case_name}`: {}",
+                error.message()
+            )
         }
         result => region_liveness_changed(
             case_name,
             "the aliased Sweep command to create no destination entity",
-            &format!("the destination lookup returned `{result:?}`"),
+            &format!("the destination lookup returned `{}`", describe_engine_result(&result)),
         ),
     }
 }
 
 async fn assert_clone_region_known_failure(case_name: &str, file_name: &str) {
     let prepared = execute_with_retries(&RetryConfig::default(), || execute_first_operation(file_name)).await;
-    let (ctx, exec_state) = prepared
-        .unwrap_or_else(|error| panic!("region-liveness engine contract setup failed for `{case_name}`: {error}"));
+    let (ctx, exec_state) = prepared.unwrap_or_else(|error| {
+        panic!(
+            "region-liveness engine contract setup failed for `{case_name}`: {}",
+            exec_error_message(&error)
+        )
+    });
 
     let region_id = exec_state
         .root_module_artifact_state()
@@ -462,14 +531,17 @@ async fn assert_clone_region_known_failure(case_name: &str, file_name: &str) {
         }) => {}
         Err(error) if error.is_retryable() => {
             ctx.close().await;
-            panic!("region-liveness engine contract transport failed for `{case_name}`: {error}")
+            panic!(
+                "region-liveness engine contract transport failed for `{case_name}`: {}",
+                error.message()
+            )
         }
         result => {
             ctx.close().await;
             region_liveness_changed(
                 case_name,
                 "the engine object created by region() to exist before EntityClone",
-                &format!("the source lookup returned `{result:?}`"),
+                &format!("the source lookup returned `{}`", describe_engine_result(&result)),
             )
         }
     }
@@ -495,14 +567,17 @@ async fn assert_clone_region_known_failure(case_name: &str, file_name: &str) {
             modeling_response: OkModelingCmdResponse::EntityClone(response),
         }) if response.face_edge_ids.is_empty() => {}
         Err(error) if error.is_retryable() => {
-            panic!("region-liveness engine contract transport failed for `{case_name}`: {error}")
+            panic!(
+                "region-liveness engine contract transport failed for `{case_name}`: {}",
+                error.message()
+            )
         }
         result => {
             ctx.close().await;
             region_liveness_changed(
                 case_name,
                 "EntityClone to report success with no destination while the independent clone(Region) bug is open",
-                &format!("EntityClone returned `{result:?}`"),
+                &format!("EntityClone returned `{}`", describe_engine_result(&result)),
             )
         }
     }
@@ -519,14 +594,20 @@ async fn assert_clone_region_known_failure(case_name: &str, file_name: &str) {
     ctx.close().await;
 
     match destination_lookup {
-        Err(error) if error.message() == "No such entity exists" => {}
+        Err(error) if engine_message_before_api_call_id(error.message()) == "No such entity exists" => {}
         Err(error) if error.is_retryable() => {
-            panic!("region-liveness engine contract transport failed for `{case_name}`: {error}")
+            panic!(
+                "region-liveness engine contract transport failed for `{case_name}`: {}",
+                error.message()
+            )
         }
         result => region_liveness_changed(
             case_name,
             "the clone destination to be absent while the independent clone(Region) bug is open",
-            &format!("the clone destination lookup returned `{result:?}`"),
+            &format!(
+                "the clone destination lookup returned `{}`",
+                describe_engine_result(&result)
+            ),
         ),
     }
 }
@@ -543,9 +624,16 @@ async fn assert_fixture_succeeds(case_name: &str, file_name: &str, expected: &st
     match result {
         Ok(()) => {}
         Err(error) if error.is_retryable() => {
-            panic!("region-liveness engine contract transport failed for `{case_name}`: {error}")
+            panic!(
+                "region-liveness engine contract transport failed for `{case_name}`: {}",
+                exec_error_message(&error)
+            )
         }
-        Err(error) => region_liveness_changed(case_name, expected, &format!("execution failed with `{error}`")),
+        Err(error) => region_liveness_changed(
+            case_name,
+            expected,
+            &format!("execution failed with `{}`", exec_error_message(&error)),
+        ),
     }
 }
 
@@ -563,12 +651,16 @@ async fn region_liveness_warnings_match_in_mock_and_real_execution() {
     let mock_outcome = mock_ctx
         .run_mock(&program, &MockConfig::default())
         .await
-        .unwrap_or_else(|error| panic!("mock execution failed for `{case_name}`: {error}"));
+        .unwrap_or_else(|error| panic!("mock execution failed for `{case_name}`: {}", error.error.message()));
     mock_ctx.close().await;
 
     let prepared = execute_with_retries(&RetryConfig::default(), || execute_first_operation(file_name)).await;
-    let (real_ctx, real_state) =
-        prepared.unwrap_or_else(|error| panic!("real execution failed for `{case_name}`: {error}"));
+    let (real_ctx, real_state) = prepared.unwrap_or_else(|error| {
+        panic!(
+            "real execution failed for `{case_name}`: {}",
+            exec_error_message(&error)
+        )
+    });
     real_ctx.close().await;
 
     let mock_issues = region_liveness_issues(&mock_outcome.issues);
@@ -740,7 +832,10 @@ async fn every_mixed_consuming_command_has_pinned_second_operation_behavior() {
                 Ok(_) => {}
                 Err(error) if error.is_retryable() => {
                     ctx.close().await;
-                    panic!("region-liveness engine contract transport failed for `{case_name}`: {error}")
+                    panic!(
+                        "region-liveness engine contract transport failed for `{case_name}`: {}",
+                        error.message()
+                    )
                 }
                 Err(error) => {
                     ctx.close().await;
@@ -766,7 +861,10 @@ async fn every_mixed_consuming_command_has_pinned_second_operation_behavior() {
                 Ok(_) => {}
                 Err(error) if error.is_retryable() => {
                     ctx.close().await;
-                    panic!("region-liveness engine contract transport failed for `{case_name}`: {error}")
+                    panic!(
+                        "region-liveness engine contract transport failed for `{case_name}`: {}",
+                        error.message()
+                    )
                 }
                 Err(error) => {
                     ctx.close().await;
@@ -792,10 +890,14 @@ async fn every_mixed_consuming_command_has_pinned_second_operation_behavior() {
                 Ok(_) if second == ContractCommand::RemoveSceneObjects => {}
                 Err(error)
                     if second != ContractCommand::RemoveSceneObjects
-                        && error.message() == second.second_use_error_after(first) => {}
+                        && engine_message_before_api_call_id(error.message())
+                            == second.second_use_error_after(first) => {}
                 Err(error) if error.is_retryable() => {
                     ctx.close().await;
-                    panic!("region-liveness engine contract transport failed for `{case_name}`: {error}")
+                    panic!(
+                        "region-liveness engine contract transport failed for `{case_name}`: {}",
+                        error.message()
+                    )
                 }
                 Err(error) => {
                     ctx.close().await;
