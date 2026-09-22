@@ -59,10 +59,16 @@ jobs:
   measure:
     name: Interaction performance budgets
     needs: build-app
+    if: ${{ !cancelled() }}
     # Keep compilation in a separate job, and score one browser at a time.
     runs-on: namespace-profile-ubuntu-8-cores;overrides.cache-tag=modeling-app-general-v2
     timeout-minutes: 15
     steps:
+      - name: Require instrumented build
+        env:
+          BUILD_RESULT: ${{ needs.build-app.result }}
+        run: test "$BUILD_RESULT" = success
+
       - uses: actions/checkout@v7.0.1
 
       - uses: actions/setup-node@v7.0.0

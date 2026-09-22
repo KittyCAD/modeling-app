@@ -204,7 +204,6 @@ test('harness detects a delayed pointerdown before the command-palette click', a
     )
     await page.mouse.up()
     await waitForSample(page, OPEN, 1)
-    await waitForInjectedDuration(page)
     await expect(page.getByTestId('cmd-bar-search')).toBeEditable()
   } finally {
     report = await finishCapture(
@@ -219,12 +218,14 @@ test('harness detects a delayed pointerdown before the command-palette click', a
   expect(() => expectInteractionBudget(report)).toThrow(
     'Interaction latency budget exceeded'
   )
-  const responsivenessViolation = report.violations.find(
-    (violation) => violation.metric === 'responsiveness'
+  // This is the final gesture: response timing must retain the pointerdown
+  // stall even when its optional Event Timing record has not arrived at stop.
+  const outcomeViolation = report.violations.find(
+    (violation) => violation.metric === 'outcome'
   )
-  expect(responsivenessViolation?.id).toBe(OPEN)
-  expect(responsivenessViolation?.durationMs).toBeGreaterThanOrEqual(
-    MIN_INJECTED_DURATION_MS
+  expect(outcomeViolation?.id).toBe(OPEN)
+  expect(outcomeViolation?.durationMs).toBeGreaterThanOrEqual(
+    INJECTED_HANDLER_MS
   )
 })
 
