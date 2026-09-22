@@ -2651,57 +2651,6 @@ function getCreatedProjectSyncBase(
   return { revision: String(project.revision), manifest }
 }
 
-async function remoteArchiveMatchesUploadedManifest(
-  metadata: ProjectMetadata,
-  remoteFiles: ProjectArchiveFile[]
-) {
-  const environmentName = getEnvironmentName()
-  const remoteProjectId = metadata.remoteProjectId
-  const uploadedManifest = metadata.baseManifest
-  if (!environmentName || !remoteProjectId || !uploadedManifest) {
-    return false
-  }
-
-  const projectToml = remoteFiles.find(
-    (file) => file.relativePath === PROJECT_SETTINGS_FILE_NAME
-  )
-  if (!projectToml) {
-    return false
-  }
-  const remoteContents = new TextDecoder().decode(projectToml.data)
-  if (
-    getCloudProjectIdFromProjectTomlContents(
-      remoteContents,
-      environmentName
-    ) !== remoteProjectId
-  ) {
-    return false
-  }
-
-  const serverStamp = `\n[cloud."${environmentName}"]\nproject_id = "${remoteProjectId}"\n`
-  const candidates = [remoteContents]
-  if (remoteContents.endsWith(serverStamp)) {
-    candidates.push(remoteContents.slice(0, -serverStamp.length))
-  }
-
-  for (const contents of candidates) {
-    const candidateFiles = remoteFiles.map((file) =>
-      file === projectToml
-        ? { ...file, data: new TextEncoder().encode(contents) }
-        : file
-    )
-    if (
-      projectManifestsEqual(
-        await projectManifestFromFiles(candidateFiles),
-        uploadedManifest
-      )
-    ) {
-      return true
-    }
-  }
-  return false
-}
-
 /**
  * Builds a whole-project snapshot when local and remote changed independent
  * paths from the last synced base. This is intentionally file-level only: when
@@ -3320,36 +3269,6 @@ async function syncProject(
       metadata.baseManifest &&
         projectManifestsEqual(localManifest, metadata.baseManifest)
     )
-
-    // Recognize the first upload before sending edits made during creation.
-    // Keep the local files and queued edits for the normal guarded upload.
-    if (
-      !localClean &&
-      !metadata.remoteRevision &&
-      remoteRevision &&
-      (!metadata.conflict?.remoteRevision ||
-        metadata.conflict.remoteRevision === remoteRevision) &&
-      (await remoteArchiveMatchesUploadedManifest(metadata, remoteFiles))
-    ) {
-      if (entries.length === 0) {
-        await appendOutboxEntry({
-          projectPath: metadata.localProjectPath,
-          kind: 'upsert',
-          targetPath: metadata.localProjectPath,
-          createdAt: nowIso(),
-        })
-      }
-      await putProjectMetadata({
-        ...metadata,
-        baseManifest: remoteManifest,
-        remoteRevision,
-        remoteUpdatedAt: getRemoteUpdatedAt(remoteProject),
-        conflict: undefined,
-        lastFailure: undefined,
-      })
-      scheduleSync(0)
-      return
-    }
     const autoReconciledFiles =
       syncBase && remoteRevision && !localMatchesRemote && !localClean
         ? getCloudSyncAutoReconciledProjectFiles({
