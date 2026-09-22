@@ -4,6 +4,7 @@ import {
   type CloudProject,
   cloudProjectResponse,
   routeCloudProjects,
+  zipProject,
 } from '@e2e/playwright/lib/cloudSyncTestUtils'
 import { throwTronAppMissing } from '@e2e/playwright/lib/electron-helpers'
 import { playwrightPluginSettings } from '@e2e/playwright/storageStates'
@@ -11,7 +12,6 @@ import { mockClientErrorReports } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 import type { Page } from '@playwright/test'
 import { DEFAULT_PERSONAL_CLOUD_PROJECT_LIBRARY_LOCAL_PATH } from '@src/lib/projectLibraries'
-import JSZip from 'jszip'
 
 const FLOW_TIMEOUT = 30_000
 
@@ -191,9 +191,7 @@ test.describe('Aquarium publication', { tag: ['@desktop'] }, () => {
         }
         remoteArchives.set(
           remoteProjectId,
-          await zipLocalProject(movedProjectPath, {
-            'project.toml': createdProject.files['project.toml'],
-          })
+          await zipProject(createdProject.files)
         )
         return createdProject
       },
@@ -391,27 +389,4 @@ async function clearCloudSyncState(page: Page) {
         request.onsuccess = () => resolve()
       })
   )
-}
-
-async function zipLocalProject(
-  projectPath: string,
-  overrides: Record<string, string>
-) {
-  const zip = new JSZip()
-  const entries = await fsp.readdir(projectPath, {
-    recursive: true,
-    withFileTypes: true,
-  })
-  for (const entry of entries) {
-    if (!entry.isFile()) {
-      continue
-    }
-    const absolutePath = path.join(entry.parentPath, entry.name)
-    const relativePath = path.relative(projectPath, absolutePath)
-    zip.file(
-      relativePath,
-      overrides[relativePath] ?? (await fsp.readFile(absolutePath))
-    )
-  }
-  return Buffer.from(await zip.generateAsync({ type: 'uint8array' }))
 }

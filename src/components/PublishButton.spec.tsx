@@ -91,7 +91,7 @@ const fileOperations = {}
 
 function createApp({
   project = defaultProject,
-  hasCloudSyncFeature = false,
+  cloudSyncEnabled = false,
   homeProjectActions,
   startProjectSync = vi.fn().mockResolvedValue(undefined),
   syncNow = vi.fn().mockResolvedValue({ remoteProjectId: 'remote-synced' }),
@@ -100,7 +100,7 @@ function createApp({
   settingsSend = vi.fn(),
 }: {
   project?: Project
-  hasCloudSyncFeature?: boolean
+  cloudSyncEnabled?: boolean
   homeProjectActions?: HomeProjectActionsService
   startProjectSync?: ReturnType<typeof vi.fn>
   syncNow?: ReturnType<typeof vi.fn>
@@ -118,7 +118,7 @@ function createApp({
       },
     },
     userFeatures: {
-      useHas: () => hasCloudSyncFeature,
+      useHas: () => false,
     },
     auth: {
       useAuthState: () => ({ matches: () => false }),
@@ -148,7 +148,11 @@ function createApp({
           return homeProjectActions
         }
         if (service === cloudSyncService) {
-          return { startProjectSync, syncNow }
+          return {
+            startProjectSync,
+            syncNow,
+            status: { value: { enabled: cloudSyncEnabled } },
+          }
         }
         return undefined
       },
@@ -250,7 +254,7 @@ describe('PublishButton', () => {
     ['disabled', false, false],
   ] as const)(
     'moves after publishing when cloud sync is %s',
-    async (_label, hasCloudSyncFeature, shouldMove) => {
+    async (_label, cloudSyncEnabled, shouldMove) => {
       const moveToLibrary = vi.fn().mockResolvedValue({
         defaultFile: '/cloud/example/main.kcl',
         localProjectPath: '/cloud/example',
@@ -271,7 +275,7 @@ describe('PublishButton', () => {
       } as unknown as HomeProjectActionsService
       const app = createApp({
         project: localProject,
-        hasCloudSyncFeature,
+        cloudSyncEnabled,
         homeProjectActions,
         startProjectSync,
         syncNow,
@@ -341,7 +345,7 @@ describe('PublishButton', () => {
     const syncNow = vi.fn().mockRejectedValue(new Error('sync failed'))
     const app = createApp({
       project: localProject,
-      hasCloudSyncFeature: true,
+      cloudSyncEnabled: true,
       homeProjectActions,
       syncNow,
     })
