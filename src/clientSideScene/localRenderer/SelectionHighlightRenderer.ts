@@ -19,6 +19,7 @@ import {
   Vector2,
 } from 'three'
 import { LineSegments2 } from 'three/examples/jsm/lines/webgpu/LineSegments2.js'
+import Color4 from 'three/src/renderers/common/Color4.js'
 import {
   max,
   min,
@@ -65,7 +66,7 @@ export class SelectionHighlightRenderer {
   private readonly selectionLineScene = new Scene()
   private readonly drawingBufferSize = new Vector2()
   private readonly texelSize = new Vector2(1, 1)
-  private readonly savedClearColor = new Color()
+  private readonly savedClearColor = new Color4()
   private readonly backgroundColorNode = uniform(new Color())
   private readonly maskTarget = new RenderTarget(1, 1, {
     type: UnsignedByteType,
@@ -94,7 +95,6 @@ export class SelectionHighlightRenderer {
   private hoveredKey: string | null = null
   private frameOutputTarget: RenderTarget | null = null
   private frameAutoClear = true
-  private frameClearAlpha = 1
 
   constructor(renderer: WebGPURenderer, backgroundColor: string) {
     this.renderer = renderer
@@ -184,10 +184,7 @@ export class SelectionHighlightRenderer {
     const targetsResized = this.ensureTargetSize()
     this.frameOutputTarget = this.renderer.getRenderTarget()
     this.frameAutoClear = this.renderer.autoClear
-    this.frameClearAlpha = this.renderer.getClearAlpha()
-    this.renderer.getClearColor(
-      this.savedClearColor as Parameters<WebGPURenderer['getClearColor']>[0]
-    )
+    this.renderer.getClearColor(this.savedClearColor)
 
     const shouldRebuildBase = rebuildBase || targetsResized
     if (shouldRebuildBase) {
@@ -276,7 +273,7 @@ export class SelectionHighlightRenderer {
 
     const highlightCpuSubmissionMs = performance.now() - highlightStartedAt
 
-    this.renderer.setClearColor(this.savedClearColor, this.frameClearAlpha)
+    this.renderer.setClearColor(this.savedClearColor, this.savedClearColor.a)
     this.renderer.setRenderTarget(this.frameOutputTarget)
     this.renderer.autoClear = true
     const presentationStartedAt = performance.now()

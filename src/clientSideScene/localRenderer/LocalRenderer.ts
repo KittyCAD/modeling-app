@@ -29,6 +29,7 @@ import type { PlaneVisibilityMap } from '@src/machines/modelingSharedTypes'
 import {
   Box3,
   BufferGeometry,
+  type Camera,
   Material,
   type Mesh,
   NeutralToneMapping,
@@ -42,29 +43,34 @@ import {
   Vector3,
 } from 'three'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
+import type DenoiseNode from 'three/examples/jsm/tsl/display/DenoiseNode.js'
 import { denoise } from 'three/examples/jsm/tsl/display/DenoiseNode.js'
+import type GTAONode from 'three/examples/jsm/tsl/display/GTAONode.js'
 import { ao } from 'three/examples/jsm/tsl/display/GTAONode.js'
 import { mrt, normalView, output, pass, vec3, vec4 } from 'three/tsl'
-import { type Node, RenderPipeline, WebGPURenderer } from 'three/webgpu'
+import {
+  type Node,
+  type PassNode,
+  RenderPipeline,
+  WebGPURenderer,
+} from 'three/webgpu'
 
 const WEBGPU_PORT_DEBUG_STORAGE_KEY = 'webgpu-port-debug'
 const WEBGPU_PORT_LOG_PREFIX = '[WEBGPU_POC]'
 const ENGINE_MILLIMETERS_TO_GLTF_METERS = 1 / 1000
 
-type AoFactory = typeof ao
-type AmbientOcclusionPass = ReturnType<AoFactory> & { dispose: () => void }
-type AmbientOcclusionDenoisePass = ReturnType<typeof denoise>
+// The installed typings omit support for reconstructing normals from depth.
 type CreateAmbientOcclusion = (
-  depthNode: Parameters<AoFactory>[0],
-  normalNode: Parameters<AoFactory>[1] | null,
-  camera: Parameters<AoFactory>[2]
-) => AmbientOcclusionPass
+  depthNode: Node,
+  normalNode: Node | null,
+  camera: Camera
+) => GTAONode
 type AmbientOcclusionPipeline = {
   camera: PerspectiveCamera | OrthographicCamera
   pipeline: RenderPipeline
-  scenePass: ReturnType<typeof pass>
-  aoPass: AmbientOcclusionPass
-  denoisePass: AmbientOcclusionDenoisePass | null
+  scenePass: PassNode
+  aoPass: GTAONode
+  denoisePass: DenoiseNode | null
   denoiseNoiseTexture: Texture | null
 }
 type DisposableGpuDevice = {
@@ -518,8 +524,8 @@ export class LocalRenderer {
   }
 
   private configureAmbientOcclusion(
-    aoPass: AmbientOcclusionPass,
-    denoisePass?: AmbientOcclusionDenoisePass | null
+    aoPass: GTAONode,
+    denoisePass?: DenoiseNode | null
   ) {
     aoPass.radius.value = this.ambientOcclusionRadius
     aoPass.thickness.value = this.ambientOcclusionRadius * 3
@@ -617,7 +623,7 @@ export class LocalRenderer {
             ? denoise(
                 aoPass.getTextureNode(),
                 scenePassDepth,
-                scenePassNormal as Parameters<typeof denoise>[2],
+                scenePassNormal as Node,
                 previewCamera
               )
             : null
