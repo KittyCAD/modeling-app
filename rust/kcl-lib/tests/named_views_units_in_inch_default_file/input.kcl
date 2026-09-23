@@ -7,7 +7,7 @@
 // file-default length. A consumer that read the number and assumed
 // millimeters would have placed the camera 25.4 times too close, and nothing
 // in the value would have looked wrong.
-@settings(experimentalFeatures = allow, defaultLengthUnit = inch)
+@settings(kclVersion = "3.0-preview", defaultLengthUnit = inch)
 
 view = view::oriented(
   view::Orientation::Front,
