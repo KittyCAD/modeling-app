@@ -33,6 +33,10 @@ test.beforeEach(async ({ page, homePage, scene, fs, folderSetupFn }) => {
   await page.waitForFunction(() =>
     window.app.settings.actor.getSnapshot().matches('idle')
   )
+  // Start the engine at the scored viewport size so resizing cannot enqueue
+  // stream reconfiguration after the readiness checks.
+  await page.emulateMedia({ reducedMotion: 'no-preference' })
+  await page.setBodyDimensions({ width: 1200, height: 800 })
   await homePage.openProject(projectName)
   await scene.connectionEstablished()
   await scene.settled()
@@ -45,8 +49,6 @@ test.beforeEach(async ({ page, homePage, scene, fs, folderSetupFn }) => {
   expect(
     await page.evaluate(() => window.app.project?.executingEditor.value?.errors)
   ).toEqual([])
-  await page.emulateMedia({ reducedMotion: 'no-preference' })
-  await page.setBodyDimensions({ width: 1200, height: 800 })
   await page.evaluate(() => document.fonts.ready)
 
   // The shared Playwright layout starts with Code open and Files closed. Keep
