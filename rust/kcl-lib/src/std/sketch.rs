@@ -297,7 +297,7 @@ async fn inner_involute_circular(
     if let Some(tag) = &tag {
         new_sketch.add_tag(tag, &current_path, exec_state, None);
     }
-    new_sketch.paths.push(current_path);
+    new_sketch.paths.push_back(current_path);
     Ok(new_sketch)
 }
 
@@ -457,7 +457,7 @@ pub(super) async fn straight_line(
         new_sketch.is_closed = ProfileClosed::Implicitly;
     }
 
-    new_sketch.paths.push(current_path);
+    new_sketch.paths.push_back(current_path);
 
     Ok(new_sketch)
 }
@@ -689,7 +689,7 @@ async fn inner_angled_line_length(
         new_sketch.is_closed = ProfileClosed::Implicitly;
     }
 
-    new_sketch.paths.push(current_path);
+    new_sketch.paths.push_back(current_path);
     Ok(new_sketch)
 }
 
@@ -1350,7 +1350,7 @@ pub(crate) async fn create_sketch(
         artifact_id: path_id.into(),
         origin_sketch_id: None,
         on: sketch_surface,
-        paths: vec![],
+        paths: Default::default(),
         inner_paths: vec![],
         units,
         mirror: Default::default(),
@@ -1467,7 +1467,7 @@ pub(crate) async fn inner_close(
         if let Some(tag) = &tag {
             new_sketch.add_tag(tag, &current_path, exec_state, None);
         }
-        new_sketch.paths.push(current_path);
+        new_sketch.paths.push_back(current_path);
     } else if tag.is_some() {
         exec_state.warn(
             crate::CompilationIssue {
@@ -1613,7 +1613,7 @@ pub async fn absolute_arc(
         new_sketch.is_closed = ProfileClosed::Implicitly;
     }
 
-    new_sketch.paths.push(current_path);
+    new_sketch.paths.push_back(current_path);
 
     Ok(new_sketch)
 }
@@ -1691,7 +1691,7 @@ pub async fn relative_arc(
         new_sketch.is_closed = ProfileClosed::Implicitly;
     }
 
-    new_sketch.paths.push(current_path);
+    new_sketch.paths.push_back(current_path);
 
     Ok(new_sketch)
 }
@@ -1866,7 +1866,7 @@ async fn inner_tangential_arc_radius_angle(
         new_sketch.is_closed = ProfileClosed::Implicitly;
     }
 
-    new_sketch.paths.push(current_path);
+    new_sketch.paths.push_back(current_path);
 
     Ok(new_sketch)
 }
@@ -1964,7 +1964,7 @@ async fn inner_tangential_arc_to_point(
         new_sketch.is_closed = ProfileClosed::Implicitly;
     }
 
-    new_sketch.paths.push(current_path);
+    new_sketch.paths.push_back(current_path);
 
     Ok(new_sketch)
 }
@@ -2113,7 +2113,7 @@ async fn inner_bezier_curve(
         new_sketch.is_closed = ProfileClosed::Implicitly;
     }
 
-    new_sketch.paths.push(current_path);
+    new_sketch.paths.push_back(current_path);
 
     Ok(new_sketch)
 }
@@ -2174,7 +2174,7 @@ async fn inner_subtract_2d(
         // So if you have circle A, and it has a circular hole cut out (B),
         // then you cut A out of an even bigger circle C, we will lose that info.
         // Not really sure what to do about this.
-        sketch.inner_paths.extend_from_slice(&hole_sketch.paths);
+        sketch.inner_paths.extend(hole_sketch.paths.iter().cloned());
     }
 
     // Returns the input sketch, exactly as it was, zero modifications.
@@ -2373,7 +2373,7 @@ pub(crate) async fn inner_elliptic(
         new_sketch.is_closed = ProfileClosed::Implicitly;
     }
 
-    new_sketch.paths.push(current_path);
+    new_sketch.paths.push_back(current_path);
 
     Ok(new_sketch)
 }
@@ -2542,7 +2542,7 @@ pub(crate) async fn inner_hyperbolic(
         new_sketch.is_closed = ProfileClosed::Implicitly;
     }
 
-    new_sketch.paths.push(current_path);
+    new_sketch.paths.push_back(current_path);
 
     Ok(new_sketch)
 }
@@ -2757,7 +2757,7 @@ pub(crate) async fn inner_parabolic(
         new_sketch.add_tag(tag, &current_path, exec_state, None);
     }
 
-    new_sketch.paths.push(current_path);
+    new_sketch.paths.push_back(current_path);
 
     Ok(new_sketch)
 }
@@ -2912,7 +2912,7 @@ pub(crate) async fn inner_conic(
         new_sketch.add_tag(tag, &current_path, exec_state, None);
     }
 
-    new_sketch.paths.push(current_path);
+    new_sketch.paths.push_back(current_path);
 
     Ok(new_sketch)
 }
@@ -3153,7 +3153,7 @@ async fn inner_region(
                     artifact_id: region_id.into(),
                     origin_sketch_id: None,
                     on: segment.surface.clone(),
-                    paths: vec![first_path],
+                    paths: imbl::vector![first_path],
                     inner_paths: vec![],
                     units,
                     mirror: Default::default(),
@@ -3184,14 +3184,14 @@ async fn inner_region(
     let original_seg_to_region = build_reverse_region_mapping(&region_mapping, &original_segment_ids);
 
     {
-        let mut new_paths = Vec::new();
+        let mut new_paths = imbl::Vector::new();
         for path in &sketch.paths {
             let original_id = path.get_id();
             if let Some(region_ids) = original_seg_to_region.get(&original_id) {
                 for region_id in region_ids {
                     let mut new_path = path.clone();
                     new_path.set_id(*region_id);
-                    new_paths.push(new_path);
+                    new_paths.push_back(new_path);
                 }
             }
         }
@@ -3224,7 +3224,7 @@ async fn inner_region(
     // which is not valid on the region. Update it to a region edge so that
     // do_post_extrude can use it for Solid3dGetExtrusionFaceInfo.
     if sketch.mirror.is_some() {
-        sketch.mirror = sketch.paths.first().map(|p| p.get_id());
+        sketch.mirror = sketch.paths.front().map(|p| p.get_id());
     }
 
     sketch.meta.push(args.source_range.into());

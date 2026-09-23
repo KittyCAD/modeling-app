@@ -203,39 +203,58 @@ export async function deleteFromSelection(
   }
 
   // Below is all AST-based deletion logic
-  const varDec = getNodeFromPath<VariableDeclarator | CallExpressionKw>(
-    ast,
-    selection.codeRef.pathToNode,
-    wasmInstance,
-    ['VariableDeclarator', 'CallExpressionKw']
-  )
-  if (err(varDec)) return varDec
-  const selectedNode = varDec.node
-  const selectedCallExpression =
-    selectedNode.type === 'CallExpressionKw'
-      ? selectedNode
-      : selectedNode.init.type === 'CallExpressionKw'
-        ? selectedNode.init
-        : null
-  const isSelectedCallExpression = selectedNode.type === 'CallExpressionKw'
-
   if (selection.artifact?.type === 'edgeCut') {
     return deleteEdgeTreatment(astClone, selection, wasmInstance)
   }
 
-  if (
-    selection.artifact?.type === 'pattern' &&
-    selectedNode.type === 'VariableDeclarator' &&
-    selectedNode.init.type === 'PipeExpression'
-  ) {
+  const varDec = getNodeFromPath<VariableDeclarator>(
+    ast,
+    selection.codeRef.pathToNode,
+    wasmInstance,
+    'VariableDeclarator'
+  )
+  if (err(varDec)) return varDec
+  const selectedNode = varDec.node
+  const selectedCallExpression =
+    selectedNode.init.type === 'CallExpressionKw' ? selectedNode.init : null
+  const selectedCallName = selectedCallExpression?.callee.name.name ?? null
+  const isSweepLikePathSelection =
+    selection.artifact?.type === 'path' &&
+    selectedCallName !== null &&
+    ['extrude', 'revolve', 'sweep', 'loft', 'blend'].includes(selectedCallName)
+  if (selectedNode.init.type === 'PipeExpression') {
+    const pipeExpression = selectedNode.init
     const pipeBodyIndex = selection.codeRef.pathToNode.findIndex(
       ([key, kind]) => key === 'body' && kind === 'PipeExpression'
     )
     const pipeItemIndex = selection.codeRef.pathToNode[pipeBodyIndex + 1]?.[0]
+    const pipeItem =
+      typeof pipeItemIndex === 'number' && pipeItemIndex > 0
+        ? pipeExpression.body[pipeItemIndex]
+        : undefined
+    // Legacy Sketch 1 segment, wall, and cap selections can point to a sketch
+    // pipe stage. Removing that stage would delete sketch code instead of the
+    // selected sketch or extrusion, so let the geometry handlers below handle it.
+    // TODO: Handle geometry selections before generic pipe deletion so this
+    // exclusion is unnecessary. Retire the Sketch 1 paths with its support/tests.
+    const isGeometrySelection =
+      selection.artifact?.type === 'segment' ||
+      selection.artifact?.type === 'wall' ||
+      selection.artifact?.type === 'cap'
     if (
+      !isGeometrySelection &&
+      pipeItem?.type === 'CallExpressionKw' &&
       typeof pipeItemIndex === 'number' &&
-      selectedNode.init.body.length > 1
+      pipeExpression.body.length > 1
     ) {
+      // Match the whole pipe stage so selecting a nested call (e.g. translate
+      // inside union) cannot delete the enclosing operation instead.
+      if (
+        pipeItem.start !== selection.codeRef.range[0] ||
+        pipeItem.end !== selection.codeRef.range[1]
+      ) {
+        return new Error('Cannot delete a nested call as a pipe stage')
+      }
       const varDecClone = getNodeFromPath<VariableDeclarator>(
         astClone,
         selection.codeRef.pathToNode,
@@ -251,15 +270,13 @@ export async function deleteFromSelection(
   }
 
   if (
-    isSelectedCallExpression ||
     ((selection?.artifact?.type === 'wall' ||
       selection?.artifact?.type === 'cap') &&
-      selectedNode.type === 'VariableDeclarator' &&
       selectedNode.init.type === 'PipeExpression') ||
     selection.artifact?.type === 'sweep' ||
     selection.artifact?.type === 'plane' ||
     (selection.artifact?.type === 'path' &&
-      selection.artifact.subType === 'region') ||
+      (selection.artifact.subType === 'region' || isSweepLikePathSelection)) ||
     selection.artifact?.type === 'compositeSolid' ||
     selection.artifact?.type === 'pattern' ||
     selection.artifact?.type === 'helix' ||
@@ -270,7 +287,6 @@ export async function deleteFromSelection(
     let extrudeNameToDelete = ''
     let pathToNode: PathToNode | null = null
     if (
-      selectedNode.type === 'VariableDeclarator' &&
       selection.artifact &&
       selection.artifact.type !== 'sweep' &&
       selection.artifact.type !== 'plane' &&

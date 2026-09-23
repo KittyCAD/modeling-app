@@ -404,9 +404,7 @@ function ProjectMenuPopover({
           Element: 'button' as const,
           children: (
             <>
-              <span className={projectMenuItemLabelClassName}>
-                Export current part
-              </span>
+              <span className={projectMenuItemLabelClassName}>Export</span>
               <kbd className={projectMenuItemHotkeyClassName}>
                 {hotkeyDisplay('ctrl+shift+e', platform)}
               </kbd>
@@ -581,6 +579,7 @@ function ProjectMenuPopover({
         as={Fragment}
       >
         <Popover.Panel
+          data-testid="project-sidebar-menu"
           className={`z-10 absolute top-full left-0 mt-1 pb-1 w-52 bg-chalkboard-10 dark:bg-chalkboard-90
           border border-solid border-chalkboard-20 dark:border-chalkboard-90 rounded
           shadow-lg`}

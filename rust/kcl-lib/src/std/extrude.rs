@@ -1111,7 +1111,7 @@ pub(crate) async fn do_post_extrude<'a>(
     } else {
         // The "get extrusion face info" API call requires *any* edge on the sketch being extruded.
         // So, let's just use the first one.
-        let Some(any_edge_id) = sketch.paths.first().map(|edge| edge.get_base().geo_meta.id) else {
+        let Some(any_edge_id) = sketch.paths.front().map(|edge| edge.get_base().geo_meta.id) else {
             return Err(KclError::new_type(KclErrorDetails::new(
                 "Expected a non-empty sketch".to_owned(),
                 vec![args.source_range],

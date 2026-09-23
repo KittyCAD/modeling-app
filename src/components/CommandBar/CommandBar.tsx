@@ -13,6 +13,7 @@ import Tooltip from '@src/components/Tooltip'
 import { useApp } from '@src/lib/boot'
 import type { Command, CommandArgument } from '@src/lib/commandTypes'
 import useHotkeyWrapper from '@src/lib/hotkeyWrapper'
+import { interactions } from '@src/lib/interactionPerformance/definitions'
 import {
   commandScopeService,
   commandScopesValueSpec,
@@ -224,7 +225,12 @@ export const CommandBar = () => {
             )}
             <div className="flex flex-col gap-2 !absolute right-2 top-2 m-0 p-0 border-none bg-transparent hover:bg-transparent">
               <button
-                data-testid="command-bar-close-button"
+                type="button"
+                data-testid={interactions.commandPaletteClose.testId}
+                data-interaction-id={interactions.commandPaletteClose.id}
+                data-expect-interaction-ms={
+                  interactions.commandPaletteClose.budgetMs
+                }
                 onClick={() => cmd.send({ type: 'Close' })}
                 className="group m-0 p-0 border-none bg-transparent hover:bg-transparent"
               >

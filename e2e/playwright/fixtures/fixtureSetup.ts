@@ -155,6 +155,7 @@ export class ElectronZoo {
 
   public page!: Page
   public context!: BrowserContext
+  private tracingEnabled = false
 
   constructor() {}
 
@@ -225,7 +226,9 @@ export class ElectronZoo {
       })
     })
 
-    await this.context.tracing.stopChunk({ path: 'trace.zip' })
+    if (this.tracingEnabled) {
+      await this.context.tracing.stopChunk({ path: 'trace.zip' })
+    }
 
     // Only after cleanup we're ready.
     this.available = true
@@ -304,7 +307,12 @@ export class ElectronZoo {
       await tryToGetWindowPage()
 
       this.context = this.electron.context()
-      await this.context.tracing.start({ screenshots: true, snapshots: true })
+      const trace = testInfo.project.use.trace
+      this.tracingEnabled =
+        trace !== 'off' && !(typeof trace === 'object' && trace.mode === 'off')
+      if (this.tracingEnabled) {
+        await this.context.tracing.start({ screenshots: true, snapshots: true })
+      }
 
       // We need to patch this because addInitScript will bind too late in our
       // electron tests, never running. We need to call reload() after each call
@@ -335,7 +343,9 @@ export class ElectronZoo {
     }
 
     await startRendererCrashDiagnostics(this.electron)
-    await this.context.tracing.startChunk()
+    if (this.tracingEnabled) {
+      await this.context.tracing.startChunk()
+    }
 
     await this.page.evaluate(
       ({ key, testScope }) => sessionStorage.setItem(key, testScope),
