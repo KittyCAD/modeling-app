@@ -66,7 +66,12 @@ test(
     // The shared CI account has thousands of projects. Filter their cards
     // through the UI without replacing the real project-list response.
     await page.getByPlaceholder(/^Search projects/).fill(projectName)
-    await expect(page.getByTestId('project-link')).toHaveCount(0)
+    // Fuzzy search can return other UUID-named projects; check exact collisions.
+    await expect(
+      page.getByTestId('project-link').filter({
+        has: page.getByText(projectName, { exact: true }),
+      })
+    ).toHaveCount(0)
     await createProject({ name: projectName, page })
     await expectProjectFileRoute(page)
 
@@ -74,6 +79,7 @@ test(
     expect(response.ok()).toBe(true)
     const created: CreatedRemoteProject = await response.json()
     expect(created.id).toBeTruthy()
+    expect(created.title).toBe(projectName)
     expect(created.revision).toBeTruthy()
     expect(created.files.map((file) => file.relative_path)).toEqual(
       expect.arrayContaining(['main.kcl', 'project.toml'])
