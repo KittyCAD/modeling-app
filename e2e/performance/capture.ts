@@ -4,6 +4,7 @@ import type { Page, TestInfo } from '@playwright/test'
 import { expect } from '@playwright/test'
 import { reportInteractions } from '@src/lib/interactionPerformance/report'
 import type { InteractionReport } from '@src/lib/interactionPerformance/report'
+import type { ComparisonSessionIdentity } from '@e2e/performance/comparison'
 
 const POLL_INTERVAL_MS = 10
 const EVENT_TIMING_REPORTING_WINDOW_MS = 1000
@@ -44,7 +45,8 @@ export async function finishCapture(
   testInfo: TestInfo,
   scenario: string,
   expected: Readonly<Record<string, number>>,
-  tronApp: ElectronZoo | undefined
+  tronApp: ElectronZoo | undefined,
+  comparison?: Readonly<ComparisonSessionIdentity>
 ): Promise<InteractionReport> {
   const snapshot = await page.evaluate(async (reportingWindowMs) => {
     const recorder = window.app.interactionPerformance
@@ -66,6 +68,8 @@ export async function finishCapture(
   }))
   const metadata = {
     scenario,
+    comparison,
+    calibrationFault: process.env.INTERACTION_CALIBRATION_FAULT ?? 'none',
     repeatIndex: testInfo.repeatEachIndex,
     commit: process.env.GITHUB_SHA ?? null,
     runId: process.env.GITHUB_RUN_ID ?? null,

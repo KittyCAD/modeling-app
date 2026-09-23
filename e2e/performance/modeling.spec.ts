@@ -1,135 +1,17 @@
-import { readFile } from 'node:fs/promises'
-import path from 'node:path'
+import { prepareModeling } from '@e2e/performance/scenarios'
 import {
   expectInteractionBudget,
   finishCapture,
   startCapture,
   waitForSample,
 } from '@e2e/performance/capture'
-import { expect, test } from '@e2e/playwright/zoo-test'
+import { expect, test } from '@e2e/performance/test'
 import { interactions } from '@src/lib/interactionPerformance/definitions'
 import type { InteractionReport } from '@src/lib/interactionPerformance/report'
 
-const projectName = 'interaction-performance'
-const modelPath = path.join(
-  'rust',
-  'kcl-lib',
-  'tests',
-  'named_views_hide_extrude',
-  'input.kcl'
-)
-
-// Keep engine startup and project loading outside every measured session.
 test.beforeEach(async ({ page, homePage, scene, fs, folderSetupFn }) => {
-  await folderSetupFn(async (dir) => {
-    const projectDir = path.join(dir, projectName)
-    await fs.mkdir(projectDir, { recursive: true })
-    await fs.writeFile(
-      path.join(projectDir, 'main.kcl'),
-      new Uint8Array(await readFile(modelPath))
-    )
-  })
-  await homePage.waitForAuthentication()
-  await page.waitForFunction(() =>
-    window.app.settings.actor.getSnapshot().matches('idle')
-  )
-  // Start the engine at the scored viewport size so resizing cannot enqueue
-  // stream reconfiguration after the readiness checks.
-  await page.emulateMedia({ reducedMotion: 'no-preference' })
-  await page.setBodyDimensions({ width: 1200, height: 800 })
-  await homePage.openProject(projectName)
-  await scene.connectionEstablished()
-  await scene.settled()
-  await page.waitForFunction(() => {
-    const editor = window.app.project?.executingEditor.value
-    return (
-      editor && !editor.isExecutingSignal.value && editor.artifactGraph.size > 0
-    )
-  })
-  expect(
-    await page.evaluate(() => window.app.project?.executingEditor.value?.errors)
-  ).toEqual([])
-  await page.evaluate(() => document.fonts.ready)
-
-  // The shared Playwright layout starts with Code open and Files closed. Keep
-  // that state so first-use includes the first sidebar click on each pane.
-  await expect(
-    page.getByTestId(interactions.codePaneClose.testId)
-  ).toHaveAttribute('aria-pressed', 'true')
-  await expect(
-    page.getByTestId(interactions.filesPaneOpen.testId)
-  ).toHaveAttribute('aria-pressed', 'false')
-  await expect(page.getByTestId('command-bar-wrapper')).toBeHidden()
-  await expect(page.locator('#code-pane .cm-content')).toBeEditable()
+  await prepareModeling({ page, homePage, scene, fs, folderSetupFn })
 })
-
-for (const scenario of [
-  { id: 'modeling.first-use', repetitions: 1, warm: false },
-  { id: 'modeling.repeated-use', repetitions: 10, warm: true },
-]) {
-  test(scenario.id, async ({ page, tronApp }, testInfo) => {
-    const actions = [
-      {
-        definition: interactions.commandPaletteOpen,
-        verify: () => expect(page.getByTestId('cmd-bar-search')).toBeEditable(),
-      },
-      {
-        definition: interactions.commandPaletteClose,
-        verify: () =>
-          expect(page.getByTestId('command-bar-wrapper')).toBeHidden(),
-      },
-      {
-        definition: interactions.codePaneClose,
-        verify: () => expect(page.locator('#code-pane')).toHaveCount(0),
-      },
-      {
-        definition: interactions.codePaneOpen,
-        verify: () =>
-          expect(page.locator('#code-pane .cm-content')).toBeEditable(),
-      },
-      {
-        definition: interactions.filesPaneOpen,
-        verify: () =>
-          expect(
-            page.getByRole('treeitem', { name: 'main.kcl', exact: true })
-          ).toBeVisible(),
-      },
-      {
-        definition: interactions.filesPaneClose,
-        verify: () => expect(page.locator('#files-pane')).toHaveCount(0),
-      },
-    ]
-    if (scenario.warm) {
-      for (const { definition, verify } of actions) {
-        await page.getByTestId(definition.testId).click()
-        await verify()
-      }
-    }
-
-    await startCapture(page)
-    let report: InteractionReport
-    try {
-      for (let index = 1; index <= scenario.repetitions; index++) {
-        for (const { definition, verify } of actions) {
-          await page.getByTestId(definition.testId).click()
-          await waitForSample(page, definition.id, index)
-          await verify()
-        }
-      }
-    } finally {
-      report = await finishCapture(
-        page,
-        testInfo,
-        scenario.id,
-        Object.fromEntries(
-          actions.map(({ definition }) => [definition.id, scenario.repetitions])
-        ),
-        tronApp
-      )
-    }
-    expectInteractionBudget(report)
-  })
-}
 
 test('harness waits for usable pane content', async ({
   page,

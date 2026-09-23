@@ -2,6 +2,15 @@ name: Build Wasm
 
 on:
   workflow_call:
+    inputs:
+      ref:
+        description: Exact application commit; empty preserves the caller checkout
+        type: string
+        default: ""
+      artifact-suffix:
+        description: Optional namespace for independent Wasm and binding artifacts
+        type: string
+        default: ""
     secrets:
       TAB_API_KEY:
         required: false
@@ -17,6 +26,14 @@ jobs:
       - uses: actions/checkout@v7.0.1
         with:
           repository: kittycad/modeling-app # required for 'workflow_call'
+          ref: ${{ inputs.ref }}
+
+      - uses: actions/checkout@v7.0.1
+        if: ${{ inputs.artifact-suffix != '' }}
+        with:
+          repository: kittycad/modeling-app
+          ref: ${{ github.sha }}
+          path: .performance-pipeline
 
       - uses: actions/setup-node@v7.0.0
         with:
@@ -35,7 +52,7 @@ jobs:
         uses: actions-rust-lang/setup-rust-toolchain@v1.17.0
         with:
           cache: false # configured below
-          rustflags: '' # use .cargo/config.toml
+          rustflags: "" # use .cargo/config.toml
 
       - name: Install Wasm pack
         uses: taiki-e/install-action@c30ba1cbe2face7f695d394a2c95af204d417b29
@@ -55,7 +72,13 @@ jobs:
 
       - name: Build Wasm
         shell: bash
-        run: npm run build:wasm
+        run: |
+          if [ -n "$ARTIFACT_SUFFIX" ]; then
+            cargo fetch --locked --manifest-path rust/Cargo.toml
+          fi
+          npm run build:wasm
+        env:
+          ARTIFACT_SUFFIX: ${{ inputs.artifact-suffix }}
 
       - name: Use committed TypeScript bindings
         shell: bash
@@ -67,15 +90,20 @@ jobs:
           ls -R rust/kcl-wasm-lib/pkg
           cp rust/kcl-wasm-lib/pkg/kcl_wasm_lib_bg.wasm public
 
-      - uses: actions/upload-artifact@v7
-        with:
-          name: prepared-wasm
-          retention-days: 7
-          path: |
-            rust/kcl-wasm-lib/pkg/kcl_wasm_lib*
+      - name: Record comparison Wasm provenance and reject lockfile drift
+        if: ${{ inputs.artifact-suffix != '' }}
+        run: node .performance-pipeline/e2e/performance/build-comparison.cjs wasm .
 
       - uses: actions/upload-artifact@v7
         with:
-          name: prepared-ts-rs-bindings
+          name: prepared-wasm${{ inputs.artifact-suffix }}
+          retention-days: 7
+          path: |
+            rust/kcl-wasm-lib/pkg/kcl_wasm_lib*
+            rust/kcl-wasm-lib/pkg/interaction-wasm-manifest.json
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: prepared-ts-rs-bindings${{ inputs.artifact-suffix }}
           path: |
             rust/kcl-lib/bindings/*

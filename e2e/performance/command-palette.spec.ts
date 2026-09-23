@@ -1,3 +1,4 @@
+import { prepareHome } from '@e2e/performance/scenarios'
 import {
   expectInteractionBudget,
   finishCapture,
@@ -5,14 +6,13 @@ import {
   startCapture,
   waitForSample,
 } from '@e2e/performance/capture'
-import { expect, test } from '@e2e/playwright/zoo-test'
+import { expect, test } from '@e2e/performance/test'
 import type { Page } from '@playwright/test'
 import { interactions } from '@src/lib/interactionPerformance/definitions'
 import { reportInteractions } from '@src/lib/interactionPerformance/report'
 import type { InteractionReport } from '@src/lib/interactionPerformance/report'
 
 const OPEN = interactions.commandPaletteOpen.id
-const CLOSE = interactions.commandPaletteClose.id
 const POLL_INTERVAL_MS = 10
 const INJECTED_HANDLER_MS = 250
 const MIN_INJECTED_DURATION_MS = INJECTED_HANDLER_MS - 50
@@ -34,66 +34,9 @@ async function waitForInjectedDuration(page: Page) {
   )
 }
 
-test.beforeEach(async ({ page, homePage, cmdBar }) => {
-  await homePage.waitForAuthentication()
-  await page.waitForFunction(() =>
-    window.app.settings.actor.getSnapshot().matches('idle')
-  )
-  await homePage.expectIsCurrentPage()
-  await homePage.projectsLoaded()
-  expect(
-    await page.evaluate(() => ({
-      desktop: Boolean(window.electron),
-      hasProject: window.app.project !== undefined,
-      engineStarted: window.app.engineCommandManager.started,
-    }))
-  ).toEqual({ desktop: true, hasProject: false, engineStarted: false })
-  // The shared functional fixture requests reduced motion. Score normal motion.
-  await page.emulateMedia({ reducedMotion: 'no-preference' })
-  await page.setBodyDimensions({ width: 1200, height: 800 })
-  await page.evaluate(() => document.fonts.ready)
-  await expect(cmdBar.cmdBarOpenBtn).toBeEnabled()
-  await expect(page.getByTestId('command-bar-wrapper')).toBeHidden()
+test.beforeEach(async ({ page, homePage }) => {
+  await prepareHome({ page, homePage })
 })
-
-// Each of five repeats reloads the renderer with a fresh project directory.
-// Repeated-use scores ten pairs after one unscored warm-up pair in that renderer.
-for (const scenario of [
-  { id: 'command-palette.first-use', repetitions: 1, warm: false },
-  { id: 'command-palette.repeated-use', repetitions: 10, warm: true },
-]) {
-  test(scenario.id, async ({ page, cmdBar, tronApp }, testInfo) => {
-    const close = page.getByTestId(interactions.commandPaletteClose.testId)
-    if (scenario.warm) {
-      await cmdBar.cmdBarOpenBtn.click()
-      await expect(page.getByTestId('cmd-bar-search')).toBeVisible()
-      await close.click()
-      await expect(page.getByTestId('command-bar-wrapper')).toBeHidden()
-    }
-
-    await startCapture(page)
-    let report: InteractionReport
-    try {
-      for (let index = 1; index <= scenario.repetitions; index++) {
-        await cmdBar.cmdBarOpenBtn.click()
-        await waitForSample(page, OPEN, index)
-        await expect(page.getByTestId('cmd-bar-search')).toBeEditable()
-        await close.click()
-        await waitForSample(page, CLOSE, index)
-        await expect(page.getByTestId('command-bar-wrapper')).toBeHidden()
-      }
-    } finally {
-      report = await finishCapture(
-        page,
-        testInfo,
-        scenario.id,
-        { [OPEN]: scenario.repetitions, [CLOSE]: scenario.repetitions },
-        tronApp
-      )
-    }
-    expectInteractionBudget(report)
-  })
-}
 
 test('harness detects a delayed real command-palette click', async ({
   page,
@@ -282,7 +225,7 @@ test('recorder does not attribute secondary clicks and restart clears prior samp
       tronApp
     )
   }
-  expectInteractionBudget(report)
+  expect(report.errors).toEqual([])
   expect(report.unattributed).toBe(0)
   expect(report.coverage.find((row) => row.id === OPEN)?.measured).toBe(1)
 })

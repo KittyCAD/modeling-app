@@ -1,132 +1,142 @@
 # Interaction performance
 
-The controlled performance suite fails when a scored interaction meets or exceeds
-its registered budget. First-use and repeated-use scenarios both enforce the
-under-150-ms limit. Missing or unfinished outcomes, invalid data, and dropped input
-records also fail CI. Runs have no retries or Test Analysis Bot override.
+The controlled suite compares the PR merge against its event base on the same
+visible macOS Electron runner. It detects added latency in a fixed workload, while
+reporting the absolute 150 ms target separately. Existing target breaches remain
+visible as performance debt; a single noisy click does not decide the PR result.
+No retries, discarded warm-up inputs, or Test Analysis Bot overrides are allowed.
 
-## Registering an interaction
+## What is measured
 
-`src/lib/interactionPerformance/definitions.ts` owns each interaction's identity,
-test ID, expected duration, and outcome description. `outcomes.ts` defines the
-visible completion checks for instrumented builds. Expectations must
-be positive and no greater than 150 ms. Use the same definition on the control:
+Home measures command-palette open and close. A loaded small modeling project
+measures those actions plus Code Editor and Project Files open and close. Modeling
+starts with Code open and Files closed, so Code runs close-then-open. The fixture
+is `rust/kcl-lib/tests/named_views_hide_extrude/input.kcl` from the selected harness.
+Large projects, keyboard shortcuts, native menus, panel-header close buttons, and
+new controls outside this inventory are not covered by this gate.
 
-```tsx
-data-interaction-id={interactions.commandPaletteOpen.id}
-data-testid={interactions.commandPaletteOpen.testId}
-data-expect-interaction-ms={interactions.commandPaletteOpen.budgetMs}
-```
+`definitions.ts` fixes the identities and 150 ms targets. `outcomes.ts` matches
+existing test IDs and pre-click toggle state, then checks usable content or
+unmount. Code opening requires visible editable CodeMirror content; Files opening
+requires visible enabled entries. The same collector and outcome definitions are
+built into both revisions. Candidate interaction annotations cannot change the
+comparison's coverage or expectations. Existing annotations are additionally
+checked by `zds/interaction-expectations`.
 
-The `zds/interaction-expectations` lint rule requires these three attributes to
-reference the same central definition and prevents later props from overriding
-them. Toggle controls can select a definition through an immutable conditional
-`const` alias; all three fields must use that same alias. TypeScript checks that
-the definition exists. Controls without interaction annotations are not yet lint
-errors; adding mandatory coverage is a later stage.
-
-The recorder captures trusted clicks during an explicitly started session:
-
-- **Outcome latency** runs from pointerdown (or the activation click when no
-  pointerdown was captured) until its declared result is ready after a rendering
-  opportunity, including UI transitions and async work. It includes button dwell;
-  scored clicks have no intentional hold. This is an observation of usable DOM,
-  not a guarantee that the compositor presented that frame.
-- **Event Timing** reports browser input delay, handler processing, and presentation
-  delay. It also captures slow pointer handlers preceding a fast click. Browser
-  durations are rounded to 8 ms; filtered or late entries remain unreported.
-  Observed breaches fail, but missing entries are not proof of a fast presentation.
-
-After the controlled scenario's actions finish, the suite keeps the observer
-active for a one-second reporting window before taking its final snapshot. This
-captures presentation feedback that arrives after the last DOM outcome; it adds
-no inputs and does not add the reporting wait to measured durations. Late entries
-can increase a sample's Event Timing maximum. The window is recorded in measurement
-metadata. It is not a delivery guarantee: filtered entries and feedback arriving
-after the final snapshot remain unreported, not evidence of a fast presentation. Discovery does not use this reporting window.
-
-The registered outcomes cover command-palette search becoming usable and the
-palette closing, plus Code Editor and Project Files sidebar toggles. Code Editor
-opening waits for visible, editable CodeMirror content; Project Files opening
-waits for visible, enabled file entries. Empty file explorers do not yet have
-a completion signal. Pane closing waits for unmount. Native menus,
-keyboard shortcuts, engine completion, and panel-header close buttons need their
-own completion conditions and scenarios.
+- **Outcome latency** spans trusted pointerdown through the declared usable DOM
+  outcome, observed after a rendering opportunity. This includes transitions and
+  asynchronous work, but is not proof that a frame reached the physical display.
+- **Event Timing** includes browser input delay, handler processing, and
+  presentation delay, including preceding pointer handlers. Durations are rounded
+  to 8 ms. Filtered or late entries stay unreported, never zero. A one-second final
+  observation window adds no inputs or measured delay, and is not a delivery
+  guarantee. Only fully observed presentation strata receive a comparison verdict;
+  incomplete strata remain explicitly unavailable. Every outcome stratum is required.
 
 Normal release builds exclude the recorder, completion checks, and measurement
-API. Test builds opt in with `VITE_INTERACTION_PERFORMANCE=1` while retaining
-production optimization and the real UI. Even there, the recorder loads and
-allocates state only when `start()` is explicitly called. Active samples stay in
-memory until the test exports them; this does not collect customer telemetry.
+API. Optimized test builds opt in with `VITE_INTERACTION_PERFORMANCE=1`; even then
+recording starts only when the harness requests it. There is no customer telemetry
+or application appearance change.
+
+## Paired decision
+
+The fixed schedule has ten paired blocks, five base-first and five candidate-first,
+with one fresh Electron process per context and variant. Every renderer performs
+one first-use cycle and ten repeated cycles. All 1,760 ordinary clicks are retained.
+First-use means the first input to the control in that renderer, not a cold host
+GPU cache or the first mount of a default-open pane.
+
+For each interaction and context, compare first-use latency, the median of its ten
+repeated inputs, and their maximum. The renderer/session is the sampling unit;
+ten clicks in one renderer are not ten independent trials. The maximum protects
+against repeated-use stalls that a mean or median would hide.
+
+The provisional regression rule requires a median paired increase of at least
+24 ms, a positive increase in at least nine of ten pairs, and positive median
+increases in both execution-order groups. Apply it to every outcome stratum and
+fully observed Event Timing stratum. This is an engineering rule requiring native
+A/A and injected-delay calibration, not a statistical guarantee for all changes.
+Smaller or rare slowdowns outside the sampled workload can escape detection.
+
+Missing sessions, outcomes, duplicates, unexpected inputs, invalid records,
+visibility interruptions, retries, repeats, skipped probes, changed order, and
+partial CLI selections fail collection. Timing decisions happen after the complete
+schedule so a slow sample cannot restart a worker and alter subsequent conditions.
+Five mandatory harness probes then run on each build: delayed click, delayed
+pointerdown, missing measurement, secondary-click/restart, and delayed pane content.
+They exercise the real application and verify that the collector rejects bad data
+and includes injected delays.
+
+## Builds and trust
+
+CI resolves immutable event-base, candidate merge, PR-head, and harness commits.
+Each app uses its own locked dependencies, Wasm, generated bindings, and Electron
+runtime. Both receive the same six-file test-instrumentation overlay. Workload,
+selectors, collector, schedule, and comparison policy come from the base revision.
+The initial rollout explicitly uses the candidate harness when the base has no
+comparison entrypoint. An incompatible existing base harness fails rather than
+silently switching policy.
+
+Source, locks, workload, harness files, and built artifacts are hashed and checked
+before measurements. Build failures fail the final check. The raw comparison,
+missing presentation evidence, 150 ms breaches, metadata, and all attempts are
+retained for 30 days. TAB receives the final aggregate decision with every capture;
+its responses cannot change CI's result.
+
+This prevents ordinary test edits in a feature PR from weakening that PR's
+comparison. It is not a security boundary against a malicious PR that rewrites the
+workflow or app to recognize a benchmark. Workflow/harness changes require review,
+and the final check must be required by repository protection before claiming that
+GitHub prevents merging a regression. The PR itself cannot enable repository rules.
 
 ## Running measurements
 
-Run desktop measurements in a normal visible Electron window with `HEADLESS`
-unset. The windows can take focus. Keep the same machine and display setup when
-comparing changes, and leave normal motion enabled.
+Use visible Electron with `HEADLESS` unset, normal motion, the fixed 1200×800
+viewport, and traces/video/screenshots disabled. Readiness waits cover settings,
+authentication, fonts, and (for modeling) engine connection and scene execution.
+Cloud sync is disabled from startup. These waits do not exercise scored controls.
 
-The scored CI job uses the repository's established macOS desktop runner and
-launches visible Electron directly. Compilation stays in a separate job. This
-is a hosted desktop, so compare results within the same runner profile; a local
-desktop pass does not establish the CI result. Earlier Linux/Xvfb measurements
-remain separate evidence with different rendering and presentation costs.
-
-Prepare dependencies and matching Wasm artifacts using the normal repository
-setup, then build and test the production Electron app:
+The CI workflow builds and verifies both revisions automatically. For a local
+same-app diagnostic, prepare the normal dependencies and matching Wasm, then:
 
 ```sh
-npm ci
 cp rust/kcl-wasm-lib/pkg/kcl_wasm_lib_bg.wasm public/
 VITE_INTERACTION_PERFORMANCE=1 VITE_ZOO_BASE_DOMAIN=dev.zoo.dev npm run tronb:vite:prod
 NODE_ENV=production TARGET=desktop VITE_ZOO_BASE_DOMAIN=dev.zoo.dev \
-  npm exec -- playwright test --config=playwright.performance.config.ts --headed
+  env -u HEADLESS npm exec -- playwright test --config=playwright.performance.config.ts --headed
 ```
 
-The test process needs the existing development API token through the usual
-credential setup. CI supplies it only to the test step. Its measurement command
-unsets `HEADLESS` and uses the same controlled configuration as the local run.
+The normal development API credential is needed through the existing credential
+setup. CI requires `INTERACTION_BASE_APP_DIR` and `INTERACTION_CANDIDATE_APP_DIR`;
+local runs default both to the current checkout. Local results are diagnostic and
+do not establish native CI calibration or independently built source provenance.
 
-The profile uses the existing Electron fixtures and authentication, with cloud
-synchronization disabled from startup. Home scenarios verify that Home is ready
-and no project or engine session has started. Modeling scenarios open the existing
-`named_views_hide_extrude` KCL fixture in a local project and wait for the engine
-connection and scene before capture. Both profiles fix the window size, restore
-normal motion, wait for fonts, and disable traces, screenshots, and video.
-
-Each scenario runs five times with a reloaded renderer and fresh project directory:
-
-- First-use measures one open/close pair per renderer.
-- Repeated-use measures ten pairs after one unscored warm-up pair per renderer.
-
-Home measures the command palette. Modeling measures the command palette, Code
-Editor, and Project Files separately under their registered IDs, so the same
-palette can be compared between Home and a loaded project. Modeling preserves
-the shared Playwright layout: Code starts open and Files starts closed, so Code
-is measured close-then-open. First-use means the first click on each control in
-that renderer, not the first time a default-open pane mounted. These small-project
-results do not establish performance in large projects.
-
-Harness probes inject 250 ms click and pointerdown stalls, verify that the same
-budget assertion rejects them, verify missing-data errors, and check that secondary clicks remain unattributed across recorder
-restart. Another probe delays pane-content visibility to verify that mounting an
-empty pane cannot complete a measurement. Their 10 ms polling interval controls
-when tests read completed records; the recorder owns the measurement timestamps.
-
-The CI job summary shows every scenario's measurements and errors. Raw samples,
-environment metadata, coverage, and all budget breaches are also retained in
-`test-results/interaction-performance/` and `playwright-report/interaction-performance/`.
-GitHub retains these artifacts for 30 days. After all scenarios finish, the TAB
-reporter publishes one result per scenario containing every repetition, the
-measurement summaries, raw measurement JSON, and workflow run/attempt identifiers.
-TAB's duration field remains the total scenario runtime, not click latency.
-Earlier workflow attempts remain in history; TAB uses the latest as its current
-result. Its responses never override this workflow's collection or latency failures.
-Publication failures are logged and leave the local reports and test result intact.
-Inspect the HTML report with:
+Inspect `test-results/interaction-performance/comparison.json`, the workflow
+summary, or the HTML report:
 
 ```sh
 npm exec -- playwright show-report playwright-report/interaction-performance
 ```
+
+## Calibration and rollout
+
+Before treating this gate as stable, run a predeclared set of independent manual
+A/A workflows against the exact same commit, preserving every attempt. Set
+`baseline-ref` to the selected candidate commit. Verify artifact identity before
+calling it an identical-build comparison. The injected modes `first`, `warm`, and
+`stall` add 64 ms to the candidate Home palette's real click handler on its first
+input, every repeated input, or one of ten repeated inputs respectively. They are
+allowed only for manual A/A runs and must fail the ordinary comparison. They never
+convert an expected failure into a green performance check.
+
+Examine the whole gate's false failures and detection results, not only individual
+medians. Record all artifacts and the calibrated sensitivity. Passing a few A/A
+runs cannot prove zero flakes; preserve the ability to diagnose future failures.
+
+For a confirmed runner/setup failure, rerun the complete workflow on the same
+commit and retain the failed attempt. A valid slow measurement is evidence, not a
+reason to retry until green. Do not use `--repeat-each`, `--grep`, multiple workers,
+or skipped probes to produce a passing gate.
 
 ## Discovery during functional tests
 
@@ -161,28 +171,3 @@ parallel workers, and partially observed profiles differ from the controlled
 performance suite, so they are not enforcement measurements. Discovery is off by
 default and explicitly disabled in `playwright.performance.config.ts` to avoid
 competing recording sessions.
-
-## Calibration and rollout
-
-Calibrate additional scenarios on a consistent runner before making them blocking:
-
-```sh
-NODE_ENV=production TARGET=desktop npm exec -- playwright test \
-  --config=playwright.performance.config.ts --repeat-each=20
-```
-
-Compare first-use and repeated-use separately: maxima, p50/p95, every breach,
-collection failures, and environment metadata. Investigate variation instead of
-adding retries or widening timeouts. The injected-delay probes must keep detecting
-the regression.
-
-For a confirmed runner or setup failure, use GitHub's **Re-run all jobs** on the
-same commit. Preserve the failed attempt and rerun the complete workflow, not
-individual tests or only failed jobs. A slow but valid sample is a measurement,
-not a reason to rerun until it disappears.
-
-Expand the interaction inventory through discovery, improve slow actions, then
-add them to the controlled suite. Discovery remains report-only; scored scenarios
-have no higher-budget exceptions. Mandatory registration and executed scenarios
-for every new control are a later stage. A PR cannot raise an interaction budget
-above 150 ms.

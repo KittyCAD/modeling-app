@@ -33,5 +33,6 @@ export interface InteractionSnapshot {
 }
 
 export interface InteractionDefinition extends InteractionDescription {
+  matchesTarget: (target: Element) => boolean
   isReady: (document: Document) => boolean
 }

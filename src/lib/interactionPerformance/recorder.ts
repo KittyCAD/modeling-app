@@ -155,13 +155,19 @@ export class InteractionRecorder {
   private capture = (event: Event) => {
     if (!event.isTrusted) return
     const target = event.composedPath().find((node) => node instanceof Element)
-    const control =
-      target instanceof Element ? target.closest('[data-interaction-id]') : null
+    // Both builds use the same selectors and pre-action state, independent of
+    // measurement annotations added or removed by the application revision.
+    const matchingDefinitions =
+      target instanceof Element
+        ? [...this.definitions.values()].filter((definition) =>
+            definition.matchesTarget(target)
+          )
+        : []
     // A control's primary action does not describe its context menu or middle
     // click. Keep those inputs in discovery without claiming that action ran.
     const id =
-      event.type === 'click'
-        ? (control?.getAttribute('data-interaction-id') ?? null)
+      event.type === 'click' && matchingDefinitions.length === 1
+        ? matchingDefinitions[0].id
         : null
     const timestamps =
       event instanceof PointerEvent

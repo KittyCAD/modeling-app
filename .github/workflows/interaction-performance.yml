@@ -5,6 +5,16 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
+    inputs:
+      baseline-ref:
+        description: Baseline commit (default candidate parent; candidate SHA gives manual A/A)
+        type: string
+        default: ""
+      calibration-fault:
+        description: Manual A/A only, add 64 ms to candidate Home palette opening
+        type: choice
+        default: none
+        options: [none, first, warm, stall]
 
 concurrency:
   group: interaction-performance-${{ github.head_ref || github.ref }}
@@ -14,88 +24,183 @@ permissions:
   contents: read
 
 jobs:
-  build-wasm:
-    uses: ./.github/workflows/build-wasm.yml
-
-  build-app:
-    needs: build-wasm
-    runs-on: namespace-profile-ubuntu-8-cores;overrides.cache-tag=modeling-app-general-v2
+  resolve:
+    runs-on: namespace-profile-ubuntu-2-cores
+    outputs:
+      base_commit: ${{ steps.plan.outputs.base_commit }}
+      candidate_commit: ${{ steps.plan.outputs.candidate_commit }}
+      pr_head_commit: ${{ steps.plan.outputs.pr_head_commit }}
+      harness_commit: ${{ steps.plan.outputs.harness_commit }}
+      harness_source: ${{ steps.plan.outputs.harness_source }}
+      harness_variant: ${{ steps.plan.outputs.harness_variant }}
+      calibration_fault: ${{ steps.plan.outputs.calibration_fault }}
+      build_matrix: ${{ steps.plan.outputs.build_matrix }}
     steps:
       - uses: actions/checkout@v7.0.1
-
+        with:
+          fetch-depth: 0
       - uses: actions/setup-node@v7.0.0
         with:
           node-version-file: .nvmrc
+      - name: Verify build manifest producer and consumer
+        run: node --test e2e/performance/build-comparison.node-test.cjs
+      - name: Resolve immutable application and harness commits
+        id: plan
+        run: node e2e/performance/build-comparison.cjs resolve .
+      - uses: actions/upload-artifact@v7
+        with:
+          name: interaction-comparison-plan
+          path: comparison-plan.json
+          if-no-files-found: error
+          retention-days: 30
+
+  build-wasm:
+    needs: resolve
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJSON(needs.resolve.outputs.build_matrix) }}
+    uses: ./.github/workflows/build-wasm.yml
+    with:
+      ref: ${{ matrix.commit }}
+      artifact-suffix: -interaction-${{ matrix.variant }}
+
+  build-app:
+    needs: [resolve, build-wasm]
+    runs-on: namespace-profile-ubuntu-8-cores;overrides.cache-tag=modeling-app-general-v2
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJSON(needs.resolve.outputs.build_matrix) }}
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          ref: ${{ matrix.commit }}
+          path: app
+      - uses: actions/checkout@v7.0.1
+        with:
+          ref: ${{ needs.resolve.outputs.harness_commit }}
+          path: harness
+      - uses: actions/setup-node@v7.0.0
+        with:
+          node-version-file: app/.nvmrc
           cache: npm
-
+          cache-dependency-path: app/package-lock.json
       - run: npm ci
-
+        working-directory: app
       - uses: actions/download-artifact@v8
         with:
-          name: prepared-wasm
-          path: rust/kcl-wasm-lib/pkg
-
+          name: interaction-comparison-plan
+          path: provenance
       - uses: actions/download-artifact@v8
         with:
-          name: prepared-ts-rs-bindings
-          path: rust/kcl-lib/bindings
-
+          name: prepared-wasm-interaction-${{ matrix.variant }}
+          path: app/rust/kcl-wasm-lib/pkg
+      - uses: actions/download-artifact@v8
+        with:
+          name: prepared-ts-rs-bindings-interaction-${{ matrix.variant }}
+          path: app/rust/kcl-lib/bindings
+      - name: Apply identical test instrumentation to this application
+        run: node harness/e2e/performance/build-comparison.cjs prepare app harness provenance/comparison-plan.json "$VARIANT"
+        env:
+          VARIANT: ${{ matrix.variant }}
       - name: Build production Electron application
+        working-directory: app
         run: |
           cp rust/kcl-wasm-lib/pkg/kcl_wasm_lib_bg.wasm public/
           npm run tronb:vite:prod
         env:
-          VERCEL_GIT_COMMIT_SHA: ${{ github.sha }}
+          VERCEL_GIT_COMMIT_SHA: ${{ matrix.commit }}
           VITE_ZOO_BASE_DOMAIN: dev.zoo.dev
-          VITE_INTERACTION_PERFORMANCE: '1'
-
+          VITE_INTERACTION_PERFORMANCE: "1"
+      - name: Record source, workload, dependencies, and build hashes
+        run: node harness/e2e/performance/build-comparison.cjs manifest app harness provenance/comparison-plan.json "$VARIANT"
+        env:
+          VARIANT: ${{ matrix.variant }}
       - uses: actions/upload-artifact@v7
         with:
-          name: interaction-performance-build
-          path: .vite/
+          name: interaction-performance-build-${{ matrix.variant }}
+          path: |
+            app/.vite/
+            app/interaction-build-manifest.json
           include-hidden-files: true
+          if-no-files-found: error
           retention-days: 7
 
   measure:
-    name: Interaction performance budgets
-    needs: build-app
+    name: Interaction performance regression
+    needs: [resolve, build-wasm, build-app]
     # A failed dependency must fail this check instead of leaving it skipped.
     if: ${{ !cancelled() }}
-    # Use the established macOS desktop runner for normal Electron presentation.
-    # Keep compilation separate and score one browser at a time.
     runs-on: namespace-profile-macos-8-cores
     timeout-minutes: 15
     steps:
-      - name: Require instrumented build
+      - name: Require both instrumented builds
         env:
+          PLAN_RESULT: ${{ needs.resolve.result }}
+          WASM_RESULT: ${{ needs.build-wasm.result }}
           BUILD_RESULT: ${{ needs.build-app.result }}
-        run: test "$BUILD_RESULT" = success
-
+        run: test "$PLAN_RESULT" = success && test "$WASM_RESULT" = success && test "$BUILD_RESULT" = success
       - uses: actions/checkout@v7.0.1
-
+        with:
+          ref: ${{ needs.resolve.outputs.base_commit }}
+          path: apps/base
+      - uses: actions/checkout@v7.0.1
+        with:
+          ref: ${{ needs.resolve.outputs.candidate_commit }}
+          path: apps/candidate
       - uses: actions/setup-node@v7.0.0
         with:
-          node-version-file: .nvmrc
+          node-version-file: apps/base/.nvmrc
           cache: npm
-
+          cache-dependency-path: apps/base/package-lock.json
       - run: npm ci
-
+        working-directory: apps/base
+      - uses: actions/setup-node@v7.0.0
+        with:
+          node-version-file: apps/candidate/.nvmrc
+          cache: npm
+          cache-dependency-path: apps/candidate/package-lock.json
+      - run: npm ci
+        working-directory: apps/candidate
+      # Node/Playwright belong to the selected harness; each app launches its own Electron.
+      - uses: actions/setup-node@v7.0.0
+        with:
+          node-version-file: apps/${{ needs.resolve.outputs.harness_variant }}/.nvmrc
       - uses: actions/download-artifact@v8
         with:
-          name: interaction-performance-build
-          path: .vite
-
+          name: interaction-comparison-plan
+          path: provenance
       - uses: actions/download-artifact@v8
         with:
-          name: prepared-wasm
-          path: rust/kcl-wasm-lib/pkg
-
+          name: interaction-performance-build-base
+          path: apps/base
       - uses: actions/download-artifact@v8
         with:
-          name: prepared-ts-rs-bindings
-          path: rust/kcl-lib/bindings
-
-      - name: Enforce interaction budgets
+          name: interaction-performance-build-candidate
+          path: apps/candidate
+      - uses: actions/download-artifact@v8
+        with:
+          name: prepared-wasm-interaction-base
+          path: apps/base/rust/kcl-wasm-lib/pkg
+      - uses: actions/download-artifact@v8
+        with:
+          name: prepared-wasm-interaction-candidate
+          path: apps/candidate/rust/kcl-wasm-lib/pkg
+      - uses: actions/download-artifact@v8
+        with:
+          name: prepared-ts-rs-bindings-interaction-base
+          path: apps/base/rust/kcl-lib/bindings
+      - uses: actions/download-artifact@v8
+        with:
+          name: prepared-ts-rs-bindings-interaction-candidate
+          path: apps/candidate/rust/kcl-lib/bindings
+      - name: Verify both applications against the selected harness
+        env:
+          HARNESS_VARIANT: ${{ needs.resolve.outputs.harness_variant }}
+        run: |
+          HARNESS_DIR="$GITHUB_WORKSPACE/apps/$HARNESS_VARIANT"
+          node "$HARNESS_DIR/e2e/performance/build-comparison.cjs" verify-pair apps/base apps/candidate provenance/comparison-plan.json
+      - name: Compare native interaction performance
+        working-directory: apps/${{ needs.resolve.outputs.harness_variant }}
         run: env -u HEADLESS npm exec -- playwright test --config=playwright.performance.config.ts --headed
         env:
           NODE_ENV: production
@@ -104,16 +209,26 @@ jobs:
           VITE_ZOO_API_TOKEN: ${{ secrets.ZOO_API_TOKEN }}
           TAB_API_URL: ${{ vars.TAB_API_URL }}
           TAB_API_KEY: ${{ secrets.TAB_API_KEY }}
-          CI_COMMIT_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          CI_COMMIT_SHA: ${{ needs.resolve.outputs.pr_head_commit || needs.resolve.outputs.candidate_commit }}
           CI_PR_NUMBER: ${{ github.event.pull_request.number }}
-
-      - name: Preserve measurements and failures
+          INTERACTION_BASE_APP_DIR: ${{ github.workspace }}/apps/base
+          INTERACTION_CANDIDATE_APP_DIR: ${{ github.workspace }}/apps/candidate
+          INTERACTION_BASE_COMMIT: ${{ needs.resolve.outputs.base_commit }}
+          INTERACTION_CANDIDATE_COMMIT: ${{ needs.resolve.outputs.candidate_commit }}
+          INTERACTION_PR_HEAD_COMMIT: ${{ needs.resolve.outputs.pr_head_commit }}
+          INTERACTION_HARNESS_COMMIT: ${{ needs.resolve.outputs.harness_commit }}
+          INTERACTION_HARNESS_SOURCE: ${{ needs.resolve.outputs.harness_source }}
+          INTERACTION_CALIBRATION_FAULT: ${{ needs.resolve.outputs.calibration_fault }}
+      # A successful comparison does not establish A/A noise or fault-injection calibration.
+      - name: Preserve measurements, provenance, and failures
         if: ${{ !cancelled() }}
         uses: actions/upload-artifact@v7
         with:
           name: interaction-performance-${{ github.sha }}-${{ github.run_attempt }}
           path: |
-            test-results/interaction-performance/
-            playwright-report/interaction-performance/
+            provenance/comparison-plan.json
+            apps/*/interaction-build-manifest.json
+            apps/*/test-results/interaction-performance/
+            apps/*/playwright-report/interaction-performance/
           if-no-files-found: error
           retention-days: 30
