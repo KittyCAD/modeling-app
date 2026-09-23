@@ -1015,6 +1015,10 @@ export async function expectCloudFeatureEnabled(page: Page) {
     page,
     `'${OPFS_CLOUD_FEATURE_FLAG}' feature not enabled: / did not redirect to /home`
   ).toHaveURL(/\/home$/)
+  // Home can mount while the default project-library settings are still loading.
+  await page.waitForFunction(() =>
+    window.app.settings.actor.getSnapshot().matches('idle')
+  )
   await expect(
     page.getByText(PERSONAL_CLOUD_PROJECT_LIBRARY_TITLE, { exact: true }),
     `'${OPFS_CLOUD_FEATURE_FLAG}' feature not enabled: "${PERSONAL_CLOUD_PROJECT_LIBRARY_TITLE}" not visible`
