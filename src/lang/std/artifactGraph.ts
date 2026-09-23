@@ -1,5 +1,4 @@
 import type { OkWebSocketResponseData, WebSocketRequest } from '@kittycad/lib'
-import type { SetKclVersion } from '@rust/kcl-lib/bindings/ModelingCmd'
 
 import type {
   Cap,
@@ -71,15 +70,7 @@ export interface WallArtifactRich extends BaseArtifact {
   faceCodeRef: CodeRef
 }
 
-// The JS SDK does not expose set_kcl_version yet. Use its generated Rust type
-// until the SDK catches up.
-export type EngineCommand =
-  | WebSocketRequest
-  | {
-      type: 'modeling_cmd_req'
-      cmd_id: string
-      cmd: SetKclVersion & { type: 'set_kcl_version' }
-    }
+export type EngineCommand = WebSocketRequest
 
 export interface ResponseMap {
   [commandId: string]: OkWebSocketResponseData
