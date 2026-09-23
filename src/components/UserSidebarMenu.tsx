@@ -152,7 +152,7 @@ const UserSidebarMenu = ({ user }: { user?: UserResponse }) => {
         {
           id: 'check-for-updates',
           Element: 'button',
-          hide: !isDesktop(),
+          className: isDesktop() ? '' : 'hidden',
           onClick: () => {
             window.electron?.appCheckForUpdates().catch(reportRejection)
           },
