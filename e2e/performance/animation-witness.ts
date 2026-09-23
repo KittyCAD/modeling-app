@@ -1,6 +1,7 @@
-import type { JSHandle, Page, TestInfo } from '@playwright/test'
+import type { CDPSession, JSHandle, Page, TestInfo } from '@playwright/test'
 import { interactions } from '@src/lib/interactionPerformance/definitions'
 import type { InteractionSample } from '@src/lib/interactionPerformance/types'
+import type { Protocol } from 'playwright-core/types/protocol'
 
 interface AnimationTarget {
   tagName: string
@@ -63,20 +64,157 @@ interface AnimationWitness {
   stop(): AnimationEvidence
 }
 
+interface ClockReading {
+  rendererNowMs: number
+  rendererTimeOriginMs: number
+  rendererEpochMs: number
+  nodeBeforeEpochMs: number
+  nodeAfterEpochMs: number
+}
+
+interface CpuProfileEvidence {
+  calibrationEligible: false
+  clockAlignment: string
+  samplingIntervalUs: number
+  beforeStart: ClockReading | null
+  afterStart: ClockReading | null
+  beforeStop: ClockReading | null
+  afterStop: ClockReading | null
+  stopReason: string | null
+  profile: Protocol.Profiler.Profile | null
+  errors: string[]
+}
+
+interface CpuProfileCapture {
+  stop(reason: string): Promise<CpuProfileEvidence>
+}
+
 const witnesses = new WeakMap<Page, JSHandle<AnimationWitness>>()
+const profilers = new WeakMap<Page, CpuProfileCapture>()
 const MAXIMUM_DURATION_MS = 30_000
 
-export async function startAnimationWitness(page: Page) {
-  if (witnesses.has(page)) {
-    throw new Error('An animation witness is already active for this page.')
+async function readClocks(page: Page): Promise<ClockReading> {
+  const nodeBeforeEpochMs = Date.now()
+  const renderer = await page.evaluate(() => ({
+    rendererNowMs: performance.now(),
+    rendererTimeOriginMs: performance.timeOrigin,
+    rendererEpochMs: Date.now(),
+  }))
+  return { ...renderer, nodeBeforeEpochMs, nodeAfterEpochMs: Date.now() }
+}
+
+async function startCpuProfile(page: Page): Promise<CpuProfileCapture> {
+  const evidence: CpuProfileEvidence = {
+    calibrationEligible: false,
+    clockAlignment:
+      'Profiler timestamps are monotonic microseconds. Profile startTime/endTime fall between their before/after renderer clock readings; preserve these bounds rather than assuming an exact offset.',
+    samplingIntervalUs: 1000,
+    beforeStart: null,
+    afterStart: null,
+    beforeStop: null,
+    afterStop: null,
+    stopReason: null,
+    profile: null,
+    errors: [],
   }
+  let session: CDPSession | undefined
+  let closed = false
+  let started = false
+  let stopping: Promise<CpuProfileEvidence> | undefined
+  let timeout: ReturnType<typeof setTimeout> | undefined
+
+  function removeListeners() {
+    page.off('close', onPageClosed)
+    session?.off('close', onSessionClosed)
+    clearTimeout(timeout)
+  }
+
+  function onSessionClosed() {
+    closed = true
+    removeListeners()
+  }
+
+  function onPageClosed() {
+    void stop('page-closed')
+  }
+
+  function stop(reason: string): Promise<CpuProfileEvidence> {
+    if (stopping) return stopping
+    evidence.stopReason = reason
+    removeListeners()
+    stopping = (async () => {
+      try {
+        if (session && started && !closed) {
+          evidence.beforeStop = await readClocks(page).catch(() => {
+            evidence.errors.push('before-stop-clock-unavailable')
+            return null
+          })
+          const { profile } = await session.send('Profiler.stop')
+          evidence.profile = profile
+          evidence.afterStop = await readClocks(page).catch(() => {
+            evidence.errors.push('after-stop-clock-unavailable')
+            return null
+          })
+          for (const node of profile.nodes) {
+            // Keep script paths for attribution, without URL credentials or queries.
+            try {
+              const url = new URL(node.callFrame.url)
+              url.username = ''
+              url.password = ''
+              url.search = ''
+              url.hash = ''
+              node.callFrame.url =
+                url.protocol === 'data:' ? '[data-url]' : url.toString()
+            } catch {
+              node.callFrame.url = node.callFrame.url.split(/[?#]/)[0] ?? ''
+            }
+          }
+        } else if (started) {
+          evidence.errors.push('profiler-session-closed-before-stop')
+        }
+      } catch {
+        evidence.errors.push('profiler-stop-unavailable')
+      } finally {
+        if (session && !closed) {
+          await session.detach().catch(() => {
+            evidence.errors.push('profiler-detach-unavailable')
+          })
+        }
+        removeListeners()
+      }
+      return evidence
+    })()
+    return stopping
+  }
+
+  try {
+    session = await page.context().newCDPSession(page)
+    session.on('close', onSessionClosed)
+    page.once('close', onPageClosed)
+    await session.send('Profiler.enable')
+    await session.send('Profiler.setSamplingInterval', {
+      interval: evidence.samplingIntervalUs,
+    })
+    evidence.beforeStart = await readClocks(page)
+    await session.send('Profiler.start')
+    started = true
+    evidence.afterStart = await readClocks(page)
+    timeout = setTimeout(() => void stop('duration-limit'), MAXIMUM_DURATION_MS)
+  } catch {
+    evidence.errors.push('profiler-start-unavailable')
+    await stop('setup-failed')
+  }
+  return { stop }
+}
+
+async function createAnimationWitness(page: Page) {
   const witness = await page.evaluateHandle(
     ({ maximumDurationMs, openId }) => {
       const evidence: AnimationEvidence = {
         metadata: {
           calibrationEligible: false,
           instrumentation:
-            'Scoped transition events and animation-frame animation/style reads; diagnostic timings include observer overhead.',
+            'Scoped transition events, animation-frame animation/style reads and a CDP CPU profile; diagnostic timings include observer overhead.',
           timeOrigin: performance.timeOrigin,
           maximumDurationMs,
         },
@@ -232,20 +370,48 @@ export async function startAnimationWitness(page: Page) {
       openId: interactions.commandPaletteOpen.id,
     }
   )
-  witnesses.set(page, witness)
+  return witness
+}
+
+export async function startAnimationWitness(page: Page) {
+  if (witnesses.has(page) || profilers.has(page)) {
+    throw new Error('An animation witness is already active for this page.')
+  }
+  const profiler = await startCpuProfile(page)
+  try {
+    const witness = await createAnimationWitness(page)
+    witnesses.set(page, witness)
+    profilers.set(page, profiler)
+  } catch (error) {
+    await profiler.stop('witness-setup-failed')
+    throw error
+  }
 }
 
 export async function finishAnimationWitness(page: Page, testInfo?: TestInfo) {
   const witness = witnesses.get(page)
-  if (!witness) return
+  const profiler = profilers.get(page)
   witnesses.delete(page)
+  profilers.delete(page)
   try {
-    const evidence = await witness.evaluate((state) => state.stop())
-    await testInfo?.attach('animation-witness', {
-      body: JSON.stringify(evidence, null, 2),
-      contentType: 'application/json',
-    })
+    if (witness) {
+      try {
+        const evidence = await witness.evaluate((state) => state.stop())
+        await testInfo?.attach('animation-witness', {
+          body: JSON.stringify(evidence, null, 2),
+          contentType: 'application/json',
+        })
+      } finally {
+        await witness.dispose()
+      }
+    }
   } finally {
-    await witness.dispose()
+    if (profiler) {
+      const evidence = await profiler.stop('finished')
+      await testInfo?.attach('animation-cpu-profile', {
+        body: JSON.stringify(evidence, null, 2),
+        contentType: 'application/json',
+      })
+    }
   }
 }
