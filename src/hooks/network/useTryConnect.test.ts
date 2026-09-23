@@ -21,7 +21,10 @@ vi.mock('@src/lib/settings/settingsUtils', () => ({
   getSettingsFromActorContext: vi.fn(),
   jsAppSettings: vi.fn(),
 }))
-vi.mock('@src/lib/trap', () => ({ reportRejection: vi.fn() }))
+vi.mock(import('@src/lib/trap'), async (importOriginal) => ({
+  ...(await importOriginal()),
+  reportRejection: vi.fn(),
+}))
 
 describe('tryConnecting', () => {
   it('stops the initial retry loop after a terminal connection error', async () => {
@@ -60,7 +63,9 @@ describe('tryConnecting', () => {
         setShowManualConnect,
         sceneInfra: {} as SceneInfra,
         engineCommandManager: manager as unknown as ConnectionManager,
-        kclManager: {} as KclManager,
+        kclManager: {
+          getLanguageVersion: vi.fn().mockResolvedValue('2.0'),
+        } as unknown as KclManager,
         rustContext: {} as RustContext,
       })
     ).rejects.toEqual(connectionError)
