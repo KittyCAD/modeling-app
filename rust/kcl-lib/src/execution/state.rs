@@ -1401,11 +1401,11 @@ impl ExecState {
     /// execution, or `None` when it declares no kclVersion. Must be assigned
     /// unconditionally at the start of every execution since the state may be
     /// reused across executions whose programs declare different versions.
-    pub(crate) fn set_entry_point_kcl_version(&mut self, program: &crate::Program) {
-        self.global.entry_point_kcl_version = declared_kcl_version(&program.ast)
-            .ok()
-            .flatten()
-            .map(|(version, _)| version);
+    pub(crate) fn set_entry_point_kcl_version(&mut self, program: &crate::Program) -> Result<(), KclError> {
+        let version = program.language_version()?;
+        // Import diagnostics distinguish an explicit version from the default.
+        self.global.entry_point_kcl_version = declared_kcl_version(&program.ast)?.map(|_| version);
+        Ok(())
     }
 
     /// KCL 3.0: the entry point's declared kclVersion decides which kclVersion
@@ -1420,8 +1420,8 @@ impl ExecState {
     ///   which the legacy lookup would honor for that file only. Mixing 1.0
     ///   and 2.0 remains allowed, as it always has been.
     ///
-    /// A file that declares no kclVersion is always fine: it runs under the
-    /// version the lookup gives it, as it always has. Only user files (local
+    /// A file that declares no kclVersion does not cause a version mismatch:
+    /// it runs under the version the lookup gives it. Only user files (local
     /// imports) are checked. Standard library modules are exempt: they ship
     /// with the interpreter, always run under the entry point's pinned
     /// version, and the user cannot edit them to resolve a mismatch. Foreign
@@ -1485,6 +1485,33 @@ impl ExecState {
             ),
             source_ranges,
         )))
+    }
+
+    /// Check an imported file before executing it. Version mismatches take
+    /// priority over V3's `use` keyword restriction.
+    pub(crate) fn validate_imported_module(
+        &self,
+        path: &ModulePath,
+        program: &Node<Program>,
+        import_range: Option<SourceRange>,
+    ) -> Result<(), KclError> {
+        self.check_imported_module_kcl_version(path, program, import_range)?;
+        if !path.is_local() || !self.entry_point_version_is_v3_or_higher() {
+            return Ok(());
+        }
+
+        let source = self.global.id_to_source.get(&program.module_id).ok_or_else(|| {
+            KclError::new_internal(KclErrorDetails::new(
+                format!("Missing source for imported KCL module `{path}`"),
+                import_range.into_iter().collect(),
+            ))
+        })?;
+        crate::parsing::validate_use_keyword_source(&source.source, program.module_id).map_err(|error| {
+            match import_range {
+                Some(range) => error.add_import_location(&path.import_name(), range),
+                None => error,
+            }
+        })
     }
 }
 

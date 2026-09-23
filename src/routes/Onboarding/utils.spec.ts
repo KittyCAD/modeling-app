@@ -177,16 +177,31 @@ describe('Onboarding utility functions', () => {
       })
       const navigate = vi.fn()
       const deps = createOnboardingDeps([cloud.target], navigate)
+      const { result } = renderHook(() => useOnboardingStartPending())
 
-      const firstStart = acceptOnboarding(deps)
+      expect(result.current).toBe(false)
+
+      let firstStart: Promise<void> | undefined
+      act(() => {
+        firstStart = acceptOnboarding(deps)
+      })
       const secondStart = acceptOnboarding(deps)
+      const { result: lateSubscriber } = renderHook(() =>
+        useOnboardingStartPending()
+      )
 
       expect(secondStart).toBe(firstStart)
       expect(cloud.run).toHaveBeenCalledOnce()
+      expect(result.current).toBe(true)
+      expect(lateSubscriber.current).toBe(true)
 
-      resolveProject?.(createProject('/cloud/tutorial-project/main.kcl'))
-      await Promise.all([firstStart, secondStart])
+      await act(async () => {
+        resolveProject?.(createProject('/cloud/tutorial-project/main.kcl'))
+        await Promise.all([firstStart, secondStart])
+      })
       expect(navigate).toHaveBeenCalledOnce()
+      expect(result.current).toBe(false)
+      expect(lateSubscriber.current).toBe(false)
     })
 
     it('exposes pending state and restores interaction after a failed replay', async () => {

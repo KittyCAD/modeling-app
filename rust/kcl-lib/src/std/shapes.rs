@@ -170,7 +170,7 @@ async fn inner_rectangle(
                 },
             },
         };
-        new_sketch.paths.push(current_path);
+        new_sketch.paths.push_back(current_path);
     }
     Ok(new_sketch)
 }
@@ -268,7 +268,7 @@ pub(super) async fn inner_circle(
         new_sketch.add_tag(tag, &current_path, exec_state, None);
     }
 
-    new_sketch.paths.push(current_path);
+    new_sketch.paths.push_back(current_path);
 
     exec_state
         .batch_modeling_cmd(
@@ -376,7 +376,7 @@ async fn inner_circle_three_point(
         new_sketch.add_tag(tag, &current_path, exec_state, None);
     }
 
-    new_sketch.paths.push(current_path);
+    new_sketch.paths.push_back(current_path);
 
     exec_state
         .batch_modeling_cmd(
@@ -521,7 +521,7 @@ async fn inner_polygon(
             },
         };
 
-        sketch.paths.push(current_path);
+        sketch.paths.push_back(current_path);
     }
 
     // Close the polygon by connecting back to the first vertex with a new ID
@@ -558,7 +558,7 @@ async fn inner_polygon(
         },
     };
 
-    sketch.paths.push(current_path);
+    sketch.paths.push_back(current_path);
     sketch.is_closed = ProfileClosed::Explicitly;
 
     exec_state
@@ -687,7 +687,7 @@ async fn inner_ellipse(
         new_sketch.add_tag(tag, &current_path, exec_state, None);
     }
 
-    new_sketch.paths.push(current_path);
+    new_sketch.paths.push_back(current_path);
 
     exec_state
         .batch_modeling_cmd(

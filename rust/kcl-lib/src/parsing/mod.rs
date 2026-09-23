@@ -6,6 +6,7 @@ use crate::errors::KclErrorDetails;
 use crate::parsing::ast::types::Node;
 use crate::parsing::ast::types::Program;
 use crate::parsing::token::TokenStream;
+use crate::parsing::token::TokenType;
 
 pub(crate) mod ast;
 mod math;
@@ -38,8 +39,44 @@ pub fn parse_str(code: &str, module_id: ModuleId) -> ParseResult {
     parse_tokens(tokens)
 }
 
+/// Parse local imported KCL before comparing its declared version with the
+/// entry point. Defer `use` validation so a version mismatch is reported first.
+pub(crate) fn parse_str_deferred_use_keyword(code: &str, module_id: ModuleId) -> ParseResult {
+    let tokens = pr_try!(crate::parsing::token::lex(code, module_id));
+    parse_tokens_with_use_policy(tokens, UseKeywordPolicy::Deferred)
+}
+
+pub(crate) const RESERVED_USE_MESSAGE: &str =
+    "`use` is a reserved keyword in KCL 3.0 and cannot be used as an identifier";
+
+/// Check an imported source using the same lexer classification as ordinary
+/// parsing, including the `use(` function-name exception.
+pub(crate) fn validate_use_keyword_source(code: &str, module_id: ModuleId) -> Result<(), KclError> {
+    let tokens = crate::parsing::token::lex(code, module_id)?;
+    let Some(token) = tokens
+        .iter()
+        .find(|token| token.token_type == TokenType::Keyword && token.value == "use")
+    else {
+        return Ok(());
+    };
+    Err(KclError::new_syntax(KclErrorDetails::new(
+        RESERVED_USE_MESSAGE.to_owned(),
+        vec![token.as_source_range()],
+    )))
+}
+
+#[derive(Clone, Copy)]
+enum UseKeywordPolicy {
+    DeclaredVersion,
+    Deferred,
+}
+
 /// Parse the supplied tokens into an AST.
-pub fn parse_tokens(mut tokens: TokenStream) -> ParseResult {
+pub fn parse_tokens(tokens: TokenStream) -> ParseResult {
+    parse_tokens_with_use_policy(tokens, UseKeywordPolicy::DeclaredVersion)
+}
+
+fn parse_tokens_with_use_policy(mut tokens: TokenStream, use_policy: UseKeywordPolicy) -> ParseResult {
     let unknown_tokens = tokens.remove_unknown();
 
     if !unknown_tokens.is_empty() {
@@ -64,7 +101,23 @@ pub fn parse_tokens(mut tokens: TokenStream) -> ParseResult {
         return Node::<Program>::default().into();
     }
 
-    parser::run_parser(tokens.as_slice())
+    let use_keyword_ranges = tokens.allow_use_identifiers();
+    let mut result = parser::run_parser(tokens.as_slice());
+    if matches!(use_policy, UseKeywordPolicy::DeclaredVersion)
+        && let Ok((Some(program), issues)) = &mut result.0
+        && !use_keyword_ranges.is_empty()
+        && matches!(
+            crate::execution::declared_kcl_version(program),
+            Ok(Some((version, _))) if version >= crate::KclVersion::V3Preview
+        )
+    {
+        issues.extend(
+            use_keyword_ranges
+                .into_iter()
+                .map(|range| CompilationIssue::err(range, RESERVED_USE_MESSAGE)),
+        );
+    }
+    result
 }
 
 /// Result of parsing.
@@ -185,6 +238,89 @@ pub fn deprecation(s: &str, kind: DeprecationKind) -> Option<&'static str> {
 
 #[cfg(test)]
 mod tests {
+    use super::*;
+    use crate::parsing::token::LexerMode;
+
+    #[test]
+    fn use_identifiers_remain_valid_before_v3() {
+        for mode in [LexerMode::Old, LexerMode::New] {
+            let _guard = LexerMode::override_for_test(mode);
+            for version in [None, Some("1.0"), Some("2.0")] {
+                let settings = version.map_or(String::new(), |version| format!("@settings(kclVersion = {version})\n"));
+                let code = format!("{settings}use = 1\nvalue = use\n");
+                assert!(top_level_parse(&code).is_ok(), "{mode:?}: {code}");
+            }
+        }
+    }
+
+    #[test]
+    fn use_identifiers_are_reserved_in_v3_preview() {
+        for mode in [LexerMode::Old, LexerMode::New] {
+            let _guard = LexerMode::override_for_test(mode);
+            for version in ["3-preview", "3.0-preview", "3.0.0-preview"] {
+                let code = format!("@settings(kclVersion = \"{version}\")\nuse = 1\n");
+                let result = top_level_parse(&code);
+                let errors: Vec<_> = result.unwrap_errs().collect();
+                assert_eq!(errors.len(), 1, "{mode:?}: {code}: {errors:#?}");
+                assert_eq!(
+                    errors[0].source_range,
+                    SourceRange::new(
+                        code.find("use =").unwrap(),
+                        code.find("use =").unwrap() + 3,
+                        ModuleId::default()
+                    )
+                );
+                assert_eq!(
+                    errors[0].message,
+                    "`use` is a reserved keyword in KCL 3.0 and cannot be used as an identifier"
+                );
+            }
+        }
+    }
+
+    #[test]
+    fn use_function_name_exception_requires_adjacent_parenthesis() {
+        for mode in [LexerMode::Old, LexerMode::New] {
+            let _guard = LexerMode::override_for_test(mode);
+            let allowed = "@settings(kclVersion = \"3.0-preview\")\nfn use() { return 1 }\nuse()\n";
+            assert!(top_level_parse(allowed).is_ok(), "{mode:?}: {allowed}");
+
+            let rejected = "@settings(kclVersion = \"3.0-preview\")\nfn use () { return 1 }\n";
+            assert!(!top_level_parse(rejected).is_ok(), "{mode:?}: {rejected}");
+        }
+    }
+
+    #[test]
+    fn use_in_settings_keys_is_version_checked() {
+        for mode in [LexerMode::Old, LexerMode::New] {
+            let _guard = LexerMode::override_for_test(mode);
+            assert!(top_level_parse("@settings(use = 1)\n").is_ok());
+            let v3 = "@settings(kclVersion = \"3.0-preview\", use = 1)\n";
+            assert!(!top_level_parse(v3).is_ok(), "{mode:?}: {v3}");
+        }
+    }
+
+    #[test]
+    fn use_reservation_uses_last_declared_version() {
+        for mode in [LexerMode::Old, LexerMode::New] {
+            let _guard = LexerMode::override_for_test(mode);
+            let late_v3 = "use = 1\n@settings(kclVersion = \"3.0-preview\")\n";
+            assert!(!top_level_parse(late_v3).is_ok(), "{mode:?}: {late_v3}");
+
+            let last_v2 = "@settings(kclVersion = \"3.0-preview\")\n@settings(kclVersion = 2.0)\nuse = 1\n";
+            assert!(top_level_parse(last_v2).is_ok(), "{mode:?}: {last_v2}");
+        }
+    }
+
+    #[test]
+    fn use_text_in_strings_comments_and_longer_names_is_not_reserved() {
+        for mode in [LexerMode::Old, LexerMode::New] {
+            let _guard = LexerMode::override_for_test(mode);
+            let code = "@settings(kclVersion = \"3.0-preview\")\nuseful = \"use\" // use\n";
+            assert!(top_level_parse(code).is_ok(), "{mode:?}: {code}");
+        }
+    }
+
     macro_rules! parse_and_lex {
         ($func_name:ident, $test_kcl_program:expr_2021) => {
             #[test]

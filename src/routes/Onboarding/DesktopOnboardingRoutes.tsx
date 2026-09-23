@@ -613,10 +613,10 @@ function Imports() {
           bring files into your project, whether from the sample library or from
           your local drive.
         </p>
-        <h1 className="text-xl font-bold">Insert parts</h1>
+        <h1 className="text-xl font-bold">Import parts</h1>
         <p className="my-4">
           Once a file has been added to your project, you can add it to the
-          scene using insert. Insert is available in the toolbar. This is the
+          scene using Import. Import is available in the toolbar. This is the
           first step to making assemblies!
         </p>
         <OnboardingButtons
@@ -640,9 +640,8 @@ function Exports() {
       <OnboardingCard>
         <h1 className="text-xl font-bold">Exporting</h1>
         <p className="my-4">
-          You can export the currently-opened part by clicking the Export button
-          in the left sidebar. We support exporting to STEP, gLTF, STL, OBJ, and
-          more.
+          You can export the current model by clicking the Export button in the
+          left sidebar. We support exporting to STEP, gLTF, STL, OBJ, and more.
         </p>
         <OnboardingButtons
           currentSlug={thisOnboardingStatus}

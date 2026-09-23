@@ -5,6 +5,7 @@ import {
   Slot,
 } from '@kittycad/registry'
 import type { Command } from '@src/lib/commandTypes'
+import { kclCommands } from '@src/lib/kclCommands'
 import {
   type CommandSystemService,
   commandScopeService,
@@ -91,6 +92,20 @@ describe('keymap extension', () => {
   it('keeps the keymap scope ValueSpec as a command scope alias', () => {
     expect(keymapScopesValueSpec).toBe(commandScopesValueSpec)
     expect(keymapContract.keymapScopesValueSpec).toBe(commandScopesValueSpec)
+  })
+
+  it('keeps the Import command compatible with saved Insert shortcuts', () => {
+    const commands = kclCommands({
+      kclManager: { fileSettings: {} },
+    } as Parameters<typeof kclCommands>[0])
+    expect(commands.find((command) => command.name === 'Import')?.id).toBe(
+      'code:Insert'
+    )
+    expect(
+      defaultKeymap.bindings.find(
+        (binding) => binding.id === 'toolbar.modeling.insert'
+      )?.command
+    ).toBe('code:Insert')
   })
 
   it('uses Shift+Escape to exit sketch across desktop and web', () => {

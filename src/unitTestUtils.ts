@@ -115,7 +115,9 @@ export async function buildTheWorldAndConnectToEngine({
   const rustContext = new RustContext(
     instancePromise,
     engineCommandManager,
-    settingsActor
+    settingsActor,
+    0,
+    pool === 'cpu'
   )
   const kclManager = new KclManager('some-file', '', {
     wasmInstancePromise: instancePromise,

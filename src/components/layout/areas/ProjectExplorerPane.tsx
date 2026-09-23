@@ -196,7 +196,7 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
               commands.send({
                 type: 'Find and select command',
                 data: {
-                  name: 'Insert',
+                  name: 'Import',
                   groupId: 'code',
                   argDefaultValues: { path: relativeFilePath },
                 },
