@@ -1,8 +1,3 @@
-import { startDiagnosticTrace } from '@e2e/performance/diagnostic-trace'
-import {
-  startInteractionDiagnostics,
-  stopInteractionDiagnostics,
-} from '@e2e/performance/diagnostics'
 import { readFile } from 'node:fs/promises'
 import path from 'node:path'
 import {
@@ -109,12 +104,6 @@ for (const scenario of [
       }
     }
 
-    const diagnostics = !scenario.warm
-      ? await startInteractionDiagnostics(page)
-      : undefined
-    const stopTrace = !scenario.warm
-      ? await startDiagnosticTrace(tronApp, testInfo)
-      : undefined
     await startCapture(page)
     let report: InteractionReport
     try {
@@ -135,14 +124,6 @@ for (const scenario of [
         ),
         tronApp
       )
-      if (diagnostics) {
-        // Diagnostic tail only: observe entries that arrive after capture stops.
-        await page.evaluate(
-          () => new Promise<void>((resolve) => setTimeout(resolve, 500))
-        )
-        await stopInteractionDiagnostics(diagnostics, testInfo)
-      }
-      await stopTrace?.()
     }
     expectInteractionBudget(report)
   })

@@ -1,8 +1,3 @@
-import { startDiagnosticTrace } from '@e2e/performance/diagnostic-trace'
-import {
-  startInteractionDiagnostics,
-  stopInteractionDiagnostics,
-} from '@e2e/performance/diagnostics'
 import {
   expectInteractionBudget,
   finishCapture,
@@ -76,12 +71,6 @@ for (const scenario of [
       await expect(page.getByTestId('command-bar-wrapper')).toBeHidden()
     }
 
-    const diagnostics = !scenario.warm
-      ? await startInteractionDiagnostics(page)
-      : undefined
-    const stopTrace = !scenario.warm
-      ? await startDiagnosticTrace(tronApp, testInfo)
-      : undefined
     await startCapture(page)
     let report: InteractionReport
     try {
@@ -101,14 +90,6 @@ for (const scenario of [
         { [OPEN]: scenario.repetitions, [CLOSE]: scenario.repetitions },
         tronApp
       )
-      if (diagnostics) {
-        // Diagnostic tail only: observe entries that arrive after capture stops.
-        await page.evaluate(
-          () => new Promise<void>((resolve) => setTimeout(resolve, 500))
-        )
-        await stopInteractionDiagnostics(diagnostics, testInfo)
-      }
-      await stopTrace?.()
     }
     expectInteractionBudget(report)
   })
