@@ -45,6 +45,155 @@ async function expectCloudSyncHomeReady(page: Page) {
 }
 
 test(
+  'creates a fresh blank Personal Cloud project for every Zookeeper deep link',
+  { tag: ['@web', '@zookeeper'] },
+  async ({ context, page }, testInfo) => {
+    await mockClientErrorReports(context)
+    await context.route('**/user', (route) =>
+      route.fulfill({
+        json: {
+          id: '13447000-0000-4000-8000-000000000001',
+          name: 'Playwright User',
+          username: 'playwright',
+          email: 'playwright@example.com',
+          image: '',
+          created_at: '2026-09-01T12:00:00.000Z',
+          updated_at: '2026-09-01T12:00:00.000Z',
+        },
+      })
+    )
+    await context.route('**/user/payment/balance?*', (route) =>
+      route.fulfill({
+        json: {
+          created_at: '2026-09-01T12:00:00.000Z',
+          updated_at: '2026-09-01T12:00:00.000Z',
+          monthly_api_credits_remaining: 0,
+          monthly_api_credits_remaining_monetary_value: 100,
+          stable_api_credits_remaining: 0,
+          stable_api_credits_remaining_monetary_value: 0,
+          total_due: 0,
+        },
+      })
+    )
+    await context.route('**/user/payment/subscriptions', (route) =>
+      route.fulfill({
+        json: {
+          modeling_app: {
+            name: 'free',
+            type: { type: 'individual' },
+            pay_as_you_go_api_credit_price: 0.0083,
+            monthly_pay_as_you_go_api_credits_monetary_value: 100,
+          },
+        },
+      })
+    )
+    const createdProjects: CloudProject[] = [
+      {
+        id: '12945000-0000-4000-8000-000000000001',
+        title: 'demo-project',
+        revision: 'demo-project-rev-1',
+        files: {},
+      },
+      {
+        id: '12945000-0000-4000-8000-000000000002',
+        title: 'demo-project-1',
+        revision: 'demo-project-1-rev-1',
+        files: {},
+      },
+    ]
+    let createIndex = 0
+    const remoteProjects: CloudProject[] = []
+    const { calls: apiCalls } = await routeCloudProjects(context, {
+      remoteProjects,
+      createProject: () => {
+        const project = createdProjects[createIndex++]
+        if (!project) {
+          throw new Error('Unexpected extra deep-link project creation.')
+        }
+        remoteProjects.push(project)
+        return project
+      },
+    })
+
+    // This exercises prompt prefilling, so the Zookeeper connection should not
+    // depend on the AI backend or submit a prompt to it.
+    const submittedPrompts: unknown[] = []
+    await page.routeWebSocket('**/ws/ml/copilot**', (client) => {
+      client.onMessage((message) => {
+        const request = JSON.parse(message.toString())
+        if (request.type === 'list_modes') {
+          client.send(
+            JSON.stringify({
+              conversation_id: {
+                conversation_id: '13447000-0000-4000-8000-000000000001',
+              },
+            })
+          )
+        } else if (request.type === 'ping') {
+          client.send(JSON.stringify({ pong: {} }))
+        } else if (request.type === 'user') {
+          submittedPrompts.push(request)
+        }
+      })
+    })
+
+    const prompt = 'Design a spur gear'
+    const query = new URLSearchParams({
+      cmd: 'set-layout',
+      groupId: 'application',
+      layoutId: 'zookeeper',
+      'zookeeper-prompt': prompt,
+      'ttc-prompt': prompt,
+    })
+    const deepLink = `/?${query}`
+
+    await setup(context, page, testInfo, [OPFS_CLOUD_FEATURE_FLAG], {
+      cloudSyncEnabled: true,
+    })
+    await expectCloudFeatureEnabled(page)
+    await expectCloudSyncHomeReady(page)
+
+    for (const [index, project] of createdProjects.entries()) {
+      await page.goto(deepLink)
+
+      await expectProjectFileRoute(page)
+      await expect(page).toHaveURL(
+        new RegExp(`${project.title}%2Fmain\\.kcl$`),
+        { timeout: CLOUD_SYNC_E2E_TIMEOUT }
+      )
+      await expect
+        .poll(() =>
+          page.evaluate(() => {
+            const layout = window.app.layout.get()
+            return 'sizes' in layout ? layout.sizes : []
+          })
+        )
+        .toEqual([0, 50, 50])
+      await expect(page.getByTestId('command-bar-wrapper')).not.toBeVisible()
+      await expect(
+        page.getByTestId('ml-ephant-conversation-input')
+      ).toHaveValue(prompt, { timeout: CLOUD_SYNC_E2E_TIMEOUT })
+      expect(new URL(page.url()).search).toBe('')
+      expect(submittedPrompts).toEqual([])
+
+      // Wait for cloud metadata to be persisted before the next full-page
+      // navigation, which otherwise can interrupt the first project's upload.
+      const projectPath = `${PROJECT_DIR}/${project.title}`
+      await expect
+        .poll(() => readCloudSyncProjectMetadata(page, projectPath), {
+          timeout: CLOUD_SYNC_E2E_TIMEOUT,
+        })
+        .toMatchObject({ remoteProjectId: project.id })
+      expect(apiCalls.creates).toHaveLength(index + 1)
+      const files = await readOpfsTextFiles(page, {
+        main: `${projectPath}/main.kcl`,
+      })
+      expect(files.main.trim()).toBe('@settings(kclVersion = 2.0)')
+    }
+  }
+)
+
+test(
   'creates a multi-file sample in Personal Cloud from Home',
   { tag: ['@web'] },
   async ({ context, page }, testInfo) => {

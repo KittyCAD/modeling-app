@@ -53,6 +53,43 @@ beforeEach(() => {
 })
 
 describe('appNavigation', () => {
+  test('canceling its application workflow prevents an in-flight open from publishing', async () => {
+    const prepared = Promise.withResolvers<undefined>()
+    const controller = new AbortController()
+    const { navigation, dependencies } = navigationHarness({
+      resolveProjectOpen: async () => {
+        await prepared.promise
+        return resolvedProject
+      },
+    })
+    const opening = navigation.openProject({
+      target: '/projects/bracket',
+      signal: controller.signal,
+    })
+    controller.abort()
+    prepared.resolve(undefined)
+    await expect(opening).rejects.toMatchObject({ name: 'AbortError' })
+    expect(dependencies.openResolvedProject).not.toHaveBeenCalled()
+    expect(dependencies.projectOpened).not.toHaveBeenCalled()
+  })
+
+  test('waits for URL projection before completing an open', async () => {
+    const projection = Promise.withResolvers<undefined>()
+    const { navigation } = navigationHarness({
+      projectOpened: () => projection.promise,
+    })
+    const finished = vi.fn()
+    const opening = navigation
+      .openProject({ target: '/projects/bracket' })
+      .then(finished)
+    await Promise.resolve(undefined)
+    await Promise.resolve(undefined)
+    expect(finished).not.toHaveBeenCalled()
+    projection.resolve(undefined)
+    await opening
+    expect(finished).toHaveBeenCalledOnce()
+  })
+
   test('opens a project before projecting its location', async () => {
     const { dependencies, navigation } = navigationHarness()
     const request = { target: '/projects/bracket' }

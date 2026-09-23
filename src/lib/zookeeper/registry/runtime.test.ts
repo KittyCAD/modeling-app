@@ -119,13 +119,15 @@ function createController(
 ) {
   const dispose = vi.fn(() => disposal)
   const updateAuthToken = vi.fn()
+  const seedPrompt = vi.fn()
   const controller = {
     dispose,
     projectPath,
+    seedPrompt,
     updateAuthToken,
   } as unknown as ZookeeperSessionController
 
-  return { controller, dispose, updateAuthToken }
+  return { controller, dispose, seedPrompt, updateAuthToken }
 }
 
 function createControllerLoader(
@@ -150,6 +152,96 @@ function createControllerLoader(
 }
 
 describe('Zookeeper runtime', () => {
+  it('holds a prompt for its project while the controller loads without a mounted pane', async () => {
+    const { services } = createServices()
+    const loader = createControllerLoader()
+    const pending =
+      deferred<Awaited<ReturnType<typeof loader.loadController>>>()
+    const runtime = createZookeeperRuntime(services, () => pending.promise)
+
+    expect(runtime.seedPrompt('/project', 'make a gear')).toBe(true)
+    expect(runtime.seedPrompt('/other', 'wrong project')).toBe(false)
+    expect(runtime.seedPrompt('/project', '  ')).toBe(false)
+    await Promise.resolve()
+    expect(runtime.session.value).toBeUndefined()
+
+    pending.resolve({
+      createZookeeperSessionController: loader.createZookeeperSessionController,
+    })
+    await vi.waitFor(() => expect(loader.controllers).toHaveLength(1))
+    expect(loader.controllers[0]?.seedPrompt).toHaveBeenCalledExactlyOnceWith(
+      'make a gear'
+    )
+    expect(runtime.seedPrompt('/project', 'add a hole')).toBe(true)
+    expect(loader.controllers[0]?.seedPrompt).toHaveBeenLastCalledWith(
+      'add a hole'
+    )
+    await runtime.dispose()
+  })
+
+  it('drops a pending prompt when its project changes during controller loading', async () => {
+    const { services, currentProject, setSettingsProject } = createServices()
+    const loader = createControllerLoader()
+    const pending =
+      deferred<Awaited<ReturnType<typeof loader.loadController>>>()
+    const runtime = createZookeeperRuntime(services, () => pending.promise)
+    expect(runtime.seedPrompt('/project', 'old prompt')).toBe(true)
+    await Promise.resolve()
+
+    setSettingsProject('/other', otherProjectId)
+    currentProject.value = createProject(
+      '/other',
+      true,
+      undefined,
+      otherProjectId
+    ).project
+    expect(runtime.seedPrompt('/project', 'late old prompt')).toBe(false)
+    pending.resolve({
+      createZookeeperSessionController: loader.createZookeeperSessionController,
+    })
+    await vi.waitFor(() => expect(loader.controllers).toHaveLength(1))
+    expect(loader.controllers[0]?.controller.projectPath).toBe('/other')
+    expect(loader.controllers[0]?.seedPrompt).not.toHaveBeenCalled()
+    await runtime.dispose()
+  })
+
+  it('discards an unclaimed prompt and refuses further handoffs after disposal', async () => {
+    const { services } = createServices()
+    const loader = createControllerLoader()
+    const pending =
+      deferred<Awaited<ReturnType<typeof loader.loadController>>>()
+    const runtime = createZookeeperRuntime(services, () => pending.promise)
+    expect(runtime.seedPrompt('/project', 'make a gear')).toBe(true)
+    await Promise.resolve()
+    await runtime.dispose()
+    pending.resolve({
+      createZookeeperSessionController: loader.createZookeeperSessionController,
+    })
+    await Promise.resolve()
+    expect(loader.createZookeeperSessionController).not.toHaveBeenCalled()
+    expect(runtime.seedPrompt('/project', 'late prompt')).toBe(false)
+  })
+
+  it('drops pending prompts on logout even when the project remains open', async () => {
+    const { services, isLoggedIn } = createServices()
+    const loader = createControllerLoader()
+    const pending =
+      deferred<Awaited<ReturnType<typeof loader.loadController>>>()
+    const runtime = createZookeeperRuntime(services, () => pending.promise)
+    expect(runtime.seedPrompt('/project', 'old session prompt')).toBe(true)
+    await Promise.resolve()
+
+    isLoggedIn.value = false
+    expect(runtime.seedPrompt('/project', 'logged out prompt')).toBe(false)
+    isLoggedIn.value = true
+    pending.resolve({
+      createZookeeperSessionController: loader.createZookeeperSessionController,
+    })
+    await vi.waitFor(() => expect(loader.controllers).toHaveLength(1))
+    expect(loader.controllers[0]?.seedPrompt).not.toHaveBeenCalled()
+    await runtime.dispose()
+  })
+
   it('starts without waiting for the pane once auth is hydrated', async () => {
     const { services, token } = createServices({ apiToken: '' })
     const { createZookeeperSessionController, loadController } =

@@ -12,6 +12,8 @@ import { File, KclManager, ZDSProject } from '@src/lang/KclManager'
 import { lspService } from '@src/lang/lsp/registry/contract'
 import { createAppNavigationService } from '@src/lib/appNavigation'
 import { createAppNavigationDependencies } from '@src/lib/appNavigationRuntime'
+import { createAppLaunchService } from '@src/lib/appLaunch'
+import { createAppLaunchDependencies } from '@src/lib/appLaunchRuntime'
 import { type BillingRegistryService, billingService } from '@src/lib/billing'
 import { createAuthCommands } from '@src/lib/commandBarConfigs/authCommandConfig'
 import { createProjectCommands } from '@src/lib/commandBarConfigs/projectsCommandConfig'
@@ -53,6 +55,7 @@ import {
   userFeaturesContextHas,
 } from '@src/machines/userFeaturesMachine'
 import { appNavigationService } from '@src/registry/contracts/appNavigation'
+import { appLaunchService } from '@src/registry/contracts/appLaunch'
 import {
   type AuthRegistryService,
   authService,
@@ -101,6 +104,7 @@ import {
 import {
   appRegistryOverridesSlot,
   appRegistryServicesSlot,
+  appLaunchServicesSlot,
   coreRegistryItems,
 } from '@src/registry/registry'
 import type { SnapshotFrom, Subscription } from 'xstate'
@@ -242,6 +246,7 @@ export class App implements AppSubsystems {
    * construction and teardown to the legacy App runtime.
    */
   private unbindProjectSessionRuntime: (() => void) | undefined
+  private disposeLaunch: (() => void) | undefined
 
   constructor(subsystems: AppSubsystems) {
     this.wasmPromise = subsystems.wasmPromise
@@ -293,6 +298,14 @@ export class App implements AppSubsystems {
     )
     this.settings.actor.subscribe(this.syncPluginSettings)
     this.syncPluginSettingsFromCurrent()
+    const launch = createAppLaunchService(createAppLaunchDependencies(this))
+    this.registry.reconfigure(appLaunchServicesSlot, [
+      defineRegistryItem({
+        id: 'app.launch-service',
+        providesServices: [provideService(appLaunchService, launch)],
+      }),
+    ])
+    this.disposeLaunch = launch.dispose
   }
 
   /**
@@ -307,6 +320,7 @@ export class App implements AppSubsystems {
       appRegistryOverridesSlot.of(...registryOverrides),
       appCommandsSlot.of(),
       appRegistryServicesSlot.of(),
+      appLaunchServicesSlot.of(),
       engineSceneRuntimeExtensionsSlot.of(),
       ...coreRegistryItems,
     ])
@@ -493,6 +507,8 @@ export class App implements AppSubsystems {
       return
     }
     this.hasStoppedSubsystems = true
+    this.disposeLaunch?.()
+    this.disposeLaunch = undefined
     this.closeProject()
     this.unbindProjectSessionRuntime?.()
     this.unbindProjectSessionRuntime = undefined

@@ -1,3 +1,4 @@
+import { useSignals } from '@preact/signals-react/runtime'
 import { useApp } from '@src/lib/boot'
 import {
   ALLOW_MOBILE_QUERY_PARAM,
@@ -7,6 +8,7 @@ import { isDesktop } from '@src/lib/isDesktop'
 import { isMobile } from '@src/lib/isMobile'
 import { PATHS } from '@src/lib/paths'
 import { appNavigationService } from '@src/registry/contracts/appNavigation'
+import { appLaunchService } from '@src/registry/contracts/appLaunch'
 import { generateSignInUrl } from '@src/routes/utils'
 import { useEffect } from 'react'
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
@@ -16,11 +18,13 @@ import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
  * accordingly.
  */
 export function useAuthNavigation() {
+  useSignals()
   const app = useApp()
   const { auth } = app
   const navigate = useNavigate()
   const location = useLocation()
   const authState = auth.useAuthState()
+  const launchPending = app.registry.get(appLaunchService).pending.value
   const [searchParams] = useSearchParams()
   const requestingImmediateSignInIfNecessary = searchParams.has(
     IMMEDIATE_SIGN_IN_IF_NECESSARY_QUERY_PARAM
@@ -35,7 +39,9 @@ export function useAuthNavigation() {
       authState.matches('loggedIn') &&
       location.pathname.includes(PATHS.SIGN_IN)
     ) {
-      void app.registry.get(appNavigationService).showHome()
+      if (!launchPending) {
+        void app.registry.get(appNavigationService).showHome()
+      }
     } else if (
       authState.matches('loggedOut') &&
       !location.pathname.includes(PATHS.SIGN_IN)
@@ -55,5 +61,5 @@ export function useAuthNavigation() {
       window.location.href = generateSignInUrl()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [authState, location.pathname])
+  }, [authState, location.pathname, launchPending])
 }

@@ -309,6 +309,27 @@ describe('Zookeeper session controller', () => {
     vi.restoreAllMocks()
   })
 
+  it('acknowledges each prompt handoff without discarding a newer identical prompt', async () => {
+    const { controller } = createHarness()
+    controller.seedPrompt('make a gear')
+    const first = controller.promptSeed.value
+    if (!first) throw new Error('Expected a prompt seed')
+    controller.seedPrompt('make a gear')
+    const second = controller.promptSeed.value
+    if (!second) throw new Error('Expected another prompt seed')
+    expect(second).not.toBe(first)
+    controller.consumePromptSeed(first)
+    expect(controller.promptSeed.value).toBe(second)
+    controller.consumePromptSeed(second)
+    expect(controller.promptSeed.value).toBeUndefined()
+
+    controller.seedPrompt('pending at disposal')
+    await controller.dispose()
+    expect(controller.promptSeed.value).toBeUndefined()
+    controller.seedPrompt('too late')
+    expect(controller.promptSeed.value).toBeUndefined()
+  })
+
   it('owns billing transitions and auth rotation without a mounted pane', () => {
     const { actor, billingSend, controller, conversationStore } =
       createHarness()

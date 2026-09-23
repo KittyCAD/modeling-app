@@ -18,7 +18,6 @@ import {
   type ProjectStatus,
   useProjectStatuses,
 } from '@src/hooks/useProjectStatus'
-import { useQueryParamEffects } from '@src/hooks/useQueryParamEffects'
 import {
   autoUpdateDownloadProgressSignal,
   autoUpdateReadySignal,
@@ -294,7 +293,6 @@ const Home = () => {
   const keymap = registry.optional(keymapService)
   const { kclManager } = useSingletons()
   const settingsActor = settings.actor
-  useQueryParamEffects()
 
   useEffect(() => {
     if (!keymap) {

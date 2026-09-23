@@ -18,7 +18,6 @@ import { WasmErrToast } from '@src/components/WasmErrToast'
 import { useEngineConnectionSubscriptions } from '@src/hooks/useEngineConnectionSubscriptions'
 import { useHotKeyListener } from '@src/hooks/useHotKeyListener'
 import { useModelingContext } from '@src/hooks/useModelingContext'
-import { useQueryParamEffects } from '@src/hooks/useQueryParamEffects'
 import { lspService } from '@src/lang/lsp/registry/contract'
 import {
   autoUpdateDownloadProgressSignal,
@@ -75,7 +74,6 @@ export function OpenedProject() {
   const defaultAreaLibrary = useDefaultAreaLibrary()
   const defaultActionLibrary = useDefaultActionLibrary()
   const { state: modelingState, send: modelingSend } = useModelingContext()
-  useQueryParamEffects()
   const [nativeFileMenuCreated, setNativeFileMenuCreated] = useState(false)
   const location = useLocation()
   const navigate = useNavigate()

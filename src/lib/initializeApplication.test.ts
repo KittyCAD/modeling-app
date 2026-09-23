@@ -9,6 +9,7 @@ const mocks = vi.hoisted(() => ({
   readInitialUrl: vi.fn(),
   formatUrl: vi.fn(),
   navigate: vi.fn(),
+  accept: vi.fn(),
 }))
 
 vi.mock('@src/lib/routeInit', () => ({
@@ -24,6 +25,7 @@ function fakeApp(): App {
         readInitialUrl: mocks.readInitialUrl,
         formatUrl: mocks.formatUrl,
         navigate: mocks.navigate,
+        accept: mocks.accept,
       }),
     },
   } as unknown as App
@@ -34,6 +36,37 @@ beforeEach(() => {
 })
 
 describe('initializeApplication', () => {
+  it('hands off the original link once without blocking React on command readiness', async () => {
+    const pending = Promise.withResolvers<undefined>()
+    mocks.accept.mockReturnValue(pending.promise)
+    const search =
+      '?cmd=set-layout&groupId=application&layoutId=zookeeper&ttc-prompt=make+a+gear&pool=alpha'
+    mocks.readInitialUrl.mockReturnValue({
+      type: 'launch',
+      destination: { type: 'index' },
+      search,
+      hash: '',
+    })
+    await initializeApplication(fakeApp())
+    expect(mocks.accept).toHaveBeenCalledExactlyOnceWith({
+      destination: { type: 'index' },
+      urlState: { search, hash: '', overlay: undefined },
+      request: {
+        genericCommand: {
+          name: 'set-layout',
+          groupId: 'application',
+          argDefaultValues: { layoutId: 'zookeeper' },
+        },
+        zookeeperPrompt: 'make a gear',
+        askOpenDesktop: false,
+      },
+      remainingSearch: '?pool=alpha',
+    })
+    expect(mocks.initIndexRoute).not.toHaveBeenCalled()
+    expect(mocks.navigate).not.toHaveBeenCalled()
+    pending.resolve(undefined)
+  })
+
   it('dispatches the initial project intent without React Router', async () => {
     mocks.readInitialUrl.mockReturnValue({
       type: 'launch',

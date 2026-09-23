@@ -141,7 +141,7 @@ export function createAppNavigationDependencies(
     projectOpened: (outcome, resolution, request) => {
       const appUrl = app.registry.get(appUrlService)
       if (request.startup) {
-        void appUrl.navigate(
+        return appUrl.navigate(
           appUrl.formatUrl({
             destination: {
               type: 'project',
@@ -151,12 +151,11 @@ export function createAppNavigationDependencies(
           }),
           { replace: true }
         )
-        return
       }
 
       const openedFilePath = outcome.data.file?.path
       if (openedFilePath) {
-        void appUrl.navigate(
+        return appUrl.navigate(
           `${PATHS.FILE}/${encodeURIComponent(openedFilePath)}`
         )
       }
