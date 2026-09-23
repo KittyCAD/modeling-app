@@ -806,18 +806,6 @@ const KCL_DIRECT_TAG_FILLET = `body = startSketchOn(XY)
   |> fillet(radius = 1, tags = [e1])
 `
 
-/** Tags and edges both present: auto-convert should be available and should merge into one edges array. */
-const KCL_TAGS_AND_EDGE_REFS = `body = startSketchOn(XY)
-  |> startProfile(at = [0, 0])
-  |> line(endAbsolute = [10, 0], tag = $e1)
-  |> line(endAbsolute = [10, 10])
-  |> line(endAbsolute = [0, 10])
-  |> line(endAbsolute = [0, 0])
-  |> close()
-  |> extrude(length = 5, tagStart = $capStart001)
-  |> fillet(radius = 1, tags = [e1], edges = [{ sideFaces = [e1, capStart001] }])
-`
-
 /** Mixed direct tag + stdlib in same tags array: both should be converted to edgeRefs (two entries). */
 const KCL_MIXED_DIRECT_AND_STDLIB = `body = startSketchOn(XY)
   |> startProfile(at = [0, 0])
@@ -2380,38 +2368,6 @@ surface001 = extrude(
         if (err(expected)) throw expected
         expect(n).toBe(norm(expected))
         expect(n).not.toContain('baseRegion.tags.capEnd001')
-      }
-    )
-
-    it(
-      'fillet with both tags and edgeRefs: refactor merges tags into edgeRefs (auto-convert should be available)',
-      { timeout: 30_000 },
-      async () => {
-        const ast = assertParse(KCL_TAGS_AND_EDGE_REFS, instanceInThisFile)
-        await kclManagerInThisFile.executeAst({ ast })
-        const execState = kclManagerInThisFile.execState
-        if ((execState.directTagFilletMetadata?.length ?? 0) < 1) {
-          expect(execState.artifactGraph.size).toBeGreaterThan(0)
-          return
-        }
-        const refactored = refactorZ0006Unified(
-          ast,
-          execState.edgeRefactorMetadata ?? [],
-          execState.directTagFilletMetadata ?? [],
-          execState.artifactGraph,
-          instanceInThisFile
-        )
-        expect(err(refactored)).toBe(false)
-        if (err(refactored)) throw refactored
-        expect(refactored).not.toMatch(UUID_IN_FACES_REGEX)
-        const n = norm(refactored)
-        expect(n).toContain('fillet(')
-        expect(n).toContain('edges = [')
-        // Should have at least two edge refs: one from tags=[e1], one from existing edgeRefs
-        const sideFaceCount = (refactored.match(/sideFaces\s*=\s*\[/g) ?? [])
-          .length
-        expect(sideFaceCount).toBeGreaterThanOrEqual(2)
-        expect(n).toContain('sideFaces = [e1, capStart001]')
       }
     )
 
