@@ -90,6 +90,7 @@ reqwest = { version = "0.13.2", default-features = false, features = [
   "rustls",
 ] }
 rgba_simple = "0.10.0"
+rmp-serde = { workspace = true }
 schemars = { version = "0.8.17", features = [
   "impl_json_schema",
   "indexmap2",

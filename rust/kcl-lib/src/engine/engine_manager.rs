@@ -288,7 +288,7 @@ impl EngineManager {
 
             // If the response is an error, return it.
             // Parsing will do that and we can ignore the result, we don't care.
-            let response = self.parse_websocket_response(resp.clone(), source_range)?;
+            let response = self.parse_websocket_response(resp.clone(), source_range).await?;
             return Ok(response);
         }
 
@@ -571,11 +571,12 @@ impl EngineManager {
                 let ws_resp = self
                     .inner_send_modeling_cmd(batch_id.into(), source_range, final_req, id_to_source_range.clone())
                     .await?;
-                let response = self.parse_websocket_response(ws_resp, source_range)?;
+                let response = self.parse_websocket_response(ws_resp, source_range).await?;
 
                 // If we have a batch response, we want to return the specific id we care about.
                 if let OkWebSocketResponseData::ModelingBatch { responses } = response {
                     self.parse_batch_responses(last_id.into(), id_to_source_range, id_to_command, responses)
+                        .await
                 } else {
                     // We should never get here.
                     Err(KclError::new_engine(KclErrorDetails::new(
@@ -601,7 +602,7 @@ impl EngineManager {
                 let ws_resp = self
                     .inner_send_modeling_cmd(cmd_id.into(), source_range, final_req, id_to_source_range)
                     .await?;
-                self.parse_websocket_response(ws_resp, source_range)
+                self.parse_websocket_response(ws_resp, source_range).await
             }
             _ => Err(KclError::new_engine(KclErrorDetails::new(
                 format!("The final request is not a modeling command: {final_req:?}"),
@@ -721,7 +722,14 @@ impl EngineManager {
         })
     }
 
-    fn parse_websocket_response(
+    async fn api_call_id_message(&self) -> String {
+        match self.session_data.read().await.as_ref() {
+            Some(session) => format!(" (API call ID: {})", session.api_call_id),
+            None => " (No API call ID: session data empty)".to_owned(),
+        }
+    }
+
+    async fn parse_websocket_response(
         &self,
         response: WebSocketResponse,
         source_range: SourceRange,
@@ -730,25 +738,30 @@ impl EngineManager {
             WebSocketResponse::Success(success) => Ok(success.resp),
             WebSocketResponse::Failure(fail) => {
                 let _request_id = fail.request_id;
+                let api_call_id_msg = self.api_call_id_message().await;
                 if fail.errors.is_empty() {
                     return Err(KclError::new_engine(KclErrorDetails::new(
-                        "Failure response with no error details".to_owned(),
+                        format!("Failure response with no error details{api_call_id_msg}"),
                         vec![source_range],
                     )));
                 }
                 Err(KclError::new_engine(KclErrorDetails::new(
-                    fail.errors
-                        .iter()
-                        .map(|e| e.message.clone())
-                        .collect::<Vec<_>>()
-                        .join("\n"),
+                    format!(
+                        "{}{}",
+                        fail.errors
+                            .iter()
+                            .map(|e| e.message.clone())
+                            .collect::<Vec<_>>()
+                            .join("\n"),
+                        api_call_id_msg
+                    ),
                     vec![source_range],
                 )))
             }
         }
     }
 
-    fn parse_batch_responses(
+    async fn parse_batch_responses(
         &self,
         // The last response we are looking for.
         id: uuid::Uuid,
@@ -779,6 +792,7 @@ impl EngineManager {
                 }
                 BatchResponse::Success { .. } => continue,
                 BatchResponse::Failure { errors } => {
+                    let api_call_id_msg = self.api_call_id_message().await;
                     let command = id_to_command
                         .get(&cmd_id)
                         .map(ModelingCmdEndpoint::to_string)
@@ -792,14 +806,16 @@ impl EngineManager {
                     })?;
                     if errors.is_empty() {
                         any_err = Some(KclError::new_engine(KclErrorDetails::new(
-                            format!("Failure response for batch with no error details at command {command}"),
+                            format!(
+                                "Failure response for batch with no error details at command {command}{api_call_id_msg}"
+                            ),
                             vec![source_range],
                         )));
                         break;
                     }
                     let errors = errors.iter().map(|e| e.message.clone()).collect::<Vec<_>>().join("\n");
                     any_err = Some(KclError::new_engine(KclErrorDetails::new(
-                        format!("command {command} resulted in errors: \n {errors}"),
+                        format!("command {command} resulted in errors: \n {errors}{api_call_id_msg}"),
                         vec![source_range],
                     )));
                     break;
@@ -970,4 +986,61 @@ impl EngineManager {
 pub enum SocketHealth {
     Active,
     Inactive,
+}
+
+#[cfg(test)]
+mod tests {
+    use kcmc::websocket::ApiError;
+    use kcmc::websocket::ErrorCode;
+
+    use super::*;
+
+    fn api_error(message: &str) -> ApiError {
+        ApiError {
+            error_code: ErrorCode::BadRequest,
+            message: message.to_owned(),
+        }
+    }
+
+    #[tokio::test]
+    async fn engine_response_errors_include_api_call_id() {
+        let manager = EngineManager::new_mock();
+        *manager.session_data.write().await = Some(ModelingSessionData {
+            api_call_id: "test-api-call-id".to_owned(),
+        });
+
+        let response_error = manager
+            .parse_websocket_response(
+                WebSocketResponse::failure(None, vec![api_error("response failed")]),
+                SourceRange::default(),
+            )
+            .await
+            .unwrap_err();
+        assert!(
+            response_error
+                .message()
+                .ends_with("response failed (API call ID: test-api-call-id)")
+        );
+
+        let cmd_id = Uuid::new_v4();
+        let batch_error = manager
+            .parse_batch_responses(
+                cmd_id,
+                HashMap::from([(cmd_id, SourceRange::default())]),
+                HashMap::from([(cmd_id, ModelingCmdEndpoint::PlaneSetColor)]),
+                HashMap::from([(
+                    cmd_id.into(),
+                    BatchResponse::Failure {
+                        errors: vec![api_error("batch failed")],
+                    },
+                )]),
+            )
+            .await
+            .unwrap_err();
+        assert!(
+            batch_error
+                .message()
+                .ends_with("batch failed (API call ID: test-api-call-id)")
+        );
+    }
 }
