@@ -17,7 +17,7 @@ on:
         options: [none, first, warm, stall]
 
 concurrency:
-  group: interaction-performance-${{ github.head_ref || github.ref }}
+  group: interaction-performance-${{ github.event_name == 'workflow_dispatch' && github.run_id || github.head_ref || github.ref }}
   cancel-in-progress: true
 
 permissions:
