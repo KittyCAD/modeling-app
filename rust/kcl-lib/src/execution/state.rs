@@ -124,6 +124,33 @@ pub(super) struct GlobalState {
     pub sketch_mode: bool,
     /// True when the engine being used for execution is CPU only with no graphical environment
     pub geometry_only: bool,
+    /// Std's exported declarations skipped as not yet added. Set once by
+    /// `eval_prelude`, since root environments reach the prelude without an
+    /// import statement; the mock memory cache carries it like `module_infos`.
+    pub std_not_yet_added: IndexMap<String, NotYetAdded>,
+    /// Test-only: explain missing names for user declarations too, so tests
+    /// can cover the hint path while std declares nothing gated.
+    #[cfg(test)]
+    pub(crate) hint_all_not_yet_added: bool,
+}
+
+/// A declaration skipped because the program's KCL version predates its
+/// `added_in`, kept so a failed lookup of the name can explain why. Records
+/// flow like names: module scope, the module's outcome if exported, glob imports.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+pub struct NotYetAdded {
+    /// The KCL version the declaration is available from.
+    pub added_in: annotations::VersionConstraint,
+    /// Whether the declaration belongs to std. Only std declarations get the hint.
+    pub is_std: bool,
+}
+
+/// A record in a module's scope and whether the module exports it, by its own
+/// `export` or an `export import *`. Only exported records leave in the outcome.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub(crate) struct ScopedNotYetAdded {
+    pub item: NotYetAdded,
+    pub exported: bool,
 }
 
 impl GlobalState {
@@ -321,6 +348,9 @@ pub(super) struct ModuleState {
     pub stdlib_entry_source_range: Option<SourceRange>,
     /// Identifiers that have been exported from the current module.
     pub module_exports: Vec<String>,
+    /// Not-yet-added records in scope here: this module's own plus those from
+    /// glob imports. Only the exported ones travel in the module's outcome.
+    pub not_yet_added: IndexMap<String, ScopedNotYetAdded>,
     /// Settings specified from annotations.
     pub settings: MetaSettings,
     /// True if executing in sketch mode. Only a single sketch block will be
@@ -636,6 +666,100 @@ impl ExecState {
             .deprecation_version_override
             .as_deref()
             .unwrap_or(self.mod_local.settings.kcl_version.as_str())
+    }
+
+    /// The entry point's declared KCL version, or the default. `added_in`
+    /// gating uses this rather than [`Self::kcl_version`] because std modules
+    /// declare no version of their own.
+    pub(crate) fn entry_point_kcl_version(&self) -> KclVersion {
+        self.global.entry_point_kcl_version.unwrap_or_default()
+    }
+
+    /// Record that `key` was skipped in the current module because the
+    /// program's KCL version predates `added_in`.
+    pub(crate) fn record_not_yet_added(
+        &mut self,
+        key: String,
+        added_in: annotations::VersionConstraint,
+        exported: bool,
+    ) {
+        let item = NotYetAdded {
+            added_in,
+            is_std: matches!(self.mod_local.path, ModulePath::Std { .. }),
+        };
+        self.mod_local
+            .not_yet_added
+            .insert(key, ScopedNotYetAdded { item, exported });
+    }
+
+    /// Bring a glob-imported module's exported records into this scope, as
+    /// `import *` does for names. Records already here are left alone.
+    pub(crate) fn import_not_yet_added(&mut self, records: &IndexMap<String, NotYetAdded>, exported: bool) {
+        for (key, item) in records {
+            self.mod_local
+                .not_yet_added
+                .entry(key.clone())
+                .or_insert_with(|| ScopedNotYetAdded {
+                    item: item.clone(),
+                    exported,
+                });
+        }
+    }
+
+    /// The record for `key` in this module's scope, then in std's.
+    pub(crate) fn not_yet_added_in_scope(&self, key: &str) -> Option<&NotYetAdded> {
+        self.mod_local
+            .not_yet_added
+            .get(key)
+            .map(|scoped| &scoped.item)
+            .or_else(|| self.global.std_not_yet_added.get(key))
+    }
+
+    /// Append the version help to `err` if one of `keys` is a std declaration
+    /// skipped in the current scope, mirroring the not-yet-added parameter
+    /// message.
+    pub(crate) fn with_not_yet_added_hint(&self, keys: &[&str], err: KclError) -> KclError {
+        match keys.iter().find_map(|key| self.not_yet_added_in_scope(key)) {
+            Some(item) if self.hints_for(item) => self.not_yet_added_hint(item, err),
+            _ => err,
+        }
+    }
+
+    /// Like [`Self::with_not_yet_added_hint`], but consulting another module's
+    /// exported `records`.
+    pub(crate) fn with_not_yet_added_hint_from(
+        &self,
+        records: &IndexMap<String, NotYetAdded>,
+        keys: &[&str],
+        err: KclError,
+    ) -> KclError {
+        match keys.iter().find_map(|key| records.get(*key)) {
+            Some(item) if self.hints_for(item) => self.not_yet_added_hint(item, err),
+            _ => err,
+        }
+    }
+
+    /// Whether a failed lookup should mention `item`. Only std declarations
+    /// qualify, so a mismatch with the library is explained while user code
+    /// keeps the plain message; hints for user code would also have to follow
+    /// lexical scope, which these records do not.
+    fn hints_for(&self, item: &NotYetAdded) -> bool {
+        #[cfg(test)]
+        if self.global.hint_all_not_yet_added {
+            return true;
+        }
+        item.is_std
+    }
+
+    fn not_yet_added_hint(&self, item: &NotYetAdded, mut err: KclError) -> KclError {
+        let details = err.details_mut();
+        details.message = format!(
+            "{}; it was added in KCL {}, but this program uses KCL {}",
+            details.message,
+            item.added_in,
+            self.entry_point_kcl_version().as_str()
+        );
+        err
     }
 
     #[cfg(test)]
@@ -1562,6 +1686,9 @@ impl GlobalState {
             drag_anchors: Vec::new(),
             sketch_mode: false,
             geometry_only: settings.geometry_only,
+            std_not_yet_added: Default::default(),
+            #[cfg(test)]
+            hint_all_not_yet_added: false,
         };
 
         let root_id = ModuleId::default();
@@ -1735,6 +1862,7 @@ impl ModuleState {
             sketch_block: Default::default(),
             stdlib_entry_source_range: Default::default(),
             module_exports: Default::default(),
+            not_yet_added: Default::default(),
             explicit_length_units: false,
             path,
             settings: Default::default(),
