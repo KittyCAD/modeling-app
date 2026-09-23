@@ -82,26 +82,43 @@ where
 }
 
 fn into_miette(error: kcl_lib::KclErrorWithOutputs, filename: &str, code: &str) -> PyErr {
-    let retryable = error.is_retryable();
-    let (message, error) = match render_miette(error, code) {
-        Ok(result) => result,
-        Err(error) => return error,
-    };
-    let constraint_report = sketch_constraint_report_from_error(&error, filename, code, message.clone());
-    Python::attach(|py| -> PyResult<PyErr> {
-        let exception = Bound::new(
-            py,
-            PyKclError {
+    match ExecutionFailure::new(error, filename, code) {
+        Ok(failure) => failure.to_py_err(),
+        Err(error) => error,
+    }
+}
+
+#[derive(Debug)]
+struct ExecutionFailure {
+    // Retain Rust data, not a Python traceback that could reference the session.
+    error: PyKclError,
+    message: String,
+}
+
+impl ExecutionFailure {
+    fn new(error: kcl_lib::KclErrorWithOutputs, filename: &str, code: &str) -> PyResult<Self> {
+        let retryable = error.is_retryable();
+        let (message, error) = render_miette(error, code)?;
+        let constraint_report = sketch_constraint_report_from_error(&error, filename, code, message.clone());
+        Ok(Self {
+            error: PyKclError {
                 retryable,
                 sketch_constraint_report: Some(constraint_report),
                 execution: Some(Arc::new(error)),
             },
-        )?;
-        // Direct Rust construction bypasses the Python constructor's exception arguments.
-        exception.setattr("args", (message, retryable))?;
-        Ok(PyErr::from_value(exception.into_any()))
-    })
-    .unwrap_or_else(|error| error)
+            message,
+        })
+    }
+
+    fn to_py_err(&self) -> PyErr {
+        Python::attach(|py| -> PyResult<PyErr> {
+            let exception = Bound::new(py, self.error.clone())?;
+            // Direct Rust construction bypasses the Python constructor's exception arguments.
+            exception.setattr("args", (&self.message, self.error.retryable))?;
+            Ok(PyErr::from_value(exception.into_any()))
+        })
+        .unwrap_or_else(|error| error)
+    }
 }
 
 fn render_miette(error: kcl_lib::KclErrorWithOutputs, code: &str) -> PyResult<(String, kcl_lib::KclErrorWithOutputs)> {

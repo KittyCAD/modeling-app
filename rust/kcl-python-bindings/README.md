@@ -39,26 +39,33 @@ names using the constraint report's instance index.
 
 ### Inspecting sketches after an execution error
 
-Execution still raises `KclError` when KCL fails. If a sketch completed before
-that failure, the error retains its geometry and constraint colours:
+Execution still raises `KclError` by default. Inspection callers can opt into
+`allow_partial=True` to receive a session even when execution fails later:
 
 ```python
-try:
-    outcome = await kcl.execute("main.kcl")
-except kcl.KclError as error:
+async with await kcl.new_kcl_session("main.kcl", allow_partial=True) as session:
     # Keep reporting the original failure; a PNG is not project validation.
-    print(error)
-    png = bytes(error.render_sketch_png("profile"))
+    if session.execution_error is not None:
+        print(session.execution_error)
+    png = bytes(session.render_sketch_png("profile"))
 ```
 
-Use the existing `sketch_constraint_report` property or
-`get_sketch_constraint_status` API for constraint reports.
+`session.render_sketch_png` uses the saved result for both successful and failed
+executions. An inspection-only session has already closed its Engine connection.
+Its `outcome`, snapshots, exports and measurements raise the original execution
+error; it does not present partial geometry as a successful model.
+
+Use `await session.sketch_constraint_report()` when a report is needed. On failure,
+the report remains explicitly incomplete and includes the original error. PNG
+rendering does not request another report. Existing exception-based callers can
+still use `KclError.render_sketch_png` and its `sketch_constraint_report` property.
 For duplicate names, pass `instance_index` from a fresh constraint report for
 the same entrypoint and source. Refresh indices after editing the project.
-Rendering uses the saved scene after the engine connection closes. It neither
+Rendering also works after `session.close()`. It uses the saved scene and neither
 re-executes nor changes/copies project files, including imported assets.
 
-Parse errors have no execution output. Missing, unfinished, and empty sketches
+Parse errors still raise, even with `allow_partial=True`, because they have no
+execution output. Missing, unfinished, and empty sketches
 cannot be recovered; `render_sketch_png` raises an exception in these cases.
 A sketch whose constraints conflict can still render with its existing diagnostic
 colours; the PNG does not establish that those constraints are satisfied.

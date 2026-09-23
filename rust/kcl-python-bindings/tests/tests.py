@@ -481,9 +481,99 @@ async def test_failed_execution_retains_sketches(live: bool) -> None:
 
 
 @pytest.mark.asyncio
+@pytest.mark.parametrize("from_file", [False, True])
+async def test_partial_session_preserves_error_and_inspects_sketches(
+    from_file: bool, tmp_path: Path
+) -> None:
+    source = named_sketches_all_statuses_code
+    baseline = await kcl.mock_execute_code(source)
+    source += "\nlate = missing_value\n"
+    if from_file:
+        entrypoint = tmp_path / "main.kcl"
+        entrypoint.write_text(source)
+        create = kcl.new_kcl_session
+        argument = str(entrypoint)
+    else:
+        create = kcl.new_kcl_session_code
+        argument = source
+
+    # Existing callers still receive the same exception unless they opt in.
+    with pytest.raises(kcl.KclError, match="missing_value") as strict:
+        await create(argument, mock=True)
+    session = await create(argument, mock=True, allow_partial=True)
+    async with session:
+        error = session.execution_error
+        assert isinstance(error, kcl.KclError)
+        assert error.args == strict.value.args
+        assert error.is_retryable() == strict.value.is_retryable()
+        report = await session.sketch_constraint_report()
+        assert report.is_complete is False
+        assert report.kcl_error is not None
+        assert "missing_value" in report.kcl_error.text
+        assert (
+            report.total_sketches()
+            == baseline.sketch_constraint_report().total_sketches()
+        )
+        for name in ("fixedSketch", "looseSketch", "conflictSketch"):
+            assert bytes(session.render_sketch_png(name)) == bytes(
+                baseline.render_sketch_png(name)
+            )
+
+        # A recovered PNG must not make incomplete geometry exportable or measurable.
+        with pytest.raises(kcl.KclError, match="missing_value"):
+            _ = session.outcome
+        with pytest.raises(kcl.KclError, match="missing_value"):
+            await session.export(kcl.FileExportFormat.Step)
+        with pytest.raises(kcl.KclError, match="missing_value"):
+            await session.snapshots(kcl.ImageFormat.Png, [])
+        with pytest.raises(kcl.KclError, match="missing_value"):
+            await session.measure(kcl.PhysicalPropertiesRequest())
+
+    await session.close()
+    with pytest.raises(Exception, match="Connection already closed"):
+        async with session:
+            pytest.fail("Closed sessions must not be re-entered")
+    assert bytes(session.render_sketch_png("fixedSketch")) == bytes(
+        baseline.render_sketch_png("fixedSketch")
+    )
+    retained_error = session.execution_error
+    assert isinstance(retained_error, kcl.KclError)
+    assert retained_error.args == strict.value.args
+
+
+@pytest.mark.asyncio
+async def test_partial_session_success_and_body_error_cleanup() -> None:
+    for source in (
+        mixed_sketches_code,
+        mixed_sketches_code + "\nlate = missing_value\n",
+    ):
+        session = await kcl.new_kcl_session_code(source, mock=True, allow_partial=True)
+        with pytest.raises(ValueError, match="body failed"):
+            async with session:
+                if session.execution_error is None:
+                    assert bytes(session.render_sketch_png("s1")) == bytes(
+                        session.outcome.render_sketch_png("s1")
+                    )
+                raise ValueError("body failed")
+        with pytest.raises(Exception, match="Connection already closed"):
+            async with session:
+                pytest.fail("Context exit must close the session")
+        assert bytes(session.render_sketch_png("s1")).startswith(b"\x89PNG\r\n\x1a\n")
+
+
+@pytest.mark.asyncio
+async def test_partial_session_still_raises_parse_errors() -> None:
+    with pytest.raises(kcl.KclError):
+        await kcl.new_kcl_session_code(
+            mixed_sketches_code + "\nincomplete = (", mock=True, allow_partial=True
+        )
+
+
+@pytest.mark.asyncio
 @pytest.mark.parametrize("fixture", ["statuses.kcl", "imports.kcl"])
+@pytest.mark.parametrize("use_session", [False, True])
 async def test_failed_execution_preserves_instance_selection(
-    fixture: str, tmp_path: Path
+    fixture: str, use_session: bool, tmp_path: Path
 ) -> None:
     fixtures = Path(tests_dir) / "sketch_visualizer" / "duplicate_names"
     for path in fixtures.glob("*.kcl"):
@@ -494,9 +584,16 @@ async def test_failed_execution_preserves_instance_selection(
     entrypoint.write_text(source)
     baseline = await kcl.mock_execute(str(entrypoint))
     entrypoint.write_text(source + "\nlate = missing_value\n")
-    with pytest.raises(kcl.KclError, match="missing_value") as raised:
-        await kcl.mock_execute(str(entrypoint))
-    error = raised.value
+    if use_session:
+        async with await kcl.new_kcl_session(
+            str(entrypoint), mock=True, allow_partial=True
+        ) as session:
+            assert isinstance(session.execution_error, kcl.KclError)
+        error = session
+    else:
+        with pytest.raises(kcl.KclError, match="missing_value") as raised:
+            await kcl.mock_execute(str(entrypoint))
+        error = raised.value
     with pytest.raises(Exception, match="found 2 sketches named `profile`"):
         error.render_sketch_png("profile")
     for index in (0, 1):
@@ -510,7 +607,8 @@ async def test_failed_execution_preserves_instance_selection(
 
 
 @pytest.mark.asyncio
-async def test_failed_execution_rejects_unfinished_sketches() -> None:
+@pytest.mark.parametrize("use_session", [False, True])
+async def test_failed_execution_rejects_unfinished_sketches(use_session: bool) -> None:
     source = (
         mixed_sketches_code
         + """
@@ -520,13 +618,21 @@ unfinished = sketch(on = XY) {
 }
 """
     )
-    with pytest.raises(kcl.KclError, match="missing_value") as raised:
-        await kcl.mock_execute_code(source)
-    assert bytes(raised.value.render_sketch_png("s1")).startswith(b"\x89PNG\r\n\x1a\n")
+    if use_session:
+        async with await kcl.new_kcl_session_code(
+            source, mock=True, allow_partial=True
+        ) as session:
+            assert isinstance(session.execution_error, kcl.KclError)
+        error = session
+    else:
+        with pytest.raises(kcl.KclError, match="missing_value") as raised:
+            await kcl.mock_execute_code(source)
+        error = raised.value
+    assert bytes(error.render_sketch_png("s1")).startswith(b"\x89PNG\r\n\x1a\n")
     with pytest.raises(Exception, match="no completed geometry"):
-        raised.value.render_sketch_png("unfinished")
+        error.render_sketch_png("unfinished")
     with pytest.raises(Exception, match="no sketch named"):
-        raised.value.render_sketch_png("absent")
+        error.render_sketch_png("absent")
 
 
 @pytest.mark.asyncio
@@ -540,7 +646,10 @@ async def test_parse_error_has_no_recoverable_sketches() -> None:
 
 
 @pytest.mark.asyncio
-async def test_failed_execution_keeps_original_import_assets(tmp_path: Path) -> None:
+@pytest.mark.parametrize("use_session", [False, True])
+async def test_failed_execution_keeps_original_import_assets(
+    use_session: bool, tmp_path: Path
+) -> None:
     assets = tmp_path / "assets"
     assets.mkdir()
     gltf = json.loads((Path(tests_dir) / "inputs" / "cube.gltf").read_text())
@@ -554,27 +663,45 @@ async def test_failed_execution_keeps_original_import_assets(tmp_path: Path) -> 
     baseline = await kcl.mock_execute(str(entrypoint))
     entrypoint.write_text(source + "\nlate = missing_value\n")
     before = {p: p.read_bytes() for p in tmp_path.rglob("*") if p.is_file()}
-    with pytest.raises(kcl.KclError, match="missing_value") as raised:
-        await kcl.mock_execute(str(entrypoint))
+    if use_session:
+        async with await kcl.new_kcl_session(
+            str(entrypoint), mock=True, allow_partial=True
+        ) as session:
+            assert isinstance(session.execution_error, kcl.KclError)
+        error = session
+    else:
+        with pytest.raises(kcl.KclError, match="missing_value") as raised:
+            await kcl.mock_execute(str(entrypoint))
+        error = raised.value
     assert all(p.read_bytes() == content for p, content in before.items())
     # Rendering must use retained objects, not reread the project or its assets.
     entrypoint.unlink()
     (assets / "cube.bin").unlink()
-    assert bytes(raised.value.render_sketch_png("s1")) == bytes(
+    assert bytes(error.render_sketch_png("s1")) == bytes(
         baseline.render_sketch_png("s1")
     )
 
 
 @requires_engine
 @pytest.mark.asyncio
-async def test_engine_error_retains_completed_sketch() -> None:
+@pytest.mark.parametrize("use_session", [False, True])
+async def test_engine_error_retains_completed_sketch(use_session: bool) -> None:
     source = Path(engine_error_file).read_text()
     baseline = await execute_with_retries(
         kcl.execute_code, source.split("fillet001 =")[0]
     )
-    with pytest.raises(kcl.KclError, match="engine") as raised:
-        await execute_with_retries(kcl.execute_code, source)
-    assert bytes(raised.value.render_sketch_png("sketch001")) == bytes(
+    if use_session:
+        async with await kcl.new_kcl_session_code(
+            source, allow_partial=True
+        ) as session:
+            assert isinstance(session.execution_error, kcl.KclError)
+            assert "engine" in str(session.execution_error)
+        error = session
+    else:
+        with pytest.raises(kcl.KclError, match="engine") as raised:
+            await execute_with_retries(kcl.execute_code, source)
+        error = raised.value
+    assert bytes(error.render_sketch_png("sketch001")) == bytes(
         baseline.render_sketch_png("sketch001")
     )
     # Recovery does not retain the failed connection or poison a new execution.

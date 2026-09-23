@@ -16,6 +16,7 @@ use pyo3::types::PyAny;
 use tokio::sync::Mutex;
 
 use crate::ExecOutcome;
+use crate::ExecutionFailure;
 use crate::KclInput;
 use crate::KclProgram;
 use crate::SnapshotOptions;
@@ -41,25 +42,44 @@ pub struct KclSession {
 }
 
 struct SessionState {
-    ctx: Mutex<Option<kcl_lib::ExecutorContext>>,
+    ctx: Mutex<SessionConnection>,
     program: kcl_lib::Program,
-    outcome: ExecOutcome,
+    outcome: Result<ExecOutcome, ExecutionFailure>,
+}
+
+enum SessionConnection {
+    Live(Box<kcl_lib::ExecutorContext>),
+    InspectionOnly,
+    Closed,
 }
 
 impl SessionState {
+    fn outcome(&self) -> PyResult<ExecOutcome> {
+        self.outcome.as_ref().cloned().map_err(ExecutionFailure::to_py_err)
+    }
+
+    async fn ensure_open(&self) -> PyResult<()> {
+        if matches!(*self.ctx.lock().await, SessionConnection::Closed) {
+            return Err(PyException::new_err("Connection already closed"));
+        }
+        Ok(())
+    }
+
     async fn context(&self) -> PyResult<kcl_lib::ExecutorContext> {
-        self.ctx
-            .lock()
-            .await
-            .clone()
-            .ok_or_else(|| PyException::new_err("Connection already closed"))
+        if let Err(error) = &self.outcome {
+            return Err(error.to_py_err());
+        }
+        match &*self.ctx.lock().await {
+            SessionConnection::Live(ctx) => Ok(ctx.as_ref().clone()),
+            _ => Err(PyException::new_err("Connection already closed")),
+        }
     }
 }
 
 impl std::fmt::Debug for KclSession {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.debug_struct("Connection")
-            .field("executed_kcl.filename", &self.executed_kcl.outcome.filename)
+            .field("execution_completed", &self.executed_kcl.outcome.is_ok())
             .finish()
     }
 }
@@ -69,10 +89,32 @@ impl std::fmt::Debug for KclSession {
 impl KclSession {
     /// Saved diagnostics, constraint reports, and sketch rendering from this execution.
     /// Available after close(); accessing it neither re-executes KCL nor copies the execution state.
+    /// Raises the original execution error for an inspection-only session.
     #[getter]
     #[gen_stub(override_return_type(type_repr = "ExecOutcome"))]
-    fn outcome(&self) -> ExecOutcome {
-        self.executed_kcl.outcome.clone()
+    fn outcome(&self) -> PyResult<ExecOutcome> {
+        self.executed_kcl.outcome()
+    }
+
+    /// The original execution error, or None if execution completed.
+    #[getter]
+    #[gen_stub(override_return_type(type_repr = "KclError | None"))]
+    fn execution_error(&self, py: Python<'_>) -> Option<Py<PyAny>> {
+        self.executed_kcl
+            .outcome
+            .as_ref()
+            .err()
+            .map(|error| error.to_py_err().into_value(py).into_any())
+    }
+
+    /// Render a completed sketch from this execution, including after a later error or close().
+    /// Does not execute KCL again or require a live Engine connection.
+    #[pyo3(signature = (sketch_name, *, instance_index=None))]
+    fn render_sketch_png(&self, sketch_name: &str, instance_index: Option<usize>) -> PyResult<Vec<u8>> {
+        match &self.executed_kcl.outcome {
+            Ok(outcome) => outcome.render_sketch_png(sketch_name, instance_index),
+            Err(error) => error.error.render_sketch_png(sketch_name, instance_index),
+        }
     }
 
     // This is for entering a Python 'async with' context.
@@ -80,9 +122,8 @@ impl KclSession {
     /// Enter this session without executing KCL again.
     #[gen_stub(override_return_type(type_repr = "KclSession"))]
     async fn __aenter__(slf: Py<Self>) -> PyResult<Py<Self>> {
-        // Get the context, so that we can check it's still there and hasn't been closed/taken yet.
         Python::attach(|py| -> PyResult<_> { Ok(slf.try_borrow(py)?.executed_kcl.clone()) })?
-            .context()
+            .ensure_open()
             .await?;
         Ok(slf)
     }
@@ -107,7 +148,8 @@ impl KclSession {
 
     /// After calling this, calling any methods that use the connection will raise an exception.
     pub async fn close(&mut self) -> PyResult<()> {
-        let Some(ctx) = self.executed_kcl.ctx.lock().await.take() else {
+        let connection = std::mem::replace(&mut *self.executed_kcl.ctx.lock().await, SessionConnection::Closed);
+        let SessionConnection::Live(ctx) = connection else {
             return Ok(());
         };
         spawn_py(async move {
@@ -134,9 +176,18 @@ impl KclSession {
     /// Uses the saved execution state without executing KCL again.
     /// It is NOT safe to concurrently call methods on this object. Only call one of measure, export, etc at a time.
     pub async fn sketch_constraint_report(&self) -> PyResult<SketchConstraintReport> {
-        self.executed_kcl.context().await?;
-        let outcome = self.outcome();
-        spawn_py(async move { Ok(outcome.sketch_constraint_report()) }).await
+        self.executed_kcl.ensure_open().await?;
+        match &self.executed_kcl.outcome {
+            Ok(outcome) => {
+                let outcome = outcome.clone();
+                spawn_py(async move { Ok(outcome.sketch_constraint_report()) }).await
+            }
+            Err(error) => error
+                .error
+                .sketch_constraint_report
+                .clone()
+                .ok_or_else(|| error.to_py_err()),
+        }
     }
 
     /// Get 2D images of the model.
@@ -162,12 +213,13 @@ impl KclSession {
     pub async fn export(&self, export_format: FileExportFormat) -> PyResult<Vec<RawFile>> {
         let executed_kcl = self.executed_kcl.clone();
         let ctx = executed_kcl.context().await?;
+        let outcome = executed_kcl.outcome()?;
         spawn_py(async move {
             let result = crate::export_from_executed(
                 &ctx,
                 &executed_kcl.program,
-                &executed_kcl.outcome.code,
-                &executed_kcl.outcome.filename,
+                &outcome.code,
+                &outcome.filename,
                 export_format,
             )
             .await;
@@ -181,37 +233,63 @@ impl KclSession {
 /// Execute this KCL project.
 /// Return an executed KCL project with its connection still available.
 /// You can call follow-up methods, like exporting or snapshotting or measuring, on the returned session.
+/// With allow_partial=True, execution errors return an inspection-only session with execution_error set.
+/// Its Engine connection is closed; only saved sketch inspection is available. Parse errors still raise.
 #[pyo3_stub_gen::derive::gen_stub_pyfunction]
 #[gen_stub(override_return_type(type_repr = "KclSession"))]
-#[pyfunction(signature = (path, *, mock=false, highlight_edges=None, video_res_width=None, video_res_height=None))]
+#[pyfunction(signature = (path, *, mock=false, highlight_edges=None, video_res_width=None, video_res_height=None, allow_partial=false))]
 pub async fn new_kcl_session(
     path: String,
     mock: bool,
     highlight_edges: Option<bool>,
     video_res_width: Option<u32>,
     video_res_height: Option<u32>,
+    allow_partial: bool,
 ) -> PyResult<KclSession> {
     let input = KclInput::Path(path);
-    spawn_py(async move { new_kcl_session_impl(input, mock, highlight_edges, video_res_width, video_res_height).await })
+    spawn_py(async move {
+        new_kcl_session_impl(
+            input,
+            mock,
+            highlight_edges,
+            video_res_width,
+            video_res_height,
+            allow_partial,
+        )
         .await
+    })
+    .await
 }
 
 /// Execute this KCL source code string.
 /// Return an executed KCL project with its connection still available.
 /// You can call follow-up methods, like exporting or snapshotting or measuring, on the returned session.
+/// With allow_partial=True, execution errors return an inspection-only session with execution_error set.
+/// Its Engine connection is closed; only saved sketch inspection is available. Parse errors still raise.
 #[pyo3_stub_gen::derive::gen_stub_pyfunction]
 #[gen_stub(override_return_type(type_repr = "KclSession"))]
-#[pyfunction(signature = (code, *, mock=false, highlight_edges=None, video_res_width=None, video_res_height=None))]
+#[pyfunction(signature = (code, *, mock=false, highlight_edges=None, video_res_width=None, video_res_height=None, allow_partial=false))]
 pub async fn new_kcl_session_code(
     code: String,
     mock: bool,
     highlight_edges: Option<bool>,
     video_res_width: Option<u32>,
     video_res_height: Option<u32>,
+    allow_partial: bool,
 ) -> PyResult<KclSession> {
     let input = KclInput::Code(code);
-    spawn_py(async move { new_kcl_session_impl(input, mock, highlight_edges, video_res_width, video_res_height).await })
+    spawn_py(async move {
+        new_kcl_session_impl(
+            input,
+            mock,
+            highlight_edges,
+            video_res_width,
+            video_res_height,
+            allow_partial,
+        )
         .await
+    })
+    .await
 }
 
 /// Execute this KCL project.
@@ -222,6 +300,7 @@ pub async fn new_kcl_session_impl(
     highlight_edges: Option<bool>,
     video_res_width: Option<u32>,
     video_res_height: Option<u32>,
+    allow_partial: bool,
 ) -> PyResult<KclSession> {
     let KclProgram {
         code,
@@ -247,7 +326,17 @@ pub async fn new_kcl_session_impl(
         Ok((env_ref, _modeling_session_data)) => env_ref,
         Err(err) => {
             ctx.close().await;
-            return Err(into_miette(err, &filename, &code));
+            if !allow_partial {
+                return Err(into_miette(err, &filename, &code));
+            }
+            let error = ExecutionFailure::new(err, &filename, &code)?;
+            return Ok(KclSession {
+                executed_kcl: Arc::new(SessionState {
+                    ctx: Mutex::new(SessionConnection::InspectionOnly),
+                    program,
+                    outcome: Err(error),
+                }),
+            });
         }
     };
     let outcome = match state.into_exec_outcome(env_ref, &ctx).await {
@@ -262,9 +351,9 @@ pub async fn new_kcl_session_impl(
         }
     };
     let executed_kcl = Arc::new(SessionState {
-        ctx: Mutex::new(Some(ctx)),
+        ctx: Mutex::new(SessionConnection::Live(Box::new(ctx))),
         program,
-        outcome,
+        outcome: Ok(outcome),
     });
     Ok(KclSession { executed_kcl })
 }
@@ -281,6 +370,7 @@ mod tests {
             None,
             None,
             None,
+            false,
         )
         .await
         .unwrap();
@@ -291,6 +381,40 @@ mod tests {
 
         session.close().await.unwrap();
         session.executed_kcl.context().await.unwrap_err();
-        assert!(session.outcome().report_all().is_empty());
+        assert!(session.outcome().unwrap().report_all().is_empty());
+    }
+
+    #[tokio::test]
+    async fn partial_session_keeps_no_engine_connection() {
+        let source = format!(
+            "{}\nlate = missing_value\n",
+            include_str!("../../kcl-lib/tests/sketch_visualizer/duplicate_names/statuses.kcl")
+        );
+        let mut session = new_kcl_session_impl(KclInput::Code(source), true, None, None, None, true)
+            .await
+            .unwrap();
+
+        assert!(matches!(
+            *session.executed_kcl.ctx.lock().await,
+            SessionConnection::InspectionOnly
+        ));
+        assert!(
+            session
+                .executed_kcl
+                .context()
+                .await
+                .unwrap_err()
+                .to_string()
+                .contains("missing_value")
+        );
+        session.outcome().unwrap_err();
+        let png = session.render_sketch_png("profile", Some(0)).unwrap();
+        session.close().await.unwrap();
+        session.close().await.unwrap();
+        assert!(matches!(
+            *session.executed_kcl.ctx.lock().await,
+            SessionConnection::Closed
+        ));
+        assert_eq!(png, session.render_sketch_png("profile", Some(0)).unwrap());
     }
 }

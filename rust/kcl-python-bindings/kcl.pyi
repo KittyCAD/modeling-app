@@ -478,6 +478,17 @@ class KclSession:
         r"""
         Saved diagnostics, constraint reports, and sketch rendering from this execution.
         Available after close(); accessing it neither re-executes KCL nor copies the execution state.
+        Raises the original execution error for an inspection-only session.
+        """
+    @property
+    def execution_error(self) -> KclError | None:
+        r"""
+        The original execution error, or None if execution completed.
+        """
+    def render_sketch_png(self, sketch_name: builtins.str, *, instance_index: typing.Optional[builtins.int] = None) -> builtins.list[builtins.int]:
+        r"""
+        Render a completed sketch from this execution, including after a later error or close().
+        Does not execute KCL again or require a live Engine connection.
         """
     async def __aenter__(self) -> KclSession:
         r"""
@@ -1477,18 +1488,22 @@ async def mock_execute_code(code: builtins.str) -> zooExecOutcome:
     Mock execute the kcl code.
     """
 
-async def new_kcl_session(path: builtins.str, *, mock: builtins.bool = ..., highlight_edges: typing.Optional[builtins.bool] = None, video_res_width: typing.Optional[builtins.int] = None, video_res_height: typing.Optional[builtins.int] = None) -> KclSession:
+async def new_kcl_session(path: builtins.str, *, mock: builtins.bool = ..., highlight_edges: typing.Optional[builtins.bool] = None, video_res_width: typing.Optional[builtins.int] = None, video_res_height: typing.Optional[builtins.int] = None, allow_partial: builtins.bool = ...) -> KclSession:
     r"""
     Execute this KCL project.
     Return an executed KCL project with its connection still available.
     You can call follow-up methods, like exporting or snapshotting or measuring, on the returned session.
+    With allow_partial=True, execution errors return an inspection-only session with execution_error set.
+    Its Engine connection is closed; only saved sketch inspection is available. Parse errors still raise.
     """
 
-async def new_kcl_session_code(code: builtins.str, *, mock: builtins.bool = ..., highlight_edges: typing.Optional[builtins.bool] = None, video_res_width: typing.Optional[builtins.int] = None, video_res_height: typing.Optional[builtins.int] = None) -> KclSession:
+async def new_kcl_session_code(code: builtins.str, *, mock: builtins.bool = ..., highlight_edges: typing.Optional[builtins.bool] = None, video_res_width: typing.Optional[builtins.int] = None, video_res_height: typing.Optional[builtins.int] = None, allow_partial: builtins.bool = ...) -> KclSession:
     r"""
     Execute this KCL source code string.
     Return an executed KCL project with its connection still available.
     You can call follow-up methods, like exporting or snapshotting or measuring, on the returned session.
+    With allow_partial=True, execution errors return an inspection-only session with execution_error set.
+    Its Engine connection is closed; only saved sketch inspection is available. Parse errors still raise.
     """
 
 async def parse(path: builtins.str) -> builtins.bool:
