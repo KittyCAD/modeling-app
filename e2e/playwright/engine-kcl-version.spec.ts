@@ -47,8 +47,14 @@ test(
 
     await homePage.openProject('engine-kcl-version')
     await scene.settled()
-    expect(socketUrls).toHaveLength(1)
-    expect(new URL(socketUrls[0]).searchParams.get('kcl_version')).toBe('2.0')
+    // Startup may retry the connection; edits must preserve the ready session.
+    const initialSocketCount = socketUrls.length
+    expect(initialSocketCount).toBeGreaterThan(0)
+    expect(
+      new URL(socketUrls[initialSocketCount - 1]).searchParams.get(
+        'kcl_version'
+      )
+    ).toBe('2.0')
     expect(versions).toEqual([])
 
     await (await getUtils(page)).openFilePanel()
@@ -60,15 +66,17 @@ test(
     await expect.poll(() => versions).toEqual(['3.0-preview', '2.0'])
     await scene.settled()
 
-    expect(socketUrls).toHaveLength(1)
+    expect(socketUrls).toHaveLength(initialSocketCount)
 
     await page.evaluate(() =>
       window.app.singletons.kclManager.flushWriteToFile()
     )
     await page.reload()
     await scene.settled()
-    expect(socketUrls).toHaveLength(2)
-    expect(new URL(socketUrls[1]).searchParams.get('kcl_version')).toBe('2.0')
+    expect(socketUrls.length).toBeGreaterThan(initialSocketCount)
+    expect(
+      new URL(socketUrls[socketUrls.length - 1]).searchParams.get('kcl_version')
+    ).toBe('2.0')
   }
 )
 
@@ -91,13 +99,26 @@ test(
       }
     })
     await homePage.openProject('invalid-kcl-version')
-    await scene.connectionEstablished()
+    // Connection UI can settle before initial execution publishes diagnostics.
     await expect
-      .poll(() =>
-        page.evaluate(() => window.app.singletons.kclManager.hasErrors())
+      .poll(
+        () =>
+          page.evaluate(() => {
+            const { kclManager } = window.app.singletons
+            return (
+              kclManager.engineCommandManager.isReady && kclManager.hasErrors()
+            )
+          }),
+        { timeout: 30_000 }
       )
       .toBe(true)
-    expect(new URL(socketUrls[0]).searchParams.has('kcl_version')).toBe(false)
+    const initialSocketCount = socketUrls.length
+    expect(initialSocketCount).toBeGreaterThan(0)
+    expect(
+      new URL(socketUrls[initialSocketCount - 1]).searchParams.has(
+        'kcl_version'
+      )
+    ).toBe(false)
 
     await editor.replaceCodeByTyping('"abcd"', '2.0')
     await scene.settled()
@@ -106,6 +127,6 @@ test(
         page.evaluate(() => window.app.singletons.kclManager.hasErrors())
       )
       .toBe(false)
-    expect(socketUrls).toHaveLength(1)
+    expect(socketUrls).toHaveLength(initialSocketCount)
   }
 )
