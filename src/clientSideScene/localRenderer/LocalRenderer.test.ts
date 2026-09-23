@@ -1,6 +1,5 @@
 import { signal } from '@preact/signals-core'
 import type { KclManager } from '@src/lang/KclManager'
-import type { IntegerIdPickTarget } from '@src/clientSideScene/localRenderer/IntegerIdPicker'
 import type { LocalSelectionCommandProvider } from '@src/clientSideScene/localSelectionCommandProxy'
 import type ModelingAppFile from '@src/lib/modelingAppFile'
 import { Signal } from '@src/lib/signal'
@@ -52,7 +51,7 @@ type RendererInternals = {
     pick: ReturnType<
       typeof vi.fn<
         () => Promise<{
-          target: IntegerIdPickTarget | null
+          target: Mesh | null
           diagnostics: { stale: boolean }
         }>
       >
@@ -151,9 +150,8 @@ describe('local GLB loading', () => {
     const planes = new PlaneRenderer(Themes.Light)
     planes.updateDefaultPlanes(f.manager.rustContext.defaultPlanes)
     planes.updateOffsetPlanes(new Map([['offset', offsetPlane()]]))
-    const object = planes.planes.get(id)?.mesh
-    if (!object) throw new Error('Missing plane mesh')
-    const target = { object }
+    const target = planes.planes.get(id)?.mesh
+    if (!target) throw new Error('Missing plane mesh')
     const picker = {
       pick: vi
         .fn()
@@ -197,7 +195,7 @@ describe('local GLB loading', () => {
       )
     const defaultTargets = [...planes.planes.values()]
       .filter((plane) => plane.defaultPlane)
-      .map(({ mesh }) => ({ object: mesh }))
+      .map(({ mesh }) => mesh)
     return {
       ...f,
       target,
@@ -263,7 +261,7 @@ describe('local GLB loading', () => {
     expect(f.highlights.setHover).toHaveBeenLastCalledWith(null)
     const defaultTargets = [
       ...(f.state.planeRenderer?.planes.values() ?? []),
-    ].map(({ mesh }) => ({ object: mesh }))
+    ].map(({ mesh }) => mesh)
     expect(f.picker.setTargets).toHaveBeenLastCalledWith(defaultTargets, null)
     expect(f.highlights.setTargets).toHaveBeenLastCalledWith(defaultTargets)
     f.renderer.dispose()
@@ -499,7 +497,7 @@ describe('local GLB loading', () => {
     if (!(mesh instanceof Mesh)) throw new Error('Missing mesh')
     const disposeGeometry = vi.spyOn(mesh.geometry, 'dispose')
     const disposeMaterial = vi.spyOn(mesh.material, 'dispose')
-    const disposePlane = vi.spyOn(f.target.object.geometry, 'dispose')
+    const disposePlane = vi.spyOn(f.target.geometry, 'dispose')
 
     f.manager.isExecutingSignal.value = true
     f.manager.artifactGraph.clear()

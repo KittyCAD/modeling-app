@@ -24,10 +24,6 @@ import {
 const SELECTION_LINE_WIDTH_AT_REFERENCE_PX = 24
 const SELECTION_LINE_WIDTH_REFERENCE_VIEWPORT_PX = 2048
 
-export type IntegerIdPickTarget = {
-  object: Object3D
-}
-
 export type IntegerIdPickerGeometryStats = {
   vertexCount: number
   faceCount: number
@@ -61,7 +57,7 @@ export type IntegerIdPickerDiagnostics = {
 }
 
 export type IntegerIdPickResult = {
-  target: IntegerIdPickTarget | null
+  target: Mesh | null
   diagnostics: IntegerIdPickerDiagnostics
 }
 
@@ -72,7 +68,7 @@ export class IntegerIdPicker {
   private readonly geometries: BufferGeometry[] = []
   private readonly materials = new Set<Material>()
   private readonly sourceByProxy = new Map<Mesh, Mesh>()
-  private targetById: Array<IntegerIdPickTarget | null> = [null]
+  private targetById: Array<Mesh | null> = [null]
   private renderTarget: RenderTarget | null = null
   private edgeObject: LineSegments2 | null = null
   private geometryStats: IntegerIdPickerGeometryStats | null = null
@@ -86,7 +82,7 @@ export class IntegerIdPicker {
   }
 
   // Share geometry; only the small ID materials and scene nodes are owned here.
-  setTargets(targets: IntegerIdPickTarget[], occluder: Object3D | null) {
+  setTargets(targets: Mesh[], occluder: Object3D | null) {
     this.clearModel()
     const startedAt = performance.now()
     const stats: IntegerIdPickerGeometryStats = {
@@ -131,9 +127,8 @@ export class IntegerIdPicker {
       if (object instanceof Mesh) addMesh(object, occluderMaterial)
     })
     for (const target of targets) {
-      if (!(target.object instanceof Mesh)) continue
       const id = this.targetById.push(target) - 1
-      addMesh(target.object, createMaterial(id))
+      addMesh(target, createMaterial(id))
     }
     this.geometryStats = stats
     this.idSceneBuildDurationMs = performance.now() - startedAt

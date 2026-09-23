@@ -11,10 +11,7 @@ import {
 import { EdgeRenderer } from '@src/clientSideScene/localRenderer/EdgeRenderer'
 import { PlaneRenderer } from '@src/clientSideScene/localRenderer/PlaneRenderer'
 import { EnvMapLoader } from '@src/clientSideScene/localRenderer/EnvMapLoader'
-import {
-  IntegerIdPicker,
-  type IntegerIdPickTarget,
-} from '@src/clientSideScene/localRenderer/IntegerIdPicker'
+import { IntegerIdPicker } from '@src/clientSideScene/localRenderer/IntegerIdPicker'
 import { HDR_ENV_MAP_URL } from '@src/clientSideScene/localRenderer/maps'
 import {
   type LocalRendererFrameMetrics,
@@ -33,6 +30,7 @@ import {
   Box3,
   BufferGeometry,
   Material,
+  type Mesh,
   NeutralToneMapping,
   type Object3D,
   OrthographicCamera,
@@ -131,7 +129,7 @@ export class LocalRenderer {
     yz: true,
   }
   private selectedPlaneId: string | null = null
-  private hoveredPlane: IntegerIdPickTarget | null = null
+  private hoveredPlane: Mesh | null = null
   private hoverRequestVersion = 0
   private pointerOverCanvas = false
   private unregisterPlanePicking: (() => void) | null = null
@@ -199,10 +197,10 @@ export class LocalRenderer {
     this.invalidateBaseRender()
   }
 
-  private getPlaneTarget(id: string | null): IntegerIdPickTarget | null {
+  private getPlaneTarget(id: string | null): Mesh | null {
     if (!id) return null
     const plane = this.planeRenderer?.planes.get(id)
-    return plane?.group.visible ? { object: plane.mesh } : null
+    return plane?.group.visible ? plane.mesh : null
   }
 
   private updatePlaneSelection() {
@@ -226,7 +224,7 @@ export class LocalRenderer {
     this.planeRenderer.setDefaultVisibility(this.defaultPlaneVisibility)
     const targets = Array.from(
       this.planeRenderer.planes.values(),
-      ({ mesh }) => ({ object: mesh })
+      ({ mesh }) => mesh
     )
 
     this.integerIdPicker?.setTargets(targets, this.currentModel)
@@ -286,9 +284,9 @@ export class LocalRenderer {
       )
         return {}
       const target = result?.target ?? null
-      const entityId = target?.object.name || null
+      const entityId = target?.name || null
       if (isHover) {
-        if (this.hoveredPlane?.object !== target?.object) {
+        if (this.hoveredPlane !== target) {
           this.hoveredPlane = target
           this.selectionHighlightRenderer?.setHover(target)
           this.scheduleRender()

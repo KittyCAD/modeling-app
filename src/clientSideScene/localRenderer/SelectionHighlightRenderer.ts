@@ -1,4 +1,3 @@
-import type { IntegerIdPickTarget } from '@src/clientSideScene/localRenderer/IntegerIdPicker'
 import {
   SKETCH_HIGHLIGHT_COLOR,
   SKETCH_SELECTION_COLOR,
@@ -14,7 +13,6 @@ import {
   NoColorSpace,
   NormalBlending,
   NoToneMapping,
-  type Object3D,
   Scene,
   UnsignedByteType,
   Vector2,
@@ -82,8 +80,8 @@ export class SelectionHighlightRenderer {
   private readonly hoverLineMaterial: Line2NodeMaterial
   private readonly selectionLineMaterial: Line2NodeMaterial
   private readonly compositeQuad = new QuadMesh()
-  private readonly overlayByKey = new Map<string, Object3D>()
-  private readonly sourceByOverlay = new Map<Mesh, Object3D>()
+  private readonly overlayByKey = new Map<string, Mesh>()
+  private readonly sourceByOverlay = new Map<Mesh, Mesh>()
   private readonly lineKeys = new Set<string>()
   private readonly geometries: BufferGeometry[] = []
   private readonly maskMaterial = new MeshBasicNodeMaterial({
@@ -210,27 +208,24 @@ export class SelectionHighlightRenderer {
     this.backgroundColorNode.value.set(backgroundColor)
   }
 
-  setHover(target: IntegerIdPickTarget | null) {
-    this.hoveredKey = target ? getTargetKey(target) : null
+  setHover(target: Mesh | null) {
+    this.hoveredKey = target?.uuid ?? null
     this.updateSceneMembership()
   }
 
-  setTargets(targets: IntegerIdPickTarget[]) {
+  setTargets(targets: Mesh[]) {
     this.clearModel()
-    for (const { object } of targets) {
-      if (!(object instanceof Mesh)) continue
-      const overlay = new Mesh(object.geometry, this.maskMaterial)
+    for (const mesh of targets) {
+      const overlay = new Mesh(mesh.geometry, this.maskMaterial)
       overlay.matrixAutoUpdate = false
-      this.overlayByKey.set(object.uuid, overlay)
-      this.sourceByOverlay.set(overlay, object)
+      this.overlayByKey.set(mesh.uuid, overlay)
+      this.sourceByOverlay.set(overlay, mesh)
     }
   }
 
-  setSelection(targets: Iterable<IntegerIdPickTarget>) {
+  setSelection(targets: Iterable<Mesh>) {
     console.log('setselection', targets)
-    this.selectedKeys = new Set(
-      Array.from(targets, (target) => getTargetKey(target))
-    )
+    this.selectedKeys = new Set(Array.from(targets, (target) => target.uuid))
     this.updateSceneMembership()
   }
 
@@ -497,8 +492,4 @@ function createCompositeMaterial(
   material.depthWrite = false
   material.toneMapped = false
   return material
-}
-
-function getTargetKey(target: IntegerIdPickTarget) {
-  return target.object.uuid
 }
