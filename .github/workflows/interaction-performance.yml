@@ -17,7 +17,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        variant: [no-shadow-instant, shadow-instant]
+        variant: [baseline, instant]
     runs-on: namespace-profile-ubuntu-8-cores;overrides.cache-tag=modeling-app-general-v2
     timeout-minutes: 15
     steps:
@@ -32,24 +32,24 @@ jobs:
 
       - uses: actions/download-artifact@v8
         with:
-          # Identical application source at 5579609; only diagnostic tests differ.
-          run-id: 35888349572
+          # Application source includes CPU screenshot canvases at b968198.
+          run-id: 35892904430
           github-token: ${{ github.token }}
           name: interaction-performance-build
           path: .vite
 
       - uses: actions/download-artifact@v8
         with:
-          # Identical application source at 5579609; only diagnostic tests differ.
-          run-id: 35888349572
+          # Application source includes CPU screenshot canvases at b968198.
+          run-id: 35892904430
           github-token: ${{ github.token }}
           name: prepared-wasm
           path: rust/kcl-wasm-lib/pkg
 
       - uses: actions/download-artifact@v8
         with:
-          # Identical application source at 5579609; only diagnostic tests differ.
-          run-id: 35888349572
+          # Application source includes CPU screenshot canvases at b968198.
+          run-id: 35892904430
           github-token: ${{ github.token }}
           name: prepared-ts-rs-bindings
           path: rust/kcl-lib/bindings

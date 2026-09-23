@@ -70,20 +70,19 @@ test.beforeEach(async ({ page, homePage, cmdBar }) => {
   await page.emulateMedia({ reducedMotion: 'no-preference' })
   await page.setBodyDimensions({ width: 1200, height: 800 })
   await page.evaluate(() => document.fonts.ready)
-  // Diagnostic branch only: compare inexpensive palette separation styles.
-  const variant = process.env.INTERACTION_DIAGNOSTIC_VARIANT
-  await page.addStyleTag({
-    content: `
-      [data-testid="command-bar"] {
-        box-shadow: ${variant === 'shadow-instant' ? '0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)' : 'none'} !important;
-      }
-      [data-testid="command-bar-wrapper"] > div {
-        transition: none !important;
-        transform: none !important;
-        opacity: 1 !important;
-      }
-    `,
-  })
+  // Diagnostic branch only: isolate palette paint without blur or compositing.
+  if (process.env.INTERACTION_DIAGNOSTIC_VARIANT === 'instant') {
+    await page.addStyleTag({
+      content: `
+        [data-testid="command-bar"] { box-shadow: none !important; }
+        [data-testid="command-bar-wrapper"] > div {
+          transition: none !important;
+          transform: none !important;
+          opacity: 1 !important;
+        }
+      `,
+    })
+  }
   await expect(cmdBar.cmdBarOpenBtn).toBeEnabled()
   await expect(page.getByTestId('command-bar-wrapper')).toBeHidden()
 })

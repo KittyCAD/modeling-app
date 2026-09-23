@@ -57,14 +57,15 @@ test.beforeEach(async ({ page, homePage, scene, fs, folderSetupFn }) => {
   await page.emulateMedia({ reducedMotion: 'no-preference' })
   await page.setBodyDimensions({ width: 1200, height: 800 })
   await page.evaluate(() => document.fonts.ready)
-  // Diagnostic branch only: isolate shadow raster work from the same app build.
-  if (process.env.INTERACTION_DIAGNOSTIC_VARIANT === 'no-shadows') {
+  // Diagnostic branch only: isolate palette paint without blur or compositing.
+  if (process.env.INTERACTION_DIAGNOSTIC_VARIANT === 'instant') {
     await page.addStyleTag({
       content: `
         [data-testid="command-bar"] { box-shadow: none !important; }
-        [role="tooltip"] > * {
-          filter: none !important;
-          will-change: auto !important;
+        [data-testid="command-bar-wrapper"] > div {
+          transition: none !important;
+          transform: none !important;
+          opacity: 1 !important;
         }
       `,
     })
