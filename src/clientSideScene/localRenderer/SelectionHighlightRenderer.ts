@@ -8,7 +8,6 @@ import {
   Color,
   DoubleSide,
   LinearSRGBColorSpace,
-  type Material,
   Mesh,
   NearestFilter,
   NoBlending,
@@ -87,7 +86,11 @@ export class SelectionHighlightRenderer {
   private readonly sourceByOverlay = new Map<Mesh, Object3D>()
   private readonly lineKeys = new Set<string>()
   private readonly geometries: BufferGeometry[] = []
-  private readonly maskMaterials = new Set<Material>()
+  private readonly maskMaterial = new MeshBasicNodeMaterial({
+    color: 0xffffff,
+    side: DoubleSide,
+    toneMapped: false,
+  })
   private selectedKeys = new Set<string>()
   private hoveredKey: string | null = null
   private frameOutputTarget: RenderTarget | null = null
@@ -214,15 +217,9 @@ export class SelectionHighlightRenderer {
 
   setTargets(targets: IntegerIdPickTarget[]) {
     this.clearModel()
-    const material = new MeshBasicNodeMaterial({
-      color: 0xffffff,
-      side: DoubleSide,
-      toneMapped: false,
-    })
-    this.maskMaterials.add(material)
     for (const { object } of targets) {
       if (!(object instanceof Mesh)) continue
-      const overlay = new Mesh(object.geometry, material)
+      const overlay = new Mesh(object.geometry, this.maskMaterial)
       overlay.matrixAutoUpdate = false
       this.overlayByKey.set(object.uuid, overlay)
       this.sourceByOverlay.set(overlay, object)
@@ -316,14 +313,11 @@ export class SelectionHighlightRenderer {
       geometry.dispose()
     })
     this.geometries.length = 0
-    this.maskMaterials.forEach((material) => {
-      material.dispose()
-    })
-    this.maskMaterials.clear()
   }
 
   dispose() {
     this.clearModel()
+    this.maskMaterial.dispose()
     this.baseHdrTarget.dispose()
     this.baseLdrTarget.dispose()
     this.frameTarget.dispose()
