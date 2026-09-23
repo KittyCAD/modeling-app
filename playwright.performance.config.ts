@@ -12,13 +12,16 @@ export default defineConfig({
   fullyParallel: false,
   workers: 1,
   retries: 0,
-  repeatEach: 5,
+  repeatEach: 1,
+  projects: [
+    { name: 'home-diagnostic', grep: /command-palette\.first-use/ },
+    { name: 'modeling-diagnostic', grep: /modeling\.first-use/ },
+  ],
   forbidOnly: Boolean(process.env.CI),
   timeout: 120_000,
   reporter: [
     ['list'],
     ['./e2e/performance/reporter.ts'],
-    ['./e2e/performance/tab-reporter.ts'],
     [
       'json',
       { outputFile: './test-results/interaction-performance/playwright.json' },

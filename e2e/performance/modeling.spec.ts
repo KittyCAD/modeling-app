@@ -11,6 +11,15 @@ import { interactions } from '@src/lib/interactionPerformance/definitions'
 import type { InteractionReport } from '@src/lib/interactionPerformance/report'
 
 const projectName = 'interaction-performance'
+
+test.afterEach(async ({}, testInfo) => {
+  // Diagnostic branch only: let Chromium flush its startup trace after scoring.
+  await new Promise((resolve) => setTimeout(resolve, 25_000))
+  await testInfo.attach('presentation-trace', {
+    path: testInfo.outputPath('presentation-trace.json'),
+    contentType: 'application/json',
+  })
+})
 const modelPath = path.join(
   'rust',
   'kcl-lib',
@@ -104,6 +113,7 @@ for (const scenario of [
       }
     }
 
+    await page.evaluate(() => performance.mark('diagnostic-capture-start'))
     await startCapture(page)
     let report: InteractionReport
     try {

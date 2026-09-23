@@ -17,6 +17,15 @@ const POLL_INTERVAL_MS = 10
 const INJECTED_HANDLER_MS = 250
 const MIN_INJECTED_DURATION_MS = INJECTED_HANDLER_MS - 50
 
+test.afterEach(async ({}, testInfo) => {
+  // Diagnostic branch only: let Chromium flush its startup trace after scoring.
+  await new Promise((resolve) => setTimeout(resolve, 25_000))
+  await testInfo.attach('presentation-trace', {
+    path: testInfo.outputPath('presentation-trace.json'),
+    contentType: 'application/json',
+  })
+})
+
 async function waitForInjectedDuration(page: Page) {
   // Wait for the injected delay to reach Event Timing. The longest event in the
   // gesture can include the stall as presentation delay instead of processing.
@@ -71,6 +80,7 @@ for (const scenario of [
       await expect(page.getByTestId('command-bar-wrapper')).toBeHidden()
     }
 
+    await page.evaluate(() => performance.mark('diagnostic-capture-start'))
     await startCapture(page)
     let report: InteractionReport
     try {
