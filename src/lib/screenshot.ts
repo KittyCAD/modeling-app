@@ -55,8 +55,7 @@ const drawVisibleVideoStream = (
   const fullCanvas = document.createElement('canvas')
   fullCanvas.width = canvas.width
   fullCanvas.height = canvas.height
-  // Prefer CPU rasterization for temporary canvases read back for PNG encoding.
-  const fullContext = fullCanvas.getContext('2d', { willReadFrequently: true })
+  const fullContext = fullCanvas.getContext('2d')
   if (!fullContext) {
     return null
   }
@@ -64,9 +63,7 @@ const drawVisibleVideoStream = (
   fullContext.drawImage(video, 0, 0, fullCanvas.width, fullCanvas.height)
   targetCanvas.width = crop.sourceWidth
   targetCanvas.height = crop.sourceHeight
-  const targetContext = targetCanvas.getContext('2d', {
-    willReadFrequently: true,
-  })
+  const targetContext = targetCanvas.getContext('2d')
   if (!targetContext) {
     return null
   }
