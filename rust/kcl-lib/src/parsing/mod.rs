@@ -400,6 +400,23 @@ mod tests {
     }
 
     #[test]
+    fn enum_tag_and_label_identifiers_remain_valid_before_v3() {
+        for mode in [LexerMode::Old, LexerMode::New] {
+            let _guard = LexerMode::override_for_test(mode);
+            for version in [None, Some("1.0"), Some("2.0")] {
+                let settings = version.map_or_else(
+                    || "@settings(experimentalFeatures = allow)\n".to_owned(),
+                    |version| format!("@settings(kclVersion = {version}, experimentalFeatures = allow)\n"),
+                );
+                for body in ["value = $enum\n", "line(end = [1, 0], tag = $enum)\n", "2 as enum\n"] {
+                    let code = format!("{settings}{body}");
+                    assert!(top_level_parse(&code).is_ok(), "{mode:?}: {code}");
+                }
+            }
+        }
+    }
+
+    #[test]
     fn enum_is_reserved_in_every_v3_identifier_position() {
         for mode in [LexerMode::Old, LexerMode::New] {
             let _guard = LexerMode::override_for_test(mode);
@@ -412,6 +429,9 @@ mod tests {
                 "import other as enum from \"dep.kcl\"\n",
                 "import \"dep.kcl\" as enum\n",
                 "@settings(enum = 1)\nvalue = 1\n",
+                "value = $enum\n",
+                "line(end = [1, 0], tag = $enum)\n",
+                "2 as enum\n",
             ] {
                 let code = format!("@settings(kclVersion = \"3.0-preview\", experimentalFeatures = allow)\n{body}");
                 let result = top_level_parse(&code);
