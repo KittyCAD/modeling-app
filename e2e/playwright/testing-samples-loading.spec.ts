@@ -159,10 +159,8 @@ test.describe('Query parameter command', { tag: '@web' }, () => {
   }) => {
     await page.goto('/?cmd=set-layout&groupId=application&layoutId=ttc')
 
-    // The root route awaits Wasm before mounting the query-command consumer.
-    await page.evaluate(async () => {
-      await window.app.wasmPromise
-    })
+    // Home creates and opens a project before the file route applies its layout.
+    await page.waitForURL('**/file/**', { waitUntil: 'domcontentloaded' })
 
     await expect
       .poll(() =>
