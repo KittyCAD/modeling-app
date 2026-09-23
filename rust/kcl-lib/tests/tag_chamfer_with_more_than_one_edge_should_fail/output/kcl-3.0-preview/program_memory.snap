@@ -1,0 +1,17 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Variables in memory after executing tag_chamfer_with_more_than_one_edge_should_fail.kcl
+---
+{
+  "chamfer1": {
+    "type": "TagIdentifier",
+    "value": "chamfer1"
+  },
+  "cube": {
+    "type": "Function"
+  },
+  "line1": {
+    "type": "TagIdentifier",
+    "value": "line1"
+  }
+}

@@ -1,0 +1,22 @@
+fn cube(pos, scale) {
+  sg = startSketchOn(XY)
+    |> startProfile(at = pos)
+    |> line(end = [0, scale])
+    |> line(end = [scale, 0])
+    |> line(end = [0, -scale])
+
+  return sg
+}
+part001 = cube(pos = [0, 0], scale = 20)
+  |> close(tag = $line1)
+  |> extrude(length = 20)
+  |> chamfer(length = 10, tags = [getOppositeEdge(line1)])
+
+pattn2 = patternCircular3d(
+  part001,
+  axis = [0, 0, 1],
+  center = [-20, -20, -20],
+  instances = 5,
+  arcDegrees = 360,
+  rotateDuplicates = false,
+)

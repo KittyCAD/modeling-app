@@ -64,9 +64,9 @@ criterion_group!(benches, bench_kcl_lsp_semantic_tokens);
 criterion_main!(benches);
 
 const KITT_PROGRAM: &str = include_str!("../../kcl-lib/e2e/executor/inputs/kittycad_svg.kcl");
-const PIPES_PROGRAM: &str = include_str!("../../kcl-lib/e2e/executor/inputs/pipes_on_pipes.kcl");
+const PIPES_PROGRAM: &str = include_str!("../../kcl-lib/tests/pipes_on_pipes/input.kcl");
 const CUBE_PROGRAM: &str = include_str!("../../kcl-lib/e2e/executor/inputs/cube.kcl");
 const MATH_PROGRAM: &str = include_str!("../../kcl-lib/e2e/executor/inputs/math.kcl");
 const MIKE_STRESS_TEST_PROGRAM: &str = include_str!("../../kcl-lib/tests/mike_stress_test/input.kcl");
-const GLOBAL_TAGS_FILE: &str = include_str!("../../kcl-lib/e2e/executor/inputs/global-tags.kcl");
-const LSYSTEM_PROGRAM: &str = include_str!("../../kcl-lib/e2e/executor/inputs/lsystem.kcl");
+const GLOBAL_TAGS_FILE: &str = include_str!("../../kcl-lib/tests/global_tags/input.kcl");
+const LSYSTEM_PROGRAM: &str = include_str!("../../kcl-lib/tests/lsystem/input.kcl");
