@@ -37,6 +37,14 @@ The recorder captures trusted clicks during an explicitly started session:
   durations are rounded to 8 ms; filtered or late entries remain unreported.
   Observed breaches fail, but missing entries are not proof of a fast presentation.
 
+After the controlled scenario's actions finish, the suite keeps the observer
+active for a one-second reporting window before taking its final snapshot. This
+captures presentation feedback that arrives after the last DOM outcome; it adds
+no inputs and does not add the reporting wait to measured durations. Late entries
+can increase a sample's Event Timing maximum. The window is recorded in measurement
+metadata. It is not a delivery guarantee: filtered entries and feedback arriving
+after the final snapshot remain unreported, not evidence of a fast presentation. Discovery does not use this reporting window.
+
 The registered outcomes cover command-palette search becoming usable and the
 palette closing, plus Code Editor and Project Files sidebar toggles. Code Editor
 opening waits for visible, editable CodeMirror content; Project Files opening

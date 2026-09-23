@@ -6,6 +6,7 @@ import { reportInteractions } from '@src/lib/interactionPerformance/report'
 import type { InteractionReport } from '@src/lib/interactionPerformance/report'
 
 const POLL_INTERVAL_MS = 10
+const EVENT_TIMING_REPORTING_WINDOW_MS = 1000
 
 export async function startCapture(page: Page) {
   await page.evaluate(() => {
@@ -45,13 +46,16 @@ export async function finishCapture(
   expected: Readonly<Record<string, number>>,
   tronApp: ElectronZoo | undefined
 ): Promise<InteractionReport> {
-  const snapshot = await page.evaluate(() => {
+  const snapshot = await page.evaluate(async (reportingWindowMs) => {
     const recorder = window.app.interactionPerformance
     if (!recorder) {
       throw new Error('Build the app with VITE_INTERACTION_PERFORMANCE=1.')
     }
+    // GPU presentation feedback can arrive after the final DOM outcome. Keep
+    // collecting without changing completed durations or exercising more inputs.
+    await new Promise((resolve) => setTimeout(resolve, reportingWindowMs))
     return recorder.stop()
-  })
+  }, EVENT_TIMING_REPORTING_WINDOW_MS)
   const report = reportInteractions(snapshot, expected)
   if (!tronApp) throw new Error('Interaction measurements require Electron.')
   const runtime = await tronApp.electron.evaluate(async ({ app }) => ({
@@ -78,6 +82,7 @@ export async function finishCapture(
     viewport: page.viewportSize(),
     motion: 'no-preference',
     timing: 'pointerdown-to-outcome-observed-after-render',
+    eventTimingReportingWindowMs: EVENT_TIMING_REPORTING_WINDOW_MS,
   }
   // Preserve raw records before assertions so a failed collection is inspectable.
   await testInfo.attach('interaction-measurements', {
