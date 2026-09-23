@@ -443,7 +443,7 @@ export type ZookeeperAttachmentFetchState =
   | { status: 'error'; message: string }
 
 export const getZookeeperAttachmentKey = (
-  attachmentRef: AttachmentRef
+  attachmentRef: Pick<AttachmentRef, 'prompt_id' | 'seq' | 'index'>
 ): string =>
   `${attachmentRef.prompt_id}:${attachmentRef.seq}:${attachmentRef.index}`
 
@@ -1073,6 +1073,7 @@ export const zookeeperManagerMachine = setup({
         prompt_id,
         seq,
         indices: [index],
+        supports_attachments_error: true,
       }
 
       context.ws.send(JSON.stringify(request))
@@ -1940,6 +1941,33 @@ export const zookeeperManagerMachine = setup({
                     assertEvent(event, [
                       ZookeeperManagerTransitions.ResponseReceive,
                     ])
+
+                    if ('attachments_error' in event.response) {
+                      const { prompt_id, seq, indices, detail } =
+                        event.response.attachments_error
+
+                      const attachmentFetches = { ...context.attachmentFetches }
+
+                      for (const index of indices) {
+                        const key = getZookeeperAttachmentKey({
+                          prompt_id,
+                          seq,
+                          index,
+                        })
+
+                        if (attachmentFetches[key]?.status !== 'loading') {
+                          continue
+                        }
+
+                        attachmentFetches[key] = {
+                          status: 'error',
+                          message: detail,
+                        }
+                      }
+
+                      // Attachment failures must not change conversation or generation state.
+                      return { attachmentFetches }
+                    }
 
                     if ('attachments' in event.response) {
                       const attachmentFetches: Record<

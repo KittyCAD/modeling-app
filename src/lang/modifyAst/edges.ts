@@ -44,6 +44,7 @@ import {
   getCodeRefsByArtifactId,
   getCommonFacesForEdge,
   getFaceCodeRef,
+  getMergedSweepBodyArtifact,
   getSegmentForEdgeCut,
   getSweepArtifactFromSelection,
   type ResolvedGraphSelection,
@@ -3750,12 +3751,22 @@ export function insertPrimitiveEdgeVariablesAndOffsetPathToNode({
     if (!bodySelection?.artifact || !bodySelection.codeRef) {
       continue
     }
+    if (bodySelection.artifact.type === 'sweep') {
+      const body = getMergedSweepBodyArtifact(
+        bodySelection.artifact,
+        artifactGraph
+      )
+      if (err(body)) return body
+      bodySelection.artifact = body
+      bodySelection.codeRef = body.codeRef
+    }
+
     const resolvedBodySelection: ResolvedGraphSelection = {
       artifact: bodySelection.artifact,
       codeRef: bodySelection.codeRef,
     }
 
-    const bodyKey = JSON.stringify(bodySelection.codeRef.pathToNode)
+    const bodyKey = bodySelection.artifact.id
     const byBody = primitiveSelectionsByBody.get(bodyKey)
     if (byBody) {
       if (!byBody.primitiveIndices.includes(selection.primitiveIndex)) {
@@ -3787,7 +3798,8 @@ export function insertPrimitiveEdgeVariablesAndOffsetPathToNode({
       wasmInstance,
       nodeToEdit,
       {
-        lastChildLookup: true,
+        // Keep canonical sweeps on their own body, just like graph edges.
+        lastChildLookup: primitiveData.bodySelection.artifact?.type !== 'sweep',
         artifactTypeFilter: ['compositeSolid', 'sweep'],
       }
     )

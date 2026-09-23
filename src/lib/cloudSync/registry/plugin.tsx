@@ -45,6 +45,7 @@ import {
   normalizePathForSync,
 } from '@src/lib/cloudSync/paths'
 import { CLOUD_SYNC_PLUGIN_ID } from '@src/lib/cloudSync/registry/constants'
+import { personalCloudProjectRelationshipMembershipPolicy } from '@src/lib/cloudSync/registry/personalCloudLibrary'
 import {
   type CloudProjectLocalManifestComparison,
   classifyCloudProjectDuplicateRisk,
@@ -1374,6 +1375,9 @@ export const cloudSyncProjectLibraryType = defineRegistryItemFactory((ctx) => {
     newLibrarySetting: getDefaultCloudProjectLibrarySetting(),
     settingsDetails: CloudProjectLibrarySettingsDetails,
     homeSummary: CloudSyncLibraryHomeSummary,
+    relationshipMembershipPolicies: [
+      personalCloudProjectRelationshipMembershipPolicy,
+    ],
     operations: {
       createProject: {
         // Creating a project only needs the local library folder, so it stays
