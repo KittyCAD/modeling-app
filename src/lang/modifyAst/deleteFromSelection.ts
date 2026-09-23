@@ -207,30 +207,47 @@ export async function deleteFromSelection(
     return deleteEdgeTreatment(astClone, selection, wasmInstance)
   }
 
-  const varDec = getNodeFromPath<VariableDeclarator>(
+  const selectedAstNode = getNodeFromPath<
+    VariableDeclarator | CallExpressionKw
+  >(ast, selection.codeRef.pathToNode, wasmInstance, [
+    'VariableDeclarator',
+    'CallExpressionKw',
+  ])
+  if (err(selectedAstNode)) return selectedAstNode
+
+  const varDec = getNodeFromPath<VariableDeclarator | CallExpressionKw>(
     ast,
     selection.codeRef.pathToNode,
     wasmInstance,
     'VariableDeclarator'
   )
   if (err(varDec)) return varDec
-  const selectedNode = varDec.node
+  const varDecNode =
+    varDec.node.type === 'VariableDeclarator' ? varDec.node : null
+  const varDecNodeInit = varDecNode?.init ?? null
   const selectedCallExpression =
-    selectedNode.init.type === 'CallExpressionKw' ? selectedNode.init : null
+    selectedAstNode.node.type === 'CallExpressionKw'
+      ? selectedAstNode.node
+      : varDecNodeInit?.type === 'CallExpressionKw'
+        ? varDecNodeInit
+        : varDec.node.type === 'CallExpressionKw'
+          ? varDec.node
+          : null
   const selectedCallName = selectedCallExpression?.callee.name.name ?? null
   const isSweepLikePathSelection =
     selection.artifact?.type === 'path' &&
     selectedCallName !== null &&
     ['extrude', 'revolve', 'sweep', 'loft', 'blend'].includes(selectedCallName)
-  if (selectedNode.init.type === 'PipeExpression') {
-    const pipeExpression = selectedNode.init
+  const isSelectedCallExpression =
+    selectedAstNode.node.type === 'CallExpressionKw'
+  if (varDecNodeInit?.type === 'PipeExpression') {
     const pipeBodyIndex = selection.codeRef.pathToNode.findIndex(
       ([key, kind]) => key === 'body' && kind === 'PipeExpression'
     )
     const pipeItemIndex = selection.codeRef.pathToNode[pipeBodyIndex + 1]?.[0]
     const pipeItem =
       typeof pipeItemIndex === 'number' && pipeItemIndex > 0
-        ? pipeExpression.body[pipeItemIndex]
+        ? varDecNodeInit.body[pipeItemIndex]
         : undefined
     // Legacy Sketch 1 segment, wall, and cap selections can point to a sketch
     // pipe stage. Removing that stage would delete sketch code instead of the
@@ -245,7 +262,7 @@ export async function deleteFromSelection(
       !isGeometrySelection &&
       pipeItem?.type === 'CallExpressionKw' &&
       typeof pipeItemIndex === 'number' &&
-      pipeExpression.body.length > 1
+      varDecNodeInit.body.length > 1
     ) {
       // Match the whole pipe stage so selecting a nested call (e.g. translate
       // inside union) cannot delete the enclosing operation instead.
@@ -270,9 +287,10 @@ export async function deleteFromSelection(
   }
 
   if (
+    isSelectedCallExpression ||
     ((selection?.artifact?.type === 'wall' ||
       selection?.artifact?.type === 'cap') &&
-      selectedNode.init.type === 'PipeExpression') ||
+      varDecNodeInit?.type === 'PipeExpression') ||
     selection.artifact?.type === 'sweep' ||
     selection.artifact?.type === 'plane' ||
     (selection.artifact?.type === 'path' &&
@@ -287,6 +305,7 @@ export async function deleteFromSelection(
     let extrudeNameToDelete = ''
     let pathToNode: PathToNode | null = null
     if (
+      !isSelectedCallExpression &&
       selection.artifact &&
       selection.artifact.type !== 'sweep' &&
       selection.artifact.type !== 'plane' &&
@@ -297,7 +316,8 @@ export async function deleteFromSelection(
       selection.artifact.type !== 'planeOfFace' &&
       selection.artifact.type !== 'namedView'
     ) {
-      const varDecName = selectedNode.id.name
+      if (!varDecNode) return new Error('Could not find sketch variable')
+      const varDecName = varDecNode.id.name
       traverse(astClone, {
         enter: (node, path) => {
           if (node.type === 'VariableDeclaration') {
@@ -530,11 +550,8 @@ export async function deleteFromSelection(
     }
     // await prom
     return astClone
-  } else if (
-    selectedNode.type === 'VariableDeclarator' &&
-    selectedNode.init.type === 'PipeExpression'
-  ) {
-    const pipeBody = selectedNode.init.body
+  } else if (varDecNodeInit?.type === 'PipeExpression') {
+    const pipeBody = varDecNodeInit.body
     const doNotDeleteProfileIfItHasBeenExtruded = !(
       selection?.artifact?.type === 'segment' && selection?.artifact?.surfaceId
     )
@@ -551,11 +568,8 @@ export async function deleteFromSelection(
     }
   } else if (
     // single expression profiles or clone
-    selectedNode.type === 'VariableDeclarator' &&
-    selectedNode.init.type === 'CallExpressionKw' &&
-    ['circleThreePoint', 'circle', 'clone'].includes(
-      selectedNode.init.callee.name.name
-    )
+    varDecNodeInit?.type === 'CallExpressionKw' &&
+    ['circleThreePoint', 'circle', 'clone'].includes(selectedCallName ?? '')
   ) {
     const varDecIndex = varDec.shallowPath[1][0] as number
     astClone.body.splice(varDecIndex, 1)
