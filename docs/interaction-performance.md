@@ -57,10 +57,11 @@ Run desktop measurements in a normal visible Electron window with `HEADLESS`
 unset. The windows can take focus. Keep the same machine and display setup when
 comparing changes, and leave normal motion enabled.
 
-Linux CI uses an Xvfb virtual display. Its rendering and presentation costs can
-differ from a physical desktop, especially on first use. Compare results within
-each environment and confirm a proposed UI optimization on a visible desktop
-before changing product behavior to satisfy the virtual-display budget.
+The scored CI job uses the repository's established macOS desktop runner and
+launches visible Electron directly. Compilation stays in a separate job. This
+is a hosted desktop, so compare results within the same runner profile; a local
+desktop pass does not establish the CI result. Earlier Linux/Xvfb measurements
+remain separate evidence with different rendering and presentation costs.
 
 Prepare dependencies and matching Wasm artifacts using the normal repository
 setup, then build and test the production Electron app:
@@ -74,8 +75,8 @@ NODE_ENV=production TARGET=desktop VITE_ZOO_BASE_DOMAIN=dev.zoo.dev \
 ```
 
 The test process needs the existing development API token through the usual
-credential setup. CI supplies it only to the test step. Linux runs use the same
-Xvfb wrapper as the existing desktop tests.
+credential setup. CI supplies it only to the test step. Its measurement command
+unsets `HEADLESS` and uses the same controlled configuration as the local run.
 
 The profile uses the existing Electron fixtures and authentication, with cloud
 synchronization disabled from startup. Home scenarios verify that Home is ready
