@@ -254,7 +254,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
 
       // Verify all three segments were tagged
       expect(newCode).toContain('tag = $seg01')
-      expect(newCode).toContain('tag = $chamferFace01')
+      expect(newCode).toContain('tag = $seg02')
       expect(newCode).toContain('tag = $seg03')
       // Should create three separate GDT annotations (one per face)
       const gdtCalls = newCode.match(/gdt::flatness/g)
@@ -540,7 +540,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
 
       // Verify the original segment tag is preserved and chamfer gets new tag
       expect(newCode).toContain('tag = $seg01')
-      expect(newCode).toContain('tag = $seg02')
+      expect(newCode).toContain('tag = $chamferFace01')
       // Verify the GDT annotation references the chamfer tag
       expect(newCode).toContain(
         'gdt::flatness(faces = [chamferFace01], tolerance = 0.1mm)'
@@ -665,7 +665,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       if (err(newCode)) throw newCode
 
       expect(newCode).toContain('tag = $seg01')
-      expect(newCode).toContain('tag = $chamferFace01')
+      expect(newCode).toContain('tag = $seg02')
       expect(newCode).toContain('tag = $seg03')
       const gdtCalls = newCode.match(/gdt::straightness/g)
       expect(gdtCalls).toHaveLength(3)
@@ -2209,7 +2209,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       // Verify the original segment tag is preserved
       expect(newCode).toContain('xLine(length = 10, tag = $seg01)')
       // Verify the chamfer was tagged properly
-      expect(newCode).toContain('tag = $seg02')
+      expect(newCode).toContain('tag = $chamferFace01')
       // Verify GDT datum annotation was added for chamfer
       expect(newCode).toContain('gdt::datum(face = chamferFace01, name = "D")')
 
