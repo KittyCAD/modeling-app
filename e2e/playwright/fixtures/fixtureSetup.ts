@@ -250,53 +250,8 @@ export class ElectronZoo {
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     const that = this
 
-    const traceConfigPath = testInfo.outputPath('trace-config.json')
-    await fsp.mkdir(path.dirname(traceConfigPath), { recursive: true })
-    await fsp.writeFile(
-      traceConfigPath,
-      JSON.stringify({
-        startup_duration: 20,
-        result_file: testInfo.outputPath('presentation-trace.json'),
-        trace_config: {
-          included_categories: [
-            'benchmark',
-            'cc',
-            'viz',
-            'gpu',
-            'disabled-by-default-gpu.dawn',
-            'disabled-by-default-gpu.graphite.dawn',
-            'skia',
-            'skia.gpu',
-            'skia.shaders',
-            'latencyInfo',
-            'toplevel',
-            'blink.user_timing',
-            'disabled-by-default-devtools.timeline',
-          ],
-          excluded_categories: ['*'],
-          enable_argument_filter: true,
-          record_mode: 'record-until-full',
-          trace_buffer_size_in_kb: 32768,
-        },
-      })
-    )
     const options = {
-      args: [
-        '.',
-        '--no-sandbox',
-        ...(['cpu-raster', 'cpu-paint'].includes(
-          process.env.INTERACTION_DIAGNOSTIC_VARIANT ?? ''
-        )
-          ? ['--disable-gpu-rasterization']
-          : []),
-        ...(['cpu-canvas', 'cpu-paint'].includes(
-          process.env.INTERACTION_DIAGNOSTIC_VARIANT ?? ''
-        )
-          ? ['--disable-accelerated-2d-canvas']
-          : []),
-        `--trace-config-file=${traceConfigPath}`,
-        '--trace-startup-format=json',
-      ],
+      args: ['.', '--no-sandbox'],
       timeout: setupTimeout,
       env: {
         ...process.env,

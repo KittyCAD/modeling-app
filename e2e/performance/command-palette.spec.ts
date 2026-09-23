@@ -17,24 +17,6 @@ const POLL_INTERVAL_MS = 10
 const INJECTED_HANDLER_MS = 250
 const MIN_INJECTED_DURATION_MS = INJECTED_HANDLER_MS - 50
 
-test.afterEach(async ({ page, cmdBar }, testInfo) => {
-  // Diagnostic branch only: let Chromium flush its startup trace after scoring.
-  await new Promise((resolve) => setTimeout(resolve, 25_000))
-  await cmdBar.cmdBarOpenBtn.click()
-  await expect(page.getByTestId('cmd-bar-search')).toBeEditable()
-  await expect(
-    page.locator('[data-testid="command-bar-wrapper"] > div')
-  ).toHaveCSS('opacity', '1')
-  await testInfo.attach('palette-appearance', {
-    body: await page.screenshot(),
-    contentType: 'image/png',
-  })
-  await testInfo.attach('presentation-trace', {
-    path: testInfo.outputPath('presentation-trace.json'),
-    contentType: 'application/json',
-  })
-})
-
 async function waitForInjectedDuration(page: Page) {
   // Wait for the injected delay to reach Event Timing. The longest event in the
   // gesture can include the stall as presentation delay instead of processing.
@@ -70,7 +52,6 @@ test.beforeEach(async ({ page, homePage, cmdBar }) => {
   await page.emulateMedia({ reducedMotion: 'no-preference' })
   await page.setBodyDimensions({ width: 1200, height: 800 })
   await page.evaluate(() => document.fonts.ready)
-
   await expect(cmdBar.cmdBarOpenBtn).toBeEnabled()
   await expect(page.getByTestId('command-bar-wrapper')).toBeHidden()
 })
@@ -90,7 +71,6 @@ for (const scenario of [
       await expect(page.getByTestId('command-bar-wrapper')).toBeHidden()
     }
 
-    await page.evaluate(() => performance.mark('diagnostic-capture-start'))
     await startCapture(page)
     let report: InteractionReport
     try {
