@@ -379,6 +379,8 @@ export class CameraControls {
     this.camera.up.set(0, 0, 1)
     this.camera.far = 20000
     this.target = new Vector3()
+    this.camera.position.set(14, -14, 14) // Initial camera position, used when project is empty.
+    this.camera.lookAt(this.target)
     this.domElement = domElement
     this.isDragging = false
     this.wasDragging = false
