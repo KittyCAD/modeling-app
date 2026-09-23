@@ -162,6 +162,8 @@ const createFakeController = ({
     cancel: vi.fn(),
     checkBillingAccess: vi.fn(),
     clearConversation: vi.fn(async () => undefined),
+    selectConversation: vi.fn(async () => undefined),
+    loadConversationDetails: vi.fn(async () => ({})),
     dispose: vi.fn(),
     reconnect: vi.fn(),
     removeQueued: vi.fn(),
@@ -173,6 +175,9 @@ const createFakeController = ({
   const controller = {
     actor: actor.actor,
     conversationLookupError: signal(conversationLookupError),
+    conversationIds: signal(['older-conversation', 'current-conversation']),
+    currentConversationId: signal('current-conversation'),
+    conversationSwitchError: signal(undefined),
     isClearingChat: clearingSignal,
     isResumingInterruptedTurn: resumingSignal,
     projectPath: '/projects/cube',
@@ -447,7 +452,7 @@ describe('ZookeeperConversationPane', () => {
       fireEvent.click(screen.getByRole('button', { name: 'Clear chat' }))
       const dialog = screen.getByRole('dialog', { name: 'Start a new chat?' })
       expect(dialog).toHaveTextContent(
-        'Your current chat will no longer be accessible from this project.'
+        'Your current chat will remain in conversation history.'
       )
       expect(dialog).toHaveTextContent(
         'Changes already made to project files will not be undone.'
@@ -648,4 +653,64 @@ describe('ZookeeperConversationPane', () => {
     })
     expect(latestConversationProps().initialMlCopilotMode).toBe('user-mode')
   })
+
+  test('selects an idle saved conversation without showing a confirmation', async () => {
+    const fake = createFakeController()
+    render(
+      <MemoryRouter>
+        <ZookeeperConversationPane {...createPaneProps(fake.controller)} />
+      </MemoryRouter>
+    )
+    fireEvent.click(screen.getByRole('button', { name: 'Choose conversation' }))
+    fireEvent.click(
+      await screen.findByRole('menuitem', { name: 'Chat older-co' })
+    )
+    expect(fake.selectConversation).toHaveBeenCalledExactlyOnceWith(
+      'older-conversation'
+    )
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+  })
+
+  test.each([true, false])(
+    'confirms a switch with a running response or queued messages: %s',
+    async (running) => {
+      const fake = createFakeController({
+        actorContext: { awaitingResponse: running },
+        queue: running
+          ? []
+          : [{ id: 'queued', text: 'queued prompt', attachments: [] }],
+      })
+      render(
+        <MemoryRouter>
+          <ZookeeperConversationPane {...createPaneProps(fake.controller)} />
+        </MemoryRouter>
+      )
+      fireEvent.click(
+        screen.getByRole('button', { name: 'Choose conversation' })
+      )
+      fireEvent.click(
+        await screen.findByRole('menuitem', { name: 'Chat older-co' })
+      )
+      expect(fake.selectConversation).not.toHaveBeenCalled()
+      expect(
+        screen.getByRole('dialog', { name: 'Switch conversations?' })
+      ).toHaveTextContent(
+        'Changes already made to project files will not be undone.'
+      )
+      fireEvent.click(screen.getByRole('button', { name: 'Keep current chat' }))
+      expect(fake.selectConversation).not.toHaveBeenCalled()
+      fireEvent.click(
+        screen.getByRole('button', { name: 'Choose conversation' })
+      )
+      fireEvent.click(
+        await screen.findByRole('menuitem', { name: 'Chat older-co' })
+      )
+      fireEvent.click(
+        screen.getByRole('button', { name: 'Switch conversation' })
+      )
+      expect(fake.selectConversation).toHaveBeenCalledExactlyOnceWith(
+        'older-conversation'
+      )
+    }
+  )
 })

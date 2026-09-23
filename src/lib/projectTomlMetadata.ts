@@ -224,7 +224,10 @@ export function setZookeeperConversationInProjectTomlContents(
   contents: string,
   environmentName: string,
   conversationId: string,
-  { prepend = false }: { prepend?: boolean } = {}
+  {
+    prepend = false,
+    select = false,
+  }: { prepend?: boolean; select?: boolean } = {}
 ): string | Error {
   const current = getZookeeperConversationMetadataFromProjectTomlContents(
     contents,
@@ -256,18 +259,24 @@ export function setZookeeperConversationInProjectTomlContents(
   const environment = zookeeper[environmentName]
   const { conversationIds } = current
   const alreadySaved = conversationIds.includes(conversationId)
+  if (select && !alreadySaved) {
+    return new Error('The conversation is no longer saved in this project')
+  }
   if (
     alreadySaved &&
+    (!select || conversationIds.at(-1) === conversationId) &&
     environment.conversation_ids !== undefined &&
     environment.conversation_id === undefined
   ) {
     return contents
   }
-  environment.conversation_ids = alreadySaved
-    ? conversationIds
-    : prepend
-      ? [conversationId, ...conversationIds]
-      : [...conversationIds, conversationId]
+  environment.conversation_ids = select
+    ? [...conversationIds.filter((id) => id !== conversationId), conversationId]
+    : alreadySaved
+      ? conversationIds
+      : prepend
+        ? [conversationId, ...conversationIds]
+        : [...conversationIds, conversationId]
   delete environment.conversation_id
   return stringifyProjectToml(table)
 }

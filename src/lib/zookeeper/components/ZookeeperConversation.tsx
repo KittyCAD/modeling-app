@@ -683,7 +683,7 @@ export const ZookeeperConversation = (props: ZookeeperConversationProps) => {
   const shouldShowWelcomeMessage = isNonNullable(props.welcomeMessage)
 
   return (
-    <div className="relative">
+    <div className="relative min-h-0 flex-1">
       <div className="absolute inset-0">
         <div className="flex flex-col h-full">
           <div className="h-full flex flex-col justify-end overflow-auto relative">

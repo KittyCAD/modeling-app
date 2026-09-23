@@ -240,6 +240,62 @@ describe('project-backed Zookeeper conversations', () => {
     expect(files.get(projectTomlPath)).toContain(conversationId)
   })
 
+  it('lists recovered IDs and moves an explicitly selected chat to the end', async () => {
+    files.set(
+      '/tmp/ml-conversations.json',
+      JSON.stringify({ [projectId]: conversationId })
+    )
+    await store().saveProjectConversationId({
+      projectId,
+      conversationId: replacementId,
+    })
+    await expect(store().getProjectConversationIds(projectId)).resolves.toEqual(
+      [conversationId, replacementId]
+    )
+    await store().selectProjectConversationId({ projectId, conversationId })
+    await expect(store().getProjectConversationIds(projectId)).resolves.toEqual(
+      [replacementId, conversationId]
+    )
+    await expect(store().getProjectConversationId(projectId)).resolves.toBe(
+      conversationId
+    )
+    fsMocks.writeFile.mockClear()
+    await store().selectProjectConversationId({ projectId, conversationId })
+    expect(fsMocks.writeFile).not.toHaveBeenCalled()
+  })
+
+  it('does not import an unknown ID when selecting a chat', async () => {
+    await store().saveProjectConversationId({ projectId, conversationId })
+    const before = files.get(projectTomlPath)
+    await expect(
+      store().selectProjectConversationId({
+        projectId,
+        conversationId: replacementId,
+      })
+    ).rejects.toThrow('no longer saved')
+    expect(files.get(projectTomlPath)).toBe(before)
+  })
+
+  it('keeps selection scoped to the current environment', async () => {
+    await store().saveProjectConversationId({ projectId, conversationId })
+    await store('dev.zoo.dev').saveProjectConversationId({
+      projectId,
+      conversationId: replacementId,
+    })
+    await expect(
+      store('dev.zoo.dev').selectProjectConversationId({
+        projectId,
+        conversationId,
+      })
+    ).rejects.toThrow('no longer saved')
+    await expect(store().getProjectConversationIds(projectId)).resolves.toEqual(
+      [conversationId]
+    )
+    await expect(
+      store('dev.zoo.dev').getProjectConversationIds(projectId)
+    ).resolves.toEqual([replacementId])
+  })
+
   it('keeps environments separate without migrating an unscoped mapping into a second environment', async () => {
     files.set(
       '/tmp/ml-conversations.json',

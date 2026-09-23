@@ -19,6 +19,7 @@ import { S } from '@src/machines/utils'
 import { useSelector } from '@xstate/react'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
+import { ZookeeperConversationPicker } from '@src/lib/zookeeper/components/ZookeeperConversationPicker'
 
 export const ZookeeperConversationPane = (props: {
   controller: ZookeeperSessionController
@@ -30,12 +31,14 @@ export const ZookeeperConversationPane = (props: {
   useSignals()
   const [defaultPrompt, setDefaultPrompt] = useState('')
   const [isConfirmingClearChat, setIsConfirmingClearChat] = useState(false)
+  const [pendingConversationId, setPendingConversationId] = useState<string>()
   const [searchParams, setSearchParams] = useSearchParams()
   const controller = props.controller
   const actor = controller.actor
 
   useEffect(() => {
     setIsConfirmingClearChat(false)
+    setPendingConversationId(undefined)
   }, [controller])
 
   let conversation = useSelector(actor, (snapshot) => {
@@ -149,7 +152,47 @@ export const ZookeeperConversationPane = (props: {
     props.zookeeperMode.project ?? props.zookeeperMode.user ?? defaultMode
 
   return (
-    <>
+    <div className="flex min-h-0 flex-1 flex-col">
+      <ZookeeperConversationPicker
+        key={controller.projectPath}
+        controller={controller}
+        currentPrompt={
+          conversation?.exchanges
+            .map((exchange) => exchange.request)
+            .find((request) => request?.type === 'user')?.content
+        }
+        onNewChat={() => setIsConfirmingClearChat(true)}
+        onSelect={(id) => {
+          if (id === controller.currentConversationId.value) return
+          if (isPromptRunning || controller.queue.value.length > 0) {
+            setPendingConversationId(id)
+          } else {
+            void controller.selectConversation(id)
+          }
+        }}
+      />
+      {controller.conversationSwitchError.value && (
+        <p role="alert" className="px-3 py-2 text-sm">
+          {controller.conversationSwitchError.value}
+        </p>
+      )}
+      {pendingConversationId && (
+        <DeleteConfirmationDialog
+          title="Switch conversations?"
+          confirmButtonText="Switch conversation"
+          dismissButtonText="Keep current chat"
+          onConfirm={() => {
+            void controller.selectConversation(pendingConversationId)
+            setPendingConversationId(undefined)
+          }}
+          onDismiss={() => setPendingConversationId(undefined)}
+        >
+          <p className="my-4">
+            This will stop the current response and discard queued messages.
+            Changes already made to project files will not be undone.
+          </p>
+        </DeleteConfirmationDialog>
+      )}
       {isConfirmingClearChat && (
         <DeleteConfirmationDialog
           title="Start a new chat?"
@@ -167,8 +210,8 @@ export const ZookeeperConversationPane = (props: {
               : 'This will start a new conversation.'}
           </p>
           <p className="my-4">
-            Your current chat will no longer be accessible from this project.
-            Changes already made to project files will not be undone.
+            Your current chat will remain in conversation history. Changes
+            already made to project files will not be undone.
           </p>
         </DeleteConfirmationDialog>
       )}
@@ -233,6 +276,6 @@ export const ZookeeperConversationPane = (props: {
         modeOptions={modeOptions}
         modeScopeKey={controller.projectPath}
       />
-    </>
+    </div>
   )
 }

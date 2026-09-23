@@ -1,5 +1,5 @@
 import { signal } from '@preact/signals-core'
-import type { ZookeeperConversationStore } from '@src/lib/zookeeper/zookeeperConversationStore'
+import type { ProjectZookeeperConversationStore } from '@src/lib/zookeeper/zookeeperConversationStore'
 import type * as ZookeeperManagerMachineModule from '@src/lib/zookeeper/zookeeperManagerMachine'
 import type { ZookeeperManagerActor } from '@src/lib/zookeeper/zookeeperManagerMachine'
 import type * as SystemIOUtilsModule from '@src/machines/systemIO/utils'
@@ -190,21 +190,31 @@ function createHarness({
   apiToken = 'initial-token',
   initialProjectId = projectId,
   storeGet = Promise.resolve(undefined),
+  storeIds,
 }: {
   actorState?: TestState
   actorContext?: Partial<SnapshotContext>
   apiToken?: string
   initialProjectId?: string | undefined
   storeGet?: Promise<string | undefined>
+  storeIds?: Promise<string[]>
 } = {}) {
   const actor = new TestActor()
   actor.setSnapshot(actorState, actorContext)
   managerMocks.create.mockReturnValue(actor)
 
   const billingSend = vi.fn()
-  const conversationStore: ZookeeperConversationStore = {
+  const conversationStore: ProjectZookeeperConversationStore & {
+    deleteProjectConversationId: ReturnType<typeof vi.fn>
+  } = {
     deleteProjectConversationId: vi.fn().mockResolvedValue(undefined),
     getProjectConversationId: vi.fn().mockReturnValue(storeGet),
+    getProjectConversationIds: vi
+      .fn()
+      .mockImplementation(
+        () => storeIds ?? storeGet.then((id) => (id ? [id] : []))
+      ),
+    selectProjectConversationId: vi.fn().mockResolvedValue(undefined),
     saveProjectConversationId: vi.fn().mockResolvedValue(undefined),
   }
   const project: Project = {
@@ -596,8 +606,9 @@ describe('Zookeeper session controller', () => {
       storeGet: lookup.promise,
     })
     lookup.reject(new Error('Cannot read project.toml'))
-    await flushPromises()
-    expect(controller.showManualConnect.value).toBe(true)
+    await vi.waitFor(() =>
+      expect(controller.showManualConnect.value).toBe(true)
+    )
     expect(controller.conversationLookupError.value).toContain(
       'Could not read the saved Zookeeper conversation'
     )
@@ -605,9 +616,9 @@ describe('Zookeeper session controller', () => {
       sentEvents(actor, ZookeeperManagerTransitions.CacheSetupAndConnect)
     ).toHaveLength(0)
 
-    vi.mocked(conversationStore.getProjectConversationId).mockResolvedValue(
-      'saved-conversation'
-    )
+    vi.mocked(conversationStore.getProjectConversationIds).mockResolvedValue([
+      'saved-conversation',
+    ])
     controller.reconnect()
     await flushPromises()
     expect(controller.conversationLookupError.value).toBeUndefined()
@@ -783,6 +794,118 @@ describe('Zookeeper session controller', () => {
     expect(
       sentEvents(actor, ZookeeperManagerTransitions.ConversationClose)
     ).toHaveLength(1)
+  })
+
+  it('selects a saved conversation only after persistence and file work finish', async () => {
+    const selected = deferred<undefined>()
+    const fileWork = deferred<undefined>()
+    const { actor, controller, conversationStore } = createHarness({
+      storeIds: Promise.resolve(['older', 'current']),
+    })
+    await flushPromises()
+    expect(controller.currentConversationId.value).toBe('current')
+    vi.mocked(
+      conversationStore.selectProjectConversationId
+    ).mockReturnValueOnce(selected.promise)
+    workerMocks.processors[0].reset.mockReturnValueOnce(fileWork.promise)
+
+    const selecting = controller.selectConversation('older')
+    await flushPromises()
+    expect(controller.isClearingChat.value).toBe(true)
+    expect(
+      sentEvents(actor, ZookeeperManagerTransitions.ConversationClose)
+    ).toHaveLength(0)
+    selected.resolve(undefined)
+    await selecting
+    expect(conversationStore.selectProjectConversationId).toHaveBeenCalledWith({
+      projectId,
+      conversationId: 'older',
+    })
+    expect(controller.conversationIds.value).toEqual(['current', 'older'])
+    expect(conversationStore.deleteProjectConversationId).not.toHaveBeenCalled()
+    actor.emit('await')
+    await flushPromises()
+    expect(
+      sentEvents(actor, ZookeeperManagerTransitions.CacheSetupAndConnect)
+    ).toHaveLength(0)
+
+    fileWork.resolve(undefined)
+    await flushPromises()
+    expect(
+      sentEvents(actor, ZookeeperManagerTransitions.CacheSetupAndConnect)
+    ).toEqual([expect.objectContaining({ conversationId: 'older' })])
+    expect(controller.currentConversationId.value).toBe('older')
+    expect(controller.isClearingChat.value).toBe(false)
+    actor.emit('ready-await', { conversationId: 'older' })
+    await flushPromises()
+    expect(controller.conversationIds.value).toEqual(['current', 'older'])
+  })
+
+  it('ignores the current conversation, unknown IDs, and concurrent switches', async () => {
+    const { actor, controller, conversationStore } = createHarness({
+      storeIds: Promise.resolve(['older', 'current']),
+    })
+    await flushPromises()
+    await controller.selectConversation('current')
+    await controller.selectConversation('not-in-this-project')
+    expect(conversationStore.selectProjectConversationId).not.toHaveBeenCalled()
+    expect(
+      sentEvents(actor, ZookeeperManagerTransitions.ConversationClose)
+    ).toHaveLength(0)
+    await controller.selectConversation('older')
+    await controller.selectConversation('current')
+    expect(conversationStore.selectProjectConversationId).toHaveBeenCalledOnce()
+  })
+
+  it('keeps the current chat and queue when selecting cannot be persisted, then retries', async () => {
+    vi.spyOn(console, 'error').mockImplementation(() => {})
+    const { actor, controller, conversationStore } = createHarness({
+      storeIds: Promise.resolve(['older', 'current']),
+    })
+    await flushPromises()
+    controller.sendOrQueue('keep this message', undefined, [])
+    vi.mocked(
+      conversationStore.selectProjectConversationId
+    ).mockRejectedValueOnce(new Error('Read-only project'))
+    await controller.selectConversation('older')
+    expect(controller.isClearingChat.value).toBe(false)
+    expect(controller.currentConversationId.value).toBe('current')
+    expect(controller.conversationIds.value).toEqual(['older', 'current'])
+    expect(controller.queue.value).toHaveLength(1)
+    expect(controller.conversationSwitchError.value).toContain(
+      'Could not switch'
+    )
+    expect(
+      sentEvents(actor, ZookeeperManagerTransitions.ConversationClose)
+    ).toHaveLength(0)
+    await controller.selectConversation('older')
+    expect(controller.conversationSwitchError.value).toBeUndefined()
+    expect(
+      sentEvents(actor, ZookeeperManagerTransitions.ConversationClose)
+    ).toHaveLength(1)
+  })
+
+  it('does not reconnect a selected chat after the project session is disposed', async () => {
+    const selected = deferred<undefined>()
+    const { actor, controller, conversationStore } = createHarness({
+      storeIds: Promise.resolve(['older', 'current']),
+    })
+    await flushPromises()
+    vi.mocked(
+      conversationStore.selectProjectConversationId
+    ).mockReturnValueOnce(selected.promise)
+    const selecting = controller.selectConversation('older')
+    await flushPromises()
+    const disposal = controller.dispose()
+    selected.resolve(undefined)
+    await Promise.all([selecting, disposal])
+    actor.emit('await')
+    expect(
+      sentEvents(actor, ZookeeperManagerTransitions.ConversationClose)
+    ).toHaveLength(0)
+    expect(
+      sentEvents(actor, ZookeeperManagerTransitions.CacheSetupAndConnect)
+    ).toHaveLength(0)
   })
 
   it('cancels a prompt being collected when clear starts', async () => {
@@ -1044,7 +1167,7 @@ describe('Zookeeper session controller', () => {
       awaitingResponse: true,
       conversationId: 'active-conversation',
     })
-    const lookupCount = vi.mocked(conversationStore.getProjectConversationId)
+    const lookupCount = vi.mocked(conversationStore.getProjectConversationIds)
       .mock.calls.length
     actor.send.mockClear()
     billingSend.mockClear()
@@ -1063,7 +1186,7 @@ describe('Zookeeper session controller', () => {
     expect(workerMocks.histories[0].dispose).toHaveBeenCalledOnce()
     expect(workerMocks.processors[0].dispose).toHaveBeenCalledOnce()
     expect(actor.send).not.toHaveBeenCalled()
-    expect(conversationStore.getProjectConversationId).toHaveBeenCalledTimes(
+    expect(conversationStore.getProjectConversationIds).toHaveBeenCalledTimes(
       lookupCount
     )
     expect(billingSend.mock.calls.map(([event]) => event)).toEqual([

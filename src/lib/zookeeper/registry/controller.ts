@@ -28,6 +28,10 @@ import { collectProjectFiles } from '@src/machines/systemIO/utils'
 import { S } from '@src/machines/utils'
 import type { SystemIORegistryService } from '@src/registry/contracts/systemIO'
 import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
+import {
+  loadZookeeperConversationDetails,
+  type ZookeeperConversationDetails,
+} from '@src/lib/zookeeper/conversationDetails'
 import { NIL as uuidNIL } from 'uuid'
 import type { SnapshotFrom, Subscription } from 'xstate'
 
@@ -53,6 +57,9 @@ export interface QueuedMessage {
 export interface ZookeeperSessionController {
   readonly actor: ZookeeperManagerActor
   readonly conversationLookupError: ReadonlySignal<string | undefined>
+  readonly conversationIds: ReadonlySignal<readonly string[]>
+  readonly currentConversationId: ReadonlySignal<string | undefined>
+  readonly conversationSwitchError: ReadonlySignal<string | undefined>
   readonly isClearingChat: ReadonlySignal<boolean>
   readonly isResumingInterruptedTurn: ReadonlySignal<boolean>
   readonly projectPath: string
@@ -61,6 +68,10 @@ export interface ZookeeperSessionController {
   cancel(): void
   checkBillingAccess(): void
   clearConversation(): Promise<void>
+  selectConversation(conversationId: string): Promise<void>
+  loadConversationDetails(
+    signal: AbortSignal
+  ): Promise<ZookeeperConversationDetails>
   dispose(): Promise<void>
   reconnect(): void
   removeQueued(id: string): void
@@ -83,6 +94,16 @@ class SessionController implements ZookeeperSessionController {
   private readonly conversationLookupErrorSignal = signal<string | undefined>()
   readonly conversationLookupError: ReadonlySignal<string | undefined> =
     this.conversationLookupErrorSignal
+
+  private readonly conversationIdsSignal = signal<readonly string[]>([])
+  readonly conversationIds: ReadonlySignal<readonly string[]> =
+    this.conversationIdsSignal
+  private readonly currentConversationIdSignal = signal<string | undefined>()
+  readonly currentConversationId: ReadonlySignal<string | undefined> =
+    this.currentConversationIdSignal
+  private readonly conversationSwitchErrorSignal = signal<string | undefined>()
+  readonly conversationSwitchError: ReadonlySignal<string | undefined> =
+    this.conversationSwitchErrorSignal
 
   private readonly queueSignal = signal<QueuedMessage[]>([])
   readonly queue: ReadonlySignal<readonly QueuedMessage[]> = this.queueSignal
@@ -306,12 +327,38 @@ class SessionController implements ZookeeperSessionController {
     this.continueCheck(snapshot, true)
   }
 
-  async clearConversation() {
+  clearConversation() {
+    return this.changeConversation()
+  }
+
+  selectConversation(conversationId: string) {
+    if (
+      conversationId === this.currentConversationIdSignal.peek() ||
+      !this.conversationIdsSignal.peek().includes(conversationId)
+    ) {
+      return Promise.resolve()
+    }
+    return this.changeConversation(conversationId)
+  }
+
+  async loadConversationDetails(signal: AbortSignal) {
+    const apiToken = this.apiToken
+    const projectId = this.projectId
+    if (!this.active || !projectId || projectId === uuidNIL) return {}
+    const ids =
+      await this.deps.conversationStore.getProjectConversationIds(projectId)
+    if (!this.active || signal.aborted || apiToken !== this.apiToken) return {}
+    this.conversationIdsSignal.value = ids
+    return loadZookeeperConversationDetails(ids, apiToken, signal)
+  }
+
+  private async changeConversation(conversationId?: string) {
     if (!this.active || this.isClearingChatSignal.peek()) {
       return
     }
 
     this.isClearingChatSignal.value = true
+    this.conversationSwitchErrorSignal.value = undefined
     this.activeSubmission = undefined
     this.continueCheckGeneration += 1
     this.continueCheckInFlight = false
@@ -325,21 +372,50 @@ class SessionController implements ZookeeperSessionController {
       this.clearOperationGeneration === generation &&
       this.isClearingChatSignal.peek()
 
-    // Keep the previous conversation saved; the next server-issued ID will be appended.
+    // Drain old saves before changing sessions so they cannot reorder the selected chat.
     await Promise.all(this.persistenceOperations)
 
     if (!isCurrentOperation()) {
       return
     }
 
+    if (conversationId !== undefined && this.projectId !== undefined) {
+      try {
+        await this.trackPersistence(
+          this.deps.conversationStore.selectProjectConversationId({
+            projectId: this.projectId,
+            conversationId,
+          })
+        )
+      } catch (error: unknown) {
+        if (!isCurrentOperation()) return
+        reportRejection(error)
+        this.conversationSwitchErrorSignal.value =
+          'Could not switch conversations. Please try again.'
+        this.isClearingChatSignal.value = false
+        this.reconcileReconnect(this.actor.getSnapshot())
+        this.flushQueue(this.actor.getSnapshot())
+        return
+      }
+      if (!isCurrentOperation()) return
+      this.conversationIdsSignal.value = [
+        ...this.conversationIdsSignal
+          .peek()
+          .filter((id) => id !== conversationId),
+        conversationId,
+      ]
+    }
+
     this.steeredId = null
     this.queueSignal.value = []
     this.lookupLoaded = true
-    this.savedConversationId = undefined
+    this.savedConversationId = conversationId
+    this.currentConversationIdSignal.value = conversationId
+    this.conversationLookupErrorSignal.value = undefined
 
-    let startingFreshConversation = false
-    const startFreshConversation = () => {
-      if (startingFreshConversation) {
+    let startingConversation = false
+    const startConversation = () => {
+      if (startingConversation) {
         return
       }
       this.clearSubscription?.unsubscribe()
@@ -347,7 +423,7 @@ class SessionController implements ZookeeperSessionController {
       if (!isCurrentOperation()) {
         return
       }
-      startingFreshConversation = true
+      startingConversation = true
       this.history.finishPending()
       void this.fileRequestProcessor.reset().then(() => {
         if (!isCurrentOperation()) {
@@ -357,7 +433,7 @@ class SessionController implements ZookeeperSessionController {
         this.actor.send({
           type: ZookeeperManagerTransitions.CacheSetupAndConnect,
           refParentSend: this.actor.send,
-          conversationId: undefined,
+          conversationId,
         })
         this.isClearingChatSignal.value = false
         this.reconcileReconnect(this.actor.getSnapshot())
@@ -366,14 +442,14 @@ class SessionController implements ZookeeperSessionController {
 
     this.clearSubscription = this.actor.subscribe((snapshot) => {
       if (snapshot.matches(S.Await)) {
-        startFreshConversation()
+        startConversation()
       }
     })
     this.actor.send({
       type: ZookeeperManagerTransitions.ConversationClose,
     })
     if (this.actor.getSnapshot().matches(S.Await)) {
-      startFreshConversation()
+      startConversation()
     }
   }
 
@@ -585,6 +661,14 @@ class SessionController implements ZookeeperSessionController {
       .saveProjectConversationId({ projectId, conversationId })
       .then(() => {
         this.lastSavedConversationId = conversationId
+        if (!this.active) return
+        this.currentConversationIdSignal.value = conversationId
+        if (!this.conversationIdsSignal.peek().includes(conversationId)) {
+          this.conversationIdsSignal.value = [
+            ...this.conversationIdsSignal.peek(),
+            conversationId,
+          ]
+        }
       }, reportRejection)
       .finally(() => this.savingConversationIds.delete(conversationId))
     void this.trackPersistence(operation)
@@ -611,12 +695,15 @@ class SessionController implements ZookeeperSessionController {
     this.lastSavedConversationId =
       this.actor.getSnapshot().context.conversationId
 
-    const finish = (conversationId: string | undefined) => {
+    const finish = (conversationIds: string[]) => {
       if (!this.active || this.lookupLoaded) {
         return
       }
       this.lookupLoaded = true
+      const conversationId = conversationIds.at(-1)
       this.savedConversationId = conversationId
+      this.conversationIdsSignal.value = conversationIds
+      this.currentConversationIdSignal.value = conversationId
       if (this.reconnectAfterLookup) {
         this.reconnect()
         return
@@ -625,13 +712,13 @@ class SessionController implements ZookeeperSessionController {
     }
 
     if (projectId === undefined || projectId === uuidNIL) {
-      finish(undefined)
+      finish([])
       return
     }
 
     this.lookupInFlight = true
     const lookup = this.deps.conversationStore
-      .getProjectConversationId(projectId)
+      .getProjectConversationIds(projectId)
       .then(finish)
       .catch((error: unknown) => {
         if (!this.active || this.lookupLoaded) {

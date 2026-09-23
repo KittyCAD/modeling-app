@@ -25,7 +25,13 @@ export interface ZookeeperConversationStore {
 export type ProjectZookeeperConversationStore = Omit<
   ZookeeperConversationStore,
   'deleteProjectConversationId'
->
+> & {
+  getProjectConversationIds: (projectId: string) => Promise<string[]>
+  selectProjectConversationId: (args: {
+    projectId: string
+    conversationId: string
+  }) => Promise<void>
+}
 
 export const jsonToZookeeperConversations = (
   json: string
@@ -153,13 +159,13 @@ export const makeProjectZookeeperConversationStore = (
   const saveConversation = async (
     contents: string,
     conversationId: string,
-    prepend = false
+    options: { prepend?: boolean; select?: boolean } = {}
   ) => {
     const next = setZookeeperConversationInProjectTomlContents(
       contents,
       environment,
       conversationId,
-      { prepend }
+      options
     )
     if (isErr(next)) {
       return Promise.reject(next)
@@ -169,34 +175,49 @@ export const makeProjectZookeeperConversationStore = (
     }
   }
 
+  const getProjectConversationIds = (projectId: string) =>
+    serialize(async () => {
+      const contents = await readProjectToml(projectId)
+      const saved = getZookeeperConversationMetadataFromProjectTomlContents(
+        contents,
+        environment
+      )
+      if (isErr(saved)) {
+        return Promise.reject(saved)
+      }
+      if (!saved.canMigrateLegacyConversation) {
+        return saved.conversationIds
+      }
+      const legacy = (
+        await readZookeeperConversations(fileOperations, true)
+      ).get(projectId)
+      if (legacy !== undefined && !saved.conversationIds.includes(legacy)) {
+        // Recover older IDs without changing which conversation the current UI resumes.
+        await saveConversation(contents, legacy, { prepend: true })
+        return [legacy, ...saved.conversationIds]
+      }
+      return saved.conversationIds
+    })
+
   return {
-    getProjectConversationId(projectId) {
-      return serialize(async () => {
-        const contents = await readProjectToml(projectId)
-        const saved = getZookeeperConversationMetadataFromProjectTomlContents(
-          contents,
-          environment
-        )
-        if (isErr(saved)) {
-          return Promise.reject(saved)
-        }
-        const conversationId = saved.conversationIds.at(-1)
-        if (!saved.canMigrateLegacyConversation) {
-          return conversationId
-        }
-        const legacy = (
-          await readZookeeperConversations(fileOperations, true)
-        ).get(projectId)
-        if (legacy !== undefined && !saved.conversationIds.includes(legacy)) {
-          // Recover older IDs without changing which conversation the current UI resumes.
-          await saveConversation(contents, legacy, true)
-        }
-        return conversationId ?? legacy
-      })
+    getProjectConversationIds,
+    async getProjectConversationId(projectId) {
+      return (await getProjectConversationIds(projectId)).at(-1)
     },
     saveProjectConversationId({ projectId, conversationId }) {
       return serialize(async () => {
         await saveConversation(await readProjectToml(projectId), conversationId)
+      })
+    },
+    selectProjectConversationId({ projectId, conversationId }) {
+      return serialize(async () => {
+        await saveConversation(
+          await readProjectToml(projectId),
+          conversationId,
+          {
+            select: true,
+          }
+        )
       })
     },
   }
