@@ -117,6 +117,10 @@ export class HomePageFixture {
   }
 
   projectsLoaded = async () => {
+    // Library defaults are applied during settings initialization after a reload.
+    await this.page.waitForFunction(() =>
+      window.app?.settings.actor.getSnapshot().matches('idle')
+    )
     const projectLink = this.page.getByTestId('project-link').first()
     const noProjects = this.page.getByTestId('projects-none')
     await expect(projectLink.or(noProjects)).toBeVisible()
