@@ -6,6 +6,8 @@ vi.mock('@src/lib/clientErrors', async (importOriginal) => {
 })
 
 import type * as ClientErrorsModule from '@src/lib/clientErrors'
+import type { KclVersion } from '@rust/kcl-lib/bindings/KclVersion'
+import type { WebSocketResponse } from '@kittycad/lib'
 import { EXECUTE_AST_INTERRUPT_ERROR_MESSAGE } from '@src/lib/constants'
 import { EngineDebugger } from '@src/lib/debugger'
 import { Connection } from '@src/lib/engineConnection/connection'
@@ -15,6 +17,7 @@ import {
   type EngineDisconnectEventDetail,
 } from '@src/lib/engineConnection/utils'
 import type { SettingsActorType } from '@src/machines/settingsMachine'
+import { Themes } from '@src/lib/theme'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
 class ReconnectTestWebSocket extends EventTarget {
@@ -28,7 +31,7 @@ class ReconnectTestWebSocket extends EventTarget {
     this.readyState = 2
   })
 
-  constructor() {
+  constructor(readonly url?: string | URL) {
     super()
     ReconnectTestWebSocket.instances.push(this)
   }
@@ -85,6 +88,130 @@ describe('ConnectionManager', () => {
     vi.unstubAllGlobals()
     reportClientError.mockClear()
     ReconnectTestWebSocket.instances = []
+  })
+
+  describe('KCL language version', () => {
+    const acknowledgement: [WebSocketResponse] = [
+      {
+        success: true,
+        resp: {
+          type: 'modeling',
+          data: { modeling_response: { type: 'empty' } },
+        },
+      },
+    ]
+
+    it.each<KclVersion>(['1.0', '2.0', '3.0-preview'])(
+      'sends %s in the connection URL and remembers it for this session',
+      async (version) => {
+        vi.stubGlobal('WebSocket', ReconnectTestWebSocket)
+        const manager = createConnectionManager()
+        vi.spyOn(manager, 'settings', 'get').mockReturnValue({
+          theme: Themes.Light,
+          highlightEdges: true,
+          enableSSAO: true,
+          showScaleGrid: true,
+          cameraProjection: 'perspective',
+          cameraOrbit: 'spherical',
+          backfaceColor: '#ffffff',
+        })
+        await manager.start({
+          width: 256,
+          height: 256,
+          token: 'token',
+          setStreamIsReady: vi.fn(),
+          callbackOnUnitTestingConnection: vi.fn(),
+          kclVersion: version,
+        })
+        expect(
+          new URL(manager.connection!.url).searchParams.get('kcl_version')
+        ).toBe(version)
+        expect(
+          new URL(ReconnectTestWebSocket.instances[0].url!).searchParams.get(
+            'kcl_version'
+          )
+        ).toBe(version)
+        const send = vi
+          .spyOn(manager, 'sendCommand')
+          .mockResolvedValue(acknowledgement)
+        await manager.setKclVersion(version)
+        expect(send).not.toHaveBeenCalled()
+        manager.tearDown({ route: 'service-disposed', initiatedBy: 'client' })
+      }
+    )
+
+    it('sends changed versions over the reliable command path and skips confirmed duplicates', async () => {
+      const manager = createConnectionManager()
+      addConnectedState(manager)
+      const send = vi
+        .spyOn(manager, 'sendCommand')
+        .mockResolvedValue(acknowledgement)
+      for (const version of ['2.0', '2.0', '3.0-preview', '1.0'] as const) {
+        await manager.setKclVersion(version)
+      }
+      expect(send.mock.calls.map(([, { command }]) => command)).toEqual([
+        expect.objectContaining({
+          cmd: { type: 'set_kcl_version', kcl_version: '2.0' },
+        }),
+        expect.objectContaining({
+          cmd: { type: 'set_kcl_version', kcl_version: '3.0-preview' },
+        }),
+        expect.objectContaining({
+          cmd: { type: 'set_kcl_version', kcl_version: '1.0' },
+        }),
+      ])
+    })
+
+    it('does not trust the old version after a failed or interrupted change', async () => {
+      const manager = createConnectionManager()
+      addConnectedState(manager)
+      const send = vi
+        .spyOn(manager, 'sendCommand')
+        .mockResolvedValue(acknowledgement)
+      await manager.setKclVersion('2.0')
+      send.mockRejectedValueOnce(new Error('interrupted'))
+      await expect(manager.setKclVersion('3.0-preview')).rejects.toThrow(
+        'interrupted'
+      )
+      await manager.setKclVersion('2.0')
+      expect(send).toHaveBeenCalledTimes(3)
+    })
+
+    it('does not apply an old session acknowledgement to a replacement connection', async () => {
+      const manager = createConnectionManager()
+      addConnectedState(manager)
+      const deferred = Promise.withResolvers<[WebSocketResponse]>()
+      const send = vi
+        .spyOn(manager, 'sendCommand')
+        .mockReturnValueOnce(deferred.promise)
+        .mockResolvedValue(acknowledgement)
+      const pending = manager.setKclVersion('2.0')
+      addConnectedState(manager)
+      deferred.resolve(acknowledgement)
+      await expect(pending).rejects.toThrow()
+      await manager.setKclVersion('2.0')
+      expect(send).toHaveBeenCalledTimes(2)
+    })
+
+    it('resends the version after teardown and reconnect', async () => {
+      const manager = createConnectionManager()
+      addConnectedState(manager)
+      const send = vi
+        .spyOn(manager, 'sendCommand')
+        .mockResolvedValue(acknowledgement)
+      await manager.setKclVersion('2.0')
+      manager.tearDown({ route: 'service-disposed', initiatedBy: 'client' })
+      addConnectedState(manager)
+      await manager.setKclVersion('2.0')
+      expect(send).toHaveBeenCalledTimes(2)
+    })
+
+    it('rejects version changes while disconnected', async () => {
+      const manager = createConnectionManager()
+      const send = vi.spyOn(manager, 'sendCommand')
+      await expect(manager.setKclVersion('2.0')).rejects.toThrow()
+      expect(send).not.toHaveBeenCalled()
+    })
   })
 
   it('warns when Engine rejects a modeling command', async () => {

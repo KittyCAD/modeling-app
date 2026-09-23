@@ -26,6 +26,7 @@ it('serializes artifact helpers behind active work on the same manager', async (
   const firstState = emptyExecState()
   const secondState = emptyExecState()
   kclManager.engineCommandManager.started = true
+  vi.spyOn(kclManager.engineCommandManager, 'setKclVersion').mockResolvedValue()
   const rustExecute = vi
     .spyOn(kclManager.rustContext, 'execute')
     .mockReturnValueOnce(active.promise)

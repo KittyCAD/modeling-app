@@ -1,9 +1,9 @@
 import type {
   ClientMetrics,
-  WebSocketRequest,
   WebSocketResponse,
 } from '@kittycad/lib/dist/types/src'
 import { EngineDebugger } from '@src/lib/debugger'
+import type { EngineCommand } from '@src/lang/std/artifactGraph'
 import {
   createOnConnectionStateChange,
   createOnDataChannel,
@@ -182,9 +182,13 @@ export class Connection extends EventTarget {
     // The API derives the engine's geometry_only setting from the CPU pool.
     const poolQuery = pool ? `&pool=${pool}` : ''
     const postEffectQuery = pool ? '' : '&post_effect=ssao'
-    const url = withKittycadWebSocketURL(
-      `?video_res_width=${256}&video_res_height=${256}${postEffectQuery}${webrtcQuery}${poolQuery}`
+    const url = new URL(
+      withKittycadWebSocketURL(
+        `?video_res_width=${256}&video_res_height=${256}${postEffectQuery}${webrtcQuery}${poolQuery}`
+      )
     )
+    const kclVersion = new URL(this.url, url).searchParams.get('kcl_version')
+    if (kclVersion !== null) url.searchParams.set('kcl_version', kclVersion)
     this.websocket = new WebSocket(url, [])
     this.websocket.binaryType = 'arraybuffer'
     const onWebSocketOpen = (event: Event) => {
@@ -973,7 +977,7 @@ export class Connection extends EventTarget {
 
   // Do not change this back to an object or any, we should only be sending the
   // WebSocketRequest type!
-  unreliableSend(message: WebSocketRequest) {
+  unreliableSend(message: EngineCommand) {
     if (!this.unreliableDataChannel) {
       console.warn('race condition my guy, unreliableSend')
       return
@@ -1001,7 +1005,7 @@ export class Connection extends EventTarget {
     )
   }
 
-  send(message: WebSocketRequest) {
+  send(message: EngineCommand) {
     if (!this.websocket) {
       console.warn('send, websocket is undefined')
       return

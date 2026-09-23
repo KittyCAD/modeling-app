@@ -6,12 +6,18 @@ import {
   artifactAnnotationsEvent,
   setArtifactGraphEffect,
 } from '@src/editor/plugins/artifacts'
-import type { KCLError } from '@src/lang/errors'
+import { KCLError } from '@src/lang/errors'
 import {
   compilationIssuesToDiagnostics,
   kclErrorsToDiagnostics,
 } from '@src/lang/errors'
-import { executeAst, executeAstMock, lintAst } from '@src/lang/langHelpers'
+import {
+  executeAst,
+  executeAstMock,
+  handleExecuteError,
+  lintAst,
+} from '@src/lang/langHelpers'
+import { getKclLanguageVersion } from '@src/lang/kclLanguageVersion'
 import { refactorZ0006Unified } from '@src/lang/modifyAst/edges'
 import {
   ensureDefaultKclVersionOnBlankMain,
@@ -72,7 +78,8 @@ import {
   processCodeMirrorRanges,
   type processCodeMirrorRanges as processCodeMirrorRangesFn,
 } from '@src/lib/selections'
-import { err, reportRejection } from '@src/lib/trap'
+import { err, isErr, reportRejection } from '@src/lib/trap'
+import { getResponseErrorMessage } from '@src/lib/engineConnection/utils'
 import { deferredCallback, uuidv4 } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { reportSystemIOError } from '@src/machines/systemIO/errorReporting'
@@ -1764,7 +1771,15 @@ export class KclManager extends File {
            * take that path is what overwrote freshly typed sketch lines.
            */
           await this.executeCode(newCode)
-          if (!isCurrentDirectEditorExecution()) return
+          // executeCode records failures instead of rejecting. Do not let the
+          // sketch executor bypass a failed or still-pending version update.
+          if (
+            !isCurrentDirectEditorExecution() ||
+            this.hasErrors() ||
+            this.isExecuting
+          ) {
+            return
+          }
 
           const setProgramOutcome = await this.rustContext.hackSetProgram(
             this.ast,
@@ -2538,6 +2553,11 @@ export class KclManager extends File {
     return result.program
   }
 
+  async getLanguageVersion() {
+    const instance = await this.wasmInstancePromise
+    return getKclLanguageVersion(this.code, instance)
+  }
+
   // This NEVER updates the code, if you want to update the code DO NOT add to
   // this function, too many other things that don't want it exist. For that,
   // use updateModelingState().
@@ -2571,12 +2591,57 @@ export class KclManager extends File {
     this.beginLiveOperationUpdates(currentExecutionId)
 
     const codeThatExecuted = this.code
-    const { logs, errors, execState, isInterrupted } = await executeAst({
-      ast,
-      path: this.path,
-      rustContext: this.rustContext,
-      callbacks: this.createExecutionCallbacks(currentExecutionId),
-    })
+    const pathThatExecuted = this.path
+    let executionResult: Awaited<ReturnType<typeof executeAst>>
+    try {
+      const version = getKclLanguageVersion(ast, await this.wasmInstancePromise)
+      if (isErr(version)) {
+        await Promise.reject(version)
+      } else {
+        await this.engineCommandManager.setKclVersion(version)
+      }
+      if (
+        this.executeIsStale ||
+        this._cancelTokens.get(currentExecutionId) ||
+        this.path !== pathThatExecuted
+      ) {
+        await Promise.reject(new Error(EXECUTE_AST_INTERRUPT_ERROR_MESSAGE))
+      }
+      executionResult = await executeAst({
+        ast,
+        path: pathThatExecuted,
+        rustContext: this.rustContext,
+        callbacks: this.createExecutionCallbacks(currentExecutionId),
+      })
+    } catch (cause) {
+      executionResult = handleExecuteError(
+        new KCLError(
+          'engine',
+          getResponseErrorMessage(
+            cause,
+            'Failed to set the engine KCL version'
+          ),
+          [ast.start, ast.end, ast.moduleId],
+          [],
+          [],
+          {},
+          emptyOperationsByModule(),
+          new Map(),
+          {},
+          null
+        )
+      )
+    }
+    const { logs, errors, execState, isInterrupted } = executionResult
+
+    if (this.path !== pathThatExecuted) {
+      this.endLiveOperationUpdates()
+      this._cancelTokens.delete(currentExecutionId)
+      markOnce('code/endExecuteAst')
+      this.notifyExecutionCompletion('cancelled')
+      this.isExecuting = false
+      return
+    }
 
     const livePathsToWatch = Object.values(execState.filenames)
       .filter((file) => {
@@ -3687,6 +3752,9 @@ export class KclManager extends File {
       try {
         const currentCode = this.editorState.doc.toString()
         await this.executeCode(currentCode)
+        if (requestId !== this.lastSketchCheckpointRestoreRequestId) return
+        if (requestedDocumentVersion !== this._documentVersion) return
+        if (this.hasErrors() || this.isExecuting) return
         const setProgramOutcome = await this.rustContext.hackSetProgram(
           this.ast,
           jsAppSettings(this.systemDeps.settings)

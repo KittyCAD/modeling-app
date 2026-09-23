@@ -15,7 +15,7 @@ import {
   getSettingsFromActorContext,
   jsAppSettings,
 } from '@src/lib/settings/settingsUtils'
-import { reportRejection } from '@src/lib/trap'
+import { isErr, reportRejection } from '@src/lib/trap'
 import type { SettingsActorType } from '@src/machines/settingsMachine'
 import { useRef } from 'react'
 
@@ -30,6 +30,7 @@ const attemptToConnectToEngine = async ({
   setIsSceneReady,
   timeToConnect,
   engineCommandManager,
+  kclManager,
   rustContext,
 }: {
   authToken: string
@@ -39,6 +40,7 @@ const attemptToConnectToEngine = async ({
   setIsSceneReady: React.Dispatch<React.SetStateAction<boolean>>
   timeToConnect: number
   engineCommandManager: ConnectionManager
+  kclManager: KclManager
   rustContext: RustContext
 }) => {
   const codecError = await preflightEngineVideoCodecSupport()
@@ -83,6 +85,7 @@ const attemptToConnectToEngine = async ({
           videoWrapperRef.current.clientHeight
         )
 
+        const kclVersion = await kclManager.getLanguageVersion()
         await engineCommandManager.start({
           width,
           height,
@@ -91,6 +94,9 @@ const attemptToConnectToEngine = async ({
             setAppState({ isStreamReady: true })
           },
           rustContext,
+          // Invalid source can still open the editor. Execution will resolve and
+          // synchronize the version once the user fixes the program.
+          kclVersion: isErr(kclVersion) ? undefined : kclVersion,
         })
 
         if (!videoRef.current) {
@@ -264,6 +270,7 @@ export async function tryConnecting({
             setIsSceneReady,
             timeToConnect,
             engineCommandManager,
+            kclManager,
             rustContext,
           })
 
