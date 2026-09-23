@@ -17,7 +17,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        variant: [baseline, resize-before-load]
+        variant: [baseline, cpu-raster, cpu-canvas, cpu-paint]
     runs-on: namespace-profile-macos-8-cores
     timeout-minutes: 15
     steps:

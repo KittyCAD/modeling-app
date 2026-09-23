@@ -284,6 +284,16 @@ export class ElectronZoo {
       args: [
         '.',
         '--no-sandbox',
+        ...(['cpu-raster', 'cpu-paint'].includes(
+          process.env.INTERACTION_DIAGNOSTIC_VARIANT ?? ''
+        )
+          ? ['--disable-gpu-rasterization']
+          : []),
+        ...(['cpu-canvas', 'cpu-paint'].includes(
+          process.env.INTERACTION_DIAGNOSTIC_VARIANT ?? ''
+        )
+          ? ['--disable-accelerated-2d-canvas']
+          : []),
         `--trace-config-file=${traceConfigPath}`,
         '--trace-startup-format=json',
       ],
