@@ -13,7 +13,11 @@ permissions:
 
 jobs:
   measure:
-    name: Capture first-use presentation traces
+    name: Presentation traces (${{ matrix.variant }})
+    strategy:
+      fail-fast: false
+      matrix:
+        variant: [baseline, no-shadows]
     runs-on: namespace-profile-ubuntu-8-cores;overrides.cache-tag=modeling-app-general-v2
     timeout-minutes: 15
     steps:
@@ -56,6 +60,7 @@ jobs:
       - name: Capture first-use presentation traces
         run: xvfb-run --auto-servernum --server-args="-screen 0 1280x960x24" -- npm exec -- playwright test --config=playwright.performance.config.ts
         env:
+          INTERACTION_DIAGNOSTIC_VARIANT: ${{ matrix.variant }}
           NODE_ENV: production
           TARGET: desktop
           VITE_ZOO_BASE_DOMAIN: dev.zoo.dev
@@ -67,7 +72,7 @@ jobs:
         if: ${{ !cancelled() }}
         uses: actions/upload-artifact@v7
         with:
-          name: interaction-performance-${{ github.sha }}-${{ github.run_attempt }}
+          name: interaction-performance-${{ matrix.variant }}-${{ github.sha }}-${{ github.run_attempt }}
           path: |
             test-results/interaction-performance/
             playwright-report/interaction-performance/

@@ -62,6 +62,7 @@ export async function finishCapture(
   }))
   const metadata = {
     scenario,
+    diagnosticVariant: process.env.INTERACTION_DIAGNOSTIC_VARIANT,
     repeatIndex: testInfo.repeatEachIndex,
     commit: process.env.GITHUB_SHA ?? null,
     runId: process.env.GITHUB_RUN_ID ?? null,
