@@ -784,9 +784,9 @@ describe('home project actions', () => {
 
   beforeEach(() => {
     vi.clearAllMocks()
-    projectIdentityMocks.separateProjectsSharingProjectId.mockResolvedValue({
-      sharedProjectId: 'shared-project-id',
-    })
+    projectIdentityMocks.separateProjectsSharingProjectId.mockResolvedValue(
+      undefined
+    )
   })
 
   afterEach(() => {
