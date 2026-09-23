@@ -21,6 +21,7 @@ import { SelectionHighlightRenderer } from '@src/clientSideScene/localRenderer/S
 import type { KclExecutionDoneDetail, KclManager } from '@src/lang/KclManager'
 import { KclManagerEvents } from '@src/lang/KclManager'
 import { EngineDebugger } from '@src/lib/debugger'
+import { DprDetector } from '@src/lib/DprDetector'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import { type ResolvedTheme, getThemeBackgroundColor } from '@src/lib/theme'
 import { reportRejection } from '@src/lib/trap'
@@ -107,6 +108,7 @@ export class LocalRenderer {
   private selectionHighlightRenderer: SelectionHighlightRenderer | null = null
   private performanceMonitor: LocalRendererPerformanceMonitor | null = null
   private resizeObserver: ResizeObserver | null = null
+  private readonly dprDetector: DprDetector
   private animationFrameId = -1
   private scheduledRenderAt = 0
   private currentModel: Object3D | null = null
@@ -174,6 +176,7 @@ export class LocalRenderer {
     this.unregisterBaseUnitListener = kclManager.sceneInfra.baseUnitChange.add(
       this.syncPlaneScale
     )
+    this.dprDetector = new DprDetector(this.resize)
     void this.initialize().catch(this.handleInitializationError)
   }
 
@@ -399,6 +402,7 @@ export class LocalRenderer {
     this.performanceMonitor = null
     this.resizeObserver?.disconnect()
     this.resizeObserver = null
+    this.dprDetector.dispose()
     if (this.animationFrameId !== -1) {
       cancelAnimationFrame(this.animationFrameId)
       this.animationFrameId = -1
@@ -743,7 +747,7 @@ export class LocalRenderer {
       return
     }
 
-    renderer.setSize(width, height, false)
+    renderer.setDrawingBufferSize(width, height, window.devicePixelRatio)
     if (this.previewCamera instanceof PerspectiveCamera) {
       this.previewCamera.aspect = width / height
       this.previewCamera.updateProjectionMatrix()
