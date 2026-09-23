@@ -287,7 +287,14 @@ impl KclValueControlFlow {
 
     /// The source ranges of the wrapped value, for error reporting.
     pub(crate) fn source_ranges(&self) -> Vec<SourceRange> {
-        self.value.metadata().iter().map(|m| m.source_range).collect()
+        // Repeated value origins are not separate call-stack frames.
+        self.value
+            .metadata()
+            .into_iter()
+            .map(|m| m.source_range)
+            .collect::<AhashIndexSet<_>>()
+            .into_iter()
+            .collect()
     }
 
     pub(crate) fn into_value(self) -> KclValue {
