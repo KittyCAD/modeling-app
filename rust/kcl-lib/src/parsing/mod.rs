@@ -48,6 +48,8 @@ pub(crate) fn parse_str_deferred_use_keyword(code: &str, module_id: ModuleId) ->
 
 pub(crate) const RESERVED_USE_MESSAGE: &str =
     "`use` is a reserved keyword in KCL 3.0 and cannot be used as an identifier";
+pub(crate) const RESERVED_ENUM_MESSAGE: &str =
+    "`enum` is a reserved keyword in KCL 3.0 and cannot be used as an identifier";
 
 /// Check an imported source using the same lexer classification as ordinary
 /// parsing, including the `use(` function-name exception.
@@ -63,6 +65,23 @@ pub(crate) fn validate_use_keyword_source(code: &str, module_id: ModuleId) -> Re
         RESERVED_USE_MESSAGE.to_owned(),
         vec![token.as_source_range()],
     )))
+}
+
+/// Reject `enum` in every identifier position of an imported V3 module.
+pub(crate) fn validate_enum_keyword_source(code: &str, module_id: ModuleId) -> Result<(), KclError> {
+    let tokens = crate::parsing::token::lex(code, module_id)?;
+    let Some(issue) = reserved_enum_issues(&tokens).into_iter().next() else {
+        return Ok(());
+    };
+    Err(KclError::new_syntax(issue.into()))
+}
+
+fn reserved_enum_issues(tokens: &TokenStream) -> Vec<CompilationIssue> {
+    tokens
+        .iter()
+        .filter(|token| token.token_type == TokenType::Word && token.value == "enum")
+        .map(|token| CompilationIssue::err(token.as_source_range(), RESERVED_ENUM_MESSAGE))
+        .collect()
 }
 
 /// Reject names reserved for future import modifiers in the first import slot.
@@ -139,6 +158,7 @@ fn parse_tokens_with_use_policy(mut tokens: TokenStream, use_policy: UseKeywordP
     }
 
     let mut reserved_issues = reserved_import_modifier_issues(&tokens);
+    reserved_issues.extend(reserved_enum_issues(&tokens));
     let use_keyword_ranges = tokens.allow_use_identifiers();
     reserved_issues.extend(
         use_keyword_ranges
@@ -357,6 +377,73 @@ mod tests {
         for mode in [LexerMode::Old, LexerMode::New] {
             let _guard = LexerMode::override_for_test(mode);
             let code = "@settings(kclVersion = \"3.0-preview\")\nuseful = \"use\" // use\n";
+            assert!(top_level_parse(code).is_ok(), "{mode:?}: {code}");
+        }
+    }
+
+    #[test]
+    fn enum_identifiers_remain_valid_before_v3() {
+        for mode in [LexerMode::Old, LexerMode::New] {
+            let _guard = LexerMode::override_for_test(mode);
+            for version in [None, Some("1.0"), Some("2.0")] {
+                let settings = version.map_or(String::new(), |version| format!("@settings(kclVersion = {version})\n"));
+                for body in [
+                    "enum = 1\nvalue = enum\n",
+                    "fn enum() { return 1 }\n",
+                    "import enum from \"dep.kcl\"\n",
+                ] {
+                    let code = format!("{settings}{body}");
+                    assert!(top_level_parse(&code).is_ok(), "{mode:?}: {code}");
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn enum_is_reserved_in_every_v3_identifier_position() {
+        for mode in [LexerMode::Old, LexerMode::New] {
+            let _guard = LexerMode::override_for_test(mode);
+            for body in [
+                "enum = 1\n",
+                "value = enum\n",
+                "fn enum() { return 1 }\n",
+                "type enum = number\n",
+                "import enum from \"dep.kcl\"\n",
+                "import other as enum from \"dep.kcl\"\n",
+                "import \"dep.kcl\" as enum\n",
+                "@settings(enum = 1)\nvalue = 1\n",
+            ] {
+                let code = format!("@settings(kclVersion = \"3.0-preview\", experimentalFeatures = allow)\n{body}");
+                let result = top_level_parse(&code);
+                let errors: Vec<_> = result.unwrap_errs().collect();
+                assert_eq!(errors.len(), 1, "{mode:?}: {code}: {errors:#?}");
+                let start = code.find("enum").unwrap();
+                assert_eq!(
+                    errors[0].source_range,
+                    SourceRange::new(start, start + "enum".len(), ModuleId::default())
+                );
+                assert_eq!(errors[0].message, RESERVED_ENUM_MESSAGE);
+            }
+        }
+    }
+
+    #[test]
+    fn enum_reservation_uses_last_declared_version() {
+        for mode in [LexerMode::Old, LexerMode::New] {
+            let _guard = LexerMode::override_for_test(mode);
+            let late_v3 = "enum = 1\n@settings(kclVersion = \"3.0-preview\")\n";
+            assert!(!top_level_parse(late_v3).is_ok(), "{mode:?}: {late_v3}");
+
+            let last_v2 = "@settings(kclVersion = \"3.0-preview\")\n@settings(kclVersion = 2.0)\nenum = 1\n";
+            assert!(top_level_parse(last_v2).is_ok(), "{mode:?}: {last_v2}");
+        }
+    }
+
+    #[test]
+    fn enum_text_in_strings_comments_and_longer_names_is_not_reserved() {
+        for mode in [LexerMode::Old, LexerMode::New] {
+            let _guard = LexerMode::override_for_test(mode);
+            let code = "@settings(kclVersion = \"3.0-preview\")\nenumeration = \"enum\" // enum\n";
             assert!(top_level_parse(code).is_ok(), "{mode:?}: {code}");
         }
     }

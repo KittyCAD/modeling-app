@@ -1507,6 +1507,7 @@ impl ExecState {
             ))
         })?;
         crate::parsing::validate_use_keyword_source(&source.source, program.module_id)
+            .and_then(|_| crate::parsing::validate_enum_keyword_source(&source.source, program.module_id))
             .and_then(|_| crate::parsing::validate_import_modifier_source(&source.source, program.module_id))
             .map_err(|error| match import_range {
                 Some(range) => error.add_import_location(&path.import_name(), range),

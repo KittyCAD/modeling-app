@@ -6000,6 +6000,39 @@ face = disc()
     }
 
     #[tokio::test(flavor = "multi_thread")]
+    async fn imported_enum_identifier_follows_entry_point_version() {
+        let dep = "enum = 10\nexport width = enum\n";
+        for main_header in ["", "@settings(kclVersion = 1.0)\n", "@settings(kclVersion = 2.0)\n"] {
+            let main = format!("{main_header}import width from \"dep.kcl\"\nx = width\n");
+            run_versioned_modules(&main, &[("dep.kcl", dep)])
+                .await
+                .unwrap_or_else(|error| panic!("main={main_header:?}: {error:#?}"));
+        }
+
+        for run_mock in [false, true] {
+            let error = if run_mock {
+                run_versioned_modules_mock(V3_MAIN_IMPORTING_DEP, &[("dep.kcl", dep)]).await
+            } else {
+                run_versioned_modules(V3_MAIN_IMPORTING_DEP, &[("dep.kcl", dep)]).await
+            }
+            .expect_err("V3 imports must reject an enum identifier");
+            assert!(matches!(error, KclError::Syntax { .. }), "{error:#?}");
+            assert_eq!(error.message(), crate::parsing::RESERVED_ENUM_MESSAGE);
+            let ranges = error.source_ranges();
+            assert_eq!(ranges.len(), 2, "{ranges:#?}");
+            assert_eq!((ranges[0].start(), ranges[0].end()), (0, "enum".len()));
+            assert!(!ranges[0].module_id().is_top_level());
+            assert!(ranges[1].module_id().is_top_level());
+        }
+
+        let dep_v2 = format!("@settings(kclVersion = 2.0)\n{dep}");
+        let error = run_versioned_modules(V3_MAIN_IMPORTING_DEP, &[("dep.kcl", &dep_v2)])
+            .await
+            .expect_err("version mismatch must precede enum validation");
+        assert_kcl_version_mismatch(&error, "2.0");
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
     async fn imported_import_modifiers_follow_entry_point_version() {
         for word in ["template", "lazy", "component"] {
             let dep = format!("import {word} from \"nested.kcl\"\nexport width = 10\n");
