@@ -17,7 +17,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        variant: [baseline, cpu-raster, cpu-canvas, cpu-paint]
+        variant: [baseline]
     runs-on: namespace-profile-macos-8-cores
     timeout-minutes: 15
     steps:
@@ -81,7 +81,47 @@ jobs:
         with:
           name: interaction-performance-${{ matrix.variant }}-${{ github.sha }}-${{ github.run_attempt }}
           path: |
-            test-results/interaction-performance/
-            playwright-report/interaction-performance/
+            test-results/interaction-performance/playwright.json
+            test-results/interaction-performance/**/presentation-trace.json
+            test-results/interaction-performance/**/error-context.md
           if-no-files-found: error
           retention-days: 30
+
+  cloud-timing:
+    name: Cloud creation timing diagnosis
+    runs-on: namespace-profile-macos-8-cores
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: actions/setup-node@v7.0.0
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - name: Ensure Chrome is available
+        timeout-minutes: 4
+        run: |
+          if [ ! -d "/Applications/Google Chrome.app" ]; then
+            npm exec -- playwright install chrome
+          fi
+      - name: Trace real project creation without retries
+        timeout-minutes: 5
+        run: env -u HEADLESS npm exec -- playwright test --config=playwright.cloud-diagnostic.config.ts --headed
+        env:
+          TARGET: web
+          NODE_ENV: development
+          VERCEL_BASE_URL: https://modeling-7pe13j5wh.vercel.dev.zoo.dev
+          VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
+          VITE_ZOO_BASE_DOMAIN: dev.zoo.dev
+          VITE_ZOO_API_TOKEN: ${{ secrets.ZOO_API_TOKEN }}
+      - name: Preserve cloud timing evidence
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: cloud-creation-timings-${{ github.sha }}-${{ github.run_attempt }}
+          path: |
+            test-results/cloud-timing-diagnostic/report.json
+            test-results/cloud-timing-diagnostic/**/timings/events.jsonl
+            test-results/cloud-timing-diagnostic/**/timings/cpu-profile.json
+          if-no-files-found: error
+          retention-days: 7
