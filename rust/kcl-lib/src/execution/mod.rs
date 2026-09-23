@@ -3700,7 +3700,7 @@ answer = returnX()"#;
 
     #[tokio::test(flavor = "multi_thread")]
     async fn type_aliases() {
-        let text = r#"@settings(experimentalFeatures = allow)
+        let text = r#"@settings(kclVersion = "3.0-preview")
 type MyTy = [number; 2]
 fn foo(@x: MyTy) {
     return x[0]
@@ -7604,14 +7604,42 @@ second = makeSketch()
     }
 
     #[tokio::test(flavor = "multi_thread")]
-    async fn test_enum_declaration_is_experimental() {
-        // Without opting in, executing a program with an enum declaration
-        // fails at the parsing stage with the experimental diagnostic.
-        let code = "type Color { | Red }";
-        assert_eq!(
-            parse_execute(code).await.unwrap_err().message(),
-            "Use of enum declarations is experimental and may change or be removed."
-        );
+    async fn user_aliases_and_enums_require_v3_even_with_experimental_opt_in() {
+        for version in ["1.0", "2.0"] {
+            for opt_in in ["", ", experimentalFeatures = allow"] {
+                for (feature, declaration) in [
+                    ("Type aliases", "type Distance = number(mm)"),
+                    ("Enum declarations", "type Color { | Red }"),
+                ] {
+                    let code = format!("@settings(kclVersion = \"{version}\"{opt_in})\n{declaration}\n");
+                    assert_eq!(
+                        parse_execute(&code).await.unwrap_err().message(),
+                        format!("{feature} require KCL 3.0-preview, but this program uses KCL {version}."),
+                        "code: {code}"
+                    );
+                }
+            }
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn user_aliases_and_enums_execute_in_v3_without_experimental_opt_in() {
+        for code in [
+            "@settings(kclVersion = \"3.0-preview\")\ntype Distance = number(mm)\nx = 1mm: Distance\n",
+            "@settings(kclVersion = \"3.0-preview\")\ntype Color { | Red }\nx = Color::Red\n",
+        ] {
+            let result = parse_execute(code).await.unwrap();
+            assert!(result.exec_state.issues().is_empty(), "code: {code}");
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn standard_library_type_aliases_remain_available_before_v3() {
+        for version in ["1.0", "2.0"] {
+            let code = format!("@settings(kclVersion = \"{version}\")\nx = 1mm: mm\n");
+            let result = parse_execute(&code).await.unwrap();
+            assert!(result.exec_state.issues().is_empty(), "code: {code}");
+        }
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -7619,18 +7647,18 @@ second = makeSketch()
         // Plain and exported declarations both execute. Nothing references the
         // enum yet, so this only asserts that declaring one is no longer an
         // error; constructor use is exercised separately.
-        let code = r#"@settings(experimentalFeatures = allow)
+        let code = r#"@settings(kclVersion = "3.0-preview", experimentalFeatures = allow)
 type Color { | Red | Green }
 "#;
         parse_execute(code).await.unwrap();
 
-        let code = r#"@settings(experimentalFeatures = allow)
+        let code = r#"@settings(kclVersion = "3.0-preview", experimentalFeatures = allow)
 export type Color { | Red | Green }
 "#;
         parse_execute(code).await.unwrap();
 
         // A zero-variant enum is a valid declaration.
-        let code = r#"@settings(experimentalFeatures = allow)
+        let code = r#"@settings(kclVersion = "3.0-preview", experimentalFeatures = allow)
 type Empty { | }
 "#;
         parse_execute(code).await.unwrap();
@@ -7644,7 +7672,7 @@ type Empty { | }
         //
         // The rule is about nesting, not about one kind of block, so all routes
         // to `BodyType::Block` are covered here.
-        let allow = "@settings(experimentalFeatures = allow)\n";
+        let allow = "@settings(kclVersion = \"3.0-preview\", experimentalFeatures = allow)\n";
         for (case, code) in [
             (
                 "function body",
@@ -7677,7 +7705,7 @@ type Empty { | }
         // harmlessly, while two nested `type Color` declarations would be one type
         // with two variant sets. Tightening aliases to match, or relaxing enums,
         // has to break this test first.
-        let allow = "@settings(experimentalFeatures = allow)\n";
+        let allow = "@settings(kclVersion = \"3.0-preview\", experimentalFeatures = allow)\n";
         for (case, code) in [
             (
                 "function body",
@@ -7698,7 +7726,7 @@ type Empty { | }
 
     #[tokio::test(flavor = "multi_thread")]
     async fn enum_declaration_rejects_duplicate() {
-        let code = r#"@settings(experimentalFeatures = allow)
+        let code = r#"@settings(kclVersion = "3.0-preview", experimentalFeatures = allow)
 type Color { | Red | Green | Red }
 "#;
         assert_eq!(
@@ -7880,38 +7908,38 @@ x = m + 1
         let plain_module = ("Color.kcl", "export x = 1\n");
         let enum_module = (
             "enums.kcl",
-            "@settings(experimentalFeatures = allow)\nexport type Color { | Red }\n",
+            "@settings(kclVersion = \"3.0-preview\", experimentalFeatures = allow)\nexport type Color { | Red }\n",
         );
 
         for (case, main, modules) in [
             (
                 "module then enum",
-                "@settings(experimentalFeatures = allow)\nimport \"Color.kcl\"\ntype Color { | Red }\n",
+                "@settings(kclVersion = \"3.0-preview\", experimentalFeatures = allow)\nimport \"Color.kcl\"\ntype Color { | Red }\n",
                 vec![plain_module],
             ),
             (
                 "enum then module",
-                "@settings(experimentalFeatures = allow)\ntype Color { | Red }\nimport \"Color.kcl\"\n",
+                "@settings(kclVersion = \"3.0-preview\", experimentalFeatures = allow)\ntype Color { | Red }\nimport \"Color.kcl\"\n",
                 vec![plain_module],
             ),
             (
                 "named import of an enum",
-                "@settings(experimentalFeatures = allow)\nimport \"Color.kcl\"\nimport Color from 'enums.kcl'\n",
+                "@settings(kclVersion = \"3.0-preview\", experimentalFeatures = allow)\nimport \"Color.kcl\"\nimport Color from 'enums.kcl'\n",
                 vec![plain_module, enum_module],
             ),
             (
                 "glob import of an enum",
-                "@settings(experimentalFeatures = allow)\nimport \"Color.kcl\"\nimport * from 'enums.kcl'\n",
+                "@settings(kclVersion = \"3.0-preview\", experimentalFeatures = allow)\nimport \"Color.kcl\"\nimport * from 'enums.kcl'\n",
                 vec![plain_module, enum_module],
             ),
             (
                 "module then enum alias",
-                "@settings(experimentalFeatures = allow)\ntype Base { | Red }\nimport \"Color.kcl\"\ntype Color = Base\n",
+                "@settings(kclVersion = \"3.0-preview\", experimentalFeatures = allow)\ntype Base { | Red }\nimport \"Color.kcl\"\ntype Color = Base\n",
                 vec![plain_module],
             ),
             (
                 "enum alias then module",
-                "@settings(experimentalFeatures = allow)\ntype Base { | Red }\ntype Color = Base\nimport \"Color.kcl\"\n",
+                "@settings(kclVersion = \"3.0-preview\", experimentalFeatures = allow)\ntype Base { | Red }\ntype Color = Base\nimport \"Color.kcl\"\n",
                 vec![plain_module],
             ),
         ] {
@@ -7926,7 +7954,7 @@ x = m + 1
 
     #[tokio::test(flavor = "multi_thread")]
     async fn enum_alias_can_shadow_module_from_outer_scope() {
-        let main = r#"@settings(experimentalFeatures = allow)
+        let main = r#"@settings(kclVersion = "3.0-preview", experimentalFeatures = allow)
 type Color { | Red }
 import "Shade.kcl"
 
@@ -7948,10 +7976,10 @@ result = pick()
 
     #[tokio::test(flavor = "multi_thread")]
     async fn enum_constructs_variant() {
-        let allow = "@settings(experimentalFeatures = allow)\n";
+        let allow = "@settings(kclVersion = \"3.0-preview\", experimentalFeatures = allow)\n";
         let colors = (
             "colors.kcl",
-            "@settings(experimentalFeatures = allow)\nexport type Color { | Red | Green }\n",
+            "@settings(kclVersion = \"3.0-preview\", experimentalFeatures = allow)\nexport type Color { | Red | Green }\n",
         );
 
         for (case, main, modules) in [
@@ -7992,7 +8020,7 @@ result = pick()
 
     #[tokio::test(flavor = "multi_thread")]
     async fn enum_aliases_preserve_the_original_declaration() {
-        let code = r#"@settings(experimentalFeatures = allow)
+        let code = r#"@settings(kclVersion = "3.0-preview", experimentalFeatures = allow)
 type Color { | Red | Green }
 type C = Color
 type D = C
@@ -8047,7 +8075,7 @@ passed = passThroughAlias(D::Green)
 
     #[tokio::test(flavor = "multi_thread")]
     async fn enum_aliases_survive_qualified_imports_and_reexports() {
-        let main = r#"@settings(experimentalFeatures = allow)
+        let main = r#"@settings(kclVersion = "3.0-preview", experimentalFeatures = allow)
 import "colors.kcl"
 import "aliases.kcl"
 import "tones.kcl"
@@ -8076,19 +8104,19 @@ fromOriginal = throughOriginal(colors::Color::Red)
         let modules = [
             (
                 "colors.kcl",
-                "@settings(experimentalFeatures = allow)\nexport type Color { | Red | Green }\n",
+                "@settings(kclVersion = \"3.0-preview\", experimentalFeatures = allow)\nexport type Color { | Red | Green }\n",
             ),
             (
                 "palette.kcl",
-                "@settings(experimentalFeatures = allow)\nimport \"colors.kcl\" as swatches\nexport type Shade = swatches::Color\n",
+                "@settings(kclVersion = \"3.0-preview\", experimentalFeatures = allow)\nimport \"colors.kcl\" as swatches\nexport type Shade = swatches::Color\n",
             ),
             (
                 "aliases.kcl",
-                "@settings(experimentalFeatures = allow)\nimport \"palette.kcl\"\nexport type Paint = palette::Shade\n",
+                "@settings(kclVersion = \"3.0-preview\", experimentalFeatures = allow)\nimport \"palette.kcl\"\nexport type Paint = palette::Shade\n",
             ),
             (
                 "tones.kcl",
-                "@settings(experimentalFeatures = allow)\nimport Color from \"colors.kcl\"\nexport type Tint = Color\n",
+                "@settings(kclVersion = \"3.0-preview\", experimentalFeatures = allow)\nimport Color from \"colors.kcl\"\nexport type Tint = Color\n",
             ),
         ];
 
@@ -8141,12 +8169,11 @@ fromOriginal = throughOriginal(colors::Color::Red)
     async fn signature_types_resolve_in_declaring_module() {
         let colors = (
             "colors.kcl",
-            "@settings(experimentalFeatures = allow)\nexport type Color { | Red | Green }\n\nexport fn paint(@c: Color) {\n  return c\n}\n",
+            "@settings(kclVersion = \"3.0-preview\", experimentalFeatures = allow)\nexport type Color { | Red | Green }\n\nexport fn paint(@c: Color) {\n  return c\n}\n",
         );
         // The caller can reach `colors::Color` but never binds the bare name
         // `Color`, so resolving the signature in the caller's scope would fail.
-        let main =
-            "@settings(experimentalFeatures = allow)\nimport \"colors.kcl\"\nr = colors::paint(colors::Color::Red)\n";
+        let main = "@settings(kclVersion = \"3.0-preview\", experimentalFeatures = allow)\nimport \"colors.kcl\"\nr = colors::paint(colors::Color::Red)\n";
 
         let result = execute_with_modules(main, &[colors]).await.unwrap();
         let KclValue::Enum { value } = mem_get_json(result.exec_state.stack(), result.mem_env, "r") else {
@@ -8157,7 +8184,7 @@ fromOriginal = throughOriginal(colors::Color::Red)
 
     #[tokio::test(flavor = "multi_thread")]
     async fn qualified_type_paths_resolve_in_aliases_and_ascriptions() {
-        let main = r#"@settings(experimentalFeatures = allow)
+        let main = r#"@settings(kclVersion = "3.0-preview", experimentalFeatures = allow)
 type ViewOrientation = view::Orientation
 front = view::Orientation::Front: view::Orientation
 "#;
@@ -8180,9 +8207,9 @@ front = view::Orientation::Front: view::Orientation
         // resolve identically under any alias.
         let colors = (
             "colors.kcl",
-            "@settings(experimentalFeatures = allow)\nexport type Color { | Red | Green }\n\nexport fn paint(@c: Color) {\n  return c\n}\n",
+            "@settings(kclVersion = \"3.0-preview\", experimentalFeatures = allow)\nexport type Color { | Red | Green }\n\nexport fn paint(@c: Color) {\n  return c\n}\n",
         );
-        let main = "@settings(experimentalFeatures = allow)\nimport \"colors.kcl\" as painter\nr = painter::paint(painter::Color::Red)\n";
+        let main = "@settings(kclVersion = \"3.0-preview\", experimentalFeatures = allow)\nimport \"colors.kcl\" as painter\nr = painter::paint(painter::Color::Red)\n";
 
         let result = execute_with_modules(main, &[colors]).await.unwrap();
         let KclValue::Enum { value } = mem_get_json(result.exec_state.stack(), result.mem_env, "r") else {
@@ -8199,9 +8226,9 @@ front = view::Orientation::Front: view::Orientation
         // caller's binding.
         let broken = (
             "broken.kcl",
-            "@settings(experimentalFeatures = allow)\nexport fn f(@x: Missing) {\n  return x\n}\n",
+            "@settings(kclVersion = \"3.0-preview\", experimentalFeatures = allow)\nexport fn f(@x: Missing) {\n  return x\n}\n",
         );
-        let main = "@settings(experimentalFeatures = allow)\ntype Missing = string\nimport \"broken.kcl\"\nr = broken::f(\"hi\")\n";
+        let main = "@settings(kclVersion = \"3.0-preview\", experimentalFeatures = allow)\ntype Missing = string\nimport \"broken.kcl\"\nr = broken::f(\"hi\")\n";
 
         let err = execute_with_modules(main, &[broken]).await.unwrap_err();
         assert!(
@@ -8216,7 +8243,7 @@ front = view::Orientation::Front: view::Orientation
         // Resolution happens when the declaration executes, so a type declared
         // later in the file is not visible. The function is never called; the
         // error must surface at the declaration itself.
-        let main = "@settings(experimentalFeatures = allow)\nfn f(@x: Later) {\n  return x\n}\ntype Later = string\n";
+        let main = "@settings(kclVersion = \"3.0-preview\", experimentalFeatures = allow)\nfn f(@x: Later) {\n  return x\n}\ntype Later = string\n";
 
         let err = parse_execute(main).await.unwrap_err();
         assert!(
@@ -8232,7 +8259,7 @@ front = view::Orientation::Front: view::Orientation
         // module: the anonymous function's signature must see the alias in the
         // enclosing function body. Caller-scope resolution would use the
         // module-level `Width = string` and fail to coerce `42`.
-        let main = "@settings(experimentalFeatures = allow)\ntype Width = string\nfn makeMeasure() {\n  type Width = number(mm)\n  return fn(@w: Width) { return w }\n}\nmeasure = makeMeasure()\nr = measure(42)\n";
+        let main = "@settings(kclVersion = \"3.0-preview\", experimentalFeatures = allow)\ntype Width = string\nfn makeMeasure() {\n  type Width = number(mm)\n  return fn(@w: Width) { return w }\n}\nmeasure = makeMeasure()\nr = measure(42)\n";
 
         let result = parse_execute(main).await.unwrap();
         let KclValue::Number { value, .. } = mem_get_json(result.exec_state.stack(), result.mem_env, "r") else {
@@ -8307,10 +8334,9 @@ front = view::Orientation::Front: view::Orientation
     async fn signature_types_use_declaring_scope_when_both_scopes_define_the_name() {
         let m1 = (
             "m1.kcl",
-            "@settings(experimentalFeatures = allow)\ntype A = string\n\nexport fn test(@a: A) {\n  return a\n}\n",
+            "@settings(kclVersion = \"3.0-preview\", experimentalFeatures = allow)\ntype A = string\n\nexport fn test(@a: A) {\n  return a\n}\n",
         );
-        let main =
-            "@settings(experimentalFeatures = allow)\nimport * from \"m1.kcl\"\ntype A = number(mm)\nx = test(2mm)\n";
+        let main = "@settings(kclVersion = \"3.0-preview\", experimentalFeatures = allow)\nimport * from \"m1.kcl\"\ntype A = number(mm)\nx = test(2mm)\n";
 
         let err = execute_with_modules(main, &[m1]).await.unwrap_err();
         assert_eq!(
@@ -8321,7 +8347,7 @@ front = view::Orientation::Front: view::Orientation
 
     #[tokio::test(flavor = "multi_thread")]
     async fn enum_rejects_bad_variant_paths() {
-        let allow = "@settings(experimentalFeatures = allow)\n";
+        let allow = "@settings(kclVersion = \"3.0-preview\", experimentalFeatures = allow)\n";
 
         for (case, main, modules, message) in [
             (
@@ -8359,7 +8385,7 @@ front = view::Orientation::Front: view::Orientation
                 format!("{allow}import \"colors.kcl\"\nx = colors::Color::Red\n"),
                 vec![(
                     "colors.kcl",
-                    "@settings(experimentalFeatures = allow)\ntype Color { | Red }\n",
+                    "@settings(kclVersion = \"3.0-preview\", experimentalFeatures = allow)\ntype Color { | Red }\n",
                 )],
                 "Item Color not found in module's exported items",
             ),
@@ -8380,7 +8406,7 @@ front = view::Orientation::Front: view::Orientation
                 format!("{allow}import \"types.kcl\"\nx = types::T::foo\n"),
                 vec![(
                     "types.kcl",
-                    "@settings(experimentalFeatures = allow)\nexport type T = number(_)\n",
+                    "@settings(kclVersion = \"3.0-preview\", experimentalFeatures = allow)\nexport type T = number(_)\n",
                 )],
                 "`T` is a type that does not resolve to an enum, so it cannot be used as the head of a `::` path.",
             ),
@@ -8406,7 +8432,7 @@ front = view::Orientation::Front: view::Orientation
 
     #[tokio::test(flavor = "multi_thread")]
     async fn enum_compares_by_variant() {
-        let code = r#"@settings(experimentalFeatures = allow)
+        let code = r#"@settings(kclVersion = "3.0-preview", experimentalFeatures = allow)
 type Color { | Red | Green }
 sameEq = Color::Red == Color::Red
 sameNeq = Color::Red != Color::Red
@@ -8438,7 +8464,7 @@ otherNeq = Color::Red != Color::Green
         // `assertIs` runs inside the block because block-local bindings live in a
         // child scope that the root environment cannot read afterwards. A wrong
         // comparison therefore fails this test instead of passing unnoticed.
-        let code = r#"@settings(experimentalFeatures = allow)
+        let code = r#"@settings(kclVersion = "3.0-preview", experimentalFeatures = allow)
 type Color { | Red | Green }
 sketch(on = XY) {
   c = Color::Red
@@ -8463,7 +8489,7 @@ sketch(on = XY) {
         //
         // `!=` is deliberately absent: the interception tests `Eq` only, so `!=`
         // still compares, which `enum_usable_inside_sketch_block` covers.
-        let allow = "@settings(experimentalFeatures = allow)\n";
+        let allow = "@settings(kclVersion = \"3.0-preview\", experimentalFeatures = allow)\n";
         let tail = "  l1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])\n}\n";
         for (case, declaration, comparison, types) in [
             (
@@ -8489,7 +8515,7 @@ sketch(on = XY) {
         // Two names for one declaration, so they are the same type and compare
         // equal. Identity is the declaration, not the binding, which is what makes
         // this different from two files that each declare a `Color`.
-        let main = r#"@settings(experimentalFeatures = allow)
+        let main = r#"@settings(kclVersion = "3.0-preview", experimentalFeatures = allow)
 import Color as A from 'colors.kcl'
 import Color as B from 'colors.kcl'
 x = A::Red == B::Red
@@ -8499,7 +8525,7 @@ y = A::Red == B::Green
             main,
             &[(
                 "colors.kcl",
-                "@settings(experimentalFeatures = allow)\nexport type Color { | Red | Green }\n",
+                "@settings(kclVersion = \"3.0-preview\", experimentalFeatures = allow)\nexport type Color { | Red | Green }\n",
             )],
         )
         .await
@@ -8515,14 +8541,14 @@ y = A::Red == B::Green
 
     #[tokio::test(flavor = "multi_thread")]
     async fn enum_rejects_comparison_across_types() {
-        let allow = "@settings(experimentalFeatures = allow)\n";
+        let allow = "@settings(kclVersion = \"3.0-preview\", experimentalFeatures = allow)\n";
         let color = (
             "a.kcl",
-            "@settings(experimentalFeatures = allow)\nexport type Color { | Red }\n",
+            "@settings(kclVersion = \"3.0-preview\", experimentalFeatures = allow)\nexport type Color { | Red }\n",
         );
         let other_color = (
             "b.kcl",
-            "@settings(experimentalFeatures = allow)\nexport type Color { | Red }\n",
+            "@settings(kclVersion = \"3.0-preview\", experimentalFeatures = allow)\nexport type Color { | Red }\n",
         );
 
         for (case, main, modules, message) in [
@@ -8569,10 +8595,10 @@ y = A::Red == B::Green
 
     #[tokio::test(flavor = "multi_thread")]
     async fn enum_rejects_bare_type_name_as_value() {
-        let allow = "@settings(experimentalFeatures = allow)\n";
+        let allow = "@settings(kclVersion = \"3.0-preview\", experimentalFeatures = allow)\n";
         let colors = (
             "colors.kcl",
-            "@settings(experimentalFeatures = allow)\nexport type Color { | Red | Green }\n",
+            "@settings(kclVersion = \"3.0-preview\", experimentalFeatures = allow)\nexport type Color { | Red | Green }\n",
         );
 
         for (case, main, modules, message) in [
@@ -8623,55 +8649,60 @@ y = A::Red == B::Green
     }
 
     #[tokio::test(flavor = "multi_thread")]
-    async fn enum_use_gated_by_consuming_module() {
-        // The declaring modules allow experimental features; the consuming one
-        // does not, so constructing the imported enum is what trips the gate.
-        // The gate follows the consumer's settings through both the original
-        // binding and a re-exported type alias.
-        //
-        // Experimental use is reported as a compilation issue rather than by
-        // aborting the run, which is how `RuntimeType::from_alias` reports it too,
-        // so execution succeeds and the diagnostic is what carries the complaint.
-        let colors = (
-            "colors.kcl",
-            "@settings(experimentalFeatures = allow)\nexport type Color { | Red }\n",
-        );
-        let aliases = (
-            "aliases.kcl",
-            "@settings(experimentalFeatures = allow)\nimport \"colors.kcl\"\nexport type Shade = colors::Color\n",
-        );
-
-        for (case, main, modules) in [
-            (
-                "original binding",
-                "import \"colors.kcl\"\nx = colors::Color::Red\n",
-                vec![colors],
-            ),
-            (
-                "re-exported alias",
-                "import \"aliases.kcl\"\nx = aliases::Shade::Red\n",
-                vec![colors, aliases],
-            ),
-        ] {
-            let result = execute_with_modules(main, &modules)
-                .await
-                .unwrap_or_else(|err| panic!("case: {case}: {}", err.message()));
-
-            let issues = &result.exec_state.global.issues;
-            assert_eq!(issues.len(), 1, "case: {case}: issues: {issues:?}");
-            assert_eq!(
-                issues[0].message, "Use of the enum `Color` is experimental and may change or be removed.",
-                "case: {case}"
-            );
-            assert_eq!(issues[0].severity, Severity::Error, "case: {case}");
+    async fn imported_user_type_declarations_require_v3_even_with_opt_in() {
+        for version in ["1.0", "2.0"] {
+            for module_settings in [format!("@settings(kclVersion = \"{version}\")\n"), String::new()] {
+                for (feature, declaration, use_type) in [
+                    (
+                        "Type aliases",
+                        "export type Distance = number(mm)",
+                        "x = 1mm: types::Distance",
+                    ),
+                    (
+                        "Enum declarations",
+                        "export type Color { | Red }",
+                        "x = types::Color::Red",
+                    ),
+                ] {
+                    let main = format!(
+                        "@settings(kclVersion = \"{version}\", experimentalFeatures = allow)\nimport \"types.kcl\"\n{use_type}\n"
+                    );
+                    let module = format!("{module_settings}{declaration}\n");
+                    let err = execute_with_modules(&main, &[("types.kcl", &module)])
+                        .await
+                        .unwrap_err();
+                    assert_eq!(
+                        err.message(),
+                        format!("{feature} require KCL 3.0-preview, but this program uses KCL {version}."),
+                        "main: {main}; module: {module}"
+                    );
+                }
+            }
         }
     }
 
     #[tokio::test(flavor = "multi_thread")]
-    async fn enum_use_not_gated_when_consumer_allows_it() {
-        // The other half of the gate: with the setting present, using an enum
-        // raises nothing at all.
-        let code = r#"@settings(experimentalFeatures = allow)
+    async fn named_view_access_in_unversioned_import_uses_entry_point_version() {
+        let dep = "export camera = view::directed([0, 1, -2])\n";
+        for version in ["1.0", "2.0"] {
+            let main = format!("@settings(kclVersion = \"{version}\")\nimport \"dep.kcl\"\nx = dep::camera\n");
+            let err = execute_with_modules(&main, &[("dep.kcl", dep)]).await.unwrap_err();
+            assert!(
+                err.message()
+                    .contains(&format!("added in KCL 3.0, but this program uses KCL {version}")),
+                "error: {}",
+                err.message()
+            );
+        }
+
+        let main = "@settings(kclVersion = \"3.0-preview\")\nimport \"dep.kcl\"\nx = dep::camera\n";
+        let result = execute_with_modules(main, &[("dep.kcl", dep)]).await.unwrap();
+        assert!(result.exec_state.issues().is_empty());
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn enum_use_is_not_experimental_in_v3() {
+        let code = r#"@settings(kclVersion = "3.0-preview")
 type Color { | Red }
 x = Color::Red
 "#;
@@ -8681,6 +8712,51 @@ x = Color::Red
             "issues: {:?}",
             result.exec_state.global.issues
         );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn v3_enum_variant_warning_follows_explicit_annotations() {
+        for (case, declarations, binding, expected_warnings) in [
+            ("unannotated enum", "type Color { | Red }", "Color", 0),
+            (
+                "annotated enum",
+                "@(experimental = true)\ntype Color { | Red }",
+                "Color",
+                1,
+            ),
+            (
+                "alias of annotated enum",
+                "@(experimental = true)\ntype Color { | Red }\ntype Shade = Color",
+                "Shade",
+                1,
+            ),
+            (
+                "annotated alias",
+                "type Color { | Red }\n@(experimental = true)\ntype Shade = Color",
+                "Shade",
+                1,
+            ),
+        ] {
+            let code = format!(
+                "@settings(kclVersion = \"3.0-preview\", experimentalFeatures = warn)\n{declarations}\nx = {binding}::Red\n"
+            );
+            let result = parse_execute(&code)
+                .await
+                .unwrap_or_else(|err| panic!("case: {case}: {}", err.message()));
+            let variant_warnings: Vec<_> = result
+                .exec_state
+                .issues()
+                .iter()
+                .filter(|issue| {
+                    issue.message == "Use of the enum `Color` is experimental and may change or be removed."
+                })
+                .collect();
+            assert_eq!(variant_warnings.len(), expected_warnings, "case: {case}");
+            assert!(
+                variant_warnings.iter().all(|issue| issue.severity == Severity::Warning),
+                "case: {case}"
+            );
+        }
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -8697,12 +8773,12 @@ x = Color::Red
                 // The module arrives second, which is the path carrying the
                 // "only `TypeDef::Enum` conflicts" guard.
                 "an alias may share a name with a module",
-                "@settings(experimentalFeatures = allow)\ntype Temperature = number(_)\nimport \"Temperature.kcl\"\nx = Temperature::x\n",
+                "@settings(kclVersion = \"3.0-preview\", experimentalFeatures = allow)\ntype Temperature = number(_)\nimport \"Temperature.kcl\"\nx = Temperature::x\n",
                 vec![("Temperature.kcl", "export x = 1\n")],
             ),
             (
                 "a value may share a name with an enum",
-                "@settings(experimentalFeatures = allow)\ntype Color { | Red }\nColor = 5\n",
+                "@settings(kclVersion = \"3.0-preview\", experimentalFeatures = allow)\ntype Color { | Red }\nColor = 5\n",
                 vec![],
             ),
         ] {
@@ -8714,7 +8790,7 @@ x = Color::Red
 
     #[tokio::test(flavor = "multi_thread")]
     async fn enum_declaration_rejects_redefinition() {
-        let code = r#"@settings(experimentalFeatures = allow)
+        let code = r#"@settings(kclVersion = "3.0-preview", experimentalFeatures = allow)
 type Color { | Red }
 type Color { | Green }
 "#;
@@ -8732,7 +8808,7 @@ type Color { | Green }
     #[tokio::test(flavor = "multi_thread")]
     async fn enum_projects_to_string() {
         let header = r#"
-            @settings(experimentalFeatures = allow)
+            @settings(kclVersion = "3.0-preview", experimentalFeatures = allow)
             type Color { | Red | Green }
             type Label = string
         "#;
@@ -8779,7 +8855,7 @@ type Color { | Green }
     #[tokio::test(flavor = "multi_thread")]
     async fn enum_ascription_keeps_the_enum() {
         let header = r#"
-            @settings(experimentalFeatures = allow)
+            @settings(kclVersion = "3.0-preview", experimentalFeatures = allow)
             type Color { | Red | Green }
             type Paint = Color
         "#;
@@ -8809,7 +8885,7 @@ type Color { | Green }
     #[tokio::test(flavor = "multi_thread")]
     async fn enum_projection_is_not_implicit() {
         let header = r#"
-            @settings(experimentalFeatures = allow)
+            @settings(kclVersion = "3.0-preview", experimentalFeatures = allow)
             type Color { | Red | Green }
         "#;
         let found = "but found a value of enum `Color` (with type `Color`).";
@@ -8865,7 +8941,7 @@ type Color { | Green }
     #[tokio::test(flavor = "multi_thread")]
     async fn enum_ascription_rejections() {
         let header = r#"
-            @settings(experimentalFeatures = allow)
+            @settings(kclVersion = "3.0-preview", experimentalFeatures = allow)
             type Color { | Red }
             type Shade { | Red }
         "#;
@@ -8909,7 +8985,7 @@ type Color { | Green }
     #[tokio::test(flavor = "multi_thread")]
     async fn enum_flows_through_declared_types() {
         let header = r#"
-            @settings(experimentalFeatures = allow)
+            @settings(kclVersion = "3.0-preview", experimentalFeatures = allow)
             type Color { | Red | Green }
             type Paint = Color
             type Shade { | Red }
@@ -9029,9 +9105,9 @@ type Color { | Green }
     // ---- `added_in` on whole declarations ----
 
     /// Runs `body` under `kcl_version` and returns the fatal error message, or
-    /// `None` if it ran without issues. Experimental features are allowed
-    /// because user type aliases are experimental, and hints are enabled for
-    /// user declarations, since in production only std gets them.
+    /// `None` if it ran without issues. Experimental features are allowed for
+    /// unrelated syntax in the test programs. Hints are enabled for user
+    /// declarations, since in production only std gets them.
     async fn added_in_error(kcl_version: &str, body: &str) -> Option<String> {
         let program = format!("@settings(kclVersion = {kcl_version}, experimentalFeatures = allow)\n{body}");
         match parse_execute_hinting_all(&program, None).await {
