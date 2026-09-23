@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties named_views_hide_helix.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": 10.0,
+      "y": 0.0,
+      "z": 10.0
+    },
+    "dimensions": {
+      "x": 50.0,
+      "y": 30.0,
+      "z": 20.0
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 599.9999848427251
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 0.9999998458927924
+  }
+}
