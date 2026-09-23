@@ -111,7 +111,7 @@ describe('useProjectSearch compatibility', () => {
     act(() => result.current.setQuery('BRACKET'))
     expect(result.current.searchResults).toEqual([titleMatch, nameMatch])
 
-    act(() => result.current.setQuery('braket'))
+    act(() => result.current.setQuery('brake'))
     expect(result.current.searchResults).toEqual([titleMatch, nameMatch])
   })
 
