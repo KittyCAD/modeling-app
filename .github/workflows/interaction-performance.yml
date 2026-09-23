@@ -18,6 +18,7 @@ on:
           - cloud-stages
           - cloud-cleanup
           - native-tools
+          - palette-native-trace
       palette-frame-observer:
         description: Collect extra palette animation-frame observations
         type: boolean
@@ -179,7 +180,7 @@ jobs:
           retention-days: 7
 
   palette-reduction:
-    if: ${{ inputs.diagnostic == 'palette-reduction' || inputs.diagnostic == 'targeted' || inputs.diagnostic == 'comparison' }}
+    if: ${{ inputs.diagnostic == 'palette-reduction' || inputs.diagnostic == 'targeted' || inputs.diagnostic == 'comparison' || inputs.diagnostic == 'palette-native-trace' }}
     name: Standalone palette presentation
     runs-on: namespace-profile-macos-8-cores
     timeout-minutes: 10
@@ -202,7 +203,8 @@ jobs:
         timeout-minutes: 5
         run: env -u HEADLESS npm exec -- playwright test --config=playwright.palette-reduction.config.ts --headed
         env:
-          PALETTE_REDUCTION_FRAME_OBSERVER: ${{ inputs.palette-frame-observer }}
+          PALETTE_REDUCTION_FRAME_OBSERVER: ${{ inputs.diagnostic == 'palette-native-trace' && 'false' || inputs.palette-frame-observer }}
+          PALETTE_REDUCTION_NATIVE_TRACE: ${{ inputs.diagnostic == 'palette-native-trace' }}
       - name: Preserve reduction evidence
         if: ${{ !cancelled() }}
         uses: actions/upload-artifact@v7

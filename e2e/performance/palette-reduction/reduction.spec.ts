@@ -8,6 +8,7 @@ import type { ReductionCapture } from '@e2e/performance/palette-reduction/render
 import presentation from '@e2e/performance/palette-reduction/home-presentation.json'
 import { readPaletteAppearance } from '@e2e/performance/palette-reduction/presentation'
 import type { PaletteAppearance } from '@e2e/performance/palette-reduction/presentation'
+import { startNativeGpuTrace } from '@e2e/performance/palette-reduction/native-gpu-trace'
 
 const buildDirectory = path.resolve('test-results/palette-reduction-build')
 
@@ -17,6 +18,11 @@ test('first-use standalone palette presentation', async ({}, testInfo) => {
     frameObserver
   )
   const extraFrameObserverEnabled = frameObserver === 'true'
+  const nativeTraceEnabled =
+    process.env.PALETTE_REDUCTION_NATIVE_TRACE === 'true'
+  const tracesGpu = nativeTraceEnabled && testInfo.repeatEachIndex === 0
+  if (tracesGpu) testInfo.setTimeout(120_000)
+  let nativeTrace: Awaited<ReturnType<typeof startNativeGpuTrace>> | undefined
   const repetitions = Number(process.env.PALETTE_REDUCTION_REPEAT_EACH)
   expect(
     Number.isInteger(repetitions) && repetitions > 0,
@@ -45,6 +51,7 @@ test('first-use standalone palette presentation', async ({}, testInfo) => {
     const close = page.getByTestId(interactions.commandPaletteClose.testId)
     await expect(open).toBeEnabled()
     await expect(page.getByTestId('command-bar-wrapper')).toBeHidden()
+    if (tracesGpu) nativeTrace = await startNativeGpuTrace(electron)
     const capture = await page.evaluateHandle(
       async (extraFrameObserverEnabled): Promise<ReductionCapture> => {
         const source = './renderer.js'
@@ -119,6 +126,8 @@ test('first-use standalone palette presentation', async ({}, testInfo) => {
         const metadata = {
           calibrationEligible: false,
           extraFrameObserverEnabled,
+          nativeTraceEnabled,
+          nativeTraceRequestedForThisRepeat: tracesGpu,
           repeatIndex: testInfo.repeatEachIndex,
           presentationValidation: {
             finalRepeatIndex,
@@ -222,6 +231,10 @@ test('first-use standalone palette presentation', async ({}, testInfo) => {
       }
     }
   } finally {
-    await electron.close()
+    try {
+      await nativeTrace?.finish(testInfo)
+    } finally {
+      await electron.close()
+    }
   }
 })
