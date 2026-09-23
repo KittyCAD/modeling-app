@@ -2509,7 +2509,6 @@ baseExtrude = extrude(sketch001, length = -15)
 seg01OppositeEdge = getOppositeEdge(seg01)
 seg02OppositeEdge = getOppositeEdge(seg02)
 extrude001 = baseExtrude
-  |> fillet(radius = 5, tags = [seg02OppositeEdge])
 fillet001 = ${edgeTreatmentType}(extrude001, ${parameterName} = 6, tags = [seg02])
 chamfer001 = chamfer(extrude001, length = 5, tags = [seg01OppositeEdge])`
 
