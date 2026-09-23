@@ -4701,9 +4701,13 @@ e
 
     #[test]
     fn reserved_words() {
-        // Since these are stored in a set, we sort to make the tests
-        // deterministic.
-        for word in crate::parsing::token::RESERVED_WORDS.keys().sorted() {
+        // The default parser uses KCL 1.0, where `use` remains an identifier.
+        // Sort the other reserved words for deterministic assertion order.
+        for word in crate::parsing::token::RESERVED_WORDS
+            .keys()
+            .filter(|word| **word != "use")
+            .sorted()
+        {
             assert_reserved(word);
         }
     }
