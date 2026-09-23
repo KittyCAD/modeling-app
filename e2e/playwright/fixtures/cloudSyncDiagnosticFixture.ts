@@ -133,6 +133,9 @@ export const test = base.extend<{ cloudSyncDiagnostic: undefined }>({
               calibrationEligible: false,
               baseApplicationCommit: 'e9510abfb317779a6b04af21b88bc539b258416c',
               testFixtureCommit: 'cc0b8f937e976c31019c823e10697b7b92675ecd',
+              applicationChanges: [
+                'reuse-local-binding-discovery-per-index-pass',
+              ],
               diagnosticCommit: process.env.GITHUB_SHA ?? null,
               cpu: cpus()[0]?.model ?? null,
               platform: platform(),
