@@ -36,9 +36,9 @@ redo-kcl-stdlib-docs:
     EXPECTORATE=overwrite {{ cnr }} {{ kcl_lib_flags }} -- generate_settings_docs
 
 # Copy a test KCL file from executor tests into a new simulation test.
-copy-exec-test-into-sim-test test_name:
+move-exec-test-into-sim-test test_name:
     just new-sim-test {{ test_name }}
-    cp kcl-lib/e2e/executor/inputs/{{ test_name }}.kcl kcl-lib/tests/{{ test_name }}/input.kcl
+    mv kcl-lib/e2e/executor/inputs/{{ test_name }}.kcl kcl-lib/tests/{{ test_name }}/input.kcl
     zoo kcl fmt -w kcl-lib/tests/{{ test_name }}/input.kcl
 
 # Create a new, empty KCL deterministic simulation test case.
