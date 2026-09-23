@@ -53,17 +53,24 @@ memory until the test exports them; this does not collect customer telemetry.
 
 ## Running measurements
 
-Desktop tests open real application windows and can take focus. Use the existing
-Linux CI job with its Xvfb virtual display to avoid interrupting local desktop use.
+Run desktop measurements in a normal visible Electron window with `HEADLESS`
+unset. The windows can take focus. Keep the same machine and display setup when
+comparing changes, and leave normal motion enabled.
+
+Linux CI uses an Xvfb virtual display. Its rendering and presentation costs can
+differ from a physical desktop, especially on first use. Compare results within
+each environment and confirm a proposed UI optimization on a visible desktop
+before changing product behavior to satisfy the virtual-display budget.
 
 Prepare dependencies and matching Wasm artifacts using the normal repository
 setup, then build and test the production Electron app:
 
 ```sh
 npm ci
+cp rust/kcl-wasm-lib/pkg/kcl_wasm_lib_bg.wasm public/
 VITE_INTERACTION_PERFORMANCE=1 VITE_ZOO_BASE_DOMAIN=dev.zoo.dev npm run tronb:vite:prod
 NODE_ENV=production TARGET=desktop VITE_ZOO_BASE_DOMAIN=dev.zoo.dev \
-  npm exec -- playwright test --config=playwright.performance.config.ts
+  npm exec -- playwright test --config=playwright.performance.config.ts --headed
 ```
 
 The test process needs the existing development API token through the usual
