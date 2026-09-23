@@ -2583,6 +2583,7 @@ export class KclManager extends File {
       ast,
       path: this.path,
       rustContext: this.rustContext,
+      callbacks: this.createExecutionCallbacks(currentExecutionId),
     })
 
     const livePathsToWatch = Object.values(execState.filenames)

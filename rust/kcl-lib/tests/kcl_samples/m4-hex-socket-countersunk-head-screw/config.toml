@@ -1,2 +1,5 @@
 # Rendering can shift Engine-generated UUIDs between runs.
 redact_uuids = true
+
+[test_graphics.EngineRender]
+reason = "Bounding box differs in geometry-only mode"

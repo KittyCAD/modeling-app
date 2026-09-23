@@ -250,7 +250,7 @@ pub(crate) async fn create_segments_in_engine(
                         metadata: range.into(),
                     },
                 };
-                sketch.paths.push(Path::ToPoint { base });
+                sketch.paths.push_back(Path::ToPoint { base });
                 sketch.synthetic_jump_path_ids.push(id);
             }
         } else {
@@ -449,7 +449,7 @@ pub(crate) async fn create_segments_in_engine(
                     new_sketch.add_tag(tag, &current_path, exec_state, None);
                 }
 
-                new_sketch.paths.push(current_path);
+                new_sketch.paths.push_back(current_path);
 
                 outer_sketch = Some(new_sketch);
             }
@@ -701,7 +701,7 @@ mod tests {
             sketch.paths.len() > 1,
             "expected sampled line segments, not one exact path"
         );
-        assert_eq!(sketch.paths.first().unwrap().get_from()[0].n, 0.0);
+        assert_eq!(sketch.paths.front().unwrap().get_from()[0].n, 0.0);
         assert_eq!(sketch.paths.last().unwrap().get_to()[0].n, 40.0);
 
         ctx.close().await;

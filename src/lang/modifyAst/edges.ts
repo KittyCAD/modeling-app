@@ -44,6 +44,7 @@ import {
   getCodeRefsByArtifactId,
   getCommonFacesForEdge,
   getFaceCodeRef,
+  getMergedSweepBodyArtifact,
   getSegmentForEdgeCut,
   getSweepArtifactFromSelection,
   type ResolvedGraphSelection,
@@ -1431,7 +1432,6 @@ interface UnifiedCallToFix {
   triggerRanges?: Z0006SourceRange[]
   orderedPayloads: FilletEdgeRefPayload[]
   orderedEdgeRefExprs: Expr[]
-  hasExistingEdgeRefs: boolean
   tagsBaseExpr?: Expr | null
   owningBodyExpr?: Expr | null
 }
@@ -1472,7 +1472,6 @@ function findFilletChamferCallsToFixUnified(
       return
     }
     const elements = getTagsElementsFromCall(call)
-    const existingEdgeRefExprs = getExistingEdgeRefsFromCall(call)
     const orderedPayloads: FilletEdgeRefPayload[] = []
     const orderedEdgeRefExprs: Expr[] = []
     const triggerRanges: Z0006SourceRange[] = []
@@ -1572,9 +1571,7 @@ function findFilletChamferCallsToFixUnified(
     if (
       elements?.length &&
       !hasUnconvertedTagsElement &&
-      (orderedPayloads.length > 0 ||
-        orderedEdgeRefExprs.length > 0 ||
-        existingEdgeRefExprs.length > 0)
+      (orderedPayloads.length > 0 || orderedEdgeRefExprs.length > 0)
     ) {
       const moduleId = call.moduleId
       results.push({
@@ -1582,7 +1579,6 @@ function findFilletChamferCallsToFixUnified(
         triggerRanges,
         orderedPayloads,
         orderedEdgeRefExprs,
-        hasExistingEdgeRefs: existingEdgeRefExprs.length > 0,
         tagsBaseExpr: tagsBaseExpr ?? undefined,
         owningBodyExpr: call.unlabeled
           ? structuredClone(call.unlabeled)
@@ -2441,7 +2437,6 @@ export function refactorZ0006Unified(
     range,
     orderedPayloads,
     orderedEdgeRefExprs,
-    hasExistingEdgeRefs,
     tagsBaseExpr,
     owningBodyExpr,
   } of toFixFC) {
@@ -2476,10 +2471,6 @@ export function refactorZ0006Unified(
     )
     if (err(nodeResult)) continue
     const callNode = nodeResult.node
-    if (hasExistingEdgeRefs) {
-      const existing = getExistingEdgeRefsFromCall(callNode)
-      edgeRefExprs.push(...existing)
-    }
     if (edgeRefExprs.length === 0) continue
     const args = callNode.arguments ?? []
     const newArgs = args.filter(
@@ -3760,12 +3751,22 @@ export function insertPrimitiveEdgeVariablesAndOffsetPathToNode({
     if (!bodySelection?.artifact || !bodySelection.codeRef) {
       continue
     }
+    if (bodySelection.artifact.type === 'sweep') {
+      const body = getMergedSweepBodyArtifact(
+        bodySelection.artifact,
+        artifactGraph
+      )
+      if (err(body)) return body
+      bodySelection.artifact = body
+      bodySelection.codeRef = body.codeRef
+    }
+
     const resolvedBodySelection: ResolvedGraphSelection = {
       artifact: bodySelection.artifact,
       codeRef: bodySelection.codeRef,
     }
 
-    const bodyKey = JSON.stringify(bodySelection.codeRef.pathToNode)
+    const bodyKey = bodySelection.artifact.id
     const byBody = primitiveSelectionsByBody.get(bodyKey)
     if (byBody) {
       if (!byBody.primitiveIndices.includes(selection.primitiveIndex)) {
@@ -3797,7 +3798,8 @@ export function insertPrimitiveEdgeVariablesAndOffsetPathToNode({
       wasmInstance,
       nodeToEdit,
       {
-        lastChildLookup: true,
+        // Keep canonical sweeps on their own body, just like graph edges.
+        lastChildLookup: primitiveData.bodySelection.artifact?.type !== 'sweep',
         artifactTypeFilter: ['compositeSolid', 'sweep'],
       }
     )

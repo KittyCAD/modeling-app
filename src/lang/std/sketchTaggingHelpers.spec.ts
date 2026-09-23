@@ -1,6 +1,7 @@
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import {
   addTagForSketchOnFace,
+  addTagToEdgeCutSelector,
   addTagToSingletonEdgeCut,
 } from '@src/lang/std/sketchTaggingHelpers'
 import { topLevelRange } from '@src/lang/util'
@@ -173,7 +174,7 @@ describe('addTagToSingletonEdgeCut', () => {
     if (err(result)) throw result
 
     expect(recast(result.modifiedAst, instanceInThisFile)).toContain(
-      'tag = $seg01'
+      'tag = $chamferFace01'
     )
   })
 
@@ -189,6 +190,49 @@ describe('addTagToSingletonEdgeCut', () => {
       new Error(
         'Cannot tag an edge cut from an operation with multiple selectors until source-selector metadata is available'
       )
+    )
+  })
+})
+
+describe('addTagToEdgeCutSelector', () => {
+  it('splits and tags the selector identified by artifact lineage', () => {
+    const code = `chamfer001 = chamfer(body001, edges = [
+  { sideFaces = [region001.tags.bottom, endCap] },
+  { sideFaces = [region001.tags.right, endCap] }
+], length = 1)`
+    const ast = assertParse(code, instanceInThisFile)
+    const callStart = code.indexOf('chamfer(')
+    const pathToNode = getNodePathFromSourceRange(
+      ast,
+      topLevelRange(callStart, code.length)
+    )
+
+    const result = addTagToEdgeCutSelector(
+      { node: ast, pathToNode, wasmInstance: instanceInThisFile },
+      1,
+      instanceInThisFile
+    )
+    if (err(result)) throw result
+
+    expect(recast(result.modifiedAst, instanceInThisFile)).toContain(
+      `chamfer001 = chamfer(
+  body001,
+  edges = [
+    {
+      sideFaces = [region001.tags.right, endCap]
+    }
+  ],
+  length = 1,
+  tag = $chamferFace01,
+)
+  |> chamfer(
+       edges = [
+         {
+           sideFaces = [region001.tags.bottom, endCap]
+         }
+       ],
+       length = 1,
+     )`
     )
   })
 })

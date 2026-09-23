@@ -8,6 +8,7 @@ import {
 import { signal } from '@preact/signals-core'
 import type * as ClientErrors from '@src/lib/clientErrors'
 import { CLOUD_SYNC_PLUGIN_ID } from '@src/lib/cloudSync/registry/constants'
+import { personalCloudProjectRelationshipMembershipPolicy } from '@src/lib/cloudSync/registry/personalCloudLibrary'
 import { testFileOperations } from '@src/lib/fileSystem/testRuntime'
 import fsZds from '@src/lib/fs-zds'
 import { fsZdsConstants } from '@src/lib/fs-zds/constants'
@@ -39,6 +40,7 @@ import {
 import {
   type ProjectLibraryRealization,
   type ProjectLibraryRealizationContribution,
+  type ProjectLibraryRelationshipMembershipPolicy,
   projectLibraryTypesValueSpec,
 } from '@src/registry/contracts/projectLibraries'
 import type { SettingsRegistryService } from '@src/registry/contracts/settings'
@@ -230,6 +232,19 @@ const fileOperationsTestItem = defineRegistryItem({
   providesServices: [provideService(fileOperationsService, testFileOperations)],
 })
 
+const personalCloudMembershipPolicyTestItem = defineRegistryItem({
+  id: 'test.personal-cloud-membership-policy',
+  provides: [
+    provide(projectLibraryTypesValueSpec, {
+      type: CLOUD_PROJECT_LIBRARY_TYPE,
+      title: 'Cloud',
+      relationshipMembershipPolicies: [
+        personalCloudProjectRelationshipMembershipPolicy,
+      ],
+    }),
+  ],
+})
+
 function createCloudSyncService(
   overrides: Partial<CloudSyncRegistryService> = {}
 ): CloudSyncRegistryService {
@@ -297,6 +312,47 @@ function cloudRelationship(
   }
 }
 
+function organizationRelationship(
+  realizations: ProjectLibraryRealization[] = [],
+  overrides: Partial<CloudProjectRelationship> = {}
+): CloudProjectRelationship {
+  const localRealizations = realizations.map(
+    (
+      realization,
+      index
+    ): CloudProjectRelationship['localRealizations'][number] => ({
+      role: index === 0 ? 'canonical' : 'duplicate',
+      realization,
+      duplicateRisk: 'unknown',
+      autoCleanupEligible: false,
+    })
+  )
+  return cloudRelationship({
+    remoteProjectId: 'org-owned',
+    remoteProject: {
+      id: 'org-owned',
+      access: {
+        scope: 'organization',
+        organization_id: 'org-123',
+        can_edit: false,
+        can_delete: false,
+        can_manage_organization: false,
+      },
+    },
+    canonicalRealization: localRealizations[0],
+    localRealizations,
+    duplicateRealizations: localRealizations.slice(1),
+    ...overrides,
+  })
+}
+
+const personalCloudLibrary = {
+  id: PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
+  title: 'Personal Cloud',
+  path: '/cloud',
+  type: CLOUD_PROJECT_LIBRARY_TYPE,
+}
+
 describe('deriveHomeProjectEntryContributions', () => {
   it('derives local-only realization cards', () => {
     expect(
@@ -346,6 +402,230 @@ describe('deriveHomeProjectEntryContributions', () => {
       }),
     ])
   })
+
+  it.each([false, true])(
+    'excludes org-owned remote projects even when can_edit is %s',
+    (canEdit) => {
+      const relationships = [
+        cloudRelationship({
+          remoteProjectId: 'personal',
+          remoteProject: {
+            id: 'personal',
+            access: {
+              scope: 'personal',
+              can_edit: true,
+              can_delete: true,
+              can_manage_organization: true,
+            },
+          },
+        }),
+        organizationRelationship([], {
+          remoteProject: {
+            id: 'org-owned',
+            access: {
+              scope: 'organization',
+              can_edit: canEdit,
+              can_delete: canEdit,
+              can_manage_organization: canEdit,
+            },
+          },
+        }),
+        cloudRelationship({
+          remoteProjectId: 'legacy',
+          remoteProject: { id: 'legacy' },
+        }),
+      ]
+      const original = structuredClone(relationships)
+      const entries = deriveHomeProjectEntryContributions({
+        realizations: [],
+        cloudRelationships: relationships,
+        relationshipMembershipPolicies: [
+          personalCloudProjectRelationshipMembershipPolicy,
+        ],
+      })
+
+      expect(entries.map((entry) => entry.remoteProjectId)).toEqual([
+        'personal',
+        'legacy',
+      ])
+      expect(
+        entries.every((entry) =>
+          entry.libraryIds?.includes(PERSONAL_CLOUD_PROJECT_LIBRARY_ID)
+        )
+      ).toBe(true)
+      expect(relationships).toEqual(original)
+    }
+  )
+
+  it('lets another library define the inverse relationship-membership policy', () => {
+    const organizationLibraryId = 'cloud-organization-org-123'
+    const organizationMembershipPolicy = {
+      libraryId: organizationLibraryId,
+      includes: ({ relationship }) =>
+        relationship.remoteProject?.access?.scope === 'organization',
+    } satisfies ProjectLibraryRelationshipMembershipPolicy
+
+    const entries = deriveHomeProjectEntryContributions({
+      realizations: [],
+      cloudRelationships: [
+        cloudRelationship({
+          remoteProjectId: 'personal',
+          remoteProject: {
+            id: 'personal',
+            access: {
+              scope: 'personal',
+              can_edit: true,
+              can_delete: true,
+              can_manage_organization: true,
+            },
+          },
+        }),
+        organizationRelationship(),
+      ],
+      relationshipMembershipPolicies: [
+        personalCloudProjectRelationshipMembershipPolicy,
+        organizationMembershipPolicy,
+      ],
+    })
+
+    expect(entries).toEqual([
+      expect.objectContaining({
+        remoteProjectId: 'personal',
+        libraryIds: [PERSONAL_CLOUD_PROJECT_LIBRARY_ID],
+      }),
+      expect.objectContaining({
+        remoteProjectId: 'org-owned',
+        libraryIds: [organizationLibraryId],
+      }),
+    ])
+  })
+
+  it.each([false, true])(
+    'hides materialized org projects without losing an explicit directory copy (copy: %s)',
+    (withDirectoryCopy) => {
+      const cloud = realization({
+        localProjectPath: '/cloud/shared-sample',
+        cloudProjectId: 'org-owned',
+        libraryIds: [PERSONAL_CLOUD_PROJECT_LIBRARY_ID],
+        libraryRefs: [personalCloudLibrary],
+      })
+      const directory = realization({
+        localProjectPath: '/projects/my-copy',
+        defaultFile: '/projects/my-copy/main.kcl',
+      })
+      const realizations = withDirectoryCopy ? [cloud, directory] : [cloud]
+      const relationship = organizationRelationship(realizations, {
+        conflict: { remoteRevision: 'hidden-canonical-conflict' },
+        syncFailure: { message: 'Hidden canonical upload failed' },
+      })
+      const original = structuredClone(relationship)
+      const entries = deriveHomeProjectEntryContributions({
+        realizations,
+        cloudRelationships: [relationship],
+        relationshipMembershipPolicies: [
+          personalCloudProjectRelationshipMembershipPolicy,
+        ],
+      })
+
+      expect(entries).toEqual(
+        withDirectoryCopy
+          ? [
+              expect.objectContaining({
+                source: 'local',
+                status: 'synced',
+                localProjectPath: directory.localProjectPath,
+                defaultFile: directory.defaultFile,
+                remoteProjectId: 'org-owned',
+                libraryIds: [DEFAULT_PROJECT_LIBRARY_ID],
+                deleteRemoteOnDelete: false,
+              }),
+            ]
+          : []
+      )
+      for (const entry of entries) {
+        expect(entry.cloudRelationshipId).toBeUndefined()
+        expect(entry.duplicateRealizations).toBeUndefined()
+        expect(entry.conflict).toBeUndefined()
+        expect(entry.syncFailure).toBeUndefined()
+      }
+      expect(relationship).toEqual(original)
+    }
+  )
+
+  it.each([
+    {
+      libraryType: DIRECTORY_PROJECT_LIBRARY_TYPE,
+      libraryId: DEFAULT_PROJECT_LIBRARY_ID,
+      deletesRemote: false,
+      personalMembership: true,
+    },
+    {
+      libraryType: CLOUD_PROJECT_LIBRARY_TYPE,
+      libraryId: 'other-cloud-library',
+      deletesRemote: true,
+      personalMembership: true,
+    },
+    {
+      libraryType: CLOUD_PROJECT_LIBRARY_TYPE,
+      libraryId: 'other-cloud-library',
+      deletesRemote: true,
+      personalMembership: false,
+    },
+  ])(
+    'preserves org copies and sync warnings in $libraryId (Personal Cloud overlap: $personalMembership)',
+    ({ libraryType, libraryId, deletesRemote, personalMembership }) => {
+      const local = realization({
+        localProjectPath: '/cloud/shared-sample',
+        cloudProjectId: 'org-owned',
+        libraryIds: personalMembership
+          ? [PERSONAL_CLOUD_PROJECT_LIBRARY_ID, libraryId]
+          : [libraryId],
+        libraryRefs: [
+          ...(personalMembership ? [personalCloudLibrary] : []),
+          {
+            id: libraryId,
+            title: 'Explicit library',
+            path: '/cloud',
+            type: libraryType,
+          },
+        ],
+      })
+      const conflict = { remoteRevision: 'newer-revision' }
+      const syncFailure = {
+        kind: 'remote-upload-forbidden' as const,
+        message: 'Project upload is forbidden',
+      }
+      const relationship = organizationRelationship([local], {
+        conflict,
+        syncFailure,
+      })
+      const original = structuredClone(relationship)
+      const entries = deriveHomeProjectEntryContributions({
+        realizations: [local],
+        cloudRelationships: [relationship],
+        relationshipMembershipPolicies: [
+          personalCloudProjectRelationshipMembershipPolicy,
+        ],
+      })
+
+      expect(entries).toEqual([
+        expect.objectContaining({
+          source: 'local',
+          status: 'conflicted',
+          localProjectPath: local.localProjectPath,
+          remoteProjectId: 'org-owned',
+          libraryIds: [libraryId],
+          deleteRemoteOnDelete: deletesRemote,
+          conflict,
+          syncFailure,
+        }),
+      ])
+      expect(entries[0].cloudRelationshipId).toBe(
+        personalMembership ? undefined : relationship.id
+      )
+      expect(relationship).toEqual(original)
+    }
+  )
 
   it('derives one canonical relationship card with duplicate metadata attached', () => {
     const canonical = realization({
@@ -524,6 +804,44 @@ describe('home project actions', () => {
     registry?.[Symbol.dispose]()
     registry = undefined
     vi.restoreAllMocks()
+  })
+
+  it('updates Personal Cloud membership when the remote ownership scope changes', () => {
+    const personal = cloudRelationship({
+      remoteProjectId: 'org-owned',
+      remoteProject: {
+        id: 'org-owned',
+        access: {
+          scope: 'personal',
+          can_edit: true,
+          can_delete: true,
+          can_manage_organization: true,
+        },
+      },
+    })
+    const relationships = signal([personal])
+    registry = new Registry()
+    registry.configure([
+      defineRegistryItem({
+        id: 'test.cloud-relationships',
+        providesServices: [
+          provideService(cloudProjectRelationshipsService, {
+            relationships,
+            watchRemoteThumbnail: vi.fn(),
+          }),
+        ],
+      }),
+      personalCloudMembershipPolicyTestItem,
+      homeProjectsExtension,
+    ])
+
+    const personalEntries = registry.get(homeProjectEntriesValueSpec)
+    expect(personalEntries).toHaveLength(1)
+    relationships.value = [organizationRelationship()]
+    expect(registry.get(homeProjectEntriesValueSpec)).toEqual([])
+    expect(relationships.value).toHaveLength(1)
+    relationships.value = [personal]
+    expect(registry.get(homeProjectEntriesValueSpec)).toEqual(personalEntries)
   })
 
   it('delegates visible thumbnail demand and cleanup to cloud relationships', () => {
@@ -1234,12 +1552,19 @@ describe('home project actions', () => {
     {
       name: 'uses cloudSync cleanup for a linked directory project when the plugin is active',
       pluginActive: true,
+      organizationCopy: false,
     },
     {
       name: 'deletes a linked directory project normally when the plugin is inactive',
       pluginActive: false,
+      organizationCopy: false,
     },
-  ])('$name', async ({ pluginActive }) => {
+    {
+      name: 'opens and deletes a visible org directory copy without targeting its hidden cloud canonical or deleting the remote project',
+      pluginActive: true,
+      organizationCopy: true,
+    },
+  ])('$name', async ({ pluginActive, organizationCopy }) => {
     const systemIO = createSystemIOService()
     const cloudSync = createCloudSyncService({
       status: signal(
@@ -1251,6 +1576,18 @@ describe('home project actions', () => {
     const removeProjectDirectory = vi
       .spyOn(fsZds, 'rm')
       .mockResolvedValue(undefined)
+    const orgRelationship = organizationRelationship([
+      realization({
+        localProjectPath: '/cloud/bracket',
+        cloudProjectId: 'org-owned',
+        libraryIds: [PERSONAL_CLOUD_PROJECT_LIBRARY_ID],
+        libraryRefs: [personalCloudLibrary],
+      }),
+      realization({
+        localProjectPath: '/projects/bracket',
+        defaultFile: '/projects/bracket/main.kcl',
+      }),
+    ])
 
     registry = new Registry()
     registry.configure([
@@ -1280,6 +1617,16 @@ describe('home project actions', () => {
         id: 'test.cloud-sync',
         providesServices: [provideService(cloudSyncService, cloudSync)],
       }),
+      defineRegistryItem({
+        id: 'test.cloud-relationships',
+        providesServices: [
+          provideService(cloudProjectRelationshipsService, {
+            relationships: signal(organizationCopy ? [orgRelationship] : []),
+            watchRemoteThumbnail: vi.fn(),
+          }),
+        ],
+      }),
+      personalCloudMembershipPolicyTestItem,
       createPlugin({
         id: CLOUD_SYNC_PLUGIN_ID,
         title: 'Cloud sync',
@@ -1300,30 +1647,44 @@ describe('home project actions', () => {
       return
     }
 
-    await deleteProject.run({
-      library: {
-        id: DEFAULT_PROJECT_LIBRARY_ID,
-        title: 'Projects',
-        path: '/projects',
-        type: DIRECTORY_PROJECT_LIBRARY_TYPE,
-      },
-      project: {
-        id: 'local:/projects/bracket',
-        source: 'local',
-        status: 'synced',
-        libraryIds: [DEFAULT_PROJECT_LIBRARY_ID],
-        name: 'bracket',
-        localProjectPath: '/projects/bracket',
-        localProjectName: 'bracket',
-        remoteProjectId: 'remote-123',
+    if (organizationCopy) {
+      const entries = registry.get(homeProjectEntriesValueSpec)
+      expect(entries).toHaveLength(1)
+      const project = entries[0]
+      expect(project.localProjectPath).toBe('/projects/bracket')
+      expect(project.deleteRemoteOnDelete).toBe(false)
+      const actions = registry.get(homeProjectActionsService)
+      await expect(actions.open(project)).resolves.toMatchObject({
         defaultFile: '/projects/bracket/main.kcl',
-        readWriteAccess: true,
-      },
-    })
+      })
+      expect(cloudSync.ensureProjectLocallySynced).not.toHaveBeenCalled()
+      await actions.delete(project)
+    } else {
+      await deleteProject.run({
+        library: {
+          id: DEFAULT_PROJECT_LIBRARY_ID,
+          title: 'Projects',
+          path: '/projects',
+          type: DIRECTORY_PROJECT_LIBRARY_TYPE,
+        },
+        project: {
+          id: 'local:/projects/bracket',
+          source: 'local',
+          status: 'synced',
+          libraryIds: [DEFAULT_PROJECT_LIBRARY_ID],
+          name: 'bracket',
+          localProjectPath: '/projects/bracket',
+          localProjectName: 'bracket',
+          remoteProjectId: 'remote-123',
+          defaultFile: '/projects/bracket/main.kcl',
+          readWriteAccess: true,
+        },
+      })
+    }
 
     if (pluginActive) {
       expect(cloudSync.deleteLocalProjectRealizations).toHaveBeenCalledWith(
-        'remote-123',
+        organizationCopy ? 'org-owned' : 'remote-123',
         '/projects/bracket'
       )
       expect(removeProjectDirectory).not.toHaveBeenCalled()

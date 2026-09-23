@@ -392,6 +392,64 @@ extrude002 = extrude(region(point = [3, 2], sketch = sketch002), length = -.1)
      )
 `
 
+const KCL_MIXED_SKETCH_TAGS_AND_DEPRECATED_HELPERS = `@settings(defaultLengthUnit = mm, kclVersion = 1.0)
+
+bodyCenterX = 270mm
+bodyCenterY = -15mm
+bodyWidth = 400mm
+bodyDepth = 410mm
+bodyHeight = 420mm
+bodyBottomZ = 160mm
+bodyCornerRadius = 12mm
+bodyFrontY = bodyCenterY - (bodyDepth / 2)
+bodyMinX = bodyCenterX - (bodyWidth / 2)
+
+bodyBasePlane = {
+  origin = [bodyMinX, bodyFrontY, bodyBottomZ],
+  xAxis = [1, 0, 0],
+  yAxis = [0, 1, 0]
+}
+
+bodyBoxSketch = sketch(on = bodyBasePlane) {
+  b1 = line(start = [var 0mm, var 0mm], end = [var 400mm, var 0mm])
+  b2 = line(start = [var 400mm, var 0mm], end = [var 400mm, var 410mm])
+  b3 = line(start = [var 400mm, var 410mm], end = [var 0mm, var 410mm])
+  b4 = line(start = [var 0mm, var 410mm], end = [var 0mm, var 0mm])
+
+  coincident([b1.end, b2.start])
+  coincident([b2.end, b3.start])
+  coincident([b3.end, b4.start])
+  coincident([b4.end, b1.start])
+  coincident([b1.start, ORIGIN])
+  horizontal(b1)
+  vertical(b2)
+  horizontal(b3)
+  vertical(b4)
+  horizontalDistance([b1.start, b1.end]) == bodyWidth
+  verticalDistance([b1.start, b4.start]) == bodyDepth
+}
+bodyBoxRegion = region(point = [200mm, 205mm], sketch = bodyBoxSketch)
+bodyBoxRaw = extrude(bodyBoxRegion, length = bodyHeight)
+bodyBoxRounded = fillet(
+  bodyBoxRaw,
+  radius = bodyCornerRadius,
+  tags = [
+    bodyBoxRaw.sketch.tags.b1,
+    bodyBoxRaw.sketch.tags.b2,
+    bodyBoxRaw.sketch.tags.b3,
+    bodyBoxRaw.sketch.tags.b4,
+    getOppositeEdge(bodyBoxRaw.sketch.tags.b1),
+    getOppositeEdge(bodyBoxRaw.sketch.tags.b2),
+    getOppositeEdge(bodyBoxRaw.sketch.tags.b3),
+    getOppositeEdge(bodyBoxRaw.sketch.tags.b4),
+    getNextAdjacentEdge(bodyBoxRaw.sketch.tags.b1),
+    getPreviousAdjacentEdge(bodyBoxRaw.sketch.tags.b1),
+    getNextAdjacentEdge(bodyBoxRaw.sketch.tags.b2),
+    getPreviousAdjacentEdge(bodyBoxRaw.sketch.tags.b3)
+  ],
+)
+`
+
 const KCL_MEMBER_DIRECT_SKETCH_TAGS = `@settings(defaultLengthUnit = mm, kclVersion = 1.0)
 
 bodyBoxSketch = sketch(on = XY) {
@@ -804,18 +862,6 @@ const KCL_DIRECT_TAG_FILLET = `body = startSketchOn(XY)
   |> close()
   |> extrude(length = 5, tagStart = $capStart001)
   |> fillet(radius = 1, tags = [e1])
-`
-
-/** Tags and edges both present: auto-convert should be available and should merge into one edges array. */
-const KCL_TAGS_AND_EDGE_REFS = `body = startSketchOn(XY)
-  |> startProfile(at = [0, 0])
-  |> line(endAbsolute = [10, 0], tag = $e1)
-  |> line(endAbsolute = [10, 10])
-  |> line(endAbsolute = [0, 10])
-  |> line(endAbsolute = [0, 0])
-  |> close()
-  |> extrude(length = 5, tagStart = $capStart001)
-  |> fillet(radius = 1, tags = [e1], edges = [{ sideFaces = [e1, capStart001] }])
 `
 
 /** Mixed direct tag + stdlib in same tags array: both should be converted to edgeRefs (two entries). */
@@ -1637,7 +1683,7 @@ part = bracket()
         expected: [
           'extrude(length = 5, tagEnd = $capEnd001)',
           'fillet(radius = 1, edges = [',
-          'sideFaces = [e1, capEnd001]',
+          'sideFaces = [capEnd001, e1]',
         ],
       },
       {
@@ -1647,18 +1693,18 @@ part = bracket()
           'extrude(length = 5, tagEnd = $capEnd001)',
           'fillet(',
           'edges = [',
-          'sideFaces = [e1, capEnd001]',
+          'sideFaces = [capEnd001, e1]',
         ],
       },
       {
         name: 'refactors getNextAdjacentEdge in fillet to edgeRefs with tag names not UUIDs',
         kcl: KCL_GET_NEXT_ADJACENT_EDGE,
-        expected: ['fillet(', 'edges = [', 'sideFaces = [e1, seg01]'],
+        expected: ['fillet(', 'edges = [', 'sideFaces = [seg01, e1]'],
       },
       {
         name: 'refactors getPreviousAdjacentEdge in fillet to edgeRefs with tag names not UUIDs',
         kcl: KCL_GET_PREVIOUS_ADJACENT_EDGE,
-        expected: ['fillet(', 'edges = [', 'sideFaces = [e1, seg01]'],
+        expected: ['fillet(', 'edges = [', 'sideFaces = [seg01, e1]'],
       },
       {
         name: 'refactors getCommonEdge in fillet to edgeRefs with tag names (e1, cap1) not UUIDs',
@@ -1707,7 +1753,7 @@ part = bracket()
         if (err(refactored)) throw refactored
         const n = norm(refactored)
         expect(n).toContain(
-          'to = { sideFaces = [facetag1, facetag0], endFaces = [capStart001, capEnd001] }'
+          'to = { sideFaces = [facetag0, facetag1], endFaces = [capStart001, capEnd001] }'
         )
         expect(n).not.toContain('getCommonEdge(faces = [facetag0, facetag1])')
       }
@@ -1927,7 +1973,7 @@ surface001 = extrude(
         if (err(refactored)) throw refactored
         const n = norm(refactored)
         expect(n).toContain(
-          'to = { sideFaces = [facetag1, facetag0], endFaces = [capStart001, capEnd001] }'
+          'to = { sideFaces = [facetag0, facetag1], endFaces = [capStart001, capEnd001] }'
         )
         expect(n).not.toContain('to = targetEdge')
       }
@@ -2059,7 +2105,7 @@ surface001 = extrude(
         expect(n).toContain('extrude(length = 5, tagEnd = $capEnd001)')
         expect(n).toContain('fillet(')
         expect(n).toContain('edges = [')
-        expect(n).toContain('sideFaces = [e1, capEnd001]')
+        expect(n).toContain('sideFaces = [capEnd001, e1]')
         expect(n).toContain('sideFaces = [e2, capEnd001]')
       }
     )
@@ -2078,6 +2124,28 @@ surface001 = extrude(
         expect(n).toContain('%.sketch.tags.edge1')
         expect(n).toContain('%.sketch.tags.edge3')
         expect(n).not.toContain('%.sketch.tags.seg')
+      }
+    )
+
+    it(
+      'refactors mixed direct sketch tags and deprecated helper tags',
+      { timeout: 30_000 },
+      async () => {
+        const refactored = await runIntegrationRefactor(
+          KCL_MIXED_SKETCH_TAGS_AND_DEPRECATED_HELPERS
+        )
+        expect(refactored).not.toMatch(UUID_IN_FACES_REGEX)
+        expect(refactored).not.toContain('tag = $seg')
+        const n = norm(refactored)
+        expect(n).toContain('edges = [')
+        expect(n).not.toContain('tags = [')
+        expect(n).not.toContain('getOppositeEdge')
+        expect(n).not.toContain('getNextAdjacentEdge')
+        expect(n).not.toContain('getPreviousAdjacentEdge')
+        expect(n).toContain('bodyBoxRaw.sketch.tags.b1')
+        expect(n).toContain('bodyBoxRaw.sketch.tags.b2')
+        expect(n).toContain('bodyBoxRaw.sketch.tags.b3')
+        expect(n).toContain('bodyBoxRaw.sketch.tags.b4')
       }
     )
 
@@ -2343,13 +2411,13 @@ surface001 = extrude(
            sideFaces = [bs.tags.edge7, bs.tags.edge6]
          },
          {
-           sideFaces = [bs.tags.edge2, bs.tags.edge1]
+           sideFaces = [bs.tags.edge1, bs.tags.edge2]
          },
          {
            sideFaces = [bs.tags.edge2, bs.tags.edge3]
          },
          {
-           sideFaces = [bs.tags.edge6, bs.tags.edge5]
+           sideFaces = [bs.tags.edge5, bs.tags.edge6]
          }
        ],
      )`
@@ -2384,38 +2452,6 @@ surface001 = extrude(
     )
 
     it(
-      'fillet with both tags and edgeRefs: refactor merges tags into edgeRefs (auto-convert should be available)',
-      { timeout: 30_000 },
-      async () => {
-        const ast = assertParse(KCL_TAGS_AND_EDGE_REFS, instanceInThisFile)
-        await kclManagerInThisFile.executeAst({ ast })
-        const execState = kclManagerInThisFile.execState
-        if ((execState.directTagFilletMetadata?.length ?? 0) < 1) {
-          expect(execState.artifactGraph.size).toBeGreaterThan(0)
-          return
-        }
-        const refactored = refactorZ0006Unified(
-          ast,
-          execState.edgeRefactorMetadata ?? [],
-          execState.directTagFilletMetadata ?? [],
-          execState.artifactGraph,
-          instanceInThisFile
-        )
-        expect(err(refactored)).toBe(false)
-        if (err(refactored)) throw refactored
-        expect(refactored).not.toMatch(UUID_IN_FACES_REGEX)
-        const n = norm(refactored)
-        expect(n).toContain('fillet(')
-        expect(n).toContain('edges = [')
-        // Should have at least two edge refs: one from tags=[e1], one from existing edgeRefs
-        const sideFaceCount = (refactored.match(/sideFaces\s*=\s*\[/g) ?? [])
-          .length
-        expect(sideFaceCount).toBeGreaterThanOrEqual(2)
-        expect(n).toContain('sideFaces = [e1, capStart001]')
-      }
-    )
-
-    it(
       'fillet with mixed direct tag and stdlib (tags = [e1, getOppositeEdge(e1)]): refactor converts both to edgeRefs in order',
       { timeout: 30_000 },
       async () => {
@@ -2445,7 +2481,7 @@ surface001 = extrude(
         const sideFaceCount = (refactored.match(/sideFaces\s*=\s*\[/g) ?? [])
           .length
         expect(sideFaceCount).toBe(2)
-        expect(n).toContain('sideFaces = [e1, capEnd001]')
+        expect(n).toContain('sideFaces = [capEnd001, e1]')
       }
     )
 
@@ -2471,7 +2507,7 @@ surface001 = extrude(
         expect(refactored).not.toMatch(UUID_IN_FACES_REGEX)
         const n = norm(refactored)
         expect(n).toMatch(/fillet\(\s*radius = 1,\s*edges = \[/)
-        expect(n).toContain('sideFaces = [e1, capEnd001]')
+        expect(n).toContain('sideFaces = [capEnd001, e1]')
         expect(n).toContain('sideFaces = [seg01, capStart001]')
         const sideFaceCount = (refactored.match(/sideFaces\s*=\s*\[/g) ?? [])
           .length

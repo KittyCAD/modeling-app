@@ -15,7 +15,6 @@ use crate::KclError;
 use crate::SourceRange;
 use crate::errors::KclErrorDetails;
 use crate::exec::PlaneKind;
-use crate::execution::EnvironmentRef;
 use crate::execution::ExecState;
 use crate::execution::ExecutorContext;
 use crate::execution::Plane;
@@ -29,6 +28,7 @@ use crate::execution::kcl_value::KclValue;
 use crate::execution::kcl_value::TypeDef;
 use crate::execution::memory::{self};
 use crate::fmt;
+use crate::modules::ModuleItems;
 use crate::parsing::ast::types::ABSOLUTE_PATHS_NOT_SUPPORTED;
 use crate::parsing::ast::types::Identifier;
 use crate::parsing::ast::types::Name;
@@ -56,19 +56,19 @@ pub enum RuntimeType {
 pub(super) fn type_value_named_by_segment(
     exec_state: &ExecState,
     segment: &Node<Identifier>,
-    within: Option<&(EnvironmentRef, Vec<String>)>,
+    within: Option<&ModuleItems>,
 ) -> Option<KclValue> {
     let key = format!("{}{}", memory::TYPE_PREFIX, segment.name);
     match within {
-        Some((env, exports)) => {
-            if !exports.contains(&key) {
+        Some(items) => {
+            if !items.exports.contains(&key) {
                 return None;
             }
 
             exec_state
                 .stack()
                 .memory
-                .get_from_owned(&key, *env, segment.as_source_range(), 0)
+                .get_from_owned(&key, items.environment, segment.as_source_range(), 0)
                 .ok()
         }
         None => exec_state.stack().get(&key, segment.as_source_range()).ok(),
@@ -101,18 +101,18 @@ pub(super) async fn resolve_named_type_def(
         ))
     };
 
-    let mut within: Option<(EnvironmentRef, Vec<String>)> = None;
+    let mut within: Option<ModuleItems> = None;
     for segment in &name.path {
         let key = format!("{}{}", memory::MODULE_PREFIX, segment.name);
         let module = match &within {
-            Some((env, exports)) => {
-                if !exports.contains(&key) {
+            Some(items) => {
+                if !items.exports.contains(&key) {
                     return Err(unknown_type());
                 }
                 exec_state
                     .stack()
                     .memory
-                    .get_from_owned(&key, *env, segment.as_source_range(), 0)
+                    .get_from_owned(&key, items.environment, segment.as_source_range(), 0)
                     .map_err(|_| unknown_type())?
             }
             None => exec_state
@@ -129,7 +129,14 @@ pub(super) async fn resolve_named_type_def(
         );
     }
 
-    let type_value = type_value_named_by_segment(exec_state, &name.name, within.as_ref()).ok_or_else(unknown_type)?;
+    let type_value = type_value_named_by_segment(exec_state, &name.name, within.as_ref()).ok_or_else(|| {
+        // The type may be a declaration skipped as not yet added.
+        let key = format!("{}{}", memory::TYPE_PREFIX, name.name.name);
+        match &within {
+            Some(items) => exec_state.with_not_yet_added_hint_from(&items.not_yet_added, &[&key], unknown_type()),
+            None => exec_state.with_not_yet_added_hint(&[&key], unknown_type()),
+        }
+    })?;
     let KclValue::Type {
         value, experimental, ..
     } = type_value

@@ -521,6 +521,10 @@ pub enum SweepEdgeSubType {
 pub struct EdgeCut {
     pub id: ArtifactId,
     pub sub_type: EdgeCutSubType,
+    /// Index of the source selector in an `edges` argument, when this edge cut
+    /// was created from an edge-reference command.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub source_selector_index: Option<usize>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub consumed_edge_id: Option<ArtifactId>,
     pub edge_ids: Vec<ArtifactId>,

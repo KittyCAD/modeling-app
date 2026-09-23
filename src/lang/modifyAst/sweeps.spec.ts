@@ -1183,12 +1183,12 @@ extrude001 = extrude(profile001, length = 1, tagEnd = $capEnd001)
        tags = [
          getCommonEdge(faces = [seg01, capEnd001])
        ],
-       tag = $seg02,
+       tag = $chamferFace01,
      )
 plane001 = offsetPlane(XY, offset = 2)
 sketch002 = startSketchOn(plane001)
 profile002 = circle(sketch002, center = [0, 0], radius = 0.1)
-extrude002 = extrude(profile002, to = seg02)`)
+extrude002 = extrude(profile002, to = chamferFace01)`)
       const error = await mockExecAstAndReportErrors(
         result.modifiedAst,
         rustContextInThisFile

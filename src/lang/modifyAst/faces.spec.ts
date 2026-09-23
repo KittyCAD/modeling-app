@@ -160,9 +160,9 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
        tags = [
          getCommonEdge(faces = [seg01, capEnd001])
        ],
-       tag = $seg02,
+       tag = $chamferFace01,
      )
-plane001 = offsetPlane(planeOf(extrude001, face = seg02), offset = 1)`
+plane001 = offsetPlane(planeOf(extrude001, face = chamferFace01), offset = 1)`
 
   const boxWithTwoTags = `sketch001 = startSketchOn(XY)
 profile001 = startProfile(sketch001, at = [0, 0])
@@ -788,9 +788,9 @@ chamfer001 = chamfer(extrude001, tags = getCommonEdge(faces = [region001.tags.li
       }
 
       const newCode = recast(result.modifiedAst, instanceInThisFile)
-      expect(newCode).toContain(`tag = $seg01`)
+      expect(newCode).toContain(`tag = $chamferFace01`)
       expect(newCode).toContain(
-        `surface001 = deleteFace(chamfer001, faces = seg01)`
+        `surface001 = deleteFace(chamfer001, faces = chamferFace01)`
       )
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
@@ -1971,7 +1971,7 @@ plane001 = offsetPlane(planeOf(extrude001, face = seg01), offset = 20)`)
       const newCode2 = recast(result2.modifiedAst, instanceInThisFile)
       expect(newCode2).not.toContain(`offset = 1`)
       expect(newCode2).toContain(
-        `plane001 = offsetPlane(planeOf(extrude001, face = seg02), offset = 2)`
+        `plane001 = offsetPlane(planeOf(extrude001, face = chamferFace01), offset = 2)`
       )
       await enginelessExecutor(result2.modifiedAst, rustContextInThisFile)
     })

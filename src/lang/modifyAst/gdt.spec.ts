@@ -540,10 +540,10 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
 
       // Verify the original segment tag is preserved and chamfer gets new tag
       expect(newCode).toContain('tag = $seg01')
-      expect(newCode).toContain('tag = $seg02')
+      expect(newCode).toContain('tag = $chamferFace01')
       // Verify the GDT annotation references the chamfer tag
       expect(newCode).toContain(
-        'gdt::flatness(faces = [seg02], tolerance = 0.1mm)'
+        'gdt::flatness(faces = [chamferFace01], tolerance = 0.1mm)'
       )
       // Verify the original chamfer operation is still there
       expect(newCode).toContain('chamfer(')
@@ -596,11 +596,11 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
 
       // Verify GDT annotation was added for fillet
       expect(newCode).toContain('gdt::flatness(')
-      expect(newCode).toContain('faces = [seg02]') // The tagged fillet face
+      expect(newCode).toContain('faces = [filletFace01]')
       expect(newCode).toContain('tolerance = 0.1mm')
 
       // Verify the fillet was tagged properly
-      expect(newCode).toContain('tag = $seg02')
+      expect(newCode).toContain('tag = $filletFace01')
 
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
@@ -2209,9 +2209,9 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       // Verify the original segment tag is preserved
       expect(newCode).toContain('xLine(length = 10, tag = $seg01)')
       // Verify the chamfer was tagged properly
-      expect(newCode).toContain('tag = $seg02')
+      expect(newCode).toContain('tag = $chamferFace01')
       // Verify GDT datum annotation was added for chamfer
-      expect(newCode).toContain('gdt::datum(face = seg02, name = "D")')
+      expect(newCode).toContain('gdt::datum(face = chamferFace01, name = "D")')
 
       // Execute to validate runtime consistency
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)

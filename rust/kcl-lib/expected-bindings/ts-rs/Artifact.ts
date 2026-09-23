@@ -151,7 +151,12 @@ patternIds?: Array<ArtifactId>, };
 
 export type CompositeSolidSubType = "intersect" | "subtract" | "split" | "union";
 
-export type EdgeCut = { id: ArtifactId, subType: EdgeCutSubType, consumedEdgeId?: ArtifactId | null, edgeIds: Array<ArtifactId>, surfaceId?: ArtifactId | null, codeRef: CodeRef, };
+export type EdgeCut = { id: ArtifactId, subType: EdgeCutSubType, 
+/**
+ * Index of the source selector in an `edges` argument, when this edge cut
+ * was created from an edge-reference command.
+ */
+sourceSelectorIndex?: number | null, consumedEdgeId?: ArtifactId | null, edgeIds: Array<ArtifactId>, surfaceId?: ArtifactId | null, codeRef: CodeRef, };
 
 export type EdgeCutEdge = { id: ArtifactId, edgeCutId: ArtifactId, surfaceId: ArtifactId, };
 

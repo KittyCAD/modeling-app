@@ -1772,6 +1772,16 @@ async fn step_block(
                     index += 1;
                     continue;
                 }
+                if crate::execution::exec_ast::skip_if_not_yet_added(
+                    &ty.outer_attrs,
+                    || format!("{}{}", crate::execution::memory::TYPE_PREFIX, ty.name.name),
+                    matches!(ty.visibility, crate::parsing::ast::types::ItemVisibility::Export),
+                    ty.as_source_range(),
+                    exec_state,
+                )? {
+                    index += 1;
+                    continue;
+                }
                 ctx.exec_type_declaration(ty, body_type, exec_state).await?;
                 last = None;
                 index += 1;
@@ -1802,6 +1812,19 @@ async fn step_block(
                 if exec_state.sketch_mode()
                     && crate::execution::exec_ast::sketch_mode_should_skip(&variable_declaration.declaration.init)
                 {
+                    index += 1;
+                    continue;
+                }
+                if crate::execution::exec_ast::skip_if_not_yet_added(
+                    &variable_declaration.outer_attrs,
+                    || variable_declaration.declaration.id.name.clone(),
+                    matches!(
+                        variable_declaration.visibility,
+                        crate::parsing::ast::types::ItemVisibility::Export
+                    ),
+                    variable_declaration.as_source_range(),
+                    exec_state,
+                )? {
                     index += 1;
                     continue;
                 }

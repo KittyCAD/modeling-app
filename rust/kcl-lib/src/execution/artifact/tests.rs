@@ -1952,18 +1952,23 @@ fn edge_specifier_surface_extrude_creates_sweep_without_path_id() {
 }
 
 #[test]
-fn edge_specifier_cut_creates_edge_cut_without_consumed_edge_id() {
+fn edge_specifier_cut_creates_one_edge_cut_per_source_selector() {
     let cmd_id = Uuid::new_v4();
     let object_id = Uuid::new_v4();
     let side_face_a = Uuid::new_v4();
     let side_face_b = Uuid::new_v4();
-    let edge_reference = kcmc::shared::EdgeSpecifier::builder()
+    let edge_reference_a = kcmc::shared::EdgeSpecifier::builder()
         .side_faces(vec![side_face_a, side_face_b])
         .build();
+    let edge_reference_b = kcmc::shared::EdgeSpecifier::builder()
+        .side_faces(vec![side_face_b, side_face_a])
+        .build();
+    let extra_face_id = Uuid::new_v4();
     let command = ModelingCmd::from(
         kcmc::each_cmd::Solid3dCutEdgeReferences::builder()
             .object_id(object_id)
-            .edges_references(vec![edge_reference])
+            .edges_references(vec![edge_reference_a, edge_reference_b])
+            .extra_face_ids(vec![extra_face_id])
             .cut_type(kcmc::shared::CutTypeV2::Fillet {
                 radius: kcmc::length_unit::LengthUnit(1.0),
                 second_length: None,
@@ -1994,15 +1999,26 @@ fn edge_specifier_cut_creates_edge_cut_without_consumed_edge_id() {
     )
     .unwrap();
 
-    assert_eq!(updated.len(), 1);
+    assert_eq!(updated.len(), 2);
     assert!(matches!(
         &updated[0],
         Artifact::EdgeCut(EdgeCut {
             id,
             sub_type: EdgeCutSubType::Fillet,
+            source_selector_index: Some(0),
             consumed_edge_id: None,
             ..
         }) if *id == ArtifactId::new(cmd_id)
+    ));
+    assert!(matches!(
+        &updated[1],
+        Artifact::EdgeCut(EdgeCut {
+            id,
+            sub_type: EdgeCutSubType::Fillet,
+            source_selector_index: Some(1),
+            consumed_edge_id: None,
+            ..
+        }) if *id == ArtifactId::new(extra_face_id)
     ));
 }
 
