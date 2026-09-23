@@ -4,6 +4,7 @@ import {
 } from '@src/lib/constants'
 import {
   type BufferGeometry,
+  type Camera,
   Color,
   DoubleSide,
   LinearSRGBColorSpace,
@@ -229,7 +230,7 @@ export class SelectionHighlightRenderer {
     this.updateSceneMembership()
   }
 
-  render(camera: Parameters<WebGPURenderer['render']>[1]) {
+  render(camera: Camera) {
     for (const [overlay, source] of this.sourceByOverlay) {
       source.updateWorldMatrix(true, false)
       overlay.matrix.copy(source.matrixWorld)
@@ -385,7 +386,7 @@ export class SelectionHighlightRenderer {
 
   private renderSceneOverlay(
     scene: Scene,
-    camera: Parameters<WebGPURenderer['render']>[1],
+    camera: Camera,
     outputTarget: RenderTarget | null,
     compositeMaterial: NodeMaterial
   ) {
@@ -402,7 +403,7 @@ export class SelectionHighlightRenderer {
 
   private renderLines(
     scene: Scene,
-    camera: Parameters<WebGPURenderer['render']>[1],
+    camera: Camera,
     outputTarget: RenderTarget | null
   ) {
     if (scene.children.length === 0) {

@@ -1,5 +1,6 @@
 import {
   type BufferGeometry,
+  type Camera,
   Color,
   DoubleSide,
   type Material,
@@ -157,7 +158,7 @@ export class IntegerIdPicker {
     y: number
     streamWidth: number
     streamHeight: number
-    camera: Parameters<WebGPURenderer['render']>[1]
+    camera: Camera
   }): Promise<IntegerIdPickResult | null> {
     if (
       !this.geometryStats ||
@@ -275,7 +276,7 @@ export class IntegerIdPicker {
 
   private renderIdBuffer(
     target: RenderTarget,
-    camera: Parameters<WebGPURenderer['render']>[1],
+    camera: Camera,
     viewportWidth: number
   ) {
     for (const [proxy, source] of this.sourceByProxy) {
