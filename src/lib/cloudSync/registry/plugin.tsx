@@ -1183,8 +1183,10 @@ const cloudSyncCloudProjectRelationships = defineRegistryItemFactory((ctx) => {
     }
   }
 
+  // Progress refreshes metadata separately; it does not directly change relationships.
+  const cloudSyncEnabled = computed(() => cloudSyncStatus.value.enabled)
   const cloudProjectRelationships = computed(() => {
-    if (!cloudSyncStatus.value.enabled) {
+    if (!cloudSyncEnabled.value) {
       return []
     }
 
