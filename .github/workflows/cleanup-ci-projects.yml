@@ -8,7 +8,7 @@ on:
       dry_run:
         description: Report eligible projects without deleting them
         type: boolean
-        default: true
+        default: false
 
 permissions:
   contents: read
