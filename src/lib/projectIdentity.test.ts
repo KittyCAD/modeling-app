@@ -70,7 +70,7 @@ describe('separateProjectsSharingProjectId', () => {
         projectPaths: ['/projects/original', '/projects/copy'],
         keepProjectPath: '/projects/copy',
       })
-    ).resolves.toBeUndefined()
+    ).resolves.toEqual({ sharedProjectId: 'shared-project-id' })
 
     expect(writtenProjectId('/projects/original')).toBe('new-project-id-1')
     expect(writtenProjectId('/projects/copy')).toBeUndefined()
