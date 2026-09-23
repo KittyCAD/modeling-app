@@ -1,5 +1,5 @@
 import { PROJECT_SETTINGS_FILE_NAME, REGEXP_UUIDV4 } from '@src/lib/constants'
-import { getAppSettingsFilePath, isPathNotFoundError } from '@src/lib/desktop'
+import { getAppSettingsFilePath } from '@src/lib/desktop'
 import fsZds from '@src/lib/fs-zds'
 import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
 import {
@@ -46,12 +46,6 @@ export const jsonToZookeeperConversations = (
   return conversations
 }
 
-export const zookeeperConversationsToJson = (
-  conversations: ZookeeperConversations
-): string => {
-  return JSON.stringify(Object.fromEntries(conversations))
-}
-
 const getZookeeperConversationsFilePath = async () =>
   fsZds.join(
     fsZds.dirname(await getAppSettingsFilePath()),
@@ -67,18 +61,9 @@ const readZookeeperConversations = async (
     )
     return jsonToZookeeperConversations(json ?? '')
   } catch (error) {
-    return isPathNotFoundError(error) ? new Map() : Promise.reject(error)
+    console.warn('Cannot get Zookeeper conversations', error)
+    return new Map()
   }
-}
-
-const writeZookeeperConversations = async (
-  fileOperations: FileOperationsRegistryService,
-  conversations: ZookeeperConversations
-) => {
-  await fileOperations.writeFile(
-    await getZookeeperConversationsFilePath(),
-    zookeeperConversationsToJson(conversations)
-  )
 }
 
 let pendingOperation = Promise.resolve<unknown>(undefined)
@@ -88,16 +73,6 @@ const serialize = <T>(operation: () => Promise<T>): Promise<T> => {
   pendingOperation = result.catch(() => undefined)
   return result
 }
-
-export const deleteLegacyProjectConversationId = (
-  fileOperations: FileOperationsRegistryService,
-  projectId: string
-): Promise<void> =>
-  serialize(async () => {
-    const conversations = await readZookeeperConversations(fileOperations)
-    conversations.delete(projectId)
-    await writeZookeeperConversations(fileOperations, conversations)
-  })
 
 // TODO: Coordinate project.toml updates with settings and cloud writes.
 // https://github.com/KittyCAD/modeling-app/pull/14058#discussion_r4069113804

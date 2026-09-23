@@ -8,7 +8,6 @@ const fsMocks = vi.hoisted(() => ({
 
 vi.mock('@src/lib/desktop', () => ({
   getAppSettingsFilePath: async () => '/tmp/settings.json',
-  isPathNotFoundError: (error: { code?: string }) => error?.code === 'ENOENT',
 }))
 
 vi.mock('@src/lib/fs-zds', () => ({
@@ -21,13 +20,9 @@ vi.mock('@src/lib/fs-zds', () => ({
 
 import {
   jsonToZookeeperConversations,
-  deleteLegacyProjectConversationId,
   makeProjectZookeeperConversationStore,
-  zookeeperConversationsToJson,
 } from '@src/lib/zookeeper/zookeeperConversationStore'
 import { getZookeeperConversationMetadataFromProjectTomlContents } from '@src/lib/projectTomlMetadata'
-
-const fileOperations = fsMocks as unknown as FileOperationsRegistryService
 
 beforeEach(() => {
   fsMocks.readFile.mockReset()
@@ -42,20 +37,7 @@ function deferred<T>() {
   return { promise, resolve }
 }
 
-describe('zookeeperConversationStore', () => {
-  it('round trips project conversation mappings', () => {
-    const conversations = new Map([
-      [
-        '11111111-1111-4111-8111-111111111111',
-        '22222222-2222-4222-8222-222222222222',
-      ],
-    ])
-
-    expect(
-      jsonToZookeeperConversations(zookeeperConversationsToJson(conversations))
-    ).toEqual(conversations)
-  })
-
+describe('legacy conversation mappings', () => {
   it('drops malformed conversation mappings', () => {
     const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
 
@@ -81,74 +63,6 @@ describe('zookeeperConversationStore', () => {
       warn.mockRestore()
     }
   })
-
-  it('serializes legacy deletions and preserves unrelated mappings', async () => {
-    const projectId = '11111111-1111-4111-8111-111111111111'
-    const conversationId = '22222222-2222-4222-8222-222222222222'
-    const otherProjectId = '33333333-3333-4333-8333-333333333333'
-    const untouchedProjectId = '44444444-4444-4444-8444-444444444444'
-    const firstWrite = deferred<undefined>()
-    let contents = JSON.stringify({
-      [projectId]: conversationId,
-      [otherProjectId]: conversationId,
-      [untouchedProjectId]: conversationId,
-    })
-
-    fsMocks.readFile.mockImplementation(async () =>
-      new TextEncoder().encode(contents)
-    )
-    fsMocks.writeFile.mockImplementation(
-      async (_path: string, data: string | Uint8Array) => {
-        if (fsMocks.writeFile.mock.calls.length === 1) {
-          await firstWrite.promise
-        }
-        contents =
-          typeof data === 'string' ? data : new TextDecoder().decode(data)
-      }
-    )
-
-    const deletion = deleteLegacyProjectConversationId(
-      fileOperations,
-      projectId
-    )
-    await vi.waitFor(() => expect(fsMocks.writeFile).toHaveBeenCalledOnce())
-    const otherDeletion = deleteLegacyProjectConversationId(
-      fileOperations,
-      otherProjectId
-    )
-
-    await Promise.resolve()
-    expect(fsMocks.readFile).toHaveBeenCalledOnce()
-
-    firstWrite.resolve(undefined)
-    await Promise.all([deletion, otherDeletion])
-    expect(JSON.parse(contents)).toEqual({
-      [untouchedProjectId]: conversationId,
-    })
-  })
-
-  it.each(['unreadable', 'corrupt'])(
-    'does not overwrite %s legacy JSON during cleanup',
-    async (legacyState) => {
-      if (legacyState === 'unreadable') {
-        fsMocks.readFile.mockRejectedValueOnce(
-          Object.assign(new Error('Permission denied'), { code: 'EACCES' })
-        )
-      } else {
-        fsMocks.readFile.mockResolvedValueOnce(
-          new TextEncoder().encode('{corrupt')
-        )
-      }
-
-      await expect(
-        deleteLegacyProjectConversationId(
-          fileOperations,
-          '11111111-1111-4111-8111-111111111111'
-        )
-      ).rejects.toThrow()
-      expect(fsMocks.writeFile).not.toHaveBeenCalled()
-    }
-  )
 })
 
 describe('project-backed Zookeeper conversations', () => {
@@ -217,6 +131,9 @@ describe('project-backed Zookeeper conversations', () => {
     )
     expect(files.get(projectTomlPath)).toContain(conversationId)
     expect(files.get('/tmp/ml-conversations.json')).toBe(legacy)
+    expect(fsMocks.writeFile.mock.calls.map(([path]) => path)).toEqual([
+      projectTomlPath,
+    ])
   })
 
   it.each(['mismatched', 'corrupt'])(
@@ -418,46 +335,30 @@ describe('project-backed Zookeeper conversations', () => {
     ).resolves.toBeUndefined()
   })
 
-  it('rejects unreadable legacy metadata without a saved conversation, then retries', async () => {
-    files.set(
-      '/tmp/ml-conversations.json',
-      JSON.stringify({ [projectId]: conversationId })
-    )
-    const original = files.get(projectTomlPath)
-    const readFile = fsMocks.readFile.getMockImplementation()!
-    fsMocks.readFile.mockImplementation(async (path: string) => {
-      if (path.endsWith('ml-conversations.json')) {
-        throw Object.assign(new Error('Permission denied'), {
-          code: 'EACCES',
-        })
+  it.each(['missing', 'unreadable', 'corrupt'])(
+    'returns no saved conversation when legacy JSON is %s',
+    async (legacyState) => {
+      const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
+      try {
+        if (legacyState === 'missing') {
+          files.delete('/tmp/ml-conversations.json')
+        } else if (legacyState === 'corrupt') {
+          files.set('/tmp/ml-conversations.json', '{corrupt')
+        } else {
+          fsMocks.readFile
+            .mockResolvedValueOnce(new TextEncoder().encode(initialToml))
+            .mockRejectedValueOnce(new Error('Permission denied'))
+        }
+        await expect(
+          store().getProjectConversationId(projectId)
+        ).resolves.toBeUndefined()
+        expect(files.get(projectTomlPath)).toBe(initialToml)
+        expect(fsMocks.writeFile).not.toHaveBeenCalled()
+      } finally {
+        warn.mockRestore()
       }
-      return readFile(path)
-    })
-    await expect(store().getProjectConversationId(projectId)).rejects.toThrow(
-      'Permission denied'
-    )
-    expect(files.get(projectTomlPath)).toBe(original)
-
-    fsMocks.readFile.mockImplementation(readFile)
-    await expect(store().getProjectConversationId(projectId)).resolves.toBe(
-      conversationId
-    )
-    expect(files.get(projectTomlPath)).toContain(conversationId)
-  })
-
-  it('rejects corrupt legacy JSON without writing project.toml', async () => {
-    files.set('/tmp/ml-conversations.json', '{corrupt')
-    await expect(store().getProjectConversationId(projectId)).rejects.toThrow()
-    expect(fsMocks.writeFile).not.toHaveBeenCalled()
-  })
-
-  it('allows a new chat when the legacy file does not exist', async () => {
-    files.delete('/tmp/ml-conversations.json')
-    await expect(
-      store().getProjectConversationId(projectId)
-    ).resolves.toBeUndefined()
-    expect(fsMocks.writeFile).not.toHaveBeenCalled()
-  })
+    }
+  )
 
   it('rejects unreadable metadata and never falls back to the local mapping', async () => {
     fsMocks.readFile.mockRejectedValueOnce(new Error('Permission denied'))

@@ -78,10 +78,6 @@ const projectIdentityMocks = vi.hoisted(() => ({
   separateProjectsSharingProjectId: vi.fn(),
 }))
 
-const conversationStoreMocks = vi.hoisted(() => ({
-  deleteLegacyProjectConversationId: vi.fn(),
-}))
-
 vi.mock('@src/lib/clientErrors', async (importOriginal) => {
   const original = await importOriginal<typeof ClientErrors>()
   return {
@@ -91,11 +87,6 @@ vi.mock('@src/lib/clientErrors', async (importOriginal) => {
 })
 
 vi.mock('@src/lib/projectIdentity', () => projectIdentityMocks)
-
-vi.mock(
-  '@src/lib/zookeeper/zookeeperConversationStore',
-  () => conversationStoreMocks
-)
 
 const fsZdsMocks = vi.hoisted(() => {
   const join = (...parts: string[]) => {
@@ -793,10 +784,7 @@ describe('home project actions', () => {
 
   beforeEach(() => {
     vi.clearAllMocks()
-    projectIdentityMocks.separateProjectsSharingProjectId.mockResolvedValue({
-      sharedProjectId: 'shared-project-id',
-    })
-    conversationStoreMocks.deleteLegacyProjectConversationId.mockResolvedValue(
+    projectIdentityMocks.separateProjectsSharingProjectId.mockResolvedValue(
       undefined
     )
   })
@@ -1077,9 +1065,6 @@ describe('home project actions', () => {
       projectPaths: ['/projects/original', '/projects/copy'],
       keepProjectPath: '/projects/copy',
     })
-    expect(
-      conversationStoreMocks.deleteLegacyProjectConversationId
-    ).not.toHaveBeenCalled()
   })
 
   it('clears shared history when separating every project copy', async () => {
@@ -1128,11 +1113,12 @@ describe('home project actions', () => {
     await registry.get(homeProjectActionsService).separateProjectCopies(project)
 
     expect(
-      conversationStoreMocks.deleteLegacyProjectConversationId
-    ).toHaveBeenCalledWith(
-      registry.get(fileOperationsService),
-      'shared-project-id'
-    )
+      projectIdentityMocks.separateProjectsSharingProjectId
+    ).toHaveBeenCalledWith({
+      fileOperations: registry.get(fileOperationsService),
+      projectPaths: ['/projects/original', '/projects/copy'],
+      keepProjectPath: undefined,
+    })
   })
 
   it('reports configured directory project delete failures as destructive', async () => {

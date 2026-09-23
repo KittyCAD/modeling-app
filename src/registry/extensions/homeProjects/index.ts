@@ -17,7 +17,6 @@ import {
   projectLibrariesFromSettings,
 } from '@src/lib/projectLibraries'
 import { invalidateProjectLibraryRealizations } from '@src/lib/projectLibraries/registry/invalidation'
-import { deleteLegacyProjectConversationId } from '@src/lib/zookeeper/zookeeperConversationStore'
 import {
   type CloudProjectRelationship,
   type CloudProjectRelationshipRealization,
@@ -749,23 +748,12 @@ const homeProjectActions = defineRegistryItemFactory((ctx) => {
         project.localProjectPath,
         ...(project.duplicateProjectIdPaths ?? []),
       ].filter((projectPath): projectPath is string => Boolean(projectPath))
-      const { sharedProjectId } = await separateProjectsSharingProjectId({
+      await separateProjectsSharingProjectId({
         fileOperations: ctx.services.get(fileOperationsService),
         projectPaths,
         keepProjectPath,
       })
-      try {
-        if (!keepProjectPath) {
-          await deleteLegacyProjectConversationId(
-            ctx.services.get(fileOperationsService),
-            sharedProjectId
-          )
-        }
-      } finally {
-        // The project files have already been updated, so refresh Home even if
-        // cleaning up the now-orphaned conversation mapping fails.
-        invalidateProjectLibraryRealizations()
-      }
+      invalidateProjectLibraryRealizations()
       toast.success(
         keepProjectPath
           ? 'Separated project copies. The selected project kept its Zookeeper history.'
