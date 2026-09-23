@@ -920,24 +920,43 @@ def test_kcl_lint_fix_no_style():
         assert after_fixing.new_code == code
 
 
-@requires_engine
 @pytest.mark.asyncio
 async def test_kcl_execute_code_and_export_with_bad_units():
     bad_units_file = os.path.join(tests_dir, "bad_units_in_annotation", "input.kcl")
-    # Read from a file.
     with open(bad_units_file, "r") as f:
-        code = str(f.read())
-        assert code is not None
-        assert len(code) > 0
-        try:
-            await execute_with_retries(
-                kcl.execute_code_and_export, code, kcl.FileExportFormat.Step
-            )
-        except Exception as e:
-            assert e is not None
-            assert len(str(e)) > 0
-            print(e)
-            assert "[1:1]" in str(e)
+        code = f.read()
+
+    with pytest.raises(kcl.KclError) as raised:
+        await kcl.execute_code_and_export(code, kcl.FileExportFormat.Step)
+
+    error = str(raised.value)
+    assert "KCL Semantic error" in error
+    assert "Unexpected value for length units: `nm`" in error
+    assert "[1:1]" in error
+    assert "@settings(defaultLengthUnit = nm)" in error
+
+
+@pytest.mark.asyncio
+async def test_bad_units_in_annotation_reports_source_before_execution():
+    bad_units_file = os.path.join(tests_dir, "bad_units_in_annotation", "input.kcl")
+    with open(bad_units_file, "r") as f:
+        code = f.read()
+
+    for execute in (
+        lambda: kcl.mock_execute(bad_units_file),
+        lambda: kcl.new_kcl_session_code(code, mock=True),
+    ):
+        with pytest.raises(kcl.KclError) as raised:
+            await execute()
+        assert "Unexpected value for length units: `nm`" in str(raised.value)
+        assert "[1:1]" in str(raised.value)
+
+    report = await kcl.get_sketch_constraint_status_code(code)
+    assert report.is_complete is False
+    assert report.kcl_error is not None
+    assert report.kcl_error.phase == "parse"
+    assert "Unexpected value for length units: `nm`" in report.kcl_error.text
+    assert "[1:1]" in report.kcl_error.text
 
 
 def test_relevant_file_extensions():
