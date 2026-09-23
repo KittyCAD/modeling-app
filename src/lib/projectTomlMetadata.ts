@@ -200,11 +200,7 @@ export function getZookeeperConversationMetadataFromProjectTomlContents(
   if (!isTomlTable(environment)) {
     return new Error('Invalid Zookeeper environment metadata in project.toml')
   }
-  // Preserve conversations saved by builds using the earlier singular field.
-  const legacyId = environment.conversation_id
-  const conversationIds =
-    environment.conversation_ids ??
-    (legacyId === undefined || legacyId === '' ? [] : [legacyId])
+  const conversationIds = environment.conversation_ids ?? []
   if (
     !isArray(conversationIds) ||
     !conversationIds.every(
@@ -215,16 +211,17 @@ export function getZookeeperConversationMetadataFromProjectTomlContents(
   }
   return {
     conversationIds,
-    // The JSON mapping is unscoped; do not guess its owner in a multi-environment project.
-    canMigrateLegacyConversation: Object.keys(zookeeper).length === 1,
+    // An explicit list, including [], is authoritative over the legacy JSON mapping.
+    canMigrateLegacyConversation:
+      environment.conversation_ids === undefined &&
+      Object.keys(zookeeper).length === 1,
   }
 }
 
 export function setZookeeperConversationInProjectTomlContents(
   contents: string,
   environmentName: string,
-  conversationId: string,
-  { prepend = false }: { prepend?: boolean } = {}
+  conversationId: string | undefined
 ): string | Error {
   const current = getZookeeperConversationMetadataFromProjectTomlContents(
     contents,
@@ -233,7 +230,7 @@ export function setZookeeperConversationInProjectTomlContents(
   if (isErr(current)) {
     return current
   }
-  if (!REGEXP_UUIDV4.test(conversationId)) {
+  if (conversationId !== undefined && !REGEXP_UUIDV4.test(conversationId)) {
     return new Error('Invalid Zookeeper conversation ID')
   }
   const table = parseProjectToml(contents)
@@ -255,20 +252,16 @@ export function setZookeeperConversationInProjectTomlContents(
   }
   const environment = zookeeper[environmentName]
   const { conversationIds } = current
-  const alreadySaved = conversationIds.includes(conversationId)
-  if (
-    alreadySaved &&
-    environment.conversation_ids !== undefined &&
-    environment.conversation_id === undefined
-  ) {
+  const alreadySaved =
+    conversationId === undefined
+      ? conversationIds.length === 0
+      : conversationIds.includes(conversationId)
+  if (alreadySaved && environment.conversation_ids !== undefined) {
     return contents
   }
-  environment.conversation_ids = alreadySaved
-    ? conversationIds
-    : prepend
-      ? [conversationId, ...conversationIds]
-      : [...conversationIds, conversationId]
-  delete environment.conversation_id
+  // Keep an empty list so another device cannot restore the cleared legacy mapping.
+  environment.conversation_ids =
+    conversationId === undefined ? [] : [...conversationIds, conversationId]
   return stringifyProjectToml(table)
 }
 

@@ -112,13 +112,13 @@ describe('projectTomlMetadata', () => {
     expect(toml).toContain('base_unit = "mm"')
   })
 
-  it('preserves an explicitly cleared conversation when saving settings', () => {
+  it('preserves a cleared conversation list over stale settings', () => {
     const toml = preserveProjectTomlMetadataInProjectSettingsContents(
       '[settings.zookeeper."zoo.dev"]\nconversation_ids = []\n',
-      '[settings.modeling]\nbase_unit = "mm"\n'
+      '[settings.zookeeper."zoo.dev"]\nconversation_ids = ["old-conversation"]\n'
     )
-    expect(toml).toContain('[settings.zookeeper."zoo.dev"]')
     expect(toml).toContain('conversation_ids = []')
+    expect(toml).not.toContain('old-conversation')
   })
 
   it('preserves top-level project metadata when replacing project settings', () => {

@@ -9,10 +9,10 @@ import { BillingTransition } from '@src/lib/billing'
 import type { BillingRegistryService } from '@src/lib/billing/registry/contract'
 import { getParentAbsolutePath } from '@src/lib/paths'
 import type { Project } from '@src/lib/project'
-import { reportRejection } from '@src/lib/trap'
+import { reportRejection, trap } from '@src/lib/trap'
 import { ZookeeperEditPatchHistory } from '@src/lib/zookeeper/registry/ZookeeperEditPatchHistory'
 import { ZookeeperFileRequestProcessor } from '@src/lib/zookeeper/registry/ZookeeperFileRequestProcessor'
-import type { ProjectZookeeperConversationStore } from '@src/lib/zookeeper/zookeeperConversationStore'
+import type { ZookeeperConversationStore } from '@src/lib/zookeeper/zookeeperConversationStore'
 import {
   createZookeeperManagerActor,
   hasBeenInterruptedOnLast,
@@ -34,7 +34,7 @@ import type { SnapshotFrom, Subscription } from 'xstate'
 export interface ZookeeperSessionControllerDependencies {
   apiToken: string
   billing: BillingRegistryService
-  conversationStore: ProjectZookeeperConversationStore
+  conversationStore: ZookeeperConversationStore
   fileOperations: FileOperationsRegistryService
   kclManager: KclManager
   project: ReadonlySignal<ZDSProject | undefined>
@@ -324,9 +324,27 @@ class SessionController implements ZookeeperSessionController {
       this.active &&
       this.clearOperationGeneration === generation &&
       this.isClearingChatSignal.peek()
+    const projectId = this.projectId
 
-    // Keep the previous conversation saved; the next server-issued ID will be appended.
-    await Promise.all(this.persistenceOperations)
+    try {
+      if (projectId !== undefined && projectId !== uuidNIL) {
+        await this.trackPersistence(
+          this.deps.conversationStore.deleteProjectConversationId(projectId)
+        )
+      }
+    } catch (error: unknown) {
+      if (!isCurrentOperation()) {
+        return
+      }
+      this.isClearingChatSignal.value = false
+      const snapshot = this.actor.getSnapshot()
+      this.reconcileReconnect(snapshot)
+      this.flushQueue(snapshot)
+      trap(error instanceof Error ? error : new Error(String(error)), {
+        altErr: new Error('Could not clear chat. Please try again.'),
+      })
+      return
+    }
 
     if (!isCurrentOperation()) {
       return

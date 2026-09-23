@@ -174,71 +174,87 @@ describe('project-backed Zookeeper conversations', () => {
     await expect(store().getProjectConversationId(projectId)).resolves.toBe(
       conversationId
     )
-    expect(fsMocks.readFile.mock.calls).toEqual([
-      [projectTomlPath],
-      ['/tmp/ml-conversations.json'],
-    ])
+    expect(fsMocks.readFile.mock.calls).toEqual([[projectTomlPath]])
   })
 
-  it('migrates the local mapping once and gives synced metadata priority', async () => {
-    files.set(
-      '/tmp/ml-conversations.json',
-      JSON.stringify({ [projectId]: conversationId })
-    )
-    await expect(store().getProjectConversationId(projectId)).resolves.toBe(
-      conversationId
-    )
-    expect(files.get(projectTomlPath)).toContain(conversationId)
-
-    await store().saveProjectConversationId({
-      projectId,
-      conversationId: replacementId,
+  it('imports the legacy ID without changing mappings for this or unopened projects', async () => {
+    const legacy = JSON.stringify({
+      [projectId]: conversationId,
+      [replacementId]: conversationId,
     })
-    await expect(store().getProjectConversationId(projectId)).resolves.toBe(
-      replacementId
-    )
-  })
-
-  it('recovers a mismatched local ID without changing the synced conversation', async () => {
-    const legacy = JSON.stringify({ [projectId]: conversationId })
     files.set('/tmp/ml-conversations.json', legacy)
-    await store().saveProjectConversationId({
-      projectId,
-      conversationId: replacementId,
-    })
-
-    await expect(store().getProjectConversationId(projectId)).resolves.toBe(
-      replacementId
-    )
-    expect(
-      getZookeeperConversationMetadataFromProjectTomlContents(
-        files.get(projectTomlPath)!,
-        'zoo.dev'
-      )
-    ).toMatchObject({ conversationIds: [conversationId, replacementId] })
-    expect(files.get('/tmp/ml-conversations.json')).toBe(legacy)
-
-    fsMocks.writeFile.mockClear()
-    await expect(store().getProjectConversationId(projectId)).resolves.toBe(
-      replacementId
-    )
-    expect(fsMocks.writeFile).not.toHaveBeenCalled()
-  })
-
-  it('recovers a legacy conversation into an empty list', async () => {
-    files.set(
-      projectTomlPath,
-      `${initialToml}\n[settings.zookeeper."zoo.dev"]\nconversation_ids = []\n`
-    )
-    files.set(
-      '/tmp/ml-conversations.json',
-      JSON.stringify({ [projectId]: conversationId })
-    )
     await expect(store().getProjectConversationId(projectId)).resolves.toBe(
       conversationId
     )
     expect(files.get(projectTomlPath)).toContain(conversationId)
+    expect(files.get('/tmp/ml-conversations.json')).toBe(legacy)
   })
+
+  it.each(['mismatched', 'corrupt'])(
+    'uses the synced list without reading %s legacy JSON',
+    async (legacyState) => {
+      files.set(
+        '/tmp/ml-conversations.json',
+        legacyState === 'corrupt'
+          ? '{corrupt'
+          : JSON.stringify({ [projectId]: conversationId })
+      )
+      await store().saveProjectConversationId({
+        projectId,
+        conversationId: replacementId,
+      })
+      const contents = files.get(projectTomlPath)
+      fsMocks.readFile.mockClear()
+      fsMocks.writeFile.mockClear()
+
+      await expect(store().getProjectConversationId(projectId)).resolves.toBe(
+        replacementId
+      )
+      expect(fsMocks.readFile.mock.calls).toEqual([[projectTomlPath]])
+      expect(fsMocks.writeFile).not.toHaveBeenCalled()
+      expect(files.get(projectTomlPath)).toBe(contents)
+    }
+  )
+
+  it.each([false, true])(
+    'keeps cleared history cleared on another device, with existing metadata: %s',
+    async (hasSavedConversation) => {
+      if (hasSavedConversation) {
+        await store().saveProjectConversationId({ projectId, conversationId })
+      }
+      await store().deleteProjectConversationId(projectId)
+      const clearedToml = files.get(projectTomlPath)!
+      expect(clearedToml).toContain('conversation_ids = []')
+
+      // Another device still has its own legacy mapping after receiving the TOML.
+      const legacy = JSON.stringify({ [projectId]: conversationId })
+      files = new Map([
+        [projectTomlPath, clearedToml],
+        ['/tmp/ml-conversations.json', legacy],
+      ])
+      fsMocks.writeFile.mockClear()
+      await expect(
+        store().getProjectConversationId(projectId)
+      ).resolves.toBeUndefined()
+      await store().deleteProjectConversationId(projectId)
+      expect(fsMocks.writeFile).not.toHaveBeenCalled()
+
+      await store().saveProjectConversationId({
+        projectId,
+        conversationId: replacementId,
+      })
+      await expect(store().getProjectConversationId(projectId)).resolves.toBe(
+        replacementId
+      )
+      expect(
+        getZookeeperConversationMetadataFromProjectTomlContents(
+          files.get(projectTomlPath)!,
+          'zoo.dev'
+        )
+      ).toMatchObject({ conversationIds: [replacementId] })
+      expect(files.get('/tmp/ml-conversations.json')).toBe(legacy)
+    }
+  )
 
   it('keeps environments separate without migrating an unscoped mapping into a second environment', async () => {
     files.set(
@@ -265,14 +281,13 @@ describe('project-backed Zookeeper conversations', () => {
         'dev.zoo.dev'
       )
     ).toMatchObject({ conversationIds: [replacementId] })
-  })
-
-  it('does not rewrite project.toml on resume or when saving the same ID', async () => {
-    await store().saveProjectConversationId({ projectId, conversationId })
-    fsMocks.writeFile.mockClear()
-    await store().getProjectConversationId(projectId)
-    await store().saveProjectConversationId({ projectId, conversationId })
-    expect(fsMocks.writeFile).not.toHaveBeenCalled()
+    await store('dev.zoo.dev').deleteProjectConversationId(projectId)
+    await expect(
+      store('dev.zoo.dev').getProjectConversationId(projectId)
+    ).resolves.toBeUndefined()
+    await expect(store().getProjectConversationId(projectId)).resolves.toBe(
+      conversationId
+    )
   })
 
   it('appends new IDs without duplicating or reordering existing conversations', async () => {
@@ -290,6 +305,10 @@ describe('project-backed Zookeeper conversations', () => {
     ).toMatchObject({ conversationIds: [conversationId, replacementId] })
 
     fsMocks.writeFile.mockClear()
+    await store().saveProjectConversationId({
+      projectId,
+      conversationId: replacementId,
+    })
     await store().saveProjectConversationId({ projectId, conversationId })
     await expect(store().getProjectConversationId(projectId)).resolves.toBe(
       replacementId
@@ -298,43 +317,7 @@ describe('project-backed Zookeeper conversations', () => {
     expect(fsMocks.writeFile).not.toHaveBeenCalled()
   })
 
-  it.each([conversationId, ''])(
-    'preserves the earlier singular field on read and replaces it on save: %s',
-    async (savedId) => {
-      files.set(
-        projectTomlPath,
-        `${initialToml}\n[settings.zookeeper."zoo.dev"]\nconversation_id = "${savedId}"\n`
-      )
-      await expect(store().getProjectConversationId(projectId)).resolves.toBe(
-        savedId || undefined
-      )
-      await store().saveProjectConversationId({
-        projectId,
-        conversationId: savedId || replacementId,
-      })
-      const contents = files.get(projectTomlPath)!
-      expect(
-        getZookeeperConversationMetadataFromProjectTomlContents(
-          contents,
-          'zoo.dev'
-        )
-      ).toMatchObject({ conversationIds: [savedId || replacementId] })
-      expect(contents).toContain('conversation_ids =')
-      expect(contents).not.toContain('conversation_id =')
-    }
-  )
-
-  it('gives an explicit list priority over the earlier singular field', async () => {
-    files.set(
-      projectTomlPath,
-      `${initialToml}\n[settings.zookeeper."zoo.dev"]\nconversation_ids = []\nconversation_id = "${conversationId}"\n`
-    )
-    await expect(
-      store().getProjectConversationId(projectId)
-    ).resolves.toBeUndefined()
-  })
-
-  it('serializes pending saves so a new chat does not overwrite the previous ID', async () => {
+  it('serializes saves and clear so a pending save cannot restore cleared history', async () => {
     const write = deferred<undefined>()
     fsMocks.writeFile.mockImplementationOnce(
       async (path: string, contents: string) => {
@@ -347,12 +330,15 @@ describe('project-backed Zookeeper conversations', () => {
       conversationId,
     })
     await vi.waitFor(() => expect(fsMocks.writeFile).toHaveBeenCalledOnce())
+    const clearing = store().deleteProjectConversationId(projectId)
+    const cleared = store().getProjectConversationId(projectId)
     const nextChat = store().saveProjectConversationId({
       projectId,
       conversationId: replacementId,
     })
     write.resolve(undefined)
-    await Promise.all([saving, nextChat])
+    await Promise.all([saving, clearing, nextChat])
+    await expect(cleared).resolves.toBeUndefined()
     await expect(store().getProjectConversationId(projectId)).resolves.toBe(
       replacementId
     )
@@ -361,7 +347,7 @@ describe('project-backed Zookeeper conversations', () => {
         files.get(projectTomlPath)!,
         'zoo.dev'
       )
-    ).toMatchObject({ conversationIds: [conversationId, replacementId] })
+    ).toMatchObject({ conversationIds: [replacementId] })
   })
 
   it('does not continue migration when writing project.toml fails', async () => {
@@ -379,41 +365,49 @@ describe('project-backed Zookeeper conversations', () => {
     )
   })
 
-  it.each([false, true])(
-    'retries unreadable legacy metadata with an existing chat: %s',
-    async (hasSavedConversation) => {
-      files.set(
-        '/tmp/ml-conversations.json',
-        JSON.stringify({ [projectId]: conversationId })
-      )
-      if (hasSavedConversation) {
-        await store().saveProjectConversationId({
-          projectId,
-          conversationId: replacementId,
+  it('keeps the saved conversation when clearing fails and supports retry', async () => {
+    await store().saveProjectConversationId({ projectId, conversationId })
+    const contents = files.get(projectTomlPath)
+    fsMocks.writeFile.mockRejectedValueOnce(new Error('Permission denied'))
+    await expect(
+      store().deleteProjectConversationId(projectId)
+    ).rejects.toThrow('Permission denied')
+    expect(files.get(projectTomlPath)).toBe(contents)
+    await expect(store().getProjectConversationId(projectId)).resolves.toBe(
+      conversationId
+    )
+    await store().deleteProjectConversationId(projectId)
+    await expect(
+      store().getProjectConversationId(projectId)
+    ).resolves.toBeUndefined()
+  })
+
+  it('rejects unreadable legacy metadata without a saved conversation, then retries', async () => {
+    files.set(
+      '/tmp/ml-conversations.json',
+      JSON.stringify({ [projectId]: conversationId })
+    )
+    const original = files.get(projectTomlPath)
+    const readFile = fsMocks.readFile.getMockImplementation()!
+    fsMocks.readFile.mockImplementation(async (path: string) => {
+      if (path.endsWith('ml-conversations.json')) {
+        throw Object.assign(new Error('Permission denied'), {
+          code: 'EACCES',
         })
       }
-      const original = files.get(projectTomlPath)
-      const readFile = fsMocks.readFile.getMockImplementation()!
-      fsMocks.readFile.mockImplementation(async (path: string) => {
-        if (path.endsWith('ml-conversations.json')) {
-          throw Object.assign(new Error('Permission denied'), {
-            code: 'EACCES',
-          })
-        }
-        return readFile(path)
-      })
-      await expect(store().getProjectConversationId(projectId)).rejects.toThrow(
-        'Permission denied'
-      )
-      expect(files.get(projectTomlPath)).toBe(original)
+      return readFile(path)
+    })
+    await expect(store().getProjectConversationId(projectId)).rejects.toThrow(
+      'Permission denied'
+    )
+    expect(files.get(projectTomlPath)).toBe(original)
 
-      fsMocks.readFile.mockImplementation(readFile)
-      await expect(store().getProjectConversationId(projectId)).resolves.toBe(
-        hasSavedConversation ? replacementId : conversationId
-      )
-      expect(files.get(projectTomlPath)).toContain(conversationId)
-    }
-  )
+    fsMocks.readFile.mockImplementation(readFile)
+    await expect(store().getProjectConversationId(projectId)).resolves.toBe(
+      conversationId
+    )
+    expect(files.get(projectTomlPath)).toContain(conversationId)
+  })
 
   it('rejects corrupt legacy JSON without starting a replacement chat', async () => {
     files.set('/tmp/ml-conversations.json', '{corrupt')
@@ -453,7 +447,6 @@ describe('project-backed Zookeeper conversations', () => {
     'conversation_ids = "invalid"',
     `conversation_ids = ["${conversationId}", "invalid"]`,
     'conversation_ids = [42]',
-    'conversation_id = "invalid"',
   ])(
     'rejects malformed conversation metadata without replacing it: %s',
     async (metadata) => {

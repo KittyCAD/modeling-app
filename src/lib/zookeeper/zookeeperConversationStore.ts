@@ -22,11 +22,6 @@ export interface ZookeeperConversationStore {
   deleteProjectConversationId: (projectId: string) => Promise<void>
 }
 
-export type ProjectZookeeperConversationStore = Omit<
-  ZookeeperConversationStore,
-  'deleteProjectConversationId'
->
-
 export const jsonToZookeeperConversations = (
   json: string
 ): ZookeeperConversations => {
@@ -131,7 +126,7 @@ export const makeProjectZookeeperConversationStore = (
   fileOperations: FileOperationsRegistryService,
   projectPath: string,
   environmentName: string | undefined
-): ProjectZookeeperConversationStore => {
+): ZookeeperConversationStore => {
   const projectTomlPath = fsZds.join(projectPath, PROJECT_SETTINGS_FILE_NAME)
   const environment = environmentName ?? ''
 
@@ -152,14 +147,12 @@ export const makeProjectZookeeperConversationStore = (
 
   const saveConversation = async (
     contents: string,
-    conversationId: string,
-    prepend = false
+    conversationId: string | undefined
   ) => {
     const next = setZookeeperConversationInProjectTomlContents(
       contents,
       environment,
-      conversationId,
-      { prepend }
+      conversationId
     )
     if (isErr(next)) {
       return Promise.reject(next)
@@ -187,16 +180,20 @@ export const makeProjectZookeeperConversationStore = (
         const legacy = (
           await readZookeeperConversations(fileOperations, true)
         ).get(projectId)
-        if (legacy !== undefined && !saved.conversationIds.includes(legacy)) {
-          // Recover older IDs without changing which conversation the current UI resumes.
-          await saveConversation(contents, legacy, true)
+        if (legacy !== undefined) {
+          await saveConversation(contents, legacy)
         }
-        return conversationId ?? legacy
+        return legacy
       })
     },
     saveProjectConversationId({ projectId, conversationId }) {
       return serialize(async () => {
         await saveConversation(await readProjectToml(projectId), conversationId)
+      })
+    },
+    deleteProjectConversationId(projectId) {
+      return serialize(async () => {
+        await saveConversation(await readProjectToml(projectId), undefined)
       })
     },
   }
