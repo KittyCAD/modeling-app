@@ -14,7 +14,7 @@ import {
   setOperationsEffect,
 } from '@src/editor/plugins/operations'
 import { File, KclManager } from '@src/lang/KclManager'
-import { DEFAULT_KCL_VERSION } from '@src/lib/constants'
+import { DEFAULT_KCL_VERSION } from '@src/lib/kclVersion'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
 const clientErrorMocks = vi.hoisted(() => ({
