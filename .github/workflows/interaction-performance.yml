@@ -17,7 +17,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        variant: [baseline, composite, shadowless, ganesh]
+        variant: [baseline, narrow, precompile, plain, ganesh]
     runs-on: namespace-profile-macos-8-cores
     timeout-minutes: 15
     steps:
@@ -64,6 +64,15 @@ jobs:
           VITE_ZOO_API_TOKEN: ${{ secrets.ZOO_API_TOKEN }}
           CI_COMMIT_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
           CI_PR_NUMBER: ${{ github.event.pull_request.number }}
+
+      - name: Preserve compact measurements
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: interaction-measurements-${{ matrix.variant }}-${{ github.sha }}-${{ github.run_attempt }}
+          path: test-results/interaction-performance/playwright.json
+          if-no-files-found: error
+          retention-days: 30
 
       - name: Preserve measurements and failures
         if: ${{ !cancelled() }}

@@ -59,12 +59,12 @@ test.beforeEach(async ({ page, homePage, scene, fs, folderSetupFn }) => {
   await page.evaluate(() => document.fonts.ready)
   // Diagnostic-only variants isolate palette raster/compositing costs.
   const variant = process.env.INTERACTION_DIAGNOSTIC_VARIANT
-  if (variant === 'composite' || variant === 'shadowless') {
+  if (variant === 'narrow' || variant === 'plain') {
     await page.addStyleTag({
       content:
-        variant === 'composite'
-          ? '[data-testid="command-bar-wrapper"] > div { will-change: transform, opacity; }'
-          : '[data-testid="command-bar"] { box-shadow: none !important; }',
+        variant === 'narrow'
+          ? '[data-testid="command-bar-wrapper"] > div { max-width: 36rem; margin-inline: auto; }'
+          : '[data-testid="command-bar"] { box-shadow: none !important; } [data-testid="command-bar-wrapper"] > div { transition-duration: 0s !important; transform: none !important; }',
     })
   }
 

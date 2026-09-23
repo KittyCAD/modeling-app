@@ -60,6 +60,7 @@ export async function finishCapture(
     gpu: await app.getGPUInfo('basic'),
     gpuFeatures: app.getGPUFeatureStatus(),
   }))
+  console.log(JSON.stringify({ diagnosticGraphics: runtime.gpuFeatures }))
   const metadata = {
     scenario,
     diagnosticVariant: process.env.INTERACTION_DIAGNOSTIC_VARIANT,
