@@ -885,6 +885,29 @@ const KCL_MIXED_DEPRECATED_AND_SEGMENT_TAG = `body = startSketchOn(XY)
   |> fillet(radius = 1, tags = [getOppositeEdge(e1), seg01])
 `
 
+const KCL_MIXED_DEPRECATED_AND_EDGE_ID_CLOSEST_TO = `@settings(defaultLengthUnit = mm, kclVersion = 2.0)
+
+baseSketch = sketch(on = XY) {
+  e1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
+  e2 = line(start = [var 10mm, var 0mm], end = [var 10mm, var 10mm])
+  e3 = line(start = [var 10mm, var 10mm], end = [var 0mm, var 10mm])
+  e4 = line(start = [var 0mm, var 10mm], end = [var 0mm, var 0mm])
+
+  coincident([e1.end, e2.start])
+  coincident([e2.end, e3.start])
+  coincident([e3.end, e4.start])
+  coincident([e4.end, e1.start])
+}
+baseRegion = region(point = [5mm, 5mm], sketch = baseSketch)
+base = extrude(baseRegion, length = 5mm)
+edgeFromPoint = edgeId(base, closestTo = [5mm, 0mm, 0mm])
+body = fillet(
+  base,
+  radius = 1mm,
+  tags = [getOppositeEdge(baseRegion.tags.e1), edgeFromPoint],
+)
+`
+
 const KCL_SHADOWED_EDGE_HELPER_VARIABLE = `globalBody = startSketchOn(XY)
   |> startProfile(at = [0, 0])
   |> line(endAbsolute = [10, 0])
@@ -2509,6 +2532,48 @@ surface001 = extrude(
           .length
         expect(sideFaceCount).toBe(2)
         expect(n).not.toContain('tags = [')
+      }
+    )
+
+    it(
+      'refactors mixed getOppositeEdge and edgeId closestTo tags when both have metadata',
+      { timeout: 30_000 },
+      async () => {
+        const ast = assertParse(
+          KCL_MIXED_DEPRECATED_AND_EDGE_ID_CLOSEST_TO,
+          instanceInThisFile
+        )
+        await kclManagerInThisFile.executeAst({ ast })
+        expect(kclManagerInThisFile.errors).toEqual([])
+        const execState = kclManagerInThisFile.execState
+        const edgeMetadata = execState.edgeRefactorMetadata ?? []
+        expect(edgeMetadata.map((meta) => meta.stdlibFn)).toEqual(
+          expect.arrayContaining(['getOppositeEdge', 'edgeId'])
+        )
+
+        const refactored = refactorZ0006Unified(
+          ast,
+          edgeMetadata,
+          execState.directTagFilletMetadata ?? [],
+          execState.artifactGraph,
+          instanceInThisFile
+        )
+        expect(err(refactored)).toBe(false)
+        if (err(refactored)) throw refactored
+        expect(refactored).not.toMatch(UUID_IN_FACES_REGEX)
+        const n = norm(refactored)
+        expect(n).toMatch(/fillet\(\s*base,\s*radius = 1mm,\s*edges = \[/)
+        expect(n).toMatch(
+          /sideFaces = \[(?:baseRegion\.tags\.e1, capEnd001|capEnd001, baseRegion\.tags\.e1)\]/
+        )
+        expect(n).toMatch(
+          /sideFaces = \[(?:baseRegion\.tags\.e1, capStart001|capStart001, baseRegion\.tags\.e1)\]/
+        )
+        expect(refactored.match(/sideFaces\s*=\s*\[/g)).toHaveLength(2)
+        expect(n).not.toContain('tags = [')
+        expect(n).toContain(
+          'edgeFromPoint = edgeId(base, closestTo = [5mm, 0mm, 0mm])'
+        )
       }
     )
   })
