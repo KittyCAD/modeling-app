@@ -7,6 +7,7 @@ import { useModelingContext } from '@src/hooks/useModelingContext'
 import { getSelectedDefaultPlane } from '@src/lib/selections'
 import { useSingletons } from '@src/lib/boot'
 import { useCallback, useEffect, useRef, useState } from 'react'
+import { getSelectedPlaneId } from '@src/lang/queryAst'
 
 export const LocalWebGPUScene = (props: LocalRendererProps) => {
   const {
@@ -25,7 +26,7 @@ export const LocalWebGPUScene = (props: LocalRendererProps) => {
   const planeInteractionEnabled =
     state.matches('idle') || state.matches('Sketch no face')
   const selectedPlaneId =
-    getSelectedDefaultPlane(state.context.selectionRanges)?.id ?? null
+    getSelectedPlaneId(state.context.selectionRanges) ?? null
   const defaultPlaneVisibility = state.context.defaultPlaneVisibility
   const isExecuting = kclManager.isExecutingSignal.value
   const [isAwaitingModel, setIsAwaitingModel] = useState(false)

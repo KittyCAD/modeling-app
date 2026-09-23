@@ -230,6 +230,7 @@ export class SelectionHighlightRenderer {
   }
 
   setSelection(targets: Iterable<IntegerIdPickTarget>) {
+    console.log('setselection', targets)
     this.selectedKeys = new Set(
       Array.from(targets, (target) => getTargetKey(target))
     )

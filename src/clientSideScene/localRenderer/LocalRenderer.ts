@@ -49,6 +49,7 @@ import { denoise } from 'three/examples/jsm/tsl/display/DenoiseNode.js'
 import { ao } from 'three/examples/jsm/tsl/display/GTAONode.js'
 import { mrt, normalView, output, pass, vec3, vec4 } from 'three/tsl'
 import { type Node, RenderPipeline, WebGPURenderer } from 'three/webgpu'
+import { object } from 'fast-check'
 
 const WEBGPU_PORT_DEBUG_STORAGE_KEY = 'webgpu-port-debug'
 const WEBGPU_PORT_LOG_PREFIX = '[WEBGPU_POC]'
@@ -188,6 +189,7 @@ export class LocalRenderer {
   }
 
   setSelectedDefaultPlane(id: string | null) {
+    console.log('>>setselecteddefaultplaneid', id)
     this.selectedPlaneId = id
     this.updatePlaneSelection()
   }
@@ -231,6 +233,15 @@ export class LocalRenderer {
     const targets = Array.from(planes.values(), ({ fill }) => ({
       object: fill,
     }))
+
+
+    const offsetPlanes = this.offsetPlaneRenderer?.planes;
+    if (offsetPlanes) {
+        targets.push(...offsetPlanes?.map(offsetPlane => ({
+          object: offsetPlane.mesh
+        })))
+    }
+
     this.integerIdPicker?.setTargets(targets, this.currentModel)
     this.selectionHighlightRenderer?.setTargets(targets)
     this.clearPlaneHover()
@@ -276,6 +287,7 @@ export class LocalRenderer {
         streamHeight: streamDimensions.height,
         camera: this.previewCamera,
       })
+
       if (
         this.disposed ||
         this.forceHide ||
@@ -294,6 +306,14 @@ export class LocalRenderer {
           entityId = planes?.[key] ?? null
         }
       }
+      if (!entityId) {
+        for (const {mesh, artifactId} of this.offsetPlaneRenderer?.planes ?? []) {
+          if (mesh === target?.object) {
+            entityId = artifactId
+          }
+        }
+      }
+      //console.log(target)
       if (isHover) {
         if (this.hoveredPlane?.object !== target?.object) {
           this.hoveredPlane = target

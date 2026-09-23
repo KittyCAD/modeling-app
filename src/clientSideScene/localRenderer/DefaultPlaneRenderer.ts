@@ -42,7 +42,6 @@ type PlaneLabel = {
   background: Color
 }
 
-/** Reference geometry, independent of the exported model and its lifetime. */
 export class DefaultPlaneRenderer {
   readonly planes = new Map<
     keyof PlaneVisibilityMap,

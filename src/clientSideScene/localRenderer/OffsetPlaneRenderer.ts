@@ -21,7 +21,7 @@ export class OffsetPlaneRenderer {
     new Color(0.6, 0.6, 0.6),
     0.3
   )
-  private readonly planes: { group: Group; size: number }[] = []
+  public readonly planes: { artifactId: string, group: Group; mesh: Mesh, size: number }[] = []
   private scale = 1
 
   constructor() {
@@ -61,11 +61,12 @@ export class OffsetPlaneRenderer {
           new Vector3(zAxis.x, zAxis.y, zAxis.z)
         )
         .setPosition(origin.x, origin.y, origin.z)
-      plane.add(new Mesh(this.planeGeometry, this.materials.fillMaterial))
+        const mesh = new Mesh(this.planeGeometry, this.materials.fillMaterial)
+      plane.add(mesh)
       plane.add(
         new LineSegments2(this.borderGeometry, this.materials.borderMaterial)
       )
-      this.planes.push({ group: plane, size: artifact.size })
+      this.planes.push({ artifactId: artifact.id, group: plane, mesh, size: artifact.size })
       this.group.add(plane)
     }
     this.applyScale()
