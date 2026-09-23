@@ -22,7 +22,7 @@ type FileRoleLabel =
   | 'Keybindings'
   | 'Sign Out'
   | 'Theme'
-  | 'Export Current Part'
+  | 'Export'
   | 'Create New File'
   | 'Create New Folder'
   | 'Share Part via Zoo Link'

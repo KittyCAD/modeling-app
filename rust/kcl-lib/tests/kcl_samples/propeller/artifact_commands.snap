@@ -577,6 +577,15 @@ description: Artifact commands propeller.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
+        "type": "query_entity_type",
+        "entity_id": "[uuid]"
+      },
+      "omitFromGraph": true
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
         "type": "solid3d_get_common_edge",
         "object_id": "[uuid]",
         "face_ids": [
@@ -584,6 +593,15 @@ description: Artifact commands propeller.kcl
           "[uuid]"
         ]
       }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "query_entity_type",
+        "entity_id": "[uuid]"
+      },
+      "omitFromGraph": true
     },
     {
       "cmdId": "[uuid]",

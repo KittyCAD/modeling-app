@@ -341,8 +341,8 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
 
       // Verify results - should tag the chamfer operation (edgeCut expression)
       expect(tags.length).toBe(1)
-      expect(newCode).toContain('tag = $seg02') // The NEW chamfer tag that was added
-      expect(tags[0]).toEqual(createLocalName('seg02'))
+      expect(newCode).toContain('tag = $chamferFace01')
+      expect(tags[0]).toEqual(createLocalName('chamferFace01'))
     }, 5_000)
   })
 
@@ -377,7 +377,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
 
       // Verify chamfer tagging worked
       expect(tag).toBeTruthy()
-      expect(newCode).toContain('tag = $seg02')
+      expect(newCode).toContain('tag = $chamferFace01')
     }, 5_000)
 
     it('should successfully tag a fillet edgeCut', async () => {
@@ -412,7 +412,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
         if (!err(newCode)) {
           // Verify fillet tagging worked
           expect(tag).toBeTruthy()
-          expect(newCode).toContain('tag = $seg02')
+          expect(newCode).toContain('tag = $filletFace01')
         }
       }
     }, 5_000)

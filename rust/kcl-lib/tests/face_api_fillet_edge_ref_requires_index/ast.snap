@@ -4247,6 +4247,7 @@ description: Result of parsing face_api_fillet_edge_ref_requires_index.kcl
       },
       "startNodes": []
     },
-    "start": 0
+    "start": 0,
+    "type": "Program"
   }
 }

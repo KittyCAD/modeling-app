@@ -1335,6 +1335,34 @@ const prepareToEditRingGear: PrepareToEditCallback = async ({
   }
 }
 
+/**
+ * Gather up the argument values for the Clone command
+ * to be used in the command bar edit flow.
+ */
+const prepareToEditClone: PrepareToEditCallback = async ({
+  operation,
+  artifactGraph,
+}) => {
+  const baseCommand = {
+    name: 'Clone',
+    groupId: 'modeling',
+  }
+  if (operation.type !== 'StdLibCall' || operation.name !== 'clone') {
+    return { reason: 'Wrong operation type' }
+  }
+
+  const objects = retrieveUnlabeledSelectionsForEdit(operation, artifactGraph)
+  const argDefaultValues: ModelingCommandSchema['Clone'] = {
+    objects,
+    variableName: KCL_DEFAULT_CONSTANT_PREFIXES.CLONE,
+    nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
+  }
+  return {
+    ...baseCommand,
+    argDefaultValues,
+  }
+}
+
 const prepareToEditOffsetPlane: PrepareToEditCallback = async ({
   operation,
   rustContext,

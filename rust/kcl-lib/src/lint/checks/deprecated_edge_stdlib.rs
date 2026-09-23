@@ -24,8 +24,7 @@ def_finding!(
 Using 'tags' in fillet/chamfer, 'axis' in revolve/helix, 'across' in mirror3d, or edge arguments in extrude with deprecated \
 stdlib (e.g. getOppositeEdge, getCommonEdge) or direct tags is deprecated. Using deprecated edge \
 stdlib calls in the getBoundedEdge 'edge' argument is also deprecated. Prefer 'edges' (fillet/chamfer) or an edge \
-specifier object such as { sideFaces = [tag1, tag2] }. \
-The auto-fix will convert it.
+specifier object such as { sideFaces = [tag1, tag2] }.
 ",
     FindingFamily::Simplify
 );

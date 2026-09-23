@@ -945,6 +945,7 @@ fn remap_artifact_for_clone(
         Artifact::EdgeCut(source) => Artifact::EdgeCut(EdgeCut {
             id: remap_id_for_clone(source.id, entity_id_map),
             sub_type: source.sub_type,
+            source_selector_index: source.source_selector_index,
             surface_id: remap_opt_id_for_clone(source.surface_id, entity_id_map),
             code_ref: clone_code_ref.clone(),
         }),
@@ -2257,6 +2258,7 @@ fn artifacts_to_update(
             return_arr.push(Artifact::EdgeCut(EdgeCut {
                 id,
                 sub_type: edge_cut_sub_type(cmd.cut_type),
+                source_selector_index: None,
                 surface_id: None,
                 code_ref,
             }));
@@ -2278,6 +2280,7 @@ fn artifacts_to_update(
             return_arr.push(Artifact::EdgeCut(EdgeCut {
                 id,
                 sub_type: edge_cut_sub_type_v2(cmd.cut_type),
+                source_selector_index: None,
                 surface_id: None,
                 code_ref,
             }));
@@ -2290,12 +2293,20 @@ fn artifacts_to_update(
             return Ok(return_arr);
         }
         ModelingCmd::Solid3dCutEdgeReferences(cmd) => {
-            return Ok(vec![Artifact::EdgeCut(EdgeCut {
-                id,
-                sub_type: edge_cut_sub_type_v2(cmd.cut_type),
-                surface_id: None,
-                code_ref,
-            })]);
+            let face_ids = std::iter::once(id).chain(cmd.extra_face_ids.iter().copied().map(ArtifactId::new));
+            return Ok(face_ids
+                .take(cmd.edges_references.len())
+                .enumerate()
+                .map(|(source_selector_index, face_id)| {
+                    Artifact::EdgeCut(EdgeCut {
+                        id: face_id,
+                        sub_type: edge_cut_sub_type_v2(cmd.cut_type),
+                        source_selector_index: Some(source_selector_index),
+                        surface_id: None,
+                        code_ref: code_ref.clone(),
+                    })
+                })
+                .collect());
         }
         ModelingCmd::EntityMakeHelix(cmd) => {
             let cylinder_id = ArtifactId::new(cmd.cylinder_id);

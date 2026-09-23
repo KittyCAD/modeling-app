@@ -35,6 +35,13 @@ const meta = {
     accountHref: 'https://zoo.dev/account/billing',
     balance: 8,
     allowance: 20,
+    userPaymentBalance: {
+      ...overdueBalance,
+      total_due: 0,
+      monthly_api_credits_refresh_at: new Date(
+        Date.now() + 3.5 * 86_400_000
+      ).toISOString(),
+    },
   },
 } satisfies Meta<typeof BillingDialog>
 

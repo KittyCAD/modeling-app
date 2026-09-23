@@ -421,7 +421,7 @@ async fn fix_sketch_tags_and_references(
     surfaces: Option<Vec<ExtrudeSurface>>,
 ) -> Result<()> {
     // Fix the path references in the sketch.
-    for path in new_sketch.paths.as_mut_slice() {
+    for path in &mut new_sketch.paths {
         if let Some(new_path_id) = entity_id_map.get(&path.get_id()) {
             path.set_id(*new_path_id);
         } else {
@@ -581,8 +581,10 @@ mod tests {
 
 clonedCube = clone(cube)
 "#;
-        let ctx = crate::test_server::new_context(true, None, true).await.unwrap();
         let program = crate::Program::parse_no_errs(code).unwrap();
+        let ctx = crate::test_server::new_context(true, None, true, program.language_version().unwrap())
+            .await
+            .unwrap();
 
         // Execute the program.
         let result = ctx.run_with_caching(program.clone()).await.unwrap();
@@ -630,8 +632,10 @@ clonedCube = clone(cube)
 
 clonedCube = clone(cube)
 "#;
-        let ctx = crate::test_server::new_context(true, None, true).await.unwrap();
         let program = crate::Program::parse_no_errs(code).unwrap();
+        let ctx = crate::test_server::new_context(true, None, true, program.language_version().unwrap())
+            .await
+            .unwrap();
 
         // Execute the program.
         let result = ctx.run_with_caching(program.clone()).await.unwrap();
@@ -710,8 +714,10 @@ loftProfileB = startSketchOn(offsetPlane(XZ, offset = -15))
 surfaceLoft = loft([loftProfileA, loftProfileB], bodyType = SURFACE)
 surfaceLoftClone = clone(surfaceLoft)
 "#;
-        let ctx = crate::test_server::new_context(true, None, true).await.unwrap();
         let program = crate::Program::parse_no_errs(code).unwrap();
+        let ctx = crate::test_server::new_context(true, None, true, program.language_version().unwrap())
+            .await
+            .unwrap();
 
         let result = ctx.run_with_caching(program).await.unwrap();
         for (source_name, clone_name) in [
@@ -762,8 +768,10 @@ source = extrude(
 )
 cloned = clone(source)
 "#;
-        let ctx = crate::test_server::new_context(true, None, true).await.unwrap();
         let program = crate::Program::parse_no_errs(code).unwrap();
+        let ctx = crate::test_server::new_context(true, None, true, program.language_version().unwrap())
+            .await
+            .unwrap();
 
         let result = ctx.run_with_caching(program).await.unwrap();
         let KclValueView::Solid { value: source } = result.variables.get("source").unwrap() else {
@@ -811,8 +819,10 @@ base = extrude(profile, length = 1)
 source = extrude(c, length = 4, method = NEW)
 cloned = clone(source)
 "#;
-        let ctx = crate::test_server::new_context(true, None, true).await.unwrap();
         let program = crate::Program::parse_no_errs(code).unwrap();
+        let ctx = crate::test_server::new_context(true, None, true, program.language_version().unwrap())
+            .await
+            .unwrap();
 
         let result = ctx.run_with_caching(program).await.unwrap();
         let KclValueView::Solid { value: source } = result.variables.get("source").unwrap() else {
@@ -878,8 +888,10 @@ surfaceB = extrude(region(segments = [sketchA.line1, sketchA.line2]), length = -
 bridge = blend([surfaceA.sketch.tags.line7, surfaceB.sketch.tags.line3])
 bridgeClone = clone(bridge)
 "#;
-        let ctx = crate::test_server::new_context(true, None, true).await.unwrap();
         let program = crate::Program::parse_no_errs(code).unwrap();
+        let ctx = crate::test_server::new_context(true, None, true, program.language_version().unwrap())
+            .await
+            .unwrap();
 
         let result = ctx.run_with_caching(program).await.unwrap();
         let KclValueView::Solid { value: bridge } = result.variables.get("bridge").unwrap() else {
@@ -936,8 +948,10 @@ pieces = split([target], tools = [cutter], keepTools = true)
 joined = joinSurfaces(pieces)
 joinedClone = clone(joined)
 "#;
-        let ctx = crate::test_server::new_context(true, None, true).await.unwrap();
         let program = crate::Program::parse_no_errs(code).unwrap();
+        let ctx = crate::test_server::new_context(true, None, true, program.language_version().unwrap())
+            .await
+            .unwrap();
 
         let result = ctx.run_with_caching(program).await.unwrap();
         let KclValueView::Solid { value: joined } = result.variables.get("joined").unwrap() else {
@@ -972,8 +986,10 @@ lofted = loft([
 ])
 clonedLoft = clone(lofted)
 "#;
-        let ctx = crate::test_server::new_context(true, None, true).await.unwrap();
         let program = crate::Program::parse_no_errs(code).unwrap();
+        let ctx = crate::test_server::new_context(true, None, true, program.language_version().unwrap())
+            .await
+            .unwrap();
 
         let result = ctx.run_with_caching(program).await.unwrap();
         let KclValueView::Solid { value: lofted } = result.variables.get("lofted").unwrap() else {
@@ -1045,8 +1061,10 @@ right = startSketchOn(XY)
 composite = union([left, right])
 clonedComposite = clone(composite)
 "#;
-        let ctx = crate::test_server::new_context(true, None, true).await.unwrap();
         let program = crate::Program::parse_no_errs(code).unwrap();
+        let ctx = crate::test_server::new_context(true, None, true, program.language_version().unwrap())
+            .await
+            .unwrap();
 
         let result = ctx.run_with_caching(program).await.unwrap();
         let KclValueView::Solid { value: composite } = result.variables.get("composite").unwrap() else {
@@ -1108,10 +1126,10 @@ clonedCopy = clone(patternCopy)
         std::fs::write(tmpdir.path().join("composite.kcl"), module_code).unwrap();
         std::fs::write(&main_path, code).unwrap();
 
-        let ctx = crate::test_server::new_context(true, Some(main_path), true)
+        let program = crate::Program::parse_no_errs(code).unwrap();
+        let ctx = crate::test_server::new_context(true, Some(main_path), true, program.language_version().unwrap())
             .await
             .unwrap();
-        let program = crate::Program::parse_no_errs(code).unwrap();
 
         let result = ctx.run_with_caching(program).await.unwrap();
         let KclValueView::Solid { value: composite } = result.variables.get("composite").unwrap() else {
@@ -1150,8 +1168,10 @@ clonedCopy = clone(patternCopy)
 
 clonedCube = clone(cube)
 "#;
-        let ctx = crate::test_server::new_context(true, None, true).await.unwrap();
         let program = crate::Program::parse_no_errs(code).unwrap();
+        let ctx = crate::test_server::new_context(true, None, true, program.language_version().unwrap())
+            .await
+            .unwrap();
 
         // Execute the program.
         let result = ctx.run_with_caching(program.clone()).await.unwrap();
@@ -1197,8 +1217,10 @@ clonedCube = clone(cube)
 
 clonedCube = clone(cube)
 "#;
-        let ctx = crate::test_server::new_context(true, None, true).await.unwrap();
         let program = crate::Program::parse_no_errs(code).unwrap();
+        let ctx = crate::test_server::new_context(true, None, true, program.language_version().unwrap())
+            .await
+            .unwrap();
 
         // Execute the program.
         let result = ctx.run_with_caching(program.clone()).await.unwrap();
@@ -1273,7 +1295,9 @@ patternCopy = patterned[1]
 clonedCopy = clone(patternCopy)
 "#;
         let program = crate::Program::parse_no_errs(code).unwrap();
-        let ctx = crate::test_server::new_context(true, None, true).await.unwrap();
+        let ctx = crate::test_server::new_context(true, None, true, program.language_version().unwrap())
+            .await
+            .unwrap();
 
         let result = ctx.run_with_caching(program).await.unwrap();
         let source = result.variables.get("source").unwrap();
@@ -1344,8 +1368,10 @@ clonedCube = clone(cube)
     |> translate(
         x = 25.0,
     )"#;
-        let ctx = crate::test_server::new_context(true, None, true).await.unwrap();
         let program = crate::Program::parse_no_errs(code).unwrap();
+        let ctx = crate::test_server::new_context(true, None, true, program.language_version().unwrap())
+            .await
+            .unwrap();
 
         // Execute the program.
         let result = ctx.run_with_caching(program.clone()).await.unwrap();
@@ -1437,8 +1463,10 @@ clonedCube = clone(cube)
 
 clonedCube = clone(cube)
 "#;
-        let ctx = crate::test_server::new_context(true, None, true).await.unwrap();
         let program = crate::Program::parse_no_errs(code).unwrap();
+        let ctx = crate::test_server::new_context(true, None, true, program.language_version().unwrap())
+            .await
+            .unwrap();
 
         // Execute the program.
         let result = ctx.run_with_caching(program.clone()).await.unwrap();
@@ -1530,8 +1558,10 @@ cube = baseCube
 
 clonedCube = clone(cube)
 "#;
-        let ctx = crate::test_server::new_context(true, None, true).await.unwrap();
         let program = crate::Program::parse_no_errs(code).unwrap();
+        let ctx = crate::test_server::new_context(true, None, true, program.language_version().unwrap())
+            .await
+            .unwrap();
 
         // Execute the program.
         let result = ctx.run_with_caching(program.clone()).await.unwrap();

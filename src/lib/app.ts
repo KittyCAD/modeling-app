@@ -71,6 +71,10 @@ import {
   homeProjectActionsService,
   homeProjectEntriesValueSpec,
 } from '@src/registry/contracts/homeProjects'
+import {
+  type InteractionPerformanceService,
+  interactionPerformanceService,
+} from '@src/registry/contracts/interactionPerformance'
 import { keymapService } from '@src/registry/contracts/keymap'
 import { machineManagerService } from '@src/registry/contracts/machineManager'
 import {
@@ -180,6 +184,9 @@ export class App implements AppSubsystems {
   public get fileOperations(): FileOperationsRegistryService {
     return this.registry.get(fileOperationsService)
   }
+
+  declare readonly interactionPerformance?: InteractionPerformanceService
+
   private get projectSession(): ProjectSessionService {
     return this.registry.get(projectSession)
   }
@@ -246,6 +253,11 @@ export class App implements AppSubsystems {
     this.settings = subsystems.settings
     this.layout = subsystems.layout
     this.registry = subsystems.registry
+    if (import.meta.env.VITE_INTERACTION_PERFORMANCE === '1') {
+      this.interactionPerformance = this.registry.get(
+        interactionPerformanceService
+      )
+    }
     this.userFeatures = subsystems.userFeatures
     this.systemIOActor = createActor(systemIOMachineImpl, {
       input: {

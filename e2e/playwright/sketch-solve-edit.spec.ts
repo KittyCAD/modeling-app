@@ -2565,7 +2565,7 @@ hide(sketch001)`
     await expect(toolbar.exitSketchBtn).toBeEnabled()
     await editor.expectEditor.toContain('tag = $')
     await editor.expectEditor.toContain(
-      'sketch002 = sketch(on = faceOf(chamfer001, face = seg01))'
+      'sketch002 = sketch(on = faceOf(chamfer001, face = chamferFace01))'
     )
     await toolbar.exitSketch()
     await toolbar.editSketch(1)

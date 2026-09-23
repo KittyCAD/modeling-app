@@ -1071,7 +1071,7 @@ region001 = region(segments = [sketch001.circle1])`
 hide(sketch001)
 region001 = region(segments = [sketch001.line1, sketch001.line2])
 extrude001 = extrude(region001, length = -12)`
-    const firstFilletDeclaration = `fillet001 = fillet(extrude001, edges=[{sideFaces=[extrude001.faces.capEnd001,region001.tags.line2],endFaces=[region001.tags.line4,region001.tags.line1]}], radius=5,)`
+    const firstFilletDeclaration = `fillet001 = fillet(extrude001, edges=[{sideFaces=[region001.tags.line2,extrude001.faces.capEnd001],endFaces=[region001.tags.line1,region001.tags.line4]}], radius=5,)`
     const secondFilletDeclaration = `fillet002 = fillet(extrude001, edges=[{sideFaces=[extrude001.faces.capStart001,region001.tags.line2],endFaces=[region001.tags.line1,region001.tags.line4]}], radius=5,)`
 
     // Locators
@@ -1364,96 +1364,6 @@ fillet001 = fillet(extrude001, radius = 5, tags = [getOppositeEdge(region001.tag
     })
   })
 
-  test('Should automatically fix fillet kwargs that are incompatible with P&C upon edit', async ({
-    context,
-    page,
-    homePage,
-    scene,
-    editor,
-    toolbar,
-    cmdBar,
-  }) => {
-    // Initial KCL has mixed deprecated tags and edges. Auto-fix merges to edges only;
-    // edit-only path must preserve all edges when updating radius.
-    const initialCode = `sketchPlane = startSketchOn(XY)
-profile = startProfile(sketchPlane, at = [0, 0])
-  |> line(endAbsolute = [10, 0], tag = $e1)
-  |> line(endAbsolute = [10, 10])
-  |> line(endAbsolute = [0, 10])
-  |> line(endAbsolute = [0, 0])
-  |> close()
-myExtrude = extrude(profile, length = 5, tagStart = $capStart001)
-myFillet = fillet(myExtrude, radius = 1, tags = [getOppositeEdge(e1)], edges = [{ sideFaces = [e1, capStart001]}])
-`
-
-    await test.step('Initial test setup', async () => {
-      await context.addInitScript((code: string) => {
-        localStorage.setItem('persistCode', code)
-      }, initialCode)
-      await page.setBodyDimensions({ width: 1000, height: 500 })
-      await homePage.goToModelingScene()
-      await scene.settled(cmdBar)
-    })
-
-    await test.step('Edit fillet via feature tree (triggers auto-fix then edit)', async () => {
-      await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
-      await toolbar.waitForFeatureTreeToBeBuilt()
-      await page.waitForTimeout(300)
-      const operationButton = await toolbar.getFeatureTreeOperation(
-        'myFillet',
-        0
-      )
-      await operationButton.dblclick({ button: 'left' })
-      // Auto-fix converts tags to edgeRefs and re-runs; wait for cmd bar to show Fillet (allow time for fix + re-run)
-      await expect
-        .poll(
-          async () => {
-            const state = await cmdBar.getState()
-            return (
-              state.stage === 'arguments' &&
-              state.commandName === 'Fillet' &&
-              state.currentArgKey === 'radius'
-            )
-          },
-          { timeout: 20_000 }
-        )
-        .toBe(true)
-      await cmdBar.expectState({
-        commandName: 'Fillet',
-        currentArgKey: 'radius',
-        currentArgValue: '1',
-        headerArguments: {
-          Radius: '1',
-        },
-        highlightedHeaderArg: 'radius',
-        stage: 'arguments',
-      })
-      await page.keyboard.insertText('2')
-      await cmdBar.progressCmdBar()
-      await cmdBar.expectState({
-        stage: 'review',
-        headerArguments: {
-          Radius: '2',
-        },
-        commandName: 'Fillet',
-      })
-      await cmdBar.progressCmdBar()
-      await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
-    })
-
-    await test.step('Confirm code has edges preserved and radius updated', async () => {
-      await toolbar.openPane(DefaultLayoutPaneID.Code)
-      await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
-      const code = await editor.getCurrentCode()
-      expect(code).toContain('edges')
-      // The existing edge ref (sideFaces = [e1, capStart001]) must be preserved by auto-fix and edit-only path
-      expect(code).toContain('sideFaces = [e1, capStart001]')
-      expect(code).toContain('radius = 2')
-      // Deprecated tags syntax should be removed by auto-fix
-      expect(code).not.toContain('tags = [getOppositeEdge')
-    })
-  })
-
   test('Should automatically fix revolve axis that is incompatible with P&C upon edit', async ({
     context,
     page,
@@ -1732,10 +1642,9 @@ fillet(extrude001, radius = 5, edges = [{ sideFaces = [region001.tags.line2, cap
 
       await test.step('Load standalone fillets using new edge syntax', async () => {
         await editor.openPane()
-        await editor.codeContent.click()
-        await page.keyboard.press('ControlOrMeta+A')
-        await page.keyboard.insertText(standaloneFilletCode)
-        await scene.settled(cmdBar)
+        await scene.waitForExecutionDoneAfter(() =>
+          editor.replaceCode('', standaloneFilletCode)
+        )
         await editor.expectEditor.toContain(standaloneAssignedFilletDeclaration)
         await editor.expectEditor.toContain(
           standaloneUnassignedFilletDeclaration,
@@ -1885,7 +1794,7 @@ extrude001 = extrude(region001, length = 5)`
 
       expect(normalizedCode).toContain('fillet001=fillet(extrude001,')
       expect(normalizedCode).toContain(
-        'edges=[{sideFaces=[region001.tags.line3,region001.tags.line1],endFaces=[capEnd001,capStart001]}]'
+        'edges=[{sideFaces=[region001.tags.line1,region001.tags.line3],endFaces=[capStart001,capEnd001]}]'
       )
       expect(normalizedCode).toContain('radius=1000,')
       expect(normalizedCode).not.toContain('tags=[')
@@ -2274,10 +2183,9 @@ chamfer(extrude001, length = 5, edges = [{ sideFaces = [region001.tags.line2, ca
 
       await test.step('Load standalone chamfers using new edge syntax', async () => {
         await editor.openPane()
-        await editor.codeContent.click()
-        await page.keyboard.press('ControlOrMeta+A')
-        await page.keyboard.insertText(standaloneChamferCode)
-        await scene.settled(cmdBar)
+        await scene.waitForExecutionDoneAfter(() =>
+          editor.replaceCode('', standaloneChamferCode)
+        )
         await editor.expectEditor.toContain(
           standaloneAssignedChamferDeclaration
         )
@@ -2656,9 +2564,9 @@ chamfer001 = chamfer(
     await cmdBar.submit()
     await scene.settled(cmdBar)
 
-    await editor.expectEditor.toContain('tag = $seg01')
+    await editor.expectEditor.toContain('tag = $chamferFace01')
     await editor.expectEditor.toContain(
-      'surface001 = deleteFace(chamfer001, faces = seg01)'
+      'surface001 = deleteFace(chamfer001, faces = chamferFace01)'
     )
   })
 
@@ -2715,11 +2623,9 @@ hide(sketch001)`
     await cmdBar.submit()
     await scene.settled(cmdBar)
 
+    await editor.expectEditor.toContain('tag = $chamferFace01')
     await editor.expectEditor.toContain(
-      'face001 = faceId(chamfer001, index = 7)'
-    )
-    await editor.expectEditor.toContain(
-      'surface001 = deleteFace(chamfer001, faces = face001)'
+      'surface001 = deleteFace(chamfer001, faces = chamferFace01)'
     )
   })
 
@@ -2778,11 +2684,9 @@ hide(sketch001)`
     await cmdBar.submit()
     await scene.settled(cmdBar)
 
+    await editor.expectEditor.toContain('tag = $filletFace01')
     await editor.expectEditor.toContain(
-      'face001 = faceId(fillet001, index = 7)'
-    )
-    await editor.expectEditor.toContain(
-      'surface001 = deleteFace(fillet001, faces = face001)'
+      'surface001 = deleteFace(fillet001, faces = filletFace01)'
     )
   })
 
@@ -2817,10 +2721,10 @@ region002 = region(point = [-20.0275mm, 10mm], sketch = sketch002)`
   region002,
   angle = 360deg,
   axis = {
-    sideFaces = [capEnd001, region001.tags.line1],
+    sideFaces = [region001.tags.line1, capEnd001],
     endFaces = [
-      region001.tags.line3,
-      region001.tags.line2
+      region001.tags.line2,
+      region001.tags.line3
     ]
   },
   bodyType = SURFACE,
@@ -2829,10 +2733,10 @@ region002 = region(point = [-20.0275mm, 10mm], sketch = sketch002)`
   region002,
   angle = 360deg,
   axis = {
-    sideFaces = [capEnd001, region001.tags.line1],
+    sideFaces = [region001.tags.line1, capEnd001],
     endFaces = [
-      region001.tags.line3,
-      region001.tags.line2
+      region001.tags.line2,
+      region001.tags.line3
     ]
   },
   bodyType = SURFACE,

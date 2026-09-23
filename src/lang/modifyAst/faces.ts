@@ -36,7 +36,10 @@ import {
   getCapForPathId,
   getFaceCodeRef,
 } from '@src/lang/std/artifactGraph'
-import { addTagToSingletonEdgeCut } from '@src/lang/std/sketchTaggingHelpers'
+import {
+  addTagToEdgeCutSelector,
+  addTagToSingletonEdgeCut,
+} from '@src/lang/std/sketchTaggingHelpers'
 import {
   type Artifact,
   type ArtifactGraph,
@@ -204,12 +207,12 @@ export function addDeleteFace({
     return { modifiedAst, pathToNode }
   }
 
-  // An edgeCut identifies the chamfer/fillet result, but does not retain enough
-  // source identity to split a multi-selector operation. Singleton operations
-  // can be tagged directly without reconstructing a removed sweepEdge.
+  // Edge-reference cuts carry a selector index and are split while producing
+  // the face expression below. Older edge cuts can only be tagged as a whole.
   for (const selection of faces.graphSelections) {
     const resolved = resolveToCodeRef(selection, artifactGraph)
     if (resolved?.artifact?.type !== 'edgeCut') continue
+    if (resolved.artifact.sourceSelectorIndex != null) continue
 
     const tagResult = addTagToSingletonEdgeCut(
       {
@@ -1190,14 +1193,24 @@ export function getFacesExprsFromSelection(
       }
       const tagResult =
         targetArtifact?.type === 'edgeCut'
-          ? addTagToSingletonEdgeCut(
-              {
-                node: modifiedAst,
-                pathToNode: codeRef.pathToNode,
-                wasmInstance,
-              },
-              wasmInstance
-            )
+          ? targetArtifact.sourceSelectorIndex != null
+            ? addTagToEdgeCutSelector(
+                {
+                  node: modifiedAst,
+                  pathToNode: codeRef.pathToNode,
+                  wasmInstance,
+                },
+                targetArtifact.sourceSelectorIndex,
+                wasmInstance
+              )
+            : addTagToSingletonEdgeCut(
+                {
+                  node: modifiedAst,
+                  pathToNode: codeRef.pathToNode,
+                  wasmInstance,
+                },
+                wasmInstance
+              )
           : mutateAstWithTagForSketchSegment(
               modifiedAst,
               codeRef.pathToNode,
@@ -1211,6 +1224,7 @@ export function getFacesExprsFromSelection(
         return []
       }
 
+      modifiedAst = tagResult.modifiedAst
       return [createLocalName(tagResult.tag)]
     } else {
       console.warn('Face was not a cap or wall or chamfer', v2Sel)
