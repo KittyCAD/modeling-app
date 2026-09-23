@@ -1498,22 +1498,49 @@ async function findLocalProjectPathsByRemoteProjectId(
       continue
     }
     const candidatePath = localFs.join(projectDirectory, entry)
-    if (!(await exists(candidatePath))) {
-      continue
-    }
-    const candidateMetadata = await getProjectMetadata(candidatePath)
-    if (isProjectSyncExcluded(candidateMetadata)) {
-      continue
-    }
-    const candidateRemoteProjectId = await readProjectTomlCloudProjectId(
-      candidatePath
-    ).catch(() => undefined)
+    const candidateRemoteProjectId =
+      await readSyncableLocalProjectRemoteId(candidatePath)
     if (candidateRemoteProjectId === remoteProjectId) {
       projectPaths.push(normalizePathForSync(candidatePath))
     }
   }
 
   return projectPaths
+}
+
+async function readSyncableLocalProjectRemoteId(projectPath: string) {
+  if (!(await exists(projectPath))) {
+    return undefined
+  }
+  const metadata = await getProjectMetadata(projectPath)
+  if (isProjectSyncExcluded(metadata)) {
+    return undefined
+  }
+  return readProjectTomlCloudProjectId(projectPath).catch(() => undefined)
+}
+
+async function indexLocalProjectPathsByRemoteId(projectDirectory: string) {
+  const projects = new Map<string, string[]>()
+  const entries = await localFs.readdir(projectDirectory).catch((error) => {
+    if (error === 'ENOENT') {
+      return []
+    }
+    return Promise.reject(error)
+  })
+  for (const entry of entries) {
+    if (entry.startsWith('.')) {
+      continue
+    }
+    const projectPath = localFs.join(projectDirectory, entry)
+    const remoteId = await readSyncableLocalProjectRemoteId(projectPath)
+    if (!remoteId) {
+      continue
+    }
+    const paths = projects.get(remoteId) ?? []
+    paths.push(normalizePathForSync(projectPath))
+    projects.set(remoteId, paths)
+  }
+  return projects
 }
 
 type LocalProjectRealizationCandidate = {
@@ -3450,6 +3477,7 @@ async function syncRemoteIndex(
     }
   }
 
+  const localProjectsByDirectory = new Map<string, Map<string, string[]>>()
   for (const remoteProject of remoteProjects) {
     const skipAction = getCloudSyncRemoteIndexAction({
       hasRemoteProjectId: Boolean(remoteProject.id),
@@ -3589,12 +3617,36 @@ async function syncRemoteIndex(
       const projectName = localProjectNameForRemoteProject(remoteProject)
       let existingProjectDirectory: string | undefined
       let existingProjectPath: string | undefined
+      // Discover local bindings once per reconciliation, rather than scanning
+      // every local directory again for each remote-only project. Revalidate
+      // matches before use; concurrent local edits remain in the fresh outbox
+      // read after this index pass. Destructive duplicate cleanup reads afresh.
       for (const projectDirectory of projectDirectories) {
-        existingProjectPath = await findLocalProjectPathByRemoteProjectId(
-          projectDirectory,
-          remoteProject.id,
-          projectName
+        let localProjects = localProjectsByDirectory.get(projectDirectory)
+        if (!localProjects) {
+          localProjects =
+            await indexLocalProjectPathsByRemoteId(projectDirectory)
+          localProjectsByDirectory.set(projectDirectory, localProjects)
+        }
+        const candidates = localProjects.get(remoteProject.id) ?? []
+        const preferredPath = normalizePathForSync(
+          localFs.join(projectDirectory, projectName)
         )
+        const orderedCandidates = candidates.includes(preferredPath)
+          ? [
+              preferredPath,
+              ...candidates.filter((path) => path !== preferredPath),
+            ]
+          : candidates
+        for (const candidatePath of orderedCandidates) {
+          if (
+            (await readSyncableLocalProjectRemoteId(candidatePath)) ===
+            remoteProject.id
+          ) {
+            existingProjectPath = candidatePath
+            break
+          }
+        }
         if (existingProjectPath) {
           existingProjectDirectory = projectDirectory
           break
