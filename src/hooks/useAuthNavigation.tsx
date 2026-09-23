@@ -9,6 +9,7 @@ import { isMobile } from '@src/lib/isMobile'
 import { PATHS } from '@src/lib/paths'
 import { appNavigationService } from '@src/registry/contracts/appNavigation'
 import { appLaunchService } from '@src/registry/contracts/appLaunch'
+import { appUrlService } from '@src/registry/contracts/appUrl'
 import { generateSignInUrl } from '@src/routes/utils'
 import { useEffect } from 'react'
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
@@ -40,7 +41,16 @@ export function useAuthNavigation() {
       location.pathname.includes(PATHS.SIGN_IN)
     ) {
       if (!launchPending) {
-        void app.registry.get(appNavigationService).showHome()
+        // Launch completion can render before React commits the new location.
+        // Validate the live browser/hash URL before redirecting from sign-in;
+        // the URL service's cached location also waits for that React commit.
+        const currentUrl = app.registry.get(appUrlService).readInitialUrl()
+        if (
+          currentUrl.type === 'launch' &&
+          currentUrl.destination.type === 'sign-in'
+        ) {
+          void app.registry.get(appNavigationService).showHome()
+        }
       }
     } else if (
       authState.matches('loggedOut') &&
