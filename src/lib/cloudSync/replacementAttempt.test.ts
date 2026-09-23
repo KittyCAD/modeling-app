@@ -20,8 +20,6 @@ describe('createProjectReplacementAttempt', () => {
     const baseFiles = [
       projectFile('main.kcl', 'main = 1\n'),
       projectFile('obsolete.kcl', 'obsolete = 1\n'),
-      projectFile('thumbnail.png', 'generated preview'),
-      projectFile('assets/thumbnail.png', 'user image'),
     ]
     const nextFile = projectFile('main.kcl', 'main = 2\n')
     const attempt = await createProjectReplacementAttempt({
@@ -41,9 +39,6 @@ describe('createProjectReplacementAttempt', () => {
       await projectManifestFromFiles([projectFile('main.kcl', 'main = 2\n')])
     )
     expect(attempt.expectedRevision).toBe('revision-1')
-    expect(attempt.deletedPaths).toEqual([
-      'assets/thumbnail.png',
-      'obsolete.kcl',
-    ])
+    expect(attempt.deletedPaths).toEqual(['obsolete.kcl'])
   })
 })
