@@ -78,147 +78,229 @@ test.describe('Snap to Grid', { tag: '@desktop' }, () => {
 
 test.describe(
   'Modern sketch snap to grid',
-  { tag: ['@desktop', '@web'] },
+  {
+    tag: ['@desktop', '@web'],
+  },
   () => {
     test.use({ userFeatures: [OPFS_CLOUD_FEATURE_FLAG] })
-    test('snaps solver sketch points to the visible grid with feedback', async ({
-      page,
-      homePage,
-      toolbar,
-      scene,
-      editor,
-    }) => {
-      await page.setBodyDimensions({ width: 1200, height: 500 })
-      await homePage.goToModelingScene()
-      await expect(toolbar.startSketchBtn).toBeEnabled({ timeout: 15_000 })
-      await scene.settled()
-      await editor.replaceCode(
-        '',
-        '@settings(kclVersion = 2.0)\n\nsketch001 = sketch(on = XY) {}'
-      )
-      await editor.expectEditor.toContain('sketch001')
-      await scene.settled()
+    for (const grid of [
+      { major: 1, minor: 4, snaps: 2 },
+      { major: 2.3333, minor: 17, snaps: 1 },
+    ]) {
+      test(`preserves grid precision through creation, dragging, and reload (${grid.major}/${grid.minor}/${grid.snaps})`, async ({
+        page,
+        homePage,
+        toolbar,
+        scene,
+        editor,
+        fs,
+      }) => {
+        await page.setBodyDimensions({ width: 1200, height: 500 })
+        await homePage.goToModelingScene()
+        await expect(toolbar.startSketchBtn).toBeEnabled({ timeout: 15_000 })
+        await scene.settled()
+        await editor.replaceCode(
+          '',
+          '@settings(kclVersion = 2.0)\n\nsketch001 = sketch(on = XY) {}'
+        )
+        await editor.expectEditor.toContain('sketch001')
+        await scene.settled()
 
-      const commands = page.getByRole('button', { name: 'Commands' })
-      const cameraProjection = await page.evaluate(
-        () => window.app.settings.get().modeling.cameraProjection.current
-      )
-      if (cameraProjection !== 'orthographic') {
-        await waitForSettingsIdle(page)
-        await commands.click()
-        await page
-          .getByRole('option', {
-            name: 'Settings · modeling · camera projection',
+        const commands = page.getByRole('button', { name: 'Commands' })
+        const cameraProjection = await page.evaluate(
+          () => window.app.settings.get().modeling.cameraProjection.current
+        )
+        if (cameraProjection !== 'orthographic') {
+          await waitForSettingsIdle(page)
+          await commands.click()
+          await page
+            .getByRole('option', {
+              name: 'Settings · modeling · camera projection',
+            })
+            .click()
+          await page.getByRole('option', { name: 'Orthographic' }).click()
+          await waitForSettingsIdle(page)
+        }
+        const fixedSizeGrid = await page.evaluate(
+          () => window.app.settings.get().modeling.fixedSizeGrid.current
+        )
+        if (!fixedSizeGrid) {
+          await waitForSettingsIdle(page)
+          await commands.click()
+          await page
+            .getByRole('option', {
+              name: 'Settings · modeling · fixed size grid',
+            })
+            .click()
+          await page.getByRole('option', { name: 'On', exact: true }).click()
+          await waitForSettingsIdle(page)
+        }
+        await scene.settled()
+
+        await toolbar.openFeatureTreePane()
+        const sketchOperation = await toolbar.getFeatureTreeOperation(
+          'sketch001',
+          0
+        )
+        await sketchOperation.dblclick()
+        await expect(toolbar.exitSketchBtn).toBeEnabled()
+        await toolbar.closeFeatureTreePane()
+
+        const enableSketchMenuItem = async (
+          name: string,
+          setting: 'showSketchGrid' | 'snapToGrid'
+        ) => {
+          const isEnabled = () =>
+            page.evaluate(
+              (setting) => window.app.settings.get().modeling[setting].current,
+              setting
+            )
+          if (await isEnabled()) return
+
+          await waitForSettingsIdle(page)
+          const [openSketchMenu] = scene.makeMouseHelpers(0.8, 0.2, {
+            format: 'ratio',
           })
-          .click()
-        await page.getByRole('option', { name: 'Orthographic' }).click()
-        await waitForSettingsIdle(page)
-      }
-      const fixedSizeGrid = await page.evaluate(
-        () => window.app.settings.get().modeling.fixedSizeGrid.current
-      )
-      if (!fixedSizeGrid) {
-        await waitForSettingsIdle(page)
-        await commands.click()
-        await page
-          .getByRole('option', {
-            name: 'Settings · modeling · fixed size grid',
-          })
-          .click()
-        await page.getByRole('option', { name: 'On', exact: true }).click()
-        await waitForSettingsIdle(page)
-      }
-      await scene.settled()
+          await openSketchMenu({ shouldRightClick: true })
+          const item = page
+            .getByTestId('view-controls-menu')
+            .getByRole('button', { name })
+          await expect(item).toBeVisible()
+          await item.click()
+          await waitForSettingsIdle(page)
+          await expect.poll(isEnabled).toBe(true)
+        }
+        await enableSketchMenuItem('Show Sketch Grid', 'showSketchGrid')
+        await enableSketchMenuItem('Snap to Grid', 'snapToGrid')
 
-      await toolbar.openFeatureTreePane()
-      const sketchOperation = await toolbar.getFeatureTreeOperation(
-        'sketch001',
-        0
-      )
-      await sketchOperation.dblclick()
-      await expect(toolbar.exitSketchBtn).toBeEnabled()
-      await toolbar.closeFeatureTreePane()
-
-      const enableSketchMenuItem = async (
-        name: string,
-        setting: 'showSketchGrid' | 'snapToGrid'
-      ) => {
-        const isEnabled = () =>
-          page.evaluate(
-            (setting) => window.app.settings.get().modeling[setting].current,
-            setting
+        for (const [setting, value] of [
+          ['majorGridSpacing', grid.major],
+          ['minorGridsPerMajor', grid.minor],
+          ['snapsPerMinor', grid.snaps],
+        ] as const) {
+          await waitForSettingsIdle(page)
+          await page.evaluate(
+            ({ setting, value }) => {
+              window.app.settings.actor.send({
+                type: `set.modeling.${setting}`,
+                data: { level: 'project', value },
+              })
+            },
+            { setting, value }
           )
-        if (await isEnabled()) return
-
+          await expect
+            .poll(() =>
+              page.evaluate(
+                (setting) =>
+                  window.app.settings.get().modeling[setting].current,
+                setting
+              )
+            )
+            .toBe(value)
+        }
         await waitForSettingsIdle(page)
-        const [openSketchMenu] = scene.makeMouseHelpers(0.8, 0.2, {
+
+        const lineTool = page.getByRole('button', {
+          name: 'line Line',
+          exact: true,
+        })
+        if ((await lineTool.getAttribute('aria-pressed')) !== 'true') {
+          await page.keyboard.press('l')
+        }
+        await expect(lineTool).toHaveAttribute('aria-pressed', 'true')
+
+        const [clickStart, moveStart] = scene.makeMouseHelpers(0.63, 0.35, {
           format: 'ratio',
         })
-        await openSketchMenu({ shouldRightClick: true })
-        const item = page
-          .getByTestId('view-controls-menu')
-          .getByRole('button', { name })
-        await expect(item).toBeVisible()
-        await item.click()
-        await waitForSettingsIdle(page)
-        await expect.poll(isEnabled).toBe(true)
-      }
-      await enableSketchMenuItem('Show Sketch Grid', 'showSketchGrid')
-      await enableSketchMenuItem('Snap to Grid', 'snapToGrid')
+        const [clickEnd, moveEnd] = scene.makeMouseHelpers(0.72, 0.58, {
+          format: 'ratio',
+        })
+        await moveStart()
+        await expect
+          .poll(() =>
+            page.evaluate(() => {
+              const sketchScene =
+                window.app.singletons.kclManager.sceneInfra.scene
+              return {
+                gridMarkerVisible:
+                  sketchScene.getObjectByName(
+                    'sketch-solve-grid-snapping-preview-sprite'
+                  )?.visible ?? false,
+                constraintBadgeVisible:
+                  sketchScene.getObjectByName(
+                    'sketch-solve-snapping-preview-sprite'
+                  )?.visible ?? false,
+              }
+            })
+          )
+          .toEqual({ gridMarkerVisible: true, constraintBadgeVisible: false })
+        await clickStart()
+        await moveEnd()
+        await clickEnd()
 
-      const lineTool = page.getByRole('button', {
-        name: 'line Line',
-        exact: true,
-      })
-      if ((await lineTool.getAttribute('aria-pressed')) !== 'true') {
-        await page.keyboard.press('l')
-      }
-      await expect(lineTool).toHaveAttribute('aria-pressed', 'true')
+        const getSnappedLineValues = async () => {
+          const code = (await editor.codeContent.textContent()) ?? ''
+          const line = code.match(
+            /(?:line\d*\s*=\s*)?line\(\s*start\s*=\s*\[\s*var\s+(-?\d+(?:\.\d+)?)mm,\s*var\s+(-?\d+(?:\.\d+)?)mm\s*,?\s*\],\s*end\s*=\s*\[\s*var\s+(-?\d+(?:\.\d+)?)mm,\s*var\s+(-?\d+(?:\.\d+)?)mm\s*,?\s*\]/
+          )
+          return line?.slice(1).map(Number) ?? null
+        }
+        await expect.poll(getSnappedLineValues).not.toBeNull()
+        const snappedLineValues = await getSnappedLineValues()
+        expect(snappedLineValues).not.toBeNull()
 
-      const [clickStart, moveStart] = scene.makeMouseHelpers(0.63, 0.35, {
-        format: 'ratio',
-      })
-      const [clickEnd, moveEnd] = scene.makeMouseHelpers(0.72, 0.58, {
-        format: 'ratio',
-      })
-      await moveStart()
-      await expect
-        .poll(() =>
-          page.evaluate(() => {
-            const sketchScene =
-              window.app.singletons.kclManager.sceneInfra.scene
-            return {
-              gridMarkerVisible:
-                sketchScene.getObjectByName(
-                  'sketch-solve-grid-snapping-preview-sprite'
-                )?.visible ?? false,
-              constraintBadgeVisible:
-                sketchScene.getObjectByName(
-                  'sketch-solve-snapping-preview-sprite'
-                )?.visible ?? false,
-            }
-          })
+        const step = grid.major / (grid.minor * grid.snaps)
+        const expectOnGrid = (values: number[] | null) => {
+          expect(values).toHaveLength(4)
+          for (const value of values ?? []) {
+            expect(value / step).toBeCloseTo(Math.round(value / step), 10)
+          }
+        }
+        expectOnGrid(snappedLineValues)
+        await page.keyboard.press('Escape')
+        await lineTool.click()
+        await expect(lineTool).toHaveAttribute('aria-pressed', 'false')
+
+        const pointHandles = page.locator('[data-handle="sketch-point-handle"]')
+        await expect(pointHandles).toHaveCount(2)
+        const pointBox = await pointHandles.first().boundingBox()
+        if (!pointBox) throw new Error('Expected a draggable line endpoint')
+        const x = pointBox.x + pointBox.width / 2
+        const y = pointBox.y + pointBox.height / 2
+        const checkpointBeforeDrag = await page.evaluate(
+          () => window.app.singletons.kclManager.currentSketchCheckpointId
         )
-        .toEqual({ gridMarkerVisible: true, constraintBadgeVisible: false })
-      await clickStart()
-      await moveEnd()
-      await clickEnd()
-
-      const getSnappedLineValues = async () => {
-        const code = (await editor.codeContent.textContent()) ?? ''
-        const line = code.match(
-          /(?:line\d*\s*=\s*)?line\(start\s*=\s*\[var\s+(-?\d+(?:\.\d+)?)mm,\s*var\s+(-?\d+(?:\.\d+)?)mm\],\s*end\s*=\s*\[var\s+(-?\d+(?:\.\d+)?)mm,\s*var\s+(-?\d+(?:\.\d+)?)mm\]/
-        )
-        return line?.slice(1).map(Number) ?? null
-      }
-      await expect.poll(getSnappedLineValues).not.toBeNull()
-      const snappedLineValues = await getSnappedLineValues()
-      expect(snappedLineValues).not.toBeNull()
-
-      for (const value of snappedLineValues ?? []) {
-        expect(value * 4).toBeCloseTo(Math.round(value * 4), 8)
-      }
-    })
+        await page.mouse.move(x, y)
+        await page.mouse.down()
+        await page.mouse.move(x + 43, y - 31, { steps: 8 })
+        await page.mouse.up()
+        // Preview coordinates appear before the release creates a checkpoint.
+        await expect
+          .poll(() =>
+            page.evaluate(
+              () => window.app.singletons.kclManager.currentSketchCheckpointId
+            )
+          )
+          .not.toBe(checkpointBeforeDrag)
+        await expect.poll(getSnappedLineValues).not.toEqual(snappedLineValues)
+        const draggedLineValues = await getSnappedLineValues()
+        expectOnGrid(draggedLineValues)
+        await toolbar.exitSketchBtn.click()
+        await expect(toolbar.startSketchBtn).toBeEnabled()
+        const savedSource = await page.evaluate(() => ({
+          path: window.app.singletons.kclManager.path,
+          code: window.app.singletons.kclManager.code,
+        }))
+        // Autosave is debounced; verify persistence before destroying the page.
+        await expect
+          .poll(() => fs.readFile(savedSource.path, { encoding: 'utf-8' }))
+          .toBe(savedSource.code)
+        await page.reload()
+        await expect(toolbar.startSketchBtn).toBeEnabled({ timeout: 30_000 })
+        await scene.settled()
+        await expect.poll(getSnappedLineValues).toEqual(draggedLineValues)
+      })
+    }
   }
 )
 

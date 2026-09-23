@@ -84,6 +84,7 @@ import {
 } from '@src/machines/sketchSolve/snapping'
 import { updateSnappingPreviewSprite } from '@src/machines/sketchSolve/snappingPreviewSprite'
 import { getGridSnapOptionsFromModelingSettings } from '@src/machines/sketchSolve/tools/toolSnappingUtils'
+import { resolveSketchPoint } from '@src/machines/sketchSolve/tools/sketchCoordinates'
 import {
   type SelectionBoxVisualState,
   findContainedSegments,
@@ -237,12 +238,12 @@ function buildSegmentCtorWithDrag({
         position: {
           x: {
             type: 'Var',
-            value: roundOff(currentCursorPosition.x),
+            value: currentCursorPosition.x,
             units,
           },
           y: {
             type: 'Var',
-            value: roundOff(currentCursorPosition.y),
+            value: currentCursorPosition.y,
             units,
           },
         },
@@ -315,11 +316,11 @@ function buildApiPoint2d(
 ): ApiPoint2d<ApiNumber> {
   return {
     x: {
-      value: roundOff(position.x),
+      value: position.x,
       units,
     },
     y: {
-      value: roundOff(position.y),
+      value: position.y,
       units,
     },
   }
@@ -329,7 +330,10 @@ function buildConstraintLabelPosition(
   position: Vector2,
   units: NumericSuffix
 ): ApiPoint2d<ApiNumber> {
-  return buildApiPoint2d(position, units)
+  return buildApiPoint2d(
+    new Vector2(roundOff(position.x), roundOff(position.y)),
+    units
+  )
 }
 
 function buildSegmentDragAnchors({
@@ -1076,7 +1080,14 @@ export function createOnDragStartCallback({
     if (draggedConstraintLabelId !== null) {
       onUpdateHoveredId(draggedConstraintLabelId)
     }
-    setLastSuccessfulDragFromPoint(intersectionPoint.twoD.clone())
+    setLastSuccessfulDragFromPoint(
+      new Vector2(
+        ...resolveSketchPoint(
+          [intersectionPoint.twoD.x, intersectionPoint.twoD.y],
+          null
+        )
+      )
+    )
     setLastGoodPreview(null)
     setDragStartOutcome(currentSketchOutcome)
     setPreDragCheckpointId(getCurrentCommittedCheckpointId())
@@ -1578,7 +1589,7 @@ export function createOnDragCallback({
       const isGridSnap = snappingCandidate?.target.type === GRID_TARGET
       const dragTarget = isGridSnap
         ? new Vector2(...snappingCandidate.position)
-        : twoD
+        : new Vector2(...resolveSketchPoint([twoD.x, twoD.y], null))
       // Grid snaps must translate selected owners and coincident points by the
       // point's actual displacement, without retaining the initial cursor offset.
       const dragFromPoint =
@@ -2222,12 +2233,12 @@ export function setUpOnDragAndSelectionClickCallbacks({
                     position: {
                       x: {
                         type: 'Var',
-                        value: roundOff(x),
+                        value: x,
                         units,
                       },
                       y: {
                         type: 'Var',
-                        value: roundOff(y),
+                        value: y,
                         units,
                       },
                     },
