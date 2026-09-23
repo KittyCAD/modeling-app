@@ -16,12 +16,17 @@ interface ModuleExpansion {
   expanded: Set<number>
   toggle: (moduleId: number) => void
   reveal: (moduleId: number) => void
+  getChildren: OperationTree['getChildren']
 }
 
 const ModuleExpansionContext = createContext<ModuleExpansion | null>(null)
 
 export function useRevealFeatureTreeModule() {
   return useContext(ModuleExpansionContext)?.reveal
+}
+
+export function useFeatureTreeModuleChildren() {
+  return useContext(ModuleExpansionContext)?.getChildren
 }
 
 /** Expansion belongs to the pane so closing an ancestor preserves child choices. */
@@ -101,8 +106,13 @@ export function FeatureTreeModules({
   }, [state.reveal])
 
   const value = useMemo(
-    () => ({ expanded: state.expanded, toggle, reveal }),
-    [state.expanded, toggle, reveal]
+    () => ({
+      expanded: state.expanded,
+      toggle,
+      reveal,
+      getChildren: tree.getChildren,
+    }),
+    [state.expanded, toggle, reveal, tree.getChildren]
   )
   return (
     <ModuleExpansionContext.Provider value={value}>
