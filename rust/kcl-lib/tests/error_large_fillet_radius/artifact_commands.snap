@@ -227,15 +227,6 @@ description: Artifact commands error_large_fillet_radius.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
         "type": "solid3d_get_common_edge",
         "object_id": "[uuid]",
         "face_ids": [

@@ -23,8 +23,8 @@ import { modifyAstWithTagsForSelection } from '@src/lang/modifyAst/tagManagement
 import { resolveToCodeRef, traverse, valueOrVariable } from '@src/lang/queryAst'
 import {
   type ResolvedGraphSelection,
-  getArtifactOfTypes,
   getCapForPathId,
+  getCommonFacesForEdge,
 } from '@src/lang/std/artifactGraph'
 import type { ArtifactGraph, Expr, PathToNode, Program } from '@src/lang/wasm'
 import { modelingStdLibCall } from '@src/lib/commandBarConfigs/modelingCommandStdLib'
@@ -52,7 +52,7 @@ function setCallInAst(args: Parameters<typeof setBaseCallInAst>[0]) {
 function isProfileEdgeArtifact(
   artifact: Selections['graphSelections'][number]['artifact']
 ): boolean {
-  return artifact?.type === 'segment' || artifact?.type === 'sweepEdge'
+  return artifact?.type === 'segment'
 }
 
 function resolveSelectionsForTags(
@@ -63,24 +63,6 @@ function resolveSelectionsForTags(
   ) => boolean
 ): ResolvedGraphSelection[] {
   return selections.graphSelections.flatMap((selection) => {
-    if (
-      selection.artifact?.type === 'sweepEdge' &&
-      artifactPredicate(selection.artifact)
-    ) {
-      const segment = getArtifactOfTypes(
-        { key: selection.artifact.segId, types: ['segment'] },
-        artifactGraph
-      )
-      if (!err(segment)) {
-        return [
-          {
-            artifact: segment,
-            codeRef: segment.codeRef,
-          },
-        ]
-      }
-    }
-
     const resolved = resolveToCodeRef(selection, artifactGraph)
     if (!resolved) return []
 
@@ -93,7 +75,8 @@ function resolveSelectionsForTags(
 }
 
 function getEdgeRefPayloadFromSelection(
-  selection: Selection
+  selection: Selection,
+  artifactGraph: ArtifactGraph
 ): ReturnType<typeof entityReferenceToEdgeRefPayload> | null {
   if (selection.entityRef?.type === 'edge') {
     const payload = entityReferenceToEdgeRefPayload(selection.entityRef)
@@ -114,18 +97,15 @@ function getEdgeRefPayloadFromSelection(
   }
 
   if (selection.artifact?.type === 'segment') {
+    const commonFaces = getCommonFacesForEdge(selection.artifact, artifactGraph)
+    if (err(commonFaces)) return null
+
     return {
-      side_faces: selection.artifact.commonSurfaceIds ?? [],
+      side_faces: commonFaces.map((face) => face.id),
     }
   }
 
-  if (selection.artifact?.type !== 'sweepEdge') {
-    return null
-  }
-
-  return {
-    side_faces: selection.artifact.commonSurfaceIds ?? [],
-  }
+  return null
 }
 
 function buildFaceAndEdgeGdtExprs({
@@ -163,7 +143,8 @@ function buildFaceAndEdgeGdtExprs({
     isFaceArtifact
   )
   const edgeSelections = objects.graphSelections.filter(
-    (selection) => getEdgeRefPayloadFromSelection(selection) !== null
+    (selection) =>
+      getEdgeRefPayloadFromSelection(selection, artifactGraph) !== null
   )
   if (faceSelections.length === 0 && edgeSelections.length === 0) {
     return new Error('No valid selections found. Please select faces or edges.')
@@ -242,7 +223,7 @@ function buildGdtEdgeExpressions({
   const edgeExprs: Expr[] = []
 
   for (const selection of selections.graphSelections) {
-    const payload = getEdgeRefPayloadFromSelection(selection)
+    const payload = getEdgeRefPayloadFromSelection(selection, artifactGraph)
     if (!payload) continue
 
     const originalEdgeSelection =
@@ -275,8 +256,7 @@ function withoutEdgeLikeSelections(selections: Selections): Selections {
     graphSelections: selections.graphSelections.filter(
       (selection) =>
         selection.entityRef?.type !== 'edge' &&
-        selection.artifact?.type !== 'segment' &&
-        selection.artifact?.type !== 'sweepEdge'
+        selection.artifact?.type !== 'segment'
     ),
   }
 }
@@ -1156,7 +1136,7 @@ export function addProfileGdt({
     selections.otherSelections.length > 0 ||
     selections.graphSelections.some(
       (selection) =>
-        getEdgeRefPayloadFromSelection(selection) === null &&
+        getEdgeRefPayloadFromSelection(selection, artifactGraph) === null &&
         !isFaceArtifact(
           selection.artifact ??
             resolveToCodeRef(selection, artifactGraph)?.artifact
@@ -1178,7 +1158,8 @@ export function addProfileGdt({
   const edgeSelections = mNodeToEdit
     ? []
     : selections.graphSelections.filter(
-        (selection) => getEdgeRefPayloadFromSelection(selection) !== null
+        (selection) =>
+          getEdgeRefPayloadFromSelection(selection, artifactGraph) !== null
       )
 
   if (faceSelections.length > 0 && edgeSelections.length > 0) {
@@ -1357,7 +1338,7 @@ export function addDistanceGdt({
     ? []
     : selections.graphSelections.filter(
         (selection) =>
-          getEdgeRefPayloadFromSelection(selection) !== null ||
+          getEdgeRefPayloadFromSelection(selection, artifactGraph) !== null ||
           isFaceArtifact(
             selection.artifact ??
               resolveToCodeRef(selection, artifactGraph)?.artifact

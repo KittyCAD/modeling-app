@@ -63,6 +63,7 @@ describe('coerceSelectionsToBody', () => {
 
     const sweep: Artifact = {
       type: 'sweep',
+      edgeIds: [],
       id: 'sweep-1',
       codeRef: {
         range: [100, 200, 0],
@@ -72,7 +73,6 @@ describe('coerceSelectionsToBody', () => {
       pathId: 'path-1',
       subType: 'extrusion',
       surfaceIds: [],
-      edgeIds: [],
       method: 'merge',
       trajectoryId: null,
       consumed: false,
@@ -80,20 +80,21 @@ describe('coerceSelectionsToBody', () => {
 
     const segment: Artifact = {
       type: 'segment',
-      id: 'segment-1',
-      pathId: 'path-1',
       edgeIds: [],
       commonSurfaceIds: [],
+      id: 'segment-1',
+      pathId: 'path-1',
       edgeCutId: 'edge-cut-1',
       codeRef: { range: [10, 20, 0], pathToNode: [], nodePath: { steps: [] } },
     }
 
     const edgeCut: Artifact = {
       type: 'edgeCut',
-      id: 'edge-cut-1',
-      consumedEdgeId: 'segment-1',
-      subType: 'chamfer',
+      consumedEdgeId: '',
       edgeIds: [],
+      id: 'edge-cut-1',
+      subType: 'chamfer',
+      surfaceId: null,
       codeRef: { range: [90, 95, 0], pathToNode: [], nodePath: { steps: [] } },
     }
 
@@ -143,6 +144,7 @@ describe('coerceSelectionsToBody', () => {
 
     const sweep: Artifact = {
       type: 'sweep',
+      edgeIds: [],
       id: 'sweep-1',
       codeRef: {
         range: [100, 200, 0],
@@ -152,7 +154,6 @@ describe('coerceSelectionsToBody', () => {
       pathId: 'path-1',
       subType: 'extrusion',
       surfaceIds: [],
-      edgeIds: [],
       method: 'merge',
       trajectoryId: null,
       consumed: false,
@@ -160,10 +161,10 @@ describe('coerceSelectionsToBody', () => {
 
     const segment: Artifact = {
       type: 'segment',
-      id: 'segment-1',
-      pathId: 'path-1',
       edgeIds: [],
       commonSurfaceIds: [],
+      id: 'segment-1',
+      pathId: 'path-1',
       codeRef: { range: [10, 20, 0], pathToNode: [], nodePath: { steps: [] } },
     }
 
@@ -323,6 +324,7 @@ describe('coerceSelectionsToBody', () => {
 
     const sweep: Artifact = {
       type: 'sweep',
+      edgeIds: [],
       id: 'sweep-1',
       codeRef: {
         range: [50, 120, 0],
@@ -332,7 +334,6 @@ describe('coerceSelectionsToBody', () => {
       pathId: 'path-1',
       subType: 'extrusion',
       surfaceIds: [],
-      edgeIds: [],
       method: 'merge',
       trajectoryId: null,
       consumed: false,
@@ -379,6 +380,7 @@ describe('coerceSelectionsToBody', () => {
 
     const sweep: Artifact = {
       type: 'sweep',
+      edgeIds: [],
       id: 'sweep-1',
       codeRef: {
         range: [50, 120, 0],
@@ -388,7 +390,6 @@ describe('coerceSelectionsToBody', () => {
       pathId: 'path-1',
       subType: 'extrusion',
       surfaceIds: [],
-      edgeIds: [],
       method: 'merge',
       trajectoryId: null,
       consumed: false,

@@ -44,21 +44,6 @@ cube1 = extrude(region001, length = 2)
 cube2 = clone(cube1)
   |> translate(x = 5)`
 
-export function getClonedSweepEdges(artifactGraph: ArtifactGraph) {
-  const clonedSweep = [...artifactGraph.values()].find(
-    (artifact): artifact is Extract<Artifact, { type: 'sweep' }> =>
-      artifact.type === 'sweep' && artifact.sourceSweepId !== undefined
-  )
-  if (!clonedSweep) return []
-
-  return clonedSweep.edgeIds
-    .map((edgeId) => artifactGraph.get(edgeId))
-    .filter(
-      (artifact): artifact is Extract<Artifact, { type: 'sweepEdge' }> =>
-        artifact?.type === 'sweepEdge'
-    )
-}
-
 export async function enginelessExecutor(
   ast: Node<Program>,
   rustContext: RustContext,
