@@ -9,8 +9,7 @@ import {
   LOCAL_WEBGPU_GTAO_USE_NORMAL_MRT,
 } from '@src/clientSideScene/localRenderer/config'
 import { EdgeRenderer } from '@src/clientSideScene/localRenderer/EdgeRenderer'
-import { DefaultPlaneRenderer } from '@src/clientSideScene/localRenderer/DefaultPlaneRenderer'
-import { OffsetPlaneRenderer } from '@src/clientSideScene/localRenderer/OffsetPlaneRenderer'
+import { PlaneRenderer } from '@src/clientSideScene/localRenderer/PlaneRenderer'
 import { EnvMapLoader } from '@src/clientSideScene/localRenderer/EnvMapLoader'
 import {
   IntegerIdPicker,
@@ -49,7 +48,6 @@ import { denoise } from 'three/examples/jsm/tsl/display/DenoiseNode.js'
 import { ao } from 'three/examples/jsm/tsl/display/GTAONode.js'
 import { mrt, normalView, output, pass, vec3, vec4 } from 'three/tsl'
 import { type Node, RenderPipeline, WebGPURenderer } from 'three/webgpu'
-import { object } from 'fast-check'
 
 const WEBGPU_PORT_DEBUG_STORAGE_KEY = 'webgpu-port-debug'
 const WEBGPU_PORT_LOG_PREFIX = '[WEBGPU_POC]'
@@ -100,8 +98,7 @@ export class LocalRenderer {
   private scene: Scene | null = null
   private envMapLoader: EnvMapLoader | null = null
   private edgeRenderer: EdgeRenderer | null = null
-  private defaultPlaneRenderer: DefaultPlaneRenderer | null = null
-  private offsetPlaneRenderer: OffsetPlaneRenderer | null = null
+  private planeRenderer: PlaneRenderer | null = null
   private integerIdPicker: IntegerIdPicker | null = null
   private selectionHighlightRenderer: SelectionHighlightRenderer | null = null
   private performanceMonitor: LocalRendererPerformanceMonitor | null = null
@@ -188,15 +185,14 @@ export class LocalRenderer {
     if (!enabled) this.clearPlaneHover()
   }
 
-  setSelectedDefaultPlane(id: string | null) {
-    console.log('>>setselecteddefaultplaneid', id)
+  setSelectedPlane(id: string | null) {
     this.selectedPlaneId = id
     this.updatePlaneSelection()
   }
 
   setDefaultPlaneVisibility(visibility: PlaneVisibilityMap) {
     this.defaultPlaneVisibility = { ...visibility }
-    this.defaultPlaneRenderer?.setVisibility(visibility)
+    this.planeRenderer?.setDefaultVisibility(visibility)
     this.integerIdPicker?.invalidate()
     this.clearPlaneHover()
     this.updatePlaneSelection()
@@ -205,12 +201,8 @@ export class LocalRenderer {
 
   private getPlaneTarget(id: string | null): IntegerIdPickTarget | null {
     if (!id) return null
-    const planes = this.kclManager.rustContext.defaultPlanes
-    for (const [key, { fill }] of this.defaultPlaneRenderer?.planes ?? []) {
-      if (planes?.[key] === id && this.defaultPlaneVisibility[key])
-        return { object: fill }
-    }
-    return null
+    const plane = this.planeRenderer?.planes.get(id)
+    return plane?.group.visible ? { object: plane.mesh } : null
   }
 
   private updatePlaneSelection() {
@@ -227,20 +219,15 @@ export class LocalRenderer {
   }
 
   private rebuildPlaneTargets() {
-    const planes = this.defaultPlaneRenderer?.planes
-    if (!planes) return
-    this.defaultPlaneRenderer?.setVisibility(this.defaultPlaneVisibility)
-    const targets = Array.from(planes.values(), ({ fill }) => ({
-      object: fill,
-    }))
-
-
-    const offsetPlanes = this.offsetPlaneRenderer?.planes;
-    if (offsetPlanes) {
-        targets.push(...offsetPlanes?.map(offsetPlane => ({
-          object: offsetPlane.mesh
-        })))
-    }
+    if (!this.planeRenderer) return
+    this.planeRenderer.updateDefaultPlanes(
+      this.kclManager.rustContext.defaultPlanes
+    )
+    this.planeRenderer.setDefaultVisibility(this.defaultPlaneVisibility)
+    const targets = Array.from(
+      this.planeRenderer.planes.values(),
+      ({ mesh }) => ({ object: mesh })
+    )
 
     this.integerIdPicker?.setTargets(targets, this.currentModel)
     this.selectionHighlightRenderer?.setTargets(targets)
@@ -299,21 +286,7 @@ export class LocalRenderer {
       )
         return {}
       const target = result?.target ?? null
-      let entityId: string | null = null
-      const planes = this.kclManager.rustContext.defaultPlanes
-      for (const [key, { fill }] of this.defaultPlaneRenderer?.planes ?? []) {
-        if (fill === target?.object) {
-          entityId = planes?.[key] ?? null
-        }
-      }
-      if (!entityId) {
-        for (const {mesh, artifactId} of this.offsetPlaneRenderer?.planes ?? []) {
-          if (mesh === target?.object) {
-            entityId = artifactId
-          }
-        }
-      }
-      //console.log(target)
+      const entityId = target?.object.name || null
       if (isHover) {
         if (this.hoveredPlane?.object !== target?.object) {
           this.hoveredPlane = target
@@ -350,7 +323,7 @@ export class LocalRenderer {
     this.theme = theme
     this.selectionHighlightRenderer?.setBackgroundColor(this.backgroundColor)
     this.edgeRenderer?.setBackgroundColor(this.backgroundColor)
-    this.defaultPlaneRenderer?.setTheme(theme)
+    this.planeRenderer?.setTheme(theme)
     this.invalidateBaseRender()
   }
 
@@ -411,10 +384,8 @@ export class LocalRenderer {
     this.unregisterSharedCameraListener = null
     this.unregisterBaseUnitListener()
     this.clearModel()
-    this.defaultPlaneRenderer?.dispose()
-    this.defaultPlaneRenderer = null
-    this.offsetPlaneRenderer?.dispose()
-    this.offsetPlaneRenderer = null
+    this.planeRenderer?.dispose()
+    this.planeRenderer = null
     this.edgeRenderer?.dispose()
     this.edgeRenderer = null
     this.integerIdPicker?.dispose()
@@ -459,8 +430,7 @@ export class LocalRenderer {
       ? (10 * baseUnitMultiplier) / 100
       : undefined
     const distance = camControls.camera.position.distanceTo(camControls.target)
-    this.defaultPlaneRenderer?.updateScale(distance, fixedGridScale)
-    this.offsetPlaneRenderer?.updateScale(distance, fixedGridScale)
+    this.planeRenderer?.updateScale(distance, fixedGridScale)
     this.integerIdPicker?.invalidate()
     this.invalidateBaseRender()
   }
@@ -897,10 +867,8 @@ export class LocalRenderer {
     )
     this.edgeRenderer = edgeRenderer
     // Keep reference planes separate from the GLB and its fit-to-model bounds.
-    this.defaultPlaneRenderer = new DefaultPlaneRenderer(this.theme)
-    this.defaultPlaneRenderer.addTo(scene)
-    this.offsetPlaneRenderer = new OffsetPlaneRenderer()
-    this.offsetPlaneRenderer.addTo(scene)
+    this.planeRenderer = new PlaneRenderer(this.theme)
+    this.planeRenderer.addTo(scene)
     this.integerIdPicker = new IntegerIdPicker(renderer)
     this.integerIdPicker.setEdgesVisible(this.highlightEdges)
     this.selectionHighlightRenderer = new SelectionHighlightRenderer(
@@ -982,6 +950,8 @@ export class LocalRenderer {
     const { detail } = event as CustomEvent<KclExecutionDoneDetail>
     this.modelLoadGeneration += 1
     if (!detail.successful) {
+      this.rebuildPlaneTargets()
+      this.syncPlaneScale()
       this.pendingModelRefresh = false
       logLocalWebGpuPreview('KCL execution failed', detail)
       this.onModelLoadSettled?.()
@@ -1000,7 +970,7 @@ export class LocalRenderer {
     const isCurrent = () =>
       !this.disposed && generation === this.modelLoadGeneration
     // Reference planes do not depend on a successful GLB export.
-    this.offsetPlaneRenderer?.update(this.kclManager.artifactGraph)
+    this.planeRenderer?.updateOffsetPlanes(this.kclManager.artifactGraph)
     this.syncPlaneScale()
     // An empty execution has no GLB to export, but must clear the old model.
     if (this.kclManager.artifactGraph.size === 0) {
@@ -1009,6 +979,7 @@ export class LocalRenderer {
       this.modelLoadSettledAfterRender = true
       return
     }
+    this.rebuildPlaneTargets()
     const startedAt = performance.now()
     try {
       // Like viewer2: one whole-scene binary glTF export, without UUID extras.

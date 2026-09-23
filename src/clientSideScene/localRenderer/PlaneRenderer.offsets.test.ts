@@ -1,5 +1,6 @@
-import { OffsetPlaneRenderer } from '@src/clientSideScene/localRenderer/OffsetPlaneRenderer'
+import { PlaneRenderer } from '@src/clientSideScene/localRenderer/PlaneRenderer'
 import type { Artifact, ArtifactGraph } from '@src/lang/wasm'
+import { Themes } from '@src/lib/theme'
 import { Color, Material, Mesh, Scene, SRGBColorSpace, Vector3 } from 'three'
 import { LineSegments2 } from 'three/examples/jsm/lines/webgpu/LineSegments2.js'
 import { MeshBasicNodeMaterial } from 'three/webgpu'
@@ -23,26 +24,26 @@ function plane(id: string): Extract<Artifact, { type: 'plane' }> {
 
 function fixture() {
   const scene = new Scene()
-  const planes = new OffsetPlaneRenderer()
+  const planes = new PlaneRenderer(Themes.Light)
   planes.addTo(scene)
-  planes.update(new Map([['plane', plane('plane')]]))
+  planes.updateOffsetPlanes(new Map([['plane', plane('plane')]]))
   return { scene, planes, root: scene.children[0] }
 }
 
-describe('OffsetPlaneRenderer', () => {
+describe('PlaneRenderer offset planes', () => {
   it('renders only visible planes and follows hide/show changes after execution', () => {
     const { planes, root } = fixture()
     const artifacts: ArtifactGraph = new Map([
       ['offset', { ...plane('offset'), hidden: false }],
       ['sketch-support', { ...plane('sketch-support'), hidden: true }],
     ])
-    planes.update(artifacts)
+    planes.updateOffsetPlanes(artifacts)
     expect(root.children.map((child) => child.name)).toEqual(['offset'])
     artifacts.set('offset', { ...plane('offset'), hidden: true })
-    planes.update(artifacts)
+    planes.updateOffsetPlanes(artifacts)
     expect(root.children).toHaveLength(0)
     artifacts.set('offset', { ...plane('offset'), hidden: false })
-    planes.update(artifacts)
+    planes.updateOffsetPlanes(artifacts)
     expect(root.children.map((child) => child.name)).toEqual(['offset'])
     planes.dispose()
   })
@@ -64,7 +65,7 @@ describe('OffsetPlaneRenderer', () => {
 
   it('matches the gray fill and opaque border, sharing resources across planes', () => {
     const { planes, root } = fixture()
-    planes.update(
+    planes.updateOffsetPlanes(
       new Map([
         ['a', plane('a')],
         ['b', plane('b')],
@@ -115,7 +116,7 @@ describe('OffsetPlaneRenderer', () => {
           .distanceTo(new Vector3(0.01, 0.03, 0.02))
       ).toBeLessThan(1e-12)
       expect(
-        offsetPlane.children[0].getWorldScale(new Vector3()).x
+        offsetPlane.children[0].getWorldScale(new Vector3()).x * 100
       ).toBeCloseTo(expectedSizeMeters, 12)
       expect(offsetPlane.children[1].scale).toEqual(
         offsetPlane.children[0].scale
@@ -141,10 +142,13 @@ describe('OffsetPlaneRenderer', () => {
       ['face-support', { ...plane('face-support'), planeInfo: undefined }],
     ])
     planes.updateScale(100, 0.1)
-    planes.update(artifacts)
+    planes.updateOffsetPlanes(artifacts)
     expect(root.children.map((child) => child.name)).toEqual(['new'])
-    expect(root.children[0].children[0].scale.x).toBe(20)
-    planes.update(new Map())
+    scene.updateMatrixWorld(true)
+    expect(root.children[0].getWorldScale(new Vector3()).x * 1000).toBeCloseTo(
+      0.2
+    )
+    planes.updateOffsetPlanes(new Map())
     expect(root.children).toHaveLength(0)
     for (const callback of callbacks) expect(callback).not.toHaveBeenCalled()
     planes.dispose()

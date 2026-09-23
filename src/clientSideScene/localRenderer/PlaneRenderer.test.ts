@@ -1,11 +1,12 @@
-import { DefaultPlaneRenderer } from '@src/clientSideScene/localRenderer/DefaultPlaneRenderer'
+import { PlaneRenderer } from '@src/clientSideScene/localRenderer/PlaneRenderer'
+import type { Artifact } from '@src/lang/wasm'
 import { Themes } from '@src/lib/theme'
 import { Color, Material, Mesh, Scene, SRGBColorSpace, Vector3 } from 'three'
 import { LineSegments2 } from 'three/examples/jsm/lines/webgpu/LineSegments2.js'
 import { MeshBasicNodeMaterial } from 'three/webgpu'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
-describe('DefaultPlaneRenderer', () => {
+describe('PlaneRenderer default planes', () => {
   beforeEach(() => {
     vi.spyOn(HTMLCanvasElement.prototype, 'getContext').mockImplementation(
       function (this: HTMLCanvasElement) {
@@ -23,10 +24,66 @@ describe('DefaultPlaneRenderer', () => {
 
   function fixture() {
     const scene = new Scene()
-    const planes = new DefaultPlaneRenderer(Themes.Light)
+    const planes = new PlaneRenderer(Themes.Light)
+    planes.updateDefaultPlanes({
+      xy: 'plane-xy',
+      yz: 'plane-yz',
+      xz: 'plane-xz',
+    })
     planes.addTo(scene)
     return { scene, planes, root: scene.children[0] }
   }
+
+  it('populates IDs when available and rekeys defaults without recreating their visuals', () => {
+    const planes = new PlaneRenderer(Themes.Light)
+    planes.updateDefaultPlanes(null)
+    expect(planes.planes.size).toBe(0)
+    planes.updateDefaultPlanes({ xy: 'xy-1', yz: 'yz-1', xz: 'xz-1' })
+    const originals = [...planes.planes.values()]
+    planes.updateDefaultPlanes({ xy: 'xy-2', yz: 'yz-2', xz: 'xz-2' })
+    expect([...planes.planes.keys()]).toEqual(['xy-2', 'yz-2', 'xz-2'])
+    expect([...planes.planes.values()]).toEqual(originals)
+    expect(originals.map(({ mesh }) => mesh.name)).toEqual([
+      'xy-2',
+      'yz-2',
+      'xz-2',
+    ])
+    planes.dispose()
+  })
+
+  it('replaces only offset planes, sharing geometry and keeping defaults and labels intact', () => {
+    const { planes } = fixture()
+    const defaults = [...planes.planes.values()]
+    const offset: Artifact = {
+      type: 'plane',
+      id: 'offset',
+      pathIds: [],
+      codeRef: { range: [0, 1, 0], pathToNode: [], nodePath: { steps: [] } },
+      planeInfo: {
+        origin: { x: 0, y: 0, z: 20, units: 'mm' },
+        xAxis: { x: 1, y: 0, z: 0, units: null },
+        yAxis: { x: 0, y: 1, z: 0, units: null },
+        zAxis: { x: 0, y: 0, z: 1, units: null },
+      },
+      size: 100,
+    }
+    planes.setDefaultVisibility({ xy: false, yz: true, xz: true })
+    planes.updateOffsetPlanes(new Map([['offset', offset]]))
+    const oldOffset = planes.planes.get('offset')
+    expect(oldOffset?.mesh.geometry).toBe(defaults[0].mesh.geometry)
+    expect(oldOffset?.group.visible).toBe(true)
+    const dispose = vi.spyOn(defaults[0].mesh.geometry, 'dispose')
+    planes.updateOffsetPlanes(new Map([['offset', offset]]))
+    expect(planes.planes.get('offset')).not.toBe(oldOffset)
+    expect(oldOffset?.group.parent).toBeNull()
+    planes.updateOffsetPlanes(new Map())
+    expect([...planes.planes.values()]).toEqual(defaults)
+    expect(defaults[0].group.visible).toBe(false)
+    expect(defaults[0].group.children).toHaveLength(4)
+    expect(dispose).not.toHaveBeenCalled()
+    planes.dispose()
+    expect(dispose).toHaveBeenCalledOnce()
+  })
 
   it('creates the three labeled planes at the origin in glTF coordinates', () => {
     const { scene, root, planes } = fixture()
@@ -123,18 +180,18 @@ describe('DefaultPlaneRenderer', () => {
       return names
     }
 
-    planes.setVisibility({ xy: false, yz: true, xz: false })
+    planes.setDefaultVisibility({ xy: false, yz: true, xz: false })
     expect(visibleNames()).toEqual([
-      'default-planes',
+      'reference-planes',
       'YZ',
-      'YZ-fill',
+      'plane-yz',
       'YZ-border',
       'YZ',
       'Side',
     ])
-    planes.setVisibility({ xy: false, yz: false, xz: false })
-    expect(visibleNames()).toEqual(['default-planes'])
-    planes.setVisibility({ xy: true, yz: false, xz: true })
+    planes.setDefaultVisibility({ xy: false, yz: false, xz: false })
+    expect(visibleNames()).toEqual(['reference-planes'])
+    planes.setDefaultVisibility({ xy: true, yz: false, xz: true })
     expect(root.children.map((plane) => plane.visible)).toEqual([
       true,
       false,
@@ -161,7 +218,11 @@ describe('DefaultPlaneRenderer', () => {
       const { planes, root } = fixture()
       const originalChildren = [...root.children]
       planes.updateScale(distance)
-      expect(root.scale.x).toBeCloseTo(scale, 12)
+      root.updateMatrixWorld(true)
+      expect(root.children[0].getWorldScale(new Vector3()).x).toBeCloseTo(
+        scale,
+        12
+      )
       expect(root.children).toEqual(originalChildren)
       planes.dispose()
     }
@@ -173,10 +234,15 @@ describe('DefaultPlaneRenderer', () => {
       const { planes, root } = fixture()
       for (const distance of [1, 100, 10000]) {
         planes.updateScale(distance, fixedGridScale)
-        expect(root.scale.x).toBeCloseTo(fixedGridScale / 1000, 12)
+        root.updateMatrixWorld(true)
+        expect(root.children[0].getWorldScale(new Vector3()).x).toBeCloseTo(
+          fixedGridScale / 1000,
+          12
+        )
       }
       planes.updateScale(1000)
-      expect(root.scale.x).toBe(0.01)
+      root.updateMatrixWorld(true)
+      expect(root.children[0].getWorldScale(new Vector3()).x).toBe(0.01)
       planes.dispose()
     }
   )

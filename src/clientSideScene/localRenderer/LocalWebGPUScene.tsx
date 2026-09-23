@@ -4,7 +4,6 @@ import {
 } from '@src/clientSideScene/localRenderer/LocalRenderer'
 import { Spinner } from '@src/components/Spinner'
 import { useModelingContext } from '@src/hooks/useModelingContext'
-import { getSelectedDefaultPlane } from '@src/lib/selections'
 import { useSingletons } from '@src/lib/boot'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { getSelectedPlaneId } from '@src/lang/queryAst'
@@ -25,8 +24,7 @@ export const LocalWebGPUScene = (props: LocalRendererProps) => {
   const { state } = useModelingContext()
   const planeInteractionEnabled =
     state.matches('idle') || state.matches('Sketch no face')
-  const selectedPlaneId =
-    getSelectedPlaneId(state.context.selectionRanges) ?? null
+  const selectedPlaneId = getSelectedPlaneId(state.context.selectionRanges)
   const defaultPlaneVisibility = state.context.defaultPlaneVisibility
   const isExecuting = kclManager.isExecutingSignal.value
   const [isAwaitingModel, setIsAwaitingModel] = useState(false)
@@ -75,7 +73,7 @@ export const LocalWebGPUScene = (props: LocalRendererProps) => {
   }, [planeInteractionEnabled, kclManager])
 
   useEffect(() => {
-    rendererRef.current?.setSelectedDefaultPlane(selectedPlaneId)
+    rendererRef.current?.setSelectedPlane(selectedPlaneId)
   }, [selectedPlaneId, kclManager])
 
   useEffect(() => {

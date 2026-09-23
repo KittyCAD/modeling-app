@@ -1,5 +1,6 @@
 import { getLocalCameraSceneScale } from '@src/clientSideScene/cameraSceneScale'
 import { createPlaneMaterials } from '@src/clientSideScene/localRenderer/planeMaterials'
+import type { ArtifactGraph } from '@src/lang/wasm'
 import { type ResolvedTheme, Themes } from '@src/lib/theme'
 import type { PlaneVisibilityMap } from '@src/machines/modelingSharedTypes'
 import {
@@ -7,11 +8,14 @@ import {
   Color,
   DoubleSide,
   EdgesGeometry,
+  Euler,
   Group,
+  Matrix4,
   Mesh,
   type Object3D,
   PlaneGeometry,
   SRGBColorSpace,
+  Vector3,
 } from 'three'
 import { LineSegmentsGeometry } from 'three/examples/jsm/lines/LineSegmentsGeometry.js'
 import { LineSegments2 } from 'three/examples/jsm/lines/webgpu/LineSegments2.js'
@@ -28,12 +32,7 @@ const PLANES = [
   { key: 'xy', name: 'XY', label: 'Top', color: new Color(0.7, 0.28, 0.28) },
   { key: 'yz', name: 'YZ', label: 'Side', color: new Color(0.28, 0.7, 0.28) },
   { key: 'xz', name: 'XZ', label: 'Front', color: new Color(0.28, 0.28, 0.7) },
-] satisfies {
-  key: keyof PlaneVisibilityMap
-  name: string
-  label: string
-  color: Color
-}[]
+] as const
 
 type PlaneLabel = {
   context: CanvasRenderingContext2D
@@ -42,11 +41,16 @@ type PlaneLabel = {
   background: Color
 }
 
-export class DefaultPlaneRenderer {
-  readonly planes = new Map<
-    keyof PlaneVisibilityMap,
-    { group: Group; fill: Mesh }
-  >()
+type Plane = {
+  group: Group
+  mesh: Mesh
+  transform: Matrix4
+  size: number
+  defaultPlane?: (typeof PLANES)[number]
+}
+
+export class PlaneRenderer {
+  readonly planes = new Map<string, Plane>()
   private readonly group = new Group()
   private readonly planeGeometry = new PlaneGeometry(
     PLANE_SIZE_MM,
@@ -56,59 +60,139 @@ export class DefaultPlaneRenderer {
   private readonly materials: (MeshBasicNodeMaterial | Line2NodeMaterial)[] = []
   private readonly labels: PlaneLabel[] = []
   private readonly labelGeometries: PlaneGeometry[] = []
+  private readonly offsetMaterials = createPlaneMaterials(
+    new Color(0.6, 0.6, 0.6),
+    0.3
+  )
+  private scale = 1
 
-  constructor(theme: ResolvedTheme) {
-    this.group.name = 'default-planes'
+  constructor(private theme: ResolvedTheme) {
+    this.group.name = 'reference-planes'
     // Author in engine coordinates (Z-up, mm), then match glTF (Y-up, meters).
     this.group.rotation.x = -Math.PI / 2
-    this.updateScale(100)
+    this.group.scale.setScalar(MILLIMETERS_TO_METERS)
     const edges = new EdgesGeometry(this.planeGeometry)
     this.borderGeometry.fromEdgesGeometry(edges)
     edges.dispose()
+    this.materials.push(...Object.values(this.offsetMaterials))
+  }
 
-    for (const { key, name, label, color } of PLANES) {
-      const plane = new Group()
-      plane.name = name
-      if (name === 'YZ') plane.rotation.set(Math.PI / 2, Math.PI / 2, 0)
-      if (name === 'XZ') plane.rotation.x = Math.PI / 2
-
-      const { fillMaterial, borderMaterial } = createPlaneMaterials(color, 0.1)
-      const fill = new Mesh(this.planeGeometry, fillMaterial)
-      fill.name = `${name}-fill`
-      this.materials.push(fillMaterial)
-      plane.add(fill)
-
-      const border = new LineSegments2(this.borderGeometry, borderMaterial)
-      border.name = `${name}-border`
-      this.materials.push(borderMaterial)
-      plane.add(border)
-
-      plane.add(this.createLabel(name, borderMaterial.color, true))
-      plane.add(this.createLabel(label, borderMaterial.color, false))
-      this.planes.set(key, { group: plane, fill })
-      this.group.add(plane)
+  updateDefaultPlanes(ids: Record<keyof PlaneVisibilityMap, string> | null) {
+    if (!ids) return
+    // A new engine session can change UUIDs without changing the plane visuals.
+    for (const [id, plane] of this.planes) {
+      if (!plane.defaultPlane || ids[plane.defaultPlane.key] === id) continue
+      this.planes.delete(id)
+      plane.mesh.name = ids[plane.defaultPlane.key]
+      this.planes.set(plane.mesh.name, plane)
     }
-    this.setTheme(theme)
+    for (const definition of PLANES) {
+      const { key, name, label, color } = definition
+      if (this.planes.has(ids[key])) continue
+      const rotation = new Euler()
+      if (key === 'yz') rotation.set(Math.PI / 2, Math.PI / 2, 0)
+      if (key === 'xz') rotation.x = Math.PI / 2
+      const materials = createPlaneMaterials(color, 0.1)
+      this.materials.push(...Object.values(materials))
+      const plane = this.addPlane(
+        ids[key],
+        new Matrix4().makeRotationFromEuler(rotation),
+        PLANE_SIZE_MM,
+        materials,
+        definition
+      )
+      plane.group.name = name
+      plane.group.add(
+        this.createLabel(name, materials.borderMaterial.color, true)
+      )
+      plane.group.add(
+        this.createLabel(label, materials.borderMaterial.color, false)
+      )
+      this.setTheme(this.theme)
+    }
+    this.applyScale()
+  }
+
+  updateOffsetPlanes(artifacts: ArtifactGraph) {
+    for (const [id, plane] of this.planes) {
+      if (plane.defaultPlane) continue
+      plane.group.removeFromParent()
+      this.planes.delete(id)
+    }
+    for (const artifact of artifacts.values()) {
+      if (
+        artifact.type !== 'plane' ||
+        artifact.hidden ||
+        !artifact.planeInfo ||
+        artifact.size == null
+      )
+        continue
+      const { origin, xAxis, yAxis, zAxis } = artifact.planeInfo
+      const transform = new Matrix4()
+        .makeBasis(
+          new Vector3(xAxis.x, xAxis.y, xAxis.z),
+          new Vector3(yAxis.x, yAxis.y, yAxis.z),
+          new Vector3(zAxis.x, zAxis.y, zAxis.z)
+        )
+        .setPosition(origin.x, origin.y, origin.z)
+      this.addPlane(artifact.id, transform, artifact.size, this.offsetMaterials)
+    }
+    this.applyScale()
+  }
+
+  private addPlane(
+    id: string,
+    transform: Matrix4,
+    size: number,
+    materials: ReturnType<typeof createPlaneMaterials>,
+    defaultPlane?: Plane['defaultPlane']
+  ) {
+    const group = new Group()
+    group.name = id
+    group.matrixAutoUpdate = false
+    const mesh = new Mesh(this.planeGeometry, materials.fillMaterial)
+    // Picking returns this mesh; its name is the engine entity UUID for either kind of plane.
+    mesh.name = id
+    const border = new LineSegments2(
+      this.borderGeometry,
+      materials.borderMaterial
+    )
+    border.name = `${defaultPlane?.name ?? id}-border`
+    group.add(mesh, border)
+    const plane = { group, mesh, transform, size, defaultPlane }
+    this.planes.set(id, plane)
+    this.group.add(group)
+    return plane
   }
 
   addTo(parent: Object3D) {
     parent.add(this.group)
   }
 
-  setVisibility(visibility: PlaneVisibilityMap) {
-    for (const [key, { group }] of this.planes) {
-      group.visible = visibility[key]
+  setDefaultVisibility(visibility: PlaneVisibilityMap) {
+    for (const { defaultPlane, group } of this.planes.values()) {
+      if (defaultPlane) group.visible = visibility[defaultPlane.key]
     }
   }
 
   updateScale(cameraDistanceMm: number, fixedGridScale?: number) {
-    this.group.scale.setScalar(
-      (fixedGridScale ?? getLocalCameraSceneScale(cameraDistanceMm)) *
-        MILLIMETERS_TO_METERS
-    )
+    this.scale = fixedGridScale ?? getLocalCameraSceneScale(cameraDistanceMm)
+    this.applyScale()
+  }
+
+  private applyScale() {
+    const scale = new Vector3()
+    for (const { group, transform, size } of this.planes.values()) {
+      // Scale dimensions and labels, never the plane's world-space origin.
+      group.matrix
+        .copy(transform)
+        .scale(scale.setScalar((this.scale * size) / PLANE_SIZE_MM))
+      group.matrixWorldNeedsUpdate = true
+    }
   }
 
   setTheme(theme: ResolvedTheme) {
+    this.theme = theme
     for (const { context, texture, text, background: labelBackground } of this
       .labels) {
       const width = context.canvas.width / LABEL_TEXTURE_SCALE

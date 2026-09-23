@@ -1,13 +1,12 @@
 import { signal } from '@preact/signals-core'
 import type { KclManager } from '@src/lang/KclManager'
-import type { PlaneVisibilityMap } from '@src/machines/modelingSharedTypes'
 import type { IntegerIdPickTarget } from '@src/clientSideScene/localRenderer/IntegerIdPicker'
 import type { LocalSelectionCommandProvider } from '@src/clientSideScene/localSelectionCommandProxy'
 import type ModelingAppFile from '@src/lib/modelingAppFile'
 import { Signal } from '@src/lib/signal'
 import { Themes } from '@src/lib/theme'
 import {
-  Group,
+  type Group,
   Mesh,
   MeshStandardMaterial,
   OrthographicCamera,
@@ -29,7 +28,7 @@ vi.mock('@src/lib/settings/settingsUtils', () => ({
 vi.mock('@src/lib/trap', () => ({ reportRejection: vi.fn() }))
 
 import { LocalRenderer } from '@src/clientSideScene/localRenderer/LocalRenderer'
-import { OffsetPlaneRenderer } from '@src/clientSideScene/localRenderer/OffsetPlaneRenderer'
+import { PlaneRenderer } from '@src/clientSideScene/localRenderer/PlaneRenderer'
 import type { Artifact } from '@src/lang/wasm'
 
 // Exercise the real export/GLTFLoader lifecycle without requesting a GPU device.
@@ -39,7 +38,7 @@ type RendererInternals = {
   renderer: { dispose(): void; domElement: HTMLCanvasElement } | null
   scene: Scene | null
   currentModel: Group | null
-  offsetPlaneRenderer: OffsetPlaneRenderer | null
+  planeRenderer: PlaneRenderer | null
   pendingModelRefresh: boolean
   modelLoadSettledAfterRender: boolean
   previewCamera: PerspectiveCamera | OrthographicCamera | null
@@ -68,12 +67,6 @@ type RendererInternals = {
     setHover: ReturnType<typeof vi.fn>
     setSelection: ReturnType<typeof vi.fn>
     clearModel: ReturnType<typeof vi.fn>
-    dispose: ReturnType<typeof vi.fn>
-  } | null
-  defaultPlaneRenderer: {
-    planes?: Map<keyof PlaneVisibilityMap, { group: Group; fill: Mesh }>
-    setVisibility: ReturnType<typeof vi.fn>
-    updateScale: ReturnType<typeof vi.fn>
     dispose: ReturnType<typeof vi.fn>
   } | null
 }
@@ -148,12 +141,18 @@ describe('local GLB loading', () => {
     const prototype = LocalRenderer.prototype as unknown as RendererInternals
     vi.spyOn(prototype, 'initialize').mockResolvedValue(undefined)
     vi.spyOn(prototype, 'scheduleRender').mockImplementation(() => {})
+    vi.spyOn(HTMLCanvasElement.prototype, 'getContext').mockReturnValue(null)
+    vi.spyOn(console, 'warn').mockImplementation(() => {})
   })
   afterEach(() => vi.restoreAllMocks())
 
-  function planeFixture() {
+  function planeFixture(id = 'plane-xy') {
     const f = fixture()
-    const object = new Mesh(new PlaneGeometry())
+    const planes = new PlaneRenderer(Themes.Light)
+    planes.updateDefaultPlanes(f.manager.rustContext.defaultPlanes)
+    planes.updateOffsetPlanes(new Map([['offset', offsetPlane()]]))
+    const object = planes.planes.get(id)?.mesh
+    if (!object) throw new Error('Missing plane mesh')
     const target = { object }
     const picker = {
       pick: vi
@@ -171,14 +170,8 @@ describe('local GLB loading', () => {
       clearModel: vi.fn(),
       dispose: vi.fn(),
     }
-    f.state.defaultPlaneRenderer = {
-      planes: new Map([
-        ['xy', { group: new Group().add(object), fill: object }],
-      ]),
-      setVisibility: vi.fn(),
-      updateScale: vi.fn(),
-      dispose: vi.fn(),
-    }
+    f.state.planeRenderer = planes
+    const setDefaultVisibility = vi.spyOn(planes, 'setDefaultVisibility')
     f.state.integerIdPicker = picker
     f.state.selectionHighlightRenderer = highlights
     f.state.previewCamera = new PerspectiveCamera()
@@ -202,31 +195,45 @@ describe('local GLB loading', () => {
         },
         { streamDimensions: { width: 800, height: 600 } }
       )
-    return { ...f, target, picker, highlights, pick }
+    const defaultTargets = [...planes.planes.values()]
+      .filter((plane) => plane.defaultPlane)
+      .map(({ mesh }) => ({ object: mesh }))
+    return {
+      ...f,
+      target,
+      defaultTargets,
+      picker,
+      highlights,
+      pick,
+      setDefaultVisibility,
+    }
   }
 
-  it('maps local plane hits to engine UUIDs for existing hover and click subscribers', async () => {
-    const f = planeFixture()
-    expect((await f.pick())?.unreliableModelingResponse).toEqual({
-      type: 'highlight_set_entity',
-      data: { entity_id: 'plane-xy' },
-    })
-    expect(f.highlights.setHover).toHaveBeenLastCalledWith(f.target)
-    const result = await f.pick(true)
-    expect(result?.modelingResponse).toEqual({
-      type: 'select_with_point',
-      data: { entity_id: 'plane-xy' },
-    })
-    expect(result?.websocketResponse).toMatchObject({
-      success: true,
-      request_id: 'pick-request',
-    })
-    f.renderer.setSelectedDefaultPlane('plane-xy')
-    expect(f.highlights.setSelection).toHaveBeenLastCalledWith([f.target])
-    f.renderer.setSelectedDefaultPlane(null)
-    expect(f.highlights.setSelection).toHaveBeenLastCalledWith([])
-    f.renderer.dispose()
-  })
+  it.each(['plane-xy', 'offset'])(
+    'maps %s hits and selection to the same hover/click/highlight path',
+    async (id) => {
+      const f = planeFixture(id)
+      expect((await f.pick())?.unreliableModelingResponse).toEqual({
+        type: 'highlight_set_entity',
+        data: { entity_id: id },
+      })
+      expect(f.highlights.setHover).toHaveBeenLastCalledWith(f.target)
+      const result = await f.pick(true)
+      expect(result?.modelingResponse).toEqual({
+        type: 'select_with_point',
+        data: { entity_id: id },
+      })
+      expect(result?.websocketResponse).toMatchObject({
+        success: true,
+        request_id: 'pick-request',
+      })
+      f.renderer.setSelectedPlane(id)
+      expect(f.highlights.setSelection).toHaveBeenLastCalledWith([f.target])
+      f.renderer.setSelectedPlane(null)
+      expect(f.highlights.setSelection).toHaveBeenLastCalledWith([])
+      f.renderer.dispose()
+    }
+  )
 
   it('does not pick while dragging, in sketch editing, or outside the canvas', async () => {
     const f = planeFixture()
@@ -245,17 +252,32 @@ describe('local GLB loading', () => {
     f.renderer.dispose()
   })
 
+  it('keeps offset selection when defaults are hidden and clears it when the offset is removed', () => {
+    const f = planeFixture('offset')
+    f.renderer.setSelectedPlane('offset')
+    f.renderer.setDefaultPlaneVisibility({ xy: false, xz: false, yz: false })
+    expect(f.highlights.setSelection).toHaveBeenLastCalledWith([f.target])
+    f.state.planeRenderer?.updateOffsetPlanes(new Map())
+    f.state.rebuildPlaneTargets()
+    expect(f.highlights.setSelection).toHaveBeenLastCalledWith([])
+    expect(f.highlights.setHover).toHaveBeenLastCalledWith(null)
+    const defaultTargets = [
+      ...(f.state.planeRenderer?.planes.values() ?? []),
+    ].map(({ mesh }) => ({ object: mesh }))
+    expect(f.picker.setTargets).toHaveBeenLastCalledWith(defaultTargets, null)
+    expect(f.highlights.setTargets).toHaveBeenLastCalledWith(defaultTargets)
+    f.renderer.dispose()
+  })
+
   it('applies visibility, invalidates picking, and hides highlights until the plane is shown again', async () => {
     const f = planeFixture()
     await f.pick()
-    f.renderer.setSelectedDefaultPlane('plane-xy')
+    f.renderer.setSelectedPlane('plane-xy')
     f.picker.invalidate.mockClear()
     f.state.baseRenderDirty = false
 
     f.renderer.setDefaultPlaneVisibility({ xy: false, xz: true, yz: true })
-    expect(
-      f.state.defaultPlaneRenderer?.setVisibility
-    ).toHaveBeenLastCalledWith({
+    expect(f.setDefaultVisibility).toHaveBeenLastCalledWith({
       xy: false,
       xz: true,
       yz: true,
@@ -273,22 +295,18 @@ describe('local GLB loading', () => {
 
   it('retains visibility set before initialization and when model targets are rebuilt', () => {
     const f = planeFixture()
-    const { defaultPlaneRenderer } = f.state
-    f.state.defaultPlaneRenderer = null
+    const { planeRenderer } = f.state
+    f.state.planeRenderer = null
     const visibility = { xy: false, xz: true, yz: false }
     f.renderer.setDefaultPlaneVisibility(visibility)
-    f.renderer.setSelectedDefaultPlane('plane-xy')
+    f.renderer.setSelectedPlane('plane-xy')
 
-    f.state.defaultPlaneRenderer = defaultPlaneRenderer
+    f.state.planeRenderer = planeRenderer
     f.state.rebuildPlaneTargets()
-    expect(defaultPlaneRenderer?.setVisibility).toHaveBeenLastCalledWith(
-      visibility
-    )
+    expect(f.setDefaultVisibility).toHaveBeenLastCalledWith(visibility)
     expect(f.highlights.setSelection).toHaveBeenLastCalledWith([])
     f.state.rebuildPlaneTargets()
-    expect(defaultPlaneRenderer?.setVisibility).toHaveBeenLastCalledWith(
-      visibility
-    )
+    expect(f.setDefaultVisibility).toHaveBeenLastCalledWith(visibility)
     f.renderer.dispose()
   })
 
@@ -354,12 +372,8 @@ describe('local GLB loading', () => {
 
   it('updates plane scale on camera, fixed-grid setting, and file-unit changes', () => {
     const f = fixture()
-    const updateScale = vi.fn()
-    f.state.defaultPlaneRenderer = {
-      updateScale,
-      setVisibility: vi.fn(),
-      dispose: vi.fn(),
-    }
+    f.state.planeRenderer = new PlaneRenderer(Themes.Light)
+    const updateScale = vi.spyOn(f.state.planeRenderer, 'updateScale')
     const controls = f.manager.sceneInfra.camControls
     controls.camera.position.set(100, 0, 0)
     f.state.syncPreviewCameraFromShared()
@@ -476,8 +490,7 @@ describe('local GLB loading', () => {
 
   it('clears an empty execution without exporting, while preserving default planes', async () => {
     const f = planeFixture()
-    const referencePlane =
-      f.state.defaultPlaneRenderer?.planes?.get('xy')?.group
+    const referencePlane = f.state.planeRenderer?.planes.get('plane-xy')?.group
     if (!referencePlane) throw new Error('Missing reference plane')
     f.state.scene?.add(referencePlane)
     f.done()
@@ -498,12 +511,11 @@ describe('local GLB loading', () => {
     expect(disposeMaterial).toHaveBeenCalledOnce()
     expect(disposePlane).not.toHaveBeenCalled()
     expect(f.state.scene?.children).toEqual([referencePlane])
-    expect(f.picker.setTargets).toHaveBeenLastCalledWith([f.target], null)
-    expect(f.highlights.setTargets).toHaveBeenLastCalledWith([f.target])
+    expect(f.picker.setTargets).toHaveBeenLastCalledWith(f.defaultTargets, null)
+    expect(f.highlights.setTargets).toHaveBeenLastCalledWith(f.defaultTargets)
     expect(f.state.baseRenderDirty).toBe(true)
     expect(f.state.modelLoadSettledAfterRender).toBe(true)
     f.renderer.dispose()
-    f.target.object.geometry.dispose()
   })
 
   it('does not restore a stale GLB after an empty execution completes', async () => {
@@ -575,7 +587,7 @@ describe('local GLB loading', () => {
     async (failure) => {
       const f = planeFixture()
       const referencePlane =
-        f.state.defaultPlaneRenderer?.planes?.get('xy')?.group
+        f.state.planeRenderer?.planes.get('plane-xy')?.group
       if (!referencePlane) throw new Error('Missing reference plane')
       f.state.scene?.add(referencePlane)
       f.done()
@@ -604,13 +616,15 @@ describe('local GLB loading', () => {
       expect(disposeGeometry).toHaveBeenCalledOnce()
       expect(disposeMaterial).toHaveBeenCalledOnce()
       expect(f.state.scene?.children).toEqual([referencePlane])
-      expect(f.picker.setTargets).toHaveBeenLastCalledWith([f.target], null)
-      expect(f.highlights.setTargets).toHaveBeenLastCalledWith([f.target])
+      expect(f.picker.setTargets).toHaveBeenLastCalledWith(
+        f.defaultTargets,
+        null
+      )
+      expect(f.highlights.setTargets).toHaveBeenLastCalledWith(f.defaultTargets)
       expect(f.state.baseRenderDirty).toBe(true)
       expect(f.onModelLoadSettled).toHaveBeenCalledOnce()
       expect(f.manager.rustContext.export).toHaveBeenCalledTimes(2)
       f.renderer.dispose()
-      f.target.object.geometry.dispose()
     }
   )
 
@@ -618,36 +632,30 @@ describe('local GLB loading', () => {
     const f = fixture()
     const scene = new Scene()
     f.state.scene = scene
-    f.state.offsetPlaneRenderer = new OffsetPlaneRenderer()
-    f.state.offsetPlaneRenderer.addTo(scene)
+    f.state.planeRenderer = new PlaneRenderer(Themes.Light)
+    f.state.planeRenderer.addTo(scene)
     const root = scene.children[0]
     f.done()
     await vi.waitFor(() => expect(f.state.currentModel).not.toBeNull())
-    const offset: Artifact = {
-      type: 'plane',
-      id: 'offset',
-      pathIds: [],
-      codeRef: { range: [0, 1, 0], pathToNode: [], nodePath: { steps: [] } },
-      planeInfo: {
-        origin: { x: 0, y: 0, z: 20, units: 'mm' },
-        xAxis: { x: 1, y: 0, z: 0, units: null },
-        yAxis: { x: 0, y: 1, z: 0, units: null },
-        zAxis: { x: 0, y: 0, z: 1, units: null },
-      },
-      size: 100,
-    }
+    const defaults = [...root.children]
+    const offset = offsetPlane()
     f.manager.artifactGraph.clear()
     f.manager.artifactGraph.set(offset.id, offset)
     f.manager.rustContext.export.mockResolvedValueOnce(undefined)
     vi.spyOn(console, 'error').mockImplementation(() => {})
     f.done()
-    expect(root.children.map((child) => child.name)).toEqual(['offset'])
+    expect(root.children.map((child) => child.name)).toEqual([
+      'XY',
+      'YZ',
+      'XZ',
+      'offset',
+    ])
     await vi.waitFor(() => expect(f.state.currentModel).toBeNull())
     expect(scene.children).toEqual([root])
-    expect(root.children).toHaveLength(1)
+    expect(root.children).toHaveLength(4)
     f.manager.artifactGraph.clear()
     f.done()
-    expect(root.children).toHaveLength(0)
+    expect(root.children).toEqual(defaults)
     f.renderer.dispose()
     expect(scene.children).toHaveLength(0)
   })
@@ -686,6 +694,22 @@ describe('local GLB loading', () => {
 })
 
 // A minimal standard GLB: no Zoo extensions/extras or external resources.
+function offsetPlane(): Extract<Artifact, { type: 'plane' }> {
+  return {
+    type: 'plane',
+    id: 'offset',
+    pathIds: [],
+    codeRef: { range: [0, 1, 0], pathToNode: [], nodePath: { steps: [] } },
+    planeInfo: {
+      origin: { x: 0, y: 0, z: 20, units: 'mm' },
+      xAxis: { x: 1, y: 0, z: 0, units: null },
+      yAxis: { x: 0, y: 1, z: 0, units: null },
+      zAxis: { x: 0, y: 0, z: 1, units: null },
+    },
+    size: 100,
+  }
+}
+
 function triangleGlb(): ModelingAppFile {
   const vertices = new Float32Array([0, 0, 0, 1, 0, 0, 0, 1, 0])
   const json = JSON.stringify({
