@@ -17,8 +17,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        variant: [baseline, instant]
-    runs-on: namespace-profile-ubuntu-8-cores;overrides.cache-tag=modeling-app-general-v2
+        variant: [baseline]
+    runs-on: namespace-profile-macos-8-cores
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v7.0.1
@@ -32,33 +32,30 @@ jobs:
 
       - uses: actions/download-artifact@v8
         with:
-          # Application source includes CPU screenshot canvases at b968198.
-          run-id: 35892904430
+          # Reuse the exact app build from the failed native calibration.
+          run-id: 35905169130
           github-token: ${{ github.token }}
           name: interaction-performance-build
           path: .vite
 
       - uses: actions/download-artifact@v8
         with:
-          # Application source includes CPU screenshot canvases at b968198.
-          run-id: 35892904430
+          # Reuse the exact app build from the failed native calibration.
+          run-id: 35905169130
           github-token: ${{ github.token }}
           name: prepared-wasm
           path: rust/kcl-wasm-lib/pkg
 
       - uses: actions/download-artifact@v8
         with:
-          # Application source includes CPU screenshot canvases at b968198.
-          run-id: 35892904430
+          # Reuse the exact app build from the failed native calibration.
+          run-id: 35905169130
           github-token: ${{ github.token }}
           name: prepared-ts-rs-bindings
           path: rust/kcl-lib/bindings
 
-      - name: Install Electron runtime libraries
-        run: npm exec -- playwright install-deps chromium
-
       - name: Capture first-use presentation traces
-        run: xvfb-run --auto-servernum --server-args="-screen 0 1280x960x24" -- npm exec -- playwright test --config=playwright.performance.config.ts
+        run: env -u HEADLESS npm exec -- playwright test --config=playwright.performance.config.ts --headed
         env:
           INTERACTION_DIAGNOSTIC_VARIANT: ${{ matrix.variant }}
           NODE_ENV: production
