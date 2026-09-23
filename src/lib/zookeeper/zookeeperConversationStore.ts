@@ -1,10 +1,10 @@
 import { PROJECT_SETTINGS_FILE_NAME, REGEXP_UUIDV4 } from '@src/lib/constants'
-import { getAppSettingsFilePath } from '@src/lib/desktop'
+import { getAppSettingsFilePath, isPathNotFoundError } from '@src/lib/desktop'
 import fsZds from '@src/lib/fs-zds'
 import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
 import {
   getProjectIdFromProjectTomlContents,
-  getZookeeperConversationIdsFromProjectTomlContents,
+  getZookeeperConversationMetadataFromProjectTomlContents,
   setZookeeperConversationInProjectTomlContents,
 } from '@src/lib/projectTomlMetadata'
 import { isErr } from '@src/lib/trap'
@@ -21,6 +21,11 @@ export interface ZookeeperConversationStore {
   }) => Promise<void>
   deleteProjectConversationId: (projectId: string) => Promise<void>
 }
+
+export type ProjectZookeeperConversationStore = Omit<
+  ZookeeperConversationStore,
+  'deleteProjectConversationId'
+>
 
 export const jsonToZookeeperConversations = (
   json: string
@@ -59,7 +64,8 @@ const getZookeeperConversationsFilePath = async () =>
   )
 
 const readZookeeperConversations = async (
-  fileOperations: FileOperationsRegistryService
+  fileOperations: FileOperationsRegistryService,
+  strict = false
 ): Promise<ZookeeperConversations> => {
   try {
     const json = new TextDecoder().decode(
@@ -67,6 +73,9 @@ const readZookeeperConversations = async (
     )
     return jsonToZookeeperConversations(json ?? '')
   } catch (error) {
+    if (strict) {
+      return isPathNotFoundError(error) ? new Map() : Promise.reject(error)
+    }
     console.warn('Cannot get Zookeeper conversations', error)
     return new Map()
   }
@@ -122,7 +131,7 @@ export const makeProjectZookeeperConversationStore = (
   fileOperations: FileOperationsRegistryService,
   projectPath: string,
   environmentName: string | undefined
-): ZookeeperConversationStore => {
+): ProjectZookeeperConversationStore => {
   const projectTomlPath = fsZds.join(projectPath, PROJECT_SETTINGS_FILE_NAME)
   const environment = environmentName ?? ''
 
@@ -143,12 +152,14 @@ export const makeProjectZookeeperConversationStore = (
 
   const saveConversation = async (
     contents: string,
-    conversationId: string | undefined
+    conversationId: string,
+    prepend = false
   ) => {
     const next = setZookeeperConversationInProjectTomlContents(
       contents,
       environment,
-      conversationId
+      conversationId,
+      { prepend }
     )
     if (isErr(next)) {
       return Promise.reject(next)
@@ -162,34 +173,30 @@ export const makeProjectZookeeperConversationStore = (
     getProjectConversationId(projectId) {
       return serialize(async () => {
         const contents = await readProjectToml(projectId)
-        const saved = getZookeeperConversationIdsFromProjectTomlContents(
+        const saved = getZookeeperConversationMetadataFromProjectTomlContents(
           contents,
           environment
         )
         if (isErr(saved)) {
           return Promise.reject(saved)
         }
-        if (saved !== undefined) {
-          // Until there is a conversation picker, resume the last added conversation.
-          return saved.at(-1)
+        const conversationId = saved.conversationIds.at(-1)
+        if (!saved.canMigrateLegacyConversation) {
+          return conversationId
         }
-        const legacy = (await readZookeeperConversations(fileOperations)).get(
-          projectId
-        )
-        if (legacy !== undefined) {
-          await saveConversation(contents, legacy)
+        const legacy = (
+          await readZookeeperConversations(fileOperations, true)
+        ).get(projectId)
+        if (legacy !== undefined && !saved.conversationIds.includes(legacy)) {
+          // Recover older IDs without changing which conversation the current UI resumes.
+          await saveConversation(contents, legacy, true)
         }
-        return legacy
+        return conversationId ?? legacy
       })
     },
     saveProjectConversationId({ projectId, conversationId }) {
       return serialize(async () => {
         await saveConversation(await readProjectToml(projectId), conversationId)
-      })
-    },
-    deleteProjectConversationId(projectId) {
-      return serialize(async () => {
-        await saveConversation(await readProjectToml(projectId), undefined)
       })
     },
   }
