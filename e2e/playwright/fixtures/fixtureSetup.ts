@@ -262,6 +262,8 @@ export class ElectronZoo {
             'benchmark',
             'cc',
             'viz',
+            'gpu',
+            'skia',
             'latencyInfo',
             'toplevel',
             'blink.user_timing',
