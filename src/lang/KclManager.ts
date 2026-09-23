@@ -1771,13 +1771,10 @@ export class KclManager extends File {
            * take that path is what overwrote freshly typed sketch lines.
            */
           await this.executeCode(newCode)
-          // executeCode records failures instead of rejecting. Do not let the
-          // sketch executor bypass a failed or still-pending version update.
-          if (
-            !isCurrentDirectEditorExecution() ||
-            this.hasErrors() ||
-            this.isExecuting
-          ) {
+          // executeCode can queue behind an active render and return early.
+          // Wait for that render, then check its diagnostics and document.
+          await this.waitForExecutionQueueToIdle()
+          if (!isCurrentDirectEditorExecution() || this.hasErrors()) {
             return
           }
 
@@ -3728,11 +3725,25 @@ export class KclManager extends File {
 
     const requestId = ++this.lastSketchCheckpointRestoreRequestId
     const requestedDocumentVersion = this._documentVersion
+    const isCurrentRestore = () =>
+      requestId === this.lastSketchCheckpointRestoreRequestId &&
+      requestedDocumentVersion === this._documentVersion
     try {
+      const instance = await this.wasmInstancePromise
+      await this.waitForExecutionQueueToIdle()
+      if (!isCurrentRestore()) return
       const result =
         await this.rustContext.restoreSketchCheckpoint(checkpointId)
-      if (requestId !== this.lastSketchCheckpointRestoreRequestId) return
-      if (requestedDocumentVersion !== this._documentVersion) return
+      if (!isCurrentRestore()) return
+
+      // Checkpoint restores bypass executeAst, including its version update.
+      const version = getKclLanguageVersion(result.kclSource.text, instance)
+      if (isErr(version)) {
+        await Promise.reject(version)
+      } else {
+        await this.engineCommandManager.setKclVersion(version)
+      }
+      if (!isCurrentRestore()) return
 
       this.sendModelingEvent({
         type: 'update sketch outcome',
@@ -3745,23 +3756,21 @@ export class KclManager extends File {
         },
       })
     } catch (error) {
-      if (requestId !== this.lastSketchCheckpointRestoreRequestId) return
+      if (!isCurrentRestore()) return
 
       console.warn('Failed to restore sketch checkpoint, falling back', error)
 
       try {
         const currentCode = this.editorState.doc.toString()
         await this.executeCode(currentCode)
-        if (requestId !== this.lastSketchCheckpointRestoreRequestId) return
-        if (requestedDocumentVersion !== this._documentVersion) return
-        if (this.hasErrors() || this.isExecuting) return
+        await this.waitForExecutionQueueToIdle()
+        if (!isCurrentRestore() || this.hasErrors()) return
         const setProgramOutcome = await this.rustContext.hackSetProgram(
           this.ast,
           jsAppSettings(this.systemDeps.settings)
         )
 
-        if (requestId !== this.lastSketchCheckpointRestoreRequestId) return
-        if (requestedDocumentVersion !== this._documentVersion) return
+        if (!isCurrentRestore()) return
         if (setProgramOutcome.type !== 'Success') return
 
         this.sendModelingEvent({

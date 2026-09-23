@@ -224,9 +224,17 @@ describe('KclManager engine language version', () => {
     }
   )
 
-  it('waits for version acknowledgement and skips superseded geometry', async () => {
-    const { kclManager } = createKclManagerTestHarness()
+  it('publishes the latest queued sketch edit after the version acknowledgement', async () => {
+    const code2 = '@settings(kclVersion = 2.0)\nx = 1'
+    const code3 = '@settings(kclVersion = "3.0-preview")\nx = 1'
+    const { kclManager } = createKclManagerTestHarness(code2)
+    await kclManager.wasmInstancePromise
+    vi.useFakeTimers()
+    enableSketchSolveEditorExecution(kclManager)
     kclManager.engineCommandManager.started = true
+    const modelingSend = vi.fn()
+    kclManager.modelingSend = modelingSend
+    vi.spyOn(kclManager, 'writeToFile').mockResolvedValue(undefined)
     const acknowledgement = createDeferred<undefined>()
     const setVersion = vi
       .spyOn(kclManager.engineCommandManager, 'setKclVersion')
@@ -234,16 +242,108 @@ describe('KclManager engine language version', () => {
     const execute = vi
       .spyOn(kclManager.rustContext, 'execute')
       .mockResolvedValue(emptyExecState())
-    const pending = kclManager.executeCode('@settings(kclVersion = 2.0)')
-    await vi.waitFor(() => expect(setVersion).toHaveBeenCalledWith('2.0'))
+    const sceneGraphDelta = createEmptySceneGraphDelta()
+    const sketchExecute = vi
+      .spyOn(kclManager.rustContext, 'hackSetProgram')
+      .mockResolvedValue({
+        type: 'Success',
+        sceneGraph: sceneGraphDelta.new_graph,
+        execOutcome: sceneGraphDelta.exec_outcome,
+      })
+
+    kclManager.editorView.dispatch({
+      changes: { from: code2.length - 1, to: code2.length, insert: '2' },
+    })
+    await vi.advanceTimersByTimeAsync(1000)
+    expect(setVersion).toHaveBeenCalledWith('2.0')
     expect(execute).not.toHaveBeenCalled()
-    await kclManager.executeCode('@settings(kclVersion = "3.0-preview")')
+    kclManager.editorView.dispatch({
+      changes: { from: 0, to: kclManager.code.length, insert: code3 },
+    })
+    await vi.advanceTimersByTimeAsync(1000)
     expect(kclManager.executeIsStale).not.toBeNull()
     acknowledgement.resolve(undefined)
-    await pending
-    await vi.waitFor(() => expect(kclManager.isExecuting).toBe(false))
+    await kclManager.flushPendingEditorExecution()
+
     expect(setVersion.mock.calls).toEqual([['2.0'], ['3.0-preview']])
-    expect(execute).toHaveBeenCalledTimes(1)
+    expect(execute).toHaveBeenCalledOnce()
+    expect(sketchExecute).toHaveBeenCalledExactlyOnceWith(
+      kclManager.ast,
+      expect.anything()
+    )
+    expect(modelingSend).toHaveBeenCalledExactlyOnceWith(
+      expect.objectContaining({
+        type: 'update sketch outcome',
+        data: expect.objectContaining({ sourceDelta: { text: code3 } }),
+      })
+    )
+  })
+
+  it('synchronizes checkpoint undo and redo before publishing the restored sketch', async () => {
+    const code2 = '@settings(kclVersion = 2.0)\nx = 1'
+    const code3 = '@settings(kclVersion = "3.0-preview")\nx = 1'
+    const { kclManager } = createKclManagerTestHarness(code2)
+    await kclManager.wasmInstancePromise
+    enableSketchSolveEditorExecution(kclManager)
+    kclManager.engineCommandManager.started = true
+    const modelingSend = vi.fn()
+    kclManager.modelingSend = modelingSend
+    vi.spyOn(kclManager, 'writeToFile').mockResolvedValue(undefined)
+    const setVersion = vi.spyOn(
+      kclManager.engineCommandManager,
+      'setKclVersion'
+    )
+    vi.spyOn(kclManager.rustContext, 'execute').mockResolvedValue(
+      emptyExecState()
+    )
+    const sceneGraphDelta = createEmptySceneGraphDelta()
+    vi.spyOn(kclManager.rustContext, 'hackSetProgram').mockResolvedValue({
+      type: 'Success',
+      sceneGraph: sceneGraphDelta.new_graph,
+      execOutcome: sceneGraphDelta.exec_outcome,
+      checkpointId: 42,
+    })
+    const restore = vi
+      .spyOn(kclManager.rustContext, 'restoreSketchCheckpoint')
+      .mockImplementation(async (id) => ({
+        kclSource: { text: id === 11 ? code2 : code3 },
+        sceneGraphDelta,
+      }))
+    kclManager.updateCodeEditor(
+      code2,
+      {
+        shouldExecute: false,
+        shouldWriteToDisk: false,
+        shouldClearHistory: true,
+      },
+      { sketchCheckpointId: 11 }
+    )
+    kclManager.editorView.dispatch({
+      changes: { from: 0, to: code2.length, insert: code3 },
+    })
+    await kclManager.flushPendingEditorExecution()
+    expect(setVersion).toHaveBeenCalledExactlyOnceWith('3.0-preview')
+    modelingSend.mockClear()
+
+    const acknowledgement = createDeferred<undefined>()
+    setVersion.mockReturnValueOnce(acknowledgement.promise)
+    kclManager.undo()
+    await vi.waitFor(() => expect(setVersion).toHaveBeenLastCalledWith('2.0'))
+    expect(restore).toHaveBeenCalledExactlyOnceWith(11)
+    expect(kclManager.code).toBe(code2)
+    expect(modelingSend).not.toHaveBeenCalled()
+    acknowledgement.resolve(undefined)
+    await vi.waitFor(() => expect(modelingSend).toHaveBeenCalledOnce())
+
+    kclManager.redo()
+    await vi.waitFor(() => expect(modelingSend).toHaveBeenCalledTimes(2))
+    expect(restore).toHaveBeenLastCalledWith(42)
+    expect(kclManager.code).toBe(code3)
+    expect(setVersion.mock.calls).toEqual([
+      ['3.0-preview'],
+      ['2.0'],
+      ['3.0-preview'],
+    ])
   })
 
   it('does not execute or publish an old file after a switch during the version acknowledgement', async () => {
@@ -1391,11 +1491,12 @@ describe('KclManager diagnostics', () => {
     } as any
     kclManager.modelingSend = modelingSendSpy
 
-    vi.spyOn(kclManager.rustContext, 'restoreSketchCheckpoint').mockReturnValue(
-      deferredRestore.promise
-    )
+    const restoreSketchCheckpoint = vi
+      .spyOn(kclManager.rustContext, 'restoreSketchCheckpoint')
+      .mockReturnValue(deferredRestore.promise)
 
     void (kclManager as any).restoreSketchCheckpointForHistory(42)
+    await vi.waitFor(() => expect(restoreSketchCheckpoint).toHaveBeenCalled())
 
     kclManager.updateCodeEditor('local newer', {
       shouldExecute: false,
@@ -1420,8 +1521,8 @@ describe('KclManager diagnostics', () => {
   })
 
   it('restores the pre-drag checkpoint when undoing a recovered drag commit', async () => {
-    const baselineCode = 'baseline sketch'
-    const recoveredCode = 'last good preview'
+    const baselineCode = '@settings(kclVersion = 2.0)\nx = 1'
+    const recoveredCode = '@settings(kclVersion = 2.0)\nx = 2'
     const preDragCheckpointId = 7
     const recoveredCheckpointId = 11
     const { kclManager } = createKclManagerTestHarness(baselineCode)
@@ -1471,7 +1572,7 @@ describe('KclManager diagnostics', () => {
     expect(kclManager.currentSketchCheckpointId).toBe(recoveredCheckpointId)
 
     kclManager.undo()
-    await flushPromises()
+    await vi.waitFor(() => expect(modelingSendSpy).toHaveBeenCalled())
 
     expect(kclManager.code).toBe(baselineCode)
     expect(kclManager.currentSketchCheckpointId).toBe(preDragCheckpointId)
