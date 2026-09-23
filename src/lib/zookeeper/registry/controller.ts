@@ -52,7 +52,6 @@ export interface QueuedMessage {
 
 export interface ZookeeperSessionController {
   readonly actor: ZookeeperManagerActor
-  readonly conversationLookupError: ReadonlySignal<string | undefined>
   readonly isClearingChat: ReadonlySignal<boolean>
   readonly isResumingInterruptedTurn: ReadonlySignal<boolean>
   readonly projectPath: string
@@ -79,10 +78,6 @@ type ZookeeperSnapshot = SnapshotFrom<ZookeeperManagerActor>
 class SessionController implements ZookeeperSessionController {
   readonly actor: ZookeeperManagerActor
   readonly projectPath: string
-
-  private readonly conversationLookupErrorSignal = signal<string | undefined>()
-  readonly conversationLookupError: ReadonlySignal<string | undefined> =
-    this.conversationLookupErrorSignal
 
   private readonly queueSignal = signal<QueuedMessage[]>([])
   readonly queue: ReadonlySignal<readonly QueuedMessage[]> = this.queueSignal
@@ -112,7 +107,6 @@ class SessionController implements ZookeeperSessionController {
   private activeSubmission: { messageId: string } | undefined
   private lastSavedConversationId: string | undefined
   private lookupLoaded = false
-  private lookupInFlight = false
   private readonly persistenceOperations = new Set<Promise<void>>()
   private reconnectAfterLookup = false
   private reconnectTimer: ReturnType<typeof setTimeout> | undefined
@@ -270,7 +264,6 @@ class SessionController implements ZookeeperSessionController {
       !this.lookupLoaded
     ) {
       this.reconnectAfterLookup = true
-      this.loadConversationId()
       return
     }
 
@@ -619,10 +612,6 @@ class SessionController implements ZookeeperSessionController {
   }
 
   private loadConversationId() {
-    if (this.lookupInFlight) {
-      return
-    }
-    this.conversationLookupErrorSignal.value = undefined
     const projectId = this.projectId
     this.lookupLoaded = false
     this.savedConversationId = undefined
@@ -647,7 +636,6 @@ class SessionController implements ZookeeperSessionController {
       return
     }
 
-    this.lookupInFlight = true
     const lookup = this.deps.conversationStore
       .getProjectConversationId(projectId)
       .then(finish)
@@ -656,12 +644,7 @@ class SessionController implements ZookeeperSessionController {
           return
         }
         reportRejection(error)
-        this.conversationLookupErrorSignal.value =
-          'Could not read the saved Zookeeper conversation. Please retry.'
-        this.showManualConnectSignal.value = true
-      })
-      .finally(() => {
-        this.lookupInFlight = false
+        finish(undefined)
       })
     void this.trackPersistence(lookup)
   }

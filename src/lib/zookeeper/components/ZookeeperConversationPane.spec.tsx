@@ -139,7 +139,6 @@ const createFakeActor = (
 const createFakeController = ({
   actorContext,
   actorValue,
-  conversationLookupError,
   isClearingChat = false,
   isResumingInterruptedTurn = false,
   queue = [],
@@ -147,7 +146,6 @@ const createFakeController = ({
 }: {
   actorContext?: Partial<FakeSnapshot['context']>
   actorValue?: string
-  conversationLookupError?: string
   isClearingChat?: boolean
   isResumingInterruptedTurn?: boolean
   queue?: QueuedMessage[]
@@ -172,7 +170,6 @@ const createFakeController = ({
   }
   const controller = {
     actor: actor.actor,
-    conversationLookupError: signal(conversationLookupError),
     isClearingChat: clearingSignal,
     isResumingInterruptedTurn: resumingSignal,
     projectPath: '/projects/cube',
@@ -224,24 +221,6 @@ beforeEach(() => {
 })
 
 describe('ZookeeperConversationPane', () => {
-  test('shows a metadata read failure instead of claiming the device is offline', () => {
-    const fake = createFakeController({
-      conversationLookupError: 'Could not read the saved conversation.',
-      showManualConnect: true,
-    })
-
-    render(
-      <MemoryRouter>
-        <ZookeeperConversationPane {...createPaneProps(fake.controller)} />
-      </MemoryRouter>
-    )
-
-    const props = latestConversationProps()
-    expect(props.connectionError).toBe('Could not read the saved conversation.')
-    expect(props.showManualConnect).toBe(true)
-    expect(props.needsReconnect).toBe(true)
-  })
-
   test('maps actor state, controller signals, and visual context to the conversation', () => {
     const attachmentFetches = {
       'prompt:0:0': { status: 'loading' as const },

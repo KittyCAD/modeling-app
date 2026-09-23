@@ -438,7 +438,7 @@ describe('project-backed Zookeeper conversations', () => {
     expect(files.get(projectTomlPath)).toContain(conversationId)
   })
 
-  it('rejects corrupt legacy JSON without starting a replacement chat', async () => {
+  it('rejects corrupt legacy JSON without writing project.toml', async () => {
     files.set('/tmp/ml-conversations.json', '{corrupt')
     await expect(store().getProjectConversationId(projectId)).rejects.toThrow()
     expect(fsMocks.writeFile).not.toHaveBeenCalled()

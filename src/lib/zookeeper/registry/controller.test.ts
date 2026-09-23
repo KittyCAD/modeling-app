@@ -588,34 +588,19 @@ describe('Zookeeper session controller', () => {
     ).toHaveLength(0)
   })
 
-  it('keeps a failed metadata lookup from starting a new conversation and supports retry', async () => {
+  it('starts without a saved conversation when its lookup fails', async () => {
     const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {})
     const lookup = deferred<string | undefined>()
-    const { actor, controller, conversationStore } = createHarness({
+    const { actor, controller } = createHarness({
       actorState: 'ready-await',
       storeGet: lookup.promise,
     })
     lookup.reject(new Error('Cannot read project.toml'))
     await flushPromises()
-    expect(controller.showManualConnect.value).toBe(true)
-    expect(controller.conversationLookupError.value).toContain(
-      'Could not read the saved Zookeeper conversation'
-    )
+    expect(controller.showManualConnect.value).toBe(false)
     expect(
       sentEvents(actor, ZookeeperManagerTransitions.CacheSetupAndConnect)
-    ).toHaveLength(0)
-
-    vi.mocked(conversationStore.getProjectConversationId).mockResolvedValue(
-      'saved-conversation'
-    )
-    controller.reconnect()
-    await flushPromises()
-    expect(controller.conversationLookupError.value).toBeUndefined()
-    expect(
-      sentEvents(actor, ZookeeperManagerTransitions.CacheSetupAndConnect)
-    ).toEqual([
-      expect.objectContaining({ conversationId: 'saved-conversation' }),
-    ])
+    ).toEqual([expect.objectContaining({ conversationId: undefined })])
     consoleError.mockRestore()
   })
 
