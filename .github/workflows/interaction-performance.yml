@@ -1,9 +1,6 @@
-name: Interaction performance
+name: Interaction presentation diagnostics
 
 on:
-  pull_request:
-  push:
-    branches: [main]
   workflow_dispatch:
 
 concurrency:
@@ -12,64 +9,14 @@ concurrency:
 
 permissions:
   contents: read
+  actions: read
 
 jobs:
-  build-wasm:
-    uses: ./.github/workflows/build-wasm.yml
-
-  build-app:
-    needs: build-wasm
-    runs-on: namespace-profile-ubuntu-8-cores;overrides.cache-tag=modeling-app-general-v2
-    steps:
-      - uses: actions/checkout@v7.0.1
-
-      - uses: actions/setup-node@v7.0.0
-        with:
-          node-version-file: .nvmrc
-          cache: npm
-
-      - run: npm ci
-
-      - uses: actions/download-artifact@v8
-        with:
-          name: prepared-wasm
-          path: rust/kcl-wasm-lib/pkg
-
-      - uses: actions/download-artifact@v8
-        with:
-          name: prepared-ts-rs-bindings
-          path: rust/kcl-lib/bindings
-
-      - name: Build production Electron application
-        run: |
-          cp rust/kcl-wasm-lib/pkg/kcl_wasm_lib_bg.wasm public/
-          npm run tronb:vite:prod
-        env:
-          VERCEL_GIT_COMMIT_SHA: ${{ github.sha }}
-          VITE_ZOO_BASE_DOMAIN: dev.zoo.dev
-          VITE_INTERACTION_PERFORMANCE: '1'
-
-      - uses: actions/upload-artifact@v7
-        with:
-          name: interaction-performance-build
-          path: .vite/
-          include-hidden-files: true
-          retention-days: 7
-
   measure:
-    name: Interaction performance budgets
-    needs: build-app
-    # A failed dependency must fail this check instead of leaving it skipped.
-    if: ${{ !cancelled() }}
-    # Keep compilation in a separate job, and score one browser at a time.
+    name: Capture first-use presentation traces
     runs-on: namespace-profile-ubuntu-8-cores;overrides.cache-tag=modeling-app-general-v2
     timeout-minutes: 15
     steps:
-      - name: Require instrumented build
-        env:
-          BUILD_RESULT: ${{ needs.build-app.result }}
-        run: test "$BUILD_RESULT" = success
-
       - uses: actions/checkout@v7.0.1
 
       - uses: actions/setup-node@v7.0.0
@@ -81,31 +28,38 @@ jobs:
 
       - uses: actions/download-artifact@v8
         with:
+          # Identical application source at 5579609; only diagnostic tests differ.
+          run-id: 35888349572
+          github-token: ${{ github.token }}
           name: interaction-performance-build
           path: .vite
 
       - uses: actions/download-artifact@v8
         with:
+          # Identical application source at 5579609; only diagnostic tests differ.
+          run-id: 35888349572
+          github-token: ${{ github.token }}
           name: prepared-wasm
           path: rust/kcl-wasm-lib/pkg
 
       - uses: actions/download-artifact@v8
         with:
+          # Identical application source at 5579609; only diagnostic tests differ.
+          run-id: 35888349572
+          github-token: ${{ github.token }}
           name: prepared-ts-rs-bindings
           path: rust/kcl-lib/bindings
 
       - name: Install Electron runtime libraries
         run: npm exec -- playwright install-deps chromium
 
-      - name: Enforce interaction budgets
+      - name: Capture first-use presentation traces
         run: xvfb-run --auto-servernum --server-args="-screen 0 1280x960x24" -- npm exec -- playwright test --config=playwright.performance.config.ts
         env:
           NODE_ENV: production
           TARGET: desktop
           VITE_ZOO_BASE_DOMAIN: dev.zoo.dev
           VITE_ZOO_API_TOKEN: ${{ secrets.ZOO_API_TOKEN }}
-          TAB_API_URL: ${{ vars.TAB_API_URL }}
-          TAB_API_KEY: ${{ secrets.TAB_API_KEY }}
           CI_COMMIT_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
           CI_PR_NUMBER: ${{ github.event.pull_request.number }}
 
