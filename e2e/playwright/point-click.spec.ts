@@ -2564,9 +2564,9 @@ chamfer001 = chamfer(
     await cmdBar.submit()
     await scene.settled(cmdBar)
 
-    await editor.expectEditor.toContain('tag = $seg01')
+    await editor.expectEditor.toContain('tag = $chamferFace01')
     await editor.expectEditor.toContain(
-      'surface001 = deleteFace(chamfer001, faces = seg01)'
+      'surface001 = deleteFace(chamfer001, faces = chamferFace01)'
     )
   })
 
@@ -2623,11 +2623,9 @@ hide(sketch001)`
     await cmdBar.submit()
     await scene.settled(cmdBar)
 
+    await editor.expectEditor.toContain('tag = $chamferFace01')
     await editor.expectEditor.toContain(
-      'face001 = faceId(chamfer001, index = 7)'
-    )
-    await editor.expectEditor.toContain(
-      'surface001 = deleteFace(chamfer001, faces = face001)'
+      'surface001 = deleteFace(chamfer001, faces = chamferFace01)'
     )
   })
 
@@ -2686,9 +2684,9 @@ hide(sketch001)`
     await cmdBar.submit()
     await scene.settled(cmdBar)
 
-    await editor.expectEditor.toContain('tag = $seg01')
+    await editor.expectEditor.toContain('tag = $filletFace01')
     await editor.expectEditor.toContain(
-      'surface001 = deleteFace(fillet001, faces = seg01)'
+      'surface001 = deleteFace(fillet001, faces = filletFace01)'
     )
   })
 

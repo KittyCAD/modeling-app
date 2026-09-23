@@ -788,9 +788,9 @@ chamfer001 = chamfer(extrude001, tags = getCommonEdge(faces = [region001.tags.li
       }
 
       const newCode = recast(result.modifiedAst, instanceInThisFile)
-      expect(newCode).toContain(`tag = $seg01`)
+      expect(newCode).toContain(`tag = $chamferFace01`)
       expect(newCode).toContain(
-        `surface001 = deleteFace(chamfer001, faces = seg01)`
+        `surface001 = deleteFace(chamfer001, faces = chamferFace01)`
       )
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })

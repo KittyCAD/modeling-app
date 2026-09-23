@@ -54,7 +54,7 @@ type AddTagFn = (
   a: AddTagInfo
 ) => { modifiedAst: Node<Program>; tag: string } | Error
 
-export function addTagKw(): AddTagFn {
+export function addTagKw(prefix = 'seg'): AddTagFn {
   return ({ node, pathToNode, wasmInstance }) => {
     const _node = { ...node }
     const callExpr = getNodeFromPath<Node<CallExpressionKw>>(
@@ -68,7 +68,7 @@ export function addTagKw(): AddTagFn {
     const primaryCallExp: CallExpressionKw = callExpr.node
     const tagArg = findKwArg(ARG_TAG, primaryCallExp)
     const tagDeclarator =
-      tagArg || createTagDeclarator(findUniqueName(_node, 'seg', 2))
+      tagArg || createTagDeclarator(findUniqueName(_node, prefix, 2))
     const isTagExisting = !!tagArg
     if (!isTagExisting) {
       const labeledArg = createLabeledArg(ARG_TAG, tagDeclarator)
@@ -142,7 +142,84 @@ export function addTagToSingletonEdgeCut(
     )
   }
 
-  return addTagKw()(tagInfo)
+  return addTagKw(`${operation}Face`)(tagInfo)
+}
+
+export function addTagToEdgeCutSelector(
+  tagInfo: AddTagInfo,
+  sourceSelectorIndex: number,
+  wasmInstance: ModuleType
+): { modifiedAst: Node<Program>; tag: string } | Error {
+  const modifiedAst = structuredClone(tagInfo.node)
+  let pipeIndex = 0
+  for (let i = 0; i < tagInfo.pathToNode.length; i++) {
+    if (tagInfo.pathToNode[i][1] === 'PipeExpression') {
+      pipeIndex = Number(tagInfo.pathToNode[i + 1][0])
+      break
+    }
+  }
+
+  const pipeExpr = getNodeFromPath<PipeExpression>(
+    modifiedAst,
+    tagInfo.pathToNode,
+    wasmInstance,
+    'PipeExpression'
+  )
+  const variableDec = getNodeFromPath<VariableDeclarator>(
+    modifiedAst,
+    tagInfo.pathToNode,
+    wasmInstance,
+    'VariableDeclarator'
+  )
+  if (err(pipeExpr)) return pipeExpr
+  if (err(variableDec)) return variableDec
+
+  const isPipeExpression = pipeExpr.node.type === 'PipeExpression'
+  const callExpr = isPipeExpression
+    ? pipeExpr.node.body[pipeIndex]
+    : variableDec.node.init
+  if (callExpr.type !== 'CallExpressionKw') {
+    return new Error('Edge cut must refer to a call expression')
+  }
+  const operation = callExpr.callee.name.name
+  if (operation !== 'chamfer' && operation !== 'fillet') {
+    return new Error('Edge cut must refer to a chamfer or fillet operation')
+  }
+
+  const edges = findKwArg('edges', callExpr)
+  if (!edges || edges.type !== 'ArrayExpression') {
+    return new Error('Face API edge cut must have an edges array')
+  }
+  if (sourceSelectorIndex < 0 || sourceSelectorIndex >= edges.elements.length) {
+    return new Error('Edge cut source selector index is out of bounds')
+  }
+  if (edges.elements.length === 1) {
+    return addTagKw(`${operation}Face`)(tagInfo)
+  }
+
+  const selectedEdge = edges.elements[sourceSelectorIndex]
+  edges.elements.splice(sourceSelectorIndex, 1)
+
+  const selectedCall = structuredClone(callExpr)
+  const selectedEdges = findKwArg('edges', selectedCall)
+  if (!selectedEdges || selectedEdges.type !== 'ArrayExpression') {
+    return new Error('Face API edge cut must have an edges array')
+  }
+  selectedEdges.elements = [selectedEdge]
+  const tag = createTagDeclarator(
+    findUniqueName(modifiedAst, `${operation}Face`, 2)
+  )
+  selectedCall.arguments.push(createLabeledArg('tag', tag))
+
+  if (isPipeExpression) {
+    selectedCall.unlabeled = null
+    pipeExpr.node.body.splice(pipeIndex, 0, selectedCall)
+  } else {
+    callExpr.unlabeled = null
+    variableDec.node.init = createPipeExpression([selectedCall, callExpr])
+  }
+
+  return { modifiedAst, tag: tag.value }
 }
 
 function addTagToEdgeCut(
