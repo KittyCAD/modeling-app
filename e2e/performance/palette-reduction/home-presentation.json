@@ -1,0 +1,3065 @@
+{
+  "sourceBuildRun": null,
+  "sourceCommit": null,
+  "provenance": "Captured from the available local optimized build; its source commit is unverified. Checked-out palette presentation sources and lockfile have no diff versus d5328e2c1e. Build byte hashes are recorded separately.",
+  "bodyClass": "body-bg dark",
+  "colorScheme": "normal",
+  "devicePixelRatio": 1,
+  "viewport": {
+    "width": 1200,
+    "height": 800
+  },
+  "launcher": {
+    "tag": "button",
+    "attributes": {
+      "type": "button",
+      "class": "flex gap-1 items-center py-0 pl-0.5 pr-1 sm:pr-0.5 m-0 text-primary dark:text-inherit bg-chalkboard-10/80 dark:bg-chalkboard-100/50 hover:bg-chalkboard-10 dark:hover:bg-chalkboard-100 border border-solid border-primary/50 hover:border-primary active:border-primary",
+      "data-testid": "command-bar-open-button",
+      "data-interaction-id": "zds.commandPalette.open",
+      "data-expect-interaction-ms": "150"
+    },
+    "children": [
+      {
+        "tag": "svg",
+        "attributes": {
+          "width": "20",
+          "height": "20",
+          "viewBox": "0 0 20 20",
+          "fill": "none",
+          "aria-label": "command",
+          "class": "w-5 h-5"
+        },
+        "children": [
+          {
+            "tag": "path",
+            "attributes": {
+              "fill-rule": "evenodd",
+              "clip-rule": "evenodd",
+              "d": "M4.70711 6L8.20711 9.5L8.56066 9.85355L8.20711 10.2071L4.70711 13.7071L4 13L7.14645 9.85355L4 6.70711L4.70711 6ZM15.3536 11.3536H9.35356V12.3536H15.3536V11.3536Z",
+              "fill": "currentColor"
+            },
+            "children": []
+          }
+        ]
+      },
+      {
+        "tag": "span",
+        "attributes": {},
+        "children": [
+          "Commands"
+        ]
+      },
+      {
+        "tag": "kbd",
+        "attributes": {
+          "class": "hidden sm:block dark:bg-chalkboard-80 font-mono rounded-sm text-primary/70 dark:text-inherit inline-block px-1"
+        },
+        "children": [
+          "⌘K"
+        ]
+      }
+    ]
+  },
+  "wrapper": {
+    "tag": "div",
+    "attributes": {
+      "class": "fixed inset-0 z-50 overflow-y-auto pb-4 pt-1 pointer-events-none",
+      "data-testid": "command-bar-wrapper"
+    },
+    "children": []
+  },
+  "panel": {
+    "tag": "div",
+    "attributes": {
+      "class": "relative z-50 pointer-events-auto w-full max-w-xl pt-2 mx-auto border rounded rounded-tl-none shadow-lg bg-chalkboard-10 dark:bg-chalkboard-100 dark:border-chalkboard-70",
+      "data-testid": "command-bar"
+    },
+    "children": [
+      {
+        "tag": "div",
+        "attributes": {
+          "class": "flex items-center gap-2 px-4 pb-2 border-solid border-0 border-b border-b-chalkboard-20 dark:border-b-chalkboard-80"
+        },
+        "children": [
+          {
+            "tag": "svg",
+            "attributes": {
+              "viewBox": "0 0 20 20",
+              "fill": "none",
+              "aria-label": "search",
+              "class": "w-5 h-5 shrink-0 bg-primary/10 dark:bg-primary text-primary dark:text-inherit"
+            },
+            "children": [
+              {
+                "tag": "path",
+                "attributes": {
+                  "fill-rule": "evenodd",
+                  "clip-rule": "evenodd",
+                  "d": "M14.016 9.00482C14.016 10.662 12.6731 12.0048 11.0172 12.0048C9.3613 12.0048 8.01841 10.662 8.01841 9.00482C8.01841 7.34768 9.3613 6.00482 11.0172 6.00482C12.6731 6.00482 14.016 7.34768 14.016 9.00482ZM15.016 9.00482C15.016 11.214 13.2257 13.0048 11.0172 13.0048C10.082 13.0048 9.22178 12.6837 8.54074 12.1456L5.6912 14.9952L4.98409 14.2881L7.83921 11.433C7.32431 10.7597 7.01841 9.91799 7.01841 9.00482C7.01841 6.79568 8.80873 5.00482 11.0172 5.00482C13.2257 5.00482 15.016 6.79568 15.016 9.00482Z",
+                  "fill": "currentColor"
+                },
+                "children": []
+              }
+            ]
+          },
+          {
+            "tag": "input",
+            "attributes": {
+              "data-testid": "cmd-bar-search",
+              "class": "w-full bg-transparent focus:outline-none selection:bg-primary/20 dark:selection:bg-primary/40 dark:focus:outline-none",
+              "placeholder": "Search commands",
+              "role": "combobox",
+              "type": "text"
+            },
+            "children": []
+          }
+        ]
+      },
+      {
+        "tag": "ul",
+        "attributes": {
+          "class": "overflow-y-auto max-h-96 cursor-pointer",
+          "role": "listbox"
+        },
+        "children": [
+          {
+            "tag": "li",
+            "attributes": {
+              "class": "flex items-center gap-4 px-4 py-1.5 first:mt-2 last:mb-2 ui-active:bg-primary/10 dark:ui-active:bg-chalkboard-90 ui-disabled:!text-chalkboard-50",
+              "data-testid": "cmd-bar-option",
+              "role": "option",
+              "aria-selected": "false"
+            },
+            "children": [
+              {
+                "tag": "svg",
+                "attributes": {
+                  "width": "20",
+                  "height": "20",
+                  "viewBox": "0 0 20 20",
+                  "fill": "none",
+                  "aria-label": "import file",
+                  "class": "w-5 h-5 shrink-0"
+                },
+                "children": [
+                  {
+                    "tag": "path",
+                    "attributes": {
+                      "fill-rule": "evenodd",
+                      "clip-rule": "evenodd",
+                      "d": "M4 3H4.5H11H11.2071L11.3536 3.14645L15.8536 7.64646L16 7.7929V8.00001V11.3773C15.6992 11.1362 15.3628 10.9376 15 10.7908V8.50001H11H10.5V8.00001V4H5V16H9.79076C9.93763 16.3628 10.1362 16.6992 10.3773 17H4.5H4V16.5V3.5V3ZM11.5 4.70711L14.2929 7.50001H11.5V4.70711ZM13.8123 17.3904L16.3123 15.3904L15.6877 14.6096L14 15.9597V12H13V15.9597L11.3123 14.6096L10.6877 15.3904L13.1877 17.3904L13.5 17.6403L13.8123 17.3904Z",
+                      "fill": "currentColor"
+                    },
+                    "children": []
+                  }
+                ]
+              },
+              {
+                "tag": "div",
+                "attributes": {
+                  "class": "min-w-0 flex-grow flex flex-col"
+                },
+                "children": [
+                  {
+                    "tag": "p",
+                    "attributes": {
+                      "class": "my-0 leading-tight"
+                    },
+                    "children": [
+                      "Add file to project",
+                      " "
+                    ]
+                  },
+                  {
+                    "tag": "p",
+                    "attributes": {
+                      "class": "my-0 text-xs text-chalkboard-60 dark:text-chalkboard-50"
+                    },
+                    "children": [
+                      "Add KCL file, Zoo sample, or 3D model to new or existing project."
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "tag": "li",
+            "attributes": {
+              "class": "flex items-center gap-4 px-4 py-1.5 first:mt-2 last:mb-2 ui-active:bg-primary/10 dark:ui-active:bg-chalkboard-90 ui-disabled:!text-chalkboard-50",
+              "data-testid": "cmd-bar-option",
+              "role": "option",
+              "aria-selected": "false"
+            },
+            "children": [
+              {
+                "tag": "svg",
+                "attributes": {
+                  "width": "20",
+                  "height": "20",
+                  "viewBox": "0 0 20 20",
+                  "fill": "none",
+                  "aria-label": "download",
+                  "class": "w-5 h-5 shrink-0"
+                },
+                "children": [
+                  {
+                    "tag": "path",
+                    "attributes": {
+                      "fill-rule": "evenodd",
+                      "clip-rule": "evenodd",
+                      "d": "M5 15.5H15V12.5H16V16.5H4V12.5H5V15.5ZM10.5 11.293L13.1465 8.64648L13.8535 9.35352L10 13.207L6.14648 9.35352L6.85352 8.64648L9.5 11.293V3.5H10.5V11.293Z",
+                      "fill": "currentColor"
+                    },
+                    "children": []
+                  }
+                ]
+              },
+              {
+                "tag": "div",
+                "attributes": {
+                  "class": "min-w-0 flex-grow flex flex-col"
+                },
+                "children": [
+                  {
+                    "tag": "p",
+                    "attributes": {
+                      "class": "my-0 leading-tight"
+                    },
+                    "children": [
+                      "Check for updates",
+                      " "
+                    ]
+                  },
+                  {
+                    "tag": "p",
+                    "attributes": {
+                      "class": "my-0 text-xs text-chalkboard-60 dark:text-chalkboard-50"
+                    },
+                    "children": [
+                      "Check for a newer desktop app version."
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "tag": "li",
+            "attributes": {
+              "class": "flex items-center gap-4 px-4 py-1.5 first:mt-2 last:mb-2 ui-active:bg-primary/10 dark:ui-active:bg-chalkboard-90 ui-disabled:!text-chalkboard-50",
+              "data-testid": "cmd-bar-option",
+              "role": "option",
+              "aria-selected": "false"
+            },
+            "children": [
+              {
+                "tag": "svg",
+                "attributes": {
+                  "viewBox": "0 0 20 20",
+                  "fill": "none",
+                  "aria-label": "folder",
+                  "class": "w-5 h-5 shrink-0"
+                },
+                "children": [
+                  {
+                    "tag": "path",
+                    "attributes": {
+                      "fill-rule": "evenodd",
+                      "clip-rule": "evenodd",
+                      "d": "M3.5 3.5H4H7H7.16667L7.3 3.6L9.16667 5H16H16.5V5.5V7.5V16V16.5H16H4H3.5V16V7.5V4V3.5ZM4.5 4.5V7H15.5V6H9H8.83333L8.7 5.9L6.83333 4.5H4.5ZM15.5 8H4.5V15.5H15.5V8Z",
+                      "fill": "currentColor"
+                    },
+                    "children": []
+                  }
+                ]
+              },
+              {
+                "tag": "div",
+                "attributes": {
+                  "class": "min-w-0 flex-grow flex flex-col"
+                },
+                "children": [
+                  {
+                    "tag": "p",
+                    "attributes": {
+                      "class": "my-0 leading-tight"
+                    },
+                    "children": [
+                      "Create project",
+                      " "
+                    ]
+                  },
+                  {
+                    "tag": "p",
+                    "attributes": {
+                      "class": "my-0 text-xs text-chalkboard-60 dark:text-chalkboard-50"
+                    },
+                    "children": [
+                      "Create a project"
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "tag": "li",
+            "attributes": {
+              "class": "flex items-center gap-4 px-4 py-1.5 first:mt-2 last:mb-2 ui-active:bg-primary/10 dark:ui-active:bg-chalkboard-90 ui-disabled:!text-chalkboard-50",
+              "data-testid": "cmd-bar-option",
+              "role": "option",
+              "aria-selected": "false"
+            },
+            "children": [
+              {
+                "tag": "svg",
+                "attributes": {
+                  "viewBox": "0 0 20 20",
+                  "fill": "none",
+                  "aria-label": "folder",
+                  "class": "w-5 h-5 shrink-0"
+                },
+                "children": [
+                  {
+                    "tag": "path",
+                    "attributes": {
+                      "fill-rule": "evenodd",
+                      "clip-rule": "evenodd",
+                      "d": "M3.5 3.5H4H7H7.16667L7.3 3.6L9.16667 5H16H16.5V5.5V7.5V16V16.5H16H4H3.5V16V7.5V4V3.5ZM4.5 4.5V7H15.5V6H9H8.83333L8.7 5.9L6.83333 4.5H4.5ZM15.5 8H4.5V15.5H15.5V8Z",
+                      "fill": "currentColor"
+                    },
+                    "children": []
+                  }
+                ]
+              },
+              {
+                "tag": "div",
+                "attributes": {
+                  "class": "min-w-0 flex-grow flex flex-col"
+                },
+                "children": [
+                  {
+                    "tag": "p",
+                    "attributes": {
+                      "class": "my-0 leading-tight"
+                    },
+                    "children": [
+                      "Delete project",
+                      " "
+                    ]
+                  },
+                  {
+                    "tag": "p",
+                    "attributes": {
+                      "class": "my-0 text-xs text-chalkboard-60 dark:text-chalkboard-50"
+                    },
+                    "children": [
+                      "Delete a project"
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "tag": "li",
+            "attributes": {
+              "class": "flex items-center gap-4 px-4 py-1.5 first:mt-2 last:mb-2 ui-active:bg-primary/10 dark:ui-active:bg-chalkboard-90 ui-disabled:!text-chalkboard-50",
+              "data-testid": "cmd-bar-option",
+              "role": "option",
+              "aria-selected": "false"
+            },
+            "children": [
+              {
+                "tag": "svg",
+                "attributes": {
+                  "viewBox": "0 0 20 20",
+                  "fill": "none",
+                  "aria-label": "settings",
+                  "class": "w-5 h-5 shrink-0"
+                },
+                "children": [
+                  {
+                    "tag": "path",
+                    "attributes": {
+                      "fill-rule": "evenodd",
+                      "clip-rule": "evenodd",
+                      "d": "M8 5.5C8 5.77614 7.77614 6 7.5 6C7.22386 6 7 5.77614 7 5.5C7 5.22386 7.22386 5 7.5 5C7.77614 5 8 5.22386 8 5.5ZM6.08535 6C6.29127 6.5826 6.84689 7 7.5 7C8.32843 7 9 6.32843 9 5.5C9 4.67157 8.32843 4 7.5 4C6.84689 4 6.29127 4.4174 6.08535 5H5V6H6.08535ZM15 6H9.94999C9.98278 5.83844 10 5.67123 10 5.5C10 5.32877 9.98278 5.16155 9.94999 5H15V6ZM11 14.5C11 14.7761 10.7761 15 10.5 15C10.2239 15 10 14.7761 10 14.5C10 14.2239 10.2239 14 10.5 14C10.7761 14 11 14.2239 11 14.5ZM9.08535 15C9.29127 15.5826 9.84689 16 10.5 16C11.3284 16 12 15.3284 12 14.5C12 13.6716 11.3284 13 10.5 13C9.84689 13 9.29127 13.4174 9.08535 14H5V15H9.08535ZM15 15H12.95C12.9828 14.8384 13 14.6712 13 14.5C13 14.3288 12.9828 14.1616 12.95 14H15V15ZM11.5 10.5C11.7761 10.5 12 10.2761 12 10C12 9.72386 11.7761 9.5 11.5 9.5C11.2239 9.5 11 9.72386 11 10C11 10.2761 11.2239 10.5 11.5 10.5ZM11.5 8.5C12.1531 8.5 12.7087 8.9174 12.9146 9.5H15V10.5H12.9146C12.7087 11.0826 12.1531 11.5 11.5 11.5C10.6716 11.5 10 10.8284 10 10C10 9.17157 10.6716 8.5 11.5 8.5ZM9.05001 10.5C9.01722 10.3384 9 10.1712 9 10C9 9.82877 9.01722 9.66155 9.05001 9.5H5V10.5H9.05001Z",
+                      "fill": "currentColor"
+                    },
+                    "children": []
+                  }
+                ]
+              },
+              {
+                "tag": "div",
+                "attributes": {
+                  "class": "min-w-0 flex-grow flex flex-col"
+                },
+                "children": [
+                  {
+                    "tag": "p",
+                    "attributes": {
+                      "class": "my-0 leading-tight"
+                    },
+                    "children": [
+                      "Go to Settings",
+                      " "
+                    ]
+                  },
+                  {
+                    "tag": "p",
+                    "attributes": {
+                      "class": "my-0 text-xs text-chalkboard-60 dark:text-chalkboard-50"
+                    },
+                    "children": [
+                      "Go to the settings page"
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "tag": "li",
+            "attributes": {
+              "class": "flex items-center gap-4 px-4 py-1.5 first:mt-2 last:mb-2 ui-active:bg-primary/10 dark:ui-active:bg-chalkboard-90 ui-disabled:!text-chalkboard-50",
+              "data-testid": "cmd-bar-option",
+              "role": "option",
+              "aria-selected": "false"
+            },
+            "children": [
+              {
+                "tag": "svg",
+                "attributes": {
+                  "viewBox": "0 0 20 20",
+                  "fill": "none",
+                  "aria-label": "settings",
+                  "class": "w-5 h-5 shrink-0"
+                },
+                "children": [
+                  {
+                    "tag": "path",
+                    "attributes": {
+                      "fill-rule": "evenodd",
+                      "clip-rule": "evenodd",
+                      "d": "M8 5.5C8 5.77614 7.77614 6 7.5 6C7.22386 6 7 5.77614 7 5.5C7 5.22386 7.22386 5 7.5 5C7.77614 5 8 5.22386 8 5.5ZM6.08535 6C6.29127 6.5826 6.84689 7 7.5 7C8.32843 7 9 6.32843 9 5.5C9 4.67157 8.32843 4 7.5 4C6.84689 4 6.29127 4.4174 6.08535 5H5V6H6.08535ZM15 6H9.94999C9.98278 5.83844 10 5.67123 10 5.5C10 5.32877 9.98278 5.16155 9.94999 5H15V6ZM11 14.5C11 14.7761 10.7761 15 10.5 15C10.2239 15 10 14.7761 10 14.5C10 14.2239 10.2239 14 10.5 14C10.7761 14 11 14.2239 11 14.5ZM9.08535 15C9.29127 15.5826 9.84689 16 10.5 16C11.3284 16 12 15.3284 12 14.5C12 13.6716 11.3284 13 10.5 13C9.84689 13 9.29127 13.4174 9.08535 14H5V15H9.08535ZM15 15H12.95C12.9828 14.8384 13 14.6712 13 14.5C13 14.3288 12.9828 14.1616 12.95 14H15V15ZM11.5 10.5C11.7761 10.5 12 10.2761 12 10C12 9.72386 11.7761 9.5 11.5 9.5C11.2239 9.5 11 9.72386 11 10C11 10.2761 11.2239 10.5 11.5 10.5ZM11.5 8.5C12.1531 8.5 12.7087 8.9174 12.9146 9.5H15V10.5H12.9146C12.7087 11.0826 12.1531 11.5 11.5 11.5C10.6716 11.5 10 10.8284 10 10C10 9.17157 10.6716 8.5 11.5 8.5ZM9.05001 10.5C9.01722 10.3384 9 10.1712 9 10C9 9.82877 9.01722 9.66155 9.05001 9.5H5V10.5H9.05001Z",
+                      "fill": "currentColor"
+                    },
+                    "children": []
+                  }
+                ]
+              },
+              {
+                "tag": "div",
+                "attributes": {
+                  "class": "min-w-0 flex-grow flex flex-col"
+                },
+                "children": [
+                  {
+                    "tag": "p",
+                    "attributes": {
+                      "class": "my-0 leading-tight"
+                    },
+                    "children": [
+                      "Go to Telemetry",
+                      " "
+                    ]
+                  },
+                  {
+                    "tag": "p",
+                    "attributes": {
+                      "class": "my-0 text-xs text-chalkboard-60 dark:text-chalkboard-50"
+                    },
+                    "children": [
+                      "View the Telemetry metrics"
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "tag": "li",
+            "attributes": {
+              "class": "flex items-center gap-4 px-4 py-1.5 first:mt-2 last:mb-2 ui-active:bg-primary/10 dark:ui-active:bg-chalkboard-90 ui-disabled:!text-chalkboard-50",
+              "data-testid": "cmd-bar-option",
+              "role": "option",
+              "aria-selected": "false"
+            },
+            "children": [
+              {
+                "tag": "svg",
+                "attributes": {
+                  "viewBox": "0 0 20 20",
+                  "fill": "none",
+                  "aria-label": "arrow short left",
+                  "class": "w-5 h-5 shrink-0"
+                },
+                "children": [
+                  {
+                    "tag": "path",
+                    "attributes": {
+                      "fill-rule": "evenodd",
+                      "clip-rule": "evenodd",
+                      "d": "M10.8535 4.85349L6.20697 9.49997H14.9999V10.5H6.20697L10.8535 15.1465L10.1464 15.8535L4.29291 9.99997L10.1464 4.14645L10.8535 4.85349Z",
+                      "fill": "currentColor"
+                    },
+                    "children": []
+                  }
+                ]
+              },
+              {
+                "tag": "div",
+                "attributes": {
+                  "class": "min-w-0 flex-grow flex flex-col"
+                },
+                "children": [
+                  {
+                    "tag": "p",
+                    "attributes": {
+                      "class": "my-0 leading-tight"
+                    },
+                    "children": [
+                      "Log out",
+                      " "
+                    ]
+                  },
+                  {
+                    "tag": "p",
+                    "attributes": {
+                      "class": "my-0 text-xs text-chalkboard-60 dark:text-chalkboard-50"
+                    },
+                    "children": [
+                      "Log out of your account."
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "tag": "li",
+            "attributes": {
+              "class": "flex items-center gap-4 px-4 py-1.5 first:mt-2 last:mb-2 ui-active:bg-primary/10 dark:ui-active:bg-chalkboard-90 ui-disabled:!text-chalkboard-50",
+              "data-testid": "cmd-bar-option",
+              "role": "option",
+              "aria-selected": "false"
+            },
+            "children": [
+              {
+                "tag": "svg",
+                "attributes": {
+                  "viewBox": "0 0 20 20",
+                  "fill": "none",
+                  "aria-label": "folder",
+                  "class": "w-5 h-5 shrink-0"
+                },
+                "children": [
+                  {
+                    "tag": "path",
+                    "attributes": {
+                      "fill-rule": "evenodd",
+                      "clip-rule": "evenodd",
+                      "d": "M3.5 3.5H4H7H7.16667L7.3 3.6L9.16667 5H16H16.5V5.5V7.5V16V16.5H16H4H3.5V16V7.5V4V3.5ZM4.5 4.5V7H15.5V6H9H8.83333L8.7 5.9L6.83333 4.5H4.5ZM15.5 8H4.5V15.5H15.5V8Z",
+                      "fill": "currentColor"
+                    },
+                    "children": []
+                  }
+                ]
+              },
+              {
+                "tag": "div",
+                "attributes": {
+                  "class": "min-w-0 flex-grow flex flex-col"
+                },
+                "children": [
+                  {
+                    "tag": "p",
+                    "attributes": {
+                      "class": "my-0 leading-tight"
+                    },
+                    "children": [
+                      "Move project",
+                      " "
+                    ]
+                  },
+                  {
+                    "tag": "p",
+                    "attributes": {
+                      "class": "my-0 text-xs text-chalkboard-60 dark:text-chalkboard-50"
+                    },
+                    "children": [
+                      "Move a project to another library"
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "tag": "li",
+            "attributes": {
+              "class": "flex items-center gap-4 px-4 py-1.5 first:mt-2 last:mb-2 ui-active:bg-primary/10 dark:ui-active:bg-chalkboard-90 ui-disabled:!text-chalkboard-50",
+              "data-testid": "cmd-bar-option",
+              "role": "option",
+              "aria-selected": "false"
+            },
+            "children": [
+              {
+                "tag": "svg",
+                "attributes": {
+                  "viewBox": "0 0 20 20",
+                  "fill": "none",
+                  "aria-label": "folder",
+                  "class": "w-5 h-5 shrink-0"
+                },
+                "children": [
+                  {
+                    "tag": "path",
+                    "attributes": {
+                      "fill-rule": "evenodd",
+                      "clip-rule": "evenodd",
+                      "d": "M3.5 3.5H4H7H7.16667L7.3 3.6L9.16667 5H16H16.5V5.5V7.5V16V16.5H16H4H3.5V16V7.5V4V3.5ZM4.5 4.5V7H15.5V6H9H8.83333L8.7 5.9L6.83333 4.5H4.5ZM15.5 8H4.5V15.5H15.5V8Z",
+                      "fill": "currentColor"
+                    },
+                    "children": []
+                  }
+                ]
+              },
+              {
+                "tag": "div",
+                "attributes": {
+                  "class": "min-w-0 flex-grow flex flex-col"
+                },
+                "children": [
+                  {
+                    "tag": "p",
+                    "attributes": {
+                      "class": "my-0 leading-tight"
+                    },
+                    "children": [
+                      "Open project",
+                      " "
+                    ]
+                  },
+                  {
+                    "tag": "p",
+                    "attributes": {
+                      "class": "my-0 text-xs text-chalkboard-60 dark:text-chalkboard-50"
+                    },
+                    "children": [
+                      "Open a project"
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "tag": "li",
+            "attributes": {
+              "class": "flex items-center gap-4 px-4 py-1.5 first:mt-2 last:mb-2 ui-active:bg-primary/10 dark:ui-active:bg-chalkboard-90 ui-disabled:!text-chalkboard-50",
+              "data-testid": "cmd-bar-option",
+              "role": "option",
+              "aria-selected": "false"
+            },
+            "children": [
+              {
+                "tag": "svg",
+                "attributes": {
+                  "viewBox": "0 0 20 20",
+                  "fill": "none",
+                  "aria-label": "gear",
+                  "class": "w-5 h-5 shrink-0"
+                },
+                "children": [
+                  {
+                    "tag": "path",
+                    "attributes": {
+                      "fill-rule": "evenodd",
+                      "clip-rule": "evenodd",
+                      "d": "M8.61477 3.0884L5.87402 4.67077L6.50004 5.75505L5.25004 7.92011H4.0047V11.07H5.25004L6.50004 13.2351L5.86973 14.3268L8.62776 15.9191L9.24503 14.85H11.745L12.3647 15.9234L15.1416 14.3202L14.5151 13.2351L15.7651 11.07H16.9951V7.92011H15.7651L14.5151 5.75505L15.1373 4.67741L12.3778 3.08423L11.7451 4.18012H9.24508L8.61477 3.0884ZM10.4999 13C12.4329 13 13.9999 11.433 13.9999 9.50003C13.9999 7.56703 12.4329 6.00003 10.4999 6.00003C8.56687 6.00003 6.99986 7.56703 6.99986 9.50003C6.99986 11.433 8.56687 13 10.4999 13Z",
+                      "fill": "currentColor"
+                    },
+                    "children": []
+                  }
+                ]
+              },
+              {
+                "tag": "div",
+                "attributes": {
+                  "class": "min-w-0 flex-grow flex flex-col"
+                },
+                "children": [
+                  {
+                    "tag": "p",
+                    "attributes": {
+                      "class": "my-0 leading-tight"
+                    },
+                    "children": [
+                      "Override Engine",
+                      " "
+                    ]
+                  },
+                  {
+                    "tag": "p",
+                    "attributes": {
+                      "class": "my-0 text-xs text-chalkboard-60 dark:text-chalkboard-50"
+                    },
+                    "children": [
+                      "Connect the scene to a custom Engine WebSocket URL"
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "tag": "li",
+            "attributes": {
+              "class": "flex items-center gap-4 px-4 py-1.5 first:mt-2 last:mb-2 ui-active:bg-primary/10 dark:ui-active:bg-chalkboard-90 ui-disabled:!text-chalkboard-50",
+              "data-testid": "cmd-bar-option",
+              "role": "option",
+              "aria-selected": "false"
+            },
+            "children": [
+              {
+                "tag": "svg",
+                "attributes": {
+                  "viewBox": "0 0 20 20",
+                  "fill": "none",
+                  "aria-label": "gear",
+                  "class": "w-5 h-5 shrink-0"
+                },
+                "children": [
+                  {
+                    "tag": "path",
+                    "attributes": {
+                      "fill-rule": "evenodd",
+                      "clip-rule": "evenodd",
+                      "d": "M8.61477 3.0884L5.87402 4.67077L6.50004 5.75505L5.25004 7.92011H4.0047V11.07H5.25004L6.50004 13.2351L5.86973 14.3268L8.62776 15.9191L9.24503 14.85H11.745L12.3647 15.9234L15.1416 14.3202L14.5151 13.2351L15.7651 11.07H16.9951V7.92011H15.7651L14.5151 5.75505L15.1373 4.67741L12.3778 3.08423L11.7451 4.18012H9.24508L8.61477 3.0884ZM10.4999 13C12.4329 13 13.9999 11.433 13.9999 9.50003C13.9999 7.56703 12.4329 6.00003 10.4999 6.00003C8.56687 6.00003 6.99986 7.56703 6.99986 9.50003C6.99986 11.433 8.56687 13 10.4999 13Z",
+                      "fill": "currentColor"
+                    },
+                    "children": []
+                  }
+                ]
+              },
+              {
+                "tag": "div",
+                "attributes": {
+                  "class": "min-w-0 flex-grow flex flex-col"
+                },
+                "children": [
+                  {
+                    "tag": "p",
+                    "attributes": {
+                      "class": "my-0 leading-tight"
+                    },
+                    "children": [
+                      "Override Zookeeper",
+                      " "
+                    ]
+                  },
+                  {
+                    "tag": "p",
+                    "attributes": {
+                      "class": "my-0 text-xs text-chalkboard-60 dark:text-chalkboard-50"
+                    },
+                    "children": [
+                      "Connect to a custom Zookeeper WebSocket URL"
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "tag": "li",
+            "attributes": {
+              "class": "flex items-center gap-4 px-4 py-1.5 first:mt-2 last:mb-2 ui-active:bg-primary/10 dark:ui-active:bg-chalkboard-90 ui-disabled:!text-chalkboard-50",
+              "data-testid": "cmd-bar-option",
+              "role": "option",
+              "aria-selected": "false"
+            },
+            "children": [
+              {
+                "tag": "svg",
+                "attributes": {
+                  "viewBox": "0 0 20 20",
+                  "fill": "none",
+                  "aria-label": "arrow rotate right",
+                  "class": "w-5 h-5 shrink-0"
+                },
+                "children": [
+                  {
+                    "tag": "path",
+                    "attributes": {
+                      "fill-rule": "evenodd",
+                      "clip-rule": "evenodd",
+                      "d": "M11.6777 4.76126C10.4784 4.37716 9.18277 4.41676 8.00879 4.87259C6.83489 5.32851 5.85238 6.1743 5.22656 7.26712C4.601 8.35996 4.3693 9.63537 4.57031 10.8784C4.77154 12.1216 5.39368 13.2583 6.33203 14.0982C7.27064 14.9381 8.46951 15.4303 9.72754 15.4927C10.9855 15.5551 12.227 15.1838 13.2441 14.4409L12.9492 14.0376L12.6543 13.6333C11.8222 14.2411 10.8065 14.5447 9.77734 14.4937C8.74807 14.4426 7.76697 14.0403 6.99902 13.3531C6.23119 12.6658 5.7222 11.7355 5.55762 10.7183C5.39315 9.7011 5.58273 8.65743 6.09473 7.76321C6.60681 6.86915 7.41062 6.17719 8.37109 5.80423C9.33165 5.43132 10.3918 5.40006 11.373 5.71439C12.3541 6.02873 13.1977 6.67039 13.7627 7.53177C14.206 8.20787 14.4562 8.98795 14.4941 9.78763L12.8535 8.147L12.1465 8.85403L14.9707 11.6783L15.3252 11.3326L17.8496 8.85794L17.1504 8.1431L15.4941 9.76517C15.452 8.77931 15.1459 7.81717 14.5996 6.98392C13.9089 5.93074 12.8771 5.14549 11.6777 4.76126Z",
+                      "fill": "currentColor"
+                    },
+                    "children": []
+                  }
+                ]
+              },
+              {
+                "tag": "div",
+                "attributes": {
+                  "class": "min-w-0 flex-grow flex flex-col"
+                },
+                "children": [
+                  {
+                    "tag": "p",
+                    "attributes": {
+                      "class": "my-0 leading-tight"
+                    },
+                    "children": [
+                      "Reload app",
+                      " "
+                    ]
+                  },
+                  {
+                    "tag": "p",
+                    "attributes": {
+                      "class": "my-0 text-xs text-chalkboard-60 dark:text-chalkboard-50"
+                    },
+                    "children": [
+                      "Force the scene, features, and editor to reload."
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "tag": "li",
+            "attributes": {
+              "class": "flex items-center gap-4 px-4 py-1.5 first:mt-2 last:mb-2 ui-active:bg-primary/10 dark:ui-active:bg-chalkboard-90 ui-disabled:!text-chalkboard-50",
+              "data-testid": "cmd-bar-option",
+              "role": "option",
+              "aria-selected": "false"
+            },
+            "children": [
+              {
+                "tag": "svg",
+                "attributes": {
+                  "viewBox": "0 0 20 20",
+                  "fill": "none",
+                  "aria-label": "folder",
+                  "class": "w-5 h-5 shrink-0"
+                },
+                "children": [
+                  {
+                    "tag": "path",
+                    "attributes": {
+                      "fill-rule": "evenodd",
+                      "clip-rule": "evenodd",
+                      "d": "M3.5 3.5H4H7H7.16667L7.3 3.6L9.16667 5H16H16.5V5.5V7.5V16V16.5H16H4H3.5V16V7.5V4V3.5ZM4.5 4.5V7H15.5V6H9H8.83333L8.7 5.9L6.83333 4.5H4.5ZM15.5 8H4.5V15.5H15.5V8Z",
+                      "fill": "currentColor"
+                    },
+                    "children": []
+                  }
+                ]
+              },
+              {
+                "tag": "div",
+                "attributes": {
+                  "class": "min-w-0 flex-grow flex flex-col"
+                },
+                "children": [
+                  {
+                    "tag": "p",
+                    "attributes": {
+                      "class": "my-0 leading-tight"
+                    },
+                    "children": [
+                      "Rename project",
+                      " "
+                    ]
+                  },
+                  {
+                    "tag": "p",
+                    "attributes": {
+                      "class": "my-0 text-xs text-chalkboard-60 dark:text-chalkboard-50"
+                    },
+                    "children": [
+                      "Rename a project"
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "tag": "li",
+            "attributes": {
+              "class": "flex items-center gap-4 px-4 py-1.5 first:mt-2 last:mb-2 ui-active:bg-primary/10 dark:ui-active:bg-chalkboard-90 ui-disabled:!text-chalkboard-50",
+              "data-testid": "cmd-bar-option",
+              "role": "option",
+              "aria-selected": "false"
+            },
+            "children": [
+              {
+                "tag": "svg",
+                "attributes": {
+                  "viewBox": "0 0 20 20",
+                  "fill": "none",
+                  "aria-label": "gear",
+                  "class": "w-5 h-5 shrink-0"
+                },
+                "children": [
+                  {
+                    "tag": "path",
+                    "attributes": {
+                      "fill-rule": "evenodd",
+                      "clip-rule": "evenodd",
+                      "d": "M8.61477 3.0884L5.87402 4.67077L6.50004 5.75505L5.25004 7.92011H4.0047V11.07H5.25004L6.50004 13.2351L5.86973 14.3268L8.62776 15.9191L9.24503 14.85H11.745L12.3647 15.9234L15.1416 14.3202L14.5151 13.2351L15.7651 11.07H16.9951V7.92011H15.7651L14.5151 5.75505L15.1373 4.67741L12.3778 3.08423L11.7451 4.18012H9.24508L8.61477 3.0884ZM10.4999 13C12.4329 13 13.9999 11.433 13.9999 9.50003C13.9999 7.56703 12.4329 6.00003 10.4999 6.00003C8.56687 6.00003 6.99986 7.56703 6.99986 9.50003C6.99986 11.433 8.56687 13 10.4999 13Z",
+                      "fill": "currentColor"
+                    },
+                    "children": []
+                  }
+                ]
+              },
+              {
+                "tag": "div",
+                "attributes": {
+                  "class": "min-w-0 flex-grow flex flex-col"
+                },
+                "children": [
+                  {
+                    "tag": "p",
+                    "attributes": {
+                      "class": "my-0 leading-tight"
+                    },
+                    "children": [
+                      "Switch Environments",
+                      " "
+                    ]
+                  },
+                  {
+                    "tag": "p",
+                    "attributes": {
+                      "class": "my-0 text-xs text-chalkboard-60 dark:text-chalkboard-50"
+                    },
+                    "children": [
+                      "Connect the application runtime to a different environment"
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "tag": "li",
+            "attributes": {
+              "class": "flex items-center gap-4 px-4 py-1.5 first:mt-2 last:mb-2 ui-active:bg-primary/10 dark:ui-active:bg-chalkboard-90 ui-disabled:!text-chalkboard-50",
+              "data-testid": "cmd-bar-option",
+              "role": "option",
+              "aria-selected": "false"
+            },
+            "children": [
+              {
+                "tag": "svg",
+                "attributes": {
+                  "viewBox": "0 0 20 20",
+                  "fill": "none",
+                  "aria-label": "settings",
+                  "class": "w-5 h-5 shrink-0"
+                },
+                "children": [
+                  {
+                    "tag": "path",
+                    "attributes": {
+                      "fill-rule": "evenodd",
+                      "clip-rule": "evenodd",
+                      "d": "M8 5.5C8 5.77614 7.77614 6 7.5 6C7.22386 6 7 5.77614 7 5.5C7 5.22386 7.22386 5 7.5 5C7.77614 5 8 5.22386 8 5.5ZM6.08535 6C6.29127 6.5826 6.84689 7 7.5 7C8.32843 7 9 6.32843 9 5.5C9 4.67157 8.32843 4 7.5 4C6.84689 4 6.29127 4.4174 6.08535 5H5V6H6.08535ZM15 6H9.94999C9.98278 5.83844 10 5.67123 10 5.5C10 5.32877 9.98278 5.16155 9.94999 5H15V6ZM11 14.5C11 14.7761 10.7761 15 10.5 15C10.2239 15 10 14.7761 10 14.5C10 14.2239 10.2239 14 10.5 14C10.7761 14 11 14.2239 11 14.5ZM9.08535 15C9.29127 15.5826 9.84689 16 10.5 16C11.3284 16 12 15.3284 12 14.5C12 13.6716 11.3284 13 10.5 13C9.84689 13 9.29127 13.4174 9.08535 14H5V15H9.08535ZM15 15H12.95C12.9828 14.8384 13 14.6712 13 14.5C13 14.3288 12.9828 14.1616 12.95 14H15V15ZM11.5 10.5C11.7761 10.5 12 10.2761 12 10C12 9.72386 11.7761 9.5 11.5 9.5C11.2239 9.5 11 9.72386 11 10C11 10.2761 11.2239 10.5 11.5 10.5ZM11.5 8.5C12.1531 8.5 12.7087 8.9174 12.9146 9.5H15V10.5H12.9146C12.7087 11.0826 12.1531 11.5 11.5 11.5C10.6716 11.5 10 10.8284 10 10C10 9.17157 10.6716 8.5 11.5 8.5ZM9.05001 10.5C9.01722 10.3384 9 10.1712 9 10C9 9.82877 9.01722 9.66155 9.05001 9.5H5V10.5H9.05001Z",
+                      "fill": "currentColor"
+                    },
+                    "children": []
+                  }
+                ]
+              },
+              {
+                "tag": "div",
+                "attributes": {
+                  "class": "min-w-0 flex-grow flex flex-col"
+                },
+                "children": [
+                  {
+                    "tag": "p",
+                    "attributes": {
+                      "class": "my-0 leading-tight capitalize"
+                    },
+                    "children": [
+                      "Settings · app · machine API",
+                      " "
+                    ]
+                  },
+                  {
+                    "tag": "p",
+                    "attributes": {
+                      "class": "my-0 text-xs text-chalkboard-60 dark:text-chalkboard-50"
+                    },
+                    "children": [
+                      "Whether to enable Machine API discovery and printing controls on desktop."
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "tag": "li",
+            "attributes": {
+              "class": "flex items-center gap-4 px-4 py-1.5 first:mt-2 last:mb-2 ui-active:bg-primary/10 dark:ui-active:bg-chalkboard-90 ui-disabled:!text-chalkboard-50",
+              "data-testid": "cmd-bar-option",
+              "role": "option",
+              "aria-selected": "false"
+            },
+            "children": [
+              {
+                "tag": "svg",
+                "attributes": {
+                  "viewBox": "0 0 20 20",
+                  "fill": "none",
+                  "aria-label": "settings",
+                  "class": "w-5 h-5 shrink-0"
+                },
+                "children": [
+                  {
+                    "tag": "path",
+                    "attributes": {
+                      "fill-rule": "evenodd",
+                      "clip-rule": "evenodd",
+                      "d": "M8 5.5C8 5.77614 7.77614 6 7.5 6C7.22386 6 7 5.77614 7 5.5C7 5.22386 7.22386 5 7.5 5C7.77614 5 8 5.22386 8 5.5ZM6.08535 6C6.29127 6.5826 6.84689 7 7.5 7C8.32843 7 9 6.32843 9 5.5C9 4.67157 8.32843 4 7.5 4C6.84689 4 6.29127 4.4174 6.08535 5H5V6H6.08535ZM15 6H9.94999C9.98278 5.83844 10 5.67123 10 5.5C10 5.32877 9.98278 5.16155 9.94999 5H15V6ZM11 14.5C11 14.7761 10.7761 15 10.5 15C10.2239 15 10 14.7761 10 14.5C10 14.2239 10.2239 14 10.5 14C10.7761 14 11 14.2239 11 14.5ZM9.08535 15C9.29127 15.5826 9.84689 16 10.5 16C11.3284 16 12 15.3284 12 14.5C12 13.6716 11.3284 13 10.5 13C9.84689 13 9.29127 13.4174 9.08535 14H5V15H9.08535ZM15 15H12.95C12.9828 14.8384 13 14.6712 13 14.5C13 14.3288 12.9828 14.1616 12.95 14H15V15ZM11.5 10.5C11.7761 10.5 12 10.2761 12 10C12 9.72386 11.7761 9.5 11.5 9.5C11.2239 9.5 11 9.72386 11 10C11 10.2761 11.2239 10.5 11.5 10.5ZM11.5 8.5C12.1531 8.5 12.7087 8.9174 12.9146 9.5H15V10.5H12.9146C12.7087 11.0826 12.1531 11.5 11.5 11.5C10.6716 11.5 10 10.8284 10 10C10 9.17157 10.6716 8.5 11.5 8.5ZM9.05001 10.5C9.01722 10.3384 9 10.1712 9 10C9 9.82877 9.01722 9.66155 9.05001 9.5H5V10.5H9.05001Z",
+                      "fill": "currentColor"
+                    },
+                    "children": []
+                  }
+                ]
+              },
+              {
+                "tag": "div",
+                "attributes": {
+                  "class": "min-w-0 flex-grow flex flex-col"
+                },
+                "children": [
+                  {
+                    "tag": "p",
+                    "attributes": {
+                      "class": "my-0 leading-tight capitalize"
+                    },
+                    "children": [
+                      "Settings · app · theme",
+                      " "
+                    ]
+                  },
+                  {
+                    "tag": "p",
+                    "attributes": {
+                      "class": "my-0 text-xs text-chalkboard-60 dark:text-chalkboard-50"
+                    },
+                    "children": [
+                      "The overall appearance of the app."
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "tag": "li",
+            "attributes": {
+              "class": "flex items-center gap-4 px-4 py-1.5 first:mt-2 last:mb-2 ui-active:bg-primary/10 dark:ui-active:bg-chalkboard-90 ui-disabled:!text-chalkboard-50",
+              "data-testid": "cmd-bar-option",
+              "role": "option",
+              "aria-selected": "false"
+            },
+            "children": [
+              {
+                "tag": "svg",
+                "attributes": {
+                  "viewBox": "0 0 20 20",
+                  "fill": "none",
+                  "aria-label": "settings",
+                  "class": "w-5 h-5 shrink-0"
+                },
+                "children": [
+                  {
+                    "tag": "path",
+                    "attributes": {
+                      "fill-rule": "evenodd",
+                      "clip-rule": "evenodd",
+                      "d": "M8 5.5C8 5.77614 7.77614 6 7.5 6C7.22386 6 7 5.77614 7 5.5C7 5.22386 7.22386 5 7.5 5C7.77614 5 8 5.22386 8 5.5ZM6.08535 6C6.29127 6.5826 6.84689 7 7.5 7C8.32843 7 9 6.32843 9 5.5C9 4.67157 8.32843 4 7.5 4C6.84689 4 6.29127 4.4174 6.08535 5H5V6H6.08535ZM15 6H9.94999C9.98278 5.83844 10 5.67123 10 5.5C10 5.32877 9.98278 5.16155 9.94999 5H15V6ZM11 14.5C11 14.7761 10.7761 15 10.5 15C10.2239 15 10 14.7761 10 14.5C10 14.2239 10.2239 14 10.5 14C10.7761 14 11 14.2239 11 14.5ZM9.08535 15C9.29127 15.5826 9.84689 16 10.5 16C11.3284 16 12 15.3284 12 14.5C12 13.6716 11.3284 13 10.5 13C9.84689 13 9.29127 13.4174 9.08535 14H5V15H9.08535ZM15 15H12.95C12.9828 14.8384 13 14.6712 13 14.5C13 14.3288 12.9828 14.1616 12.95 14H15V15ZM11.5 10.5C11.7761 10.5 12 10.2761 12 10C12 9.72386 11.7761 9.5 11.5 9.5C11.2239 9.5 11 9.72386 11 10C11 10.2761 11.2239 10.5 11.5 10.5ZM11.5 8.5C12.1531 8.5 12.7087 8.9174 12.9146 9.5H15V10.5H12.9146C12.7087 11.0826 12.1531 11.5 11.5 11.5C10.6716 11.5 10 10.8284 10 10C10 9.17157 10.6716 8.5 11.5 8.5ZM9.05001 10.5C9.01722 10.3384 9 10.1712 9 10C9 9.82877 9.01722 9.66155 9.05001 9.5H5V10.5H9.05001Z",
+                      "fill": "currentColor"
+                    },
+                    "children": []
+                  }
+                ]
+              },
+              {
+                "tag": "div",
+                "attributes": {
+                  "class": "min-w-0 flex-grow flex flex-col"
+                },
+                "children": [
+                  {
+                    "tag": "p",
+                    "attributes": {
+                      "class": "my-0 leading-tight capitalize"
+                    },
+                    "children": [
+                      "Settings · command bar · include settings",
+                      " "
+                    ]
+                  },
+                  {
+                    "tag": "p",
+                    "attributes": {
+                      "class": "my-0 text-xs text-chalkboard-60 dark:text-chalkboard-50"
+                    },
+                    "children": [
+                      "Whether to include settings in the command bar."
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "tag": "li",
+            "attributes": {
+              "class": "flex items-center gap-4 px-4 py-1.5 first:mt-2 last:mb-2 ui-active:bg-primary/10 dark:ui-active:bg-chalkboard-90 ui-disabled:!text-chalkboard-50",
+              "data-testid": "cmd-bar-option",
+              "role": "option",
+              "aria-selected": "false"
+            },
+            "children": [
+              {
+                "tag": "svg",
+                "attributes": {
+                  "viewBox": "0 0 20 20",
+                  "fill": "none",
+                  "aria-label": "settings",
+                  "class": "w-5 h-5 shrink-0"
+                },
+                "children": [
+                  {
+                    "tag": "path",
+                    "attributes": {
+                      "fill-rule": "evenodd",
+                      "clip-rule": "evenodd",
+                      "d": "M8 5.5C8 5.77614 7.77614 6 7.5 6C7.22386 6 7 5.77614 7 5.5C7 5.22386 7.22386 5 7.5 5C7.77614 5 8 5.22386 8 5.5ZM6.08535 6C6.29127 6.5826 6.84689 7 7.5 7C8.32843 7 9 6.32843 9 5.5C9 4.67157 8.32843 4 7.5 4C6.84689 4 6.29127 4.4174 6.08535 5H5V6H6.08535ZM15 6H9.94999C9.98278 5.83844 10 5.67123 10 5.5C10 5.32877 9.98278 5.16155 9.94999 5H15V6ZM11 14.5C11 14.7761 10.7761 15 10.5 15C10.2239 15 10 14.7761 10 14.5C10 14.2239 10.2239 14 10.5 14C10.7761 14 11 14.2239 11 14.5ZM9.08535 15C9.29127 15.5826 9.84689 16 10.5 16C11.3284 16 12 15.3284 12 14.5C12 13.6716 11.3284 13 10.5 13C9.84689 13 9.29127 13.4174 9.08535 14H5V15H9.08535ZM15 15H12.95C12.9828 14.8384 13 14.6712 13 14.5C13 14.3288 12.9828 14.1616 12.95 14H15V15ZM11.5 10.5C11.7761 10.5 12 10.2761 12 10C12 9.72386 11.7761 9.5 11.5 9.5C11.2239 9.5 11 9.72386 11 10C11 10.2761 11.2239 10.5 11.5 10.5ZM11.5 8.5C12.1531 8.5 12.7087 8.9174 12.9146 9.5H15V10.5H12.9146C12.7087 11.0826 12.1531 11.5 11.5 11.5C10.6716 11.5 10 10.8284 10 10C10 9.17157 10.6716 8.5 11.5 8.5ZM9.05001 10.5C9.01722 10.3384 9 10.1712 9 10C9 9.82877 9.01722 9.66155 9.05001 9.5H5V10.5H9.05001Z",
+                      "fill": "currentColor"
+                    },
+                    "children": []
+                  }
+                ]
+              },
+              {
+                "tag": "div",
+                "attributes": {
+                  "class": "min-w-0 flex-grow flex flex-col"
+                },
+                "children": [
+                  {
+                    "tag": "p",
+                    "attributes": {
+                      "class": "my-0 leading-tight capitalize"
+                    },
+                    "children": [
+                      "Settings · debug · show modeling machine state",
+                      " "
+                    ]
+                  },
+                  {
+                    "tag": "p",
+                    "attributes": {
+                      "class": "my-0 text-xs text-chalkboard-60 dark:text-chalkboard-50"
+                    },
+                    "children": [
+                      "Whether to show the current modeling machine state in the status bar."
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "tag": "li",
+            "attributes": {
+              "class": "flex items-center gap-4 px-4 py-1.5 first:mt-2 last:mb-2 ui-active:bg-primary/10 dark:ui-active:bg-chalkboard-90 ui-disabled:!text-chalkboard-50",
+              "data-testid": "cmd-bar-option",
+              "role": "option",
+              "aria-selected": "false"
+            },
+            "children": [
+              {
+                "tag": "svg",
+                "attributes": {
+                  "viewBox": "0 0 20 20",
+                  "fill": "none",
+                  "aria-label": "settings",
+                  "class": "w-5 h-5 shrink-0"
+                },
+                "children": [
+                  {
+                    "tag": "path",
+                    "attributes": {
+                      "fill-rule": "evenodd",
+                      "clip-rule": "evenodd",
+                      "d": "M8 5.5C8 5.77614 7.77614 6 7.5 6C7.22386 6 7 5.77614 7 5.5C7 5.22386 7.22386 5 7.5 5C7.77614 5 8 5.22386 8 5.5ZM6.08535 6C6.29127 6.5826 6.84689 7 7.5 7C8.32843 7 9 6.32843 9 5.5C9 4.67157 8.32843 4 7.5 4C6.84689 4 6.29127 4.4174 6.08535 5H5V6H6.08535ZM15 6H9.94999C9.98278 5.83844 10 5.67123 10 5.5C10 5.32877 9.98278 5.16155 9.94999 5H15V6ZM11 14.5C11 14.7761 10.7761 15 10.5 15C10.2239 15 10 14.7761 10 14.5C10 14.2239 10.2239 14 10.5 14C10.7761 14 11 14.2239 11 14.5ZM9.08535 15C9.29127 15.5826 9.84689 16 10.5 16C11.3284 16 12 15.3284 12 14.5C12 13.6716 11.3284 13 10.5 13C9.84689 13 9.29127 13.4174 9.08535 14H5V15H9.08535ZM15 15H12.95C12.9828 14.8384 13 14.6712 13 14.5C13 14.3288 12.9828 14.1616 12.95 14H15V15ZM11.5 10.5C11.7761 10.5 12 10.2761 12 10C12 9.72386 11.7761 9.5 11.5 9.5C11.2239 9.5 11 9.72386 11 10C11 10.2761 11.2239 10.5 11.5 10.5ZM11.5 8.5C12.1531 8.5 12.7087 8.9174 12.9146 9.5H15V10.5H12.9146C12.7087 11.0826 12.1531 11.5 11.5 11.5C10.6716 11.5 10 10.8284 10 10C10 9.17157 10.6716 8.5 11.5 8.5ZM9.05001 10.5C9.01722 10.3384 9 10.1712 9 10C9 9.82877 9.01722 9.66155 9.05001 9.5H5V10.5H9.05001Z",
+                      "fill": "currentColor"
+                    },
+                    "children": []
+                  }
+                ]
+              },
+              {
+                "tag": "div",
+                "attributes": {
+                  "class": "min-w-0 flex-grow flex flex-col"
+                },
+                "children": [
+                  {
+                    "tag": "p",
+                    "attributes": {
+                      "class": "my-0 leading-tight capitalize"
+                    },
+                    "children": [
+                      "Settings · debug · show panel",
+                      " "
+                    ]
+                  },
+                  {
+                    "tag": "p",
+                    "attributes": {
+                      "class": "my-0 text-xs text-chalkboard-60 dark:text-chalkboard-50"
+                    },
+                    "children": [
+                      "Whether to show the debug panel, a development tool."
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "tag": "li",
+            "attributes": {
+              "class": "flex items-center gap-4 px-4 py-1.5 first:mt-2 last:mb-2 ui-active:bg-primary/10 dark:ui-active:bg-chalkboard-90 ui-disabled:!text-chalkboard-50",
+              "data-testid": "cmd-bar-option",
+              "role": "option",
+              "aria-selected": "false"
+            },
+            "children": [
+              {
+                "tag": "svg",
+                "attributes": {
+                  "viewBox": "0 0 20 20",
+                  "fill": "none",
+                  "aria-label": "settings",
+                  "class": "w-5 h-5 shrink-0"
+                },
+                "children": [
+                  {
+                    "tag": "path",
+                    "attributes": {
+                      "fill-rule": "evenodd",
+                      "clip-rule": "evenodd",
+                      "d": "M8 5.5C8 5.77614 7.77614 6 7.5 6C7.22386 6 7 5.77614 7 5.5C7 5.22386 7.22386 5 7.5 5C7.77614 5 8 5.22386 8 5.5ZM6.08535 6C6.29127 6.5826 6.84689 7 7.5 7C8.32843 7 9 6.32843 9 5.5C9 4.67157 8.32843 4 7.5 4C6.84689 4 6.29127 4.4174 6.08535 5H5V6H6.08535ZM15 6H9.94999C9.98278 5.83844 10 5.67123 10 5.5C10 5.32877 9.98278 5.16155 9.94999 5H15V6ZM11 14.5C11 14.7761 10.7761 15 10.5 15C10.2239 15 10 14.7761 10 14.5C10 14.2239 10.2239 14 10.5 14C10.7761 14 11 14.2239 11 14.5ZM9.08535 15C9.29127 15.5826 9.84689 16 10.5 16C11.3284 16 12 15.3284 12 14.5C12 13.6716 11.3284 13 10.5 13C9.84689 13 9.29127 13.4174 9.08535 14H5V15H9.08535ZM15 15H12.95C12.9828 14.8384 13 14.6712 13 14.5C13 14.3288 12.9828 14.1616 12.95 14H15V15ZM11.5 10.5C11.7761 10.5 12 10.2761 12 10C12 9.72386 11.7761 9.5 11.5 9.5C11.2239 9.5 11 9.72386 11 10C11 10.2761 11.2239 10.5 11.5 10.5ZM11.5 8.5C12.1531 8.5 12.7087 8.9174 12.9146 9.5H15V10.5H12.9146C12.7087 11.0826 12.1531 11.5 11.5 11.5C10.6716 11.5 10 10.8284 10 10C10 9.17157 10.6716 8.5 11.5 8.5ZM9.05001 10.5C9.01722 10.3384 9 10.1712 9 10C9 9.82877 9.01722 9.66155 9.05001 9.5H5V10.5H9.05001Z",
+                      "fill": "currentColor"
+                    },
+                    "children": []
+                  }
+                ]
+              },
+              {
+                "tag": "div",
+                "attributes": {
+                  "class": "min-w-0 flex-grow flex flex-col"
+                },
+                "children": [
+                  {
+                    "tag": "p",
+                    "attributes": {
+                      "class": "my-0 leading-tight capitalize"
+                    },
+                    "children": [
+                      "Settings · modeling · backface color",
+                      " "
+                    ]
+                  },
+                  {
+                    "tag": "p",
+                    "attributes": {
+                      "class": "my-0 text-xs text-chalkboard-60 dark:text-chalkboard-50"
+                    },
+                    "children": [
+                      "Default backface color for surfaces."
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "tag": "li",
+            "attributes": {
+              "class": "flex items-center gap-4 px-4 py-1.5 first:mt-2 last:mb-2 ui-active:bg-primary/10 dark:ui-active:bg-chalkboard-90 ui-disabled:!text-chalkboard-50",
+              "data-testid": "cmd-bar-option",
+              "role": "option",
+              "aria-selected": "false"
+            },
+            "children": [
+              {
+                "tag": "svg",
+                "attributes": {
+                  "viewBox": "0 0 20 20",
+                  "fill": "none",
+                  "aria-label": "settings",
+                  "class": "w-5 h-5 shrink-0"
+                },
+                "children": [
+                  {
+                    "tag": "path",
+                    "attributes": {
+                      "fill-rule": "evenodd",
+                      "clip-rule": "evenodd",
+                      "d": "M8 5.5C8 5.77614 7.77614 6 7.5 6C7.22386 6 7 5.77614 7 5.5C7 5.22386 7.22386 5 7.5 5C7.77614 5 8 5.22386 8 5.5ZM6.08535 6C6.29127 6.5826 6.84689 7 7.5 7C8.32843 7 9 6.32843 9 5.5C9 4.67157 8.32843 4 7.5 4C6.84689 4 6.29127 4.4174 6.08535 5H5V6H6.08535ZM15 6H9.94999C9.98278 5.83844 10 5.67123 10 5.5C10 5.32877 9.98278 5.16155 9.94999 5H15V6ZM11 14.5C11 14.7761 10.7761 15 10.5 15C10.2239 15 10 14.7761 10 14.5C10 14.2239 10.2239 14 10.5 14C10.7761 14 11 14.2239 11 14.5ZM9.08535 15C9.29127 15.5826 9.84689 16 10.5 16C11.3284 16 12 15.3284 12 14.5C12 13.6716 11.3284 13 10.5 13C9.84689 13 9.29127 13.4174 9.08535 14H5V15H9.08535ZM15 15H12.95C12.9828 14.8384 13 14.6712 13 14.5C13 14.3288 12.9828 14.1616 12.95 14H15V15ZM11.5 10.5C11.7761 10.5 12 10.2761 12 10C12 9.72386 11.7761 9.5 11.5 9.5C11.2239 9.5 11 9.72386 11 10C11 10.2761 11.2239 10.5 11.5 10.5ZM11.5 8.5C12.1531 8.5 12.7087 8.9174 12.9146 9.5H15V10.5H12.9146C12.7087 11.0826 12.1531 11.5 11.5 11.5C10.6716 11.5 10 10.8284 10 10C10 9.17157 10.6716 8.5 11.5 8.5ZM9.05001 10.5C9.01722 10.3384 9 10.1712 9 10C9 9.82877 9.01722 9.66155 9.05001 9.5H5V10.5H9.05001Z",
+                      "fill": "currentColor"
+                    },
+                    "children": []
+                  }
+                ]
+              },
+              {
+                "tag": "div",
+                "attributes": {
+                  "class": "min-w-0 flex-grow flex flex-col"
+                },
+                "children": [
+                  {
+                    "tag": "p",
+                    "attributes": {
+                      "class": "my-0 leading-tight capitalize"
+                    },
+                    "children": [
+                      "Settings · modeling · camera orbit",
+                      " "
+                    ]
+                  },
+                  {
+                    "tag": "p",
+                    "attributes": {
+                      "class": "my-0 text-xs text-chalkboard-60 dark:text-chalkboard-50"
+                    },
+                    "children": [
+                      "What methodology to use for orbiting the camera."
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "tag": "li",
+            "attributes": {
+              "class": "flex items-center gap-4 px-4 py-1.5 first:mt-2 last:mb-2 ui-active:bg-primary/10 dark:ui-active:bg-chalkboard-90 ui-disabled:!text-chalkboard-50",
+              "data-testid": "cmd-bar-option",
+              "role": "option",
+              "aria-selected": "false"
+            },
+            "children": [
+              {
+                "tag": "svg",
+                "attributes": {
+                  "viewBox": "0 0 20 20",
+                  "fill": "none",
+                  "aria-label": "settings",
+                  "class": "w-5 h-5 shrink-0"
+                },
+                "children": [
+                  {
+                    "tag": "path",
+                    "attributes": {
+                      "fill-rule": "evenodd",
+                      "clip-rule": "evenodd",
+                      "d": "M8 5.5C8 5.77614 7.77614 6 7.5 6C7.22386 6 7 5.77614 7 5.5C7 5.22386 7.22386 5 7.5 5C7.77614 5 8 5.22386 8 5.5ZM6.08535 6C6.29127 6.5826 6.84689 7 7.5 7C8.32843 7 9 6.32843 9 5.5C9 4.67157 8.32843 4 7.5 4C6.84689 4 6.29127 4.4174 6.08535 5H5V6H6.08535ZM15 6H9.94999C9.98278 5.83844 10 5.67123 10 5.5C10 5.32877 9.98278 5.16155 9.94999 5H15V6ZM11 14.5C11 14.7761 10.7761 15 10.5 15C10.2239 15 10 14.7761 10 14.5C10 14.2239 10.2239 14 10.5 14C10.7761 14 11 14.2239 11 14.5ZM9.08535 15C9.29127 15.5826 9.84689 16 10.5 16C11.3284 16 12 15.3284 12 14.5C12 13.6716 11.3284 13 10.5 13C9.84689 13 9.29127 13.4174 9.08535 14H5V15H9.08535ZM15 15H12.95C12.9828 14.8384 13 14.6712 13 14.5C13 14.3288 12.9828 14.1616 12.95 14H15V15ZM11.5 10.5C11.7761 10.5 12 10.2761 12 10C12 9.72386 11.7761 9.5 11.5 9.5C11.2239 9.5 11 9.72386 11 10C11 10.2761 11.2239 10.5 11.5 10.5ZM11.5 8.5C12.1531 8.5 12.7087 8.9174 12.9146 9.5H15V10.5H12.9146C12.7087 11.0826 12.1531 11.5 11.5 11.5C10.6716 11.5 10 10.8284 10 10C10 9.17157 10.6716 8.5 11.5 8.5ZM9.05001 10.5C9.01722 10.3384 9 10.1712 9 10C9 9.82877 9.01722 9.66155 9.05001 9.5H5V10.5H9.05001Z",
+                      "fill": "currentColor"
+                    },
+                    "children": []
+                  }
+                ]
+              },
+              {
+                "tag": "div",
+                "attributes": {
+                  "class": "min-w-0 flex-grow flex flex-col"
+                },
+                "children": [
+                  {
+                    "tag": "p",
+                    "attributes": {
+                      "class": "my-0 leading-tight capitalize"
+                    },
+                    "children": [
+                      "Settings · modeling · camera projection",
+                      " "
+                    ]
+                  },
+                  {
+                    "tag": "p",
+                    "attributes": {
+                      "class": "my-0 text-xs text-chalkboard-60 dark:text-chalkboard-50"
+                    },
+                    "children": [
+                      "Projection method applied to the 3D view, perspective or orthographic."
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "tag": "li",
+            "attributes": {
+              "class": "flex items-center gap-4 px-4 py-1.5 first:mt-2 last:mb-2 ui-active:bg-primary/10 dark:ui-active:bg-chalkboard-90 ui-disabled:!text-chalkboard-50",
+              "data-testid": "cmd-bar-option",
+              "role": "option",
+              "aria-selected": "false"
+            },
+            "children": [
+              {
+                "tag": "svg",
+                "attributes": {
+                  "viewBox": "0 0 20 20",
+                  "fill": "none",
+                  "aria-label": "settings",
+                  "class": "w-5 h-5 shrink-0"
+                },
+                "children": [
+                  {
+                    "tag": "path",
+                    "attributes": {
+                      "fill-rule": "evenodd",
+                      "clip-rule": "evenodd",
+                      "d": "M8 5.5C8 5.77614 7.77614 6 7.5 6C7.22386 6 7 5.77614 7 5.5C7 5.22386 7.22386 5 7.5 5C7.77614 5 8 5.22386 8 5.5ZM6.08535 6C6.29127 6.5826 6.84689 7 7.5 7C8.32843 7 9 6.32843 9 5.5C9 4.67157 8.32843 4 7.5 4C6.84689 4 6.29127 4.4174 6.08535 5H5V6H6.08535ZM15 6H9.94999C9.98278 5.83844 10 5.67123 10 5.5C10 5.32877 9.98278 5.16155 9.94999 5H15V6ZM11 14.5C11 14.7761 10.7761 15 10.5 15C10.2239 15 10 14.7761 10 14.5C10 14.2239 10.2239 14 10.5 14C10.7761 14 11 14.2239 11 14.5ZM9.08535 15C9.29127 15.5826 9.84689 16 10.5 16C11.3284 16 12 15.3284 12 14.5C12 13.6716 11.3284 13 10.5 13C9.84689 13 9.29127 13.4174 9.08535 14H5V15H9.08535ZM15 15H12.95C12.9828 14.8384 13 14.6712 13 14.5C13 14.3288 12.9828 14.1616 12.95 14H15V15ZM11.5 10.5C11.7761 10.5 12 10.2761 12 10C12 9.72386 11.7761 9.5 11.5 9.5C11.2239 9.5 11 9.72386 11 10C11 10.2761 11.2239 10.5 11.5 10.5ZM11.5 8.5C12.1531 8.5 12.7087 8.9174 12.9146 9.5H15V10.5H12.9146C12.7087 11.0826 12.1531 11.5 11.5 11.5C10.6716 11.5 10 10.8284 10 10C10 9.17157 10.6716 8.5 11.5 8.5ZM9.05001 10.5C9.01722 10.3384 9 10.1712 9 10C9 9.82877 9.01722 9.66155 9.05001 9.5H5V10.5H9.05001Z",
+                      "fill": "currentColor"
+                    },
+                    "children": []
+                  }
+                ]
+              },
+              {
+                "tag": "div",
+                "attributes": {
+                  "class": "min-w-0 flex-grow flex flex-col"
+                },
+                "children": [
+                  {
+                    "tag": "p",
+                    "attributes": {
+                      "class": "my-0 leading-tight capitalize"
+                    },
+                    "children": [
+                      "Settings · modeling · default unit",
+                      " "
+                    ]
+                  },
+                  {
+                    "tag": "p",
+                    "attributes": {
+                      "class": "my-0 text-xs text-chalkboard-60 dark:text-chalkboard-50"
+                    },
+                    "children": [
+                      "Set the default length unit setting value to give any new files."
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "tag": "li",
+            "attributes": {
+              "class": "flex items-center gap-4 px-4 py-1.5 first:mt-2 last:mb-2 ui-active:bg-primary/10 dark:ui-active:bg-chalkboard-90 ui-disabled:!text-chalkboard-50",
+              "data-testid": "cmd-bar-option",
+              "role": "option",
+              "aria-selected": "false"
+            },
+            "children": [
+              {
+                "tag": "svg",
+                "attributes": {
+                  "viewBox": "0 0 20 20",
+                  "fill": "none",
+                  "aria-label": "settings",
+                  "class": "w-5 h-5 shrink-0"
+                },
+                "children": [
+                  {
+                    "tag": "path",
+                    "attributes": {
+                      "fill-rule": "evenodd",
+                      "clip-rule": "evenodd",
+                      "d": "M8 5.5C8 5.77614 7.77614 6 7.5 6C7.22386 6 7 5.77614 7 5.5C7 5.22386 7.22386 5 7.5 5C7.77614 5 8 5.22386 8 5.5ZM6.08535 6C6.29127 6.5826 6.84689 7 7.5 7C8.32843 7 9 6.32843 9 5.5C9 4.67157 8.32843 4 7.5 4C6.84689 4 6.29127 4.4174 6.08535 5H5V6H6.08535ZM15 6H9.94999C9.98278 5.83844 10 5.67123 10 5.5C10 5.32877 9.98278 5.16155 9.94999 5H15V6ZM11 14.5C11 14.7761 10.7761 15 10.5 15C10.2239 15 10 14.7761 10 14.5C10 14.2239 10.2239 14 10.5 14C10.7761 14 11 14.2239 11 14.5ZM9.08535 15C9.29127 15.5826 9.84689 16 10.5 16C11.3284 16 12 15.3284 12 14.5C12 13.6716 11.3284 13 10.5 13C9.84689 13 9.29127 13.4174 9.08535 14H5V15H9.08535ZM15 15H12.95C12.9828 14.8384 13 14.6712 13 14.5C13 14.3288 12.9828 14.1616 12.95 14H15V15ZM11.5 10.5C11.7761 10.5 12 10.2761 12 10C12 9.72386 11.7761 9.5 11.5 9.5C11.2239 9.5 11 9.72386 11 10C11 10.2761 11.2239 10.5 11.5 10.5ZM11.5 8.5C12.1531 8.5 12.7087 8.9174 12.9146 9.5H15V10.5H12.9146C12.7087 11.0826 12.1531 11.5 11.5 11.5C10.6716 11.5 10 10.8284 10 10C10 9.17157 10.6716 8.5 11.5 8.5ZM9.05001 10.5C9.01722 10.3384 9 10.1712 9 10C9 9.82877 9.01722 9.66155 9.05001 9.5H5V10.5H9.05001Z",
+                      "fill": "currentColor"
+                    },
+                    "children": []
+                  }
+                ]
+              },
+              {
+                "tag": "div",
+                "attributes": {
+                  "class": "min-w-0 flex-grow flex flex-col"
+                },
+                "children": [
+                  {
+                    "tag": "p",
+                    "attributes": {
+                      "class": "my-0 leading-tight capitalize"
+                    },
+                    "children": [
+                      "Settings · modeling · enable touch controls",
+                      " "
+                    ]
+                  },
+                  {
+                    "tag": "p",
+                    "attributes": {
+                      "class": "my-0 text-xs text-chalkboard-60 dark:text-chalkboard-50"
+                    },
+                    "children": [
+                      "Enable touch events to navigate the 3D scene. When enabled, orbit with one-finger drag, pan with two-finger drag, and zoom with pinch."
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "tag": "li",
+            "attributes": {
+              "class": "flex items-center gap-4 px-4 py-1.5 first:mt-2 last:mb-2 ui-active:bg-primary/10 dark:ui-active:bg-chalkboard-90 ui-disabled:!text-chalkboard-50",
+              "data-testid": "cmd-bar-option",
+              "role": "option",
+              "aria-selected": "false"
+            },
+            "children": [
+              {
+                "tag": "svg",
+                "attributes": {
+                  "viewBox": "0 0 20 20",
+                  "fill": "none",
+                  "aria-label": "settings",
+                  "class": "w-5 h-5 shrink-0"
+                },
+                "children": [
+                  {
+                    "tag": "path",
+                    "attributes": {
+                      "fill-rule": "evenodd",
+                      "clip-rule": "evenodd",
+                      "d": "M8 5.5C8 5.77614 7.77614 6 7.5 6C7.22386 6 7 5.77614 7 5.5C7 5.22386 7.22386 5 7.5 5C7.77614 5 8 5.22386 8 5.5ZM6.08535 6C6.29127 6.5826 6.84689 7 7.5 7C8.32843 7 9 6.32843 9 5.5C9 4.67157 8.32843 4 7.5 4C6.84689 4 6.29127 4.4174 6.08535 5H5V6H6.08535ZM15 6H9.94999C9.98278 5.83844 10 5.67123 10 5.5C10 5.32877 9.98278 5.16155 9.94999 5H15V6ZM11 14.5C11 14.7761 10.7761 15 10.5 15C10.2239 15 10 14.7761 10 14.5C10 14.2239 10.2239 14 10.5 14C10.7761 14 11 14.2239 11 14.5ZM9.08535 15C9.29127 15.5826 9.84689 16 10.5 16C11.3284 16 12 15.3284 12 14.5C12 13.6716 11.3284 13 10.5 13C9.84689 13 9.29127 13.4174 9.08535 14H5V15H9.08535ZM15 15H12.95C12.9828 14.8384 13 14.6712 13 14.5C13 14.3288 12.9828 14.1616 12.95 14H15V15ZM11.5 10.5C11.7761 10.5 12 10.2761 12 10C12 9.72386 11.7761 9.5 11.5 9.5C11.2239 9.5 11 9.72386 11 10C11 10.2761 11.2239 10.5 11.5 10.5ZM11.5 8.5C12.1531 8.5 12.7087 8.9174 12.9146 9.5H15V10.5H12.9146C12.7087 11.0826 12.1531 11.5 11.5 11.5C10.6716 11.5 10 10.8284 10 10C10 9.17157 10.6716 8.5 11.5 8.5ZM9.05001 10.5C9.01722 10.3384 9 10.1712 9 10C9 9.82877 9.01722 9.66155 9.05001 9.5H5V10.5H9.05001Z",
+                      "fill": "currentColor"
+                    },
+                    "children": []
+                  }
+                ]
+              },
+              {
+                "tag": "div",
+                "attributes": {
+                  "class": "min-w-0 flex-grow flex flex-col"
+                },
+                "children": [
+                  {
+                    "tag": "p",
+                    "attributes": {
+                      "class": "my-0 leading-tight capitalize"
+                    },
+                    "children": [
+                      "Settings · modeling · fixed size grid",
+                      " "
+                    ]
+                  },
+                  {
+                    "tag": "p",
+                    "attributes": {
+                      "class": "my-0 text-xs text-chalkboard-60 dark:text-chalkboard-50"
+                    },
+                    "children": [
+                      "When enabled, the grid will use a fixed size based on your selected units rather than automatically scaling with zoom level."
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "tag": "li",
+            "attributes": {
+              "class": "flex items-center gap-4 px-4 py-1.5 first:mt-2 last:mb-2 ui-active:bg-primary/10 dark:ui-active:bg-chalkboard-90 ui-disabled:!text-chalkboard-50",
+              "data-testid": "cmd-bar-option",
+              "role": "option",
+              "aria-selected": "false"
+            },
+            "children": [
+              {
+                "tag": "svg",
+                "attributes": {
+                  "viewBox": "0 0 20 20",
+                  "fill": "none",
+                  "aria-label": "settings",
+                  "class": "w-5 h-5 shrink-0"
+                },
+                "children": [
+                  {
+                    "tag": "path",
+                    "attributes": {
+                      "fill-rule": "evenodd",
+                      "clip-rule": "evenodd",
+                      "d": "M8 5.5C8 5.77614 7.77614 6 7.5 6C7.22386 6 7 5.77614 7 5.5C7 5.22386 7.22386 5 7.5 5C7.77614 5 8 5.22386 8 5.5ZM6.08535 6C6.29127 6.5826 6.84689 7 7.5 7C8.32843 7 9 6.32843 9 5.5C9 4.67157 8.32843 4 7.5 4C6.84689 4 6.29127 4.4174 6.08535 5H5V6H6.08535ZM15 6H9.94999C9.98278 5.83844 10 5.67123 10 5.5C10 5.32877 9.98278 5.16155 9.94999 5H15V6ZM11 14.5C11 14.7761 10.7761 15 10.5 15C10.2239 15 10 14.7761 10 14.5C10 14.2239 10.2239 14 10.5 14C10.7761 14 11 14.2239 11 14.5ZM9.08535 15C9.29127 15.5826 9.84689 16 10.5 16C11.3284 16 12 15.3284 12 14.5C12 13.6716 11.3284 13 10.5 13C9.84689 13 9.29127 13.4174 9.08535 14H5V15H9.08535ZM15 15H12.95C12.9828 14.8384 13 14.6712 13 14.5C13 14.3288 12.9828 14.1616 12.95 14H15V15ZM11.5 10.5C11.7761 10.5 12 10.2761 12 10C12 9.72386 11.7761 9.5 11.5 9.5C11.2239 9.5 11 9.72386 11 10C11 10.2761 11.2239 10.5 11.5 10.5ZM11.5 8.5C12.1531 8.5 12.7087 8.9174 12.9146 9.5H15V10.5H12.9146C12.7087 11.0826 12.1531 11.5 11.5 11.5C10.6716 11.5 10 10.8284 10 10C10 9.17157 10.6716 8.5 11.5 8.5ZM9.05001 10.5C9.01722 10.3384 9 10.1712 9 10C9 9.82877 9.01722 9.66155 9.05001 9.5H5V10.5H9.05001Z",
+                      "fill": "currentColor"
+                    },
+                    "children": []
+                  }
+                ]
+              },
+              {
+                "tag": "div",
+                "attributes": {
+                  "class": "min-w-0 flex-grow flex flex-col"
+                },
+                "children": [
+                  {
+                    "tag": "p",
+                    "attributes": {
+                      "class": "my-0 leading-tight capitalize"
+                    },
+                    "children": [
+                      "Settings · modeling · gizmo type",
+                      " "
+                    ]
+                  },
+                  {
+                    "tag": "p",
+                    "attributes": {
+                      "class": "my-0 text-xs text-chalkboard-60 dark:text-chalkboard-50"
+                    },
+                    "children": [
+                      "Which type of orientation gizmo to use."
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "tag": "li",
+            "attributes": {
+              "class": "flex items-center gap-4 px-4 py-1.5 first:mt-2 last:mb-2 ui-active:bg-primary/10 dark:ui-active:bg-chalkboard-90 ui-disabled:!text-chalkboard-50",
+              "data-testid": "cmd-bar-option",
+              "role": "option",
+              "aria-selected": "false"
+            },
+            "children": [
+              {
+                "tag": "svg",
+                "attributes": {
+                  "viewBox": "0 0 20 20",
+                  "fill": "none",
+                  "aria-label": "settings",
+                  "class": "w-5 h-5 shrink-0"
+                },
+                "children": [
+                  {
+                    "tag": "path",
+                    "attributes": {
+                      "fill-rule": "evenodd",
+                      "clip-rule": "evenodd",
+                      "d": "M8 5.5C8 5.77614 7.77614 6 7.5 6C7.22386 6 7 5.77614 7 5.5C7 5.22386 7.22386 5 7.5 5C7.77614 5 8 5.22386 8 5.5ZM6.08535 6C6.29127 6.5826 6.84689 7 7.5 7C8.32843 7 9 6.32843 9 5.5C9 4.67157 8.32843 4 7.5 4C6.84689 4 6.29127 4.4174 6.08535 5H5V6H6.08535ZM15 6H9.94999C9.98278 5.83844 10 5.67123 10 5.5C10 5.32877 9.98278 5.16155 9.94999 5H15V6ZM11 14.5C11 14.7761 10.7761 15 10.5 15C10.2239 15 10 14.7761 10 14.5C10 14.2239 10.2239 14 10.5 14C10.7761 14 11 14.2239 11 14.5ZM9.08535 15C9.29127 15.5826 9.84689 16 10.5 16C11.3284 16 12 15.3284 12 14.5C12 13.6716 11.3284 13 10.5 13C9.84689 13 9.29127 13.4174 9.08535 14H5V15H9.08535ZM15 15H12.95C12.9828 14.8384 13 14.6712 13 14.5C13 14.3288 12.9828 14.1616 12.95 14H15V15ZM11.5 10.5C11.7761 10.5 12 10.2761 12 10C12 9.72386 11.7761 9.5 11.5 9.5C11.2239 9.5 11 9.72386 11 10C11 10.2761 11.2239 10.5 11.5 10.5ZM11.5 8.5C12.1531 8.5 12.7087 8.9174 12.9146 9.5H15V10.5H12.9146C12.7087 11.0826 12.1531 11.5 11.5 11.5C10.6716 11.5 10 10.8284 10 10C10 9.17157 10.6716 8.5 11.5 8.5ZM9.05001 10.5C9.01722 10.3384 9 10.1712 9 10C9 9.82877 9.01722 9.66155 9.05001 9.5H5V10.5H9.05001Z",
+                      "fill": "currentColor"
+                    },
+                    "children": []
+                  }
+                ]
+              },
+              {
+                "tag": "div",
+                "attributes": {
+                  "class": "min-w-0 flex-grow flex flex-col"
+                },
+                "children": [
+                  {
+                    "tag": "p",
+                    "attributes": {
+                      "class": "my-0 leading-tight capitalize"
+                    },
+                    "children": [
+                      "Settings · modeling · highlight edges",
+                      " "
+                    ]
+                  },
+                  {
+                    "tag": "p",
+                    "attributes": {
+                      "class": "my-0 text-xs text-chalkboard-60 dark:text-chalkboard-50"
+                    },
+                    "children": [
+                      "Whether to highlight edges of 3D objects."
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "tag": "li",
+            "attributes": {
+              "class": "flex items-center gap-4 px-4 py-1.5 first:mt-2 last:mb-2 ui-active:bg-primary/10 dark:ui-active:bg-chalkboard-90 ui-disabled:!text-chalkboard-50",
+              "data-testid": "cmd-bar-option",
+              "role": "option",
+              "aria-selected": "false"
+            },
+            "children": [
+              {
+                "tag": "svg",
+                "attributes": {
+                  "viewBox": "0 0 20 20",
+                  "fill": "none",
+                  "aria-label": "settings",
+                  "class": "w-5 h-5 shrink-0"
+                },
+                "children": [
+                  {
+                    "tag": "path",
+                    "attributes": {
+                      "fill-rule": "evenodd",
+                      "clip-rule": "evenodd",
+                      "d": "M8 5.5C8 5.77614 7.77614 6 7.5 6C7.22386 6 7 5.77614 7 5.5C7 5.22386 7.22386 5 7.5 5C7.77614 5 8 5.22386 8 5.5ZM6.08535 6C6.29127 6.5826 6.84689 7 7.5 7C8.32843 7 9 6.32843 9 5.5C9 4.67157 8.32843 4 7.5 4C6.84689 4 6.29127 4.4174 6.08535 5H5V6H6.08535ZM15 6H9.94999C9.98278 5.83844 10 5.67123 10 5.5C10 5.32877 9.98278 5.16155 9.94999 5H15V6ZM11 14.5C11 14.7761 10.7761 15 10.5 15C10.2239 15 10 14.7761 10 14.5C10 14.2239 10.2239 14 10.5 14C10.7761 14 11 14.2239 11 14.5ZM9.08535 15C9.29127 15.5826 9.84689 16 10.5 16C11.3284 16 12 15.3284 12 14.5C12 13.6716 11.3284 13 10.5 13C9.84689 13 9.29127 13.4174 9.08535 14H5V15H9.08535ZM15 15H12.95C12.9828 14.8384 13 14.6712 13 14.5C13 14.3288 12.9828 14.1616 12.95 14H15V15ZM11.5 10.5C11.7761 10.5 12 10.2761 12 10C12 9.72386 11.7761 9.5 11.5 9.5C11.2239 9.5 11 9.72386 11 10C11 10.2761 11.2239 10.5 11.5 10.5ZM11.5 8.5C12.1531 8.5 12.7087 8.9174 12.9146 9.5H15V10.5H12.9146C12.7087 11.0826 12.1531 11.5 11.5 11.5C10.6716 11.5 10 10.8284 10 10C10 9.17157 10.6716 8.5 11.5 8.5ZM9.05001 10.5C9.01722 10.3384 9 10.1712 9 10C9 9.82877 9.01722 9.66155 9.05001 9.5H5V10.5H9.05001Z",
+                      "fill": "currentColor"
+                    },
+                    "children": []
+                  }
+                ]
+              },
+              {
+                "tag": "div",
+                "attributes": {
+                  "class": "min-w-0 flex-grow flex flex-col"
+                },
+                "children": [
+                  {
+                    "tag": "p",
+                    "attributes": {
+                      "class": "my-0 leading-tight capitalize"
+                    },
+                    "children": [
+                      "Settings · modeling · major grid spacing",
+                      " "
+                    ]
+                  },
+                  {
+                    "tag": "p",
+                    "attributes": {
+                      "class": "my-0 text-xs text-chalkboard-60 dark:text-chalkboard-50"
+                    },
+                    "children": [
+                      "The space between major grid lines, specified in the current unit."
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "tag": "li",
+            "attributes": {
+              "class": "flex items-center gap-4 px-4 py-1.5 first:mt-2 last:mb-2 ui-active:bg-primary/10 dark:ui-active:bg-chalkboard-90 ui-disabled:!text-chalkboard-50",
+              "data-testid": "cmd-bar-option",
+              "role": "option",
+              "aria-selected": "false"
+            },
+            "children": [
+              {
+                "tag": "svg",
+                "attributes": {
+                  "viewBox": "0 0 20 20",
+                  "fill": "none",
+                  "aria-label": "settings",
+                  "class": "w-5 h-5 shrink-0"
+                },
+                "children": [
+                  {
+                    "tag": "path",
+                    "attributes": {
+                      "fill-rule": "evenodd",
+                      "clip-rule": "evenodd",
+                      "d": "M8 5.5C8 5.77614 7.77614 6 7.5 6C7.22386 6 7 5.77614 7 5.5C7 5.22386 7.22386 5 7.5 5C7.77614 5 8 5.22386 8 5.5ZM6.08535 6C6.29127 6.5826 6.84689 7 7.5 7C8.32843 7 9 6.32843 9 5.5C9 4.67157 8.32843 4 7.5 4C6.84689 4 6.29127 4.4174 6.08535 5H5V6H6.08535ZM15 6H9.94999C9.98278 5.83844 10 5.67123 10 5.5C10 5.32877 9.98278 5.16155 9.94999 5H15V6ZM11 14.5C11 14.7761 10.7761 15 10.5 15C10.2239 15 10 14.7761 10 14.5C10 14.2239 10.2239 14 10.5 14C10.7761 14 11 14.2239 11 14.5ZM9.08535 15C9.29127 15.5826 9.84689 16 10.5 16C11.3284 16 12 15.3284 12 14.5C12 13.6716 11.3284 13 10.5 13C9.84689 13 9.29127 13.4174 9.08535 14H5V15H9.08535ZM15 15H12.95C12.9828 14.8384 13 14.6712 13 14.5C13 14.3288 12.9828 14.1616 12.95 14H15V15ZM11.5 10.5C11.7761 10.5 12 10.2761 12 10C12 9.72386 11.7761 9.5 11.5 9.5C11.2239 9.5 11 9.72386 11 10C11 10.2761 11.2239 10.5 11.5 10.5ZM11.5 8.5C12.1531 8.5 12.7087 8.9174 12.9146 9.5H15V10.5H12.9146C12.7087 11.0826 12.1531 11.5 11.5 11.5C10.6716 11.5 10 10.8284 10 10C10 9.17157 10.6716 8.5 11.5 8.5ZM9.05001 10.5C9.01722 10.3384 9 10.1712 9 10C9 9.82877 9.01722 9.66155 9.05001 9.5H5V10.5H9.05001Z",
+                      "fill": "currentColor"
+                    },
+                    "children": []
+                  }
+                ]
+              },
+              {
+                "tag": "div",
+                "attributes": {
+                  "class": "min-w-0 flex-grow flex flex-col"
+                },
+                "children": [
+                  {
+                    "tag": "p",
+                    "attributes": {
+                      "class": "my-0 leading-tight capitalize"
+                    },
+                    "children": [
+                      "Settings · modeling · minor grids per major",
+                      " "
+                    ]
+                  },
+                  {
+                    "tag": "p",
+                    "attributes": {
+                      "class": "my-0 text-xs text-chalkboard-60 dark:text-chalkboard-50"
+                    },
+                    "children": [
+                      "Number of minor grid lines per major grid line."
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "tag": "li",
+            "attributes": {
+              "class": "flex items-center gap-4 px-4 py-1.5 first:mt-2 last:mb-2 ui-active:bg-primary/10 dark:ui-active:bg-chalkboard-90 ui-disabled:!text-chalkboard-50",
+              "data-testid": "cmd-bar-option",
+              "role": "option",
+              "aria-selected": "false"
+            },
+            "children": [
+              {
+                "tag": "svg",
+                "attributes": {
+                  "viewBox": "0 0 20 20",
+                  "fill": "none",
+                  "aria-label": "settings",
+                  "class": "w-5 h-5 shrink-0"
+                },
+                "children": [
+                  {
+                    "tag": "path",
+                    "attributes": {
+                      "fill-rule": "evenodd",
+                      "clip-rule": "evenodd",
+                      "d": "M8 5.5C8 5.77614 7.77614 6 7.5 6C7.22386 6 7 5.77614 7 5.5C7 5.22386 7.22386 5 7.5 5C7.77614 5 8 5.22386 8 5.5ZM6.08535 6C6.29127 6.5826 6.84689 7 7.5 7C8.32843 7 9 6.32843 9 5.5C9 4.67157 8.32843 4 7.5 4C6.84689 4 6.29127 4.4174 6.08535 5H5V6H6.08535ZM15 6H9.94999C9.98278 5.83844 10 5.67123 10 5.5C10 5.32877 9.98278 5.16155 9.94999 5H15V6ZM11 14.5C11 14.7761 10.7761 15 10.5 15C10.2239 15 10 14.7761 10 14.5C10 14.2239 10.2239 14 10.5 14C10.7761 14 11 14.2239 11 14.5ZM9.08535 15C9.29127 15.5826 9.84689 16 10.5 16C11.3284 16 12 15.3284 12 14.5C12 13.6716 11.3284 13 10.5 13C9.84689 13 9.29127 13.4174 9.08535 14H5V15H9.08535ZM15 15H12.95C12.9828 14.8384 13 14.6712 13 14.5C13 14.3288 12.9828 14.1616 12.95 14H15V15ZM11.5 10.5C11.7761 10.5 12 10.2761 12 10C12 9.72386 11.7761 9.5 11.5 9.5C11.2239 9.5 11 9.72386 11 10C11 10.2761 11.2239 10.5 11.5 10.5ZM11.5 8.5C12.1531 8.5 12.7087 8.9174 12.9146 9.5H15V10.5H12.9146C12.7087 11.0826 12.1531 11.5 11.5 11.5C10.6716 11.5 10 10.8284 10 10C10 9.17157 10.6716 8.5 11.5 8.5ZM9.05001 10.5C9.01722 10.3384 9 10.1712 9 10C9 9.82877 9.01722 9.66155 9.05001 9.5H5V10.5H9.05001Z",
+                      "fill": "currentColor"
+                    },
+                    "children": []
+                  }
+                ]
+              },
+              {
+                "tag": "div",
+                "attributes": {
+                  "class": "min-w-0 flex-grow flex flex-col"
+                },
+                "children": [
+                  {
+                    "tag": "p",
+                    "attributes": {
+                      "class": "my-0 leading-tight capitalize"
+                    },
+                    "children": [
+                      "Settings · modeling · mouse controls",
+                      " "
+                    ]
+                  },
+                  {
+                    "tag": "p",
+                    "attributes": {
+                      "class": "my-0 text-xs text-chalkboard-60 dark:text-chalkboard-50"
+                    },
+                    "children": [
+                      "The controls for how to navigate the 3D view."
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "tag": "li",
+            "attributes": {
+              "class": "flex items-center gap-4 px-4 py-1.5 first:mt-2 last:mb-2 ui-active:bg-primary/10 dark:ui-active:bg-chalkboard-90 ui-disabled:!text-chalkboard-50",
+              "data-testid": "cmd-bar-option",
+              "role": "option",
+              "aria-selected": "false"
+            },
+            "children": [
+              {
+                "tag": "svg",
+                "attributes": {
+                  "viewBox": "0 0 20 20",
+                  "fill": "none",
+                  "aria-label": "settings",
+                  "class": "w-5 h-5 shrink-0"
+                },
+                "children": [
+                  {
+                    "tag": "path",
+                    "attributes": {
+                      "fill-rule": "evenodd",
+                      "clip-rule": "evenodd",
+                      "d": "M8 5.5C8 5.77614 7.77614 6 7.5 6C7.22386 6 7 5.77614 7 5.5C7 5.22386 7.22386 5 7.5 5C7.77614 5 8 5.22386 8 5.5ZM6.08535 6C6.29127 6.5826 6.84689 7 7.5 7C8.32843 7 9 6.32843 9 5.5C9 4.67157 8.32843 4 7.5 4C6.84689 4 6.29127 4.4174 6.08535 5H5V6H6.08535ZM15 6H9.94999C9.98278 5.83844 10 5.67123 10 5.5C10 5.32877 9.98278 5.16155 9.94999 5H15V6ZM11 14.5C11 14.7761 10.7761 15 10.5 15C10.2239 15 10 14.7761 10 14.5C10 14.2239 10.2239 14 10.5 14C10.7761 14 11 14.2239 11 14.5ZM9.08535 15C9.29127 15.5826 9.84689 16 10.5 16C11.3284 16 12 15.3284 12 14.5C12 13.6716 11.3284 13 10.5 13C9.84689 13 9.29127 13.4174 9.08535 14H5V15H9.08535ZM15 15H12.95C12.9828 14.8384 13 14.6712 13 14.5C13 14.3288 12.9828 14.1616 12.95 14H15V15ZM11.5 10.5C11.7761 10.5 12 10.2761 12 10C12 9.72386 11.7761 9.5 11.5 9.5C11.2239 9.5 11 9.72386 11 10C11 10.2761 11.2239 10.5 11.5 10.5ZM11.5 8.5C12.1531 8.5 12.7087 8.9174 12.9146 9.5H15V10.5H12.9146C12.7087 11.0826 12.1531 11.5 11.5 11.5C10.6716 11.5 10 10.8284 10 10C10 9.17157 10.6716 8.5 11.5 8.5ZM9.05001 10.5C9.01722 10.3384 9 10.1712 9 10C9 9.82877 9.01722 9.66155 9.05001 9.5H5V10.5H9.05001Z",
+                      "fill": "currentColor"
+                    },
+                    "children": []
+                  }
+                ]
+              },
+              {
+                "tag": "div",
+                "attributes": {
+                  "class": "min-w-0 flex-grow flex flex-col"
+                },
+                "children": [
+                  {
+                    "tag": "p",
+                    "attributes": {
+                      "class": "my-0 leading-tight capitalize"
+                    },
+                    "children": [
+                      "Settings · modeling · show scale grid",
+                      " "
+                    ]
+                  },
+                  {
+                    "tag": "p",
+                    "attributes": {
+                      "class": "my-0 text-xs text-chalkboard-60 dark:text-chalkboard-50"
+                    },
+                    "children": [
+                      "Whether to show a scale grid in the 3D modeling view."
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "tag": "li",
+            "attributes": {
+              "class": "flex items-center gap-4 px-4 py-1.5 first:mt-2 last:mb-2 ui-active:bg-primary/10 dark:ui-active:bg-chalkboard-90 ui-disabled:!text-chalkboard-50",
+              "data-testid": "cmd-bar-option",
+              "role": "option",
+              "aria-selected": "false"
+            },
+            "children": [
+              {
+                "tag": "svg",
+                "attributes": {
+                  "viewBox": "0 0 20 20",
+                  "fill": "none",
+                  "aria-label": "settings",
+                  "class": "w-5 h-5 shrink-0"
+                },
+                "children": [
+                  {
+                    "tag": "path",
+                    "attributes": {
+                      "fill-rule": "evenodd",
+                      "clip-rule": "evenodd",
+                      "d": "M8 5.5C8 5.77614 7.77614 6 7.5 6C7.22386 6 7 5.77614 7 5.5C7 5.22386 7.22386 5 7.5 5C7.77614 5 8 5.22386 8 5.5ZM6.08535 6C6.29127 6.5826 6.84689 7 7.5 7C8.32843 7 9 6.32843 9 5.5C9 4.67157 8.32843 4 7.5 4C6.84689 4 6.29127 4.4174 6.08535 5H5V6H6.08535ZM15 6H9.94999C9.98278 5.83844 10 5.67123 10 5.5C10 5.32877 9.98278 5.16155 9.94999 5H15V6ZM11 14.5C11 14.7761 10.7761 15 10.5 15C10.2239 15 10 14.7761 10 14.5C10 14.2239 10.2239 14 10.5 14C10.7761 14 11 14.2239 11 14.5ZM9.08535 15C9.29127 15.5826 9.84689 16 10.5 16C11.3284 16 12 15.3284 12 14.5C12 13.6716 11.3284 13 10.5 13C9.84689 13 9.29127 13.4174 9.08535 14H5V15H9.08535ZM15 15H12.95C12.9828 14.8384 13 14.6712 13 14.5C13 14.3288 12.9828 14.1616 12.95 14H15V15ZM11.5 10.5C11.7761 10.5 12 10.2761 12 10C12 9.72386 11.7761 9.5 11.5 9.5C11.2239 9.5 11 9.72386 11 10C11 10.2761 11.2239 10.5 11.5 10.5ZM11.5 8.5C12.1531 8.5 12.7087 8.9174 12.9146 9.5H15V10.5H12.9146C12.7087 11.0826 12.1531 11.5 11.5 11.5C10.6716 11.5 10 10.8284 10 10C10 9.17157 10.6716 8.5 11.5 8.5ZM9.05001 10.5C9.01722 10.3384 9 10.1712 9 10C9 9.82877 9.01722 9.66155 9.05001 9.5H5V10.5H9.05001Z",
+                      "fill": "currentColor"
+                    },
+                    "children": []
+                  }
+                ]
+              },
+              {
+                "tag": "div",
+                "attributes": {
+                  "class": "min-w-0 flex-grow flex flex-col"
+                },
+                "children": [
+                  {
+                    "tag": "p",
+                    "attributes": {
+                      "class": "my-0 leading-tight capitalize"
+                    },
+                    "children": [
+                      "Settings · modeling · show sketch grid",
+                      " "
+                    ]
+                  },
+                  {
+                    "tag": "p",
+                    "attributes": {
+                      "class": "my-0 text-xs text-chalkboard-60 dark:text-chalkboard-50"
+                    },
+                    "children": [
+                      "Whether to show a grid while sketching."
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "tag": "li",
+            "attributes": {
+              "class": "flex items-center gap-4 px-4 py-1.5 first:mt-2 last:mb-2 ui-active:bg-primary/10 dark:ui-active:bg-chalkboard-90 ui-disabled:!text-chalkboard-50",
+              "data-testid": "cmd-bar-option",
+              "role": "option",
+              "aria-selected": "false"
+            },
+            "children": [
+              {
+                "tag": "svg",
+                "attributes": {
+                  "viewBox": "0 0 20 20",
+                  "fill": "none",
+                  "aria-label": "settings",
+                  "class": "w-5 h-5 shrink-0"
+                },
+                "children": [
+                  {
+                    "tag": "path",
+                    "attributes": {
+                      "fill-rule": "evenodd",
+                      "clip-rule": "evenodd",
+                      "d": "M8 5.5C8 5.77614 7.77614 6 7.5 6C7.22386 6 7 5.77614 7 5.5C7 5.22386 7.22386 5 7.5 5C7.77614 5 8 5.22386 8 5.5ZM6.08535 6C6.29127 6.5826 6.84689 7 7.5 7C8.32843 7 9 6.32843 9 5.5C9 4.67157 8.32843 4 7.5 4C6.84689 4 6.29127 4.4174 6.08535 5H5V6H6.08535ZM15 6H9.94999C9.98278 5.83844 10 5.67123 10 5.5C10 5.32877 9.98278 5.16155 9.94999 5H15V6ZM11 14.5C11 14.7761 10.7761 15 10.5 15C10.2239 15 10 14.7761 10 14.5C10 14.2239 10.2239 14 10.5 14C10.7761 14 11 14.2239 11 14.5ZM9.08535 15C9.29127 15.5826 9.84689 16 10.5 16C11.3284 16 12 15.3284 12 14.5C12 13.6716 11.3284 13 10.5 13C9.84689 13 9.29127 13.4174 9.08535 14H5V15H9.08535ZM15 15H12.95C12.9828 14.8384 13 14.6712 13 14.5C13 14.3288 12.9828 14.1616 12.95 14H15V15ZM11.5 10.5C11.7761 10.5 12 10.2761 12 10C12 9.72386 11.7761 9.5 11.5 9.5C11.2239 9.5 11 9.72386 11 10C11 10.2761 11.2239 10.5 11.5 10.5ZM11.5 8.5C12.1531 8.5 12.7087 8.9174 12.9146 9.5H15V10.5H12.9146C12.7087 11.0826 12.1531 11.5 11.5 11.5C10.6716 11.5 10 10.8284 10 10C10 9.17157 10.6716 8.5 11.5 8.5ZM9.05001 10.5C9.01722 10.3384 9 10.1712 9 10C9 9.82877 9.01722 9.66155 9.05001 9.5H5V10.5H9.05001Z",
+                      "fill": "currentColor"
+                    },
+                    "children": []
+                  }
+                ]
+              },
+              {
+                "tag": "div",
+                "attributes": {
+                  "class": "min-w-0 flex-grow flex flex-col"
+                },
+                "children": [
+                  {
+                    "tag": "p",
+                    "attributes": {
+                      "class": "my-0 leading-tight capitalize"
+                    },
+                    "children": [
+                      "Settings · modeling · snap to grid",
+                      " "
+                    ]
+                  },
+                  {
+                    "tag": "p",
+                    "attributes": {
+                      "class": "my-0 text-xs text-chalkboard-60 dark:text-chalkboard-50"
+                    },
+                    "children": [
+                      "Snap the cursor to the unit grid when drawing lines, arcs, and other segment-based tools."
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "tag": "li",
+            "attributes": {
+              "class": "flex items-center gap-4 px-4 py-1.5 first:mt-2 last:mb-2 ui-active:bg-primary/10 dark:ui-active:bg-chalkboard-90 ui-disabled:!text-chalkboard-50",
+              "data-testid": "cmd-bar-option",
+              "role": "option",
+              "aria-selected": "false"
+            },
+            "children": [
+              {
+                "tag": "svg",
+                "attributes": {
+                  "viewBox": "0 0 20 20",
+                  "fill": "none",
+                  "aria-label": "settings",
+                  "class": "w-5 h-5 shrink-0"
+                },
+                "children": [
+                  {
+                    "tag": "path",
+                    "attributes": {
+                      "fill-rule": "evenodd",
+                      "clip-rule": "evenodd",
+                      "d": "M8 5.5C8 5.77614 7.77614 6 7.5 6C7.22386 6 7 5.77614 7 5.5C7 5.22386 7.22386 5 7.5 5C7.77614 5 8 5.22386 8 5.5ZM6.08535 6C6.29127 6.5826 6.84689 7 7.5 7C8.32843 7 9 6.32843 9 5.5C9 4.67157 8.32843 4 7.5 4C6.84689 4 6.29127 4.4174 6.08535 5H5V6H6.08535ZM15 6H9.94999C9.98278 5.83844 10 5.67123 10 5.5C10 5.32877 9.98278 5.16155 9.94999 5H15V6ZM11 14.5C11 14.7761 10.7761 15 10.5 15C10.2239 15 10 14.7761 10 14.5C10 14.2239 10.2239 14 10.5 14C10.7761 14 11 14.2239 11 14.5ZM9.08535 15C9.29127 15.5826 9.84689 16 10.5 16C11.3284 16 12 15.3284 12 14.5C12 13.6716 11.3284 13 10.5 13C9.84689 13 9.29127 13.4174 9.08535 14H5V15H9.08535ZM15 15H12.95C12.9828 14.8384 13 14.6712 13 14.5C13 14.3288 12.9828 14.1616 12.95 14H15V15ZM11.5 10.5C11.7761 10.5 12 10.2761 12 10C12 9.72386 11.7761 9.5 11.5 9.5C11.2239 9.5 11 9.72386 11 10C11 10.2761 11.2239 10.5 11.5 10.5ZM11.5 8.5C12.1531 8.5 12.7087 8.9174 12.9146 9.5H15V10.5H12.9146C12.7087 11.0826 12.1531 11.5 11.5 11.5C10.6716 11.5 10 10.8284 10 10C10 9.17157 10.6716 8.5 11.5 8.5ZM9.05001 10.5C9.01722 10.3384 9 10.1712 9 10C9 9.82877 9.01722 9.66155 9.05001 9.5H5V10.5H9.05001Z",
+                      "fill": "currentColor"
+                    },
+                    "children": []
+                  }
+                ]
+              },
+              {
+                "tag": "div",
+                "attributes": {
+                  "class": "min-w-0 flex-grow flex flex-col"
+                },
+                "children": [
+                  {
+                    "tag": "p",
+                    "attributes": {
+                      "class": "my-0 leading-tight capitalize"
+                    },
+                    "children": [
+                      "Settings · modeling · snaps per minor",
+                      " "
+                    ]
+                  },
+                  {
+                    "tag": "p",
+                    "attributes": {
+                      "class": "my-0 text-xs text-chalkboard-60 dark:text-chalkboard-50"
+                    },
+                    "children": [
+                      "Number of snaps between minor grid lines. 1 means snapping to every minor grid line."
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "tag": "li",
+            "attributes": {
+              "class": "flex items-center gap-4 px-4 py-1.5 first:mt-2 last:mb-2 ui-active:bg-primary/10 dark:ui-active:bg-chalkboard-90 ui-disabled:!text-chalkboard-50",
+              "data-testid": "cmd-bar-option",
+              "role": "option",
+              "aria-selected": "false"
+            },
+            "children": [
+              {
+                "tag": "svg",
+                "attributes": {
+                  "viewBox": "0 0 20 20",
+                  "fill": "none",
+                  "aria-label": "settings",
+                  "class": "w-5 h-5 shrink-0"
+                },
+                "children": [
+                  {
+                    "tag": "path",
+                    "attributes": {
+                      "fill-rule": "evenodd",
+                      "clip-rule": "evenodd",
+                      "d": "M8 5.5C8 5.77614 7.77614 6 7.5 6C7.22386 6 7 5.77614 7 5.5C7 5.22386 7.22386 5 7.5 5C7.77614 5 8 5.22386 8 5.5ZM6.08535 6C6.29127 6.5826 6.84689 7 7.5 7C8.32843 7 9 6.32843 9 5.5C9 4.67157 8.32843 4 7.5 4C6.84689 4 6.29127 4.4174 6.08535 5H5V6H6.08535ZM15 6H9.94999C9.98278 5.83844 10 5.67123 10 5.5C10 5.32877 9.98278 5.16155 9.94999 5H15V6ZM11 14.5C11 14.7761 10.7761 15 10.5 15C10.2239 15 10 14.7761 10 14.5C10 14.2239 10.2239 14 10.5 14C10.7761 14 11 14.2239 11 14.5ZM9.08535 15C9.29127 15.5826 9.84689 16 10.5 16C11.3284 16 12 15.3284 12 14.5C12 13.6716 11.3284 13 10.5 13C9.84689 13 9.29127 13.4174 9.08535 14H5V15H9.08535ZM15 15H12.95C12.9828 14.8384 13 14.6712 13 14.5C13 14.3288 12.9828 14.1616 12.95 14H15V15ZM11.5 10.5C11.7761 10.5 12 10.2761 12 10C12 9.72386 11.7761 9.5 11.5 9.5C11.2239 9.5 11 9.72386 11 10C11 10.2761 11.2239 10.5 11.5 10.5ZM11.5 8.5C12.1531 8.5 12.7087 8.9174 12.9146 9.5H15V10.5H12.9146C12.7087 11.0826 12.1531 11.5 11.5 11.5C10.6716 11.5 10 10.8284 10 10C10 9.17157 10.6716 8.5 11.5 8.5ZM9.05001 10.5C9.01722 10.3384 9 10.1712 9 10C9 9.82877 9.01722 9.66155 9.05001 9.5H5V10.5H9.05001Z",
+                      "fill": "currentColor"
+                    },
+                    "children": []
+                  }
+                ]
+              },
+              {
+                "tag": "div",
+                "attributes": {
+                  "class": "min-w-0 flex-grow flex flex-col"
+                },
+                "children": [
+                  {
+                    "tag": "p",
+                    "attributes": {
+                      "class": "my-0 leading-tight capitalize"
+                    },
+                    "children": [
+                      "Settings · projects · default project name",
+                      " "
+                    ]
+                  },
+                  {
+                    "tag": "p",
+                    "attributes": {
+                      "class": "my-0 text-xs text-chalkboard-60 dark:text-chalkboard-50"
+                    },
+                    "children": [
+                      "The default project name to use when creating a new project."
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "tag": "li",
+            "attributes": {
+              "class": "flex items-center gap-4 px-4 py-1.5 first:mt-2 last:mb-2 ui-active:bg-primary/10 dark:ui-active:bg-chalkboard-90 ui-disabled:!text-chalkboard-50",
+              "data-testid": "cmd-bar-option",
+              "role": "option",
+              "aria-selected": "false"
+            },
+            "children": [
+              {
+                "tag": "svg",
+                "attributes": {
+                  "viewBox": "0 0 20 20",
+                  "fill": "none",
+                  "aria-label": "settings",
+                  "class": "w-5 h-5 shrink-0"
+                },
+                "children": [
+                  {
+                    "tag": "path",
+                    "attributes": {
+                      "fill-rule": "evenodd",
+                      "clip-rule": "evenodd",
+                      "d": "M8 5.5C8 5.77614 7.77614 6 7.5 6C7.22386 6 7 5.77614 7 5.5C7 5.22386 7.22386 5 7.5 5C7.77614 5 8 5.22386 8 5.5ZM6.08535 6C6.29127 6.5826 6.84689 7 7.5 7C8.32843 7 9 6.32843 9 5.5C9 4.67157 8.32843 4 7.5 4C6.84689 4 6.29127 4.4174 6.08535 5H5V6H6.08535ZM15 6H9.94999C9.98278 5.83844 10 5.67123 10 5.5C10 5.32877 9.98278 5.16155 9.94999 5H15V6ZM11 14.5C11 14.7761 10.7761 15 10.5 15C10.2239 15 10 14.7761 10 14.5C10 14.2239 10.2239 14 10.5 14C10.7761 14 11 14.2239 11 14.5ZM9.08535 15C9.29127 15.5826 9.84689 16 10.5 16C11.3284 16 12 15.3284 12 14.5C12 13.6716 11.3284 13 10.5 13C9.84689 13 9.29127 13.4174 9.08535 14H5V15H9.08535ZM15 15H12.95C12.9828 14.8384 13 14.6712 13 14.5C13 14.3288 12.9828 14.1616 12.95 14H15V15ZM11.5 10.5C11.7761 10.5 12 10.2761 12 10C12 9.72386 11.7761 9.5 11.5 9.5C11.2239 9.5 11 9.72386 11 10C11 10.2761 11.2239 10.5 11.5 10.5ZM11.5 8.5C12.1531 8.5 12.7087 8.9174 12.9146 9.5H15V10.5H12.9146C12.7087 11.0826 12.1531 11.5 11.5 11.5C10.6716 11.5 10 10.8284 10 10C10 9.17157 10.6716 8.5 11.5 8.5ZM9.05001 10.5C9.01722 10.3384 9 10.1712 9 10C9 9.82877 9.01722 9.66155 9.05001 9.5H5V10.5H9.05001Z",
+                      "fill": "currentColor"
+                    },
+                    "children": []
+                  }
+                ]
+              },
+              {
+                "tag": "div",
+                "attributes": {
+                  "class": "min-w-0 flex-grow flex flex-col"
+                },
+                "children": [
+                  {
+                    "tag": "p",
+                    "attributes": {
+                      "class": "my-0 leading-tight capitalize"
+                    },
+                    "children": [
+                      "Settings · text editor · automatically render",
+                      " "
+                    ]
+                  },
+                  {
+                    "tag": "p",
+                    "attributes": {
+                      "class": "my-0 text-xs text-chalkboard-60 dark:text-chalkboard-50"
+                    },
+                    "children": [
+                      "Whether the code editor should automatically render changes."
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "tag": "li",
+            "attributes": {
+              "class": "flex items-center gap-4 px-4 py-1.5 first:mt-2 last:mb-2 ui-active:bg-primary/10 dark:ui-active:bg-chalkboard-90 ui-disabled:!text-chalkboard-50",
+              "data-testid": "cmd-bar-option",
+              "role": "option",
+              "aria-selected": "false"
+            },
+            "children": [
+              {
+                "tag": "svg",
+                "attributes": {
+                  "viewBox": "0 0 20 20",
+                  "fill": "none",
+                  "aria-label": "settings",
+                  "class": "w-5 h-5 shrink-0"
+                },
+                "children": [
+                  {
+                    "tag": "path",
+                    "attributes": {
+                      "fill-rule": "evenodd",
+                      "clip-rule": "evenodd",
+                      "d": "M8 5.5C8 5.77614 7.77614 6 7.5 6C7.22386 6 7 5.77614 7 5.5C7 5.22386 7.22386 5 7.5 5C7.77614 5 8 5.22386 8 5.5ZM6.08535 6C6.29127 6.5826 6.84689 7 7.5 7C8.32843 7 9 6.32843 9 5.5C9 4.67157 8.32843 4 7.5 4C6.84689 4 6.29127 4.4174 6.08535 5H5V6H6.08535ZM15 6H9.94999C9.98278 5.83844 10 5.67123 10 5.5C10 5.32877 9.98278 5.16155 9.94999 5H15V6ZM11 14.5C11 14.7761 10.7761 15 10.5 15C10.2239 15 10 14.7761 10 14.5C10 14.2239 10.2239 14 10.5 14C10.7761 14 11 14.2239 11 14.5ZM9.08535 15C9.29127 15.5826 9.84689 16 10.5 16C11.3284 16 12 15.3284 12 14.5C12 13.6716 11.3284 13 10.5 13C9.84689 13 9.29127 13.4174 9.08535 14H5V15H9.08535ZM15 15H12.95C12.9828 14.8384 13 14.6712 13 14.5C13 14.3288 12.9828 14.1616 12.95 14H15V15ZM11.5 10.5C11.7761 10.5 12 10.2761 12 10C12 9.72386 11.7761 9.5 11.5 9.5C11.2239 9.5 11 9.72386 11 10C11 10.2761 11.2239 10.5 11.5 10.5ZM11.5 8.5C12.1531 8.5 12.7087 8.9174 12.9146 9.5H15V10.5H12.9146C12.7087 11.0826 12.1531 11.5 11.5 11.5C10.6716 11.5 10 10.8284 10 10C10 9.17157 10.6716 8.5 11.5 8.5ZM9.05001 10.5C9.01722 10.3384 9 10.1712 9 10C9 9.82877 9.01722 9.66155 9.05001 9.5H5V10.5H9.05001Z",
+                      "fill": "currentColor"
+                    },
+                    "children": []
+                  }
+                ]
+              },
+              {
+                "tag": "div",
+                "attributes": {
+                  "class": "min-w-0 flex-grow flex flex-col"
+                },
+                "children": [
+                  {
+                    "tag": "p",
+                    "attributes": {
+                      "class": "my-0 leading-tight capitalize"
+                    },
+                    "children": [
+                      "Settings · text editor · blinking cursor",
+                      " "
+                    ]
+                  },
+                  {
+                    "tag": "p",
+                    "attributes": {
+                      "class": "my-0 text-xs text-chalkboard-60 dark:text-chalkboard-50"
+                    },
+                    "children": [
+                      "Whether to make the cursor blink in the editor."
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "tag": "li",
+            "attributes": {
+              "class": "flex items-center gap-4 px-4 py-1.5 first:mt-2 last:mb-2 ui-active:bg-primary/10 dark:ui-active:bg-chalkboard-90 ui-disabled:!text-chalkboard-50",
+              "data-testid": "cmd-bar-option",
+              "role": "option",
+              "aria-selected": "false"
+            },
+            "children": [
+              {
+                "tag": "svg",
+                "attributes": {
+                  "viewBox": "0 0 20 20",
+                  "fill": "none",
+                  "aria-label": "settings",
+                  "class": "w-5 h-5 shrink-0"
+                },
+                "children": [
+                  {
+                    "tag": "path",
+                    "attributes": {
+                      "fill-rule": "evenodd",
+                      "clip-rule": "evenodd",
+                      "d": "M8 5.5C8 5.77614 7.77614 6 7.5 6C7.22386 6 7 5.77614 7 5.5C7 5.22386 7.22386 5 7.5 5C7.77614 5 8 5.22386 8 5.5ZM6.08535 6C6.29127 6.5826 6.84689 7 7.5 7C8.32843 7 9 6.32843 9 5.5C9 4.67157 8.32843 4 7.5 4C6.84689 4 6.29127 4.4174 6.08535 5H5V6H6.08535ZM15 6H9.94999C9.98278 5.83844 10 5.67123 10 5.5C10 5.32877 9.98278 5.16155 9.94999 5H15V6ZM11 14.5C11 14.7761 10.7761 15 10.5 15C10.2239 15 10 14.7761 10 14.5C10 14.2239 10.2239 14 10.5 14C10.7761 14 11 14.2239 11 14.5ZM9.08535 15C9.29127 15.5826 9.84689 16 10.5 16C11.3284 16 12 15.3284 12 14.5C12 13.6716 11.3284 13 10.5 13C9.84689 13 9.29127 13.4174 9.08535 14H5V15H9.08535ZM15 15H12.95C12.9828 14.8384 13 14.6712 13 14.5C13 14.3288 12.9828 14.1616 12.95 14H15V15ZM11.5 10.5C11.7761 10.5 12 10.2761 12 10C12 9.72386 11.7761 9.5 11.5 9.5C11.2239 9.5 11 9.72386 11 10C11 10.2761 11.2239 10.5 11.5 10.5ZM11.5 8.5C12.1531 8.5 12.7087 8.9174 12.9146 9.5H15V10.5H12.9146C12.7087 11.0826 12.1531 11.5 11.5 11.5C10.6716 11.5 10 10.8284 10 10C10 9.17157 10.6716 8.5 11.5 8.5ZM9.05001 10.5C9.01722 10.3384 9 10.1712 9 10C9 9.82877 9.01722 9.66155 9.05001 9.5H5V10.5H9.05001Z",
+                      "fill": "currentColor"
+                    },
+                    "children": []
+                  }
+                ]
+              },
+              {
+                "tag": "div",
+                "attributes": {
+                  "class": "min-w-0 flex-grow flex flex-col"
+                },
+                "children": [
+                  {
+                    "tag": "p",
+                    "attributes": {
+                      "class": "my-0 leading-tight capitalize"
+                    },
+                    "children": [
+                      "Settings · text editor · text wrapping",
+                      " "
+                    ]
+                  },
+                  {
+                    "tag": "p",
+                    "attributes": {
+                      "class": "my-0 text-xs text-chalkboard-60 dark:text-chalkboard-50"
+                    },
+                    "children": [
+                      "Whether to wrap text in the editor or overflow with scroll."
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tag": "div",
+        "attributes": {
+          "class": "flex flex-col gap-2 !absolute right-2 top-2 m-0 p-0 border-none bg-transparent hover:bg-transparent"
+        },
+        "children": [
+          {
+            "tag": "button",
+            "attributes": {
+              "type": "button",
+              "data-testid": "command-bar-close-button",
+              "data-interaction-id": "zds.commandPalette.close",
+              "data-expect-interaction-ms": "150",
+              "class": "group m-0 p-0 border-none bg-transparent hover:bg-transparent"
+            },
+            "children": [
+              {
+                "tag": "svg",
+                "attributes": {
+                  "viewBox": "0 0 20 20",
+                  "fill": "none",
+                  "aria-label": "close",
+                  "class": "w-5 h-5 rounded-sm bg-destroy-10 text-destroy-80 dark:bg-destroy-80 dark:text-destroy-10 group-hover:brightness-110"
+                },
+                "children": [
+                  {
+                    "tag": "path",
+                    "attributes": {
+                      "fill-rule": "evenodd",
+                      "clip-rule": "evenodd",
+                      "d": "M9.2929 10L6.46448 7.17158L7.17158 6.46448L10 9.2929L12.8284 6.46448L13.5355 7.17158L10.7071 10L13.5355 12.8284L12.8284 13.5355L10 10.7071L7.17158 13.5355L6.46448 12.8284L9.2929 10Z",
+                      "fill": "currentColor"
+                    },
+                    "children": []
+                  }
+                ]
+              },
+              {
+                "tag": "div",
+                "attributes": {
+                  "popover": "hint",
+                  "inert": "",
+                  "role": "tooltip",
+                  "class": "p-3 px-0 _tooltipWrapper_vujmz_3 _withFocus_vujmz_68 _bottom_vujmz_107 undefined",
+                  "style": "--_delay:0ms"
+                },
+                "children": [
+                  {
+                    "tag": "div",
+                    "attributes": {
+                      "class": "rounded _tooltip_vujmz_3 "
+                    },
+                    "children": [
+                      "Cancel",
+                      " ",
+                      {
+                        "tag": "kbd",
+                        "attributes": {
+                          "class": "hotkey ml-4 dark:!bg-chalkboard-80"
+                        },
+                        "children": [
+                          "esc"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "geometry": {
+    "launcher": {
+      "x": 1021.046875,
+      "y": 8,
+      "width": 120.953125,
+      "height": 22
+    },
+    "wrapper": {
+      "x": 0,
+      "y": 0,
+      "width": 1200,
+      "height": 800
+    },
+    "panel": {
+      "x": 312,
+      "y": 4,
+      "width": 576,
+      "height": 427
+    }
+  },
+  "styles": {
+    "launcher": {
+      "background-color": "oklch(0.2264 0 264.48 / 0.5)",
+      "border-top-left-radius": "4px",
+      "border-top-right-radius": "4px",
+      "border-width": "1px",
+      "border-color": "oklch(0.4819 0 264.48)",
+      "box-shadow": "none",
+      "filter": "none",
+      "font-family": "Inter, -apple-system, \"system-ui\", \"Segoe UI\", Roboto, Oxygen, Ubuntu, Cantarell, \"Fira Sans\", \"Droid Sans\", \"Helvetica Neue\", sans-serif",
+      "font-size": "12px",
+      "font-weight": "400",
+      "line-height": "16px",
+      "opacity": "1",
+      "overflow-y": "visible",
+      "transform": "none",
+      "width": "120.953px",
+      "height": "22px",
+      "transition-property": "all",
+      "transition-duration": "0s",
+      "transition-delay": "0s"
+    },
+    "wrapper": {
+      "background-color": "rgba(0, 0, 0, 0)",
+      "border-top-left-radius": "0px",
+      "border-top-right-radius": "0px",
+      "border-width": "0px",
+      "border-color": "rgb(229, 231, 235)",
+      "box-shadow": "none",
+      "filter": "none",
+      "font-family": "Inter, -apple-system, \"system-ui\", \"Segoe UI\", Roboto, Oxygen, Ubuntu, Cantarell, \"Fira Sans\", \"Droid Sans\", \"Helvetica Neue\", sans-serif",
+      "font-size": "16px",
+      "font-weight": "400",
+      "line-height": "24px",
+      "opacity": "1",
+      "overflow-y": "auto",
+      "transform": "none",
+      "width": "1200px",
+      "height": "800px",
+      "transition-property": "all",
+      "transition-duration": "0s",
+      "transition-delay": "0s"
+    },
+    "transition": {
+      "background-color": "rgba(0, 0, 0, 0)",
+      "border-top-left-radius": "0px",
+      "border-top-right-radius": "0px",
+      "border-width": "0px",
+      "border-color": "rgb(229, 231, 235)",
+      "box-shadow": "none",
+      "filter": "none",
+      "font-family": "Inter, -apple-system, \"system-ui\", \"Segoe UI\", Roboto, Oxygen, Ubuntu, Cantarell, \"Fira Sans\", \"Droid Sans\", \"Helvetica Neue\", sans-serif",
+      "font-size": "16px",
+      "font-weight": "400",
+      "line-height": "24px",
+      "opacity": "1",
+      "overflow-y": "visible",
+      "transform": "none",
+      "width": "1200px",
+      "height": "427px",
+      "transition-property": "all",
+      "transition-duration": "0s",
+      "transition-delay": "0s"
+    },
+    "panel": {
+      "background-color": "oklch(0.2264 0 264.48)",
+      "border-top-left-radius": "0px",
+      "border-top-right-radius": "4px",
+      "border-width": "1px",
+      "border-color": "oklch(0.4819 0 264.48)",
+      "box-shadow": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0.1) 0px 10px 15px -3px, rgba(0, 0, 0, 0.1) 0px 4px 6px -4px",
+      "filter": "none",
+      "font-family": "Inter, -apple-system, \"system-ui\", \"Segoe UI\", Roboto, Oxygen, Ubuntu, Cantarell, \"Fira Sans\", \"Droid Sans\", \"Helvetica Neue\", sans-serif",
+      "font-size": "16px",
+      "font-weight": "400",
+      "line-height": "24px",
+      "opacity": "1",
+      "overflow-y": "visible",
+      "transform": "none",
+      "width": "576px",
+      "height": "427px",
+      "transition-property": "all",
+      "transition-duration": "0s",
+      "transition-delay": "0s"
+    },
+    "input": {
+      "background-color": "rgba(0, 0, 0, 0)",
+      "border-top-left-radius": "0px",
+      "border-top-right-radius": "0px",
+      "border-width": "0px",
+      "border-color": "rgb(229, 231, 235)",
+      "box-shadow": "none",
+      "filter": "none",
+      "font-family": "Inter, -apple-system, \"system-ui\", \"Segoe UI\", Roboto, Oxygen, Ubuntu, Cantarell, \"Fira Sans\", \"Droid Sans\", \"Helvetica Neue\", sans-serif",
+      "font-size": "16px",
+      "font-weight": "400",
+      "line-height": "24px",
+      "opacity": "1",
+      "overflow-y": "clip",
+      "transform": "none",
+      "width": "514px",
+      "height": "24px",
+      "transition-property": "all",
+      "transition-duration": "0s",
+      "transition-delay": "0s"
+    },
+    "options": {
+      "background-color": "rgba(0, 0, 0, 0)",
+      "border-top-left-radius": "0px",
+      "border-top-right-radius": "0px",
+      "border-width": "0px",
+      "border-color": "rgb(229, 231, 235)",
+      "box-shadow": "none",
+      "filter": "none",
+      "font-family": "Inter, -apple-system, \"system-ui\", \"Segoe UI\", Roboto, Oxygen, Ubuntu, Cantarell, \"Fira Sans\", \"Droid Sans\", \"Helvetica Neue\", sans-serif",
+      "font-size": "16px",
+      "font-weight": "400",
+      "line-height": "24px",
+      "opacity": "1",
+      "overflow-y": "auto",
+      "transform": "none",
+      "width": "574px",
+      "height": "384px",
+      "transition-property": "all",
+      "transition-duration": "0s",
+      "transition-delay": "0s"
+    },
+    "firstOption": {
+      "background-color": "rgba(0, 0, 0, 0)",
+      "border-top-left-radius": "0px",
+      "border-top-right-radius": "0px",
+      "border-width": "0px",
+      "border-color": "rgb(229, 231, 235)",
+      "box-shadow": "none",
+      "filter": "none",
+      "font-family": "Inter, -apple-system, \"system-ui\", \"Segoe UI\", Roboto, Oxygen, Ubuntu, Cantarell, \"Fira Sans\", \"Droid Sans\", \"Helvetica Neue\", sans-serif",
+      "font-size": "16px",
+      "font-weight": "400",
+      "line-height": "24px",
+      "opacity": "1",
+      "overflow-y": "visible",
+      "transform": "none",
+      "width": "566px",
+      "height": "48px",
+      "transition-property": "all",
+      "transition-duration": "0s",
+      "transition-delay": "0s"
+    },
+    "tooltipSurface": {
+      "background-color": "oklch(0.3012 0 264.48)",
+      "border-top-left-radius": "4px",
+      "border-top-right-radius": "4px",
+      "border-width": "1px",
+      "border-color": "oklch(0.3904 0 264.48)",
+      "box-shadow": "none",
+      "filter": "drop-shadow(rgba(0, 0, 0, 0.16) 0px 1px 2px) drop-shadow(rgba(0, 0, 0, 0.08) 0px 4px 6px)",
+      "font-family": "Inter, -apple-system, \"system-ui\", \"Segoe UI\", Roboto, Oxygen, Ubuntu, Cantarell, \"Fira Sans\", \"Droid Sans\", \"Helvetica Neue\", sans-serif",
+      "font-size": "12px",
+      "font-weight": "400",
+      "line-height": "16px",
+      "opacity": "1",
+      "overflow-y": "visible",
+      "transform": "none",
+      "width": "max-content",
+      "height": "auto",
+      "transition-property": "all",
+      "transition-duration": "0s",
+      "transition-delay": "0s"
+    }
+  },
+  "optionCount": 38,
+  "autofocused": true,
+  "assets": {
+    "stylesheets": [
+      {
+        "path": "./fonts/inter/inter.css",
+        "sha256": "aebc3c1728a53e0a0f78a136f5fff9ca38d88c887aec1160feb9bfbb42062499"
+      },
+      {
+        "path": "./fonts/source-code-pro/source-code-variable.css",
+        "sha256": "ed5fc85ceb71b46cf0cb415e029adf6ddb263677291dd533e1ecaa4f5ca15e29"
+      },
+      {
+        "path": "./assets/index-DJhLWiEA.css",
+        "sha256": "fe921b2175bca8aa5a9822c0305a15cd0bace4b6c9c1d23c052159bb8ebb12d8"
+      }
+    ],
+    "fonts": [
+      {
+        "path": "fonts/inter/InterVariable-Italic.woff2",
+        "sha256": "0470791f15efd2987bdb50b24027c3f584a2cf9b7b63fbf86012c5f2e9abcc05"
+      },
+      {
+        "path": "fonts/inter/InterVariable.woff2",
+        "sha256": "8af7bd5b545567adffb3dfceb5bedb353a522d7bf1b3a2b8af7b6064156babc0"
+      },
+      {
+        "path": "fonts/source-code-pro/OTF/SourceCodePro-Black.otf",
+        "sha256": "1372d6cb5e4073b6be0d0bfa79e7e0ccf882d77e8a714c17492c4410f6379ac2"
+      },
+      {
+        "path": "fonts/source-code-pro/OTF/SourceCodePro-BlackIt.otf",
+        "sha256": "7cf24ffce3a9373d16fa95526e8091a45774a321dbf5dbe76aee9f45138c00c9"
+      },
+      {
+        "path": "fonts/source-code-pro/OTF/SourceCodePro-Bold.otf",
+        "sha256": "6f5a4a46a99ad1b92a8675e98f148272c8d2476fc0eb067247dd5eea6a3ad84c"
+      },
+      {
+        "path": "fonts/source-code-pro/OTF/SourceCodePro-BoldIt.otf",
+        "sha256": "a015a5762527946aa99778f5397da14d10b963938d1d6e08153f173fdf29d8ee"
+      },
+      {
+        "path": "fonts/source-code-pro/OTF/SourceCodePro-ExtraLight.otf",
+        "sha256": "ecec59fac495dc12514b1afab85fcf15d2f622a8fa48a247c913b01653424e11"
+      },
+      {
+        "path": "fonts/source-code-pro/OTF/SourceCodePro-ExtraLightIt.otf",
+        "sha256": "c58e92053e6ff16a2d3f76721bd6fe55e76f546b156548da86e3d390345da382"
+      },
+      {
+        "path": "fonts/source-code-pro/OTF/SourceCodePro-It.otf",
+        "sha256": "6989245c8747ecef5d927f412b49e2cef495053434b635f560f20cc81a1433d1"
+      },
+      {
+        "path": "fonts/source-code-pro/OTF/SourceCodePro-Light.otf",
+        "sha256": "02303c413a412e0982833e4d9626415338de94f4e1778548b4051d4b5bce1b28"
+      },
+      {
+        "path": "fonts/source-code-pro/OTF/SourceCodePro-LightIt.otf",
+        "sha256": "f3ed5fb28aa873a6ffa75f4c3d2e0e1fbfecbbca6dae3a4ce27683a1f6e6180d"
+      },
+      {
+        "path": "fonts/source-code-pro/OTF/SourceCodePro-Medium.otf",
+        "sha256": "d6d11eb2088ce200b59f0fb620dba4f54c153b99fd2985c9708b0aa7037a1945"
+      },
+      {
+        "path": "fonts/source-code-pro/OTF/SourceCodePro-MediumIt.otf",
+        "sha256": "443e47e4e4de0e932414825a84658064fd7c1ad711610c54681345b0e8df36c0"
+      },
+      {
+        "path": "fonts/source-code-pro/OTF/SourceCodePro-Regular.otf",
+        "sha256": "9f9664e2edf6f045c11e774f9bd0be6993971f2544a39061a5ce478b96b051f8"
+      },
+      {
+        "path": "fonts/source-code-pro/OTF/SourceCodePro-Semibold.otf",
+        "sha256": "1be15ad5855dab0017af32153342989b91fec313efcdbeda69bdeec92794da0d"
+      },
+      {
+        "path": "fonts/source-code-pro/OTF/SourceCodePro-SemiboldIt.otf",
+        "sha256": "9489d3440e4b80ac528380831f12107c73f6034b962ad7f6c382e239f508caa6"
+      },
+      {
+        "path": "fonts/source-code-pro/TTF/SourceCodePro-Black.ttf",
+        "sha256": "37a4fd8a65b8d27580676cf956e8af3a2a6204dbc76dec4318ad0fed660bc89d"
+      },
+      {
+        "path": "fonts/source-code-pro/TTF/SourceCodePro-BlackIt.ttf",
+        "sha256": "8b60e510e39f085e202447106cfd994394b5b76c55541ca6554c42e44b58918d"
+      },
+      {
+        "path": "fonts/source-code-pro/TTF/SourceCodePro-Bold.ttf",
+        "sha256": "b2095e0d657e6d28dc32444a9dacabab0c9241d0bf39d96371756cc9bdbc3a5f"
+      },
+      {
+        "path": "fonts/source-code-pro/TTF/SourceCodePro-BoldIt.ttf",
+        "sha256": "1b49d9304012bf8db9e5dd4104183d5c122c445d0570a2259125f71977595b90"
+      },
+      {
+        "path": "fonts/source-code-pro/TTF/SourceCodePro-ExtraLight.ttf",
+        "sha256": "8f4deb0901f375797fe51c2351abf2059e4ebbab2ec0ac390d040c3e802ddec6"
+      },
+      {
+        "path": "fonts/source-code-pro/TTF/SourceCodePro-ExtraLightIt.ttf",
+        "sha256": "201b24b465e7882ff93365ce731c6129cbda11fed265d1114510efee30dedaab"
+      },
+      {
+        "path": "fonts/source-code-pro/TTF/SourceCodePro-It.ttf",
+        "sha256": "9c9e0f4d016210a3c5bdfba5262637c5b26ddff4ccc382ebbc781de5961d0042"
+      },
+      {
+        "path": "fonts/source-code-pro/TTF/SourceCodePro-Light.ttf",
+        "sha256": "e9bb1870b0765b2cf06f797039d3dba4a78bb90360b20840bfc6a0c024d8f756"
+      },
+      {
+        "path": "fonts/source-code-pro/TTF/SourceCodePro-LightIt.ttf",
+        "sha256": "784e689ed03d1738f65dd4537c41ba25ac336f9f34a86bf298e24a44260c20aa"
+      },
+      {
+        "path": "fonts/source-code-pro/TTF/SourceCodePro-Medium.ttf",
+        "sha256": "f9dbc746f60c83f5cb1503b19f90729d8195cab6bb67f2b861d4eb257ed86536"
+      },
+      {
+        "path": "fonts/source-code-pro/TTF/SourceCodePro-MediumIt.ttf",
+        "sha256": "d34387901d96871f3521cbe69fe95e65396bed83eeb579de9abac510a683253d"
+      },
+      {
+        "path": "fonts/source-code-pro/TTF/SourceCodePro-Regular.ttf",
+        "sha256": "74bd80d3e42a08517cd7e1108ba3d86f2da29ac0f3065be95e0357956ab9db37"
+      },
+      {
+        "path": "fonts/source-code-pro/TTF/SourceCodePro-Semibold.ttf",
+        "sha256": "014a0fdf42504ee1faf719a96eab5f9ffdade793f1d5c5729ad4606f2aedc765"
+      },
+      {
+        "path": "fonts/source-code-pro/TTF/SourceCodePro-SemiboldIt.ttf",
+        "sha256": "600253b4aae951db5b90882a866718d99dfb0e40ef3db5b5d2d8433a412ebc85"
+      },
+      {
+        "path": "fonts/source-code-pro/VF/SourceCodeVF-Italic.otf",
+        "sha256": "25085935259b0d04f16137e49141b47478f9eeb7da25e9255e57d0c28bf616ff"
+      },
+      {
+        "path": "fonts/source-code-pro/VF/SourceCodeVF-Italic.ttf",
+        "sha256": "39d0d0ed66fc2da632dd60d863b4d5534bb398c26b2a4f054fa5975d30405896"
+      },
+      {
+        "path": "fonts/source-code-pro/VF/SourceCodeVF-Upright.otf",
+        "sha256": "05a8c47f02c197ce909ede7a86566925b98a7a983e6d8790af14b3a030e8412c"
+      },
+      {
+        "path": "fonts/source-code-pro/VF/SourceCodeVF-Upright.ttf",
+        "sha256": "c4066e584e995ec317a072f1777742861d3ce0bf210096b84450a249d0210198"
+      },
+      {
+        "path": "fonts/source-code-pro/WOFF/OTF/SourceCodePro-Black.otf.woff",
+        "sha256": "5c070bace669b93f53b8376b98a7f285cb6a6fb9b256d6134878a29144c734b4"
+      },
+      {
+        "path": "fonts/source-code-pro/WOFF/OTF/SourceCodePro-BlackIt.otf.woff",
+        "sha256": "9cdcdc7a114e5bf9ba2e9aac31af99518a54fa7b99620245467e3c786110a1fe"
+      },
+      {
+        "path": "fonts/source-code-pro/WOFF/OTF/SourceCodePro-Bold.otf.woff",
+        "sha256": "7cb40b8f9e2b2c03a64f01be6b589d8ffa3a2791aeea228e8e620b5a699b5696"
+      },
+      {
+        "path": "fonts/source-code-pro/WOFF/OTF/SourceCodePro-BoldIt.otf.woff",
+        "sha256": "b3952602d9d4a18d8ac8d949d04d2e54e33795bffc14c7c73c7e51b6da1f2f88"
+      },
+      {
+        "path": "fonts/source-code-pro/WOFF/OTF/SourceCodePro-ExtraLight.otf.woff",
+        "sha256": "fdb3668583de700682e4f87b806db49c6c382620cc7a53bf9c2930227b3e9f91"
+      },
+      {
+        "path": "fonts/source-code-pro/WOFF/OTF/SourceCodePro-ExtraLightIt.otf.woff",
+        "sha256": "10a92084d36e35c8d9ddd4ef8dbe04c7911dba8b60a39f0b998436257be47b0a"
+      },
+      {
+        "path": "fonts/source-code-pro/WOFF/OTF/SourceCodePro-It.otf.woff",
+        "sha256": "856f9a006cd5402e643da5158bd21960a5c1be1adfff8c941823efa1daeea91f"
+      },
+      {
+        "path": "fonts/source-code-pro/WOFF/OTF/SourceCodePro-Light.otf.woff",
+        "sha256": "79b44d9f3d0b08a522d0d24898e490531098a55c44b963a5083311f56d278a5a"
+      },
+      {
+        "path": "fonts/source-code-pro/WOFF/OTF/SourceCodePro-LightIt.otf.woff",
+        "sha256": "25faea556dc945730b4dd650c8dd82f6dad92334544238504d003e134f8f9ae5"
+      },
+      {
+        "path": "fonts/source-code-pro/WOFF/OTF/SourceCodePro-Medium.otf.woff",
+        "sha256": "1ca4bcf597f4cecec709cbcaa4b4c3408b4867029921b7f94bbf268f24a64c21"
+      },
+      {
+        "path": "fonts/source-code-pro/WOFF/OTF/SourceCodePro-MediumIt.otf.woff",
+        "sha256": "91731c7b767d0efa0e87eae48fbcf8df8c1595f8708f49628750a4721343997c"
+      },
+      {
+        "path": "fonts/source-code-pro/WOFF/OTF/SourceCodePro-Regular.otf.woff",
+        "sha256": "53df9d4067d2839dbb86943efb5fe6ec799af4db92f38ccbfc69f52ca991de01"
+      },
+      {
+        "path": "fonts/source-code-pro/WOFF/OTF/SourceCodePro-Semibold.otf.woff",
+        "sha256": "1d46ec645ca5b2d570620839ea6a6fc6c6de5db65dd2dc54615a6b36679ba5c9"
+      },
+      {
+        "path": "fonts/source-code-pro/WOFF/OTF/SourceCodePro-SemiboldIt.otf.woff",
+        "sha256": "6feea3b2ba0ae4c7e5786ea69560ca304d7f3b3d060e336b0beecd962220016b"
+      },
+      {
+        "path": "fonts/source-code-pro/WOFF/TTF/SourceCodePro-Black.ttf.woff",
+        "sha256": "e21644418f99e54f1766eb4952d4bdc3982699f39d19a9a211f0fd6edf44dbed"
+      },
+      {
+        "path": "fonts/source-code-pro/WOFF/TTF/SourceCodePro-BlackIt.ttf.woff",
+        "sha256": "ca84c3cd2fb12c670d63e4f9f0cfb84a5025c81cacd8009938222c17ca34885e"
+      },
+      {
+        "path": "fonts/source-code-pro/WOFF/TTF/SourceCodePro-Bold.ttf.woff",
+        "sha256": "3de30e6b6dac74eb17d9ae2a1aae5d152eb0b7a3db506c4d3ffbc922d38f27b8"
+      },
+      {
+        "path": "fonts/source-code-pro/WOFF/TTF/SourceCodePro-BoldIt.ttf.woff",
+        "sha256": "542966cedaedfd0347906c454f8d0df9d7240787345ecab826ddd52646a7e666"
+      },
+      {
+        "path": "fonts/source-code-pro/WOFF/TTF/SourceCodePro-ExtraLight.ttf.woff",
+        "sha256": "6762e850ed418c729eed10ccb8d582ec3c04ea2a261324d1f29942b7cd95e874"
+      },
+      {
+        "path": "fonts/source-code-pro/WOFF/TTF/SourceCodePro-ExtraLightIt.ttf.woff",
+        "sha256": "5ba40d78777ddd9530c72f72bb1e7daf82a8556f1caea964ceaf88ac8d9a3eab"
+      },
+      {
+        "path": "fonts/source-code-pro/WOFF/TTF/SourceCodePro-It.ttf.woff",
+        "sha256": "07d1282a2c47cdd8f274767fe56b35d466e1ceb2a082610d4dd95f7c613a531b"
+      },
+      {
+        "path": "fonts/source-code-pro/WOFF/TTF/SourceCodePro-Light.ttf.woff",
+        "sha256": "fcb4511a21ac1bf495c952b3b64b016bb679847d609ffa133f7b5f1dc6569cdf"
+      },
+      {
+        "path": "fonts/source-code-pro/WOFF/TTF/SourceCodePro-LightIt.ttf.woff",
+        "sha256": "36b58610ab46d22b19cc89cd21e175dd3ccab26fbf85de3a12b36ebc50a0b9a4"
+      },
+      {
+        "path": "fonts/source-code-pro/WOFF/TTF/SourceCodePro-Medium.ttf.woff",
+        "sha256": "6d94231fcde60b61df091128b9ae2fbbfa8c163fd0b632c28cfeb4d9bfec1bd9"
+      },
+      {
+        "path": "fonts/source-code-pro/WOFF/TTF/SourceCodePro-MediumIt.ttf.woff",
+        "sha256": "1436344ce222d53bfc3c69806b3c5c8eaf54b7054b84889196d5b1b1f1a09b1e"
+      },
+      {
+        "path": "fonts/source-code-pro/WOFF/TTF/SourceCodePro-Regular.ttf.woff",
+        "sha256": "76e0c4f8f8e3f6a14e1a75fca5793e9c45decebadfd7492e83f3b54033e1c9f4"
+      },
+      {
+        "path": "fonts/source-code-pro/WOFF/TTF/SourceCodePro-Semibold.ttf.woff",
+        "sha256": "2625fc4ab62fab75d27b6e7d2341497c96add22df40c9079a9f8538c8b0ec53c"
+      },
+      {
+        "path": "fonts/source-code-pro/WOFF/TTF/SourceCodePro-SemiboldIt.ttf.woff",
+        "sha256": "484c900c1264c842ccb8807c18df83410ea41ccbd9a01ffdf2499749fadc9789"
+      },
+      {
+        "path": "fonts/source-code-pro/WOFF/VF/SourceCodeVF-Italic.otf.woff",
+        "sha256": "2a9a1b9b4de45d926d43fca2a05c81ea6e699cd836d358f0e17bae7cbd6ca3a3"
+      },
+      {
+        "path": "fonts/source-code-pro/WOFF/VF/SourceCodeVF-Italic.ttf.woff",
+        "sha256": "a4c9f129f86045ed0c8bc9693e6e76849749223ce0539b2af24da431c582ff91"
+      },
+      {
+        "path": "fonts/source-code-pro/WOFF/VF/SourceCodeVF-Upright.otf.woff",
+        "sha256": "ab3959cefa39a8b6af562a5a94dc8e37c07dcbb94831eb164341f31793450f75"
+      },
+      {
+        "path": "fonts/source-code-pro/WOFF/VF/SourceCodeVF-Upright.ttf.woff",
+        "sha256": "abe35ba72081918064270767290fc647d03fdabd82c8791e7b6c3663d7704165"
+      },
+      {
+        "path": "fonts/source-code-pro/WOFF2/OTF/SourceCodePro-Black.otf.woff2",
+        "sha256": "dfb44c4229923ce532754c204de4316049efbaa7200cff637bffbcc8deec0ae7"
+      },
+      {
+        "path": "fonts/source-code-pro/WOFF2/OTF/SourceCodePro-BlackIt.otf.woff2",
+        "sha256": "7029cf0c0e887b67b32407d5264505587793858d463c2b8eeaad5c174f1b5c25"
+      },
+      {
+        "path": "fonts/source-code-pro/WOFF2/OTF/SourceCodePro-Bold.otf.woff2",
+        "sha256": "e5e15b262fa1b6cfe91ae9ff019adc3592398d9dedf63bed2827ad36de4cf63b"
+      },
+      {
+        "path": "fonts/source-code-pro/WOFF2/OTF/SourceCodePro-BoldIt.otf.woff2",
+        "sha256": "c9d7791f306df9bd424b11e4c432b4934e1f0a0d58594573c43837c32e8ce01c"
+      },
+      {
+        "path": "fonts/source-code-pro/WOFF2/OTF/SourceCodePro-ExtraLight.otf.woff2",
+        "sha256": "89a48b7747f7d3334a82d81d6852c6b5edc8249159cbc074450e852cf1729211"
+      },
+      {
+        "path": "fonts/source-code-pro/WOFF2/OTF/SourceCodePro-ExtraLightIt.otf.woff2",
+        "sha256": "f33f2a5c46abe594c090812586d77a2d69d96960958bcfcb6705440e12c3545d"
+      },
+      {
+        "path": "fonts/source-code-pro/WOFF2/OTF/SourceCodePro-It.otf.woff2",
+        "sha256": "5f278035ffeae1ac168a21635b529505bf5e17c41e99b1ce7042fb4e341d976a"
+      },
+      {
+        "path": "fonts/source-code-pro/WOFF2/OTF/SourceCodePro-Light.otf.woff2",
+        "sha256": "8ce9cc19d3febd7e2863b18e92ad7004fbd0249488e53a1e9e2a81051f1c7edf"
+      },
+      {
+        "path": "fonts/source-code-pro/WOFF2/OTF/SourceCodePro-LightIt.otf.woff2",
+        "sha256": "2ec15b7032b235adf5a5fb97e32d55dc77cbf34aefd73b61d8180dfe37d7e468"
+      },
+      {
+        "path": "fonts/source-code-pro/WOFF2/OTF/SourceCodePro-Medium.otf.woff2",
+        "sha256": "6c22ecbb3630944f0e2ac58f19a9cf23523399e8e1c12bd2100d5f6a79affea8"
+      },
+      {
+        "path": "fonts/source-code-pro/WOFF2/OTF/SourceCodePro-MediumIt.otf.woff2",
+        "sha256": "b69bdb74c6a827d10362c77e0024be63843649732a641dbde0c26d646b2df0a0"
+      },
+      {
+        "path": "fonts/source-code-pro/WOFF2/OTF/SourceCodePro-Regular.otf.woff2",
+        "sha256": "23a0d7981dc90c0a8ec7d8a6ca7ee5dc439c777f3e2aabcf1009fdcf0e821b79"
+      },
+      {
+        "path": "fonts/source-code-pro/WOFF2/OTF/SourceCodePro-Semibold.otf.woff2",
+        "sha256": "ccfcf42d049fb8dc6fbcae3aef276d733f88991593cd3bdf4cbfe97b02eed1bc"
+      },
+      {
+        "path": "fonts/source-code-pro/WOFF2/OTF/SourceCodePro-SemiboldIt.otf.woff2",
+        "sha256": "3e26e98afcdf8eafff958c175889706bc31420c55e2dc807e6c5bcc4aafea251"
+      },
+      {
+        "path": "fonts/source-code-pro/WOFF2/OTF/SourceCodeVF-Italic.otf.woff2",
+        "sha256": "e351b6c66efc67469a0ba5091b1f71af25827548e7e987fb97c52820fe94a6b4"
+      },
+      {
+        "path": "fonts/source-code-pro/WOFF2/OTF/SourceCodeVF-Upright.otf.woff2",
+        "sha256": "3765cc451143b207f4c6fcedc9895807abe74202064205f4ece36f030ba8ee9a"
+      },
+      {
+        "path": "fonts/source-code-pro/WOFF2/TTF/SourceCodePro-Black.ttf.woff2",
+        "sha256": "3e61b745ddbfc4f3f9aa1a0be4020b3031cad8b8b1365538ebb5c27314ecf7c3"
+      },
+      {
+        "path": "fonts/source-code-pro/WOFF2/TTF/SourceCodePro-BlackIt.ttf.woff2",
+        "sha256": "222e60d9149d7d92869275ff5cefa988ffcd78624216f7a65d7f0bd9670339cc"
+      },
+      {
+        "path": "fonts/source-code-pro/WOFF2/TTF/SourceCodePro-Bold.ttf.woff2",
+        "sha256": "1916890a0a7e223c45308421dc7f20e31bca062888634ff09a24cb2b4c0b43c6"
+      },
+      {
+        "path": "fonts/source-code-pro/WOFF2/TTF/SourceCodePro-BoldIt.ttf.woff2",
+        "sha256": "8d52472fd9e6f0c69fc6845d8bb06ee80fc48b854727bfd1878e2a6359aa7369"
+      },
+      {
+        "path": "fonts/source-code-pro/WOFF2/TTF/SourceCodePro-ExtraLight.ttf.woff2",
+        "sha256": "e1bf1ab6dd308d7d159eadb899523f7cbd9f790b1f97d3218ca911996703bcb3"
+      },
+      {
+        "path": "fonts/source-code-pro/WOFF2/TTF/SourceCodePro-ExtraLightIt.ttf.woff2",
+        "sha256": "924eb66c17ff45f4f2c8e7f6a4383dcc624a7cf2554c30d6f8ccb3c0d09e8aa6"
+      },
+      {
+        "path": "fonts/source-code-pro/WOFF2/TTF/SourceCodePro-It.ttf.woff2",
+        "sha256": "f65d785ba392916d5d26288a29abcb775fd07531edbff4a5ebb1cd428592bbc8"
+      },
+      {
+        "path": "fonts/source-code-pro/WOFF2/TTF/SourceCodePro-Light.ttf.woff2",
+        "sha256": "4f44ceede7bee5fc44871fe6d574a65f013e042229954cae25dea4687e6c7724"
+      },
+      {
+        "path": "fonts/source-code-pro/WOFF2/TTF/SourceCodePro-LightIt.ttf.woff2",
+        "sha256": "c1b824374da265deb39f08164c846fe1b52d899169a94839117a4f885cd425d5"
+      },
+      {
+        "path": "fonts/source-code-pro/WOFF2/TTF/SourceCodePro-Medium.ttf.woff2",
+        "sha256": "924641f3612b80982d2d32350d4bed27fad682d7220b3dcf2f3370c94b949c34"
+      },
+      {
+        "path": "fonts/source-code-pro/WOFF2/TTF/SourceCodePro-MediumIt.ttf.woff2",
+        "sha256": "c76f625a88617588017a2d55afef59f96d6b1a7d19cb0676cc6bdd592d0a957d"
+      },
+      {
+        "path": "fonts/source-code-pro/WOFF2/TTF/SourceCodePro-Regular.ttf.woff2",
+        "sha256": "714eee29b70d191f5bf4b3a06b68f2c50522b1303d31c7d44dcefdcc5f9defd0"
+      },
+      {
+        "path": "fonts/source-code-pro/WOFF2/TTF/SourceCodePro-Semibold.ttf.woff2",
+        "sha256": "488b2806e8a76192c2ceef29b498ba01e46b697578b200ede1b5cad855c379ba"
+      },
+      {
+        "path": "fonts/source-code-pro/WOFF2/TTF/SourceCodePro-SemiboldIt.ttf.woff2",
+        "sha256": "e2b39991bf098d36207239021e85c4905fbb8d505c784a12dac7bc9641d98786"
+      },
+      {
+        "path": "fonts/source-code-pro/WOFF2/TTF/SourceCodeVF-Italic.ttf.woff2",
+        "sha256": "05c46eaa770abdf960f887f6b5bd393f57850c1572c4a18ea133fdf497daaa3a"
+      },
+      {
+        "path": "fonts/source-code-pro/WOFF2/TTF/SourceCodeVF-Upright.ttf.woff2",
+        "sha256": "0c56a32f4f7d89d8cdf6bec01b4a7ae7362aba35169404af0e43b0c4e1f14d65"
+      },
+      {
+        "path": "fonts/source-code-pro/WOFF2/VF/SourceCodeVF-Italic.otf.woff2",
+        "sha256": "abfb4e6c65ac8c669dbb5dbc1cf0701e1b1ea97c453c0d80f76c3544439ead2d"
+      },
+      {
+        "path": "fonts/source-code-pro/WOFF2/VF/SourceCodeVF-Italic.ttf.woff2",
+        "sha256": "720e47a2e54568db2908bfbb32894c1c298fd948cc8942426987c2d29f7ebd9e"
+      },
+      {
+        "path": "fonts/source-code-pro/WOFF2/VF/SourceCodeVF-Upright.otf.woff2",
+        "sha256": "32a6d848b6ab7ed47ccdcfb84ab182faa333ce44afed8a470b59e1eda846895c"
+      },
+      {
+        "path": "fonts/source-code-pro/WOFF2/VF/SourceCodeVF-Upright.ttf.woff2",
+        "sha256": "d95dc751b4d82141259f5c00c9838addaadd3b4eac30dd7db4a0da4921d77792"
+      }
+    ]
+  }
+}

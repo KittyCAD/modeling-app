@@ -1,6 +1,9 @@
 import { randomUUID } from 'node:crypto'
-import { expect, test } from '@e2e/playwright/base-test'
 import { EditorFixture } from '@e2e/playwright/fixtures/editorFixture'
+import {
+  expect,
+  test,
+} from '@e2e/playwright/fixtures/fileLoaderDiagnosticFixture'
 import {
   type CloudProject,
   cloudProjectResponse,

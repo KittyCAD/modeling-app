@@ -11,6 +11,9 @@ on:
           - both
           - cloud
           - animation
+          - palette-reduction
+          - file-loader
+          - targeted
       cloud-creation-gate:
         description: Start cloud creation immediately or after the real project list arrives
         type: choice
@@ -29,7 +32,7 @@ permissions:
 
 jobs:
   measure:
-    if: ${{ inputs.diagnostic != 'cloud' }}
+    if: ${{ inputs.diagnostic == 'both' || inputs.diagnostic == 'animation' }}
     name: Presentation traces (${{ matrix.variant }})
     strategy:
       fail-fast: false
@@ -105,7 +108,7 @@ jobs:
           retention-days: 30
 
   cloud-timing:
-    if: ${{ inputs.diagnostic != 'animation' }}
+    if: ${{ inputs.diagnostic == 'both' || inputs.diagnostic == 'cloud' }}
     name: Cloud creation timing diagnosis
     runs-on: namespace-profile-macos-8-cores
     timeout-minutes: 10
@@ -142,5 +145,84 @@ jobs:
             test-results/cloud-timing-diagnostic/report.json
             test-results/cloud-timing-diagnostic/**/timings/events.jsonl
             test-results/cloud-timing-diagnostic/**/timings/cpu-profile.json
+          if-no-files-found: error
+          retention-days: 7
+
+  palette-reduction:
+    if: ${{ inputs.diagnostic == 'palette-reduction' || inputs.diagnostic == 'targeted' }}
+    name: Standalone palette presentation
+    runs-on: namespace-profile-macos-8-cores
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: actions/setup-node@v7.0.0
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - uses: actions/download-artifact@v8
+        with:
+          run-id: 35916061567
+          github-token: ${{ github.token }}
+          name: interaction-performance-build
+          path: .vite
+      - name: Build the standalone presentation from captured markup and app styles
+        run: node e2e/performance/palette-reduction/build.cjs
+      - name: Measure five first-use renderers without the business application
+        timeout-minutes: 5
+        run: env -u HEADLESS npm exec -- playwright test --config=playwright.palette-reduction.config.ts --headed
+      - name: Preserve reduction evidence
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: palette-reduction-${{ github.sha }}-${{ github.run_attempt }}
+          path: |
+            test-results/palette-reduction/playwright.json
+            test-results/palette-reduction-build/metadata.json
+          if-no-files-found: error
+          retention-days: 7
+
+  file-loader:
+    if: ${{ inputs.diagnostic == 'file-loader' || inputs.diagnostic == 'targeted' }}
+    name: Windows cloud file-loader waits
+    runs-on: namespace-profile-windows-8-cores
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: actions/setup-node@v7.0.0
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - uses: actions/download-artifact@v8
+        with:
+          run-id: 35920252389
+          github-token: ${{ github.token }}
+          name: prepared-wasm
+          path: rust/kcl-wasm-lib/pkg
+      - uses: actions/download-artifact@v8
+        with:
+          run-id: 35920252389
+          github-token: ${{ github.token }}
+          name: prepared-ts-rs-bindings
+          path: rust/kcl-lib/bindings
+      - name: Copy the browser Wasm asset
+        run: Copy-Item rust/kcl-wasm-lib/pkg/kcl_wasm_lib_bg.wasm public/kcl_wasm_lib_bg.wasm
+      - name: Install the existing Chrome test browser
+        run: npm exec -- playwright install chrome
+      - name: Capture the existing first-upload flow without retries
+        timeout-minutes: 5
+        run: npm exec -- playwright test --config=playwright.cloud-loader-diagnostic.config.ts --headed
+        env:
+          TARGET: web
+          NODE_ENV: development
+          VITE_ZOO_BASE_DOMAIN: dev.zoo.dev
+          VITE_ZOO_API_TOKEN: ${{ secrets.ZOO_API_TOKEN }}
+      - name: Preserve file-loader evidence
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: cloud-file-loader-${{ github.sha }}-${{ github.run_attempt }}
+          path: test-results/cloud-loader-diagnostic/results/**/file-loader-spans.json
           if-no-files-found: error
           retention-days: 7

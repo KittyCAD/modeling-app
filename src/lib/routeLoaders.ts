@@ -58,6 +58,62 @@ import { waitFor } from 'xstate'
 
 export const DEFAULT_WEB_PROJECT_NAME = 'demo-project'
 
+type FileLoaderDiagnosticStage =
+  | 'loader'
+  | 'wasm'
+  | 'application-settings'
+  | 'library-ownership'
+  | 'project-settings'
+  | 'fallback-project-info'
+  | 'file-stat'
+  | 'project-info'
+  | 'settings-idle-before-load'
+  | 'settings-idle-after-load'
+  | 'open-project'
+  | 'open-editor'
+
+let fileLoaderDiagnosticInvocation = 0
+
+// Temporary never-merge diagnostic. Keep awaits in the loader itself so the
+// capture adds no promise turns and never receives project data or errors.
+function fileLoaderDiagnostic() {
+  const invocationId = ++fileLoaderDiagnosticInvocation
+  let pending: FileLoaderDiagnosticStage | undefined
+  const emit = (
+    stage: FileLoaderDiagnosticStage,
+    phase: 'start' | 'end' | 'returned' | 'redirected' | 'rejected'
+  ) => {
+    if (import.meta.env.VITE_FILE_LOADER_DIAGNOSTIC !== '1') return
+    console.info(
+      '__FILE_LOADER_DIAG__' +
+        JSON.stringify({
+          stage,
+          invocationId,
+          pageMs: performance.now(),
+          phase,
+        })
+    )
+  }
+  return {
+    start(stage: FileLoaderDiagnosticStage) {
+      pending = stage
+      emit(stage, 'start')
+    },
+    end(stage: FileLoaderDiagnosticStage) {
+      pending = undefined
+      emit(stage, 'end')
+    },
+    reject(stage: FileLoaderDiagnosticStage) {
+      pending = undefined
+      emit(stage, 'rejected')
+    },
+    finish(phase: 'returned' | 'redirected' | 'rejected') {
+      if (pending && pending !== 'loader') emit(pending, 'rejected')
+      emit('loader', phase)
+    },
+  }
+}
+
 type CanonicalWebProjectLibrary = {
   library: ProjectLibrarySetting
   projectPath: string
@@ -198,201 +254,243 @@ export const baseLoader =
 export const fileLoader =
   ({ app }: { app: App }): LoaderFunction =>
   async (routerData): Promise<FileLoaderData | Response> => {
-    const assertCurrent = app.beginFileRouteLoad(routerData.request.signal)
-    const {
-      settings: { actor: settingsActor },
-    } = app
-    const { kclManager } = app.singletons
-    const { params } = routerData
+    const diagnostic = fileLoaderDiagnostic()
+    diagnostic.start('loader')
+    let terminalPhase: 'returned' | 'redirected' | 'rejected' = 'rejected'
+    try {
+      const assertCurrent = app.beginFileRouteLoad(routerData.request.signal)
+      const {
+        settings: { actor: settingsActor },
+      } = app
+      const { kclManager } = app.singletons
+      const { params } = routerData
 
-    // Must basically remain for all eternity, until the last person
-    // who's ever used ZDS on web before this point has died.
-    if (params.id?.startsWith('/browser')) {
-      // Pop us back home, which will cause a default project to be
-      // created.
-      return redirect(PATHS.HOME)
-    }
+      // Must basically remain for all eternity, until the last person
+      // who's ever used ZDS on web before this point has died.
+      if (params.id?.startsWith('/browser')) {
+        // Pop us back home, which will cause a default project to be
+        // created.
+        const response = redirect(PATHS.HOME)
+        terminalPhase = 'redirected'
+        return response
+      }
 
-    const wasmInstance = await kclManager.wasmInstancePromise
-    assertCurrent()
+      diagnostic.start('wasm')
+      const wasmInstance = await kclManager.wasmInstancePromise
+      diagnostic.end('wasm')
+      assertCurrent()
 
-    // Resolve the project root before loading project settings. Loading project
-    // settings from a selected file's parent folder creates project.toml in
-    // nested folders and makes them look like project roots.
-    const appSettings = await loadRouteSettings(app, wasmInstance)
-    assertCurrent()
-    const currentProjectPath = app.project?.projectIORefSignal.value.path
-    const targetLibraryPath = params.id
-      ? (
-          await getProjectLibraryOwnership(
-            appSettings.settings.app.libraries?.current ?? [],
-            params.id
-          )
-        )?.libraryPath
-      : undefined
-    const projectPathData = params.id
-      ? parseProjectRoute(appSettings.configuration, params.id, {
-          activeProjectPath: currentProjectPath,
-          candidateProjectDirectories: targetLibraryPath
-            ? [targetLibraryPath]
-            : [],
-        })
-      : undefined
+      // Resolve the project root before loading project settings. Loading project
+      // settings from a selected file's parent folder creates project.toml in
+      // nested folders and makes them look like project roots.
+      diagnostic.start('application-settings')
+      const appSettings = await loadRouteSettings(app, wasmInstance)
+      diagnostic.end('application-settings')
+      assertCurrent()
+      const currentProjectPath = app.project?.projectIORefSignal.value.path
+      if (params.id) diagnostic.start('library-ownership')
+      const targetLibraryPath = params.id
+        ? (
+            await getProjectLibraryOwnership(
+              appSettings.settings.app.libraries?.current ?? [],
+              params.id
+            )
+          )?.libraryPath
+        : undefined
+      if (params.id) diagnostic.end('library-ownership')
+      const projectPathData = params.id
+        ? parseProjectRoute(appSettings.configuration, params.id, {
+            activeProjectPath: currentProjectPath,
+            candidateProjectDirectories: targetLibraryPath
+              ? [targetLibraryPath]
+              : [],
+          })
+        : undefined
 
-    if (!projectPathData) {
-      return Promise.reject(
-        new Error('bug: projectPathData undefined, early return')
-      )
-    }
-
-    await loadRouteSettings(app, wasmInstance, projectPathData.projectPath)
-    assertCurrent()
-
-    const { projectName, projectPath, currentFileName, currentFilePath } =
-      projectPathData
-
-    const urlObj = new URL(routerData.request.url)
-
-    if (!urlObj.pathname.endsWith('/settings')) {
-      const fallbackFile = (
-        await getProjectInfo(
-          app.registry.get(fileOperationsService),
-          projectPath,
-          wasmInstance
+      if (!projectPathData) {
+        return Promise.reject(
+          new Error('bug: projectPathData undefined, early return')
         )
-      ).default_file
-      let fileExists = true
-      if (currentFilePath && fileExists) {
-        try {
-          await app.registry.get(fileOperationsService).stat(currentFilePath)
-        } catch (e) {
-          if (isPathNotFoundError(e)) {
-            fileExists = false
+      }
+
+      diagnostic.start('project-settings')
+      await loadRouteSettings(app, wasmInstance, projectPathData.projectPath)
+      diagnostic.end('project-settings')
+      assertCurrent()
+
+      const { projectName, projectPath, currentFileName, currentFilePath } =
+        projectPathData
+
+      const urlObj = new URL(routerData.request.url)
+
+      if (!urlObj.pathname.endsWith('/settings')) {
+        diagnostic.start('fallback-project-info')
+        const fallbackFile = (
+          await getProjectInfo(
+            app.registry.get(fileOperationsService),
+            projectPath,
+            wasmInstance
+          )
+        ).default_file
+        diagnostic.end('fallback-project-info')
+        let fileExists = true
+        if (currentFilePath && fileExists) {
+          diagnostic.start('file-stat')
+          try {
+            await app.registry.get(fileOperationsService).stat(currentFilePath)
+            diagnostic.end('file-stat')
+          } catch (e) {
+            diagnostic.reject('file-stat')
+            if (isPathNotFoundError(e)) {
+              fileExists = false
+            }
           }
+        }
+
+        // If we are navigating to the project and want to navigate to its
+        // default file, redirect to it keeping everything else in the URL the same.
+        if (projectPath && !currentFileName && fileExists && params.id) {
+          const encodedId = safeEncodeForRouterPaths(params.id)
+          const requestUrlWithDefaultFile = routerData.request.url.replace(
+            encodedId,
+            safeEncodeForRouterPaths(fallbackFile)
+          )
+          const response = redirect(requestUrlWithDefaultFile)
+          terminalPhase = 'redirected'
+          return response
+        }
+
+        if (
+          !fileExists ||
+          !currentFileName ||
+          !currentFilePath ||
+          !projectName
+        ) {
+          const routerSearch = getRouterSearchFromRequestUrl(
+            routerData.request.url,
+            Boolean(window.electron)
+          )
+          const onboardingChildRoute = params.id
+            ? getOnboardingChildRoute(routerData.request.url, params.id)
+            : ''
+          const response = redirect(
+            `${PATHS.FILE}/${encodeURIComponent(
+              fallbackFile
+            )}${onboardingChildRoute}${routerSearch}`
+          )
+          terminalPhase = 'redirected'
+          return response
         }
       }
 
-      // If we are navigating to the project and want to navigate to its
-      // default file, redirect to it keeping everything else in the URL the same.
-      if (projectPath && !currentFileName && fileExists && params.id) {
-        const encodedId = safeEncodeForRouterPaths(params.id)
-        const requestUrlWithDefaultFile = routerData.request.url.replace(
-          encodedId,
-          safeEncodeForRouterPaths(fallbackFile)
-        )
-        return redirect(requestUrlWithDefaultFile)
-      }
+      // Set the file system manager to the project path
+      // So that WASM gets an updated path for operations
+      projectFsManager.dir = projectPath
 
-      if (!fileExists || !currentFileName || !currentFilePath || !projectName) {
-        const routerSearch = getRouterSearchFromRequestUrl(
-          routerData.request.url,
-          Boolean(window.electron)
-        )
-        const onboardingChildRoute = params.id
-          ? getOnboardingChildRoute(routerData.request.url, params.id)
-          : ''
-        return redirect(
-          `${PATHS.FILE}/${encodeURIComponent(
-            fallbackFile
-          )}${onboardingChildRoute}${routerSearch}`
-        )
-      }
-    }
-
-    // Set the file system manager to the project path
-    // So that WASM gets an updated path for operations
-    projectFsManager.dir = projectPath
-
-    const defaultProjectData = {
-      name: projectName || 'unnamed',
-      path: projectPath,
-      children: [],
-      kcl_file_count: 0,
-      directory_count: 0,
-      metadata: null,
-      default_file: projectPath,
-      readWriteAccess: true,
-    }
-
-    const maybeProjectInfo = await getProjectInfo(
-      app.registry.get(fileOperationsService),
-      projectPath,
-      wasmInstance
-    )
-    assertCurrent()
-
-    const project = maybeProjectInfo ?? defaultProjectData
-
-    // Fire off the event to load the project settings
-    // once we know it's idle.
-    await waitFor(settingsActor, (state) => state.matches('idle'))
-    assertCurrent()
-    settingsActor.send({
-      type: 'load.project',
-      project,
-    })
-    await waitFor(settingsActor, (state) => state.matches('idle'))
-    assertCurrent()
-
-    const projectRef = await app.openProject(project, assertCurrent)
-    const editor = await projectRef.openEditor(
-      currentFilePath || PROJECT_ENTRYPOINT,
-      app.singletons.kclManager,
-      // If persistCode in localStorage is present, it'll persist that code
-      // through *anything*. INTENDED FOR TESTS.
-      window.electron?.process.env.NODE_ENV === 'test'
-        ? kclManager.localStoragePersistCode()
-        : undefined,
-      true,
-      assertCurrent
-    )
-    assertCurrent()
-
-    const requestedFileName =
-      app.systemIOActor.getSnapshot().context.requestedFileName
-    if (
-      isRequestedFileLoaded({
-        requestedFileName,
-        projectName,
-        projectPath,
-        currentFilePath,
-      })
-    ) {
-      requestedFileName.onProjectLoaderComplete?.()
-    }
-
-    const requestedProjectDirectoryPath =
-      projectRef.projectIORefSignal.value.libraryPath ??
-      getParentAbsolutePath(project.path)
-    const systemIOSnapshot = app.systemIOActor.getSnapshot()
-    // Same-directory file navigation should not restart SystemIO's own
-    // post-mutation folder refresh.
-    const shouldSyncProjectDirectory =
-      requestedProjectDirectoryPath !==
-        systemIOSnapshot.context.projectDirectoryPath ||
-      (systemIOSnapshot.matches(SystemIOMachineStates.idle) &&
-        systemIOSnapshot.context.folders === undefined)
-    if (shouldSyncProjectDirectory) {
-      app.systemIOActor.send({
-        type: SystemIOMachineEvents.setProjectDirectoryPath,
-        data: {
-          requestedProjectDirectoryPath,
-        },
-      })
-    }
-
-    const projectData: IndexLoaderData = {
-      code: editor.code,
-      project,
-      file: {
-        name: currentFileName || '',
-        path: currentFilePath || '',
+      const defaultProjectData = {
+        name: projectName || 'unnamed',
+        path: projectPath,
         children: [],
-      },
-    }
+        kcl_file_count: 0,
+        directory_count: 0,
+        metadata: null,
+        default_file: projectPath,
+        readWriteAccess: true,
+      }
 
-    return {
-      ...projectData,
+      diagnostic.start('project-info')
+      const maybeProjectInfo = await getProjectInfo(
+        app.registry.get(fileOperationsService),
+        projectPath,
+        wasmInstance
+      )
+      diagnostic.end('project-info')
+      assertCurrent()
+
+      const project = maybeProjectInfo ?? defaultProjectData
+
+      // Fire off the event to load the project settings
+      // once we know it's idle.
+      diagnostic.start('settings-idle-before-load')
+      await waitFor(settingsActor, (state) => state.matches('idle'))
+      diagnostic.end('settings-idle-before-load')
+      assertCurrent()
+      settingsActor.send({
+        type: 'load.project',
+        project,
+      })
+      diagnostic.start('settings-idle-after-load')
+      await waitFor(settingsActor, (state) => state.matches('idle'))
+      diagnostic.end('settings-idle-after-load')
+      assertCurrent()
+
+      diagnostic.start('open-project')
+      const projectRef = await app.openProject(project, assertCurrent)
+      diagnostic.end('open-project')
+      diagnostic.start('open-editor')
+      const editor = await projectRef.openEditor(
+        currentFilePath || PROJECT_ENTRYPOINT,
+        app.singletons.kclManager,
+        // If persistCode in localStorage is present, it'll persist that code
+        // through *anything*. INTENDED FOR TESTS.
+        window.electron?.process.env.NODE_ENV === 'test'
+          ? kclManager.localStoragePersistCode()
+          : undefined,
+        true,
+        assertCurrent
+      )
+      diagnostic.end('open-editor')
+      assertCurrent()
+
+      const requestedFileName =
+        app.systemIOActor.getSnapshot().context.requestedFileName
+      if (
+        isRequestedFileLoaded({
+          requestedFileName,
+          projectName,
+          projectPath,
+          currentFilePath,
+        })
+      ) {
+        requestedFileName.onProjectLoaderComplete?.()
+      }
+
+      const requestedProjectDirectoryPath =
+        projectRef.projectIORefSignal.value.libraryPath ??
+        getParentAbsolutePath(project.path)
+      const systemIOSnapshot = app.systemIOActor.getSnapshot()
+      // Same-directory file navigation should not restart SystemIO's own
+      // post-mutation folder refresh.
+      const shouldSyncProjectDirectory =
+        requestedProjectDirectoryPath !==
+          systemIOSnapshot.context.projectDirectoryPath ||
+        (systemIOSnapshot.matches(SystemIOMachineStates.idle) &&
+          systemIOSnapshot.context.folders === undefined)
+      if (shouldSyncProjectDirectory) {
+        app.systemIOActor.send({
+          type: SystemIOMachineEvents.setProjectDirectoryPath,
+          data: {
+            requestedProjectDirectoryPath,
+          },
+        })
+      }
+
+      const projectData: IndexLoaderData = {
+        code: editor.code,
+        project,
+        file: {
+          name: currentFileName || '',
+          path: currentFilePath || '',
+          children: [],
+        },
+      }
+
+      terminalPhase = 'returned'
+      return {
+        ...projectData,
+      }
+    } finally {
+      diagnostic.finish(terminalPhase)
     }
   }
 
