@@ -3632,12 +3632,14 @@ async function syncRemoteIndex(
         const preferredPath = normalizePathForSync(
           localFs.join(projectDirectory, projectName)
         )
-        const orderedCandidates = candidates.includes(preferredPath)
-          ? [
-              preferredPath,
-              ...candidates.filter((path) => path !== preferredPath),
-            ]
-          : candidates
+        // The preferred spelling may resolve to a differently cased directory.
+        const orderedCandidates =
+          candidates.length > 0
+            ? [
+                preferredPath,
+                ...candidates.filter((path) => path !== preferredPath),
+              ]
+            : candidates
         for (const candidatePath of orderedCandidates) {
           if (
             (await readSyncableLocalProjectRemoteId(candidatePath)) ===
