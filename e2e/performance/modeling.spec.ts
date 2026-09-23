@@ -57,22 +57,17 @@ test.beforeEach(async ({ page, homePage, scene, fs, folderSetupFn }) => {
   await page.emulateMedia({ reducedMotion: 'no-preference' })
   await page.setBodyDimensions({ width: 1200, height: 800 })
   await page.evaluate(() => document.fonts.ready)
-  // Diagnostic branch only: isolate palette paint without blur or compositing.
-  if (process.env.INTERACTION_DIAGNOSTIC_VARIANT === 'instant') {
+  // Diagnostic-only variants isolate palette raster/compositing costs.
+  const variant = process.env.INTERACTION_DIAGNOSTIC_VARIANT
+  if (variant === 'composite' || variant === 'shadowless') {
     await page.addStyleTag({
-      content: `
-        [data-testid="command-bar"] { box-shadow: none !important; }
-        [data-testid="command-bar-wrapper"] > div {
-          transition: none !important;
-          transform: none !important;
-          opacity: 1 !important;
-        }
-      `,
+      content:
+        variant === 'composite'
+          ? '[data-testid="command-bar-wrapper"] > div { will-change: transform, opacity; }'
+          : '[data-testid="command-bar"] { box-shadow: none !important; }',
     })
   }
 
-  // The shared Playwright layout starts with Code open and Files closed. Keep
-  // that state so first-use includes the first sidebar click on each pane.
   await expect(
     page.getByTestId(interactions.codePaneClose.testId)
   ).toHaveAttribute('aria-pressed', 'true')
