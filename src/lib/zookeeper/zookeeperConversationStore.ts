@@ -59,8 +59,7 @@ const getZookeeperConversationsFilePath = async () =>
   )
 
 const readZookeeperConversations = async (
-  fileOperations: FileOperationsRegistryService,
-  strict = false
+  fileOperations: FileOperationsRegistryService
 ): Promise<ZookeeperConversations> => {
   try {
     const json = new TextDecoder().decode(
@@ -68,11 +67,7 @@ const readZookeeperConversations = async (
     )
     return jsonToZookeeperConversations(json ?? '')
   } catch (error) {
-    if (strict) {
-      return isPathNotFoundError(error) ? new Map() : Promise.reject(error)
-    }
-    console.warn('Cannot get Zookeeper conversations', error)
-    return new Map()
+    return isPathNotFoundError(error) ? new Map() : Promise.reject(error)
   }
 }
 
@@ -177,9 +172,9 @@ export const makeProjectZookeeperConversationStore = (
         if (!saved.canMigrateLegacyConversation) {
           return conversationId
         }
-        const legacy = (
-          await readZookeeperConversations(fileOperations, true)
-        ).get(projectId)
+        const legacy = (await readZookeeperConversations(fileOperations)).get(
+          projectId
+        )
         if (legacy !== undefined) {
           await saveConversation(contents, legacy)
         }

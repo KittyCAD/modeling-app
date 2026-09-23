@@ -120,6 +120,28 @@ describe('zookeeperConversationStore', () => {
     await expect(read).resolves.toBeUndefined()
     expect(contents).toBe('{}')
   })
+
+  it.each(['unreadable', 'corrupt'])(
+    'does not overwrite %s legacy JSON during cleanup',
+    async (legacyState) => {
+      if (legacyState === 'unreadable') {
+        fsMocks.readFile.mockRejectedValueOnce(
+          Object.assign(new Error('Permission denied'), { code: 'EACCES' })
+        )
+      } else {
+        fsMocks.readFile.mockResolvedValueOnce(
+          new TextEncoder().encode('{corrupt')
+        )
+      }
+
+      await expect(
+        zookeeperConversationStore.deleteProjectConversationId(
+          '11111111-1111-4111-8111-111111111111'
+        )
+      ).rejects.toThrow()
+      expect(fsMocks.writeFile).not.toHaveBeenCalled()
+    }
+  )
 })
 
 describe('project-backed Zookeeper conversations', () => {
