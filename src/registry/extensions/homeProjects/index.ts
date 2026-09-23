@@ -17,10 +17,7 @@ import {
   projectLibrariesFromSettings,
 } from '@src/lib/projectLibraries'
 import { invalidateProjectLibraryRealizations } from '@src/lib/projectLibraries/registry/invalidation'
-import {
-  makeZookeeperConversationStore,
-  type ZookeeperConversationStore,
-} from '@src/lib/zookeeper/zookeeperConversationStore'
+import { deleteLegacyProjectConversationId } from '@src/lib/zookeeper/zookeeperConversationStore'
 import {
   type CloudProjectRelationship,
   type CloudProjectRelationshipRealization,
@@ -411,13 +408,6 @@ export function deriveHomeProjectEntryContributions({
 const homeProjectActions = defineRegistryItemFactory((ctx) => {
   const settings = ctx.services.signal(settingsService)
   const cloudSync = ctx.services.signal(cloudSyncService)
-  let zookeeperConversationStore: ZookeeperConversationStore | undefined
-  const getZookeeperConversationStore = () => {
-    zookeeperConversationStore ??= makeZookeeperConversationStore(
-      ctx.services.get(fileOperationsService)
-    )
-    return zookeeperConversationStore
-  }
 
   const getWasmPromise = () =>
     ctx.valueSpecs.get(wasmPromiseValueSpec) ??
@@ -766,7 +756,8 @@ const homeProjectActions = defineRegistryItemFactory((ctx) => {
       })
       try {
         if (!keepProjectPath) {
-          await getZookeeperConversationStore().deleteProjectConversationId(
+          await deleteLegacyProjectConversationId(
+            ctx.services.get(fileOperationsService),
             sharedProjectId
           )
         }

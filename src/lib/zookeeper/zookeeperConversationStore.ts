@@ -89,31 +89,15 @@ const serialize = <T>(operation: () => Promise<T>): Promise<T> => {
   return result
 }
 
-export const makeZookeeperConversationStore = (
-  fileOperations: FileOperationsRegistryService
-): ZookeeperConversationStore => {
-  return {
-    getProjectConversationId(projectId) {
-      return serialize(async () =>
-        (await readZookeeperConversations(fileOperations)).get(projectId)
-      )
-    },
-    saveProjectConversationId({ projectId, conversationId }) {
-      return serialize(async () => {
-        const conversations = await readZookeeperConversations(fileOperations)
-        conversations.set(projectId, conversationId)
-        await writeZookeeperConversations(fileOperations, conversations)
-      })
-    },
-    deleteProjectConversationId(projectId) {
-      return serialize(async () => {
-        const conversations = await readZookeeperConversations(fileOperations)
-        conversations.delete(projectId)
-        await writeZookeeperConversations(fileOperations, conversations)
-      })
-    },
-  }
-}
+export const deleteLegacyProjectConversationId = (
+  fileOperations: FileOperationsRegistryService,
+  projectId: string
+): Promise<void> =>
+  serialize(async () => {
+    const conversations = await readZookeeperConversations(fileOperations)
+    conversations.delete(projectId)
+    await writeZookeeperConversations(fileOperations, conversations)
+  })
 
 // TODO: Coordinate project.toml updates with settings and cloud writes.
 // https://github.com/KittyCAD/modeling-app/pull/14058#discussion_r4069113804

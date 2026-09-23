@@ -79,7 +79,7 @@ const projectIdentityMocks = vi.hoisted(() => ({
 }))
 
 const conversationStoreMocks = vi.hoisted(() => ({
-  deleteProjectConversationId: vi.fn(),
+  deleteLegacyProjectConversationId: vi.fn(),
 }))
 
 vi.mock('@src/lib/clientErrors', async (importOriginal) => {
@@ -92,9 +92,10 @@ vi.mock('@src/lib/clientErrors', async (importOriginal) => {
 
 vi.mock('@src/lib/projectIdentity', () => projectIdentityMocks)
 
-vi.mock('@src/lib/zookeeper/zookeeperConversationStore', () => ({
-  makeZookeeperConversationStore: vi.fn(() => conversationStoreMocks),
-}))
+vi.mock(
+  '@src/lib/zookeeper/zookeeperConversationStore',
+  () => conversationStoreMocks
+)
 
 const fsZdsMocks = vi.hoisted(() => {
   const join = (...parts: string[]) => {
@@ -795,7 +796,7 @@ describe('home project actions', () => {
     projectIdentityMocks.separateProjectsSharingProjectId.mockResolvedValue({
       sharedProjectId: 'shared-project-id',
     })
-    conversationStoreMocks.deleteProjectConversationId.mockResolvedValue(
+    conversationStoreMocks.deleteLegacyProjectConversationId.mockResolvedValue(
       undefined
     )
   })
@@ -1077,7 +1078,7 @@ describe('home project actions', () => {
       keepProjectPath: '/projects/copy',
     })
     expect(
-      conversationStoreMocks.deleteProjectConversationId
+      conversationStoreMocks.deleteLegacyProjectConversationId
     ).not.toHaveBeenCalled()
   })
 
@@ -1127,8 +1128,11 @@ describe('home project actions', () => {
     await registry.get(homeProjectActionsService).separateProjectCopies(project)
 
     expect(
-      conversationStoreMocks.deleteProjectConversationId
-    ).toHaveBeenCalledWith('shared-project-id')
+      conversationStoreMocks.deleteLegacyProjectConversationId
+    ).toHaveBeenCalledWith(
+      registry.get(fileOperationsService),
+      'shared-project-id'
+    )
   })
 
   it('reports configured directory project delete failures as destructive', async () => {

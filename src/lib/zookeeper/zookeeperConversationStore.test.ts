@@ -21,15 +21,13 @@ vi.mock('@src/lib/fs-zds', () => ({
 
 import {
   jsonToZookeeperConversations,
-  makeZookeeperConversationStore,
+  deleteLegacyProjectConversationId,
   makeProjectZookeeperConversationStore,
   zookeeperConversationsToJson,
 } from '@src/lib/zookeeper/zookeeperConversationStore'
 import { getZookeeperConversationMetadataFromProjectTomlContents } from '@src/lib/projectTomlMetadata'
 
-const zookeeperConversationStore = makeZookeeperConversationStore(
-  fsMocks as unknown as FileOperationsRegistryService
-)
+const fileOperations = fsMocks as unknown as FileOperationsRegistryService
 
 beforeEach(() => {
   fsMocks.readFile.mockReset()
@@ -84,11 +82,17 @@ describe('zookeeperConversationStore', () => {
     }
   })
 
-  it('serializes persistence operations', async () => {
+  it('serializes legacy deletions and preserves unrelated mappings', async () => {
     const projectId = '11111111-1111-4111-8111-111111111111'
     const conversationId = '22222222-2222-4222-8222-222222222222'
+    const otherProjectId = '33333333-3333-4333-8333-333333333333'
+    const untouchedProjectId = '44444444-4444-4444-8444-444444444444'
     const firstWrite = deferred<undefined>()
-    let contents = '{}'
+    let contents = JSON.stringify({
+      [projectId]: conversationId,
+      [otherProjectId]: conversationId,
+      [untouchedProjectId]: conversationId,
+    })
 
     fsMocks.readFile.mockImplementation(async () =>
       new TextEncoder().encode(contents)
@@ -103,22 +107,24 @@ describe('zookeeperConversationStore', () => {
       }
     )
 
-    const save = zookeeperConversationStore.saveProjectConversationId({
-      projectId,
-      conversationId,
-    })
+    const deletion = deleteLegacyProjectConversationId(
+      fileOperations,
+      projectId
+    )
     await vi.waitFor(() => expect(fsMocks.writeFile).toHaveBeenCalledOnce())
-    const deletion =
-      zookeeperConversationStore.deleteProjectConversationId(projectId)
-    const read = zookeeperConversationStore.getProjectConversationId(projectId)
+    const otherDeletion = deleteLegacyProjectConversationId(
+      fileOperations,
+      otherProjectId
+    )
 
     await Promise.resolve()
     expect(fsMocks.readFile).toHaveBeenCalledOnce()
 
     firstWrite.resolve(undefined)
-    await Promise.all([save, deletion])
-    await expect(read).resolves.toBeUndefined()
-    expect(contents).toBe('{}')
+    await Promise.all([deletion, otherDeletion])
+    expect(JSON.parse(contents)).toEqual({
+      [untouchedProjectId]: conversationId,
+    })
   })
 
   it.each(['unreadable', 'corrupt'])(
@@ -135,7 +141,8 @@ describe('zookeeperConversationStore', () => {
       }
 
       await expect(
-        zookeeperConversationStore.deleteProjectConversationId(
+        deleteLegacyProjectConversationId(
+          fileOperations,
           '11111111-1111-4111-8111-111111111111'
         )
       ).rejects.toThrow()
