@@ -1131,17 +1131,18 @@ describe('KclManager diagnostics', () => {
 
     await vi.advanceTimersByTimeAsync(1000)
 
-    expect(kclManager.code).toBe(
-      `@settings(kclVersion = ${DEFAULT_KCL_VERSION})\n`
-    )
+    const defaultVersionLiteral = DEFAULT_KCL_VERSION.includes('preview')
+      ? JSON.stringify(DEFAULT_KCL_VERSION)
+      : DEFAULT_KCL_VERSION
+    const expectedCode = `@settings(kclVersion = ${defaultVersionLiteral})\n`
+
+    expect(kclManager.code).toBe(expectedCode)
     expect(writeSpy).not.toHaveBeenCalled()
 
     await vi.advanceTimersByTimeAsync(1000)
 
     expect(writeSpy).toHaveBeenCalledTimes(1)
-    expect(writeSpy).toHaveBeenCalledWith(
-      `@settings(kclVersion = ${DEFAULT_KCL_VERSION})\n`
-    )
+    expect(writeSpy).toHaveBeenCalledWith(expectedCode)
   })
 
   it('refreshes derived state when restoring cached editor state for a reopened file', async () => {

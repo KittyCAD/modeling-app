@@ -2,6 +2,7 @@ import type { Feature, WebSocketResponse } from '@kittycad/lib'
 
 import type { UnitLength } from '@rust/kcl-lib/bindings/ModelingCmd'
 import type { WarningLevel } from '@rust/kcl-lib/bindings/WarningLevel'
+import { IS_STAGING_OR_DEBUG } from '@src/routes/utils'
 
 export const APP_NAME = 'Design Studio'
 /** Search string in new project names to increment as an index */
@@ -29,7 +30,7 @@ export const FILE_EXT = '.kcl'
  * Lowercased, with leading dot. Add extensions here to broaden support.
  */
 export const EDITABLE_TEXT_FILE_EXTENSIONS = ['.md', '.txt'] as const
-export const DEFAULT_KCL_VERSION = '2.0'
+export const DEFAULT_KCL_VERSION = IS_STAGING_OR_DEBUG ? '3.0-preview' : '2.0'
 export const EXPERIMENTAL_POINT_AND_CLICK_FLAG: Feature =
   'sketch_experimental_features'
 export const OPFS_CLOUD_FEATURE_FLAG: Feature = 'web_app_file_browser'
