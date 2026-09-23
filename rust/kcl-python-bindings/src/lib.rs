@@ -414,7 +414,9 @@ async fn run_kcl(
         geometry_only,
         None,
         None,
-        program.language_version().map_err(to_py_exception)?,
+        program
+            .language_version()
+            .map_err(|err| into_miette_for_parse(&filename, &code, err))?,
     )
     .await
     .map_err(to_py_exception)?;
@@ -477,17 +479,17 @@ async fn sketch_constraint_report_impl(input: KclInput) -> PyResult<SketchConstr
         }
     };
 
-    let (ctx, mut state) = new_context_state(
-        path,
-        false,
-        None,
-        false,
-        None,
-        None,
-        program.language_version().map_err(to_py_exception)?,
-    )
-    .await
-    .map_err(to_py_exception)?;
+    let kcl_version = match program.language_version() {
+        Ok(version) => version,
+        Err(err) => {
+            let error_text = render_miette_for_parse(&filename, &code, err);
+            return Ok(incomplete_sketch_constraint_report("parse", error_text));
+        }
+    };
+
+    let (ctx, mut state) = new_context_state(path, false, None, false, None, None, kcl_version)
+        .await
+        .map_err(to_py_exception)?;
     let result = match ctx.run(&program, &mut state).await {
         Ok((env_ref, _)) => {
             let outcome = state.into_exec_outcome(env_ref, &ctx).await.map_err(to_py_exception)?;
