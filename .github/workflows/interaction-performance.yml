@@ -16,6 +16,7 @@ on:
           - targeted
           - comparison
           - cloud-stages
+          - cloud-cleanup
       palette-frame-observer:
         description: Collect extra palette animation-frame observations
         type: boolean
@@ -191,7 +192,7 @@ jobs:
           retention-days: 7
 
   file-loader:
-    if: ${{ inputs.diagnostic == 'file-loader' || inputs.diagnostic == 'targeted' || inputs.diagnostic == 'cloud-stages' }}
+    if: ${{ inputs.diagnostic == 'file-loader' || inputs.diagnostic == 'targeted' || inputs.diagnostic == 'cloud-stages' || inputs.diagnostic == 'cloud-cleanup' }}
     name: Windows cloud startup stages
     runs-on: namespace-profile-windows-8-cores
     timeout-minutes: 15
@@ -219,7 +220,7 @@ jobs:
       - name: Install the existing Chrome test browser
         run: npm exec -- playwright install chrome
       - name: Capture the existing first-upload flow without retries
-        if: ${{ inputs.diagnostic != 'cloud-stages' }}
+        if: ${{ inputs.diagnostic != 'cloud-stages' && inputs.diagnostic != 'cloud-cleanup' }}
         timeout-minutes: 5
         run: npm exec -- playwright test --config=playwright.cloud-loader-diagnostic.config.ts --headed
         env:
@@ -244,8 +245,27 @@ jobs:
           path: test-results/cloud-sync-stages-diagnostic/results/**/cloud-sync-spans.json
           if-no-files-found: error
           retention-days: 7
+      - name: Probe cleanup after the original first-upload test deadline
+        if: ${{ inputs.diagnostic == 'cloud-cleanup' }}
+        timeout-minutes: 5
+        run: npm exec -- playwright test --config=e2e/performance/cloud-cleanup/playwright.config.ts --headed
+        env:
+          TARGET: web
+          NODE_ENV: development
+          VITE_ZOO_BASE_DOMAIN: dev.zoo.dev
+          VITE_ZOO_API_TOKEN: ${{ secrets.ZOO_API_TOKEN }}
+      - name: Preserve normalized cleanup evidence
+        if: ${{ !cancelled() && inputs.diagnostic == 'cloud-cleanup' }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: cloud-cleanup-${{ github.sha }}-${{ github.run_attempt }}
+          path: |
+            test-results/cloud-cleanup/result.json
+            test-results/cloud-cleanup/cleanup-receipt.json
+          if-no-files-found: error
+          retention-days: 7
       - name: Preserve file-loader evidence
-        if: ${{ !cancelled() && inputs.diagnostic != 'cloud-stages' }}
+        if: ${{ !cancelled() && inputs.diagnostic != 'cloud-stages' && inputs.diagnostic != 'cloud-cleanup' }}
         uses: actions/upload-artifact@v7
         with:
           name: cloud-file-loader-${{ github.sha }}-${{ github.run_attempt }}
