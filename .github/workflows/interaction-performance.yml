@@ -17,6 +17,7 @@ on:
           - comparison
           - cloud-stages
           - cloud-cleanup
+          - native-tools
       palette-frame-observer:
         description: Collect extra palette animation-frame observations
         type: boolean
@@ -38,6 +39,28 @@ permissions:
   actions: read
 
 jobs:
+  native-tools:
+    if: ${{ inputs.diagnostic == 'native-tools' }}
+    name: Native profiling capabilities
+    runs-on: namespace-profile-macos-8-cores
+    timeout-minutes: 4
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: actions/setup-node@v7.0.0
+        with:
+          node-version-file: .nvmrc
+      - name: Probe installed native profiling tools without recording
+        timeout-minutes: 2
+        run: node e2e/performance/native-tools-capabilities.cjs
+      - name: Preserve sanitized capability evidence
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: native-tools-${{ github.sha }}-${{ github.run_attempt }}
+          path: test-results/native-tools/capabilities.json
+          if-no-files-found: error
+          retention-days: 7
+
   measure:
     if: ${{ inputs.diagnostic == 'both' || inputs.diagnostic == 'animation' }}
     name: Presentation traces (${{ matrix.variant }})
