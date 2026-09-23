@@ -992,6 +992,8 @@ export class App implements AppSubsystems {
     const newCurrentProjection = context.modeling.cameraProjection.current
     if (
       this.singletons.kclManager.sceneInfra.camControls &&
+      this.singletons.kclManager.sceneInfra.camControls
+        .engineCameraProjection !== newCurrentProjection &&
       !this.singletons.kclManager.modelingState?.matches('Sketch') &&
       !this.singletons.kclManager.modelingState?.matches('sketchSolveMode')
     ) {

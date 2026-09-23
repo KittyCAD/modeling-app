@@ -313,6 +313,55 @@ describe('project system', () => {
     }
   })
 
+  it.each<'perspective' | 'orthographic'>(['perspective', 'orthographic'])(
+    'only reapplies %s projection when the actual camera differs',
+    async (projection) => {
+      const app = createAppForTest()
+      const { camControls } = app.singletons.kclManager.sceneInfra
+      const sendSceneCommand = vi
+        .spyOn(app.engineCommandManager, 'sendSceneCommand')
+        .mockResolvedValue(undefined)
+
+      try {
+        await app.openProject(mockProject)
+        const snapshot = app.settings.actor.getSnapshot()
+        snapshot.context.modeling.cameraProjection.user = projection
+        await camControls.setCameraProjection(projection)
+        const originalCamera = camControls.camera
+        sendSceneCommand.mockClear()
+
+        app.onSettingsUpdate(snapshot)
+        app.onSettingsUpdate(snapshot)
+
+        expect(camControls.camera).toBe(originalCamera)
+        expect(sendSceneCommand).not.toHaveBeenCalled()
+
+        await camControls.setCameraProjection(
+          projection === 'perspective' ? 'orthographic' : 'perspective'
+        )
+        sendSceneCommand.mockClear()
+        app.onSettingsUpdate(snapshot)
+
+        expect(camControls.engineCameraProjection).toBe(projection)
+        expect(sendSceneCommand).toHaveBeenCalledExactlyOnceWith(
+          expect.objectContaining({
+            cmd: expect.objectContaining({
+              type: `default_camera_set_${projection}`,
+            }),
+          })
+        )
+
+        const restoredCamera = camControls.camera
+        app.onSettingsUpdate(snapshot)
+        expect(camControls.camera).toBe(restoredCamera)
+        expect(sendSceneCommand).toHaveBeenCalledTimes(1)
+      } finally {
+        sendSceneCommand.mockRestore()
+        app.dispose()
+      }
+    }
+  )
+
   it('does not resend unchanged engine appearance settings', async () => {
     const app = createAppForTest()
     const kclManager = app.singletons.kclManager
