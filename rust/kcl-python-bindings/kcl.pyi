@@ -3,6 +3,7 @@
 
 import builtins
 import enum
+import types
 import typing
 __all__ = [
     "AcisImportOptions",
@@ -36,6 +37,7 @@ __all__ = [
     "InputFormat3d",
     "InventorImportOptions",
     "KclErrorInfo",
+    "KclSession",
     "NxImportOptions",
     "ObjExportOptions",
     "ObjImportOptions",
@@ -89,6 +91,8 @@ __all__ = [
     "lint_and_fix_families",
     "mock_execute",
     "mock_execute_code",
+    "new_kcl_session",
+    "new_kcl_session_code",
     "parse",
     "parse_code",
     "relevant_file_extensions",
@@ -199,10 +203,11 @@ class ExecOutcome:
         Analyze all sketches from this execution and group them by constraint
         status.
         """
-    def render_sketch_png(self, sketch_name: builtins.str) -> builtins.list[builtins.int]:
+    def render_sketch_png(self, sketch_name: builtins.str, *, instance_index: typing.Optional[builtins.int] = None) -> builtins.list[builtins.int]:
         r"""
         Render one sketch from this execution as a PNG, colored by solver
-        freedom.
+        freedom. For duplicate names, pass the zero-based instance_index
+        from the constraint report for this entrypoint and source.
         """
     def report_all(self) -> builtins.list[builtins.str]: ...
 
@@ -463,6 +468,53 @@ class KclErrorInfo:
     def text(self) -> builtins.str: ...
 
 @typing.final
+class KclSession:
+    r"""
+    Created after executing a KCL project.
+    Lets you call follow-up methods, like exporting or snapshotting, without re-executing the KCL.
+    """
+    @property
+    def outcome(self) -> ExecOutcome:
+        r"""
+        Saved diagnostics, constraint reports, and sketch rendering from this execution.
+        Available after close(); accessing it neither re-executes KCL nor copies the execution state.
+        """
+    async def __aenter__(self) -> KclSession:
+        r"""
+        Enter this session without executing KCL again.
+        """
+    async def __aexit__(self, exc_type: builtins.type[builtins.BaseException] | None, exc_value: builtins.BaseException | None, traceback: types.TracebackType | None) -> None:
+        r"""
+        Close the session, including when the context body raises an exception.
+        """
+    async def close(self) -> None:
+        r"""
+        After calling this, calling any methods that use the connection will raise an exception.
+        """
+    async def measure(self, request: PhysicalPropertiesRequest) -> PhysicalPropertiesResponse:
+        r"""
+        Measure the active model's physical properties.
+        Supports choosing any of the available properties, like volume, mass, bounding box, or any combination of them.
+        It is NOT safe to concurrently call methods on this object. Only call one of measure, export, etc at a time.
+        """
+    async def sketch_constraint_report(self) -> SketchConstraintReport:
+        r"""
+        Analyze the executed sketches and report their constraint status and execution issues.
+        Uses the saved execution state without executing KCL again.
+        It is NOT safe to concurrently call methods on this object. Only call one of measure, export, etc at a time.
+        """
+    async def snapshots(self, image_format: ImageFormat, snapshot_options: typing.Sequence[SnapshotOptions], *, zoom: builtins.bool = ...) -> builtins.list[builtins.list[builtins.int]]:
+        r"""
+        Get 2D images of the model.
+        It is NOT safe to concurrently call methods on this object. Only call one of measure, export, etc at a time.
+        """
+    async def export(self, export_format: FileExportFormat) -> builtins.list[RawFile]:
+        r"""
+        Get 3D files containing this model.
+        It is NOT safe to concurrently call methods on this object. Only call one of measure, export, etc at a time.
+        """
+
+@typing.final
 class NxImportOptions:
     def __new__(cls) -> NxImportOptions:
         r"""
@@ -635,6 +687,10 @@ class SketchConstraintReport:
     def is_complete(self) -> builtins.bool: ...
     @property
     def kcl_error(self) -> typing.Optional[KclErrorInfo]: ...
+    def total_sketches(self) -> builtins.int:
+        r"""
+        Total number of sketches across all categories.
+        """
 
 @typing.final
 class SketchConstraintStatus:
@@ -647,8 +703,13 @@ class SketchConstraintStatus:
         Name of the variable the sketch was assigned to. Empty when the sketch
         has no enclosing variable declaration, and shared between entries when
         two sketches resolve to the same declaration. This name can be passed
-        to `ExecOutcome.render_sketch_png`, which returns an ambiguity error
-        when multiple sketches share it.
+        to `ExecOutcome.render_sketch_png`, with instance_index for duplicates.
+        """
+    @property
+    def instance_index(self) -> builtins.int:
+        r"""
+        Zero-based creation order among sketches with this name. Obtain a
+        fresh report for the same entrypoint after editing the project.
         """
     @property
     def status(self) -> zooConstraintKind: ...
@@ -1043,7 +1104,7 @@ class UnitArea(enum.Enum):
     """
     SquareYards = ...
     r"""
-    Square yards <https://en.wikipedia.org/wiki/Square_mile>
+    Square yards <https://en.wikipedia.org/wiki/Square_yard>
     """
 
 @typing.final
@@ -1305,22 +1366,22 @@ async def default_units(path: builtins.str) -> zooDefaultUnits:
     Get the default length and angle units from a kcl file.
     """
 
-async def execute(path: builtins.str) -> zooExecOutcome:
+async def execute(path: builtins.str, *, geometry_only: builtins.bool = ...) -> zooExecOutcome:
     r"""
     Execute the kcl code from a file path.
     """
 
-async def execute_and_bounding_box(path: builtins.str, entity_ids: typing.Optional[typing.Sequence[builtins.str]] = None, output_unit: typing.Optional[UnitLength] = None) -> zooBoundingBoxResponse:
+async def execute_and_bounding_box(path: builtins.str, entity_ids: typing.Optional[typing.Sequence[builtins.str]] = None, output_unit: typing.Optional[UnitLength] = None, *, geometry_only: builtins.bool = ...) -> zooBoundingBoxResponse:
     r"""
     Execute a kcl file and return the model's bounding box.
     """
 
-async def execute_and_export(path: builtins.str, export_format: zooFileExportFormat) -> builtins.list[RawFile]:
+async def execute_and_export(path: builtins.str, export_format: zooFileExportFormat, *, geometry_only: builtins.bool = ...) -> builtins.list[RawFile]:
     r"""
     Execute a kcl file and export it to a specific file format.
     """
 
-async def execute_and_measure(path: builtins.str, request: zooPhysicalPropertiesRequest) -> zooPhysicalPropertiesResponse:
+async def execute_and_measure(path: builtins.str, request: zooPhysicalPropertiesRequest, *, geometry_only: builtins.bool = ...) -> zooPhysicalPropertiesResponse:
     r"""
     Execute a kcl file and measure physical properties of the resulting model.
     """
@@ -1332,22 +1393,22 @@ async def execute_and_snapshot(path: builtins.str, image_format: zooImageFormat,
 
 async def execute_and_snapshot_views(path: builtins.str, image_format: zooImageFormat, snapshot_options: typing.Sequence[SnapshotOptions], *, zoom: typing.Optional[builtins.bool] = None, highlight_edges: typing.Optional[builtins.bool] = None) -> builtins.list[builtins.list[builtins.int]]: ...
 
-async def execute_code(code: builtins.str) -> zooExecOutcome:
+async def execute_code(code: builtins.str, *, geometry_only: builtins.bool = ...) -> zooExecOutcome:
     r"""
     Execute the kcl code.
     """
 
-async def execute_code_and_bounding_box(code: builtins.str, entity_ids: typing.Optional[typing.Sequence[builtins.str]] = None, output_unit: typing.Optional[UnitLength] = None) -> zooBoundingBoxResponse:
+async def execute_code_and_bounding_box(code: builtins.str, entity_ids: typing.Optional[typing.Sequence[builtins.str]] = None, output_unit: typing.Optional[UnitLength] = None, *, geometry_only: builtins.bool = ...) -> zooBoundingBoxResponse:
     r"""
     Execute the kcl code and return the model's bounding box.
     """
 
-async def execute_code_and_export(code: builtins.str, export_format: zooFileExportFormat) -> builtins.list[RawFile]:
+async def execute_code_and_export(code: builtins.str, export_format: zooFileExportFormat, *, geometry_only: builtins.bool = ...) -> builtins.list[RawFile]:
     r"""
     Execute the kcl code and export it to a specific file format.
     """
 
-async def execute_code_and_measure(code: builtins.str, request: zooPhysicalPropertiesRequest) -> zooPhysicalPropertiesResponse:
+async def execute_code_and_measure(code: builtins.str, request: zooPhysicalPropertiesRequest, *, geometry_only: builtins.bool = ...) -> zooPhysicalPropertiesResponse:
     r"""
     Execute the kcl code and measure physical properties of the resulting model.
     """
@@ -1416,6 +1477,20 @@ async def mock_execute_code(code: builtins.str) -> zooExecOutcome:
     Mock execute the kcl code.
     """
 
+async def new_kcl_session(path: builtins.str, *, mock: builtins.bool = ..., highlight_edges: typing.Optional[builtins.bool] = None, video_res_width: typing.Optional[builtins.int] = None, video_res_height: typing.Optional[builtins.int] = None) -> KclSession:
+    r"""
+    Execute this KCL project.
+    Return an executed KCL project with its connection still available.
+    You can call follow-up methods, like exporting or snapshotting or measuring, on the returned session.
+    """
+
+async def new_kcl_session_code(code: builtins.str, *, mock: builtins.bool = ..., highlight_edges: typing.Optional[builtins.bool] = None, video_res_width: typing.Optional[builtins.int] = None, video_res_height: typing.Optional[builtins.int] = None) -> KclSession:
+    r"""
+    Execute this KCL source code string.
+    Return an executed KCL project with its connection still available.
+    You can call follow-up methods, like exporting or snapshotting or measuring, on the returned session.
+    """
+
 async def parse(path: builtins.str) -> builtins.bool:
     r"""
     Parse the kcl code from a file path.
@@ -1434,6 +1509,8 @@ def relevant_file_extensions() -> builtins.list[builtins.str]:
 
 class KclError(builtins.Exception):
     def __new__(cls, _message: typing.Any, retryable: builtins.bool = False) -> KclError: ...
+    @property
+    def sketch_constraint_report(self) -> SketchConstraintReport | None: ...
     def is_retryable(self) -> builtins.bool: ...
 
 class PanicException(BaseException):

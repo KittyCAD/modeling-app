@@ -1,0 +1,34 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing named_views_hide_imported.kcl
+---
+@settings(kclVersion = 2.0, experimentalFeatures = allow)
+
+// This test verifies that imported geometry is engine-addressable by the id
+// that hide() sends. An import has a single engine id, which the operation
+// records unchanged. The rendered snapshot must show only the anchor box.
+import "../inputs/cube.step" as cube
+
+cube
+
+anchorSketch = sketch(on = XY) {
+  line1 = line(start = [var 1500, var 0], end = [var 2000, var 0])
+  line2 = line(start = [var 2000, var 0], end = [var 2000, var 500])
+  line3 = line(start = [var 2000, var 500], end = [var 1500, var 500])
+  line4 = line(start = [var 1500, var 500], end = [var 1500, var 0])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+}
+
+boxVisible = extrude(region(point = [1750, 250], sketch = anchorSketch), length = 500)
+
+hide(cube)
+
+importedView = view::named(
+  "Anchor only",
+  camera = view::oriented(view::Orientation::Isometric),
+  baseline = view::Visibility::Show,
+  except = [cube],
+)

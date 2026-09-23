@@ -1966,6 +1966,7 @@ description: Result of parsing chamfer_multiple_tags_v3.kcl
       },
       "startNodes": []
     },
-    "start": 0
+    "start": 0,
+    "type": "Program"
   }
 }

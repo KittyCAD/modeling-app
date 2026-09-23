@@ -101,7 +101,6 @@ description: Variables in memory after executing inner-thread.kcl
   },
   "circle1": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "circle1"
   },
   "inner": {
@@ -341,17 +340,21 @@ description: Variables in memory after executing inner-thread.kcl
                       {
                         "n": 4.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -359,17 +362,21 @@ description: Variables in memory after executing inner-thread.kcl
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -678,21 +685,17 @@ description: Variables in memory after executing inner-thread.kcl
   },
   "line1": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "line1"
   },
   "line2": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "line2"
   },
   "line3": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "line3"
   },
   "line4": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "line4"
   },
@@ -824,9 +827,11 @@ description: Variables in memory after executing inner-thread.kcl
     "type": "Number",
     "value": 5.0,
     "ty": {
-      "mm": null,
       "type": "Known",
-      "type": "Length"
+      "value": {
+        "type": "Length",
+        "value": "mm"
+      }
     }
   },
   "outerCylinderRegion": {
@@ -942,17 +947,21 @@ description: Variables in memory after executing inner-thread.kcl
                       {
                         "n": 5.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -960,17 +969,21 @@ description: Variables in memory after executing inner-thread.kcl
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -1157,18 +1170,22 @@ description: Variables in memory after executing inner-thread.kcl
     "type": "Number",
     "value": 0.5,
     "ty": {
-      "mm": null,
       "type": "Known",
-      "type": "Length"
+      "value": {
+        "type": "Length",
+        "value": "mm"
+      }
     }
   },
   "rectWidth": {
     "type": "Number",
     "value": 0.5,
     "ty": {
-      "mm": null,
       "type": "Known",
-      "type": "Length"
+      "value": {
+        "type": "Length",
+        "value": "mm"
+      }
     }
   },
   "thread": {
@@ -1444,17 +1461,21 @@ description: Variables in memory after executing inner-thread.kcl
                       {
                         "n": 3.75,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": -0.25,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -1462,17 +1483,21 @@ description: Variables in memory after executing inner-thread.kcl
                       {
                         "n": 4.2500000002,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": -0.2500000001,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -1564,17 +1589,21 @@ description: Variables in memory after executing inner-thread.kcl
                       {
                         "n": 4.25000000035,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": -0.25000000025,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -1582,17 +1611,21 @@ description: Variables in memory after executing inner-thread.kcl
                       {
                         "n": 4.25000000045,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.24999999954999996,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -1684,17 +1717,21 @@ description: Variables in memory after executing inner-thread.kcl
                       {
                         "n": 4.2500000005,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.24999999939999998,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -1702,17 +1739,21 @@ description: Variables in memory after executing inner-thread.kcl
                       {
                         "n": 3.7499999997,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.24999999929999997,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -1804,17 +1845,21 @@ description: Variables in memory after executing inner-thread.kcl
                       {
                         "n": 3.74999999975,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.24999999924999997,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -1822,17 +1867,21 @@ description: Variables in memory after executing inner-thread.kcl
                       {
                         "n": 3.74999999985,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": -0.24999999995,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],

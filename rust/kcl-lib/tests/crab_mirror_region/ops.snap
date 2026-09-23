@@ -11,9 +11,11 @@ description: Operations executed crab_mirror_region.kcl
         "type": "Number",
         "value": 2.0,
         "ty": {
-          "in": null,
           "type": "Known",
-          "type": "Length"
+          "value": {
+            "type": "Length",
+            "value": "in"
+          }
         }
       },
       "visibility": "default",
@@ -68,18 +70,22 @@ description: Operations executed crab_mirror_region.kcl
                 "type": "SketchVar",
                 "value": 0.55,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.92,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -94,18 +100,22 @@ description: Operations executed crab_mirror_region.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.75,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -155,18 +165,22 @@ description: Operations executed crab_mirror_region.kcl
                 "type": "SketchVar",
                 "value": 1.04,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 3.26,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -181,18 +195,22 @@ description: Operations executed crab_mirror_region.kcl
                 "type": "SketchVar",
                 "value": 0.55,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.92,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -242,18 +260,22 @@ description: Operations executed crab_mirror_region.kcl
                 "type": "SketchVar",
                 "value": 0.67,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 3.26,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -268,18 +290,22 @@ description: Operations executed crab_mirror_region.kcl
                 "type": "SketchVar",
                 "value": 0.3,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 3.26,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -294,18 +320,22 @@ description: Operations executed crab_mirror_region.kcl
                 "type": "SketchVar",
                 "value": 1.04,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 3.26,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -355,18 +385,22 @@ description: Operations executed crab_mirror_region.kcl
                 "type": "SketchVar",
                 "value": 0.72,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 2.18,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -381,18 +415,22 @@ description: Operations executed crab_mirror_region.kcl
                 "type": "SketchVar",
                 "value": 0.3,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 3.26,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -442,18 +480,22 @@ description: Operations executed crab_mirror_region.kcl
                 "type": "SketchVar",
                 "value": 2.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.58,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -468,18 +510,22 @@ description: Operations executed crab_mirror_region.kcl
                 "type": "SketchVar",
                 "value": 0.72,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 2.18,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -529,18 +575,22 @@ description: Operations executed crab_mirror_region.kcl
                 "type": "SketchVar",
                 "value": 3.35,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 2.7,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -555,18 +605,22 @@ description: Operations executed crab_mirror_region.kcl
                 "type": "SketchVar",
                 "value": 2.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.58,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -616,18 +670,22 @@ description: Operations executed crab_mirror_region.kcl
                 "type": "SketchVar",
                 "value": 5.05,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 2.42,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -642,18 +700,22 @@ description: Operations executed crab_mirror_region.kcl
                 "type": "SketchVar",
                 "value": 3.35,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 2.7,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -703,18 +765,22 @@ description: Operations executed crab_mirror_region.kcl
                 "type": "SketchVar",
                 "value": 4.38,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.82,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -729,18 +795,22 @@ description: Operations executed crab_mirror_region.kcl
                 "type": "SketchVar",
                 "value": 5.05,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 2.42,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -790,18 +860,22 @@ description: Operations executed crab_mirror_region.kcl
                 "type": "SketchVar",
                 "value": 4.98,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.12,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -816,18 +890,22 @@ description: Operations executed crab_mirror_region.kcl
                 "type": "SketchVar",
                 "value": 4.38,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.82,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -877,18 +955,22 @@ description: Operations executed crab_mirror_region.kcl
                 "type": "SketchVar",
                 "value": 4.28,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.6,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -903,18 +985,22 @@ description: Operations executed crab_mirror_region.kcl
                 "type": "SketchVar",
                 "value": 4.98,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.12,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -964,18 +1050,22 @@ description: Operations executed crab_mirror_region.kcl
                 "type": "SketchVar",
                 "value": 3.06,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.88,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -990,18 +1080,22 @@ description: Operations executed crab_mirror_region.kcl
                 "type": "SketchVar",
                 "value": 4.28,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.6,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -1051,18 +1145,22 @@ description: Operations executed crab_mirror_region.kcl
                 "type": "SketchVar",
                 "value": 2.02,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.8,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -1077,18 +1175,22 @@ description: Operations executed crab_mirror_region.kcl
                 "type": "SketchVar",
                 "value": 3.06,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.88,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -1138,18 +1240,22 @@ description: Operations executed crab_mirror_region.kcl
                 "type": "SketchVar",
                 "value": 1.92,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.42,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -1164,18 +1270,22 @@ description: Operations executed crab_mirror_region.kcl
                 "type": "SketchVar",
                 "value": 2.02,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.8,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -1225,18 +1335,22 @@ description: Operations executed crab_mirror_region.kcl
                 "type": "SketchVar",
                 "value": 4.26,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.57,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -1251,18 +1365,22 @@ description: Operations executed crab_mirror_region.kcl
                 "type": "SketchVar",
                 "value": 1.92,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.42,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -1312,18 +1430,22 @@ description: Operations executed crab_mirror_region.kcl
                 "type": "SketchVar",
                 "value": 4.9,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.18,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -1338,18 +1460,22 @@ description: Operations executed crab_mirror_region.kcl
                 "type": "SketchVar",
                 "value": 4.26,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.57,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -1399,18 +1525,22 @@ description: Operations executed crab_mirror_region.kcl
                 "type": "SketchVar",
                 "value": 2.14,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -0.08,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -1425,18 +1555,22 @@ description: Operations executed crab_mirror_region.kcl
                 "type": "SketchVar",
                 "value": 4.9,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.18,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -1486,18 +1620,22 @@ description: Operations executed crab_mirror_region.kcl
                 "type": "SketchVar",
                 "value": 1.96,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -0.56,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -1512,18 +1650,22 @@ description: Operations executed crab_mirror_region.kcl
                 "type": "SketchVar",
                 "value": 2.14,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -0.08,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -1573,18 +1715,22 @@ description: Operations executed crab_mirror_region.kcl
                 "type": "SketchVar",
                 "value": 4.28,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -0.76,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -1599,18 +1745,22 @@ description: Operations executed crab_mirror_region.kcl
                 "type": "SketchVar",
                 "value": 1.96,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -0.56,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -1660,18 +1810,22 @@ description: Operations executed crab_mirror_region.kcl
                 "type": "SketchVar",
                 "value": 4.96,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -1.22,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -1686,18 +1840,22 @@ description: Operations executed crab_mirror_region.kcl
                 "type": "SketchVar",
                 "value": 4.28,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -0.76,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -1747,18 +1905,22 @@ description: Operations executed crab_mirror_region.kcl
                 "type": "SketchVar",
                 "value": 2.24,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -1.24,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -1773,18 +1935,22 @@ description: Operations executed crab_mirror_region.kcl
                 "type": "SketchVar",
                 "value": 4.96,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -1.22,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -1834,18 +2000,22 @@ description: Operations executed crab_mirror_region.kcl
                 "type": "SketchVar",
                 "value": 1.82,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -1.74,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -1860,18 +2030,22 @@ description: Operations executed crab_mirror_region.kcl
                 "type": "SketchVar",
                 "value": 2.24,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -1.24,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -1921,18 +2095,22 @@ description: Operations executed crab_mirror_region.kcl
                 "type": "SketchVar",
                 "value": 4.02,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -2.34,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -1947,18 +2125,22 @@ description: Operations executed crab_mirror_region.kcl
                 "type": "SketchVar",
                 "value": 1.82,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -1.74,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -2008,18 +2190,22 @@ description: Operations executed crab_mirror_region.kcl
                 "type": "SketchVar",
                 "value": 4.72,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -2.98,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -2034,18 +2220,22 @@ description: Operations executed crab_mirror_region.kcl
                 "type": "SketchVar",
                 "value": 4.02,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -2.34,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -2095,18 +2285,22 @@ description: Operations executed crab_mirror_region.kcl
                 "type": "SketchVar",
                 "value": 1.54,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -2.24,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -2121,18 +2315,22 @@ description: Operations executed crab_mirror_region.kcl
                 "type": "SketchVar",
                 "value": 4.72,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -2.98,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -2182,18 +2380,22 @@ description: Operations executed crab_mirror_region.kcl
                 "type": "SketchVar",
                 "value": 0.72,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -3.12,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -2208,18 +2410,22 @@ description: Operations executed crab_mirror_region.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -2.66,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -2234,18 +2440,22 @@ description: Operations executed crab_mirror_region.kcl
                 "type": "SketchVar",
                 "value": 1.54,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -2.24,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -3366,8 +3576,10 @@ description: Operations executed crab_mirror_region.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   },
                   {
@@ -3375,8 +3587,10 @@ description: Operations executed crab_mirror_region.kcl
                     "value": 1.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   }
                 ]
@@ -3389,8 +3603,10 @@ description: Operations executed crab_mirror_region.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   },
                   {
@@ -3398,8 +3614,10 @@ description: Operations executed crab_mirror_region.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   }
                 ]
@@ -3438,18 +3656,22 @@ description: Operations executed crab_mirror_region.kcl
                 "type": "Number",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": -0.4,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -3500,9 +3722,11 @@ description: Operations executed crab_mirror_region.kcl
             "type": "Number",
             "value": 2.0,
             "ty": {
-              "in": null,
               "type": "Known",
-              "type": "Length"
+              "value": {
+                "type": "Length",
+                "value": "in"
+              }
             }
           },
           "sourceRange": []
@@ -3561,7 +3785,9 @@ description: Operations executed crab_mirror_region.kcl
         "value": 2.718281828459045,
         "ty": {
           "type": "Known",
-          "type": "Count"
+          "value": {
+            "type": "Count"
+          }
         }
       },
       "visibility": "export",
@@ -3589,7 +3815,9 @@ description: Operations executed crab_mirror_region.kcl
         "value": 6.283185307179586,
         "ty": {
           "type": "Known",
-          "type": "Count"
+          "value": {
+            "type": "Count"
+          }
         }
       },
       "visibility": "export",
@@ -3623,7 +3851,7 @@ description: Operations executed crab_mirror_region.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 23
+            "index": 24
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3647,7 +3875,7 @@ description: Operations executed crab_mirror_region.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 24
+            "index": 25
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3671,7 +3899,7 @@ description: Operations executed crab_mirror_region.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 25
+            "index": 26
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3695,7 +3923,7 @@ description: Operations executed crab_mirror_region.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 26
+            "index": 27
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3719,7 +3947,7 @@ description: Operations executed crab_mirror_region.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 27
+            "index": 28
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3743,7 +3971,7 @@ description: Operations executed crab_mirror_region.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 28
+            "index": 29
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3767,7 +3995,7 @@ description: Operations executed crab_mirror_region.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 29
+            "index": 30
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3791,7 +4019,7 @@ description: Operations executed crab_mirror_region.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 30
+            "index": 31
           },
           {
             "type": "VariableDeclarationDeclaration"

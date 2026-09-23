@@ -4,7 +4,10 @@ import {
   checkOpenedProjectPresence,
   getZookeeperProjectReloadBehavior,
 } from '@src/components/openedProjectUtils'
+import { testFileOperations } from '@src/lib/fileSystem/testRuntime'
 import fsZds, { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
+
+const fileOperations = testFileOperations
 
 beforeAll(async () => {
   await moduleFsViaModuleImport({
@@ -25,6 +28,7 @@ describe('opened project presence', () => {
     try {
       expect(
         await checkOpenedProjectPresence({
+          fileOperations,
           projectPath,
           projects: [],
         })
@@ -38,7 +42,7 @@ describe('opened project presence', () => {
     const projectPath = `/tmp/missing-opened-project-${crypto.randomUUID()}`
 
     await expect(
-      checkOpenedProjectPresence({ projectPath, projects: [] })
+      checkOpenedProjectPresence({ fileOperations, projectPath, projects: [] })
     ).resolves.toEqual({ type: 'missing' })
   })
 
@@ -47,6 +51,7 @@ describe('opened project presence', () => {
 
     await expect(
       checkOpenedProjectPresence({
+        fileOperations,
         projectPath: '/Users/max/Repos',
         projects: [{ path: '/Users/max/Repos/' }],
       })
@@ -60,10 +65,17 @@ describe('opened project presence', () => {
 
     await expect(
       checkOpenedProjectPresence({
+        fileOperations,
         projectPath: '/Users/max/Repos',
         projects: [],
       })
-    ).resolves.toEqual({ type: 'error', error })
+    ).resolves.toEqual({
+      type: 'error',
+      error: expect.objectContaining({
+        _tag: 'FilePermissionDenied',
+        cause: error,
+      }),
+    })
   })
 })
 

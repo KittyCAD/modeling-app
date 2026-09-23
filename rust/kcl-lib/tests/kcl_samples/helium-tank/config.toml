@@ -1,0 +1,5 @@
+# Rendering can shift Engine-generated UUIDs between runs.
+redact_uuids = true
+
+[test_graphics.EngineRender]
+reason = "BooleanSubtract fails on CPU engine"

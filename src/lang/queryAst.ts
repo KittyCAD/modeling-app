@@ -227,7 +227,8 @@ export function getNodeFromPathCurry(
   }
 }
 
-type KCLNode = Node<
+export type KCLNode = Node<
+  | Program
   | Expr
   | ExpressionStatement
   | ImportStatement
@@ -242,43 +243,58 @@ type KCLNode = Node<
 >
 
 export function traverse(
-  node: KCLNode | Node<Program>,
+  node: KCLNode,
   option: {
     enter?: (node: KCLNode, pathToNode: PathToNode) => void
     leave?: (node: KCLNode) => void
   },
   pathToNode: PathToNode = []
 ) {
-  const _node = node as KCLNode
-  option?.enter?.(_node, pathToNode)
+  option?.enter?.(node, pathToNode)
   const _traverse = (node: KCLNode, pathToNode: PathToNode) =>
     traverse(node, option, pathToNode)
+  // If-expression arm bodies are Program nodes, but their items' path labels
+  // predate container visits and differ from what the Program branch below
+  // emits, so arm bodies are visited manually: visitors get enter/leave for
+  // the arm container itself (at `[key, 'IfExpression']`), and item paths
+  // stay exactly as they were.
+  const _traverseIfArmBody = (
+    arm: Node<Program>,
+    key: 'then_val' | 'final_else'
+  ) => {
+    const armPath: PathToNode = [...pathToNode, [key, 'IfExpression']]
+    option?.enter?.(arm, armPath)
+    arm.body.forEach((item, index) =>
+      _traverse(item, [...armPath, ['body', 'IfExpression'], [index, 'index']])
+    )
+    option?.leave?.(arm)
+  }
 
-  if (_node.type === 'VariableDeclaration') {
-    _traverse(_node.declaration, [
+  if (node.type === 'VariableDeclaration') {
+    _traverse(node.declaration, [
       ...pathToNode,
       ['declaration', 'VariableDeclaration'],
     ])
-  } else if (_node.type === 'VariableDeclarator') {
-    _traverse(_node.init, [...pathToNode, ['init', '']])
-  } else if (_node.type === 'ExpressionStatement') {
-    _traverse(_node.expression, [
+  } else if (node.type === 'VariableDeclarator') {
+    _traverse(node.init, [...pathToNode, ['init', '']])
+  } else if (node.type === 'ExpressionStatement') {
+    _traverse(node.expression, [
       ...pathToNode,
       ['expression', 'ExpressionStatement'],
     ])
-  } else if (_node.type === 'PipeExpression') {
-    _node.body.forEach((expression, index) =>
+  } else if (node.type === 'PipeExpression') {
+    node.body.forEach((expression, index) =>
       _traverse(expression, [
         ...pathToNode,
         ['body', 'PipeExpression'],
         [index, 'index'],
       ])
     )
-  } else if (_node.type === 'FunctionExpression') {
-    if (_node.name) {
-      _traverse(_node.name, [...pathToNode, ['name', 'FunctionExpression']])
+  } else if (node.type === 'FunctionExpression') {
+    if (node.name) {
+      _traverse(node.name, [...pathToNode, ['name', 'FunctionExpression']])
     }
-    _node.params.forEach((param, index) =>
+    node.params.forEach((param, index) =>
       _traverse(param.identifier, [
         ...pathToNode,
         ['params', 'FunctionExpression'],
@@ -286,7 +302,7 @@ export function traverse(
         ['identifier', 'Parameter'],
       ])
     )
-    _node.body.body.forEach((item, index) =>
+    node.body.body.forEach((item, index) =>
       _traverse(item, [
         ...pathToNode,
         ['body', 'FunctionExpression'],
@@ -294,16 +310,13 @@ export function traverse(
         [index, 'index'],
       ])
     )
-  } else if (_node.type === 'CallExpressionKw') {
-    _traverse(_node.callee, [...pathToNode, ['callee', 'CallExpressionKw']])
-    if (_node.unlabeled !== null) {
-      _traverse(_node.unlabeled, [
-        ...pathToNode,
-        ['unlabeled', 'Unlabeled arg'],
-      ])
+  } else if (node.type === 'CallExpressionKw') {
+    _traverse(node.callee, [...pathToNode, ['callee', 'CallExpressionKw']])
+    if (node.unlabeled !== null) {
+      _traverse(node.unlabeled, [...pathToNode, ['unlabeled', 'Unlabeled arg']])
     }
-    if (_node.arguments) {
-      _node.arguments.forEach((arg, index) =>
+    if (node.arguments) {
+      node.arguments.forEach((arg, index) =>
         _traverse(arg.arg, [
           ...pathToNode,
           ['arguments', 'CallExpressionKw'],
@@ -312,36 +325,36 @@ export function traverse(
         ])
       )
     }
-  } else if (_node.type === 'BinaryExpression') {
-    _traverse(_node.left, [...pathToNode, ['left', 'BinaryExpression']])
-    _traverse(_node.right, [...pathToNode, ['right', 'BinaryExpression']])
-  } else if (_node.type === 'Name') {
+  } else if (node.type === 'BinaryExpression') {
+    _traverse(node.left, [...pathToNode, ['left', 'BinaryExpression']])
+    _traverse(node.right, [...pathToNode, ['right', 'BinaryExpression']])
+  } else if (node.type === 'Name') {
     // do nothing
-  } else if (_node.type === 'Literal') {
+  } else if (node.type === 'Literal') {
     // do nothing
-  } else if (_node.type === 'TagDeclarator') {
+  } else if (node.type === 'TagDeclarator') {
     // do nothing
-  } else if (_node.type === 'NumericLiteral') {
+  } else if (node.type === 'NumericLiteral') {
     // do nothing
-  } else if (_node.type === 'ArrayExpression') {
-    _node.elements.forEach((el, index) =>
+  } else if (node.type === 'ArrayExpression') {
+    node.elements.forEach((el, index) =>
       _traverse(el, [
         ...pathToNode,
         ['elements', 'ArrayExpression'],
         [index, 'index'],
       ])
     )
-  } else if (_node.type === 'ArrayRangeExpression') {
-    _traverse(_node.startElement, [
+  } else if (node.type === 'ArrayRangeExpression') {
+    _traverse(node.startElement, [
       ...pathToNode,
       ['startElement', 'ArrayRangeExpression'],
     ])
-    _traverse(_node.endElement, [
+    _traverse(node.endElement, [
       ...pathToNode,
       ['endElement', 'ArrayRangeExpression'],
     ])
-  } else if (_node.type === 'ObjectExpression') {
-    _node.properties.forEach(({ key, value }, index) => {
+  } else if (node.type === 'ObjectExpression') {
+    node.properties.forEach(({ key, value }, index) => {
       _traverse(key, [
         ...pathToNode,
         ['properties', 'ObjectExpression'],
@@ -355,54 +368,33 @@ export function traverse(
         ['value', 'Property'],
       ])
     })
-  } else if (_node.type === 'UnaryExpression') {
-    _traverse(_node.argument, [...pathToNode, ['argument', 'UnaryExpression']])
-  } else if (_node.type === 'MemberExpression') {
+  } else if (node.type === 'UnaryExpression') {
+    _traverse(node.argument, [...pathToNode, ['argument', 'UnaryExpression']])
+  } else if (node.type === 'MemberExpression') {
     // hmm this smell
-    _traverse(_node.object, [...pathToNode, ['object', 'MemberExpression']])
-    _traverse(_node.property, [...pathToNode, ['property', 'MemberExpression']])
-  } else if (_node.type === 'IfExpression') {
-    _traverse(_node.cond, [...pathToNode, ['cond', 'IfExpression']])
-    _node.then_val.body.forEach((item, index) =>
-      _traverse(item, [
-        ...pathToNode,
-        ['then_val', 'IfExpression'],
-        ['body', 'IfExpression'],
-        [index, 'index'],
-      ])
-    )
-    _node.else_ifs.forEach((elseIf, index) =>
+    _traverse(node.object, [...pathToNode, ['object', 'MemberExpression']])
+    _traverse(node.property, [...pathToNode, ['property', 'MemberExpression']])
+  } else if (node.type === 'IfExpression') {
+    _traverse(node.cond, [...pathToNode, ['cond', 'IfExpression']])
+    _traverseIfArmBody(node.then_val, 'then_val')
+    node.else_ifs.forEach((elseIf, index) =>
       _traverse(elseIf, [
         ...pathToNode,
         ['else_ifs', 'IfExpression'],
         [index, 'index'],
       ])
     )
-    _node.final_else.body.forEach((item, index) =>
-      _traverse(item, [
-        ...pathToNode,
-        ['final_else', 'IfExpression'],
-        ['body', 'IfExpression'],
-        [index, 'index'],
-      ])
-    )
-  } else if (_node.type === 'ElseIf') {
-    _traverse(_node.cond, [...pathToNode, ['cond', 'IfExpression']])
-    _node.then_val.body.forEach((item, index) =>
-      _traverse(item, [
-        ...pathToNode,
-        ['then_val', 'IfExpression'],
-        ['body', 'IfExpression'],
-        [index, 'index'],
-      ])
-    )
-  } else if (_node.type === 'LabelledExpression') {
-    _traverse(_node.expr, [...pathToNode, ['expr', 'LabelledExpression']])
-    _traverse(_node.label, [...pathToNode, ['label', 'LabelledExpression']])
-  } else if (_node.type === 'AscribedExpression') {
-    _traverse(_node.expr, [...pathToNode, ['expr', 'AscribedExpression']])
-  } else if (_node.type === 'SketchBlock') {
-    _node.arguments.forEach((arg, index) =>
+    _traverseIfArmBody(node.final_else, 'final_else')
+  } else if (node.type === 'ElseIf') {
+    _traverse(node.cond, [...pathToNode, ['cond', 'IfExpression']])
+    _traverseIfArmBody(node.then_val, 'then_val')
+  } else if (node.type === 'LabelledExpression') {
+    _traverse(node.expr, [...pathToNode, ['expr', 'LabelledExpression']])
+    _traverse(node.label, [...pathToNode, ['label', 'LabelledExpression']])
+  } else if (node.type === 'AscribedExpression') {
+    _traverse(node.expr, [...pathToNode, ['expr', 'AscribedExpression']])
+  } else if (node.type === 'SketchBlock') {
+    node.arguments.forEach((arg, index) =>
       _traverse(arg.arg, [
         ...pathToNode,
         ['arguments', 'SketchBlock'],
@@ -410,32 +402,28 @@ export function traverse(
         ['arg', LABELED_ARG_FIELD],
       ])
     )
-    _node.body.items.forEach((item, index) =>
-      _traverse(item, [
-        ...pathToNode,
-        ['body', 'SketchBlock'],
-        ['items', 'Block'],
-        [index, 'index'],
-      ])
-    )
-  } else if (_node.type === 'SketchVar') {
-    if (_node.initial) {
-      _traverse(_node.initial, [...pathToNode, ['initial', 'SketchVar']])
+    // The Block branch below emits the same item paths this branch used to
+    // build inline, and visitors additionally get enter/leave for the body's
+    // Block node itself.
+    _traverse(node.body, [...pathToNode, ['body', 'SketchBlock']])
+  } else if (node.type === 'SketchVar') {
+    if (node.initial) {
+      _traverse(node.initial, [...pathToNode, ['initial', 'SketchVar']])
     }
-  } else if (_node.type === 'Block') {
-    _node.items.forEach((item, index) =>
+  } else if (node.type === 'Block') {
+    node.items.forEach((item, index) =>
       _traverse(item, [...pathToNode, ['items', 'Block'], [index, 'index']])
     )
-  } else if (_node.type === 'ImportStatement') {
+  } else if (node.type === 'ReturnStatement') {
+    _traverse(node.argument, [...pathToNode, ['argument', 'ReturnStatement']])
+  } else if (node.type === 'ImportStatement') {
     // Do nothing.
-  } else if ('body' in _node && isArray(_node.body)) {
-    // TODO: Program should have a type field, but it currently doesn't.
-    const program = node as Node<Program>
-    program.body.forEach((expression, index) => {
+  } else if (node.type === 'Program') {
+    node.body.forEach((expression, index) => {
       _traverse(expression, [...pathToNode, ['body', ''], [index, 'index']])
     })
   }
-  option?.leave?.(_node)
+  option?.leave?.(node)
 }
 
 export interface PrevVariable<T> {

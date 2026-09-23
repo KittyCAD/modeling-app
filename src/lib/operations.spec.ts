@@ -13,6 +13,7 @@ import {
   assertParse,
   defaultNodePath,
   nodePathFromRange,
+  pathToNodeFromRustNodePath,
 } from '@src/lang/wasm'
 import type { Artifact, ArtifactGraph } from '@src/lang/wasm'
 import {
@@ -317,7 +318,7 @@ describe('operations.test.ts', () => {
   //   scalar shape is tested.
   describe('hide operation argument shapes', () => {
     it('reads a plane, whose id sits on the variant', () => {
-      // tests/named_views_hide_plane/ops.snap
+      // tests/named_views_hide_plane/output/kcl-2.0/ops.snap
       const hideOp = hideOperationOf({
         type: 'Plane',
         artifact_id: 'plane-artifact',
@@ -327,7 +328,7 @@ describe('operations.test.ts', () => {
     })
 
     it('reads a GD&T annotation, whose id sits on the variant', () => {
-      // tests/named_views_hide_gdt/ops.snap
+      // tests/named_views_hide_gdt/output/kcl-2.0/ops.snap
       const hideOp = hideOperationOf({
         type: 'GdtAnnotation',
         artifact_id: 'annotation-artifact',
@@ -339,7 +340,7 @@ describe('operations.test.ts', () => {
     })
 
     it('reads imported geometry, whose id sits on the variant', () => {
-      // tests/named_views_hide_imported/ops.snap
+      // tests/named_views_hide_imported/output/kcl-2.0/ops.snap
       const hideOp = hideOperationOf({
         type: 'ImportedGeometry',
         artifact_id: 'imported-artifact',
@@ -349,7 +350,7 @@ describe('operations.test.ts', () => {
     })
 
     it('reads a solid, whose id sits in a struct payload', () => {
-      // tests/named_views_hide_extrude/ops.snap
+      // tests/named_views_hide_extrude/output/kcl-2.0/ops.snap
       const hideOp = hideOperationOf({
         type: 'Solid',
         value: { artifactId: 'solid-artifact' },
@@ -359,7 +360,7 @@ describe('operations.test.ts', () => {
     })
 
     it('reads a sketch, whose id sits in a struct payload', () => {
-      // tests/named_views_hide_sketch/ops.snap
+      // tests/named_views_hide_sketch/output/kcl-2.0/ops.snap
       const hideOp = hideOperationOf({
         type: 'Sketch',
         value: { artifactId: 'sketch-artifact' },
@@ -369,7 +370,7 @@ describe('operations.test.ts', () => {
     })
 
     it('reads a helix, whose id sits in a struct payload', () => {
-      // tests/named_views_hide_helix/ops.snap
+      // tests/named_views_hide_helix/output/kcl-2.0/ops.snap
       const hideOp = hideOperationOf({
         type: 'Helix',
         value: { artifactId: 'helix-artifact' },
@@ -1417,6 +1418,59 @@ ${operationName}(${targetLabel} = ${targetExpression}, tolerance = 0.1mm, datums
       }
       expect(argDefaultValues.note).toBe('Note on XY')
       expect(argDefaultValues.framePlane).toBe('XZ')
+    })
+  })
+
+  describe('Clone edit flow', () => {
+    it('enters edit flow with the existing cloned object selection', async () => {
+      const { instance, rustContext } =
+        await buildTheWorldAndNoEngineConnection()
+      const code = `extrude001 = extrude(profile001, length = 1)
+clone001 = clone(extrude001)`
+      const operation = stdlib('clone')
+      if (operation.type !== 'StdLibCall') {
+        throw new Error('Expected operation to be a StdLibCall')
+      }
+      operation.nodePath = await buildNodePath(
+        code,
+        'clone(extrude001)',
+        instance
+      )
+      operation.unlabeledArg = {
+        value: {
+          type: 'Solid',
+          value: { artifactId: 'source-sweep' },
+        },
+        sourceRange: rangeOfText(code, 'extrude001'),
+      }
+
+      const result = await enterEditFlow({
+        operation,
+        code,
+        artifactGraph: toArtifactGraph([
+          sweepArtifact('source-sweep', 'source-path'),
+        ]),
+        rustContext,
+      })
+      if (result instanceof Error) {
+        throw result
+      }
+      if (result.type !== 'Find and select command') {
+        throw new Error(`Expected edit flow event, got ${result.type}`)
+      }
+
+      const argDefaultValues = result.data.argDefaultValues as {
+        objects?: { graphSelections: unknown[]; otherSelections: unknown[] }
+        variableName?: string
+        nodeToEdit?: unknown
+      }
+      expect(result.data.name).toBe('Clone')
+      expect(argDefaultValues.objects?.graphSelections).toHaveLength(1)
+      expect(argDefaultValues.objects?.otherSelections).toEqual([])
+      expect(argDefaultValues.variableName).toBe('clone')
+      expect(argDefaultValues.nodeToEdit).toEqual(
+        pathToNodeFromRustNodePath(operation.nodePath)
+      )
     })
   })
 

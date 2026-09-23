@@ -70,7 +70,7 @@ jobs:
     if: github.repository == 'kittycad/modeling-app'
 
     steps:
-      - uses: actions/create-github-app-token@v3.2.0
+      - uses: actions/create-github-app-token@v3
         id: app-token
         with:
           app-id: ${{ secrets.MODELING_APP_GH_APP_ID }}
@@ -113,7 +113,7 @@ jobs:
           cache: npm
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci
 
       - name: Download browser cache
         uses: actions/cache@v6.1.0
@@ -134,8 +134,18 @@ jobs:
           CI_SUITE: e2e:snapshots
           TARGET: web
 
-      - name: Update snapshots
+      - name: Check for snapshot mismatches
         if: failure()
+        id: snapshot_mismatch
+        shell: bash
+        run: |
+          if find test-results -name '*-actual.png' -print -quit 2>/dev/null | grep --quiet .
+          then echo "found=true" >> $GITHUB_OUTPUT
+          else echo "found=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Update snapshots
+        if: failure() && steps.snapshot_mismatch.outputs.found == 'true'
         run: npm run test:snapshots -- --last-failed --update-snapshots
         env:
           VITE_ZOO_API_TOKEN: ${{ secrets.ZOO_API_TOKEN }}
@@ -226,7 +236,7 @@ jobs:
       OS_NAME: ${{ contains(matrix.os, 'ubuntu') && 'ubuntu' || (contains(matrix.os, 'windows') && 'windows' || 'macos') }}
 
     steps:
-      - uses: actions/create-github-app-token@v3.2.0
+      - uses: actions/create-github-app-token@v3
         id: app-token
         with:
           app-id: ${{ secrets.MODELING_APP_GH_APP_ID }}
@@ -269,7 +279,7 @@ jobs:
           cache: npm
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci
 
       - name: Download browser cache
         uses: actions/cache@v6.1.0
@@ -309,6 +319,7 @@ jobs:
 
       - name: Track teardown (web)
         if: always()
+        shell: bash
         run: .github/ci-cd-scripts/track-step.sh
         env:
           TAB_API_URL: ${{ vars.TAB_API_URL }}
@@ -375,8 +386,7 @@ jobs:
           cache: npm
 
       - name: Install dependencies
-        id: deps-install
-        run: npm install
+        run: npm ci
 
       - name: Download browser cache
         uses: actions/cache@v6.1.0
@@ -395,7 +405,10 @@ jobs:
           OS_NAME: ${{ env.OS_NAME }}
 
       - name: Build app
+        id: build
         run: npm run tronb:vite:dev
+        env:
+          NODE_OPTIONS: ${{ runner.os == 'macOS' && '--max-old-space-size=4096' || '' }}
 
       - name: Download test results from a previous workflow attempt
         if: ${{ github.run_attempt > 1 && !cancelled() && (success() || failure()) }}
@@ -407,7 +420,7 @@ jobs:
 
       - name: npm run test:e2e:desktop
         id: retry
-        if: ${{ !cancelled() && steps.deps-install.outcome == 'success' }}
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
         uses: nick-fields/retry@v4.0.0
         with:
           shell: bash
@@ -446,6 +459,7 @@ jobs:
 
       - name: Track teardown (desktop)
         if: always()
+        shell: bash
         run: .github/ci-cd-scripts/track-step.sh
         env:
           TAB_API_URL: ${{ vars.TAB_API_URL }}
@@ -469,7 +483,7 @@ jobs:
           cache: npm
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci
 
       - name: Download browser cache
         uses: actions/cache@v6.1.0

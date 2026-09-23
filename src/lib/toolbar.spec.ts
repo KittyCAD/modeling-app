@@ -229,7 +229,6 @@ describe('toolbar state helpers', () => {
         'spline',
         'blend-surface',
         'delete-face',
-        'delete',
         'gear-helical',
         'gear-spur',
         'gear-herringbone',
@@ -238,10 +237,10 @@ describe('toolbar state helpers', () => {
     )
   })
 
-  test('opens the Delete modeling command from the transform dropdown', () => {
+  test('opens Delete from the transform dropdown without experimental features', () => {
     const commands = { send: vi.fn() }
     const toolbarConfig = buildToolbarConfig(commands, {
-      showExperimentalFeatures: true,
+      showExperimentalFeatures: false,
     })
     const deleteItem = getToolbarItems(toolbarConfig).find(
       (item) => item.id === 'delete'
@@ -250,6 +249,8 @@ describe('toolbar state helpers', () => {
     if (!deleteItem) {
       throw new Error('Could not find toolbar item delete')
     }
+
+    expect(deleteItem.status).toBe('available')
 
     deleteItem.onClick({
       modelingSend: vi.fn(),

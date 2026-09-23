@@ -1158,13 +1158,13 @@ export function buildToolbarConfig(
           onClick: () =>
             commands.send({
               type: 'Find and select command',
-              data: { name: 'Insert', groupId: 'code' },
+              data: { name: 'Import', groupId: 'code' },
             }),
           icon: 'import',
           status: 'available',
           disabled: () => !isDesktop(),
-          title: 'Insert',
-          description: 'Insert from a file in the current project directory.',
+          title: 'Import',
+          description: 'Import from a file in the current project directory.',
           links: [
             {
               label: 'API docs',
@@ -1300,7 +1300,7 @@ export function buildToolbarConfig(
                   type: 'Find and select command',
                   data: { name: 'Delete', groupId: 'modeling' },
                 }),
-              status: 'experimental',
+              status: 'available',
               title: 'Delete',
               icon: 'trash',
               description: 'Delete selected bodies from the scene.',

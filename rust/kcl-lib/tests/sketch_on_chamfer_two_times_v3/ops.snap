@@ -54,8 +54,10 @@ description: Operations executed sketch_on_chamfer_two_times_v3.kcl
             "value": 100.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -96,8 +98,10 @@ description: Operations executed sketch_on_chamfer_two_times_v3.kcl
             "value": 20.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -155,8 +159,10 @@ description: Operations executed sketch_on_chamfer_two_times_v3.kcl
             "value": 50.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -221,8 +227,10 @@ description: Operations executed sketch_on_chamfer_two_times_v3.kcl
             "value": 50.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -370,8 +378,10 @@ description: Operations executed sketch_on_chamfer_two_times_v3.kcl
             "value": 50.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -430,7 +440,9 @@ description: Operations executed sketch_on_chamfer_two_times_v3.kcl
         "value": 2.718281828459045,
         "ty": {
           "type": "Known",
-          "type": "Count"
+          "value": {
+            "type": "Count"
+          }
         }
       },
       "visibility": "export",
@@ -458,7 +470,9 @@ description: Operations executed sketch_on_chamfer_two_times_v3.kcl
         "value": 6.283185307179586,
         "ty": {
           "type": "Known",
-          "type": "Count"
+          "value": {
+            "type": "Count"
+          }
         }
       },
       "visibility": "export",
@@ -492,7 +506,7 @@ description: Operations executed sketch_on_chamfer_two_times_v3.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 23
+            "index": 24
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -516,7 +530,7 @@ description: Operations executed sketch_on_chamfer_two_times_v3.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 24
+            "index": 25
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -540,7 +554,7 @@ description: Operations executed sketch_on_chamfer_two_times_v3.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 25
+            "index": 26
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -564,7 +578,7 @@ description: Operations executed sketch_on_chamfer_two_times_v3.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 26
+            "index": 27
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -588,7 +602,7 @@ description: Operations executed sketch_on_chamfer_two_times_v3.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 27
+            "index": 28
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -612,7 +626,7 @@ description: Operations executed sketch_on_chamfer_two_times_v3.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 28
+            "index": 29
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -636,7 +650,7 @@ description: Operations executed sketch_on_chamfer_two_times_v3.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 29
+            "index": 30
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -660,7 +674,7 @@ description: Operations executed sketch_on_chamfer_two_times_v3.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 30
+            "index": 31
           },
           {
             "type": "VariableDeclarationDeclaration"

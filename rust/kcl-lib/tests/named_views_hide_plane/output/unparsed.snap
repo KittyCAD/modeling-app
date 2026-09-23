@@ -1,0 +1,35 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing named_views_hide_plane.kcl
+---
+@settings(kclVersion = 2.0, experimentalFeatures = allow)
+
+// This test verifies that an offset plane is engine-addressable by the id that
+// hide() sends. A plane's engine id and artifact id are the same UUID. The
+// rendered snapshot must show the anchor box and at most one plane: the plane
+// at offset 20.
+planeVisible = offsetPlane(XY, offset = 20)
+
+planeHidden = offsetPlane(XY, offset = 40)
+
+anchorSketch = sketch(on = XY) {
+  line1 = line(start = [var 20, var 0], end = [var 30, var 0])
+  line2 = line(start = [var 30, var 0], end = [var 30, var 10])
+  line3 = line(start = [var 30, var 10], end = [var 20, var 10])
+  line4 = line(start = [var 20, var 10], end = [var 20, var 0])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+}
+
+boxVisible = extrude(region(point = [25, 5], sketch = anchorSketch), length = 10)
+
+hide(planeHidden)
+
+planeView = view::named(
+  "Near plane",
+  camera = view::oriented(view::Orientation::Isometric),
+  baseline = view::Visibility::Show,
+  except = [planeHidden],
+)

@@ -36,13 +36,20 @@ import {
   withUpdatedProjectTomlInArchiveFiles,
 } from '@src/lib/cloudSync/projectArchive'
 import {
+  createProjectReplacementAttempt,
+  type ProjectReplacementAttempt,
+} from '@src/lib/cloudSync/replacementAttempt'
+import { parseAcknowledgedSyncBase } from '@src/lib/cloudSync/syncBase'
+import {
   appendOutboxEntry as appendSyncDbOutboxEntry,
   clearLegacyConflictCopyReferences,
   clearOutboxEntriesForProject as clearSyncDbOutboxEntriesForProject,
+  clearOutboxEntriesForProjectAtGeneration as clearSyncDbOutboxEntriesForProjectAtGeneration,
   clearOutboxEntriesTouchingProject as clearSyncDbOutboxEntriesTouchingProject,
   deleteProjectMetadata,
   getAllOutboxEntries,
   getAllProjectMetadata,
+  getOutboxMutationGeneration,
   getProjectMetadata,
   putProjectMetadata,
 } from '@src/lib/cloudSync/syncDb'
@@ -217,7 +224,10 @@ function errorMessage(error: unknown) {
 function isProjectSyncFailureKind(
   value: unknown
 ): value is ProjectSyncFailureKind {
-  return value === 'remote-upload-forbidden'
+  return (
+    value === 'remote-upload-forbidden' ||
+    value === 'remote-replacement-rejected'
+  )
 }
 
 function projectFailureKind(error: unknown) {
@@ -1157,6 +1167,8 @@ async function writeLocalProjectCloudProjectId(
     return false
   }
 
+  // TODO: Coordinate cloud ID updates with settings saves.
+  // An overlapping save can overwrite the ID or newer settings.
   return updateLocalProjectToml(projectPath, (projectToml) =>
     getCloudProjectIdFromProjectTomlContents(projectToml, environmentName) ===
     projectId
@@ -1182,7 +1194,7 @@ async function removeLocalProjectCloudProjectId(projectPath: string) {
 
 async function updateLocalProjectToml(
   projectPath: string,
-  update: (contents: string) => string
+  update: (contents: string) => string | Error
 ) {
   const projectTomlPath = localFs.join(projectPath, PROJECT_SETTINGS_FILE_NAME)
   let projectToml = ''
@@ -1193,6 +1205,9 @@ async function updateLocalProjectToml(
   }
 
   const nextProjectToml = update(projectToml)
+  if (isErr(nextProjectToml)) {
+    return Promise.reject(nextProjectToml)
+  }
   if (nextProjectToml === projectToml) {
     return false
   }
@@ -1212,6 +1227,18 @@ async function appendOutboxEntry(entry: Omit<OutboxEntry, 'id'>) {
 async function clearOutboxEntriesForProject(projectPath: string) {
   await clearSyncDbOutboxEntriesForProject(projectPath)
   await refreshPendingCount()
+}
+
+async function clearOutboxEntriesForProjectAtGeneration(
+  projectPath: string,
+  expectedGeneration: number
+) {
+  const cleared = await clearSyncDbOutboxEntriesForProjectAtGeneration(
+    projectPath,
+    expectedGeneration
+  )
+  await refreshPendingCount()
+  return cleared
 }
 
 async function clearOutboxEntriesTouchingProject(projectPath: string) {
@@ -1282,7 +1309,10 @@ async function collectLocalProjectFiles(projectRoot: string) {
         localFs.relative(projectRoot, absolutePath)
       )
       const isDirectory = statIsDirectory(stat)
-      if (isPathIgnoredByGitignore(gitignoreStack, relativePath, isDirectory)) {
+      if (
+        (!isDirectory && isCloudSyncGeneratedArtifactPath(relativePath)) ||
+        isPathIgnoredByGitignore(gitignoreStack, relativePath, isDirectory)
+      ) {
         continue
       }
 
@@ -2155,6 +2185,87 @@ async function markProjectFailure(
   }
 }
 
+async function markProjectReplacementRejected({
+  metadata,
+  rejectedRemoteProject,
+  error,
+}: {
+  metadata: ProjectMetadata
+  rejectedRemoteProject: RemoteProject
+  error: CloudApiError
+}) {
+  const failedAt = nowIso()
+  const existingConflict = metadata.conflict
+  const message = `Cloud project replacement was rejected: ${error.message}. Local changes remain on this device.`
+  const nextMetadata: ProjectMetadata = {
+    ...metadata,
+    conflict: {
+      remoteRevision:
+        getRevision(rejectedRemoteProject) ?? existingConflict?.remoteRevision,
+      remoteUpdatedAt:
+        getRemoteUpdatedAt(rejectedRemoteProject) ??
+        existingConflict?.remoteUpdatedAt,
+      createdAt: existingConflict?.createdAt ?? failedAt,
+      reason: 'remote-replacement-rejected',
+      ...(existingConflict?.conflictProjectPath
+        ? { conflictProjectPath: existingConflict.conflictProjectPath }
+        : {}),
+    },
+    lastFailure: {
+      message,
+      at: failedAt,
+      kind: 'remote-replacement-rejected',
+    },
+  }
+  await putProjectMetadata(nextMetadata)
+  publishScopedProjectCloudProjectId(nextMetadata)
+  if (projectPathMatchesSyncScope(metadata.localProjectPath)) {
+    updateStatus({
+      state: 'conflict',
+      activeProjectPath: metadata.localProjectPath,
+      lastFailure: message,
+      lastFailureKind: 'remote-replacement-rejected',
+      lastFailureAt: failedAt,
+    })
+  }
+  reportCloudSyncFailure('sync', error)
+}
+
+async function submitProjectReplacement(
+  metadata: ProjectMetadata,
+  attempt: ProjectReplacementAttempt,
+  throttleProjectApiRequest: CloudSyncProjectApiRequestThrottle
+) {
+  try {
+    return await runCloudSyncProjectApiRequest(throttleProjectApiRequest, () =>
+      updateRemoteProject({
+        config,
+        projectPath: attempt.projectPath,
+        project: attempt.project,
+        files: attempt.files,
+        expectedRevision: attempt.expectedRevision,
+        entrypointPath: attempt.entrypointPath,
+        deletedPaths: attempt.deletedPaths,
+      })
+    )
+  } catch (error) {
+    if (!(error instanceof CloudApiError) || error.status !== 409) {
+      return rejectRemoteUploadFailure(error)
+    }
+
+    const reviewedRemoteProject = await runCloudSyncProjectApiRequest(
+      throttleProjectApiRequest,
+      () => getRemoteProject(config, attempt.project.id)
+    ).catch(() => attempt.project)
+    await markProjectReplacementRejected({
+      metadata,
+      rejectedRemoteProject: reviewedRemoteProject,
+      error,
+    })
+    return undefined
+  }
+}
+
 function markCloudMetadataFailure(error: unknown) {
   if (!isConfiguredForCloud()) {
     return
@@ -2433,13 +2544,14 @@ async function markProjectConflict(
   const createdAt = nowIso()
   const existingConflict = metadata.conflict
 
-  const nextMetadata = {
+  const nextMetadata: ProjectMetadata = {
     ...metadata,
     remoteUpdatedAt: remoteUpdatedAt ?? metadata.remoteUpdatedAt,
     conflict: {
       remoteRevision,
       remoteUpdatedAt,
       createdAt: existingConflict?.createdAt ?? createdAt,
+      reason: 'divergent-changes',
       ...(existingConflict?.conflictProjectPath
         ? { conflictProjectPath: existingConflict.conflictProjectPath }
         : {}),
@@ -2475,32 +2587,6 @@ async function markProjectConflict(
 
 function latestOutboxKind(entries: OutboxEntry[]) {
   return entries.toSorted((a, b) => (a.id ?? 0) - (b.id ?? 0)).at(-1)?.kind
-}
-
-function getOutboxDeletedPaths(
-  entries: OutboxEntry[],
-  uploadedFiles: ProjectArchiveFile[],
-  currentPaths?: Iterable<string>
-) {
-  const uploadedPaths = new Set(
-    uploadedFiles.map((file) => normalizeRelativePath(file.relativePath))
-  )
-  const currentPathSet = currentPaths
-    ? new Set(Array.from(currentPaths, normalizeRelativePath))
-    : undefined
-  return Array.from(
-    new Set(
-      entries
-        .flatMap((entry) => entry.deletedPaths ?? [])
-        .map(normalizeRelativePath)
-        .filter(
-          (path) =>
-            Boolean(path) &&
-            !uploadedPaths.has(path) &&
-            (!currentPathSet || currentPathSet.has(path))
-        )
-    )
-  ).sort()
 }
 
 function getRemovedProjectFilePaths(
@@ -2816,14 +2902,78 @@ async function localProjectChangedFromSyncBase(metadata: ProjectMetadata) {
   if (!metadata.remoteProjectId) {
     return false
   }
-  if (!metadata.baseManifest) {
+  const syncBase = parseAcknowledgedSyncBase(metadata)
+  if (!syncBase) {
     return true
   }
 
   const localManifest = await collectLocalProjectFiles(
     metadata.localProjectPath
   ).then(projectManifestFromFiles)
-  return !projectManifestsEqual(localManifest, metadata.baseManifest)
+  return !projectManifestsEqual(localManifest, syncBase.manifest)
+}
+
+/**
+ * The local snapshot and durable outbox generation a network operation was
+ * based on. Both must still match before remote data may replace local files or
+ * the worker may discard queued work.
+ */
+type ProjectSyncCheckpoint = {
+  manifest: ProjectManifest
+  outboxGeneration: number
+}
+
+async function getProjectOutboxMutationGeneration(projectPath: string) {
+  return getOutboxMutationGeneration(
+    outboxEntriesForProject(await getAllOutboxEntries(), projectPath)
+  )
+}
+
+async function projectSyncCheckpointIsCurrent(
+  projectPath: string,
+  checkpoint: ProjectSyncCheckpoint
+) {
+  const generationBeforeManifest =
+    await getProjectOutboxMutationGeneration(projectPath)
+  if (generationBeforeManifest !== checkpoint.outboxGeneration) {
+    return false
+  }
+
+  const currentManifest = await collectLocalProjectFiles(projectPath).then(
+    projectManifestFromFiles
+  )
+  const generationAfterManifest =
+    await getProjectOutboxMutationGeneration(projectPath)
+  if (generationAfterManifest !== checkpoint.outboxGeneration) {
+    return false
+  }
+  if (projectManifestsEqual(currentManifest, checkpoint.manifest)) {
+    return true
+  }
+
+  // A filesystem observer can be unavailable during startup. Preserve a
+  // manifest change detected here as durable work instead of silently losing
+  // it when the older sync attempt completes.
+  await appendOutboxEntry({
+    projectPath,
+    kind: 'upsert',
+    targetPath: projectPath,
+    createdAt: nowIso(),
+  })
+  return false
+}
+
+async function clearProjectOutboxIfCheckpointCurrent(
+  projectPath: string,
+  checkpoint: ProjectSyncCheckpoint
+) {
+  if (!(await projectSyncCheckpointIsCurrent(projectPath, checkpoint))) {
+    return false
+  }
+  return clearOutboxEntriesForProjectAtGeneration(
+    projectPath,
+    checkpoint.outboxGeneration
+  )
 }
 
 async function syncProject(
@@ -2856,6 +3006,11 @@ async function syncProject(
 
   try {
     metadata = await bindRemoteProjectIdFromToml(metadata, cloudBinding)
+    entries = outboxEntriesForProject(
+      await getAllOutboxEntries(),
+      metadata.localProjectPath
+    )
+    const syncBase = parseAcknowledgedSyncBase(metadata)
     if (!shouldSyncCloudLibraryProject(metadata) && entries.length === 0) {
       return
     }
@@ -2875,7 +3030,7 @@ async function syncProject(
       hasRemoteProjectId: Boolean(metadata.remoteProjectId),
       localChanged: false,
       remoteChanged: false,
-      hasRemoteRevision: Boolean(metadata.remoteRevision),
+      hasRemoteRevision: Boolean(syncBase),
     })
     if (initialAction === 'delete-remote') {
       await syncDeletedProject(metadata, throttleProjectApiRequest)
@@ -2919,28 +3074,45 @@ async function syncProject(
         pendingProjectPaths: new Set(),
       })
     }
+    if (
+      metadata.remoteProjectId &&
+      syncBase &&
+      remoteRevision === syncBase.revision &&
+      cloudBinding.kind === 'unbound'
+    ) {
+      await writeLocalProjectCloudProjectId(
+        metadata.localProjectPath,
+        metadata.remoteProjectId
+      )
+    }
     const localFiles = await collectLocalProjectFiles(metadata.localProjectPath)
     const localManifest = await projectManifestFromFiles(localFiles)
+    const syncCheckpoint: ProjectSyncCheckpoint = {
+      manifest: localManifest,
+      outboxGeneration: await getProjectOutboxMutationGeneration(
+        metadata.localProjectPath
+      ),
+    }
 
     if (metadata.remoteProjectId) {
-      remoteChanged =
-        Boolean(metadata.remoteRevision && remoteRevision) &&
-        metadata.remoteRevision !== remoteRevision
-      localChanged = metadata.baseManifest
-        ? !projectManifestsEqual(localManifest, metadata.baseManifest)
+      remoteChanged = Boolean(
+        syncBase && remoteRevision && syncBase.revision !== remoteRevision
+      )
+      localChanged = syncBase
+        ? !projectManifestsEqual(localManifest, syncBase.manifest)
         : true
     }
 
     if (
       entries.length === 0 &&
       metadata.remoteProjectId &&
-      metadata.baseManifest &&
+      syncBase &&
       localChanged
     ) {
       reportCloudSyncUntrackedLocalChanges({
         remoteProjectId: metadata.remoteProjectId,
-        remoteRevision: metadata.remoteRevision,
-        baseFileCount: Object.keys(metadata.baseManifest.files).length,
+        remoteRevision: syncBase.revision,
+        baseFileCount: Object.keys(syncBase.manifest.files).length,
         localFileCount: Object.keys(localManifest.files).length,
       })
     }
@@ -2952,7 +3124,7 @@ async function syncProject(
       hasRemoteProjectId: Boolean(metadata.remoteProjectId),
       localChanged,
       remoteChanged,
-      hasRemoteRevision: Boolean(metadata.remoteRevision),
+      hasRemoteRevision: Boolean(syncBase),
     })
 
     if (preflightAction === 'create-remote') {
@@ -2960,24 +3132,39 @@ async function syncProject(
         throttleProjectApiRequest,
         () => createRemoteProject(config, metadata.localProjectPath, localFiles)
       )
-      await clearOutboxEntriesForProject(metadata.localProjectPath)
-      const uploadedMetadata: ProjectMetadata = {
+      // The response hashes include the API's changes to project.toml.
+      const baseManifest: ProjectManifest = { files: {} }
+      for (const file of created.files) {
+        baseManifest.files[normalizeRelativePath(file.relative_path)] = {
+          byteSize: file.byte_size,
+          sha256: file.sha256,
+        }
+      }
+      metadata = {
         ...metadata,
         remoteProjectId: created.id,
-        remoteRevision: undefined,
-        remoteUpdatedAt: undefined,
-        baseManifest: localManifest,
+        remoteRevision: created.revision,
+        remoteUpdatedAt: getRemoteUpdatedAt(created),
+        baseManifest,
         conflict: undefined,
         lastFailure: undefined,
       }
-      await putProjectMetadata(uploadedMetadata)
-      publishScopedProjectCloudProjectId(uploadedMetadata)
+      await putProjectMetadata(metadata)
+      publishScopedProjectCloudProjectId(metadata)
+      await clearProjectOutboxIfCheckpointCurrent(
+        metadata.localProjectPath,
+        syncCheckpoint
+      )
       await appendOutboxEntry({
         projectPath: metadata.localProjectPath,
         kind: 'upsert',
         targetPath: metadata.localProjectPath,
         createdAt: nowIso(),
       })
+      await writeLocalProjectCloudProjectId(
+        metadata.localProjectPath,
+        created.id
+      )
       scheduleSync(0)
       return
     }
@@ -2993,7 +3180,14 @@ async function syncProject(
     }
 
     if (preflightAction === 'mark-synced') {
-      await clearOutboxEntriesForProject(metadata.localProjectPath)
+      if (
+        !(await clearProjectOutboxIfCheckpointCurrent(
+          metadata.localProjectPath,
+          syncCheckpoint
+        ))
+      ) {
+        return
+      }
       await markProjectSynced(
         metadata,
         localManifest,
@@ -3003,27 +3197,34 @@ async function syncProject(
     }
 
     if (preflightAction === 'push-local-with-expected-revision') {
-      const updated = await runCloudSyncProjectApiRequest(
-        throttleProjectApiRequest,
-        () =>
-          updateRemoteProject({
-            config,
-            projectPath: metadata.localProjectPath,
-            project: remoteProject,
-            files: localFiles,
-            expectedRevision: metadata.remoteRevision,
-            entrypointPath: getRemoteProjectEntrypointPath(remoteProject),
-            deletedPaths: getOutboxDeletedPaths(
-              entries,
-              localFiles,
-              Object.keys(metadata.baseManifest?.files ?? {})
-            ),
-          })
-      ).catch(rejectRemoteUploadFailure)
-      await clearOutboxEntriesForProject(metadata.localProjectPath)
+      if (!syncBase) {
+        // eslint-disable-next-line suggest-no-throw/suggest-no-throw
+        throw new Error(
+          'Cloud sync cannot update without an acknowledged base.'
+        )
+      }
+      const replacementAttempt = await createProjectReplacementAttempt({
+        projectPath: metadata.localProjectPath,
+        project: remoteProject,
+        files: localFiles,
+        syncBase,
+        entrypointPath: getRemoteProjectEntrypointPath(remoteProject),
+      })
+      const updated = await submitProjectReplacement(
+        metadata,
+        replacementAttempt,
+        throttleProjectApiRequest
+      )
+      if (!updated) {
+        return
+      }
+      await clearProjectOutboxIfCheckpointCurrent(
+        metadata.localProjectPath,
+        syncCheckpoint
+      )
       await markProjectSynced(
         metadata,
-        localManifest,
+        replacementAttempt.manifest,
         remoteSyncMetadata(updated, { useNowAsUpdatedAtFallback: true })
       )
       return
@@ -3047,12 +3248,9 @@ async function syncProject(
         projectManifestsEqual(localManifest, metadata.baseManifest)
     )
     const autoReconciledFiles =
-      metadata.baseManifest &&
-      remoteRevision &&
-      !localMatchesRemote &&
-      !localClean
+      syncBase && remoteRevision && !localMatchesRemote && !localClean
         ? getCloudSyncAutoReconciledProjectFiles({
-            baseManifest: metadata.baseManifest,
+            baseManifest: syncBase.manifest,
             localFiles,
             localManifest,
             remoteFiles,
@@ -3067,7 +3265,14 @@ async function syncProject(
     })
 
     if (reconciliationAction === 'mark-synced') {
-      await clearOutboxEntriesForProject(metadata.localProjectPath)
+      if (
+        !(await clearProjectOutboxIfCheckpointCurrent(
+          metadata.localProjectPath,
+          syncCheckpoint
+        ))
+      ) {
+        return
+      }
       await markProjectSynced(
         metadata,
         localManifest,
@@ -3077,8 +3282,19 @@ async function syncProject(
     }
 
     if (reconciliationAction === 'hydrate-clean-local') {
+      if (
+        !(await projectSyncCheckpointIsCurrent(
+          metadata.localProjectPath,
+          syncCheckpoint
+        ))
+      ) {
+        return
+      }
       await replaceLocalProjectWithFiles(metadata.localProjectPath, remoteFiles)
-      await clearOutboxEntriesForProject(metadata.localProjectPath)
+      await clearOutboxEntriesForProjectAtGeneration(
+        metadata.localProjectPath,
+        syncCheckpoint.outboxGeneration
+      )
       await markProjectSynced(
         metadata,
         remoteManifest,
@@ -3087,33 +3303,46 @@ async function syncProject(
       return
     }
 
-    if (reconciliationAction === 'auto-reconcile' && autoReconciledFiles) {
-      const autoReconciledManifest =
-        await projectManifestFromFiles(autoReconciledFiles)
-      const updated = await runCloudSyncProjectApiRequest(
-        throttleProjectApiRequest,
-        () =>
-          updateRemoteProject({
-            config,
-            projectPath: metadata.localProjectPath,
-            project: remoteProject,
-            files: autoReconciledFiles,
-            expectedRevision: remoteRevision,
-            deletedPaths: getOutboxDeletedPaths(
-              entries,
-              autoReconciledFiles,
-              remoteFiles.map((file) => file.relativePath)
-            ),
-          })
-      ).catch(rejectRemoteUploadFailure)
-      await replaceLocalProjectWithFiles(
-        metadata.localProjectPath,
-        autoReconciledFiles
+    if (
+      reconciliationAction === 'auto-reconcile' &&
+      autoReconciledFiles &&
+      remoteRevision
+    ) {
+      const replacementAttempt = await createProjectReplacementAttempt({
+        projectPath: metadata.localProjectPath,
+        project: remoteProject,
+        files: autoReconciledFiles,
+        syncBase: {
+          revision: remoteRevision,
+          manifest: remoteManifest,
+        },
+      })
+      const updated = await submitProjectReplacement(
+        metadata,
+        replacementAttempt,
+        throttleProjectApiRequest
       )
-      await clearOutboxEntriesForProject(metadata.localProjectPath)
+      if (!updated) {
+        return
+      }
+      if (
+        await projectSyncCheckpointIsCurrent(
+          metadata.localProjectPath,
+          syncCheckpoint
+        )
+      ) {
+        await replaceLocalProjectWithFiles(
+          metadata.localProjectPath,
+          replacementAttempt.files
+        )
+        await clearOutboxEntriesForProjectAtGeneration(
+          metadata.localProjectPath,
+          syncCheckpoint.outboxGeneration
+        )
+      }
       await markProjectSynced(
         metadata,
-        autoReconciledManifest,
+        replacementAttempt.manifest,
         remoteSyncMetadata(updated, { useNowAsUpdatedAtFallback: true })
       )
       return

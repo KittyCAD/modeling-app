@@ -12,8 +12,10 @@ description: Operations executed utility-sink.kcl
         "value": 850.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -41,8 +43,10 @@ description: Operations executed utility-sink.kcl
         "value": 1200.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -70,8 +74,10 @@ description: Operations executed utility-sink.kcl
         "value": 600.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -99,8 +105,10 @@ description: Operations executed utility-sink.kcl
         "value": 13.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -128,8 +136,10 @@ description: Operations executed utility-sink.kcl
         "value": 2.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -157,8 +167,10 @@ description: Operations executed utility-sink.kcl
         "value": 1.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -186,8 +198,10 @@ description: Operations executed utility-sink.kcl
         "value": 1187.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -215,8 +229,10 @@ description: Operations executed utility-sink.kcl
         "value": 847.5,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -244,8 +260,10 @@ description: Operations executed utility-sink.kcl
         "value": 587.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -273,8 +291,10 @@ description: Operations executed utility-sink.kcl
         "value": 2.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -302,8 +322,10 @@ description: Operations executed utility-sink.kcl
         "value": 593.5,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -331,8 +353,10 @@ description: Operations executed utility-sink.kcl
         "value": 834.5,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -360,8 +384,10 @@ description: Operations executed utility-sink.kcl
         "value": 2.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -416,18 +442,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 13.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -442,18 +472,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -503,18 +537,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 13.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 13.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -529,18 +567,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 13.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -590,18 +632,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 13.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -616,18 +662,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 13.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 13.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -677,18 +727,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -703,18 +757,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 13.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -768,18 +826,22 @@ description: Operations executed utility-sink.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -1315,8 +1377,10 @@ description: Operations executed utility-sink.kcl
             "value": 834.5,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -1346,8 +1410,10 @@ description: Operations executed utility-sink.kcl
         "value": 150.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -1375,8 +1441,10 @@ description: Operations executed utility-sink.kcl
         "value": 1174.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -1413,8 +1481,10 @@ description: Operations executed utility-sink.kcl
             "value": 150.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -1478,18 +1548,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 13.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -1504,18 +1578,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -1565,18 +1643,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 13.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 13.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -1591,18 +1673,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 13.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -1652,18 +1738,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 1187.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 13.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -1678,18 +1768,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 13.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 13.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -1739,18 +1833,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 1187.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -1765,18 +1863,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 1187.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 13.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -1826,18 +1928,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 13.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -1852,18 +1958,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 1187.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -1917,18 +2027,22 @@ description: Operations executed utility-sink.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -2579,8 +2693,10 @@ description: Operations executed utility-sink.kcl
             "value": 13.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -2610,8 +2726,10 @@ description: Operations executed utility-sink.kcl
         "value": 574.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -2673,18 +2791,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 13.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -2699,18 +2821,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -2760,18 +2886,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 587.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -2786,18 +2916,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 13.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -2847,18 +2981,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 13.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 587.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -2873,18 +3011,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 587.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -2934,18 +3076,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 13.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 13.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -2960,18 +3106,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 13.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 587.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -3021,18 +3171,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 13.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -3047,18 +3201,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 13.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 13.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -3112,18 +3270,22 @@ description: Operations executed utility-sink.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -3774,8 +3936,10 @@ description: Operations executed utility-sink.kcl
             "value": 13.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -3805,8 +3969,10 @@ description: Operations executed utility-sink.kcl
         "value": 163.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -3843,8 +4009,10 @@ description: Operations executed utility-sink.kcl
             "value": 163.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -3874,8 +4042,10 @@ description: Operations executed utility-sink.kcl
         "value": 671.5,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -3937,18 +4107,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 594.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -3963,18 +4137,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -4024,18 +4202,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 594.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 13.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -4050,18 +4232,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 594.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -4111,18 +4297,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 607.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 13.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -4137,18 +4327,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 594.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 13.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -4198,18 +4392,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 607.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -4224,18 +4422,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 607.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 13.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -4285,18 +4487,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 594.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -4311,18 +4517,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 607.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -4376,18 +4586,22 @@ description: Operations executed utility-sink.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -5045,8 +5259,10 @@ description: Operations executed utility-sink.kcl
             "value": 671.5,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -5101,8 +5317,10 @@ description: Operations executed utility-sink.kcl
                 "value": 1.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -5110,8 +5328,10 @@ description: Operations executed utility-sink.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -5119,8 +5339,10 @@ description: Operations executed utility-sink.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               }
             ]
@@ -5133,8 +5355,10 @@ description: Operations executed utility-sink.kcl
             "value": 1187.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -5145,7 +5369,9 @@ description: Operations executed utility-sink.kcl
             "value": 1.0,
             "ty": {
               "type": "Known",
-              "type": "Count"
+              "value": {
+                "type": "Count"
+              }
             }
           },
           "sourceRange": []
@@ -5184,8 +5410,10 @@ description: Operations executed utility-sink.kcl
             "value": 847.5,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -5242,18 +5470,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 13.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -5268,18 +5500,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -5329,18 +5565,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 1200.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 13.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -5355,18 +5595,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 13.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -5416,18 +5660,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 1200.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -5442,18 +5690,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 1200.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 13.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -5503,18 +5755,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -5529,18 +5785,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 1200.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -5594,18 +5854,22 @@ description: Operations executed utility-sink.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -6129,8 +6393,10 @@ description: Operations executed utility-sink.kcl
             "value": -13.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -6160,8 +6426,10 @@ description: Operations executed utility-sink.kcl
         "value": 574.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -6223,18 +6491,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 13.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -6249,18 +6521,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -6310,18 +6586,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 587.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -6336,18 +6616,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 13.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -6397,18 +6681,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 13.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 587.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -6423,18 +6711,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 587.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -6484,18 +6776,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 13.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 13.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -6510,18 +6806,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 13.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 587.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -6571,18 +6871,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 13.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -6597,18 +6901,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 13.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 13.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -6662,18 +6970,22 @@ description: Operations executed utility-sink.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -7324,8 +7636,10 @@ description: Operations executed utility-sink.kcl
             "value": -13.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -7364,8 +7678,10 @@ description: Operations executed utility-sink.kcl
             "value": 850.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -7422,18 +7738,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 600.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -7448,18 +7768,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -7509,18 +7833,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 1200.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 600.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -7535,18 +7863,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 600.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -7596,18 +7928,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 1200.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -7622,18 +7958,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 1200.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 600.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -7683,18 +8023,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -7709,18 +8053,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 1200.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -7774,18 +8122,22 @@ description: Operations executed utility-sink.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -8302,8 +8654,10 @@ description: Operations executed utility-sink.kcl
             "value": -2.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -8359,8 +8713,10 @@ description: Operations executed utility-sink.kcl
         "value": 1.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -8388,8 +8744,10 @@ description: Operations executed utility-sink.kcl
         "value": 593.5,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -8417,8 +8775,10 @@ description: Operations executed utility-sink.kcl
         "value": 450.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -8446,8 +8806,10 @@ description: Operations executed utility-sink.kcl
         "value": 200.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -8475,8 +8837,10 @@ description: Operations executed utility-sink.kcl
         "value": 40.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -8504,8 +8868,10 @@ description: Operations executed utility-sink.kcl
         "value": 296.75,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -8533,8 +8899,10 @@ description: Operations executed utility-sink.kcl
         "value": 13.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -8596,18 +8964,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 40.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -8622,18 +8994,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -8690,18 +9066,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": -297.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 40.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -8716,18 +9096,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 40.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -8777,18 +9161,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": -297.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 490.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -8803,18 +9191,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": -297.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 40.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -8864,18 +9256,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": -890.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 490.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -8890,18 +9286,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": -297.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 490.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -8951,18 +9351,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": -890.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 40.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -8977,18 +9381,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": -890.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 490.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -9038,18 +9446,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": -297.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 40.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -9064,18 +9476,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": -890.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 40.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -9129,18 +9545,22 @@ description: Operations executed utility-sink.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -9904,8 +10324,10 @@ description: Operations executed utility-sink.kcl
             "value": 200.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -9995,18 +10417,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 42.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -10021,18 +10447,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -10089,18 +10519,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 299.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 42.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -10115,18 +10549,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 42.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -10176,18 +10614,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 299.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 488.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -10202,18 +10644,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 299.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 42.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -10263,18 +10709,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 888.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 488.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -10289,18 +10739,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 299.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 488.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -10350,18 +10804,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 888.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 42.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -10376,18 +10834,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 888.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 488.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -10437,18 +10899,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 299.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 42.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -10463,18 +10929,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 888.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 42.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -10528,18 +10998,22 @@ description: Operations executed utility-sink.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -11310,8 +11784,10 @@ description: Operations executed utility-sink.kcl
             "value": -200.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -11376,8 +11852,10 @@ description: Operations executed utility-sink.kcl
             "value": 850.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -11444,18 +11922,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 545.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -11470,18 +11952,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -11538,18 +12024,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 594.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 545.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -11564,18 +12054,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 545.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -11625,18 +12119,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 594.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 545.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -11651,18 +12149,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 634.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 545.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -11719,18 +12221,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 634.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 545.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -11745,18 +12251,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 594.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 545.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -11810,18 +12320,22 @@ description: Operations executed utility-sink.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -12338,8 +12852,10 @@ description: Operations executed utility-sink.kcl
             "value": 5.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -12383,8 +12899,10 @@ description: Operations executed utility-sink.kcl
                 "value": 1.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -12392,8 +12910,10 @@ description: Operations executed utility-sink.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -12401,8 +12921,10 @@ description: Operations executed utility-sink.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               }
             ]
@@ -12415,8 +12937,10 @@ description: Operations executed utility-sink.kcl
             "value": 13.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -12427,7 +12951,9 @@ description: Operations executed utility-sink.kcl
             "value": 1.0,
             "ty": {
               "type": "Known",
-              "type": "Count"
+              "value": {
+                "type": "Count"
+              }
             }
           },
           "sourceRange": []
@@ -12492,8 +13018,10 @@ description: Operations executed utility-sink.kcl
             "value": 850.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -12560,18 +13088,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 545.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -12586,18 +13118,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -12654,18 +13190,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 594.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 545.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -12680,18 +13220,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 545.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -12741,18 +13285,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 594.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 545.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -12767,18 +13315,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 609.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 545.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -12835,18 +13387,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 609.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 545.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -12861,18 +13417,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 594.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 545.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -12926,18 +13486,22 @@ description: Operations executed utility-sink.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -13454,8 +14018,10 @@ description: Operations executed utility-sink.kcl
             "value": 170.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -13499,8 +14065,10 @@ description: Operations executed utility-sink.kcl
                 "value": 1.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -13508,8 +14076,10 @@ description: Operations executed utility-sink.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -13517,8 +14087,10 @@ description: Operations executed utility-sink.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               }
             ]
@@ -13531,8 +14103,10 @@ description: Operations executed utility-sink.kcl
             "value": 13.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -13543,7 +14117,9 @@ description: Operations executed utility-sink.kcl
             "value": 1.0,
             "ty": {
               "type": "Known",
-              "type": "Count"
+              "value": {
+                "type": "Count"
+              }
             }
           },
           "sourceRange": []
@@ -13608,8 +14184,10 @@ description: Operations executed utility-sink.kcl
             "value": -545.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -13676,18 +14254,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 950.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -13702,18 +14284,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -13770,18 +14356,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 594.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 950.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -13796,18 +14386,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 950.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -13857,18 +14451,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 594.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 950.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -13883,18 +14481,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 604.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 950.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -13951,18 +14553,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 604.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 950.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -13977,18 +14583,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 594.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 950.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -14042,18 +14652,22 @@ description: Operations executed utility-sink.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -14570,8 +15184,10 @@ description: Operations executed utility-sink.kcl
             "value": 237.4,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -14615,8 +15231,10 @@ description: Operations executed utility-sink.kcl
                 "value": 1.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -14624,8 +15242,10 @@ description: Operations executed utility-sink.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -14633,8 +15253,10 @@ description: Operations executed utility-sink.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               }
             ]
@@ -14647,8 +15269,10 @@ description: Operations executed utility-sink.kcl
             "value": 13.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -14659,7 +15283,9 @@ description: Operations executed utility-sink.kcl
             "value": 1.0,
             "ty": {
               "type": "Known",
-              "type": "Count"
+              "value": {
+                "type": "Count"
+              }
             }
           },
           "sourceRange": []
@@ -14724,8 +15350,10 @@ description: Operations executed utility-sink.kcl
             "value": -545.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -14792,18 +15420,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1000.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -14818,18 +15450,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -14886,18 +15522,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 594.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1000.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -14912,18 +15552,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1000.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -14973,18 +15617,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 594.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1000.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -14999,18 +15647,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 598.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1000.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -15067,18 +15719,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 598.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1000.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -15093,18 +15749,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 594.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1000.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -15158,18 +15818,22 @@ description: Operations executed utility-sink.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -15686,8 +16350,10 @@ description: Operations executed utility-sink.kcl
             "value": 70.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -15731,8 +16397,10 @@ description: Operations executed utility-sink.kcl
                 "value": 1.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -15740,8 +16408,10 @@ description: Operations executed utility-sink.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -15749,8 +16419,10 @@ description: Operations executed utility-sink.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               }
             ]
@@ -15763,8 +16435,10 @@ description: Operations executed utility-sink.kcl
             "value": 13.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -15775,7 +16449,9 @@ description: Operations executed utility-sink.kcl
             "value": 1.0,
             "ty": {
               "type": "Known",
-              "type": "Count"
+              "value": {
+                "type": "Count"
+              }
             }
           },
           "sourceRange": []
@@ -15831,8 +16507,10 @@ description: Operations executed utility-sink.kcl
         "value": 2.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -15860,8 +16538,10 @@ description: Operations executed utility-sink.kcl
         "value": 576.5,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -15889,8 +16569,10 @@ description: Operations executed utility-sink.kcl
         "value": 15.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -15918,8 +16600,10 @@ description: Operations executed utility-sink.kcl
         "value": 165.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -15947,8 +16631,10 @@ description: Operations executed utility-sink.kcl
         "value": 667.5,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -15976,8 +16662,10 @@ description: Operations executed utility-sink.kcl
         "value": 2.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -16014,8 +16702,10 @@ description: Operations executed utility-sink.kcl
             "value": 165.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -16079,18 +16769,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 15.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -16105,18 +16799,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -16166,18 +16864,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 15.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 13.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -16192,18 +16894,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 15.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -16253,18 +16959,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 591.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 13.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -16279,18 +16989,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 15.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 13.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -16340,18 +17054,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 591.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -16366,18 +17084,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 591.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 13.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -16427,18 +17149,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 15.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -16453,18 +17179,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 591.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -16518,18 +17248,22 @@ description: Operations executed utility-sink.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -17173,8 +17907,10 @@ description: Operations executed utility-sink.kcl
             "value": 667.5,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -17218,8 +17954,10 @@ description: Operations executed utility-sink.kcl
                 "value": 1.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -17227,8 +17965,10 @@ description: Operations executed utility-sink.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -17236,8 +17976,10 @@ description: Operations executed utility-sink.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               }
             ]
@@ -17250,8 +17992,10 @@ description: Operations executed utility-sink.kcl
             "value": 593.5,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -17262,7 +18006,9 @@ description: Operations executed utility-sink.kcl
             "value": 2.0,
             "ty": {
               "type": "Known",
-              "type": "Count"
+              "value": {
+                "type": "Count"
+              }
             }
           },
           "sourceRange": []
@@ -17317,8 +18063,10 @@ description: Operations executed utility-sink.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -17326,8 +18074,10 @@ description: Operations executed utility-sink.kcl
                 "value": 1.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -17335,8 +18085,10 @@ description: Operations executed utility-sink.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               }
             ]
@@ -17349,8 +18101,10 @@ description: Operations executed utility-sink.kcl
             "value": 587.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -17361,7 +18115,9 @@ description: Operations executed utility-sink.kcl
             "value": 2.0,
             "ty": {
               "type": "Known",
-              "type": "Count"
+              "value": {
+                "type": "Count"
+              }
             }
           },
           "sourceRange": []
@@ -17417,8 +18173,10 @@ description: Operations executed utility-sink.kcl
         "value": 570.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -17446,8 +18204,10 @@ description: Operations executed utility-sink.kcl
         "value": 3.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -17475,8 +18235,10 @@ description: Operations executed utility-sink.kcl
         "value": 1187.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -17538,18 +18300,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 15.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -17564,18 +18330,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -17625,18 +18395,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 572.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -17651,18 +18425,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 15.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -17712,18 +18490,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 13.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 572.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -17738,18 +18520,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 572.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -17799,18 +18585,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 13.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 15.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -17825,18 +18615,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 13.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 572.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -17886,18 +18680,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 15.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -17912,18 +18710,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 13.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 15.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -17977,18 +18779,22 @@ description: Operations executed utility-sink.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -18632,8 +19438,10 @@ description: Operations executed utility-sink.kcl
             "value": 667.5,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -18677,8 +19485,10 @@ description: Operations executed utility-sink.kcl
                 "value": 1.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -18686,8 +19496,10 @@ description: Operations executed utility-sink.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -18695,8 +19507,10 @@ description: Operations executed utility-sink.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               }
             ]
@@ -18709,8 +19523,10 @@ description: Operations executed utility-sink.kcl
             "value": 1187.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -18721,7 +19537,9 @@ description: Operations executed utility-sink.kcl
             "value": 2.0,
             "ty": {
               "type": "Known",
-              "type": "Count"
+              "value": {
+                "type": "Count"
+              }
             }
           },
           "sourceRange": []
@@ -18777,8 +19595,10 @@ description: Operations executed utility-sink.kcl
         "value": 40.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -18806,8 +19626,10 @@ description: Operations executed utility-sink.kcl
         "value": 120.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -18835,8 +19657,10 @@ description: Operations executed utility-sink.kcl
         "value": 20.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -18864,8 +19688,10 @@ description: Operations executed utility-sink.kcl
         "value": 780.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -18893,8 +19719,10 @@ description: Operations executed utility-sink.kcl
         "value": 243.25,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -18922,8 +19750,10 @@ description: Operations executed utility-sink.kcl
         "value": 20.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -18951,8 +19781,10 @@ description: Operations executed utility-sink.kcl
         "value": 80.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -18989,8 +19821,10 @@ description: Operations executed utility-sink.kcl
             "value": 780.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -19054,18 +19888,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 243.25,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -19080,18 +19918,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -19141,18 +19983,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 243.25,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -20.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -19167,18 +20013,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 243.25,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -19235,18 +20085,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 263.25,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -20.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -19261,18 +20115,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 243.25,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -20.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -19322,18 +20180,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 263.25,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -20.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -19348,18 +20210,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 263.25,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -40.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -19374,18 +20240,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 243.25,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -20.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -19435,18 +20305,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 343.25,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -40.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -19461,18 +20335,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 263.25,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -40.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -19529,18 +20407,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 343.25,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -20.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -19555,18 +20437,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 343.25,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -40.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -19616,18 +20502,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 343.25,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -20.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -19642,18 +20532,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 363.25,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -20.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -19668,18 +20562,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 343.25,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -40.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -19729,18 +20627,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 363.25,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -19755,18 +20657,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 363.25,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -20.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -19823,18 +20729,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 363.25,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -19849,18 +20759,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 243.25,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -19914,18 +20828,22 @@ description: Operations executed utility-sink.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -21322,18 +22240,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 780.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -21348,18 +22270,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -21416,18 +22342,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 243.25,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 780.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -21442,18 +22372,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 780.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -21503,18 +22437,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 243.25,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 780.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -21529,18 +22467,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 245.25,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 780.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -21597,18 +22539,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 245.25,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 780.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -21623,18 +22569,22 @@ description: Operations executed utility-sink.kcl
                 "type": "SketchVar",
                 "value": 243.25,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 780.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -21688,18 +22638,22 @@ description: Operations executed utility-sink.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -22258,8 +23212,10 @@ description: Operations executed utility-sink.kcl
                 "value": 1.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -22267,8 +23223,10 @@ description: Operations executed utility-sink.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -22276,8 +23234,10 @@ description: Operations executed utility-sink.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               }
             ]
@@ -22290,8 +23250,10 @@ description: Operations executed utility-sink.kcl
             "value": 593.5,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -22302,7 +23264,9 @@ description: Operations executed utility-sink.kcl
             "value": 2.0,
             "ty": {
               "type": "Known",
-              "type": "Count"
+              "value": {
+                "type": "Count"
+              }
             }
           },
           "sourceRange": []
@@ -22413,7 +23377,9 @@ description: Operations executed utility-sink.kcl
         "value": 2.718281828459045,
         "ty": {
           "type": "Known",
-          "type": "Count"
+          "value": {
+            "type": "Count"
+          }
         }
       },
       "visibility": "export",
@@ -22441,7 +23407,9 @@ description: Operations executed utility-sink.kcl
         "value": 6.283185307179586,
         "ty": {
           "type": "Known",
-          "type": "Count"
+          "value": {
+            "type": "Count"
+          }
         }
       },
       "visibility": "export",
@@ -22475,7 +23443,7 @@ description: Operations executed utility-sink.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 23
+            "index": 24
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -22499,7 +23467,7 @@ description: Operations executed utility-sink.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 24
+            "index": 25
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -22523,7 +23491,7 @@ description: Operations executed utility-sink.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 25
+            "index": 26
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -22547,7 +23515,7 @@ description: Operations executed utility-sink.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 26
+            "index": 27
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -22571,7 +23539,7 @@ description: Operations executed utility-sink.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 27
+            "index": 28
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -22595,7 +23563,7 @@ description: Operations executed utility-sink.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 28
+            "index": 29
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -22619,7 +23587,7 @@ description: Operations executed utility-sink.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 29
+            "index": 30
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -22643,7 +23611,7 @@ description: Operations executed utility-sink.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 30
+            "index": 31
           },
           {
             "type": "VariableDeclarationDeclaration"

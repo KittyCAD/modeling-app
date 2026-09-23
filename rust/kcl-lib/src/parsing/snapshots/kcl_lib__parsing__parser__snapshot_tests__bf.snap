@@ -67,5 +67,6 @@ expression: actual
   "commentStart": 0,
   "end": 10,
   "moduleId": 0,
-  "start": 0
+  "start": 0,
+  "type": "Program"
 }

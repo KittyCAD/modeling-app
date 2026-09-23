@@ -7,12 +7,12 @@ description: Physical properties gridfinity-bins.kcl
     "center": {
       "x": 42.0,
       "y": 63.0,
-      "z": 9.1375
+      "z": 9.737500023841855
     },
     "dimensions": {
       "x": 100.8,
       "y": 151.2,
-      "z": 19.225
+      "z": 20.425000047683717
     },
     "unit": "mm"
   },

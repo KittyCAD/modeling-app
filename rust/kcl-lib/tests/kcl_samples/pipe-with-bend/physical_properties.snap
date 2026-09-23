@@ -6,12 +6,12 @@ description: Physical properties pipe-with-bend.kcl
   "bounding_box": {
     "center": {
       "x": 508.0,
-      "y": 381.0,
+      "y": 508.0,
       "z": 0.0
     },
     "dimensions": {
       "x": 1016.0,
-      "y": 1270.0,
+      "y": 1016.0,
       "z": 508.00000000000006
     },
     "unit": "mm"

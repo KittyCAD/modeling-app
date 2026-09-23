@@ -50,6 +50,7 @@ import type {
   EdgeRefactorMeta,
 } from '@src/lang/wasm'
 import { loadAndInitialiseWasmInstance } from '@src/lang/wasmUtilsNode'
+import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 import { err } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
@@ -1602,27 +1603,37 @@ part = bracket()
     })
   })
 
-  describe('integration (engine required)', () => {
+  describe('integration (CPU Engine)', () => {
     let instanceInThisFile: ModuleType = null!
     let kclManagerInThisFile: KclManager = null!
-    let engineCommandManagerInThisFile: { tearDown: () => void } = null!
+    let engineCommandManagerInThisFile: ConnectionManager = null!
 
     beforeEach(async () => {
       if (instanceInThisFile) return
       const { instance, kclManager, engineCommandManager } =
-        await buildTheWorldAndConnectToEngine({ geometryOnly: true })
+        await buildTheWorldAndConnectToEngine({
+          webrtc: false,
+          pool: 'cpu',
+        })
+      instance.set_kcl_runtime_flags(
+        JSON.stringify({ enable_z0006_lint: 'On' })
+      )
       instanceInThisFile = instance
       kclManagerInThisFile = kclManager
       engineCommandManagerInThisFile = engineCommandManager
     })
 
     afterAll(() => {
-      engineCommandManagerInThisFile?.tearDown()
+      engineCommandManagerInThisFile?.tearDown({
+        route: 'user-requested',
+        initiatedBy: 'client',
+      })
     })
 
     async function runIntegrationRefactor(kcl: string): Promise<string> {
       const ast = assertParse(kcl, instanceInThisFile)
       await kclManagerInThisFile.executeAst({ ast })
+      expect(kclManagerInThisFile.errors).toEqual([])
       const execState = kclManagerInThisFile.execState
       expect(execState.artifactGraph.size).toBeGreaterThan(0)
       const refactored = refactorZ0006Unified(

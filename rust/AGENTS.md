@@ -39,6 +39,7 @@ This file applies to Rust development under `rust/`. It supplements the repo roo
 - Create a new sim test: `just new-sim-test foo_bar` (this creates a directory for your sim test like `kcl-lib/tests/foo/`, with an empty `input.kcl` that you should put code in).
 - Run/update the sim test: `just overwrite-sim-test foo_bar`
 - Inspect generated outputs and check for `execution_error.snap` before committing.
+- Optionally execute one `input.kcl` under multiple KCL versions via `config.toml`: `kcl_versions = ["2.0", "3.0-preview"]`. Shared snapshots go in `output/`; execution snapshots go in `output/kcl-<version>/`.
 
 ## Trim tool smoke tests
 

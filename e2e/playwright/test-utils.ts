@@ -109,6 +109,12 @@ async function waitForPageLoad(page: Page) {
   })
 }
 
+async function waitForHomeLoad(page: Page) {
+  await expect(page.getByTestId('home-section')).toBeVisible({
+    timeout: 20_000,
+  })
+}
+
 export async function waitForWebKitBillingToSettle(page: Page) {
   if (process.env.PLAYWRIGHT_WEBKIT_PERSISTENT_CONTEXT !== '1') {
     return
@@ -419,12 +425,12 @@ async function waitForAuthAndLsp(page: Page) {
     if (token) {
       // Vercel is external to Playwright, so the token is provided in the URL
       await page.goto(`/?${VERCEL_PLAYWRIGHT_TOKEN_QUERY_PARAM}=${token}`)
-      await waitForPageLoad(page)
+      await waitForHomeLoad(page)
     }
   }
 
   await page.goto('/')
-  await waitForPageLoad(page)
+  await waitForHomeLoad(page)
   return waitForLspPromise
 }
 
@@ -866,9 +872,9 @@ export const doExport = async (
   if (exportFrom === 'dropdown') {
     await page.getByTestId('project-sidebar-toggle').click()
 
-    const exportMenuButton = page.getByRole('button', {
-      name: 'Export current part',
-    })
+    const exportMenuButton = page
+      .getByTestId('project-sidebar-menu')
+      .getByRole('button', { name: 'Export' })
     await expect(exportMenuButton).toBeVisible()
     await exportMenuButton.click()
   } else if (exportFrom === 'sidebarButton') {
@@ -1084,6 +1090,7 @@ export async function setup(
           ...TEST_SETTINGS,
           plugins: playwrightPluginSettings({
             cloudSyncEnabled,
+            zookeeperEnabled: testInfo?.tags.includes('@zookeeper'),
           }),
           ...PLAYWRIGHT_LAYOUT_SETTINGS,
           app: {

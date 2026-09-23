@@ -82,7 +82,7 @@ pub fn format_number_literal(value: f64, suffix_json: &str, decimals: Option<usi
 pub fn format_number_value(value: f64, numeric_type_json: &str) -> Result<String, String> {
     console_error_panic_hook::set_once();
 
-    // ts-rs can't handle tuple types, so it mashes all of these types together.
+    // Accept unit-only inputs as well as complete numeric types.
     if let Ok(ty) = serde_json::from_str::<NumericType>(numeric_type_json)
         && let Ok(formatted) = kcl_lib::pretty::format_number_value(value, ty)
     {
@@ -113,7 +113,7 @@ pub fn format_number_value(value: f64, numeric_type_json: &str) -> Result<String
 pub fn human_display_number(value: f64, ty_json: &str) -> Result<String, String> {
     console_error_panic_hook::set_once();
 
-    // ts-rs can't handle tuple types, so it mashes all of these types together.
+    // Accept unit-only inputs as well as complete numeric types.
     if let Ok(ty) = serde_json::from_str::<NumericType>(ty_json) {
         return Ok(kcl_lib::pretty::human_display_number(value, ty));
     }
@@ -332,6 +332,14 @@ pub fn kcl_settings(program_json: &str) -> Result<JsValue, String> {
     let settings = program.meta_settings().map_err(|e| e.to_string())?;
 
     JsValue::from_serde(&settings).map_err(|e| e.to_string())
+}
+
+/// Resolve the entrypoint language version before connecting to the engine.
+#[wasm_bindgen]
+pub fn kcl_language_version(program_json: &str) -> Result<JsValue, String> {
+    let program: Program = serde_json::from_str(program_json).map_err(|e| e.to_string())?;
+    let version = program.language_version().map_err(|e| e.to_string())?;
+    JsValue::from_serde(&version).map_err(|e| e.to_string())
 }
 
 /// Takes a kcl string and Meta settings and changes the meta settings in the kcl string.

@@ -237,7 +237,7 @@ flowchart LR
     %% [ProgramBodyItem { index: 15 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlockBody, SketchBlockBodyItem { index: 11 }, ExpressionStatementExpr]
   124["SketchBlock<br>[4662, 4759, 0]"]
     %% [ProgramBodyItem { index: 21 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  125["StartSketchOnPlane<br>[884, 937, 16]"]
+  125["StartSketchOnPlane<br>[884, 937, 17]"]
     %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 8 }, ReturnStatementArg, PipeBodyItem { index: 0 }]
   126["SketchBlock<br>[5003, 5099, 0]"]
     %% [ProgramBodyItem { index: 24 }, VariableDeclarationDeclaration, VariableDeclarationInit]

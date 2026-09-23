@@ -44,6 +44,7 @@ import {
   getCodeRefsByArtifactId,
   getCommonFacesForEdge,
   getSweepArtifactFromSelection,
+  getMergedSweepBodyArtifact,
 } from '@src/lang/std/artifactGraph'
 import { findKwArg } from '@src/lang/util'
 import type {
@@ -2742,7 +2743,17 @@ export function insertPrimitiveEdgeVariablesAndOffsetPathToNode({
       continue
     }
 
-    const bodyKey = JSON.stringify(bodySelection.codeRef.pathToNode)
+    if (bodySelection.artifact.type === 'sweep') {
+      const body = getMergedSweepBodyArtifact(
+        bodySelection.artifact,
+        artifactGraph
+      )
+      if (err(body)) return body
+      bodySelection.artifact = body
+      bodySelection.codeRef = body.codeRef
+    }
+
+    const bodyKey = bodySelection.artifact.id
     const byBody = primitiveSelectionsByBody.get(bodyKey)
     if (byBody) {
       if (!byBody.primitiveIndices.includes(selection.primitiveIndex)) {
@@ -2774,7 +2785,8 @@ export function insertPrimitiveEdgeVariablesAndOffsetPathToNode({
       wasmInstance,
       nodeToEdit,
       {
-        lastChildLookup: true,
+        // Keep canonical sweeps on their own body, just like graph edges.
+        lastChildLookup: primitiveData.bodySelection.artifact?.type !== 'sweep',
         artifactTypeFilter: ['compositeSolid', 'sweep'],
       }
     )

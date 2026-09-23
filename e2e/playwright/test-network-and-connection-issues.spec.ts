@@ -1,3 +1,4 @@
+import { throwTronAppMissing } from '@e2e/playwright/lib/electron-helpers'
 import { TEST_COLORS, circleMove, getUtils } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 import { LEGACY_SKETCH_MODE_FEATURE_FLAG } from '@src/lib/constants'
@@ -18,6 +19,7 @@ test.describe('Test network related behaviors', { tag: '@desktop' }, () => {
       const u = await getUtils(page)
       await page.setBodyDimensions({ width: 1200, height: 500 })
 
+      await homePage.waitForAuthentication()
       await homePage.goToModelingScene()
       await scene.settled()
 
@@ -236,7 +238,7 @@ test.describe('Test network related behaviors', { tag: '@desktop' }, () => {
       )
       const networkToggleWeakText = page.getByText('Network health (Ok)')
 
-      if (!tronApp) throw new Error('tronApp is missing.')
+      if (!tronApp) throwTronAppMissing()
 
       await tronApp.cleanProjectDir({
         app: {

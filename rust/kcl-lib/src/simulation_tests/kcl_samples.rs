@@ -13,6 +13,7 @@ use serde::Serialize;
 use walkdir::WalkDir;
 
 use super::Test;
+use crate::simulation_tests::TestConfig;
 use crate::tooling::render_artifacts::RENDERED_MODEL_NAME;
 
 const ALLOWED_FILETYPES: [&str; 3] = ["kcl", "stp", "step"];
@@ -95,7 +96,7 @@ async fn unparse_test(test: &Test) {
 #[kcl_directory_test_macro::test_all_dirs("../public/kcl-samples", exclude = ["walkie-talkie"])]
 async fn kcl_test_execute(dir_name: &str, dir_path: &Path) {
     let t = test(dir_name, dir_path.join("main.kcl"));
-    super::execute_test(&t, true, true).await;
+    super::execute_test(&t).await;
 }
 
 /// The current engine times out on the walkie-talkie's exact 143-tool speaker
@@ -106,7 +107,7 @@ async fn kcl_test_execute(dir_name: &str, dir_path: &Path) {
 async fn kcl_test_execute_walkie_talkie() {
     let dir_path = INPUTS_DIR.join("walkie-talkie");
     let t = test("walkie-talkie", dir_path.join("main.kcl"));
-    super::execute_test(&t, true, true).await;
+    super::execute_test(&t).await;
 }
 
 #[test]
@@ -184,13 +185,23 @@ fn test(test_name: &str, entry_point: std::path::PathBuf) -> Test {
     let inputs_dir = std::fs::canonicalize(INPUTS_DIR.as_path()).unwrap();
     let relative_path = parent.strip_prefix(inputs_dir).unwrap();
     let output_dir = std::fs::canonicalize(OUTPUTS_DIR.as_path()).unwrap();
-    let relative_output_dir = output_dir.join(relative_path);
+    let test_config = TestConfig::from_file(&output_dir.join(test_name)).unwrap_or_default();
+    let TestConfig {
+        redact_uuids,
+        test_graphics,
+        kcl_versions,
+    } = test_config;
+    let mut relative_output_dir = output_dir.join(relative_path);
+    if !kcl_versions.is_empty() {
+        relative_output_dir = relative_output_dir.join("output");
+    }
 
     // Ensure the output directory exists.
     if !relative_output_dir.exists() {
         std::fs::create_dir_all(&relative_output_dir).unwrap();
     }
     Test {
+        redact_uuids,
         name: test_name.to_owned(),
         entry_point,
         input_dir: parent.to_path_buf(),
@@ -199,6 +210,8 @@ fn test(test_name: &str, entry_point: std::path::PathBuf) -> Test {
         skip_assert_artifact_graph: true,
         snapshot_physical_properties: true,
         expected_deprecation_warnings: Some(0),
+        kcl_versions,
+        test_graphics_params: test_graphics,
     }
 }
 

@@ -18315,6 +18315,7 @@ description: Result of parsing snowman.kcl
         }
       ]
     },
-    "start": 0
+    "start": 0,
+    "type": "Program"
   }
 }

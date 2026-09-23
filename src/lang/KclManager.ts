@@ -51,7 +51,6 @@ import {
   EXECUTE_AST_INTERRUPT_ERROR_MESSAGE,
 } from '@src/lib/constants'
 import { getOperationKey } from '@src/lib/featureTreeOperationTree'
-import fsZds from '@src/lib/fs-zds'
 import { markOnce } from '@src/lib/performance'
 import type RustContext from '@src/lib/rustContext'
 import type {
@@ -183,6 +182,7 @@ import {
   waitForUserFeaturesSettled,
 } from '@src/machines/userFeaturesMachine'
 import type { ExecutingEditorService } from '@src/registry/contracts/executingEditor'
+import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
 import {
   CODE_EDITOR_FOCUSED_KEYMAP_SCOPE,
   CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE,
@@ -785,17 +785,20 @@ export class File extends EventTarget {
 
   /** Allows environments to swap their implementation of these IO-interfacing functions */
   static ioImplementations = {
-    read: (path: string) => fsZds.readFile(path, 'utf8'),
-    write: (path: string, content: string) =>
-      fsZds.writeFile(path, File.encoder.encode(content)),
+    read: (_path: string): Promise<string> =>
+      Promise.reject(new Error('File IO has not been configured')),
+    write: (_path: string, _content: string): Promise<void> =>
+      Promise.reject(new Error('File IO has not been configured')),
     watch: window.electron?.watchFileOn || (() => {}),
     unwatch: window.electron?.watchFileOff || (() => {}),
   }
-  static encoder = new TextEncoder()
 }
 
 export class KclManager extends File {
   // SYSTEM DEPENDENCIES
+
+  /** Application storage facade used by workflows owned by this manager. */
+  fileOperations?: FileOperationsRegistryService
 
   private _wasmInstance: ModuleType | null = null
   /** in the case of WASM crash, we should ensure the new refreshed WASM module is held here. */
@@ -1729,12 +1732,14 @@ export class KclManager extends File {
       newCode,
       shouldResetCamera,
       requestedUserDocumentVersion,
+      forceExecution = false,
     }: {
       newCode: string
       shouldResetCamera: boolean
       requestedUserDocumentVersion: number
+      forceExecution?: boolean
     }) => {
-      if (!this._automaticallyRenderEnabled) {
+      if (!forceExecution && !this._automaticallyRenderEnabled) {
         return
       }
 
@@ -1844,6 +1849,15 @@ export class KclManager extends File {
     },
     1000
   )
+
+  scheduleCurrentCodeExecution(shouldResetCamera: boolean) {
+    this.deferredExecution({
+      newCode: this.code,
+      shouldResetCamera,
+      requestedUserDocumentVersion: this._userDocumentVersion,
+      forceExecution: true,
+    })
+  }
 
   /**
    * Finish the latest direct editor execution before a workflow consumes the
@@ -2368,6 +2382,7 @@ export class KclManager extends File {
 
   clearAst() {
     this.ast = {
+      type: 'Program',
       body: [],
       shebang: null,
       start: 0,
@@ -2672,7 +2687,11 @@ export class KclManager extends File {
 
     // Update project thumbnail after successful execution
     if (!isInterrupted && errors.length === 0 && projectFsManager.dir) {
+      if (!this.fileOperations) {
+        return
+      }
       createThumbnailPNGOnDesktop({
+        fileOperations: this.fileOperations,
         projectDirectoryWithoutEndingSlash: projectFsManager.dir,
       })
     }
@@ -3887,24 +3906,21 @@ export class KclManager extends File {
     this.timeoutWriter = undefined
     this.timeoutRewatch = undefined
 
-    await this.performDelayedWriteToFile({
-      newCode: this.code,
-      requestedDocumentVersion: this._documentVersion,
-      requestedPath: this.path,
-      options,
-    })
+    const flushCurrentBuffer = () =>
+      this.performDelayedWriteToFile({
+        newCode: this.code,
+        requestedDocumentVersion: this._documentVersion,
+        requestedPath: this.path,
+        options,
+      })
+    await flushCurrentBuffer()
 
     // Seeding an empty main.kcl (or an edit that lands during the flush) can
     // schedule one more save. Persist that latest buffer before changing paths.
     if (this.timeoutWriter !== undefined) {
       clearTimeout(this.timeoutWriter)
       this.timeoutWriter = undefined
-      await this.performDelayedWriteToFile({
-        newCode: this.code,
-        requestedDocumentVersion: this._documentVersion,
-        requestedPath: this.path,
-        options,
-      })
+      await flushCurrentBuffer()
     }
 
     return !this.hasUnsavedLocalChanges()

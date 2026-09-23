@@ -117,17 +117,21 @@ description: Variables in memory after executing named_views_hide_loft.kcl
                       {
                         "n": 20.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -135,17 +139,21 @@ description: Variables in memory after executing named_views_hide_loft.kcl
                       {
                         "n": 30.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -237,17 +245,21 @@ description: Variables in memory after executing named_views_hide_loft.kcl
                       {
                         "n": 30.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -255,17 +267,21 @@ description: Variables in memory after executing named_views_hide_loft.kcl
                       {
                         "n": 30.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 10.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -357,17 +373,21 @@ description: Variables in memory after executing named_views_hide_loft.kcl
                       {
                         "n": 30.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 10.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -375,17 +395,21 @@ description: Variables in memory after executing named_views_hide_loft.kcl
                       {
                         "n": 20.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 10.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -477,17 +501,21 @@ description: Variables in memory after executing named_views_hide_loft.kcl
                       {
                         "n": 20.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 10.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -495,17 +523,21 @@ description: Variables in memory after executing named_views_hide_loft.kcl
                       {
                         "n": 20.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -1151,17 +1183,21 @@ description: Variables in memory after executing named_views_hide_loft.kcl
                       {
                         "n": 6.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -1169,17 +1205,21 @@ description: Variables in memory after executing named_views_hide_loft.kcl
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -1379,17 +1419,21 @@ description: Variables in memory after executing named_views_hide_loft.kcl
                       {
                         "n": 2.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -1397,17 +1441,21 @@ description: Variables in memory after executing named_views_hide_loft.kcl
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
