@@ -1,6 +1,7 @@
 //! The executor for the AST.
 
 use std::collections::BTreeMap;
+use std::future::Future;
 use std::sync::Arc;
 
 use anyhow::Result;
@@ -71,10 +72,12 @@ pub use state::KclVersion;
 pub use state::LegacyAngleRefactorMeta;
 pub use state::MetaSettings;
 pub(crate) use state::ModuleArtifactState;
+pub use state::NotYetAdded;
 pub(crate) use state::PendingEdgeRefactorMeta;
 pub(crate) use state::PendingLegacyAngleRefactorMeta;
 pub use state::RefactorMetadata;
 pub(crate) use state::TangencyMode;
+pub(crate) use state::declared_kcl_version;
 
 use crate::CompilationIssue;
 use crate::ExecError;
@@ -1454,6 +1457,7 @@ impl ExecutorContext {
         exec_state.global.module_infos = mem.module_infos;
         exec_state.global.path_to_source_id = mem.path_to_source_id;
         exec_state.global.id_to_source = mem.id_to_source;
+        exec_state.global.std_not_yet_added = mem.std_not_yet_added;
         exec_state.mod_local.constraint_state = mem.constraint_state;
         let len = _mock_config
             .sketch_block_id
@@ -1496,6 +1500,8 @@ impl ExecutorContext {
         let id_to_source = exec_state.global.id_to_source.clone();
         let constraint_state = exec_state.mod_local.constraint_state.clone();
         let scene_objects = exec_state.global.root_module_artifacts.scene_objects.clone();
+        let std_not_yet_added = exec_state.global.std_not_yet_added.clone();
+        let kcl_version = exec_state.entry_point_kcl_version();
         let outcome = exec_state
             .into_exec_outcome(main_ref, self)
             .await
@@ -1509,6 +1515,8 @@ impl ExecutorContext {
             id_to_source,
             constraint_state,
             scene_objects,
+            std_not_yet_added,
+            kcl_version,
         };
         cache::write_old_memory(state).await;
 
@@ -1531,10 +1539,20 @@ impl ExecutorContext {
 
         let use_prev_memory = mock_config.use_prev_memory;
         let mut exec_state = ExecState::new_mock(self, mock_config);
+        // Before the prelude runs below, so that `added_in` gating in std sees
+        // the program's version rather than the default.
+        exec_state
+            .set_entry_point_kcl_version(program)
+            .map_err(KclErrorWithOutputs::no_outputs)?;
         if use_prev_memory {
             match cache::read_old_memory().await {
-                Some(mem) => Self::restore_mock_memory(&mut exec_state, mem, mock_config)?,
-                None => self.prepare_mem(&mut exec_state).await?,
+                Some(mem) if mem.reusable_for(exec_state.entry_point_kcl_version()) => {
+                    Self::restore_mock_memory(&mut exec_state, mem, mock_config)?
+                }
+                // No memory, or memory from another effective kclVersion, whose
+                // bindings, module outcomes, and prelude this program must not
+                // see.
+                _ => self.prepare_mem(&mut exec_state).await?,
             }
         } else {
             self.prepare_mem(&mut exec_state).await?
@@ -1554,6 +1572,16 @@ impl ExecutorContext {
 
     pub async fn run_with_caching(&self, program: crate::Program) -> Result<ExecOutcome, KclErrorWithOutputs> {
         assert!(!self.is_mock());
+        let result = self
+            .with_engine_execution(Box::pin(self.run_with_caching_inner(program)))
+            .await;
+        if result.is_err() {
+            cache::bust_cache().await;
+        }
+        result
+    }
+
+    async fn run_with_caching_inner(&self, program: crate::Program) -> Result<ExecOutcome, KclErrorWithOutputs> {
         let grid_scale = if self.settings.fixed_size_grid {
             GridScaleBehavior::Fixed(program.meta_settings().ok().flatten().map(|s| s.default_length_units))
         } else {
@@ -1731,7 +1759,7 @@ impl ExecutorContext {
                             .map_err(KclErrorWithOutputs::no_outputs)?;
 
                         let result = self
-                            .run_concurrent(
+                            .run_concurrent_inner(
                                 &program,
                                 &mut new_exec_state,
                                 Some((new_universe, new_universe_map)),
@@ -1751,7 +1779,7 @@ impl ExecutorContext {
                             .map_err(KclErrorWithOutputs::no_outputs)?;
 
                         let result = self
-                            .run_concurrent(&program, &mut exec_state, None, PreserveMem::Normal)
+                            .run_concurrent_inner(&program, &mut exec_state, None, PreserveMem::Normal)
                             .await;
 
                         (exec_state, result)
@@ -1764,7 +1792,7 @@ impl ExecutorContext {
                             .map_err(KclErrorWithOutputs::no_outputs)?;
 
                         let result = self
-                            .run_concurrent(&program, &mut exec_state, None, PreserveMem::Always)
+                            .run_concurrent_inner(&program, &mut exec_state, None, PreserveMem::Always)
                             .await;
 
                         (exec_state, result)
@@ -1780,16 +1808,12 @@ impl ExecutorContext {
                     .map_err(KclErrorWithOutputs::no_outputs)?;
 
                 let result = self
-                    .run_concurrent(&program, &mut exec_state, None, PreserveMem::Normal)
+                    .run_concurrent_inner(&program, &mut exec_state, None, PreserveMem::Normal)
                     .await;
 
                 (program, exec_state, result)
             }
         };
-
-        if result.is_err() {
-            cache::bust_cache().await;
-        }
 
         // Throw the error.
         let result = result?;
@@ -1829,6 +1853,64 @@ impl ExecutorContext {
     ///
     /// To access non-fatal errors and warnings, extract them from the `ExecState`.
     pub async fn run_concurrent(
+        &self,
+        program: &crate::Program,
+        exec_state: &mut ExecState,
+        universe_info: Option<(Universe, UniverseMap)>,
+        preserve_mem: PreserveMem,
+    ) -> Result<(EnvironmentRef, Option<ModelingSessionData>), KclErrorWithOutputs> {
+        self.with_engine_execution(Box::pin(self.run_concurrent_inner(
+            program,
+            exec_state,
+            universe_info,
+            preserve_mem,
+        )))
+        .await
+    }
+
+    /// Enclose the entire execution, including scene setup and cached settings updates.
+    async fn with_engine_execution<T>(
+        &self,
+        execution: impl Future<Output = Result<T, KclErrorWithOutputs>>,
+    ) -> Result<T, KclErrorWithOutputs> {
+        self.send_execution_boundary(ModelingCmd::from(
+            mcmd::BeginExecution::builder().enable_render(true).build(),
+        ))
+        .await
+        .map_err(KclErrorWithOutputs::no_outputs)?;
+
+        let exec_res = execution.await;
+        let flush_res = self.engine.ensure_async_commands_completed(&self.engine_batch).await;
+        if flush_res.is_err() {
+            // Do not carry unexecuted commands from a failed flush into the next execution.
+            self.engine.clear_queues(&self.engine_batch).await;
+        }
+        // Always end execution, even when evaluation or the final flush failed.
+        let end_res = self
+            .send_execution_boundary(ModelingCmd::from(mcmd::EndExecution::default()))
+            .await;
+        match (exec_res, flush_res.and(end_res)) {
+            (Ok(res), Ok(())) => Ok(res),
+            (Err(e), _) => Err(e),
+            (Ok(_), Err(e)) => Err(KclErrorWithOutputs::no_outputs(e)),
+        }
+    }
+
+    async fn send_execution_boundary(&self, cmd: ModelingCmd) -> Result<(), KclError> {
+        // A separate, empty queue keeps these commands outside all modeling batches.
+        // Their IDs must not consume or collide with the model's stable artifact IDs.
+        self.engine
+            .send_modeling_cmd(
+                &EngineBatchContext::new(),
+                uuid::Uuid::new_v4(),
+                SourceRange::synthetic(),
+                &cmd,
+            )
+            .await
+            .map(|_| ())
+    }
+
+    async fn run_concurrent_inner(
         &self,
         program: &crate::Program,
         exec_state: &mut ExecState,
@@ -2170,6 +2252,8 @@ impl ExecutorContext {
                 id_to_source: exec_state.global.id_to_source.clone(),
                 constraint_state: exec_state.mod_local.constraint_state.clone(),
                 scene_objects: exec_state.global.root_module_artifacts.scene_objects.clone(),
+                std_not_yet_added: exec_state.global.std_not_yet_added.clone(),
+                kcl_version: exec_state.entry_point_kcl_version(),
             };
             cache::write_old_memory(state).await;
             Ok(())
@@ -2301,9 +2385,11 @@ impl ExecutorContext {
             let id = self
                 .open_module(&ImportPath::Std { path }, &[], &resolved_path, exec_state, source_range)
                 .await?;
-            let (module_memory, _) = self.exec_module_for_items(id, exec_state, source_range).await?;
+            let prelude = self.exec_module_for_items(id, exec_state, source_range).await?;
 
-            exec_state.mut_stack().memory.set_std(module_memory)?;
+            exec_state.mut_stack().memory.set_std(prelude.environment)?;
+            // Root environments reach the prelude without an import, so its records live here.
+            exec_state.global.std_not_yet_added = prelude.not_yet_added;
 
             // Operations generated by the prelude are not useful, so clear them
             // out.
@@ -2467,10 +2553,32 @@ pub(crate) async fn parse_execute_with_executor_kind(
     project_directory: Option<TypedPath>,
     executor_kind: machine::ExecutorKind,
 ) -> Result<ExecTestResults, KclError> {
+    parse_execute_inner(code, project_directory, executor_kind, false).await
+}
+
+/// Like [`parse_execute_with_project_dir`], but missing names are explained
+/// for user declarations too, not only std's. Only for tests of the `added_in`
+/// hint itself, which std gives no declaration to exercise yet.
+#[cfg(test)]
+pub(crate) async fn parse_execute_hinting_all(
+    code: &str,
+    project_directory: Option<TypedPath>,
+) -> Result<ExecTestResults, KclError> {
+    parse_execute_inner(code, project_directory, machine::ExecutorKind::resolve(), true).await
+}
+
+#[cfg(test)]
+async fn parse_execute_inner(
+    code: &str,
+    project_directory: Option<TypedPath>,
+    executor_kind: machine::ExecutorKind,
+    hint_all_not_yet_added: bool,
+) -> Result<ExecTestResults, KclError> {
     let program = crate::Program::parse_no_errs(code)?;
 
     let exec_ctxt = new_mock_executor_context(project_directory, executor_kind);
     let mut exec_state = ExecState::new(&exec_ctxt);
+    exec_state.global.hint_all_not_yet_added = hint_all_not_yet_added;
     let result = exec_ctxt.run(&program, &mut exec_state).await?;
 
     Ok(ExecTestResults {
@@ -5907,6 +6015,111 @@ face = disc()
             .unwrap();
     }
 
+    #[tokio::test(flavor = "multi_thread")]
+    async fn imported_use_keyword_follows_entry_point_version() {
+        let dep = "use = 10\nexport width = use\n";
+        for main_header in ["", "@settings(kclVersion = 1.0)\n", "@settings(kclVersion = 2.0)\n"] {
+            let main = format!("{main_header}import width from \"dep.kcl\"\nx = width\n");
+            run_versioned_modules(&main, &[("dep.kcl", dep)])
+                .await
+                .unwrap_or_else(|error| panic!("main={main_header:?}: {error:#?}"));
+        }
+
+        let main_v1 = "@settings(kclVersion = 1.0)\nimport width from \"dep.kcl\"\nx = width\n";
+        let dep_v2 = format!("@settings(kclVersion = 2.0)\n{dep}");
+        run_versioned_modules(main_v1, &[("dep.kcl", &dep_v2)]).await.unwrap();
+
+        for dep in [
+            dep.to_owned(),
+            format!("@settings(kclVersion = \"3.0-preview\")\n{dep}"),
+        ] {
+            let error = run_versioned_modules(V3_MAIN_IMPORTING_DEP, &[("dep.kcl", &dep)])
+                .await
+                .expect_err("V3 imports must reject a use identifier");
+            assert!(matches!(error, KclError::Syntax { .. }), "{error:#?}");
+            assert_eq!(error.message(), crate::parsing::RESERVED_USE_MESSAGE);
+            let ranges = error.source_ranges();
+            assert_eq!(ranges.len(), 2, "{ranges:#?}");
+            let start = dep.find("use =").unwrap();
+            assert_eq!((ranges[0].start(), ranges[0].end()), (start, start + 3));
+            assert!(!ranges[0].module_id().is_top_level());
+            assert!(ranges[1].module_id().is_top_level());
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn imported_use_function_name_is_allowed_under_v3() {
+        let dep = "fn use() { return 10 }\nexport width = use()\n";
+        run_versioned_modules(V3_MAIN_IMPORTING_DEP, &[("dep.kcl", dep)])
+            .await
+            .unwrap();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn import_version_mismatch_precedes_use_keyword_error() {
+        let dep_v2 = "@settings(kclVersion = 2.0)\nuse = 10\nexport width = use\n";
+        let error = run_versioned_modules(V3_MAIN_IMPORTING_DEP, &[("dep.kcl", dep_v2)])
+            .await
+            .expect_err("version mismatch must precede the use keyword error");
+        assert_kcl_version_mismatch(&error, "2.0");
+
+        let main_v2 = "@settings(kclVersion = 2.0)\nimport width from \"dep.kcl\"\nx = width\n";
+        let dep_v3 = "@settings(kclVersion = \"3.0-preview\")\nuse = 10\nexport width = use\n";
+        let error = run_versioned_modules(main_v2, &[("dep.kcl", dep_v3)])
+            .await
+            .expect_err("version mismatch must precede the use keyword error");
+        assert!(
+            error
+                .message()
+                .starts_with("Mixing KCL versions in a single program is not allowed.")
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unreferenced_whole_module_import_checks_use_keyword_in_mock_execution() {
+        let main = "@settings(kclVersion = \"3.0-preview\")\nimport \"dep.kcl\" as dep\nx = 1\n";
+        let dep = "use = 10\n";
+        let error = run_versioned_modules_mock(main, &[("dep.kcl", dep)])
+            .await
+            .expect_err("mock import must reject a use identifier");
+        assert_eq!(error.message(), crate::parsing::RESERVED_USE_MESSAGE);
+        let ranges = error.source_ranges();
+        assert_eq!(ranges.len(), 2, "{ranges:#?}");
+        assert!(!ranges[0].module_id().is_top_level());
+        assert!(ranges[1].module_id().is_top_level());
+
+        let dep_v2 = "@settings(kclVersion = 2.0)\nuse = 10\n";
+        let error = run_versioned_modules_mock(main, &[("dep.kcl", dep_v2)])
+            .await
+            .expect_err("version mismatch must precede the use keyword error in mock execution");
+        assert_kcl_version_mismatch(&error, "2.0");
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn transitive_import_checks_use_keyword_under_v3_entry_point() {
+        let main = "@settings(kclVersion = \"3.0-preview\")\nimport doubled from \"a.kcl\"\nx = doubled\n";
+        let a = "import width from \"b.kcl\"\nexport doubled = width * 2\n";
+        let b = "use = 10\nexport width = use\n";
+        let error = run_versioned_modules(main, &[("a.kcl", a), ("b.kcl", b)])
+            .await
+            .expect_err("transitive import must reject a use identifier");
+        assert!(matches!(error, KclError::Syntax { .. }), "{error:#?}");
+        assert_eq!(error.message(), crate::parsing::RESERVED_USE_MESSAGE);
+        let ranges = error.source_ranges();
+        assert_eq!(ranges.len(), 3, "{ranges:#?}");
+        assert!(!ranges[0].module_id().is_top_level());
+        assert!(!ranges[1].module_id().is_top_level());
+        assert!(ranges[2].module_id().is_top_level());
+        assert_eq!(
+            error
+                .backtrace()
+                .iter()
+                .map(|frame| frame.fn_name.as_deref())
+                .collect::<Vec<_>>(),
+            [Some("import b.kcl"), Some("import a.kcl"), None]
+        );
+    }
+
     /// Standard library modules declare kclVersion 1.0 but are exempt: they
     /// always run under the entry point's version, and the user cannot edit
     /// them. The prelude is imported implicitly; `std::turns` is imported
@@ -7510,6 +7723,20 @@ type Color { | Red | Green | Red }
         parse_execute_with_project_dir(main, Some(crate::TypedPath(tmpdir.path().into()))).await
     }
 
+    /// Like [`execute_with_modules`], with hints enabled for user declarations;
+    /// see [`parse_execute_hinting_all`].
+    async fn execute_with_modules_hinting_all(
+        main: &str,
+        modules: &[(&str, &str)],
+    ) -> Result<ExecTestResults, KclError> {
+        let tmpdir = tempfile::TempDir::with_prefix("zma_kcl_added_in").unwrap();
+        for (name, source) in modules {
+            tokio::fs::write(tmpdir.path().join(name), source).await.unwrap();
+        }
+
+        parse_execute_hinting_all(main, Some(crate::TypedPath(tmpdir.path().into()))).await
+    }
+
     /// Runs `main` with an empty imported module named `m.kcl` in mock
     /// execution and returns the recorded compilation issues; the run may
     /// end in an error (e.g. from operating on the module's missing return
@@ -8803,5 +9030,494 @@ type Color { | Green }
                 ),
             }
         }
+    }
+
+    // ---- `added_in` on whole declarations ----
+
+    /// Runs `body` under `kcl_version` and returns the fatal error message, or
+    /// `None` if it ran without issues. Experimental features are allowed
+    /// because user type aliases are experimental, and hints are enabled for
+    /// user declarations, since in production only std gets them.
+    async fn added_in_error(kcl_version: &str, body: &str) -> Option<String> {
+        let program = format!("@settings(kclVersion = {kcl_version}, experimentalFeatures = allow)\n{body}");
+        match parse_execute_hinting_all(&program, None).await {
+            Ok(result) => {
+                assert!(
+                    result.issues().is_empty(),
+                    "kclVersion {kcl_version}: unexpected issues: {:#?}",
+                    result.issues()
+                );
+                None
+            }
+            Err(err) => Some(err.message().to_owned()),
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn not_yet_added_function_is_undefined() {
+        let body = r#"@(added_in = "3.0")
+fn newFn() { return 1 }
+x = newFn()
+"#;
+        assert_eq!(
+            added_in_error("2.0", body).await.as_deref(),
+            Some("`newFn` is not defined; it was added in KCL 3.0, but this program uses KCL 2.0")
+        );
+        assert_eq!(added_in_error("\"3.0-preview\"", body).await, None);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn not_yet_added_function_cannot_be_referenced_as_a_value() {
+        // Any reference fails, not only a call: the name is simply not bound.
+        let body = r#"@(added_in = "3.0")
+fn newFn() { return 1 }
+f = newFn
+"#;
+        assert_eq!(
+            added_in_error("2.0", body).await.as_deref(),
+            Some("`newFn` is not defined; it was added in KCL 3.0, but this program uses KCL 2.0")
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn added_in_boundary_is_inclusive_and_prerelease_counts_as_release() {
+        for (kcl_version, added_in) in [
+            ("1.0", "1.0"),
+            ("2.0", "1.0"),
+            ("2.0", "2.0"),
+            ("\"3.0-preview\"", "3.0"),
+        ] {
+            let body = format!("@(added_in = \"{added_in}\")\nfn newFn() {{ return 1 }}\nx = newFn()\n");
+            assert_eq!(
+                added_in_error(kcl_version, &body).await,
+                None,
+                "kclVersion {kcl_version}, added_in {added_in}"
+            );
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn not_yet_added_error_reports_default_kcl_version() {
+        // No `@settings(kclVersion = ...)`: the message names the default version.
+        let program = r#"@(added_in = "2.0")
+fn newFn() { return 1 }
+x = newFn()
+"#;
+        assert_eq!(
+            parse_execute_hinting_all(program, None).await.unwrap_err().message(),
+            "`newFn` is not defined; it was added in KCL 2.0, but this program uses KCL 1.0"
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn not_yet_added_constant_is_undefined() {
+        let body = r#"@(added_in = "3.0")
+newConst = 5
+x = newConst
+"#;
+        assert_eq!(
+            added_in_error("2.0", body).await.as_deref(),
+            Some("`newConst` is not defined; it was added in KCL 3.0, but this program uses KCL 2.0")
+        );
+        assert_eq!(added_in_error("\"3.0-preview\"", body).await, None);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn not_yet_added_type_is_unknown() {
+        let body = r#"@(added_in = "3.0")
+type NewT = [number; 2]
+x = [1, 2]: NewT
+"#;
+        assert_eq!(
+            added_in_error("2.0", body).await.as_deref(),
+            Some("Unknown type: NewT; it was added in KCL 3.0, but this program uses KCL 2.0")
+        );
+        assert_eq!(added_in_error("\"3.0-preview\"", body).await, None);
+    }
+
+    /// A function naming a later-added type in its signature fails at its
+    /// declaration with the type's error, unless it is gated at or above the type.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn function_using_not_yet_added_type_fails_at_its_declaration() {
+        let ty = "@(added_in = \"3.0\")\ntype NewT = [number; 2]\n";
+        let type_error = Some("Unknown type: NewT; it was added in KCL 3.0, but this program uses KCL 2.0");
+
+        // Ungated function: the type is missing on 2.0.
+        let body = format!("{ty}fn usesNew(@p: NewT) {{ return p }}\n");
+        assert_eq!(added_in_error("2.0", &body).await.as_deref(), type_error);
+        // Gated below the type: same.
+        let body = format!("{ty}@(added_in = \"2.0\")\nfn usesNew(@p: NewT) {{ return p }}\n");
+        assert_eq!(added_in_error("2.0", &body).await.as_deref(), type_error);
+        // The return type is part of the signature too.
+        let body = format!("{ty}fn makesNew(): NewT {{ return [1, 2] }}\n");
+        assert_eq!(added_in_error("2.0", &body).await.as_deref(), type_error);
+
+        // Gated at the type's version: both are skipped.
+        let body = format!("{ty}@(added_in = \"3.0\")\nfn usesNew(@p: NewT) {{ return p }}\n");
+        assert_eq!(added_in_error("2.0", &body).await, None);
+        let body = format!("{body}x = usesNew([1, 2])\n");
+        assert_eq!(
+            added_in_error("2.0", &body).await.as_deref(),
+            Some("`usesNew` is not defined; it was added in KCL 3.0, but this program uses KCL 2.0")
+        );
+
+        // On a new enough program, nothing is gated.
+        let body = format!("{ty}fn usesNew(@p: NewT) {{ return p }}\nx = usesNew([1, 2])\n");
+        assert_eq!(added_in_error("\"3.0-preview\"", &body).await, None);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn not_yet_added_declaration_is_absent_from_imports() {
+        // The module runs on a cloned state, so these also cover the record's
+        // trip through the module's execution outcome.
+        let dep = "@(added_in = \"3.0\")\nexport fn newFn() { return 1 }\nexport fn oldFn() { return 2 }\n";
+
+        // An explicit import fails with the version help.
+        let main = "@settings(kclVersion = 2.0)\nimport newFn from \"dep.kcl\"\nx = newFn()\n";
+        assert_eq!(
+            execute_with_modules_hinting_all(main, &[("dep.kcl", dep)])
+                .await
+                .unwrap_err()
+                .message(),
+            "newFn is not defined in module; it was added in KCL 3.0, but this program uses KCL 2.0"
+        );
+
+        // So does a qualified path.
+        let main = "@settings(kclVersion = 2.0)\nimport \"dep.kcl\"\nx = dep::newFn()\n";
+        assert_eq!(
+            execute_with_modules_hinting_all(main, &[("dep.kcl", dep)])
+                .await
+                .unwrap_err()
+                .message(),
+            "`newFn` is not defined; it was added in KCL 3.0, but this program uses KCL 2.0"
+        );
+
+        // A glob import silently omits it while the rest of the module works.
+        let main = "@settings(kclVersion = 2.0)\nimport * from \"dep.kcl\"\nx = oldFn()\ny = newFn()\n";
+        assert_eq!(
+            execute_with_modules_hinting_all(main, &[("dep.kcl", dep)])
+                .await
+                .unwrap_err()
+                .message(),
+            "`newFn` is not defined; it was added in KCL 3.0, but this program uses KCL 2.0"
+        );
+
+        // On a new enough program the import works.
+        let main = "@settings(kclVersion = \"3.0-preview\")\nimport newFn from \"dep.kcl\"\nx = newFn()\n";
+        let result = execute_with_modules_hinting_all(main, &[("dep.kcl", dep)])
+            .await
+            .unwrap();
+        assert_eq!(variable_f64(&result, "x"), 1.0);
+    }
+
+    /// In production only std declarations get the version help; user
+    /// declarations keep the plain message.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn not_yet_added_user_declarations_get_no_hint() {
+        let program = "@settings(kclVersion = 2.0)\n@(added_in = \"3.0\")\nfn newFn() { return 1 }\nx = newFn()\n";
+        assert_eq!(
+            parse_execute(program).await.unwrap_err().message(),
+            "`newFn` is not defined"
+        );
+
+        let dep = "@(added_in = \"3.0\")\nexport fn newFn() { return 1 }\n";
+        let main = "@settings(kclVersion = 2.0)\nimport newFn from \"dep.kcl\"\n";
+        assert_eq!(
+            execute_with_modules(main, &[("dep.kcl", dep)])
+                .await
+                .unwrap_err()
+                .message(),
+            "newFn is not defined in module"
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn not_yet_added_records_whether_the_declaration_is_std() {
+        let ctx = new_mock_executor_context(None, machine::ExecutorKind::resolve());
+        let mut exec_state = ExecState::new(&ctx);
+        let version = |s: &str| annotations::VersionConstraint::parse(s).unwrap();
+
+        exec_state.record_not_yet_added("userFn".to_owned(), version("3.0"), false);
+        exec_state.mod_local.path = ModulePath::Std {
+            value: "solid".to_owned(),
+        };
+        exec_state.record_not_yet_added("stdFn".to_owned(), version("3.0"), true);
+
+        let records = &exec_state.mod_local.not_yet_added;
+        assert!(!records["userFn"].item.is_std);
+        assert!(!records["userFn"].exported);
+        assert!(records["stdFn"].item.is_std);
+        assert!(records["stdFn"].exported);
+        ctx.close().await;
+    }
+
+    /// `export import *` re-exports records along with names.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn not_yet_added_records_follow_glob_re_exports() {
+        let dep = "@(added_in = \"3.0\")\nexport fn newFn() { return 1 }\n";
+        let mid = "export import * from \"dep.kcl\"\n";
+        let modules = [("dep.kcl", dep), ("mid.kcl", mid)];
+
+        let main = "@settings(kclVersion = 2.0)\nimport * from \"mid.kcl\"\nx = newFn()\n";
+        assert_eq!(
+            execute_with_modules_hinting_all(main, &modules)
+                .await
+                .unwrap_err()
+                .message(),
+            "`newFn` is not defined; it was added in KCL 3.0, but this program uses KCL 2.0"
+        );
+
+        let main = "@settings(kclVersion = 2.0)\nimport newFn from \"mid.kcl\"\nx = newFn()\n";
+        assert_eq!(
+            execute_with_modules_hinting_all(main, &modules)
+                .await
+                .unwrap_err()
+                .message(),
+            "newFn is not defined in module; it was added in KCL 3.0, but this program uses KCL 2.0"
+        );
+    }
+
+    /// A record is as private as its name: no `export`, no hint for importers.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn private_not_yet_added_records_stay_private() {
+        let dep = "@(added_in = \"3.0\")\nfn privateFn() { return 1 }\nexport fn oldFn() { return 2 }\n";
+
+        let main = "@settings(kclVersion = 2.0)\nimport * from \"dep.kcl\"\nx = privateFn()\n";
+        assert_eq!(
+            execute_with_modules_hinting_all(main, &[("dep.kcl", dep)])
+                .await
+                .unwrap_err()
+                .message(),
+            "`privateFn` is not defined"
+        );
+
+        let main = "@settings(kclVersion = 2.0)\nimport privateFn from \"dep.kcl\"\n";
+        assert_eq!(
+            execute_with_modules_hinting_all(main, &[("dep.kcl", dep)])
+                .await
+                .unwrap_err()
+                .message(),
+            "privateFn is not defined in module"
+        );
+
+        // `mid` imports the record without `export`, so it does not pass it on.
+        let dep = "@(added_in = \"3.0\")\nexport fn newFn() { return 1 }\n";
+        let mid = "import * from \"dep.kcl\"\nexport fn other() { return 2 }\n";
+        let main = "@settings(kclVersion = 2.0)\nimport * from \"mid.kcl\"\nx = newFn()\n";
+        assert_eq!(
+            execute_with_modules_hinting_all(main, &[("dep.kcl", dep), ("mid.kcl", mid)])
+                .await
+                .unwrap_err()
+                .message(),
+            "`newFn` is not defined"
+        );
+    }
+
+    /// The mock memory cache carries std's records, since a run reusing cached
+    /// memory skips the prelude that writes them.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn std_not_yet_added_records_survive_the_mock_memory_cache() {
+        let ctx = new_mock_executor_context(None, machine::ExecutorKind::resolve());
+        let mut exec_state = ExecState::new(&ctx);
+        let version = |s: &str| annotations::VersionConstraint::parse(s).unwrap();
+        let program = crate::Program::parse_no_errs("x = 1").unwrap();
+        let (main_ref, _) = ctx.run(&program, &mut exec_state).await.unwrap();
+        exec_state.global.std_not_yet_added.insert(
+            "cube".to_owned(),
+            NotYetAdded {
+                added_in: version("3.0"),
+                is_std: true,
+            },
+        );
+
+        let cached = cache::GlobalState::new(exec_state, ctx.settings.clone(), program.ast.clone(), main_ref);
+        let mem = cached.mock_memory_state().unwrap();
+        assert_eq!(mem.std_not_yet_added["cube"].added_in, version("3.0"));
+
+        let mock_config = MockConfig::default();
+        let mut restored = ExecState::new_mock(&ctx, &mock_config);
+        ExecutorContext::restore_mock_memory(&mut restored, mem, &mock_config).unwrap();
+        assert!(
+            !restored.stack().memory.requires_std(),
+            "cached memory already has the prelude"
+        );
+        assert_eq!(
+            restored.not_yet_added_in_scope("cube").map(|r| &r.added_in),
+            Some(&version("3.0"))
+        );
+        // A std record explains a failed lookup without any test override.
+        let err = KclError::new_undefined_value(
+            KclErrorDetails::new("`cube` is not defined".to_owned(), Vec::new()),
+            None,
+        );
+        assert_eq!(
+            restored.with_not_yet_added_hint(&["cube"], err).message(),
+            "`cube` is not defined; it was added in KCL 3.0, but this program uses KCL 1.0"
+        );
+        ctx.close().await;
+    }
+
+    // ---- mock memory reuse across settings changes ----
+
+    /// Runs `code` in mock execution reusing the previous memory, as the LSP
+    /// worker does for every execution.
+    async fn run_mock_reusing_memory(ctx: &ExecutorContext, code: &str) -> Result<ExecOutcome, KclErrorWithOutputs> {
+        let program = crate::Program::parse_no_errs(code).unwrap();
+        ctx.run_mock(
+            &program,
+            &MockConfig {
+                use_prev_memory: true,
+                ..Default::default()
+            },
+        )
+        .await
+    }
+
+    #[track_caller]
+    fn outcome_f64(outcome: &ExecOutcome, name: &str) -> f64 {
+        let Some(KclValueView::Number { value, .. }) = outcome.variables.get(name) else {
+            panic!(
+                "expected `{name}` to be a number, got {:?}",
+                outcome.variables.get(name)
+            );
+        };
+        *value
+    }
+
+    /// Memory written under one kclVersion still binds declarations the other
+    /// version skips, so a mock run reusing it must rebuild instead. Nothing
+    /// else invalidates the LSP worker's memory.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn mock_memory_is_rebuilt_on_a_kcl_version_downgrade() {
+        clear_mem_cache().await;
+        let ctx = ExecutorContext::new_mock(None).await;
+        let body = "@(added_in = \"3.0\")\nfn newFn() {\n  return 42\n}\n\nanswer = newFn()\n";
+
+        let outcome = run_mock_reusing_memory(&ctx, &format!("@settings(kclVersion = \"3.0-preview\")\n{body}"))
+            .await
+            .unwrap();
+        assert_eq!(outcome_f64(&outcome, "answer"), 42.0);
+
+        // Only the version changes; `newFn` is still bound in the cached memory.
+        let err = run_mock_reusing_memory(&ctx, &format!("@settings(kclVersion = 2.0)\n{body}"))
+            .await
+            .unwrap_err();
+        assert_eq!(err.error.message(), "`newFn` is not defined");
+
+        clear_mem_cache().await;
+        ctx.close().await;
+    }
+
+    /// A mock execution context whose project directory holds `modules`.
+    async fn mock_context_with_modules(modules: &[(&str, &str)]) -> (ExecutorContext, tempfile::TempDir) {
+        let tmpdir = tempfile::TempDir::with_prefix("zma_kcl_mock_memory").unwrap();
+        for (name, source) in modules {
+            tokio::fs::write(tmpdir.path().join(name), source).await.unwrap();
+        }
+        let ctx = ExecutorContext::new_mock(Some(ExecutorSettings {
+            project_directory: Some(crate::TypedPath(tmpdir.path().into())),
+            ..Default::default()
+        }))
+        .await;
+        (ctx, tmpdir)
+    }
+
+    const GATED_DEP: &str =
+        "@(added_in = \"3.0\")\nexport fn newFn() {\n  return 42\n}\nexport fn oldFn() {\n  return 1\n}\n";
+
+    /// A module's cached outcome keeps the exports of the version it ran
+    /// under, so an upgrade must rebuild to see newly available functions.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn mock_memory_is_rebuilt_on_a_kcl_version_upgrade_with_imports() {
+        clear_mem_cache().await;
+        let (ctx, _tmpdir) = mock_context_with_modules(&[("dep.kcl", GATED_DEP)]).await;
+
+        let outcome = run_mock_reusing_memory(
+            &ctx,
+            "@settings(kclVersion = 2.0)\nimport * from \"dep.kcl\"\nx = oldFn()\n",
+        )
+        .await
+        .unwrap();
+        assert_eq!(outcome_f64(&outcome, "x"), 1.0);
+
+        let outcome = run_mock_reusing_memory(
+            &ctx,
+            "@settings(kclVersion = \"3.0-preview\")\nimport * from \"dep.kcl\"\nanswer = newFn()\n",
+        )
+        .await
+        .unwrap();
+        assert_eq!(outcome_f64(&outcome, "answer"), 42.0);
+
+        clear_mem_cache().await;
+        ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn mock_memory_is_rebuilt_on_a_kcl_version_downgrade_with_imports() {
+        clear_mem_cache().await;
+        let (ctx, _tmpdir) = mock_context_with_modules(&[("dep.kcl", GATED_DEP)]).await;
+
+        let outcome = run_mock_reusing_memory(
+            &ctx,
+            "@settings(kclVersion = \"3.0-preview\")\nimport newFn from \"dep.kcl\"\nanswer = newFn()\n",
+        )
+        .await
+        .unwrap();
+        assert_eq!(outcome_f64(&outcome, "answer"), 42.0);
+
+        let err = run_mock_reusing_memory(
+            &ctx,
+            "@settings(kclVersion = 2.0)\nimport newFn from \"dep.kcl\"\nanswer = newFn()\n",
+        )
+        .await
+        .unwrap_err();
+        assert_eq!(err.error.message(), "newFn is not defined in module");
+
+        clear_mem_cache().await;
+        ctx.close().await;
+    }
+
+    /// Only the version decides reuse. Adding the first spline makes the
+    /// frontend add `experimentalFeatures = allow` and then execute just that
+    /// sketch, which needs the cached memory and cannot rebuild it.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn mock_memory_is_reused_when_only_other_settings_change() {
+        clear_mem_cache().await;
+        let ctx = ExecutorContext::new_mock(None).await;
+
+        run_mock_reusing_memory(&ctx, "@settings(kclVersion = 2.0)\nx = 2\n")
+            .await
+            .unwrap();
+        let outcome = run_mock_reusing_memory(
+            &ctx,
+            "@settings(kclVersion = 2.0, experimentalFeatures = allow)\ny = x\n",
+        )
+        .await
+        .unwrap();
+        assert_eq!(outcome_f64(&outcome, "y"), 2.0);
+
+        clear_mem_cache().await;
+        ctx.close().await;
+    }
+
+    /// An undeclared version is the default version, so declaring the default
+    /// explicitly is not a change, while declaring another version is.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn mock_memory_treats_an_undeclared_kcl_version_as_the_default() {
+        clear_mem_cache().await;
+        let ctx = ExecutorContext::new_mock(None).await;
+
+        run_mock_reusing_memory(&ctx, "x = 2\n").await.unwrap();
+        let outcome = run_mock_reusing_memory(&ctx, "@settings(kclVersion = 1.0)\ny = x\n")
+            .await
+            .unwrap();
+        assert_eq!(outcome_f64(&outcome, "y"), 2.0);
+        let err = run_mock_reusing_memory(&ctx, "@settings(kclVersion = 2.0)\nz = x\n")
+            .await
+            .unwrap_err();
+        assert_eq!(err.error.message(), "`x` is not defined");
+
+        clear_mem_cache().await;
+        ctx.close().await;
     }
 }
