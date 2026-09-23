@@ -1,9 +1,9 @@
 import { randomUUID } from 'node:crypto'
-import { EditorFixture } from '@e2e/playwright/fixtures/editorFixture'
 import {
   expect,
   test,
-} from '@e2e/playwright/fixtures/fileLoaderDiagnosticFixture'
+} from '@e2e/playwright/fixtures/cloudSyncDiagnosticFixture'
+import { EditorFixture } from '@e2e/playwright/fixtures/editorFixture'
 import {
   type CloudProject,
   cloudProjectResponse,
@@ -108,6 +108,9 @@ test(
       await createProject({ name: projectName, page })
       await expectProjectFileRoute(page)
 
+      await expect
+        .poll(() => createCount, { timeout: CLOUD_SYNC_E2E_TIMEOUT })
+        .toBeGreaterThan(0)
       const response = await firstUpload.promise
       expect(response.ok()).toBe(true)
       const created: CreatedRemoteProject = await response.json()

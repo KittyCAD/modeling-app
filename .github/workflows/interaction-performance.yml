@@ -15,6 +15,7 @@ on:
           - file-loader
           - targeted
           - comparison
+          - cloud-stages
       palette-frame-observer:
         description: Collect extra palette animation-frame observations
         type: boolean
@@ -190,8 +191,8 @@ jobs:
           retention-days: 7
 
   file-loader:
-    if: ${{ inputs.diagnostic == 'file-loader' || inputs.diagnostic == 'targeted' }}
-    name: Windows cloud file-loader waits
+    if: ${{ inputs.diagnostic == 'file-loader' || inputs.diagnostic == 'targeted' || inputs.diagnostic == 'cloud-stages' }}
+    name: Windows cloud startup stages
     runs-on: namespace-profile-windows-8-cores
     timeout-minutes: 15
     steps:
@@ -218,6 +219,7 @@ jobs:
       - name: Install the existing Chrome test browser
         run: npm exec -- playwright install chrome
       - name: Capture the existing first-upload flow without retries
+        if: ${{ inputs.diagnostic != 'cloud-stages' }}
         timeout-minutes: 5
         run: npm exec -- playwright test --config=playwright.cloud-loader-diagnostic.config.ts --headed
         env:
@@ -225,8 +227,25 @@ jobs:
           NODE_ENV: development
           VITE_ZOO_BASE_DOMAIN: dev.zoo.dev
           VITE_ZOO_API_TOKEN: ${{ secrets.ZOO_API_TOKEN }}
+      - name: Capture sync stages with the normal parallel web selection
+        if: ${{ inputs.diagnostic == 'cloud-stages' }}
+        timeout-minutes: 5
+        run: npm exec -- playwright test --config=playwright.cloud-sync-stages-diagnostic.config.ts --headed
+        env:
+          TARGET: web
+          NODE_ENV: development
+          VITE_ZOO_BASE_DOMAIN: dev.zoo.dev
+          VITE_ZOO_API_TOKEN: ${{ secrets.ZOO_API_TOKEN }}
+      - name: Preserve sync stage evidence
+        if: ${{ !cancelled() && inputs.diagnostic == 'cloud-stages' }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: cloud-sync-stages-${{ github.sha }}-${{ github.run_attempt }}
+          path: test-results/cloud-sync-stages-diagnostic/results/**/cloud-sync-spans.json
+          if-no-files-found: error
+          retention-days: 7
       - name: Preserve file-loader evidence
-        if: ${{ !cancelled() }}
+        if: ${{ !cancelled() && inputs.diagnostic != 'cloud-stages' }}
         uses: actions/upload-artifact@v7
         with:
           name: cloud-file-loader-${{ github.sha }}-${{ github.run_attempt }}
