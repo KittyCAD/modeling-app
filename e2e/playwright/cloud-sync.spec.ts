@@ -105,6 +105,9 @@ test(
       await createProject({ name: projectName, page })
       await expectProjectFileRoute(page)
 
+      await expect
+        .poll(() => createCount, { timeout: CLOUD_SYNC_E2E_TIMEOUT })
+        .toBeGreaterThan(0)
       const response = await firstUpload.promise
       expect(response.ok()).toBe(true)
       const created: CreatedRemoteProject = await response.json()
