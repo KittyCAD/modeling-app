@@ -1420,8 +1420,8 @@ impl ExecState {
     ///   which the legacy lookup would honor for that file only. Mixing 1.0
     ///   and 2.0 remains allowed, as it always has been.
     ///
-    /// A file that declares no kclVersion is always fine: it runs under the
-    /// version the lookup gives it, as it always has. Only user files (local
+    /// A file that declares no kclVersion does not cause a version mismatch:
+    /// it runs under the version the lookup gives it. Only user files (local
     /// imports) are checked. Standard library modules are exempt: they ship
     /// with the interpreter, always run under the entry point's pinned
     /// version, and the user cannot edit them to resolve a mismatch. Foreign
@@ -1485,6 +1485,33 @@ impl ExecState {
             ),
             source_ranges,
         )))
+    }
+
+    /// Check an imported file before executing it. Version mismatches take
+    /// priority over V3's `use` keyword restriction.
+    pub(crate) fn validate_imported_module(
+        &self,
+        path: &ModulePath,
+        program: &Node<Program>,
+        import_range: Option<SourceRange>,
+    ) -> Result<(), KclError> {
+        self.check_imported_module_kcl_version(path, program, import_range)?;
+        if !path.is_local() || !self.entry_point_version_is_v3_or_higher() {
+            return Ok(());
+        }
+
+        let source = self.global.id_to_source.get(&program.module_id).ok_or_else(|| {
+            KclError::new_internal(KclErrorDetails::new(
+                format!("Missing source for imported KCL module `{path}`"),
+                import_range.into_iter().collect(),
+            ))
+        })?;
+        crate::parsing::validate_use_keyword_source(&source.source, program.module_id).map_err(|error| {
+            match import_range {
+                Some(range) => error.add_import_location(&path.import_name(), range),
+                None => error,
+            }
+        })
     }
 }
 

@@ -75,6 +75,7 @@ pub(crate) use state::PendingEdgeRefactorMeta;
 pub(crate) use state::PendingLegacyAngleRefactorMeta;
 pub use state::RefactorMetadata;
 pub(crate) use state::TangencyMode;
+pub(crate) use state::declared_kcl_version;
 
 use crate::CompilationIssue;
 use crate::ExecError;
@@ -5899,6 +5900,111 @@ face = disc()
         run_versioned_modules_mock(main, &[("dep.kcl", "export width = 10\n")])
             .await
             .unwrap();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn imported_use_keyword_follows_entry_point_version() {
+        let dep = "use = 10\nexport width = use\n";
+        for main_header in ["", "@settings(kclVersion = 1.0)\n", "@settings(kclVersion = 2.0)\n"] {
+            let main = format!("{main_header}import width from \"dep.kcl\"\nx = width\n");
+            run_versioned_modules(&main, &[("dep.kcl", dep)])
+                .await
+                .unwrap_or_else(|error| panic!("main={main_header:?}: {error:#?}"));
+        }
+
+        let main_v1 = "@settings(kclVersion = 1.0)\nimport width from \"dep.kcl\"\nx = width\n";
+        let dep_v2 = format!("@settings(kclVersion = 2.0)\n{dep}");
+        run_versioned_modules(main_v1, &[("dep.kcl", &dep_v2)]).await.unwrap();
+
+        for dep in [
+            dep.to_owned(),
+            format!("@settings(kclVersion = \"3.0-preview\")\n{dep}"),
+        ] {
+            let error = run_versioned_modules(V3_MAIN_IMPORTING_DEP, &[("dep.kcl", &dep)])
+                .await
+                .expect_err("V3 imports must reject a use identifier");
+            assert!(matches!(error, KclError::Syntax { .. }), "{error:#?}");
+            assert_eq!(error.message(), crate::parsing::RESERVED_USE_MESSAGE);
+            let ranges = error.source_ranges();
+            assert_eq!(ranges.len(), 2, "{ranges:#?}");
+            let start = dep.find("use =").unwrap();
+            assert_eq!((ranges[0].start(), ranges[0].end()), (start, start + 3));
+            assert!(!ranges[0].module_id().is_top_level());
+            assert!(ranges[1].module_id().is_top_level());
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn imported_use_function_name_is_allowed_under_v3() {
+        let dep = "fn use() { return 10 }\nexport width = use()\n";
+        run_versioned_modules(V3_MAIN_IMPORTING_DEP, &[("dep.kcl", dep)])
+            .await
+            .unwrap();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn import_version_mismatch_precedes_use_keyword_error() {
+        let dep_v2 = "@settings(kclVersion = 2.0)\nuse = 10\nexport width = use\n";
+        let error = run_versioned_modules(V3_MAIN_IMPORTING_DEP, &[("dep.kcl", dep_v2)])
+            .await
+            .expect_err("version mismatch must precede the use keyword error");
+        assert_kcl_version_mismatch(&error, "2.0");
+
+        let main_v2 = "@settings(kclVersion = 2.0)\nimport width from \"dep.kcl\"\nx = width\n";
+        let dep_v3 = "@settings(kclVersion = \"3.0-preview\")\nuse = 10\nexport width = use\n";
+        let error = run_versioned_modules(main_v2, &[("dep.kcl", dep_v3)])
+            .await
+            .expect_err("version mismatch must precede the use keyword error");
+        assert!(
+            error
+                .message()
+                .starts_with("Mixing KCL versions in a single program is not allowed.")
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unreferenced_whole_module_import_checks_use_keyword_in_mock_execution() {
+        let main = "@settings(kclVersion = \"3.0-preview\")\nimport \"dep.kcl\" as dep\nx = 1\n";
+        let dep = "use = 10\n";
+        let error = run_versioned_modules_mock(main, &[("dep.kcl", dep)])
+            .await
+            .expect_err("mock import must reject a use identifier");
+        assert_eq!(error.message(), crate::parsing::RESERVED_USE_MESSAGE);
+        let ranges = error.source_ranges();
+        assert_eq!(ranges.len(), 2, "{ranges:#?}");
+        assert!(!ranges[0].module_id().is_top_level());
+        assert!(ranges[1].module_id().is_top_level());
+
+        let dep_v2 = "@settings(kclVersion = 2.0)\nuse = 10\n";
+        let error = run_versioned_modules_mock(main, &[("dep.kcl", dep_v2)])
+            .await
+            .expect_err("version mismatch must precede the use keyword error in mock execution");
+        assert_kcl_version_mismatch(&error, "2.0");
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn transitive_import_checks_use_keyword_under_v3_entry_point() {
+        let main = "@settings(kclVersion = \"3.0-preview\")\nimport doubled from \"a.kcl\"\nx = doubled\n";
+        let a = "import width from \"b.kcl\"\nexport doubled = width * 2\n";
+        let b = "use = 10\nexport width = use\n";
+        let error = run_versioned_modules(main, &[("a.kcl", a), ("b.kcl", b)])
+            .await
+            .expect_err("transitive import must reject a use identifier");
+        assert!(matches!(error, KclError::Syntax { .. }), "{error:#?}");
+        assert_eq!(error.message(), crate::parsing::RESERVED_USE_MESSAGE);
+        let ranges = error.source_ranges();
+        assert_eq!(ranges.len(), 3, "{ranges:#?}");
+        assert!(!ranges[0].module_id().is_top_level());
+        assert!(!ranges[1].module_id().is_top_level());
+        assert!(ranges[2].module_id().is_top_level());
+        assert_eq!(
+            error
+                .backtrace()
+                .iter()
+                .map(|frame| frame.fn_name.as_deref())
+                .collect::<Vec<_>>(),
+            [Some("import b.kcl"), Some("import a.kcl"), None]
+        );
     }
 
     /// Standard library modules declare kclVersion 1.0 but are exempt: they
