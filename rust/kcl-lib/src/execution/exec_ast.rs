@@ -1,4 +1,5 @@
 use std::collections::HashMap;
+use std::collections::HashSet;
 use std::sync::Arc;
 
 use async_recursion::async_recursion;
@@ -1065,10 +1066,10 @@ impl ExecutorContext {
     ) -> Result<ModuleExecutionOutcome, (KclError, Option<EnvironmentRef>, Option<ModuleArtifactState>)> {
         crate::log::log(format!("enter module {path} {}", exec_state.stack()));
 
-        // KCL 3.0: reject an imported file whose declared kclVersion is not
-        // allowed with the entry point's before any of it executes.
+        // Check the imported file's declared version and effective keyword
+        // restrictions before executing its body.
         exec_state
-            .check_imported_module_kcl_version(path, program, None)
+            .validate_imported_module(path, program, None)
             .map_err(|err| (err, None, None))?;
 
         // When executing only the new statements in incremental execution or
@@ -1332,17 +1333,15 @@ impl ExecutorContext {
             .open_module(&import_stmt.path, attrs, &module_path, exec_state, source_range)
             .await?;
 
-        // KCL 3.0: check the imported file's declared kclVersion at the import
-        // site as well. Mock execution runs a whole-module import's body only
-        // when the module is referenced, so for an unreferenced one this is
-        // the only place the check can run. In engine execution, every
-        // imported module's body (and so this check) ran before the root body
-        // got here.
+        // Validate the imported file at the import site as well. Mock execution
+        // runs a whole-module import's body only when referenced, so this is
+        // the only check for an unreferenced module. Engine execution already
+        // validated every imported module before executing the root body.
         if let ImportPath::Kcl { .. } = &import_stmt.path
             && let Some(ModuleRepr::Kcl(program, _)) =
                 exec_state.global.module_infos.get(&module_id).map(|info| &info.repr)
         {
-            exec_state.check_imported_module_kcl_version(&module_path, program, Some(source_range))?;
+            exec_state.validate_imported_module(&module_path, program, Some(source_range))?;
         }
 
         if let ModulePath::Local { value, .. } = &module_path {
@@ -1810,7 +1809,7 @@ impl ExecutorContext {
                 let source = resolved_path.source(&self.fs, source_range).await?;
                 exec_state.add_id_to_source(id, source.clone());
                 // TODO handle parsing errors properly
-                let parsed = crate::parsing::parse_str(&source.source, id).parse_errs_as_err()?;
+                let parsed = crate::parsing::parse_str_deferred_use_keyword(&source.source, id).parse_errs_as_err()?;
                 exec_state.add_module(id, resolved_path.clone(), ModuleRepr::Kcl(parsed, None));
 
                 Ok(id)
@@ -4657,6 +4656,9 @@ impl Node<BinaryExpression> {
     ) -> Result<KclValue, KclError> {
         let mut meta = left_value.metadata();
         meta.extend(right_value.metadata());
+        // Repeated arithmetic must not multiply copies of the same source range.
+        let mut seen = HashSet::new();
+        meta.retain(|metadata| seen.insert(metadata.source_range));
 
         // First check if we are doing string concatenation.
         if self.operator == BinaryOperator::Add

@@ -1,6 +1,7 @@
 //! The executor for the AST.
 
 use std::collections::BTreeMap;
+use std::future::Future;
 use std::sync::Arc;
 
 use anyhow::Result;
@@ -75,6 +76,7 @@ pub(crate) use state::PendingEdgeRefactorMeta;
 pub(crate) use state::PendingLegacyAngleRefactorMeta;
 pub use state::RefactorMetadata;
 pub(crate) use state::TangencyMode;
+pub(crate) use state::declared_kcl_version;
 
 use crate::CompilationIssue;
 use crate::ExecError;
@@ -1138,9 +1140,10 @@ impl ExecutorContext {
         Self::new_with_engine_and_fs(engine, crate::fs::new_file_system_handle(FileManager::new()), settings)
     }
 
-    /// Create a new default executor context.
+    /// Open an engine session for the entrypoint's resolved `Program::language_version()`.
+    /// The version is fixed for the lifetime of this connection.
     #[cfg(not(target_arch = "wasm32"))]
-    pub async fn new(client: &kittycad::Client, settings: ExecutorSettings) -> Result<Self> {
+    pub async fn new(client: &kittycad::Client, settings: ExecutorSettings, kcl_version: KclVersion) -> Result<Self> {
         let pr = std::env::var("ZOO_ENGINE_PR").ok().and_then(|s| s.parse().ok());
         let (ws, headers) = client
             .modeling()
@@ -1161,12 +1164,16 @@ impl ExecutorContext {
                     settings.pool.clone()
                 },
                 geometry_only: Some(settings.geometry_only),
-                kcl_version: None,
                 pr,
                 unlocked_framerate: None,
                 webrtc: Some(false),
                 video_res_width: settings.video_res_width,
                 video_res_height: settings.video_res_height,
+                kcl_version: Some(match kcl_version {
+                    KclVersion::V1 => kittycad::types::KclVersion::One0,
+                    KclVersion::V2 => kittycad::types::KclVersion::Two0,
+                    KclVersion::V3Preview => kittycad::types::KclVersion::Three0Preview,
+                }),
             })
             .await?;
 
@@ -1259,28 +1266,46 @@ impl ExecutorContext {
         settings: ExecutorSettings,
         token: Option<String>,
         engine_addr: Option<String>,
+        kcl_version: KclVersion,
     ) -> Result<Self> {
         // Create the client.
         let client = crate::engine::new_zoo_client(token, engine_addr)?;
 
-        let ctx = Self::new(&client, settings).await?;
+        let ctx = Self::new(&client, settings, kcl_version).await?;
         Ok(ctx)
     }
 
     /// Create a new default executor context.
-    /// With the default kittycad client.
+    /// With a kittycad client.
     /// This allows for passing in `ZOO_API_TOKEN` and `ZOO_HOST` as environment
     /// variables.
+    /// But also allows for passing in a token and engine address directly.
+    #[cfg(not(target_arch = "wasm32"))]
+    pub async fn new_with_version(kcl_version: KclVersion) -> Result<Self> {
+        Self::new_with_client(Default::default(), None, None, kcl_version).await
+    }
+
+    /// Create a new default executor context.
+    /// With the default kittycad client and the default (unannotated) KCL version.
+    /// For a versioned entrypoint, use `new_with_client` or `new_with_version`
+    /// with `Program::language_version()`.
+    /// This allows for passing in `ZOO_API_TOKEN` and `ZOO_HOST` as environment
+    /// variables.
+    #[cfg_attr(not(test), deprecated(note = "use fn new_with_version() instead"))]
     #[cfg(not(target_arch = "wasm32"))]
     pub async fn new_with_default_client() -> Result<Self> {
-        // Create the client.
-        let ctx = Self::new_with_client(Default::default(), None, None).await?;
-        Ok(ctx)
+        Self::new_with_client(Default::default(), None, None, KclVersion::default()).await
     }
 
     /// Create a geometry-only executor context with the default client.
     #[cfg(not(target_arch = "wasm32"))]
     pub async fn new_geometry_only_with_default_client() -> Result<Self> {
+        Self::new_geometry_only_with_version(KclVersion::default()).await
+    }
+
+    /// Create a geometry-only executor context for the entrypoint's KCL version.
+    #[cfg(not(target_arch = "wasm32"))]
+    pub async fn new_geometry_only_with_version(kcl_version: KclVersion) -> Result<Self> {
         Self::new_with_client(
             ExecutorSettings {
                 geometry_only: true,
@@ -1288,13 +1313,14 @@ impl ExecutorContext {
             },
             None,
             None,
+            kcl_version,
         )
         .await
     }
 
     /// For executing unit tests.
     #[cfg(not(target_arch = "wasm32"))]
-    pub async fn new_for_unit_test(engine_addr: Option<String>) -> Result<Self> {
+    pub async fn new_for_unit_test(engine_addr: Option<String>, kcl_version: KclVersion) -> Result<Self> {
         let ctx = ExecutorContext::new_with_client(
             ExecutorSettings {
                 highlight_edges: true,
@@ -1314,6 +1340,7 @@ impl ExecutorContext {
             },
             None,
             engine_addr,
+            kcl_version,
         )
         .await?;
         Ok(ctx)
@@ -1347,9 +1374,8 @@ impl ExecutorContext {
                 self.settings.geometry_only,
             )
             .await?;
-        // The engine errors out if you toggle OIT with SSAO off.
-        // So ignore OIT settings if SSAO is off.
-        if self.settings.enable_ssao {
+        // OIT requires a graphical context with SSAO enabled.
+        if !self.settings.geometry_only && self.settings.enable_ssao {
             let cmd_id = exec_state.next_uuid();
             exec_state
                 .batch_modeling_cmd(
@@ -1493,6 +1519,16 @@ impl ExecutorContext {
 
     pub async fn run_with_caching(&self, program: crate::Program) -> Result<ExecOutcome, KclErrorWithOutputs> {
         assert!(!self.is_mock());
+        let result = self
+            .with_engine_execution(Box::pin(self.run_with_caching_inner(program)))
+            .await;
+        if result.is_err() {
+            cache::bust_cache().await;
+        }
+        result
+    }
+
+    async fn run_with_caching_inner(&self, program: crate::Program) -> Result<ExecOutcome, KclErrorWithOutputs> {
         let grid_scale = if self.settings.fixed_size_grid {
             GridScaleBehavior::Fixed(program.meta_settings().ok().flatten().map(|s| s.default_length_units))
         } else {
@@ -1670,7 +1706,7 @@ impl ExecutorContext {
                             .map_err(KclErrorWithOutputs::no_outputs)?;
 
                         let result = self
-                            .run_concurrent(
+                            .run_concurrent_inner(
                                 &program,
                                 &mut new_exec_state,
                                 Some((new_universe, new_universe_map)),
@@ -1690,7 +1726,7 @@ impl ExecutorContext {
                             .map_err(KclErrorWithOutputs::no_outputs)?;
 
                         let result = self
-                            .run_concurrent(&program, &mut exec_state, None, PreserveMem::Normal)
+                            .run_concurrent_inner(&program, &mut exec_state, None, PreserveMem::Normal)
                             .await;
 
                         (exec_state, result)
@@ -1703,7 +1739,7 @@ impl ExecutorContext {
                             .map_err(KclErrorWithOutputs::no_outputs)?;
 
                         let result = self
-                            .run_concurrent(&program, &mut exec_state, None, PreserveMem::Always)
+                            .run_concurrent_inner(&program, &mut exec_state, None, PreserveMem::Always)
                             .await;
 
                         (exec_state, result)
@@ -1719,16 +1755,12 @@ impl ExecutorContext {
                     .map_err(KclErrorWithOutputs::no_outputs)?;
 
                 let result = self
-                    .run_concurrent(&program, &mut exec_state, None, PreserveMem::Normal)
+                    .run_concurrent_inner(&program, &mut exec_state, None, PreserveMem::Normal)
                     .await;
 
                 (program, exec_state, result)
             }
         };
-
-        if result.is_err() {
-            cache::bust_cache().await;
-        }
 
         // Throw the error.
         let result = result?;
@@ -1774,10 +1806,70 @@ impl ExecutorContext {
         universe_info: Option<(Universe, UniverseMap)>,
         preserve_mem: PreserveMem,
     ) -> Result<(EnvironmentRef, Option<ModelingSessionData>), KclErrorWithOutputs> {
+        self.with_engine_execution(Box::pin(self.run_concurrent_inner(
+            program,
+            exec_state,
+            universe_info,
+            preserve_mem,
+        )))
+        .await
+    }
+
+    /// Enclose the entire execution, including scene setup and cached settings updates.
+    async fn with_engine_execution<T>(
+        &self,
+        execution: impl Future<Output = Result<T, KclErrorWithOutputs>>,
+    ) -> Result<T, KclErrorWithOutputs> {
+        self.send_execution_boundary(ModelingCmd::from(
+            mcmd::BeginExecution::builder().enable_render(true).build(),
+        ))
+        .await
+        .map_err(KclErrorWithOutputs::no_outputs)?;
+
+        let exec_res = execution.await;
+        let flush_res = self.engine.ensure_async_commands_completed(&self.engine_batch).await;
+        if flush_res.is_err() {
+            // Do not carry unexecuted commands from a failed flush into the next execution.
+            self.engine.clear_queues(&self.engine_batch).await;
+        }
+        // Always end execution, even when evaluation or the final flush failed.
+        let end_res = self
+            .send_execution_boundary(ModelingCmd::from(mcmd::EndExecution::default()))
+            .await;
+        match (exec_res, flush_res.and(end_res)) {
+            (Ok(res), Ok(())) => Ok(res),
+            (Err(e), _) => Err(e),
+            (Ok(_), Err(e)) => Err(KclErrorWithOutputs::no_outputs(e)),
+        }
+    }
+
+    async fn send_execution_boundary(&self, cmd: ModelingCmd) -> Result<(), KclError> {
+        // A separate, empty queue keeps these commands outside all modeling batches.
+        // Their IDs must not consume or collide with the model's stable artifact IDs.
+        self.engine
+            .send_modeling_cmd(
+                &EngineBatchContext::new(),
+                uuid::Uuid::new_v4(),
+                SourceRange::synthetic(),
+                &cmd,
+            )
+            .await
+            .map(|_| ())
+    }
+
+    async fn run_concurrent_inner(
+        &self,
+        program: &crate::Program,
+        exec_state: &mut ExecState,
+        universe_info: Option<(Universe, UniverseMap)>,
+        preserve_mem: PreserveMem,
+    ) -> Result<(EnvironmentRef, Option<ModelingSessionData>), KclErrorWithOutputs> {
         // Record the entry point's kclVersion before anything executes;
         // imported modules pre-execute on clones of this state below and must
         // inherit it.
-        exec_state.set_entry_point_kcl_version(program);
+        exec_state
+            .set_entry_point_kcl_version(program)
+            .map_err(KclErrorWithOutputs::no_outputs)?;
 
         // Reuse our cached universe if we have one.
 
@@ -2056,7 +2148,9 @@ impl ExecutorContext {
         // Record the entry point's kclVersion. Mock execution reaches here
         // without going through run_concurrent; on the engine path this
         // re-assigns the same value, which is harmless.
-        exec_state.set_entry_point_kcl_version(program);
+        exec_state
+            .set_entry_point_kcl_version(program)
+            .map_err(KclErrorWithOutputs::no_outputs)?;
 
         // Re-apply the settings, in case the cache was busted.
         let grid_scale = if self.settings.fixed_size_grid {
@@ -2500,6 +2594,61 @@ mod tests {
         ($file:literal) => {
             include_str!(concat!("../../e2e/executor/inputs/", $file, ".kcl"))
         };
+    }
+
+    #[cfg(not(target_arch = "wasm32"))]
+    #[tokio::test]
+    async fn native_websocket_sends_entrypoint_kcl_version() {
+        use tokio::io::AsyncReadExt;
+        use tokio::io::AsyncWriteExt;
+
+        for (source, expected) in [
+            ("", "1.0"),
+            ("@settings(defaultLengthUnit = mm)", "1.0"),
+            ("@settings(kclVersion = 2.0)", "2.0"),
+            ("@settings(kclVersion = \"3.0-preview\")", "3.0-preview"),
+        ] {
+            let program = crate::Program::parse_no_errs(source).unwrap();
+            let listener = tokio::net::TcpListener::bind("127.0.0.1:0").await.unwrap();
+            let address = listener.local_addr().unwrap();
+            let request = tokio::spawn(async move {
+                let (mut socket, _) = listener.accept().await.unwrap();
+                let mut request = Vec::new();
+                let mut buffer = [0; 1024];
+                while !request.windows(4).any(|bytes| bytes == b"\r\n\r\n") {
+                    let count = socket.read(&mut buffer).await.unwrap();
+                    assert_ne!(count, 0, "connection closed before sending HTTP headers");
+                    request.extend_from_slice(&buffer[..count]);
+                }
+                // Inspect the handshake without starting an engine session.
+                socket
+                    .write_all(b"HTTP/1.1 400 Bad Request\r\nContent-Length: 0\r\nConnection: close\r\n\r\n")
+                    .await
+                    .unwrap();
+                String::from_utf8(request).unwrap()
+            });
+            let mut client = kittycad::Client::new("test-token");
+            client.set_base_url(format!("http://{address}"));
+            let result = tokio::time::timeout(
+                std::time::Duration::from_secs(5),
+                ExecutorContext::new(&client, Default::default(), program.language_version().unwrap()),
+            )
+            .await
+            .unwrap();
+            assert!(result.is_err(), "the test server deliberately rejects the upgrade");
+            let request = tokio::time::timeout(std::time::Duration::from_secs(5), request)
+                .await
+                .unwrap()
+                .unwrap();
+            let target = request.lines().next().unwrap().split_whitespace().nth(1).unwrap();
+            let url = url::Url::parse(&format!("http://localhost{target}")).unwrap();
+            let versions: Vec<_> = url
+                .query_pairs()
+                .filter(|(key, _)| key == "kcl_version")
+                .map(|(_, value)| value.into_owned())
+                .collect();
+            assert_eq!(versions, vec![expected]);
+        }
     }
 
     #[test]
@@ -4514,8 +4663,10 @@ w = f() + f()
 )
 "#;
 
-        let ctx = crate::test_server::new_context(true, None, true).await.unwrap();
         let old_program = crate::Program::parse_no_errs(code).unwrap();
+        let ctx = crate::test_server::new_context(true, None, true, old_program.language_version().unwrap())
+            .await
+            .unwrap();
 
         // Execute the program.
         if let Err(err) = ctx.run_with_caching(old_program).await {
@@ -4567,8 +4718,10 @@ w = f() + f()
 )
 "#;
 
-        let mut ctx = crate::test_server::new_context(true, None, true).await.unwrap();
         let old_program = crate::Program::parse_no_errs(code).unwrap();
+        let mut ctx = crate::test_server::new_context(true, None, true, old_program.language_version().unwrap())
+            .await
+            .unwrap();
 
         // Execute the program.
         ctx.run_with_caching(old_program.clone()).await.unwrap();
@@ -5781,6 +5934,111 @@ face = disc()
         run_versioned_modules_mock(main, &[("dep.kcl", "export width = 10\n")])
             .await
             .unwrap();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn imported_use_keyword_follows_entry_point_version() {
+        let dep = "use = 10\nexport width = use\n";
+        for main_header in ["", "@settings(kclVersion = 1.0)\n", "@settings(kclVersion = 2.0)\n"] {
+            let main = format!("{main_header}import width from \"dep.kcl\"\nx = width\n");
+            run_versioned_modules(&main, &[("dep.kcl", dep)])
+                .await
+                .unwrap_or_else(|error| panic!("main={main_header:?}: {error:#?}"));
+        }
+
+        let main_v1 = "@settings(kclVersion = 1.0)\nimport width from \"dep.kcl\"\nx = width\n";
+        let dep_v2 = format!("@settings(kclVersion = 2.0)\n{dep}");
+        run_versioned_modules(main_v1, &[("dep.kcl", &dep_v2)]).await.unwrap();
+
+        for dep in [
+            dep.to_owned(),
+            format!("@settings(kclVersion = \"3.0-preview\")\n{dep}"),
+        ] {
+            let error = run_versioned_modules(V3_MAIN_IMPORTING_DEP, &[("dep.kcl", &dep)])
+                .await
+                .expect_err("V3 imports must reject a use identifier");
+            assert!(matches!(error, KclError::Syntax { .. }), "{error:#?}");
+            assert_eq!(error.message(), crate::parsing::RESERVED_USE_MESSAGE);
+            let ranges = error.source_ranges();
+            assert_eq!(ranges.len(), 2, "{ranges:#?}");
+            let start = dep.find("use =").unwrap();
+            assert_eq!((ranges[0].start(), ranges[0].end()), (start, start + 3));
+            assert!(!ranges[0].module_id().is_top_level());
+            assert!(ranges[1].module_id().is_top_level());
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn imported_use_function_name_is_allowed_under_v3() {
+        let dep = "fn use() { return 10 }\nexport width = use()\n";
+        run_versioned_modules(V3_MAIN_IMPORTING_DEP, &[("dep.kcl", dep)])
+            .await
+            .unwrap();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn import_version_mismatch_precedes_use_keyword_error() {
+        let dep_v2 = "@settings(kclVersion = 2.0)\nuse = 10\nexport width = use\n";
+        let error = run_versioned_modules(V3_MAIN_IMPORTING_DEP, &[("dep.kcl", dep_v2)])
+            .await
+            .expect_err("version mismatch must precede the use keyword error");
+        assert_kcl_version_mismatch(&error, "2.0");
+
+        let main_v2 = "@settings(kclVersion = 2.0)\nimport width from \"dep.kcl\"\nx = width\n";
+        let dep_v3 = "@settings(kclVersion = \"3.0-preview\")\nuse = 10\nexport width = use\n";
+        let error = run_versioned_modules(main_v2, &[("dep.kcl", dep_v3)])
+            .await
+            .expect_err("version mismatch must precede the use keyword error");
+        assert!(
+            error
+                .message()
+                .starts_with("Mixing KCL versions in a single program is not allowed.")
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unreferenced_whole_module_import_checks_use_keyword_in_mock_execution() {
+        let main = "@settings(kclVersion = \"3.0-preview\")\nimport \"dep.kcl\" as dep\nx = 1\n";
+        let dep = "use = 10\n";
+        let error = run_versioned_modules_mock(main, &[("dep.kcl", dep)])
+            .await
+            .expect_err("mock import must reject a use identifier");
+        assert_eq!(error.message(), crate::parsing::RESERVED_USE_MESSAGE);
+        let ranges = error.source_ranges();
+        assert_eq!(ranges.len(), 2, "{ranges:#?}");
+        assert!(!ranges[0].module_id().is_top_level());
+        assert!(ranges[1].module_id().is_top_level());
+
+        let dep_v2 = "@settings(kclVersion = 2.0)\nuse = 10\n";
+        let error = run_versioned_modules_mock(main, &[("dep.kcl", dep_v2)])
+            .await
+            .expect_err("version mismatch must precede the use keyword error in mock execution");
+        assert_kcl_version_mismatch(&error, "2.0");
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn transitive_import_checks_use_keyword_under_v3_entry_point() {
+        let main = "@settings(kclVersion = \"3.0-preview\")\nimport doubled from \"a.kcl\"\nx = doubled\n";
+        let a = "import width from \"b.kcl\"\nexport doubled = width * 2\n";
+        let b = "use = 10\nexport width = use\n";
+        let error = run_versioned_modules(main, &[("a.kcl", a), ("b.kcl", b)])
+            .await
+            .expect_err("transitive import must reject a use identifier");
+        assert!(matches!(error, KclError::Syntax { .. }), "{error:#?}");
+        assert_eq!(error.message(), crate::parsing::RESERVED_USE_MESSAGE);
+        let ranges = error.source_ranges();
+        assert_eq!(ranges.len(), 3, "{ranges:#?}");
+        assert!(!ranges[0].module_id().is_top_level());
+        assert!(!ranges[1].module_id().is_top_level());
+        assert!(ranges[2].module_id().is_top_level());
+        assert_eq!(
+            error
+                .backtrace()
+                .iter()
+                .map(|frame| frame.fn_name.as_deref())
+                .collect::<Vec<_>>(),
+            [Some("import b.kcl"), Some("import a.kcl"), None]
+        );
     }
 
     /// Standard library modules declare kclVersion 1.0 but are exempt: they
@@ -7032,7 +7290,9 @@ fillet(solid001, radius = 0.1, tags = yoyo)
 
     async fn run_constraint_report(kcl: &str) -> SketchConstraintReport {
         let program = crate::Program::parse_no_errs(kcl).unwrap();
-        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
+        let ctx = ExecutorContext::new_geometry_only_with_version(program.language_version().unwrap())
+            .await
+            .unwrap();
         let mut exec_state = ExecState::new(&ctx);
         let (env_ref, _) = ctx.run(&program, &mut exec_state).await.unwrap();
         let outcome = exec_state

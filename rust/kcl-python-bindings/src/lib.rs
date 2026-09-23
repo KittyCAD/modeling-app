@@ -336,6 +336,7 @@ async fn new_context_state(
     geometry_only: bool,
     video_res_width: Option<u32>,
     video_res_height: Option<u32>,
+    kcl_version: kcl_lib::KclVersion,
 ) -> Result<(ExecutorContext, kcl_lib::ExecState)> {
     let mut settings = executor_settings(current_file, highlight_edges, geometry_only);
     settings.video_res_width = video_res_width;
@@ -343,7 +344,7 @@ async fn new_context_state(
     let ctx = if mock {
         ExecutorContext::new_mock(Some(settings)).await
     } else {
-        ExecutorContext::new_with_client(settings, None, None).await?
+        ExecutorContext::new_with_client(settings, None, None, kcl_version).await?
     };
     let state = kcl_lib::ExecState::new(&ctx);
     Ok((ctx, state))
@@ -431,9 +432,19 @@ async fn run_kcl(
         filename,
     } = load_and_parse(input).await?;
 
-    let (ctx, mut state) = new_context_state(path, mock, highlight_edges, geometry_only, None, None)
-        .await
-        .map_err(to_py_exception)?;
+    let (ctx, mut state) = new_context_state(
+        path,
+        mock,
+        highlight_edges,
+        geometry_only,
+        None,
+        None,
+        program
+            .language_version()
+            .map_err(|err| into_miette_for_parse(&filename, &code, err))?,
+    )
+    .await
+    .map_err(to_py_exception)?;
     let (env_ref, _) = match ctx.run(&program, &mut state).await {
         Ok(result) => result,
         Err(err) => {
@@ -493,7 +504,15 @@ async fn sketch_constraint_report_impl(input: KclInput) -> PyResult<SketchConstr
         }
     };
 
-    let (ctx, mut state) = new_context_state(path, false, None, false, None, None)
+    let kcl_version = match program.language_version() {
+        Ok(version) => version,
+        Err(err) => {
+            let error_text = render_miette_for_parse(&filename, &code, err);
+            return Ok(incomplete_sketch_constraint_report("parse", error_text));
+        }
+    };
+
+    let (ctx, mut state) = new_context_state(path, false, None, false, None, None, kcl_version)
         .await
         .map_err(to_py_exception)?;
     let result = match ctx.run(&program, &mut state).await {
@@ -762,9 +781,17 @@ async fn import_and_snapshot_views(
 ) -> PyResult<Vec<Vec<u8>>> {
     let zoom = zoom.unwrap_or(true);
     spawn_py(async move {
-        let (ctx, _state) = new_context_state(None, false, highlight_edges, false, None, None)
-            .await
-            .map_err(to_py_exception)?;
+        let (ctx, _state) = new_context_state(
+            None,
+            false,
+            highlight_edges,
+            false,
+            None,
+            None,
+            kcl_lib::KclVersion::default(),
+        )
+        .await
+        .map_err(to_py_exception)?;
         if let Err(e) = import(&ctx, filepaths, format).await {
             ctx.close().await;
             return Err(e);
@@ -1082,148 +1109,46 @@ async fn measure_model_properties(
     ctx: &ExecutorContext,
     request: PhysicalPropertiesRequest,
 ) -> PyResult<PhysicalPropertiesResponse> {
+    let Some(command) = request.modeling_cmd() else {
+        return Ok(PhysicalPropertiesResponse::default());
+    };
+    let response = ctx
+        .engine
+        .send_modeling_cmd(
+            &ctx.engine_batch,
+            uuid::Uuid::new_v4(),
+            kcl_lib::SourceRange::default(),
+            &command,
+        )
+        .await
+        .map_err(into_kcl_exception)?;
+    let OkWebSocketResponseData::Modeling { modeling_response } = response else {
+        return Err(PyException::new_err(format!(
+            "Unexpected response from engine: {response:?}"
+        )));
+    };
     let mut out = PhysicalPropertiesResponse::default();
-    let PhysicalPropertiesRequest {
-        volume,
-        mass,
-        center_of_mass,
-        surface_area,
-        density,
-        bounding_box,
-    } = request;
-    // volume
-    if let Some(volume_req) = volume {
-        let volume_resp = ctx
-            .engine
-            .send_modeling_cmd(
-                &ctx.engine_batch,
-                uuid::Uuid::new_v4(),
-                kcl_lib::SourceRange::default(),
-                &ModelingCmd::from(volume_req),
-            )
-            .await
-            .map_err(into_kcl_exception)?;
-        let OkWebSocketResponseData::Modeling {
-            modeling_response: OkModelingCmdResponse::Volume(volume_resp),
-        } = volume_resp
-        else {
-            return Err(pyo3::exceptions::PyException::new_err(format!(
-                "Unexpected response from engine: {volume_resp:?}",
+    match modeling_response {
+        OkModelingCmdResponse::PhysicalProperties(properties) => {
+            out.volume = request.volume.map(|_| properties.volume);
+            out.mass = request.mass.map(|_| properties.mass);
+            out.center_of_mass = request.center_of_mass.map(|_| properties.center_of_mass);
+            out.surface_area = request.surface_area.map(|_| properties.surface_area);
+            out.density = request.density.map(|_| properties.density);
+            out.bounding_box = request.bounding_box.map(|_| properties.bounding_box);
+        }
+        OkModelingCmdResponse::Volume(value) => out.volume = Some(value),
+        OkModelingCmdResponse::Mass(value) => out.mass = Some(value),
+        OkModelingCmdResponse::CenterOfMass(value) => out.center_of_mass = Some(value),
+        OkModelingCmdResponse::SurfaceArea(value) => out.surface_area = Some(value),
+        OkModelingCmdResponse::Density(value) => out.density = Some(value),
+        OkModelingCmdResponse::BoundingBox(value) => out.bounding_box = Some(value),
+        other => {
+            return Err(PyException::new_err(format!(
+                "Unexpected response from engine: {other:?}"
             )));
-        };
-        out.volume = Some(volume_resp);
+        }
     }
-    // mass
-    if let Some(mass_req) = mass {
-        let mass_resp = ctx
-            .engine
-            .send_modeling_cmd(
-                &ctx.engine_batch,
-                uuid::Uuid::new_v4(),
-                kcl_lib::SourceRange::default(),
-                &ModelingCmd::from(mass_req),
-            )
-            .await
-            .map_err(into_kcl_exception)?;
-        let OkWebSocketResponseData::Modeling {
-            modeling_response: OkModelingCmdResponse::Mass(mass_resp),
-        } = mass_resp
-        else {
-            return Err(pyo3::exceptions::PyException::new_err(format!(
-                "Unexpected response from engine: {mass_resp:?}",
-            )));
-        };
-        out.mass = Some(mass_resp);
-    }
-    // center_of_mass
-    if let Some(center_of_mass_req) = center_of_mass {
-        let center_of_mass_resp = ctx
-            .engine
-            .send_modeling_cmd(
-                &ctx.engine_batch,
-                uuid::Uuid::new_v4(),
-                kcl_lib::SourceRange::default(),
-                &ModelingCmd::from(center_of_mass_req),
-            )
-            .await
-            .map_err(into_kcl_exception)?;
-        let OkWebSocketResponseData::Modeling {
-            modeling_response: OkModelingCmdResponse::CenterOfMass(center_of_mass_resp),
-        } = center_of_mass_resp
-        else {
-            return Err(pyo3::exceptions::PyException::new_err(format!(
-                "Unexpected response from engine: {center_of_mass_resp:?}",
-            )));
-        };
-        out.center_of_mass = Some(center_of_mass_resp);
-    }
-    // density
-    if let Some(density_req) = density {
-        let density_resp = ctx
-            .engine
-            .send_modeling_cmd(
-                &ctx.engine_batch,
-                uuid::Uuid::new_v4(),
-                kcl_lib::SourceRange::default(),
-                &ModelingCmd::from(density_req),
-            )
-            .await
-            .map_err(into_kcl_exception)?;
-        let OkWebSocketResponseData::Modeling {
-            modeling_response: OkModelingCmdResponse::Density(density_resp),
-        } = density_resp
-        else {
-            return Err(pyo3::exceptions::PyException::new_err(format!(
-                "Unexpected response from engine: {density_resp:?}",
-            )));
-        };
-        out.density = Some(density_resp);
-    }
-    // surface_area
-    if let Some(surface_area_req) = surface_area {
-        let surface_area_resp = ctx
-            .engine
-            .send_modeling_cmd(
-                &ctx.engine_batch,
-                uuid::Uuid::new_v4(),
-                kcl_lib::SourceRange::default(),
-                &ModelingCmd::from(surface_area_req),
-            )
-            .await
-            .map_err(into_kcl_exception)?;
-        let OkWebSocketResponseData::Modeling {
-            modeling_response: OkModelingCmdResponse::SurfaceArea(surface_area_resp),
-        } = surface_area_resp
-        else {
-            return Err(pyo3::exceptions::PyException::new_err(format!(
-                "Unexpected response from engine: {surface_area_resp:?}",
-            )));
-        };
-        out.surface_area = Some(surface_area_resp);
-    }
-    // Bounding box
-    if let Some(bb_req) = bounding_box {
-        let bb_resp = ctx
-            .engine
-            .send_modeling_cmd(
-                &ctx.engine_batch,
-                uuid::Uuid::new_v4(),
-                kcl_lib::SourceRange::default(),
-                &ModelingCmd::from(bb_req),
-            )
-            .await
-            .map_err(into_kcl_exception)?;
-        let OkWebSocketResponseData::Modeling {
-            modeling_response: OkModelingCmdResponse::BoundingBox(bb_resp),
-        } = bb_resp
-        else {
-            return Err(pyo3::exceptions::PyException::new_err(format!(
-                "Unexpected response from engine: {bb_resp:?}",
-            )));
-        };
-        out.bounding_box = Some(bb_resp);
-    }
-
     Ok(out)
 }
 

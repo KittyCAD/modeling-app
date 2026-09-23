@@ -915,7 +915,9 @@ pub struct Sketch {
     /// The paths in the sketch.
     /// Only paths on the "outside" i.e. the perimeter.
     /// Does not include paths "inside" the profile (for example, edges made by subtracting a profile)
-    pub paths: Vec<Path>,
+    // Share accumulated paths when cloning a sketch; appending copies only the affected chunks.
+    #[ts(as = "Vec<Path>")]
+    pub paths: imbl::Vector<Path>,
     /// Inner paths, resulting from subtract2d to carve profiles out of the sketch.
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub inner_paths: Vec<Path>,

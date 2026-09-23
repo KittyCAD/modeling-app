@@ -797,6 +797,83 @@ async def test_kcl_execute_and_measure():
 
 @requires_engine
 @pytest.mark.asyncio
+@pytest.mark.parametrize("entry_point", ["code", "file", "session"])
+async def test_kcl_measure_all_physical_properties(tmp_path, entry_point):
+    request = kcl.PhysicalPropertiesRequest()
+    request.set_volume(kcl.UnitVolume.CubicCentimeters)
+    request.set_mass(kcl.UnitMass.Grams, 1000.0, kcl.UnitDensity.KilogramsPerCubicMeter)
+    request.set_density(
+        kcl.UnitDensity.KilogramsPerCubicMeter, 62.5, kcl.UnitMass.Grams
+    )
+    request.set_center_of_mass(kcl.UnitLength.Centimeters)
+    request.set_surface_area(kcl.UnitArea.SquareCentimeters)
+    request.set_bounding_box(kcl.UnitLength.Inches)
+
+    if entry_point == "code":
+        response = await kcl.execute_code_and_measure(
+            box_code, request, geometry_only=True
+        )
+    elif entry_point == "file":
+        source = tmp_path / "main.kcl"
+        source.write_text(box_code)
+        response = await kcl.execute_and_measure(
+            str(source), request, geometry_only=True
+        )
+    else:
+        async with await kcl.new_kcl_session_code(
+            box_code, highlight_edges=False
+        ) as session:
+            response = await session.measure(request)
+
+    assert response.get_volume() == pytest.approx(31.25)
+    assert response.get_volume_unit() == kcl.UnitVolume.CubicCentimeters
+    assert response.get_mass() == pytest.approx(31.25)
+    assert response.get_mass_unit() == kcl.UnitMass.Grams
+    assert response.get_density() == pytest.approx(2000.0)
+    assert response.get_density_unit() == kcl.UnitDensity.KilogramsPerCubicMeter
+    assert response.get_surface_area() == pytest.approx(62.5)
+    assert response.get_surface_area_unit() == kcl.UnitArea.SquareCentimeters
+    center = response.get_center_of_mass()
+    assert (center.x, center.y, center.z) == pytest.approx((1.25, 1.25, 2.5))
+    assert response.get_center_of_mass_unit() == kcl.UnitLength.Centimeters
+    bounds = response.get_bounding_box()
+    center = bounds.get_center()
+    dimensions = bounds.get_dimensions()
+    assert (center.x, center.y, center.z) == pytest.approx(
+        (12.5 / 25.4, 12.5 / 25.4, 25 / 25.4)
+    )
+    assert (dimensions.x, dimensions.y, dimensions.z) == pytest.approx(
+        (25 / 25.4, 25 / 25.4, 50 / 25.4)
+    )
+
+
+@requires_engine
+@pytest.mark.asyncio
+async def test_kcl_measure_subset_keeps_unrequested_properties_unavailable():
+    request = kcl.PhysicalPropertiesRequest()
+    request.set_volume(kcl.UnitVolume.CubicCentimeters)
+    request.set_center_of_mass(kcl.UnitLength.Centimeters)
+    async with await kcl.new_kcl_session_code(
+        box_code, highlight_edges=False
+    ) as session:
+        response = await session.measure(request)
+        assert response.get_volume() == pytest.approx(31.25)
+        assert response.get_center_of_mass().z == pytest.approx(2.5)
+        for getter in [
+            response.get_mass,
+            response.get_density,
+            response.get_surface_area,
+            response.get_bounding_box,
+        ]:
+            with pytest.raises(Exception, match="was not requested"):
+                getter()
+        empty = await session.measure(kcl.PhysicalPropertiesRequest())
+        with pytest.raises(Exception, match="Volume was not requested"):
+            empty.get_volume()
+
+
+@requires_engine
+@pytest.mark.asyncio
 async def test_kcl_execute_code_and_measure_bounding_box_cm():
     request = kcl.PhysicalPropertiesRequest()
     request.set_bounding_box(kcl.UnitLength.Centimeters)
@@ -975,24 +1052,43 @@ def test_kcl_lint_fix_no_style():
         assert after_fixing.new_code == code
 
 
-@requires_engine
 @pytest.mark.asyncio
 async def test_kcl_execute_code_and_export_with_bad_units():
     bad_units_file = os.path.join(tests_dir, "bad_units_in_annotation", "input.kcl")
-    # Read from a file.
     with open(bad_units_file, "r") as f:
-        code = str(f.read())
-        assert code is not None
-        assert len(code) > 0
-        try:
-            await execute_with_retries(
-                kcl.execute_code_and_export, code, kcl.FileExportFormat.Step
-            )
-        except Exception as e:
-            assert e is not None
-            assert len(str(e)) > 0
-            print(e)
-            assert "[1:1]" in str(e)
+        code = f.read()
+
+    with pytest.raises(kcl.KclError) as raised:
+        await kcl.execute_code_and_export(code, kcl.FileExportFormat.Step)
+
+    error = str(raised.value)
+    assert "KCL Semantic error" in error
+    assert "Unexpected value for length units: `nm`" in error
+    assert "[1:1]" in error
+    assert "@settings(defaultLengthUnit = nm)" in error
+
+
+@pytest.mark.asyncio
+async def test_bad_units_in_annotation_reports_source_before_execution():
+    bad_units_file = os.path.join(tests_dir, "bad_units_in_annotation", "input.kcl")
+    with open(bad_units_file, "r") as f:
+        code = f.read()
+
+    for execute in (
+        lambda: kcl.mock_execute(bad_units_file),
+        lambda: kcl.new_kcl_session_code(code, mock=True),
+    ):
+        with pytest.raises(kcl.KclError) as raised:
+            await execute()
+        assert "Unexpected value for length units: `nm`" in str(raised.value)
+        assert "[1:1]" in str(raised.value)
+
+    report = await kcl.get_sketch_constraint_status_code(code)
+    assert report.is_complete is False
+    assert report.kcl_error is not None
+    assert report.kcl_error.phase == "parse"
+    assert "Unexpected value for length units: `nm`" in report.kcl_error.text
+    assert "[1:1]" in report.kcl_error.text
 
 
 def test_relevant_file_extensions():

@@ -144,6 +144,22 @@ impl TokenStream {
         Self { tokens }
     }
 
+    /// Allow the parser to read `use` as an identifier until the module's KCL
+    /// version is known. Return the original keyword ranges for validation.
+    pub(super) fn allow_use_identifiers(&mut self) -> Vec<SourceRange> {
+        self.tokens
+            .iter_mut()
+            .filter_map(|token| {
+                if token.token_type == TokenType::Keyword && token.value == "use" {
+                    token.token_type = TokenType::Word;
+                    Some(token.as_source_range())
+                } else {
+                    None
+                }
+            })
+            .collect()
+    }
+
     pub(super) fn remove_unknown(&mut self) -> Vec<Token> {
         let tokens = std::mem::take(&mut self.tokens);
         let (tokens, unknown_tokens): (Vec<Token>, Vec<Token>) = tokens

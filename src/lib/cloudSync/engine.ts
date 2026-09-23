@@ -1167,6 +1167,8 @@ async function writeLocalProjectCloudProjectId(
     return false
   }
 
+  // TODO: Coordinate cloud ID updates with settings saves.
+  // An overlapping save can overwrite the ID or newer settings.
   return updateLocalProjectToml(projectPath, (projectToml) =>
     getCloudProjectIdFromProjectTomlContents(projectToml, environmentName) ===
     projectId
@@ -1192,7 +1194,7 @@ async function removeLocalProjectCloudProjectId(projectPath: string) {
 
 async function updateLocalProjectToml(
   projectPath: string,
-  update: (contents: string) => string
+  update: (contents: string) => string | Error
 ) {
   const projectTomlPath = localFs.join(projectPath, PROJECT_SETTINGS_FILE_NAME)
   let projectToml = ''
@@ -1203,6 +1205,9 @@ async function updateLocalProjectToml(
   }
 
   const nextProjectToml = update(projectToml)
+  if (isErr(nextProjectToml)) {
+    return Promise.reject(nextProjectToml)
+  }
   if (nextProjectToml === projectToml) {
     return false
   }
@@ -1304,7 +1309,10 @@ async function collectLocalProjectFiles(projectRoot: string) {
         localFs.relative(projectRoot, absolutePath)
       )
       const isDirectory = statIsDirectory(stat)
-      if (isPathIgnoredByGitignore(gitignoreStack, relativePath, isDirectory)) {
+      if (
+        (!isDirectory && isCloudSyncGeneratedArtifactPath(relativePath)) ||
+        isPathIgnoredByGitignore(gitignoreStack, relativePath, isDirectory)
+      ) {
         continue
       }
 
@@ -3066,6 +3074,17 @@ async function syncProject(
         pendingProjectPaths: new Set(),
       })
     }
+    if (
+      metadata.remoteProjectId &&
+      syncBase &&
+      remoteRevision === syncBase.revision &&
+      cloudBinding.kind === 'unbound'
+    ) {
+      await writeLocalProjectCloudProjectId(
+        metadata.localProjectPath,
+        metadata.remoteProjectId
+      )
+    }
     const localFiles = await collectLocalProjectFiles(metadata.localProjectPath)
     const localManifest = await projectManifestFromFiles(localFiles)
     const syncCheckpoint: ProjectSyncCheckpoint = {
@@ -3113,27 +3132,39 @@ async function syncProject(
         throttleProjectApiRequest,
         () => createRemoteProject(config, metadata.localProjectPath, localFiles)
       )
+      // The response hashes include the API's changes to project.toml.
+      const baseManifest: ProjectManifest = { files: {} }
+      for (const file of created.files) {
+        baseManifest.files[normalizeRelativePath(file.relative_path)] = {
+          byteSize: file.byte_size,
+          sha256: file.sha256,
+        }
+      }
+      metadata = {
+        ...metadata,
+        remoteProjectId: created.id,
+        remoteRevision: created.revision,
+        remoteUpdatedAt: getRemoteUpdatedAt(created),
+        baseManifest,
+        conflict: undefined,
+        lastFailure: undefined,
+      }
+      await putProjectMetadata(metadata)
+      publishScopedProjectCloudProjectId(metadata)
       await clearProjectOutboxIfCheckpointCurrent(
         metadata.localProjectPath,
         syncCheckpoint
       )
-      const uploadedMetadata: ProjectMetadata = {
-        ...metadata,
-        remoteProjectId: created.id,
-        remoteRevision: undefined,
-        remoteUpdatedAt: undefined,
-        baseManifest: localManifest,
-        conflict: undefined,
-        lastFailure: undefined,
-      }
-      await putProjectMetadata(uploadedMetadata)
-      publishScopedProjectCloudProjectId(uploadedMetadata)
       await appendOutboxEntry({
         projectPath: metadata.localProjectPath,
         kind: 'upsert',
         targetPath: metadata.localProjectPath,
         createdAt: nowIso(),
       })
+      await writeLocalProjectCloudProjectId(
+        metadata.localProjectPath,
+        created.id
+      )
       scheduleSync(0)
       return
     }
