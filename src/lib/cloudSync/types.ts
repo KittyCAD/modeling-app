@@ -93,12 +93,14 @@ export type OutboxEntry = {
   createdAt: string
 }
 
-/** Project metadata shape returned by cloud project list/detail endpoints. */
+/** Cloud project metadata retained after endpoint-specific parsing. */
 export type RemoteProjectSummary = {
   id: string
   title?: string
   updated_at?: string
   revision?: Revision | number
+  /** Older responses and locally known projects may not have access metadata. */
+  access?: ProjectResponse['access']
   [key: string]: unknown
 }
 

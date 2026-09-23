@@ -1309,7 +1309,10 @@ async function collectLocalProjectFiles(projectRoot: string) {
         localFs.relative(projectRoot, absolutePath)
       )
       const isDirectory = statIsDirectory(stat)
-      if (isPathIgnoredByGitignore(gitignoreStack, relativePath, isDirectory)) {
+      if (
+        (!isDirectory && isCloudSyncGeneratedArtifactPath(relativePath)) ||
+        isPathIgnoredByGitignore(gitignoreStack, relativePath, isDirectory)
+      ) {
         continue
       }
 

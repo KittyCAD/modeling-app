@@ -555,7 +555,7 @@ fn physical_properties_snapshot_preserves_stored_decimal_text() {
     let mut test = Test::new("holes_cube");
     test.output_dir = directory.path().to_owned();
     let snapshot_path = test.output_dir.join("physical_properties.snap");
-    let original = include_str!("../tests/holes_cube/physical_properties.snap");
+    let original = include_str!("../tests/holes_cube/output/kcl-1.0/physical_properties.snap");
     std::fs::write(&snapshot_path, original).unwrap();
     let snapshot = insta::Snapshot::from_file(&snapshot_path).unwrap();
     let actual = serde_json::from_str(&snapshot.as_text().unwrap().to_string()).unwrap();
@@ -678,20 +678,27 @@ async fn execute_test(test: &Test) {
 }
 
 async fn physical_properties(ctx: &ExecutorContext) -> Option<serde_json::Value> {
-    // Ask for mass first because it returns "Nothing to export" without
-    // closing the engine connection when a successful KCL program produces no
-    // physical body. Bounding box requests close empty-scene connections.
-    let mass_response = match ctx
+    // The combined command exports/tessellates before querying bounds, so empty
+    // scenes still return "Nothing to export" without closing the connection.
+    let response = match ctx
         .engine
         .send_modeling_cmd(
             &ctx.engine_batch,
             Uuid::new_v4(),
             crate::SourceRange::default(),
             &ModelingCmd::from(
-                mcmd::Mass::builder()
+                mcmd::PhysicalProperties::builder()
                     .material_density(MATERIAL_DENSITY_KG_PER_CUBIC_METER)
                     .material_density_unit(UnitDensity::KilogramsPerCubicMeter)
-                    .output_unit(UnitMass::Grams)
+                    // Density is not included in these snapshots.
+                    .material_mass(1.0)
+                    .material_mass_unit(UnitMass::Grams)
+                    .mass_output_unit(UnitMass::Grams)
+                    .density_output_unit(UnitDensity::KilogramsPerCubicMeter)
+                    .volume_output_unit(kittycad_modeling_cmds::units::UnitVolume::CubicMillimeters)
+                    .center_of_mass_output_unit(UnitLength::Millimeters)
+                    .surface_area_output_unit(UnitArea::SquareMillimeters)
+                    .bounding_box_output_unit(UnitLength::Millimeters)
                     .build(),
             ),
         )
@@ -706,56 +713,17 @@ async fn physical_properties(ctx: &ExecutorContext) -> Option<serde_json::Value>
         {
             return None;
         }
-        Err(err) => panic!("simulation test should measure the model mass: {err}"),
+        Err(err) => panic!("simulation test should measure the model physical properties: {err}"),
     };
     let OkWebSocketResponseData::Modeling {
-        modeling_response: OkModelingCmdResponse::Mass(mass),
-    } = mass_response
+        modeling_response: OkModelingCmdResponse::PhysicalProperties(properties),
+    } = response
     else {
-        panic!("Expected a mass response, got {mass_response:?}");
+        panic!("Expected a physical properties response, got {response:?}");
     };
-
-    let bounding_box_response = ctx
-        .engine
-        .send_modeling_cmd(
-            &ctx.engine_batch,
-            Uuid::new_v4(),
-            crate::SourceRange::default(),
-            &ModelingCmd::from(
-                mcmd::BoundingBox::builder()
-                    .output_unit(UnitLength::Millimeters)
-                    .build(),
-            ),
-        )
-        .await
-        .expect("simulation test should measure the model bounding box");
-    let OkWebSocketResponseData::Modeling {
-        modeling_response: OkModelingCmdResponse::BoundingBox(bounding_box),
-    } = bounding_box_response
-    else {
-        panic!("Expected a bounding box response, got {bounding_box_response:?}");
-    };
-
-    let surface_area_response = ctx
-        .engine
-        .send_modeling_cmd(
-            &ctx.engine_batch,
-            Uuid::new_v4(),
-            crate::SourceRange::default(),
-            &ModelingCmd::from(
-                mcmd::SurfaceArea::builder()
-                    .output_unit(UnitArea::SquareMillimeters)
-                    .build(),
-            ),
-        )
-        .await
-        .expect("simulation test should measure the model surface area");
-    let OkWebSocketResponseData::Modeling {
-        modeling_response: OkModelingCmdResponse::SurfaceArea(surface_area),
-    } = surface_area_response
-    else {
-        panic!("Expected a surface area response, got {surface_area_response:?}");
-    };
+    let mass = properties.mass;
+    let bounding_box = properties.bounding_box;
+    let surface_area = properties.surface_area;
 
     Some(serde_json::json!({
         "bounding_box": {
