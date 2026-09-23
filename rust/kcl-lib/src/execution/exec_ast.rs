@@ -1,4 +1,5 @@
 use std::collections::HashMap;
+use std::collections::HashSet;
 use std::sync::Arc;
 
 use async_recursion::async_recursion;
@@ -4655,6 +4656,9 @@ impl Node<BinaryExpression> {
     ) -> Result<KclValue, KclError> {
         let mut meta = left_value.metadata();
         meta.extend(right_value.metadata());
+        // Repeated arithmetic must not multiply copies of the same source range.
+        let mut seen = HashSet::new();
+        meta.retain(|metadata| seen.insert(metadata.source_range));
 
         // First check if we are doing string concatenation.
         if self.operator == BinaryOperator::Add
