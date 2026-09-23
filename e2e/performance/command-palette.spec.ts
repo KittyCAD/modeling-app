@@ -17,9 +17,15 @@ const POLL_INTERVAL_MS = 10
 const INJECTED_HANDLER_MS = 250
 const MIN_INJECTED_DURATION_MS = INJECTED_HANDLER_MS - 50
 
-test.afterEach(async ({}, testInfo) => {
+test.afterEach(async ({ page, cmdBar }, testInfo) => {
   // Diagnostic branch only: let Chromium flush its startup trace after scoring.
   await new Promise((resolve) => setTimeout(resolve, 25_000))
+  await cmdBar.cmdBarOpenBtn.click()
+  await expect(page.getByTestId('cmd-bar-search')).toBeEditable()
+  await testInfo.attach('palette-appearance', {
+    body: await page.screenshot(),
+    contentType: 'image/png',
+  })
   await testInfo.attach('presentation-trace', {
     path: testInfo.outputPath('presentation-trace.json'),
     contentType: 'application/json',
@@ -61,12 +67,16 @@ test.beforeEach(async ({ page, homePage, cmdBar }) => {
   await page.emulateMedia({ reducedMotion: 'no-preference' })
   await page.setBodyDimensions({ width: 1200, height: 800 })
   await page.evaluate(() => document.fonts.ready)
-  // Diagnostic branch only: isolate palette shadow and scale raster work.
-  const variant = process.env.INTERACTION_DIAGNOSTIC_VARIANT ?? ''
+  // Diagnostic branch only: compare inexpensive palette separation styles.
+  const variant = process.env.INTERACTION_DIAGNOSTIC_VARIANT
   await page.addStyleTag({
     content: `
-      ${variant.includes('small-shadow') ? '[data-testid="command-bar"] { box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05) !important; }' : ''}
-      ${variant.includes('no-scale') ? '[data-testid="command-bar-wrapper"] > div { transform: none !important; }' : ''}
+      [data-testid="command-bar"] {
+        box-shadow: ${variant === 'hard-shadow-fast' ? '0 2px 0 0 rgb(0 0 0 / 0.1)' : 'none'} !important;
+      }
+      [data-testid="command-bar-wrapper"] > div {
+        transition-duration: 50ms !important;
+      }
     `,
   })
   await expect(cmdBar.cmdBarOpenBtn).toBeEnabled()
