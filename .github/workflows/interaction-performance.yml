@@ -25,7 +25,8 @@ permissions:
 
 jobs:
   resolve:
-    runs-on: namespace-profile-ubuntu-2-cores
+    # Selected application refs must not update caches used by other workflows.
+    runs-on: namespace-profile-ubuntu-2-cores;overrides.cache-tag=interaction-${{ github.run_id }}-${{ github.run_attempt }}-resolve
     outputs:
       base_commit: ${{ steps.plan.outputs.base_commit }}
       candidate_commit: ${{ steps.plan.outputs.candidate_commit }}
@@ -38,10 +39,12 @@ jobs:
     steps:
       - uses: actions/checkout@v7.0.1
         with:
+          persist-credentials: false
           fetch-depth: 0
       - uses: actions/setup-node@v7.0.0
         with:
           node-version-file: .nvmrc
+          package-manager-cache: false
       - name: Verify build manifest producer and consumer
         run: node --test e2e/performance/build-comparison.node-test.cjs
       - name: Resolve immutable application and harness commits
@@ -56,34 +59,77 @@ jobs:
 
   build-wasm:
     needs: resolve
-    strategy:
-      fail-fast: false
-      matrix: ${{ fromJSON(needs.resolve.outputs.build_matrix) }}
-    uses: ./.github/workflows/build-wasm.yml
-    with:
-      ref: ${{ matrix.commit }}
-      artifact-suffix: -interaction-${{ matrix.variant }}
-
-  build-app:
-    needs: [resolve, build-wasm]
-    runs-on: namespace-profile-ubuntu-8-cores;overrides.cache-tag=modeling-app-general-v2
+    runs-on: namespace-profile-ubuntu-8-cores;overrides.cache-tag=interaction-${{ github.run_id }}-${{ github.run_attempt }}-wasm-${{ matrix.variant }}
     strategy:
       fail-fast: false
       matrix: ${{ fromJSON(needs.resolve.outputs.build_matrix) }}
     steps:
       - uses: actions/checkout@v7.0.1
         with:
+          persist-credentials: false
+          ref: ${{ matrix.commit }}
+      - uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+          ref: ${{ github.sha }}
+          path: .performance-pipeline
+      - uses: actions/setup-node@v7.0.0
+        with:
+          node-version-file: .nvmrc
+          package-manager-cache: false
+      - run: npm ci
+      - name: Use correct Rust toolchain
+        run: |
+          [ -e rust-toolchain.toml ] || cp rust/rust-toolchain.toml ./
+      - uses: actions-rust-lang/setup-rust-toolchain@v1.17.0
+        with:
+          cache: false
+          rustflags: "" # use .cargo/config.toml
+      - uses: taiki-e/install-action@c30ba1cbe2face7f695d394a2c95af204d417b29
+        with:
+          tool: wasm-pack
+      - name: Build Wasm and committed TypeScript bindings
+        run: |
+          cargo fetch --locked --manifest-path rust/Cargo.toml
+          npm run build:wasm
+      - name: Record Wasm provenance and reject lockfile drift
+        run: node .performance-pipeline/e2e/performance/build-comparison.cjs wasm .
+      - uses: actions/upload-artifact@v7
+        with:
+          name: prepared-wasm-interaction-${{ matrix.variant }}
+          path: |
+            rust/kcl-wasm-lib/pkg/kcl_wasm_lib*
+            rust/kcl-wasm-lib/pkg/interaction-wasm-manifest.json
+          if-no-files-found: error
+          retention-days: 7
+      - uses: actions/upload-artifact@v7
+        with:
+          name: prepared-ts-rs-bindings-interaction-${{ matrix.variant }}
+          path: rust/kcl-lib/bindings/*
+          if-no-files-found: error
+          retention-days: 7
+
+  build-app:
+    needs: [resolve, build-wasm]
+    runs-on: namespace-profile-ubuntu-8-cores;overrides.cache-tag=interaction-${{ github.run_id }}-${{ github.run_attempt }}-app-${{ matrix.variant }}
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJSON(needs.resolve.outputs.build_matrix) }}
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
           ref: ${{ matrix.commit }}
           path: app
       - uses: actions/checkout@v7.0.1
         with:
+          persist-credentials: false
           ref: ${{ needs.resolve.outputs.harness_commit }}
           path: harness
       - uses: actions/setup-node@v7.0.0
         with:
           node-version-file: app/.nvmrc
-          cache: npm
-          cache-dependency-path: app/package-lock.json
+          package-manager-cache: false
       - run: npm ci
         working-directory: app
       - uses: actions/download-artifact@v8
@@ -130,7 +176,7 @@ jobs:
     needs: [resolve, build-wasm, build-app]
     # A failed dependency must fail this check instead of leaving it skipped.
     if: ${{ !cancelled() }}
-    runs-on: namespace-profile-macos-8-cores
+    runs-on: namespace-profile-macos-8-cores;overrides.cache-tag=interaction-${{ github.run_id }}-${{ github.run_attempt }}-measure
     timeout-minutes: 15
     steps:
       - name: Require both instrumented builds
@@ -141,30 +187,31 @@ jobs:
         run: test "$PLAN_RESULT" = success && test "$WASM_RESULT" = success && test "$BUILD_RESULT" = success
       - uses: actions/checkout@v7.0.1
         with:
+          persist-credentials: false
           ref: ${{ needs.resolve.outputs.base_commit }}
           path: apps/base
       - uses: actions/checkout@v7.0.1
         with:
+          persist-credentials: false
           ref: ${{ needs.resolve.outputs.candidate_commit }}
           path: apps/candidate
       - uses: actions/setup-node@v7.0.0
         with:
           node-version-file: apps/base/.nvmrc
-          cache: npm
-          cache-dependency-path: apps/base/package-lock.json
+          package-manager-cache: false
       - run: npm ci
         working-directory: apps/base
       - uses: actions/setup-node@v7.0.0
         with:
           node-version-file: apps/candidate/.nvmrc
-          cache: npm
-          cache-dependency-path: apps/candidate/package-lock.json
+          package-manager-cache: false
       - run: npm ci
         working-directory: apps/candidate
       # Node/Playwright belong to the selected harness; each app launches its own Electron.
       - uses: actions/setup-node@v7.0.0
         with:
           node-version-file: apps/${{ needs.resolve.outputs.harness_variant }}/.nvmrc
+          package-manager-cache: false
       - uses: actions/download-artifact@v8
         with:
           name: interaction-comparison-plan

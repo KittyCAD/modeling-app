@@ -1,6 +1,6 @@
 # Interaction performance
 
-The controlled suite compares the PR merge against its event base on the same
+The controlled suite compares the PR merge against its first parent on the same
 visible macOS Electron runner. It detects added latency in a fixed workload, while
 reporting the absolute 150 ms target separately. Existing target breaches remain
 visible as performance debt; a single noisy click does not decide the PR result.
@@ -69,13 +69,20 @@ and includes injected delays.
 
 ## Builds and trust
 
-CI resolves immutable event-base, candidate merge, PR-head, and harness commits.
+CI resolves immutable baseline, candidate merge, PR-head, and harness commits.
+The baseline is the tested merge's first parent, with its second parent required
+to match the event PR head. The event's base SHA is retained and must be an
+ancestor of that baseline; main may have advanced before GitHub created the merge.
 Each app uses its own locked dependencies, Wasm, generated bindings, and Electron
 runtime. Both receive the same six-file test-instrumentation overlay. Workload,
 selectors, collector, schedule, and comparison policy come from the base revision.
 The initial rollout explicitly uses the candidate harness when the base has no
 comparison entrypoint. An incompatible existing base harness fails rather than
 silently switching policy.
+
+Manual baselines must be ancestors of the candidate. Comparison jobs disable
+automatic dependency caching and use isolated runner cache identities; the shared
+Wasm workflow keeps its existing behavior.
 
 Source, locks, workload, harness files, and built artifacts are hashed and checked
 before measurements. Build failures fail the final check. The raw comparison,

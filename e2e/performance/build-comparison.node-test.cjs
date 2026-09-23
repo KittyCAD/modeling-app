@@ -122,6 +122,103 @@ test('bootstrap is allowed only while the immutable base lacks the harness', (t)
   )
 })
 
+test('PR comparison uses the tested baseline when the event base is behind', (t) => {
+  const { root, baseRoot, base, candidate } = fixture(t)
+  write(baseRoot, 'main-change.txt', 'Main advanced after the event\n')
+  git(baseRoot, 'add', '.')
+  git(baseRoot, 'commit', '-qm', 'Advance main')
+  const mergeBase = git(baseRoot, 'rev-parse', 'HEAD')
+  git(root, 'checkout', '--detach', mergeBase)
+  git(
+    root,
+    'merge',
+    '--no-ff',
+    candidate,
+    '-m',
+    'Test current main with PR head'
+  )
+  const merge = git(root, 'rev-parse', 'HEAD')
+  const event = {
+    pull_request: { base: { sha: base }, head: { sha: candidate } },
+  }
+  const plan = resolvePlan(root, 'pull_request', event, merge)
+  assert.equal(plan.baseCommit, mergeBase)
+  assert.equal(plan.eventBaseCommit, base)
+  assert.equal(plan.candidateCommit, merge)
+  assert.equal(plan.prHeadCommit, candidate)
+  const file = path.join(root, 'plan.json')
+  fs.writeFileSync(file, JSON.stringify(plan))
+  assert.deepEqual(readPlan(file), plan)
+  for (const invalid of [
+    { ...plan, eventBaseCommit: null },
+    { ...plan, eventBaseCommit: 'not-a-commit' },
+    { ...plan, prHeadCommit: null },
+    { ...plan, event: 'push' },
+  ]) {
+    fs.writeFileSync(file, JSON.stringify(invalid))
+    assert.throws(() => readPlan(file), /Invalid comparison plan/)
+  }
+  assert.throws(
+    () =>
+      resolvePlan(
+        root,
+        'pull_request',
+        { pull_request: { base: { sha: base }, head: { sha: mergeBase } } },
+        merge
+      ),
+    /not the merge/
+  )
+  const unrelatedBase = git(
+    root,
+    'commit-tree',
+    `${base}^{tree}`,
+    '-m',
+    'Unrelated base'
+  )
+  assert.throws(
+    () =>
+      resolvePlan(
+        root,
+        'workflow_dispatch',
+        { inputs: { 'baseline-ref': unrelatedBase } },
+        candidate
+      ),
+    /Manual baseline must be an ancestor/
+  )
+  assert.throws(
+    () =>
+      resolvePlan(
+        root,
+        'pull_request',
+        {
+          pull_request: {
+            base: { sha: unrelatedBase },
+            head: { sha: candidate },
+          },
+        },
+        merge
+      ),
+    /Event base is not an ancestor/
+  )
+  const threeParentMerge = git(
+    root,
+    'commit-tree',
+    `${merge}^{tree}`,
+    '-p',
+    mergeBase,
+    '-p',
+    candidate,
+    '-p',
+    unrelatedBase,
+    '-m',
+    'Unsupported merge shape'
+  )
+  assert.throws(
+    () => resolvePlan(root, 'pull_request', event, threeParentMerge),
+    /not the merge/
+  )
+})
+
 test('real manifest producer and consumer reject mixed builds, lock drift, and changed payloads', (t) => {
   const { root, baseRoot, base, candidate } = fixture(t)
   const plan = resolvePlan(root, 'push', { before: base }, candidate)
@@ -178,6 +275,36 @@ test('real manifest producer and consumer reject mixed builds, lock drift, and c
   assert.throws(
     () => verifyApp(root, root, plan, 'candidate'),
     /Committed file/
+  )
+})
+
+test('real manifests support committed lockfiles larger than the Git output buffer', (t) => {
+  const { root, baseRoot, base } = fixture(t)
+  const lockfile = JSON.stringify({
+    lockfileVersion: 3,
+    packages: {
+      '': { name: 'large-lockfile-fixture', description: 'x'.repeat(2 ** 21) },
+    },
+  })
+  write(root, 'package-lock.json', lockfile)
+  git(root, 'add', 'package-lock.json')
+  git(root, 'commit', '-qm', 'Commit large lockfile')
+  const candidate = git(root, 'rev-parse', 'HEAD')
+  const plan = resolvePlan(root, 'push', { before: base }, candidate)
+  artifacts(baseRoot)
+  artifacts(root)
+  for (const [directory, variant] of [
+    [baseRoot, 'base'],
+    [root, 'candidate'],
+  ]) {
+    prepare(directory, root, plan, variant)
+    createAppManifest(directory, root, plan, variant)
+  }
+  assert.doesNotThrow(() => verifyPair(baseRoot, root, plan))
+  fs.appendFileSync(path.join(root, 'package-lock.json'), '\n')
+  assert.throws(
+    () => verifyPair(baseRoot, root, plan),
+    /Committed file package-lock.json/
   )
 })
 

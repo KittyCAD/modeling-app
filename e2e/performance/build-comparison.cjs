@@ -10,6 +10,7 @@ const path = require('node:path')
  * @property {string} baseCommit
  * @property {string} candidateCommit
  * @property {string | null} prHeadCommit
+ * @property {string | null} eventBaseCommit
  * @property {string} harnessCommit
  * @property {'base' | 'bootstrap-candidate'} harnessSource
  * @property {'base' | 'candidate'} harnessVariant
@@ -83,6 +84,7 @@ function resolvePlan(root, eventName, event, candidateRef) {
   const candidateCommit = commit(root, candidateRef)
   let baseRef
   let prHeadCommit = null
+  let eventBaseCommit = null
   if (eventName === 'pull_request') {
     baseRef = event.pull_request.base.sha
     prHeadCommit = commit(root, event.pull_request.head.sha)
@@ -93,7 +95,16 @@ function resolvePlan(root, eventName, event, candidateRef) {
   } else {
     throw new Error('Unsupported comparison event')
   }
-  const baseCommit = commit(root, baseRef)
+  let baseCommit = commit(root, baseRef)
+  if (eventName === 'workflow_dispatch') {
+    // A manual run on main must not execute an unrelated, unreviewed ref with
+    // the default branch's workflow privileges.
+    try {
+      git(root, 'merge-base', '--is-ancestor', baseCommit, candidateCommit)
+    } catch {
+      throw new Error('Manual baseline must be an ancestor of the candidate')
+    }
+  }
   const calibrationFault = event.inputs?.['calibration-fault'] || 'none'
   if (!['none', 'first', 'warm', 'stall'].includes(calibrationFault)) {
     throw new Error('Invalid calibration fault')
@@ -117,10 +128,19 @@ function resolvePlan(root, eventName, event, candidateRef) {
     )
       .split(' ')
       .slice(1)
-    if (!parents.includes(baseCommit) || !parents.includes(prHeadCommit)) {
+    if (parents.length !== 2 || parents[1] !== prHeadCommit) {
       throw new Error(
-        'Candidate is not the merge of the event base and PR head'
+        'Candidate is not the merge of a base and the exact event PR head'
       )
+    }
+    // GitHub can regenerate the tested merge after the event's base advanced.
+    // Its first parent is the exact baseline used to produce this candidate.
+    eventBaseCommit = baseCommit
+    baseCommit = parents[0]
+    try {
+      git(root, 'merge-base', '--is-ancestor', eventBaseCommit, baseCommit)
+    } catch {
+      throw new Error('Event base is not an ancestor of the tested baseline')
     }
   }
   const harnessSource = hasComparison(root, baseCommit)
@@ -135,6 +155,7 @@ function resolvePlan(root, eventName, event, candidateRef) {
     baseCommit,
     candidateCommit,
     prHeadCommit,
+    eventBaseCommit,
     harnessCommit,
     harnessSource,
     harnessVariant: harnessSource === 'base' ? 'base' : 'candidate',
@@ -155,7 +176,11 @@ function readPlan(file) {
     ![plan.baseCommit, plan.candidateCommit, plan.harnessCommit].every(
       (value) => typeof value === 'string' && /^[a-f0-9]{40}$/.test(value)
     ) ||
-    !(plan.prHeadCommit === null || /^[a-f0-9]{40}$/.test(plan.prHeadCommit)) ||
+    !(plan.event === 'pull_request'
+      ? [plan.prHeadCommit, plan.eventBaseCommit].every(
+          (value) => typeof value === 'string' && /^[a-f0-9]{40}$/.test(value)
+        )
+      : plan.prHeadCommit === null && plan.eventBaseCommit === null) ||
     !['base', 'bootstrap-candidate'].includes(plan.harnessSource) ||
     plan.harnessVariant !==
       (plan.harnessSource === 'base' ? 'base' : 'candidate') ||
@@ -187,23 +212,35 @@ function source(root, expected) {
   return { sourceCommit, sourceTree: git(root, 'rev-parse', 'HEAD^{tree}') }
 }
 
-function fileHash(root, name) {
+function fileBytes(root, name) {
   const file = path.join(root, name)
   if (!fs.lstatSync(file).isFile())
     throw new Error(`Expected regular file: ${name}`)
-  return sha256(fs.readFileSync(file))
+  return fs.readFileSync(file)
+}
+
+function fileHash(root, name) {
+  return sha256(fileBytes(root, name))
 }
 
 function committedHashes(root, names) {
   return Object.fromEntries(
     names.map((name) => {
-      const expected = sha256(
-        execFileSync('git', ['-C', root, 'show', `HEAD:${name}`], {
-          stdio: ['ignore', 'pipe', 'pipe'],
-        })
+      const contents = fileBytes(root, name)
+      requireEqual(
+        execFileSync(
+          'git',
+          ['-C', root, 'hash-object', '--no-filters', '--stdin'],
+          {
+            input: contents,
+            encoding: 'utf8',
+            stdio: ['pipe', 'pipe', 'pipe'],
+          }
+        ).trim(),
+        git(root, 'rev-parse', '--verify', `HEAD:${name}`),
+        `Committed file ${name}`
       )
-      requireEqual(fileHash(root, name), expected, `Committed file ${name}`)
-      return [name, expected]
+      return [name, sha256(contents)]
     })
   )
 }
