@@ -181,18 +181,12 @@ export const CommandBar = () => {
         className={`fixed inset-0 z-50 overflow-y-auto pb-4 pt-1 ${isArgumentThatShouldBeHardToDismiss ? 'pointer-events-none' : ''}`}
         data-testid="command-bar-wrapper"
       >
-        <Transition.Child
-          enter="duration-100 ease-out"
-          enterFrom="opacity-0 scale-95"
-          enterTo="opacity-100 scale-100"
-          leave="duration-75 ease-in"
-          leaveFrom="opacity-100 scale-100"
-          leaveTo="opacity-0 scale-95"
-        >
+        {/* Popover.Panel reads visibility from this child transition context. */}
+        <Transition.Child>
           <WrapperComponent.Panel
             className={`relative z-50 pointer-events-auto w-full ${
               showsCodemodReview ? 'max-w-3xl' : 'max-w-xl'
-            } pt-2 mx-auto border rounded rounded-tl-none shadow-lg bg-chalkboard-10 dark:bg-chalkboard-100 dark:border-chalkboard-70`}
+            } pt-2 mx-auto border rounded rounded-tl-none bg-chalkboard-10 dark:bg-chalkboard-100 dark:border-chalkboard-70`}
             as="div"
             data-testid="command-bar"
           >
