@@ -41,7 +41,7 @@ describe('DFM Review plugin', () => {
         pluginId: DFM_REVIEW_PLUGIN_ID,
         featurePolicy: {
           feature: DFM_REVIEW_FEATURE_FLAG,
-          defaultEnabled: true,
+          defaultEnabled: false,
           disableWithoutFeature: true,
         },
       }),

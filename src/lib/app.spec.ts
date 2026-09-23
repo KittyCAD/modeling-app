@@ -585,7 +585,7 @@ describe('project system', () => {
     }
   })
 
-  it('enables DFM Review when its feature arrives and disables it when the feature is removed', async () => {
+  it('requires manual DFM Review activation when its feature arrives and deactivates on feature loss', async () => {
     const userFeatures = createUserFeaturesForTest(new Set())
     const app = createAppForTest({ userFeatures })
 
@@ -593,6 +593,17 @@ describe('project system', () => {
       await waitForSettingsIdle(app)
       userFeatures.setFeatureIds(new Set([DFM_REVIEW_FEATURE_FLAG]))
 
+      expect(app.settings.get().plugins['dfm-review'].current).toBe(false)
+      expect(app.settings.get().plugins['dfm-review'].user).toBeUndefined()
+      expect(getPluginToggle(app, 'dfm-review').active.value).toBe(false)
+      expect(app.registry.get(modesService).setMode('dfm-review')).toBe(false)
+
+      app.settings.actor.send({
+        type: 'set.plugins.dfm-review',
+        data: { level: 'user', value: true },
+        doNotPersist: true,
+      })
+      await waitForSettingsIdle(app)
       await expect
         .poll(() => getPluginToggle(app, 'dfm-review').active.value)
         .toBe(true)
@@ -619,6 +630,16 @@ describe('project system', () => {
     const app = createAppForTest({ userFeatures })
 
     try {
+      await waitForSettingsIdle(app)
+      expect(app.settings.get().plugins['dfm-review'].current).toBe(false)
+      expect(getPluginToggle(app, 'dfm-review').active.value).toBe(false)
+
+      app.settings.actor.send({
+        type: 'set.plugins.dfm-review',
+        data: { level: 'user', value: true },
+        doNotPersist: true,
+      })
+      await waitForSettingsIdle(app)
       await expect
         .poll(() => getPluginToggle(app, 'dfm-review').active.value)
         .toBe(true)

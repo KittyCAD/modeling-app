@@ -49,7 +49,7 @@ export default createZdsPlugin({
     hideWithoutFeature: DFM_REVIEW_FEATURE_FLAG,
     featurePolicy: {
       feature: DFM_REVIEW_FEATURE_FLAG,
-      defaultEnabled: true,
+      defaultEnabled: false,
       disableWithoutFeature: true,
     },
     userToml: {

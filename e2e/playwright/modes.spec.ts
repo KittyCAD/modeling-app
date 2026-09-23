@@ -1,5 +1,8 @@
 import { expect, test } from '@e2e/playwright/zoo-test'
-import { DFM_REVIEW_FEATURE_FLAG } from '@src/lib/constants'
+import {
+  DFM_REVIEW_FEATURE_FLAG,
+  OPFS_CLOUD_FEATURE_FLAG,
+} from '@src/lib/constants'
 
 const GDT_COMMANDS = [
   'angularity',
@@ -27,7 +30,7 @@ test.describe('Registry modes', { tag: ['@web', '@desktop'] }, () => {
   })
 
   test.describe('without the DFM Review feature', () => {
-    test.use({ userFeatures: [] })
+    test.use({ userFeatures: [OPFS_CLOUD_FEATURE_FLAG] })
 
     test('does not expose the mode or plugin toggle', async ({ page }) => {
       await expect(page.getByTestId('toolbar')).toHaveAttribute(
@@ -46,7 +49,20 @@ test.describe('Registry modes', { tag: ['@web', '@desktop'] }, () => {
   })
 
   test.describe('with the DFM Review feature', () => {
-    test.use({ userFeatures: [DFM_REVIEW_FEATURE_FLAG] })
+    test.use({
+      userFeatures: [OPFS_CLOUD_FEATURE_FLAG, DFM_REVIEW_FEATURE_FLAG],
+    })
+
+    test.beforeEach(async ({ page }) => {
+      await expect(page.locator('option[value="dfm-review"]')).toHaveCount(0)
+      await page.getByRole('link', { name: 'Settings' }).last().click()
+      await page.getByRole('radio', { name: 'Plugins' }).click()
+      const pluginToggle = page.locator('#plugin-toggle-dfm-review')
+      await expect(pluginToggle).not.toBeChecked()
+      await page.locator('label', { has: pluginToggle }).click()
+      await expect(pluginToggle).toBeChecked()
+      await page.getByTestId('settings-close-button').click()
+    })
 
     test('switches toolbars without replacing the engine stream and safely enters and exits sketch', async ({
       page,
@@ -131,6 +147,7 @@ test.describe('Registry modes', { tag: ['@web', '@desktop'] }, () => {
 
     test('plugin settings preserve the active mode until its plugin is disabled', async ({
       page,
+      scene,
       toolbar,
     }) => {
       const mode = page.getByRole('combobox', { name: 'Mode', exact: true })
@@ -160,6 +177,7 @@ test.describe('Registry modes', { tag: ['@web', '@desktop'] }, () => {
       await pluginToggleLabel.click()
       await expect(pluginToggle).not.toBeChecked()
       await page.getByTestId('settings-close-button').click()
+      await expect(page.getByRole('dialog')).not.toBeVisible()
 
       await expect(page.getByTestId('toolbar')).toHaveAttribute(
         'data-current-mode',
@@ -168,8 +186,18 @@ test.describe('Registry modes', { tag: ['@web', '@desktop'] }, () => {
       await expect(toolbar.startSketchBtn).toBeEnabled()
       await expect(page.locator('option[value="dfm-review"]')).toHaveCount(0)
 
+      await page.reload()
+      await expect(toolbar.startSketchBtn).toBeEnabled({ timeout: 30_000 })
+      await scene.settled()
+      await expect(page.getByTestId('toolbar')).toHaveAttribute(
+        'data-current-mode',
+        'modeling'
+      )
+      await expect(page.locator('option[value="dfm-review"]')).toHaveCount(0)
+
       await page.getByRole('link', { name: 'Settings' }).last().click()
       await page.getByRole('radio', { name: 'Plugins' }).click()
+      await expect(pluginToggle).not.toBeChecked()
       await pluginToggleLabel.click()
       await expect(pluginToggle).toBeChecked()
       await page.getByTestId('settings-close-button').click()

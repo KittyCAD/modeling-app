@@ -82,8 +82,8 @@ selection resets to modeling, including while a sketch is active. Enabling the
 plugin again makes its mode available without reselecting it.
 
 For feature-gated modes, configure the plugin's activation policy. The
-[DFM Review plugin](../../plugins/dfmReview/index.ts) starts disabled until
-`dfm_review` is available, enables by default for eligible users while respecting
-their preference, and uses `disableWithoutFeature` to deactivate on flag loss.
+[DFM Review plugin](../../plugins/dfmReview/index.ts) starts disabled. Users with
+`dfm_review` can enable or disable it in Settings. It uses
+`disableWithoutFeature` to deactivate on flag loss while retaining their preference.
 That removal follows the same mode and scene cleanup path as disabling the
 plugin in settings.
