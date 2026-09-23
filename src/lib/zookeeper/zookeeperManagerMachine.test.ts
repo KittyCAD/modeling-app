@@ -4,7 +4,11 @@ import type {
   MlCopilotFile,
   MlCopilotServerMessage,
 } from '@kittycad/lib'
-import { resetReportedClientErrorsForTests } from '@src/lib/clientErrors'
+import { signal } from '@preact/signals-core'
+import {
+  initializeClientErrorReporting,
+  resetReportedClientErrorsForTests,
+} from '@src/lib/clientErrors'
 import type { FileMeta } from '@src/lib/types'
 import {
   type Conversation,
@@ -46,8 +50,10 @@ vi.mock('@src/unitTestUtils', () => ({
   })),
 }))
 
+let stopClientErrorReporting: (() => void) | undefined
 function stubClientErrorFetch() {
   resetReportedClientErrorsForTests()
+  stopClientErrorReporting = initializeClientErrorReporting(signal(true))
   const reports: ClientErrorReport[] = []
   const fetchMock = vi
     .spyOn(globalThis, 'fetch')
@@ -597,6 +603,8 @@ describe('zookeeperManagerMachine', () => {
   })
 
   afterEach(() => {
+    stopClientErrorReporting?.()
+    stopClientErrorReporting = undefined
     vi.useRealTimers()
     vi.restoreAllMocks()
     vi.unstubAllGlobals()
@@ -1830,7 +1838,9 @@ describe('zookeeperManagerMachine', () => {
       attachment_ref: attachmentRef,
     }
 
-    const createReadyActor = async () => {
+    const createReadyActor = async (
+      setupContext: Partial<ZookeeperManagerContext> = {}
+    ) => {
       const ws: TestWebSocket = new TestSocket() as TestWebSocket
       ws.readyState = WebSocket.OPEN
       const machine = zookeeperManagerMachine.provide({
@@ -1840,8 +1850,9 @@ describe('zookeeperManagerMachine', () => {
             SetupActorInput
           >(async () => ({
             ws,
-            conversation: completedConversation,
+            conversation: structuredClone(completedConversation),
             conversationId: 'conversation-id',
+            ...setupContext,
           })),
         },
       })
@@ -1866,6 +1877,8 @@ describe('zookeeperManagerMachine', () => {
         state.matches(ZookeeperManagerStates.Ready)
       )
 
+      // Only count attachment requests, not setup traffic.
+      ws.sentPayloads.length = 0
       return { actor, ws }
     }
 
@@ -1887,6 +1900,7 @@ describe('zookeeperManagerMachine', () => {
         prompt_id: attachmentRef.prompt_id,
         seq: attachmentRef.seq,
         indices: [attachmentRef.index],
+        supports_attachments_error: true,
       })
       expect(
         actor.getSnapshot().context.attachmentFetches[
@@ -1895,6 +1909,143 @@ describe('zookeeperManagerMachine', () => {
       ).toEqual({ status: 'loading' })
 
       actor.stop()
+    })
+
+    it('fails only matching loading attachments without affecting generation', async () => {
+      const { actor } = await createReadyActor({
+        conversation: {
+          exchanges: [{ responses: [], deltasAggregated: '' }],
+        },
+      })
+      try {
+        const secondRef = { ...attachmentRef, index: 2 }
+        const unrelatedRefs = [
+          { ...attachmentRef, index: 3 },
+          { ...attachmentRef, seq: attachmentRef.seq + 1 },
+          {
+            ...attachmentRef,
+            prompt_id: '00000000-0000-4000-8000-000000000002',
+          },
+        ]
+        for (const ref of [attachmentRef, secondRef, ...unrelatedRefs]) {
+          actor.send({
+            type: ZookeeperManagerTransitions.AttachmentFetch,
+            attachmentRef: ref,
+          })
+        }
+        const before = actor.getSnapshot().context
+        expect(before.awaitingResponse).toBe(true)
+
+        actor.send({
+          type: ZookeeperManagerTransitions.ResponseReceive,
+          response: {
+            attachments_error: {
+              prompt_id: attachmentRef.prompt_id,
+              seq: attachmentRef.seq,
+              indices: [attachmentRef.index, secondRef.index, 99],
+              detail: 'Unable to load attachments. Please try again.',
+            },
+          },
+        })
+
+        const after = actor.getSnapshot().context
+        for (const ref of [attachmentRef, secondRef]) {
+          expect(
+            after.attachmentFetches[getZookeeperAttachmentKey(ref)]
+          ).toEqual({
+            status: 'error',
+            message: 'Unable to load attachments. Please try again.',
+          })
+        }
+        for (const ref of unrelatedRefs) {
+          const key = getZookeeperAttachmentKey(ref)
+          expect(after.attachmentFetches[key]).toBe(
+            before.attachmentFetches[key]
+          )
+        }
+        expect(
+          after.attachmentFetches[
+            getZookeeperAttachmentKey({ ...attachmentRef, index: 99 })
+          ]
+        ).toBeUndefined()
+        expect(after.conversation).toBe(before.conversation)
+        expect(after.lastMessageId).toBe(before.lastMessageId)
+        expect(after.awaitingResponse).toBe(true)
+        expect(after.attachmentsLoadedForCurrentPrompt).toBe(
+          before.attachmentsLoadedForCurrentPrompt
+        )
+        expect(after.pendingBackendShutdown).toBe(before.pendingBackendShutdown)
+      } finally {
+        actor.stop()
+      }
+    })
+
+    it('retries a failed attachment and does not overwrite loaded bytes with an error', async () => {
+      const { actor, ws } = await createReadyActor()
+      try {
+        const key = getZookeeperAttachmentKey(attachmentRef)
+        const fetch = () =>
+          actor.send({
+            type: ZookeeperManagerTransitions.AttachmentFetch,
+            attachmentRef,
+          })
+        const fail = () =>
+          actor.send({
+            type: ZookeeperManagerTransitions.ResponseReceive,
+            response: {
+              attachments_error: {
+                prompt_id: attachmentRef.prompt_id,
+                seq: attachmentRef.seq,
+                indices: [attachmentRef.index],
+                detail: 'Unable to load attachments. Please try again.',
+              },
+            },
+          })
+
+        fetch()
+        fail()
+        expect(actor.getSnapshot().context.attachmentFetches[key]?.status).toBe(
+          'error'
+        )
+        fetch()
+        fetch()
+        expect(ws.sentPayloads).toHaveLength(2)
+        expect(JSON.parse(ws.sentPayloads[1])).toEqual({
+          type: 'fetch_attachments',
+          prompt_id: attachmentRef.prompt_id,
+          seq: attachmentRef.seq,
+          indices: [attachmentRef.index],
+          supports_attachments_error: true,
+        })
+        expect(actor.getSnapshot().context.attachmentFetches[key]).toEqual({
+          status: 'loading',
+        })
+
+        actor.send({
+          type: ZookeeperManagerTransitions.ResponseReceive,
+          response: {
+            attachments: {
+              prompt_id: attachmentRef.prompt_id,
+              seq: attachmentRef.seq,
+              role: 'client',
+              files: [loadedFile],
+            },
+          },
+        })
+        const before = actor.getSnapshot().context
+        expect(before.attachmentFetches[key]).toEqual({
+          status: 'loaded',
+          file: loadedFile,
+        })
+        fail()
+        const after = actor.getSnapshot().context
+        expect(after.attachmentFetches[key]).toBe(before.attachmentFetches[key])
+        expect(after.conversation).toBe(before.conversation)
+        fetch()
+        expect(ws.sentPayloads).toHaveLength(2)
+      } finally {
+        actor.stop()
+      }
     })
 
     it('stores fetched bytes without changing conversation state', async () => {

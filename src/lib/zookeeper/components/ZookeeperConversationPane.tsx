@@ -1,4 +1,5 @@
 import { useSignals } from '@preact/signals-react/runtime'
+import { DeleteConfirmationDialog } from '@src/components/DeleteProjectDialog'
 import {
   LEGACY_SEARCH_PARAM_ZOOKEEPER_PROMPT_KEY,
   SEARCH_PARAM_ZOOKEEPER_PROMPT_KEY,
@@ -28,9 +29,14 @@ export const ZookeeperConversationPane = (props: {
 }) => {
   useSignals()
   const [defaultPrompt, setDefaultPrompt] = useState('')
+  const [isConfirmingClearChat, setIsConfirmingClearChat] = useState(false)
   const [searchParams, setSearchParams] = useSearchParams()
   const controller = props.controller
   const actor = controller.actor
+
+  useEffect(() => {
+    setIsConfirmingClearChat(false)
+  }, [controller])
 
   let conversation = useSelector(actor, (snapshot) => {
     return snapshot.context.conversation
@@ -143,65 +149,89 @@ export const ZookeeperConversationPane = (props: {
     props.zookeeperMode.project ?? props.zookeeperMode.user ?? defaultMode
 
   return (
-    <ZookeeperConversation
-      isLoading={conversation === undefined}
-      isLoadingAttachments={isLoadingAttachments}
-      contexts={[{ type: 'selections', data: props.selectionRanges }]}
-      conversation={conversation}
-      attachmentFetches={attachmentFetches}
-      onFetchAttachment={(attachmentRef) => {
-        actor.send({
-          type: ZookeeperManagerTransitions.AttachmentFetch,
-          attachmentRef,
-        })
-      }}
-      welcomeMessage={<ZookeeperConversationWelcome />}
-      onProcess={(prompt, mode, attachments) => {
-        controller.sendOrQueue(prompt, mode, attachments)
-      }}
-      onClickClearChat={() => {
-        void controller.clearConversation()
-      }}
-      onReconnect={() => controller.reconnect()}
-      onCheckBilling={checkBillingAccess}
-      onOpenBilling={onOpenBilling}
-      connectionError={
-        showManualConnect ? 'No internet connection.' : closeReason
-      }
-      connectionFailed={setupFailed}
-      accessDeniedCode={accessDeniedCode}
-      showManualConnect={showManualConnect}
-      canClearChat={setupFailed && conversationId !== undefined}
-      isClearingChat={isClearingChat}
-      loadingMessage={
-        isSettingUp
-          ? 'Connecting to Zookeeper...'
-          : needsReconnect
-            ? 'Reconnecting...'
-            : undefined
-      }
-      onCancel={() => controller.cancel()}
-      disabled={
-        needsReconnect ||
-        isClearingChat ||
-        interruptedTurnAwaitingResume ||
-        isResumingInterruptedTurn
-      }
-      needsReconnect={needsReconnect}
-      hasPromptCompleted={!isPromptRunning && !interruptedTurnAwaitingResume}
-      isProcessing={isPromptRunning}
-      interruptedTurnAwaitingResume={interruptedTurnAwaitingResume}
-      isResumingInterruptedTurn={isResumingInterruptedTurn}
-      onResumeInterruptedTurn={() => controller.resumeInterruptedTurn()}
-      queue={[...controller.queue.value]}
-      onRemoveFromQueue={(id) => controller.removeQueued(id)}
-      onSteer={(id) => controller.steer(id)}
-      userAvatarSrc={props.userAvatarSrc}
-      defaultPrompt={defaultPrompt}
-      initialMlCopilotMode={initialMlCopilotMode}
-      onMlCopilotModeChange={props.onMlCopilotModeChange}
-      modeOptions={modeOptions}
-      modeScopeKey={controller.projectPath}
-    />
+    <>
+      {isConfirmingClearChat && (
+        <DeleteConfirmationDialog
+          title="Start a new chat?"
+          confirmButtonText="Start new chat"
+          dismissButtonText="Keep current chat"
+          onConfirm={() => {
+            setIsConfirmingClearChat(false)
+            void controller.clearConversation()
+          }}
+          onDismiss={() => setIsConfirmingClearChat(false)}
+        >
+          <p className="my-4">
+            {isPromptRunning
+              ? 'This will stop the current Zookeeper response and start a new conversation.'
+              : 'This will start a new conversation.'}
+          </p>
+          <p className="my-4">
+            Your current chat will no longer be accessible from this project.
+            Changes already made to project files will not be undone.
+          </p>
+        </DeleteConfirmationDialog>
+      )}
+      <ZookeeperConversation
+        isLoading={conversation === undefined}
+        isLoadingAttachments={isLoadingAttachments}
+        contexts={[{ type: 'selections', data: props.selectionRanges }]}
+        conversation={conversation}
+        attachmentFetches={attachmentFetches}
+        onFetchAttachment={(attachmentRef) => {
+          actor.send({
+            type: ZookeeperManagerTransitions.AttachmentFetch,
+            attachmentRef,
+          })
+        }}
+        welcomeMessage={<ZookeeperConversationWelcome />}
+        onProcess={(prompt, mode, attachments) => {
+          controller.sendOrQueue(prompt, mode, attachments)
+        }}
+        onClickClearChat={() => {
+          setIsConfirmingClearChat(true)
+        }}
+        onReconnect={() => controller.reconnect()}
+        onCheckBilling={checkBillingAccess}
+        onOpenBilling={onOpenBilling}
+        connectionError={
+          showManualConnect ? 'No internet connection.' : closeReason
+        }
+        connectionFailed={setupFailed}
+        accessDeniedCode={accessDeniedCode}
+        showManualConnect={showManualConnect}
+        canClearChat={setupFailed && conversationId !== undefined}
+        isClearingChat={isClearingChat}
+        loadingMessage={
+          isSettingUp
+            ? 'Connecting to Zookeeper...'
+            : needsReconnect
+              ? 'Reconnecting...'
+              : undefined
+        }
+        onCancel={() => controller.cancel()}
+        disabled={
+          needsReconnect ||
+          isClearingChat ||
+          interruptedTurnAwaitingResume ||
+          isResumingInterruptedTurn
+        }
+        needsReconnect={needsReconnect}
+        hasPromptCompleted={!isPromptRunning && !interruptedTurnAwaitingResume}
+        isProcessing={isPromptRunning}
+        interruptedTurnAwaitingResume={interruptedTurnAwaitingResume}
+        isResumingInterruptedTurn={isResumingInterruptedTurn}
+        onResumeInterruptedTurn={() => controller.resumeInterruptedTurn()}
+        queue={[...controller.queue.value]}
+        onRemoveFromQueue={(id) => controller.removeQueued(id)}
+        onSteer={(id) => controller.steer(id)}
+        userAvatarSrc={props.userAvatarSrc}
+        defaultPrompt={defaultPrompt}
+        initialMlCopilotMode={initialMlCopilotMode}
+        onMlCopilotModeChange={props.onMlCopilotModeChange}
+        modeOptions={modeOptions}
+        modeScopeKey={controller.projectPath}
+      />
+    </>
   )
 }

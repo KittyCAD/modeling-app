@@ -119,7 +119,19 @@ function installFetchMock({
     }
 
     if (url === `${baseUrl}/user/projects` && method === 'POST') {
-      return jsonResponse(remoteProjectPayload('rev-1'))
+      const manifest = await projectManifestFromFiles(
+        (remoteFiles ?? []).map((file) =>
+          projectFile(file.relativePath, file.contents)
+        )
+      )
+      return jsonResponse({
+        ...remoteProjectPayload('rev-1'),
+        files: Object.entries(manifest.files).map(([relative_path, file]) => ({
+          relative_path,
+          byte_size: file.byteSize,
+          sha256: file.sha256,
+        })),
+      })
     }
 
     if (url === remoteProjectUrl && method === 'GET') {
