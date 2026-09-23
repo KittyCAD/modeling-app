@@ -6000,6 +6000,58 @@ face = disc()
     }
 
     #[tokio::test(flavor = "multi_thread")]
+    async fn imported_import_modifiers_follow_entry_point_version() {
+        for word in ["template", "lazy", "component"] {
+            let dep = format!("import {word} from \"nested.kcl\"\nexport width = 10\n");
+            let nested = format!("export {word} = 1\n");
+            for main_header in ["", "@settings(kclVersion = 1.0)\n", "@settings(kclVersion = 2.0)\n"] {
+                let main = format!("{main_header}import width from \"dep.kcl\"\nx = width\n");
+                run_versioned_modules(&main, &[("dep.kcl", &dep), ("nested.kcl", &nested)])
+                    .await
+                    .unwrap_or_else(|error| panic!("main={main_header:?}, word={word}: {error:#?}"));
+            }
+
+            for run_mock in [false, true] {
+                let error = if run_mock {
+                    run_versioned_modules_mock(V3_MAIN_IMPORTING_DEP, &[("dep.kcl", &dep), ("nested.kcl", &nested)])
+                        .await
+                } else {
+                    run_versioned_modules(V3_MAIN_IMPORTING_DEP, &[("dep.kcl", &dep), ("nested.kcl", &nested)]).await
+                }
+                .expect_err("V3 imports must reject a reserved import modifier");
+                assert!(matches!(error, KclError::Syntax { .. }), "{error:#?}");
+                assert_eq!(
+                    error.message(),
+                    format!(
+                        "`{word}` is reserved as an import modifier in KCL 3.0 and cannot be the first imported item"
+                    )
+                );
+                let ranges = error.source_ranges();
+                assert_eq!(ranges.len(), 2, "{ranges:#?}");
+                let start = dep.find(word).unwrap();
+                assert_eq!((ranges[0].start(), ranges[0].end()), (start, start + word.len()));
+                assert!(!ranges[0].module_id().is_top_level());
+                assert!(ranges[1].module_id().is_top_level());
+            }
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn import_version_mismatch_precedes_import_modifier_error() {
+        let dep = "@settings(kclVersion = 2.0)\nimport lazy from \"nested.kcl\"\nexport width = 10\n";
+        let nested = "export lazy = 1\n";
+        for run_mock in [false, true] {
+            let error = if run_mock {
+                run_versioned_modules_mock(V3_MAIN_IMPORTING_DEP, &[("dep.kcl", dep), ("nested.kcl", nested)]).await
+            } else {
+                run_versioned_modules(V3_MAIN_IMPORTING_DEP, &[("dep.kcl", dep), ("nested.kcl", nested)]).await
+            }
+            .expect_err("version mismatch must precede import modifier validation");
+            assert_kcl_version_mismatch(&error, "2.0");
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
     async fn imported_use_function_name_is_allowed_under_v3() {
         let dep = "fn use() { return 10 }\nexport width = use()\n";
         run_versioned_modules(V3_MAIN_IMPORTING_DEP, &[("dep.kcl", dep)])
