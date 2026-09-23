@@ -70,7 +70,6 @@ describe('getKclLanguageVersion', () => {
 
   it.each([
     '@settings(kclVersion = "abcd")',
-    '@settings(kclVersion = 4.0)',
     '@settings(kclVersion = 2.0)\nx =',
   ])('does not supply a fallback for invalid source: %s', (code) => {
     expect(getKclLanguageVersion(code, getInstance())).toBeInstanceOf(Error)

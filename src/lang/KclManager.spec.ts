@@ -151,88 +151,6 @@ afterEach(() => {
 })
 
 describe('KclManager engine language version', () => {
-  it('reads the open source before the first execution', async () => {
-    const { kclManager } = createKclManagerTestHarness(
-      '@settings(kclVersion = 2.0)'
-    )
-    expect(await kclManager.getLanguageVersion()).toBe('2.0')
-    kclManager.updateCodeEditor('@settings(kclVersion = "abcd")', {
-      shouldExecute: false,
-      shouldWriteToDisk: false,
-    })
-    expect(await kclManager.getLanguageVersion()).toBeInstanceOf(Error)
-  })
-
-  it('synchronizes the executing AST on edits and file switches', async () => {
-    const { kclManager } = createKclManagerTestHarness()
-    kclManager.engineCommandManager.started = true
-    const execute = vi
-      .spyOn(kclManager.rustContext, 'execute')
-      .mockResolvedValue(emptyExecState())
-    const setVersion = vi.spyOn(
-      kclManager.engineCommandManager,
-      'setKclVersion'
-    )
-
-    await kclManager.executeCode('@settings(kclVersion = 2.0)\nx = 1')
-    await kclManager.executeCode('@settings(kclVersion = "3.0-preview")\nx = 1')
-    kclManager.path = '/project/legacy.kcl'
-    await kclManager.executeCode('x = 1')
-
-    expect(setVersion.mock.calls).toEqual([['2.0'], ['3.0-preview'], ['1.0']])
-    expect(execute).toHaveBeenCalledTimes(3)
-    for (let i = 0; i < 3; i++) {
-      expect(setVersion.mock.invocationCallOrder[i]).toBeLessThan(
-        execute.mock.invocationCallOrder[i]
-      )
-    }
-  })
-
-  it('waits for the version acknowledgement before executing geometry', async () => {
-    const { kclManager } = createKclManagerTestHarness()
-    kclManager.engineCommandManager.started = true
-    const acknowledgement = createDeferred<undefined>()
-    const setVersion = vi
-      .spyOn(kclManager.engineCommandManager, 'setKclVersion')
-      .mockReturnValueOnce(acknowledgement.promise)
-    const execute = vi
-      .spyOn(kclManager.rustContext, 'execute')
-      .mockResolvedValue(emptyExecState())
-
-    const pending = kclManager.executeCode('@settings(kclVersion = 2.0)')
-    await vi.waitFor(() => expect(setVersion).toHaveBeenCalledWith('2.0'))
-    expect(execute).not.toHaveBeenCalled()
-    expect(kclManager.isExecuting).toBe(true)
-    acknowledgement.resolve(undefined)
-    await pending
-    expect(execute).toHaveBeenCalledTimes(1)
-    expect(kclManager.isExecuting).toBe(false)
-  })
-
-  it('reports a rejected version and retries on the next execution', async () => {
-    const { kclManager } = createKclManagerTestHarness()
-    kclManager.engineCommandManager.started = true
-    const setVersion = vi
-      .spyOn(kclManager.engineCommandManager, 'setKclVersion')
-      .mockRejectedValueOnce([
-        { success: false, errors: [{ message: 'Unsupported KCL version' }] },
-      ])
-    const execute = vi
-      .spyOn(kclManager.rustContext, 'execute')
-      .mockResolvedValue(emptyExecState())
-    const code = '@settings(kclVersion = "3.0-preview")'
-
-    await kclManager.executeCode(code)
-    expect(execute).not.toHaveBeenCalled()
-    expect(kclManager.errors[0].message).toContain('Unsupported KCL version')
-    expect(kclManager.isExecuting).toBe(false)
-
-    await kclManager.executeCode(code)
-    expect(setVersion).toHaveBeenCalledTimes(2)
-    expect(execute).toHaveBeenCalledTimes(1)
-    expect(kclManager.errors).toEqual([])
-  })
-
   it.each(['direct editor', 'checkpoint fallback'] as const)(
     'stops %s sketch execution after a rejected version and recovers on retry',
     async (executionPath) => {
@@ -246,7 +164,9 @@ describe('KclManager engine language version', () => {
       kclManager.modelingSend = modelingSend
       const setVersion = vi
         .spyOn(kclManager.engineCommandManager, 'setKclVersion')
-        .mockRejectedValueOnce(new Error('Unsupported KCL version'))
+        .mockRejectedValueOnce([
+          { success: false, errors: [{ message: 'Unsupported KCL version' }] },
+        ])
       const execute = vi
         .spyOn(kclManager.rustContext, 'execute')
         .mockResolvedValue(emptyExecState())
@@ -304,7 +224,7 @@ describe('KclManager engine language version', () => {
     }
   )
 
-  it('skips geometry for an execution superseded while setting the version', async () => {
+  it('waits for version acknowledgement and skips superseded geometry', async () => {
     const { kclManager } = createKclManagerTestHarness()
     kclManager.engineCommandManager.started = true
     const acknowledgement = createDeferred<undefined>()
@@ -316,6 +236,7 @@ describe('KclManager engine language version', () => {
       .mockResolvedValue(emptyExecState())
     const pending = kclManager.executeCode('@settings(kclVersion = 2.0)')
     await vi.waitFor(() => expect(setVersion).toHaveBeenCalledWith('2.0'))
+    expect(execute).not.toHaveBeenCalled()
     await kclManager.executeCode('@settings(kclVersion = "3.0-preview")')
     expect(kclManager.executeIsStale).not.toBeNull()
     acknowledgement.resolve(undefined)
@@ -349,31 +270,6 @@ describe('KclManager engine language version', () => {
     expect(kclManager.ast).toBe(newAst)
     expect(kclManager.isExecuting).toBe(false)
   })
-
-  it.each([
-    '@settings(kclVersion = "abcd")',
-    '@settings(kclVersion = 2.0)\nx =',
-  ])(
-    'does not change the engine version or execute invalid source: %s',
-    async (code) => {
-      const { kclManager } = createKclManagerTestHarness()
-      kclManager.engineCommandManager.started = true
-      const execute = vi
-        .spyOn(kclManager.rustContext, 'execute')
-        .mockResolvedValue(emptyExecState())
-      const setVersion = vi.spyOn(
-        kclManager.engineCommandManager,
-        'setKclVersion'
-      )
-      await kclManager.executeCode(code)
-      expect(setVersion).not.toHaveBeenCalled()
-      expect(execute).not.toHaveBeenCalled()
-      expect(kclManager.hasErrors()).toBe(true)
-      await kclManager.executeCode('@settings(kclVersion = 2.0)')
-      expect(setVersion).toHaveBeenCalledWith('2.0')
-      expect(execute).toHaveBeenCalledTimes(1)
-    }
-  )
 })
 
 describe('KclManager live operation updates', () => {

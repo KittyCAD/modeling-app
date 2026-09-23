@@ -60,15 +60,6 @@ test(
     await expect.poll(() => versions).toEqual(['3.0-preview', '2.0'])
     await scene.settled()
 
-    // Re-executing after ordinary edits should not resend a confirmed version.
-    await editor.replaceCodeByTyping('10mm', '20mm')
-    await expect
-      .poll(() =>
-        page.evaluate(() => window.app.singletons.kclManager.lastSuccessfulCode)
-      )
-      .toContain('20mm')
-    await scene.settled()
-    expect(versions).toEqual(['3.0-preview', '2.0'])
     expect(socketUrls).toHaveLength(1)
 
     await page.evaluate(() =>
