@@ -264,6 +264,8 @@ export class ElectronZoo {
             'viz',
             'gpu',
             'skia',
+            'skia.gpu',
+            'skia.shaders',
             'latencyInfo',
             'toplevel',
             'blink.user_timing',

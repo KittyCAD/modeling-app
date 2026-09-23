@@ -22,6 +22,9 @@ test.afterEach(async ({ page, cmdBar }, testInfo) => {
   await new Promise((resolve) => setTimeout(resolve, 25_000))
   await cmdBar.cmdBarOpenBtn.click()
   await expect(page.getByTestId('cmd-bar-search')).toBeEditable()
+  await expect(
+    page.locator('[data-testid="command-bar-wrapper"] > div')
+  ).toHaveCSS('opacity', '1')
   await testInfo.attach('palette-appearance', {
     body: await page.screenshot(),
     contentType: 'image/png',
@@ -72,10 +75,12 @@ test.beforeEach(async ({ page, homePage, cmdBar }) => {
   await page.addStyleTag({
     content: `
       [data-testid="command-bar"] {
-        box-shadow: ${variant === 'hard-shadow-fast' ? '0 2px 0 0 rgb(0 0 0 / 0.1)' : 'none'} !important;
+        box-shadow: ${variant === 'shadow-instant' ? '0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)' : 'none'} !important;
       }
       [data-testid="command-bar-wrapper"] > div {
-        transition-duration: 50ms !important;
+        transition: none !important;
+        transform: none !important;
+        opacity: 1 !important;
       }
     `,
   })

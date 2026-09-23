@@ -17,7 +17,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        variant: [no-shadow-fast, hard-shadow-fast]
+        variant: [no-shadow-instant, shadow-instant]
     runs-on: namespace-profile-ubuntu-8-cores;overrides.cache-tag=modeling-app-general-v2
     timeout-minutes: 15
     steps:
