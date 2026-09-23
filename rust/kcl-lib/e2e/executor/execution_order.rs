@@ -1,6 +1,7 @@
 use std::collections::HashMap;
 use std::sync::Arc;
 
+use kcl_api::KclVersion;
 use kcl_lib::KclError;
 use kcl_lib::SourceRange;
 use kcl_lib::engine_connection::EngineTransport;
@@ -91,7 +92,9 @@ async fn kcl_test_cached_lego_batches_are_between_begin_and_end_execution() {
 }
 
 async fn lego_batches_are_between_begin_and_end_execution(use_cache: bool) {
-    let mut ctx = kcl_lib::ExecutorContext::new_with_default_client().await.unwrap();
+    let mut ctx = kcl_lib::ExecutorContext::new_with_version(KclVersion::V2)
+        .await
+        .unwrap();
     let events = Arc::new(Mutex::new(Vec::new()));
     let engine = Arc::get_mut(&mut ctx.engine).unwrap();
     engine.transport = Arc::new(Box::new(RecordingTransport {
