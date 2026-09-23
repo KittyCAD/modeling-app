@@ -283,11 +283,6 @@ export class ElectronZoo {
       args: [
         '.',
         '--no-sandbox',
-        ...(process.env.INTERACTION_DIAGNOSTIC_VARIANT === 'precompile'
-          ? ['--enable-skia-graphite-precompilation']
-          : process.env.INTERACTION_DIAGNOSTIC_VARIANT === 'ganesh'
-            ? ['--disable-skia-graphite']
-            : []),
         `--trace-config-file=${traceConfigPath}`,
         '--trace-startup-format=json',
       ],

@@ -17,7 +17,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        variant: [baseline, narrow, precompile, plain, ganesh]
+        variant: [baseline, resize-before-load]
     runs-on: namespace-profile-macos-8-cores
     timeout-minutes: 15
     steps:
@@ -32,24 +32,24 @@ jobs:
 
       - uses: actions/download-artifact@v8
         with:
-          # Reuse the exact app build from the failed native calibration.
-          run-id: 35905169130
+          # Reuse the exact async-thumbnail app build from PR CI.
+          run-id: 35909768939
           github-token: ${{ github.token }}
           name: interaction-performance-build
           path: .vite
 
       - uses: actions/download-artifact@v8
         with:
-          # Reuse the exact app build from the failed native calibration.
-          run-id: 35905169130
+          # Reuse the exact async-thumbnail app build from PR CI.
+          run-id: 35909768939
           github-token: ${{ github.token }}
           name: prepared-wasm
           path: rust/kcl-wasm-lib/pkg
 
       - uses: actions/download-artifact@v8
         with:
-          # Reuse the exact app build from the failed native calibration.
-          run-id: 35905169130
+          # Reuse the exact async-thumbnail app build from PR CI.
+          run-id: 35909768939
           github-token: ${{ github.token }}
           name: prepared-ts-rs-bindings
           path: rust/kcl-lib/bindings
@@ -58,6 +58,7 @@ jobs:
         run: env -u HEADLESS npm exec -- playwright test --config=playwright.performance.config.ts --headed
         env:
           INTERACTION_DIAGNOSTIC_VARIANT: ${{ matrix.variant }}
+          INTERACTION_DIAGNOSTIC_BUILD_RUN: 35909768939
           NODE_ENV: production
           TARGET: desktop
           VITE_ZOO_BASE_DOMAIN: dev.zoo.dev

@@ -70,16 +70,6 @@ test.beforeEach(async ({ page, homePage, cmdBar }) => {
   await page.emulateMedia({ reducedMotion: 'no-preference' })
   await page.setBodyDimensions({ width: 1200, height: 800 })
   await page.evaluate(() => document.fonts.ready)
-  // Diagnostic-only variants isolate palette raster/compositing costs.
-  const variant = process.env.INTERACTION_DIAGNOSTIC_VARIANT
-  if (variant === 'narrow' || variant === 'plain') {
-    await page.addStyleTag({
-      content:
-        variant === 'narrow'
-          ? '[data-testid="command-bar-wrapper"] > div { max-width: 36rem; margin-inline: auto; }'
-          : '[data-testid="command-bar"] { box-shadow: none !important; } [data-testid="command-bar-wrapper"] > div { transition-duration: 0s !important; transform: none !important; }',
-    })
-  }
 
   await expect(cmdBar.cmdBarOpenBtn).toBeEnabled()
   await expect(page.getByTestId('command-bar-wrapper')).toBeHidden()
