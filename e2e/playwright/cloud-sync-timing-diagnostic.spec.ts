@@ -38,7 +38,19 @@ test(
     const releaseUpload = Promise.withResolvers<undefined>()
     let createCount = 0
 
-    const finishDiagnostic = await installCloudTimingDiagnostic(page, testInfo)
+    const creationGate =
+      process.env.PLAYWRIGHT_CLOUD_CREATION_GATE ?? 'baseline'
+    if (
+      creationGate !== 'baseline' &&
+      creationGate !== 'project-list-response'
+    ) {
+      throw new Error('Unknown cloud creation diagnostic gate.')
+    }
+    const diagnostic = await installCloudTimingDiagnostic(
+      page,
+      testInfo,
+      creationGate
+    )
     await expect(await request.get(`${apiUrl}/user`, { headers })).toBeOK()
     await page.exposeFunction(
       'holdCloudCreationResponse',
@@ -79,6 +91,15 @@ test(
       // through the UI without replacing the real project-list response.
       await page.getByPlaceholder(/^Search projects/).fill(projectName)
       await expect(page.getByTestId('project-link')).toHaveCount(0)
+      if (creationGate === 'project-list-response') {
+        // Start creation after the real list arrives, without waiting for its
+        // local reconciliation. Storage timings establish whether they overlap.
+        await expect
+          .poll(diagnostic.getProjectListResponse, {
+            timeout: CLOUD_SYNC_E2E_TIMEOUT,
+          })
+          .toMatchObject({ status: 200, count: expect.any(Number) })
+      }
       await createProject({ name: projectName, page })
       await expectProjectFileRoute(page)
 
@@ -154,7 +175,7 @@ test(
       await expect(page.getByTestId('cloud-conflict-dialog')).toHaveCount(0)
     } finally {
       releaseUpload.resolve(undefined)
-      await finishDiagnostic().catch(() => {
+      await diagnostic.finish().catch(() => {
         console.error('Cloud timing diagnostic teardown could not complete.')
       })
       await page.close()

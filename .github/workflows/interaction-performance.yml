@@ -2,6 +2,14 @@ name: Interaction presentation diagnostics
 
 on:
   workflow_dispatch:
+    inputs:
+      cloud-creation-gate:
+        description: Start cloud creation immediately or after the real project list arrives
+        type: choice
+        default: baseline
+        options:
+          - baseline
+          - project-list-response
 
 concurrency:
   group: interaction-performance-${{ github.head_ref || github.ref }}
@@ -109,6 +117,7 @@ jobs:
         run: env -u HEADLESS npm exec -- playwright test --config=playwright.cloud-diagnostic.config.ts --headed
         env:
           TARGET: web
+          PLAYWRIGHT_CLOUD_CREATION_GATE: ${{ inputs.cloud-creation-gate }}
           NODE_ENV: development
           VERCEL_BASE_URL: https://modeling-7pe13j5wh.vercel.dev.zoo.dev
           VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}

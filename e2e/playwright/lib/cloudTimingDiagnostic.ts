@@ -6,7 +6,8 @@ import { isArray } from '@src/lib/utils'
 /** Temporary diagnostic only. Records method names/counts/timings, never arguments. */
 export async function installCloudTimingDiagnostic(
   page: Page,
-  testInfo: TestInfo
+  testInfo: TestInfo,
+  creationGate: 'baseline' | 'project-list-response' = 'baseline'
 ) {
   const directory = testInfo.outputPath('timings')
   mkdirSync(directory, { recursive: true })
@@ -38,6 +39,7 @@ export async function installCloudTimingDiagnostic(
     kind: 'metadata',
     at: Date.now(),
     diagnostic: 'cross-environment-diagnostic',
+    creationGate,
     sourceCommit: '7c093a1c16090b68047aca5bef141d5da3df5f8c',
     rendererOrigin: preview ? new URL(preview).origin : undefined,
     platform: process.platform,
@@ -94,6 +96,7 @@ export async function installCloudTimingDiagnostic(
       }
     }
   })
+  let firstProjectListResponse: { status: number; count: number } | undefined
   page.on('response', async (response) => {
     const url = new URL(response.url())
     if (url.pathname === '/user/projects') {
@@ -102,6 +105,9 @@ export async function installCloudTimingDiagnostic(
       if (method === 'GET') {
         const projects: unknown = await response.json().catch(() => null)
         if (isArray(projects)) count = projects.length
+        if (url.origin === 'https://api.dev.zoo.dev' && count !== undefined) {
+          firstProjectListResponse ??= { status: response.status(), count }
+        }
       }
       record({
         kind: 'project-api-response',
@@ -315,7 +321,7 @@ export async function installCloudTimingDiagnostic(
     await profiler?.detach().catch(() => undefined)
     profiler = undefined
   }
-  return async () => {
+  const finish = async () => {
     if (!profiler) return
     try {
       const { profile } = await profiler.send('Profiler.stop')
@@ -330,5 +336,9 @@ export async function installCloudTimingDiagnostic(
     } finally {
       await profiler.detach().catch(() => undefined)
     }
+  }
+  return {
+    finish,
+    getProjectListResponse: () => firstProjectListResponse,
   }
 }
