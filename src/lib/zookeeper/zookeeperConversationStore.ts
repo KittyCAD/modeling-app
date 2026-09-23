@@ -7,7 +7,7 @@ import {
   getZookeeperConversationMetadataFromProjectTomlContents,
   setZookeeperConversationInProjectTomlContents,
 } from '@src/lib/projectTomlMetadata'
-import { isErr } from '@src/lib/trap'
+import { isErr, reportRejection } from '@src/lib/trap'
 
 const ZOOKEEPER_CONVERSATIONS_FILE_NAME = 'ml-conversations.json'
 
@@ -160,7 +160,7 @@ export const makeProjectZookeeperConversationStore = (
           projectId
         )
         if (legacy !== undefined) {
-          await saveConversation(contents, legacy)
+          await saveConversation(contents, legacy).catch(reportRejection)
         }
         return legacy
       })

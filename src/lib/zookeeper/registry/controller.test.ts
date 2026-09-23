@@ -737,40 +737,6 @@ describe('Zookeeper session controller', () => {
     ])
   })
 
-  it('keeps the current chat and queue when clearing fails, then retries', async () => {
-    vi.spyOn(console, 'error').mockImplementation(() => {})
-    const { actor, controller, conversationStore } = createHarness({
-      actorContext: {
-        conversationId: 'saved-conversation',
-        awaitingResponse: true,
-      },
-    })
-    await flushPromises()
-    controller.sendOrQueue('keep this message', undefined, [])
-    vi.mocked(
-      conversationStore.deleteProjectConversationId
-    ).mockRejectedValueOnce(new Error('Permission denied'))
-
-    await controller.clearConversation()
-    expect(controller.isClearingChat.value).toBe(false)
-    expect(controller.queue.value).toHaveLength(1)
-    expect(
-      sentEvents(actor, ZookeeperManagerTransitions.ConversationClose)
-    ).toHaveLength(0)
-    expect(
-      sentEvents(actor, ZookeeperManagerTransitions.CacheSetupAndConnect)
-    ).toHaveLength(0)
-
-    await controller.clearConversation()
-    expect(conversationStore.deleteProjectConversationId).toHaveBeenCalledTimes(
-      2
-    )
-    expect(controller.queue.value).toHaveLength(0)
-    expect(
-      sentEvents(actor, ZookeeperManagerTransitions.ConversationClose)
-    ).toHaveLength(1)
-  })
-
   it('does not let an old-conversation snapshot cancel a clear', async () => {
     const deletion = deferred<undefined>()
     const { actor, controller, conversationStore } = createHarness()

@@ -379,19 +379,26 @@ describe('project-backed Zookeeper conversations', () => {
     ).toMatchObject({ conversationIds: [replacementId] })
   })
 
-  it('does not continue migration when writing project.toml fails', async () => {
+  it('resumes the legacy conversation even when writing project.toml fails', async () => {
+    const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {})
     files.set(
       '/tmp/ml-conversations.json',
       JSON.stringify({ [projectId]: conversationId })
     )
-    fsMocks.writeFile.mockRejectedValueOnce(new Error('Permission denied'))
-    await expect(store().getProjectConversationId(projectId)).rejects.toThrow(
-      'Permission denied'
-    )
-    expect(files.get(projectTomlPath)).toBe(initialToml)
-    await expect(store().getProjectConversationId(projectId)).resolves.toBe(
-      conversationId
-    )
+    try {
+      fsMocks.writeFile.mockRejectedValueOnce(new Error('Permission denied'))
+      await expect(store().getProjectConversationId(projectId)).resolves.toBe(
+        conversationId
+      )
+      expect(consoleError).toHaveBeenCalledOnce()
+      expect(files.get(projectTomlPath)).toBe(initialToml)
+      await expect(store().getProjectConversationId(projectId)).resolves.toBe(
+        conversationId
+      )
+      expect(files.get(projectTomlPath)).toContain(conversationId)
+    } finally {
+      consoleError.mockRestore()
+    }
   })
 
   it('keeps the saved conversation when clearing fails and supports retry', async () => {
