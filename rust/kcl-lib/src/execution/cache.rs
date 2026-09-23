@@ -9,6 +9,7 @@ use tokio::sync::RwLock;
 
 use crate::ExecOutcome;
 use crate::ExecutorContext;
+use crate::KclVersion;
 use crate::SourceRange;
 use crate::errors::KclError;
 use crate::execution::ConstraintKey;
@@ -20,6 +21,7 @@ use crate::execution::KclValueView;
 use crate::execution::annotations;
 use crate::execution::memory::Stack;
 use crate::execution::state::ModuleInfoMap;
+use crate::execution::state::NotYetAdded;
 use crate::execution::state::{self as exec_state};
 use crate::front::Object;
 use crate::front::ObjectId;
@@ -155,6 +157,8 @@ impl GlobalState {
             id_to_source: self.exec_state.id_to_source.clone(),
             constraint_state: self.main.exec_state.constraint_state.clone(),
             scene_objects: self.exec_state.root_module_artifacts.scene_objects.clone(),
+            std_not_yet_added: self.exec_state.std_not_yet_added.clone(),
+            kcl_version: self.exec_state.entry_point_kcl_version.unwrap_or_default(),
         })
     }
 }
@@ -185,6 +189,24 @@ pub(crate) struct SketchModeState {
     pub constraint_state: IndexMap<ObjectId, IndexMap<ConstraintKey, ConstraintState>>,
     /// The scene objects.
     pub scene_objects: Vec<Object>,
+    /// See `GlobalState::std_not_yet_added`. Restored because a run reusing
+    /// this memory skips the prelude.
+    pub std_not_yet_added: IndexMap<String, NotYetAdded>,
+    /// The effective kclVersion (declared, or the default) of the program that
+    /// wrote this memory; see [`Self::reusable_for`].
+    pub kcl_version: KclVersion,
+}
+
+impl SketchModeState {
+    /// Whether a program with the effective `kcl_version` may reuse this
+    /// memory. Memory from another version keeps bindings, module outcomes,
+    /// and a prelude this program must not see, and the LSP worker reuses
+    /// memory with no other invalidation. Only the version counts: after other
+    /// settings changes the frontend may execute a single sketch, which needs
+    /// this memory and cannot rebuild it.
+    pub(crate) fn reusable_for(&self, kcl_version: KclVersion) -> bool {
+        self.kcl_version == kcl_version
+    }
 }
 
 /// Read a named value from the previous sketch-mode execution.
@@ -204,6 +226,8 @@ impl SketchModeState {
             id_to_source: Default::default(),
             constraint_state: Default::default(),
             scene_objects: Vec::new(),
+            std_not_yet_added: Default::default(),
+            kcl_version: KclVersion::default(),
         }
     }
 }

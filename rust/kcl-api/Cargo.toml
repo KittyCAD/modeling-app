@@ -13,7 +13,7 @@ ts-rs = []
 
 [dependencies]
 arbitrary = { version = "1", features = ["derive"], optional = true }
-euler = "0.4.1"
+euler = "0.5"
 indexmap = { workspace = true, features = ["serde", "rayon"] }
 kittycad-unit-conversion-derive = "0.1.0"
 kcl-error = { version = "=0.2.186", path = "../kcl-error" }

@@ -38,6 +38,12 @@ The cloud sync system supports syncing on a per-project basis. However, cloud sy
 
 Cloud sync is technically keyed by per-project `project.toml` IDs, but the user-facing model is library membership. A project is normally made cloud-backed by moving it into a cloud-type project library, and made local-only by moving it out of a cloud-type project library.
 
+### Personal Cloud ownership
+
+The API's `/user/projects` index includes personal projects and projects shared with the active organization. The `cloud-personal` library definition owns a relationship-membership policy that excludes projects whose `access.scope` is `organization`, even when `access.can_edit` is true. A future organization library can attach the inverse policy without adding organization-specific behavior to Home. Explicit copies in other libraries remain available at their own paths; this does not delete local files or change sync enrollment. Personal projects and projects without known access metadata keep their existing behavior, including local copies before the remote index loads or while cloud sync is disabled.
+
+Apply this policy to Home's library projection, not the sync engine's remote index. The engine must retain all accessible projects because an absent remote ID can trigger missing-project reconciliation. Organization libraries, read-only/fork UX, and permission enforcement are separate concerns.
+
 ### Duplicate local realizations
 
 Duplicate cleanup operates on local realizations, not Home entries. A local realization is eligible for silent deletion only when cloudSync can prove it is an exact non-canonical duplicate in a cloud-type library. Directory-library copies are never silently deleted. Pending, conflicted, unreadable, tombstoned, sync-excluded, or divergent realizations must remain visible for user review.

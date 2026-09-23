@@ -96,7 +96,7 @@ async fn unparse_test(test: &Test) {
 #[kcl_directory_test_macro::test_all_dirs("../public/kcl-samples", exclude = ["walkie-talkie"])]
 async fn kcl_test_execute(dir_name: &str, dir_path: &Path) {
     let t = test(dir_name, dir_path.join("main.kcl"));
-    super::execute_test(&t, true).await;
+    super::execute_test(&t).await;
 }
 
 /// The current engine times out on the walkie-talkie's exact 143-tool speaker
@@ -107,7 +107,7 @@ async fn kcl_test_execute(dir_name: &str, dir_path: &Path) {
 async fn kcl_test_execute_walkie_talkie() {
     let dir_path = INPUTS_DIR.join("walkie-talkie");
     let t = test("walkie-talkie", dir_path.join("main.kcl"));
-    super::execute_test(&t, true).await;
+    super::execute_test(&t).await;
 }
 
 #[test]
@@ -188,6 +188,7 @@ fn test(test_name: &str, entry_point: std::path::PathBuf) -> Test {
     let test_config = TestConfig::from_file(&output_dir.join(test_name)).unwrap_or_default();
     let TestConfig {
         redact_uuids,
+        test_graphics,
         kcl_versions,
     } = test_config;
     let mut relative_output_dir = output_dir.join(relative_path);
@@ -210,6 +211,7 @@ fn test(test_name: &str, entry_point: std::path::PathBuf) -> Test {
         snapshot_physical_properties: true,
         expected_deprecation_warnings: Some(0),
         kcl_versions,
+        test_graphics_params: test_graphics,
     }
 }
 
