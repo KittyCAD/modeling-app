@@ -516,6 +516,32 @@ describe('project library default policies', () => {
 })
 
 describe('combineProjectLibraryTypes', () => {
+  test('composes relationship membership policies from one library type', () => {
+    const personalMembership = {
+      libraryId: 'cloud-personal',
+      includes: () => true,
+    }
+    const organizationMembership = {
+      libraryId: 'cloud-organization',
+      includes: () => false,
+    }
+
+    expect(
+      combineProjectLibraryTypes([
+        {
+          type: 'cloud',
+          title: 'Cloud',
+          relationshipMembershipPolicies: [personalMembership],
+        },
+        {
+          type: 'cloud',
+          title: 'Cloud',
+          relationshipMembershipPolicies: [organizationMembership],
+        },
+      ]).get('cloud')?.relationshipMembershipPolicies
+    ).toEqual([personalMembership, organizationMembership])
+  })
+
   test('merges duplicate library type contributions by type', () => {
     const readRealizations = async () => []
     const createProject = {
