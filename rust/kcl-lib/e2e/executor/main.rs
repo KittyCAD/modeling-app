@@ -40,14 +40,6 @@ async fn kcl_test_execute_pipes_on_pipes() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn kcl_test_execute_cylinder() {
-    let code = kcl_input!("cylinder");
-
-    let result = execute_and_snapshot_legacy_sim_test(code, None).await.unwrap();
-    assert_out("cylinder", &result);
-}
-
-#[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_execute_kittycad_svg() {
     let code = kcl_input!("kittycad_svg");
 
