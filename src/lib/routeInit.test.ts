@@ -97,6 +97,41 @@ afterEach(() => {
 })
 
 describe('initIndexRoute', () => {
+  test('does not load settings when canceled while awaiting the web feature gate', async () => {
+    setDesktop(false)
+    const featureGate = Promise.withResolvers<boolean>()
+    mocks.webHomeRouteEnabled.mockReturnValueOnce(featureGate.promise)
+    const controller = new AbortController()
+    const initializing = initIndexRoute(fakeApp(), {
+      urlState: { search: '', hash: '' },
+      signal: controller.signal,
+    })
+    controller.abort()
+    featureGate.resolve(false)
+    await expect(initializing).rejects.toMatchObject({ name: 'AbortError' })
+    expect(mocks.loadAndValidateSettings).not.toHaveBeenCalled()
+    expect(mocks.projectSkeletonCreate).not.toHaveBeenCalled()
+  })
+
+  test('does not create the default project when canceled during its file check', async () => {
+    setDesktop(false)
+    mocks.getProjectInfo.mockResolvedValue({
+      default_file: '/library/demo-project/main.kcl',
+    })
+    const exists = Promise.withResolvers<boolean>()
+    mocks.exists.mockReturnValueOnce(exists.promise)
+    const controller = new AbortController()
+    const initializing = initIndexRoute(fakeApp(), {
+      urlState: { search: '', hash: '' },
+      signal: controller.signal,
+    })
+    await vi.waitFor(() => expect(mocks.exists).toHaveBeenCalled())
+    controller.abort()
+    exists.resolve(false)
+    await expect(initializing).rejects.toMatchObject({ name: 'AbortError' })
+    expect(mocks.projectSkeletonCreate).not.toHaveBeenCalled()
+  })
+
   test('desktop goes home, carrying the query string', async () => {
     setDesktop(true)
     const result = await initIndexRoute(fakeApp(), {
@@ -228,6 +263,18 @@ describe('initFileRoute', () => {
 })
 
 describe('initHomeRoute', () => {
+  test('does not close the current project after its startup has been canceled', async () => {
+    setDesktop(false)
+    const featureGate = Promise.withResolvers<boolean>()
+    mocks.webHomeRouteEnabled.mockReturnValueOnce(featureGate.promise)
+    const controller = new AbortController()
+    const initializing = initHomeRoute(fakeApp(), { signal: controller.signal })
+    controller.abort()
+    featureGate.resolve(true)
+    await expect(initializing).rejects.toMatchObject({ name: 'AbortError' })
+    expect(mocks.loadHomeProjects).not.toHaveBeenCalled()
+  })
+
   test('unflagged web continues through the index policy', async () => {
     setDesktop(false)
     mocks.webHomeRouteEnabled.mockResolvedValue(false)

@@ -1,4 +1,5 @@
 import type { App } from '@src/lib/app'
+import { parseLaunchRequest } from '@src/lib/launchRequest'
 import {
   initFileRoute,
   initHomeRoute,
@@ -10,7 +11,10 @@ import {
   type AppDestination,
   type AppUrlState,
   appUrlService,
+  type InitialUrlIntent,
 } from '@src/registry/contracts/appUrl'
+import { appLaunchService } from '@src/registry/contracts/appLaunch'
+import type { AppNavigationService } from '@src/registry/contracts/appNavigation'
 
 const MAX_INITIAL_TRANSITIONS = 8
 
@@ -41,40 +45,81 @@ export async function initializeApplication(
     return
   }
 
+  const { request, remainingSearch } = parseLaunchRequest(intent.search)
+  if (request) {
+    // Keep the transferable URL through full-page authentication and the
+    // desktop choice. Only the launch owner consumes its one-shot parameters.
+    // Some commands register when their React view mounts. Acceptance owns the
+    // continuation, but must not block mounting that view or the sign-in UI.
+    void app.registry.get(appLaunchService).accept({
+      destination: intent.destination,
+      urlState: {
+        overlay: intent.overlay,
+        search: intent.search,
+        hash: intent.hash,
+      },
+      request,
+      remainingSearch,
+    })
+    return
+  }
+  return restoreApplicationDestination(app, intent)
+}
+
+/** Establish a typed destination without reading the URL again. */
+export async function restoreApplicationDestination(
+  app: App,
+  intent: Extract<InitialUrlIntent, { type: 'launch' }>,
+  options: {
+    openProject?: AppNavigationService['openProject']
+    signal?: AbortSignal
+    projectUrl?: boolean
+  } = {}
+): Promise<void> {
+  const appUrl = app.registry.get(appUrlService)
+
   let destination: AppDestination = intent.destination
   let urlState: AppUrlState = {
     ...(intent.overlay ? { overlay: intent.overlay } : {}),
     search: intent.search,
     hash: intent.hash,
   }
-  let shouldProjectUrl = false
+  let shouldProjectUrl = options.projectUrl ?? false
 
   for (
     let transitionCount = 0;
     transitionCount < MAX_INITIAL_TRANSITIONS;
     transitionCount += 1
   ) {
+    options.signal?.throwIfAborted()
     let result: InitialResult
     switch (destination.type) {
       case 'index':
-        result = await initIndexRoute(app, { urlState })
+        result = await initIndexRoute(app, {
+          urlState,
+          ...(options.signal ? { signal: options.signal } : {}),
+        })
         break
       case 'home':
-        result = await initHomeRoute(app)
+        result = options.signal
+          ? await initHomeRoute(app, { signal: options.signal })
+          : await initHomeRoute(app)
         break
       case 'project':
         result = await initFileRoute(app, {
           id: destination.target,
           startup: urlState,
+          ...(options.openProject ? { openProject: options.openProject } : {}),
         })
         break
       case 'sign-in':
         return
     }
+    options.signal?.throwIfAborted()
 
     if (result.kind === 'ready') {
       if (shouldProjectUrl && destination.type !== 'project') {
-        void appUrl.navigate(appUrl.formatUrl({ destination, ...urlState }), {
+        await appUrl.navigate(appUrl.formatUrl({ destination, ...urlState }), {
           replace: true,
         })
       }

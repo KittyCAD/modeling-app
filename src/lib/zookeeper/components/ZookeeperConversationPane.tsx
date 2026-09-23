@@ -1,8 +1,4 @@
 import { useSignals } from '@preact/signals-react/runtime'
-import {
-  LEGACY_SEARCH_PARAM_ZOOKEEPER_PROMPT_KEY,
-  SEARCH_PARAM_ZOOKEEPER_PROMPT_KEY,
-} from '@src/lib/constants'
 import type { SettingsType } from '@src/lib/settings/initialSettings'
 import { ZookeeperConversation } from '@src/lib/zookeeper/components/ZookeeperConversation'
 import { ZookeeperConversationWelcome } from '@src/lib/zookeeper/components/ZookeeperConversationWelcome'
@@ -15,9 +11,9 @@ import {
 } from '@src/lib/zookeeper/zookeeperManagerMachine'
 import type { ModelingMachineContext } from '@src/machines/modelingSharedTypes'
 import { S } from '@src/machines/utils'
+import type { ZookeeperPromptSeed } from '@src/registry/contracts/zookeeperPrompt'
 import { useSelector } from '@xstate/react'
-import { useCallback, useEffect, useRef, useState } from 'react'
-import { useSearchParams } from 'react-router-dom'
+import { useCallback, useEffect, useRef } from 'react'
 
 export const ZookeeperConversationPane = (props: {
   controller: ZookeeperSessionController
@@ -27,8 +23,6 @@ export const ZookeeperConversationPane = (props: {
   onMlCopilotModeChange?: (mode: MlCopilotModeId | undefined) => void
 }) => {
   useSignals()
-  const [defaultPrompt, setDefaultPrompt] = useState('')
-  const [searchParams, setSearchParams] = useSearchParams()
   const controller = props.controller
   const actor = controller.actor
 
@@ -118,20 +112,10 @@ export const ZookeeperConversationPane = (props: {
     }
   }, [accessDeniedCode, checkBillingAccess, setupFailed])
 
-  useEffect(() => {
-    const promptParam =
-      searchParams.get(SEARCH_PARAM_ZOOKEEPER_PROMPT_KEY) ??
-      searchParams.get(LEGACY_SEARCH_PARAM_ZOOKEEPER_PROMPT_KEY)
-    if (!promptParam) {
-      return
-    }
-
-    setDefaultPrompt(promptParam)
-    const nextSearchParams = new URLSearchParams(searchParams)
-    nextSearchParams.delete(SEARCH_PARAM_ZOOKEEPER_PROMPT_KEY)
-    nextSearchParams.delete(LEGACY_SEARCH_PARAM_ZOOKEEPER_PROMPT_KEY)
-    setSearchParams(nextSearchParams, { replace: true })
-  }, [searchParams, setSearchParams])
+  const onPromptSeedConsumed = useCallback(
+    (seed: ZookeeperPromptSeed) => controller.consumePromptSeed(seed),
+    [controller]
+  )
 
   const showManualConnect = controller.showManualConnect.value
   const isClearingChat = controller.isClearingChat.value
@@ -197,7 +181,8 @@ export const ZookeeperConversationPane = (props: {
       onRemoveFromQueue={(id) => controller.removeQueued(id)}
       onSteer={(id) => controller.steer(id)}
       userAvatarSrc={props.userAvatarSrc}
-      defaultPrompt={defaultPrompt}
+      promptSeed={controller.promptSeed.value}
+      onPromptSeedConsumed={onPromptSeedConsumed}
       initialMlCopilotMode={initialMlCopilotMode}
       onMlCopilotModeChange={props.onMlCopilotModeChange}
       modeOptions={modeOptions}

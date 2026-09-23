@@ -1,6 +1,6 @@
 import { signal } from '@preact/signals-core'
-import { act, render, screen, waitFor } from '@testing-library/react'
-import { MemoryRouter, useLocation } from 'react-router-dom'
+import { act, render } from '@testing-library/react'
+import { MemoryRouter } from 'react-router-dom'
 import { beforeEach, describe, expect, test, vi } from 'vitest'
 
 const conversationRender = vi.hoisted(() => vi.fn())
@@ -22,6 +22,7 @@ import type {
 } from '@src/lib/zookeeper/components/ZookeeperConversation'
 import { ZookeeperConversationPane } from '@src/lib/zookeeper/components/ZookeeperConversationPane'
 import type { ZookeeperSessionController } from '@src/lib/zookeeper/registry/controller'
+import type { ZookeeperPromptSeed } from '@src/registry/contracts/zookeeperPrompt'
 import type {
   Conversation,
   MlCopilotModeOption,
@@ -148,12 +149,19 @@ const createFakeController = ({
   showManualConnect?: boolean
 } = {}) => {
   const actor = createFakeActor(actorContext, actorValue)
+  const promptSeed = signal<ZookeeperPromptSeed | undefined>(undefined)
   const queueSignal = signal<QueuedMessage[]>(queue)
   const clearingSignal = signal(isClearingChat)
   const resumingSignal = signal(isResumingInterruptedTurn)
   const manualConnectSignal = signal(showManualConnect)
   const methods = {
     cancel: vi.fn(),
+    seedPrompt: vi.fn((prompt: string) => {
+      promptSeed.value = { prompt }
+    }),
+    consumePromptSeed: vi.fn((seed: ZookeeperPromptSeed) => {
+      if (promptSeed.peek() === seed) promptSeed.value = undefined
+    }),
     checkBillingAccess: vi.fn(),
     clearConversation: vi.fn(async () => undefined),
     dispose: vi.fn(),
@@ -169,6 +177,7 @@ const createFakeController = ({
     isClearingChat: clearingSignal,
     isResumingInterruptedTurn: resumingSignal,
     projectPath: '/projects/cube',
+    promptSeed,
     queue: queueSignal,
     showManualConnect: manualConnectSignal,
     ...methods,
@@ -205,11 +214,6 @@ const createPaneProps = (
 const latestConversationProps = () => {
   const calls = conversationRender.mock.calls
   return calls[calls.length - 1][0] as ZookeeperConversationProps
-}
-
-const LocationProbe = () => {
-  const location = useLocation()
-  return <output data-testid="location-search">{location.search}</output>
 }
 
 beforeEach(() => {
@@ -442,37 +446,32 @@ describe('ZookeeperConversationPane', () => {
     expect(fake.resumeInterruptedTurn).toHaveBeenCalledOnce()
   })
 
-  test('consumes the URL prompt and falls back through user and server modes', async () => {
+  test('hands off a controller prompt without a router and keeps the configured mode', () => {
     const fake = createFakeController({
       actorContext: {
         conversation: completedConversation,
         defaultMode: 'server-mode',
       },
     })
+    fake.seedPrompt('make a gear')
     render(
-      <MemoryRouter
-        initialEntries={[
-          '/projects/cube?zookeeper-prompt=make+a+gear&ttc-prompt=legacy&keep=yes',
-        ]}
-      >
-        <ZookeeperConversationPane
-          {...createPaneProps(fake.controller, {
-            zookeeperMode: {
-              project: undefined,
-              user: 'user-mode',
-            } as PaneProps['zookeeperMode'],
-          })}
-        />
-        <LocationProbe />
-      </MemoryRouter>
+      <ZookeeperConversationPane
+        {...createPaneProps(fake.controller, {
+          zookeeperMode: {
+            project: undefined,
+            user: 'user-mode',
+          } as PaneProps['zookeeperMode'],
+        })}
+      />
     )
 
-    await waitFor(() => {
-      expect(latestConversationProps().defaultPrompt).toBe('make a gear')
-      expect(screen.getByTestId('location-search')).toHaveTextContent(
-        '?keep=yes'
-      )
-    })
+    const seed = fake.controller.promptSeed.value
+    expect(latestConversationProps().promptSeed).toBe(seed)
+    expect(seed?.prompt).toBe('make a gear')
     expect(latestConversationProps().initialMlCopilotMode).toBe('user-mode')
+    if (!seed) return
+    act(() => latestConversationProps().onPromptSeedConsumed?.(seed))
+    expect(fake.consumePromptSeed).toHaveBeenCalledWith(seed)
+    expect(latestConversationProps().promptSeed).toBeUndefined()
   })
 })

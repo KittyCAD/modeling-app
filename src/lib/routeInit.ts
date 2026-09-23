@@ -28,7 +28,10 @@ import {
 import { loadRouteSettings } from '@src/lib/routeSettings'
 import type { AppSettings } from '@src/lib/settings/settingsUtils'
 import type { FileLoaderData, HomeLoaderData } from '@src/lib/types'
-import { appNavigationService } from '@src/registry/contracts/appNavigation'
+import {
+  type AppNavigationService,
+  appNavigationService,
+} from '@src/registry/contracts/appNavigation'
 import type {
   AppDestination,
   AppUrlState,
@@ -57,11 +60,13 @@ type CanonicalWebProjectLibrary = {
 }
 
 async function getCanonicalWebProjectLibrary(
-  settings: AppSettings['settings']
+  settings: AppSettings['settings'],
+  signal?: AbortSignal
 ): Promise<CanonicalWebProjectLibrary> {
   const fallbackLibraryPath =
     settings.app.projectDirectory.current.trim() ||
     (await getInitialDefaultDir())
+  signal?.throwIfAborted()
   const configuredLibrary = getDefaultDirectoryProjectLibrarySetting(
     settings.app.libraries?.current
   )
@@ -88,7 +93,8 @@ async function getCanonicalWebProjectLibrary(
 async function maybeGetExistingDefaultFilePath(
   app: App,
   projectPath: string,
-  wasmInstance: Awaited<App['wasmPromise']>
+  wasmInstance: Awaited<App['wasmPromise']>,
+  signal?: AbortSignal
 ) {
   try {
     const project = await getProjectInfo(
@@ -96,8 +102,10 @@ async function maybeGetExistingDefaultFilePath(
       projectPath,
       wasmInstance
     )
+    signal?.throwIfAborted()
     return project.default_file
   } catch {
+    signal?.throwIfAborted()
     return undefined
   }
 }
@@ -115,8 +123,9 @@ async function fileExists(app: App, filePath: string) {
  */
 export async function initIndexRoute(
   app: App,
-  { urlState }: { urlState: AppUrlState }
+  { urlState, signal }: { urlState: AppUrlState; signal?: AbortSignal }
 ): Promise<RouteInitResult<undefined>> {
+  signal?.throwIfAborted()
   // Desktop starts at Home.
   if (window.electron) {
     return {
@@ -131,7 +140,9 @@ export async function initIndexRoute(
     return { kind: 'ready', data: undefined }
   }
 
-  if (await webHomeRouteEnabled(app)) {
+  const homeEnabled = await webHomeRouteEnabled(app)
+  signal?.throwIfAborted()
+  if (homeEnabled) {
     return {
       kind: 'transition',
       destination: { type: 'home' },
@@ -141,23 +152,31 @@ export async function initIndexRoute(
 
   // Web without Home creates or opens its default project.
   const wasmInstance = await app.singletons.kclManager.wasmInstancePromise
+  signal?.throwIfAborted()
 
   const { settings } = await loadRouteSettings(app, wasmInstance)
-  const canonicalLibrary = await getCanonicalWebProjectLibrary(settings)
+  signal?.throwIfAborted()
+  const canonicalLibrary = await getCanonicalWebProjectLibrary(settings, signal)
+  signal?.throwIfAborted()
   let defaultFilePath =
     (await maybeGetExistingDefaultFilePath(
       app,
       canonicalLibrary.projectPath,
-      wasmInstance
+      wasmInstance,
+      signal
     )) ?? canonicalLibrary.defaultFilePath
 
-  if (!(await fileExists(app, defaultFilePath))) {
+  signal?.throwIfAborted()
+  const defaultFileExists = await fileExists(app, defaultFilePath)
+  signal?.throwIfAborted()
+  if (!defaultFileExists) {
     await projectSkeletonCreate(
       app.fileOperations,
       canonicalLibrary.defaultFilePath,
       settings.modeling.defaultUnit.current ?? DEFAULT_DEFAULT_LENGTH_UNIT,
       wasmInstance
     )
+    signal?.throwIfAborted()
     defaultFilePath = canonicalLibrary.defaultFilePath
   }
 
@@ -181,9 +200,11 @@ export async function initFileRoute(
   {
     id,
     startup,
+    openProject = app.registry.get(appNavigationService).openProject,
   }: {
     id: string
     startup: AppUrlState
+    openProject?: AppNavigationService['openProject']
   }
 ): Promise<RouteInitResult<FileLoaderData>> {
   // Before multi-file web projects, the editor used
@@ -199,7 +220,7 @@ export async function initFileRoute(
     }
   }
 
-  const outcome = await app.registry.get(appNavigationService).openProject({
+  const outcome = await openProject({
     target: id,
     startup,
   })
@@ -214,10 +235,14 @@ export async function initFileRoute(
  * projects listed there may be stale.
  */
 export async function initHomeRoute(
-  app: App
+  app: App,
+  { signal }: { signal?: AbortSignal } = {}
 ): Promise<RouteInitResult<HomeLoaderData>> {
+  signal?.throwIfAborted()
   // Unflagged web continues through the index startup policy.
-  if (!window.electron && !(await webHomeRouteEnabled(app))) {
+  const homeEnabled = window.electron || (await webHomeRouteEnabled(app))
+  signal?.throwIfAborted()
+  if (!homeEnabled) {
     return {
       kind: 'transition',
       destination: { type: 'index' },

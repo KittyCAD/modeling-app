@@ -8,6 +8,9 @@ import {
   ZOO_STUDIO_PROTOCOL,
 } from '@src/lib/constants'
 import { isDesktop } from '@src/lib/isDesktop'
+import { useApp } from '@src/lib/boot'
+import { reportRejection } from '@src/lib/trap'
+import { appLaunchService } from '@src/registry/contracts/appLaunch'
 import { platform } from '@src/lib/utils'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import { APP_DOWNLOAD_PATH } from '@src/routes/utils'
@@ -21,7 +24,8 @@ import toast from 'react-hot-toast'
 export const OpenInDesktopAppHandler = (props: React.PropsWithChildren) => {
   const buttonClasses =
     'bg-transparent flex-0 hover:bg-primary/10 dark:hover:bg-primary/10'
-  const [searchParams, setSearchParams] = useSearchParams()
+  const [searchParams] = useSearchParams()
+  const app = useApp()
   // We also ignore this param on desktop, as it is redundant
   const hasAskToOpenParam =
     !isDesktop() && searchParams.has(ASK_TO_OPEN_QUERY_PARAM)
@@ -34,6 +38,7 @@ export const OpenInDesktopAppHandler = (props: React.PropsWithChildren) => {
    */
   function onOpenInDesktopApp() {
     const newSearchParams = new URLSearchParams(globalThis.location.search)
+    newSearchParams.delete(ASK_TO_OPEN_QUERY_PARAM)
     const newURL = `${ZOO_STUDIO_PROTOCOL}://${globalThis.location.pathname.replace(
       '/',
       ''
@@ -51,7 +56,6 @@ export const OpenInDesktopAppHandler = (props: React.PropsWithChildren) => {
       return
     }
 
-    newSearchParams.delete(ASK_TO_OPEN_QUERY_PARAM)
     globalThis.location.href = newURL
   }
 
@@ -60,8 +64,10 @@ export const OpenInDesktopAppHandler = (props: React.PropsWithChildren) => {
    * and continue to the web app.
    */
   function continueToWebApp() {
-    searchParams.delete(ASK_TO_OPEN_QUERY_PARAM)
-    setSearchParams(searchParams)
+    void app.registry
+      .get(appLaunchService)
+      .continueInWeb()
+      .catch(reportRejection)
   }
 
   return hasAskToOpenParam ? (

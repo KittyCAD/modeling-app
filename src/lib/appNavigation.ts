@@ -1,3 +1,4 @@
+import { signal } from '@preact/signals-core'
 import type { ResolvedProjectOpen } from '@src/lib/projectOpen'
 import type {
   AppNavigationService,
@@ -18,7 +19,7 @@ export interface AppNavigationDependencies {
     outcome: OpenProjectOutcome,
     resolution: ResolvedProjectOpen,
     request: OpenProjectRequest
-  ) => void
+  ) => void | Promise<void>
   showHome: (openProject: AppNavigationService['openProject']) => Promise<void>
 }
 
@@ -33,21 +34,27 @@ export function createAppNavigationService(
   dependencies: AppNavigationDependencies
 ): AppNavigationService {
   let activeProjectOpen: AbortController | undefined
+  const intentRevision = signal(0)
 
   const cancelActiveProjectOpen = () => {
     activeProjectOpen?.abort()
     activeProjectOpen = undefined
   }
 
-  const beginProjectOpen = () => {
+  const beginProjectOpen = (signal?: AbortSignal) => {
     cancelActiveProjectOpen()
+    intentRevision.value += 1
 
     const controller = new AbortController()
     activeProjectOpen = controller
+    const abort = () => controller.abort()
+    if (signal?.aborted) abort()
+    else signal?.addEventListener('abort', abort, { once: true })
 
     return {
       throwIfSuperseded: () => controller.signal.throwIfAborted(),
       finish: () => {
+        signal?.removeEventListener('abort', abort)
         if (activeProjectOpen === controller) {
           activeProjectOpen = undefined
         }
@@ -56,7 +63,7 @@ export function createAppNavigationService(
   }
 
   const openProject: AppNavigationService['openProject'] = async (request) => {
-    const projectOpen = beginProjectOpen()
+    const projectOpen = beginProjectOpen(request.signal)
     try {
       projectOpen.throwIfSuperseded()
       const resolution = await dependencies.resolveProjectOpen(
@@ -69,7 +76,9 @@ export function createAppNavigationService(
         resolution,
         projectOpen.throwIfSuperseded
       )
-      dependencies.projectOpened(outcome, resolution, request)
+      projectOpen.throwIfSuperseded()
+      await dependencies.projectOpened(outcome, resolution, request)
+      projectOpen.throwIfSuperseded()
       return outcome
     } finally {
       projectOpen.finish()
@@ -77,9 +86,11 @@ export function createAppNavigationService(
   }
 
   const service: AppNavigationService = {
+    intentRevision,
     openProject,
     showHome: async () => {
       cancelActiveProjectOpen()
+      intentRevision.value += 1
       await dependencies.showHome(service.openProject)
     },
   }
