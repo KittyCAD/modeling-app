@@ -264,6 +264,7 @@ export class ElectronZoo {
             'viz',
             'gpu',
             'disabled-by-default-gpu.dawn',
+            'disabled-by-default-gpu.graphite.dawn',
             'skia',
             'skia.gpu',
             'skia.shaders',
