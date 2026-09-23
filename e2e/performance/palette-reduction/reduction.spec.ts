@@ -12,6 +12,11 @@ import type { PaletteAppearance } from '@e2e/performance/palette-reduction/prese
 const buildDirectory = path.resolve('test-results/palette-reduction-build')
 
 test('first-use standalone palette presentation', async ({}, testInfo) => {
+  const frameObserver = process.env.PALETTE_REDUCTION_FRAME_OBSERVER ?? 'true'
+  expect(['true', 'false'], 'Unknown extra frame observer option').toContain(
+    frameObserver
+  )
+  const extraFrameObserverEnabled = frameObserver === 'true'
   const repetitions = Number(process.env.PALETTE_REDUCTION_REPEAT_EACH)
   expect(
     Number.isInteger(repetitions) && repetitions > 0,
@@ -41,13 +46,16 @@ test('first-use standalone palette presentation', async ({}, testInfo) => {
     await expect(open).toBeEnabled()
     await expect(page.getByTestId('command-bar-wrapper')).toBeHidden()
     const capture = await page.evaluateHandle(
-      async (): Promise<ReductionCapture> => {
+      async (extraFrameObserverEnabled): Promise<ReductionCapture> => {
         const source = './renderer.js'
-        const module: { createCapture(): ReductionCapture } = await import(
-          source
-        )
-        return module.createCapture()
-      }
+        const module: {
+          createCapture(options: {
+            extraFrameObserverEnabled: boolean
+          }): ReductionCapture
+        } = await import(source)
+        return module.createCapture({ extraFrameObserverEnabled })
+      },
+      extraFrameObserverEnabled
     )
     try {
       await open.click()
@@ -110,6 +118,7 @@ test('first-use standalone palette presentation', async ({}, testInfo) => {
         )
         const metadata = {
           calibrationEligible: false,
+          extraFrameObserverEnabled,
           repeatIndex: testInfo.repeatEachIndex,
           presentationValidation: {
             finalRepeatIndex,

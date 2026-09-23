@@ -176,13 +176,17 @@ export interface ReductionCapture {
   stop(): { snapshot: InteractionSnapshot; frames: FrameEvidence[] }
 }
 
-export function createCapture(): ReductionCapture {
+export function createCapture({
+  extraFrameObserverEnabled = true,
+}: {
+  extraFrameObserverEnabled?: boolean
+} = {}): ReductionCapture {
   const recorder = new InteractionRecorder(document, [
     interactionOutcomes.commandPaletteOpen,
     interactionOutcomes.commandPaletteClose,
   ])
   const frames: FrameEvidence[] = []
-  let frame: number
+  let frame: number | undefined
   const time = (value: CSSNumberish | null) =>
     typeof value === 'number' ? value : (value?.toString() ?? null)
   function observeFrame() {
@@ -207,11 +211,11 @@ export function createCapture(): ReductionCapture {
     frame = requestAnimationFrame(observeFrame)
   }
   recorder.start()
-  frame = requestAnimationFrame(observeFrame)
+  if (extraFrameObserverEnabled) frame = requestAnimationFrame(observeFrame)
   return {
     snapshot: () => recorder.snapshot(),
     stop: () => {
-      cancelAnimationFrame(frame)
+      if (frame !== undefined) cancelAnimationFrame(frame)
       return { snapshot: recorder.stop(), frames }
     },
   }

@@ -3,7 +3,7 @@ import base from '@root/playwright.config'
 
 if (
   process.env.VERCEL_BASE_URL !==
-  'https://modeling-3mkyk5tea.vercel.dev.zoo.dev'
+  'https://modeling-m4vci3y8o.vercel.dev.zoo.dev'
 ) {
   // Refuse to run this diagnostic against an unverified deployment.
   // eslint-disable-next-line suggest-no-throw/suggest-no-throw

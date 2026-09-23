@@ -41,6 +41,12 @@ diagnostic timings, not calibration. The observer remains active for the same
 Event Timing entries remain missing presentation evidence. No app-facing
 recorder or production instrumentation is added.
 
+Set `PALETTE_REDUCTION_FRAME_OBSERVER=false` to omit only the extra animation-frame
+observer. It defaults to `true`. Evidence records `metadata.extraFrameObserverEnabled`;
+disabled runs have an empty `frames` array and retain the existing interaction
+recorder, readiness predicates, Event Timing, scoring, and final fidelity check.
+This control diagnoses observer overhead and remains ineligible for calibration.
+
 After the final repetition's scoring stops, the test opens the palette again solely to compare its
 geometry, option count, autofocus, and computed appearance with the captured
 fixture. This validation waits for Headless UI to remove its enter classes;
