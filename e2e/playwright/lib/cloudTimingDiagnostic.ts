@@ -40,7 +40,7 @@ export async function installCloudTimingDiagnostic(
     at: Date.now(),
     diagnostic: 'cross-environment-diagnostic',
     creationGate,
-    sourceCommit: 'd5328e2c1ed6149e637b60e26d05ea46b11a4556',
+    sourceCommit: '93f4c53efd187918d385006fe79e219cc5dd4e52',
     rendererOrigin: preview ? new URL(preview).origin : undefined,
     platform: process.platform,
     project: testInfo.project.name,
