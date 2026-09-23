@@ -1612,7 +1612,7 @@ impl ExecState {
     }
 
     /// Check an imported file before executing it. Version mismatches take
-    /// priority over V3's `use` keyword restriction.
+    /// priority over V3 keyword restrictions.
     pub(crate) fn validate_imported_module(
         &self,
         path: &ModulePath,
@@ -1630,12 +1630,13 @@ impl ExecState {
                 import_range.into_iter().collect(),
             ))
         })?;
-        crate::parsing::validate_use_keyword_source(&source.source, program.module_id).map_err(|error| {
-            match import_range {
+        crate::parsing::validate_use_keyword_source(&source.source, program.module_id)
+            .and_then(|_| crate::parsing::validate_enum_keyword_source(&source.source, program.module_id))
+            .and_then(|_| crate::parsing::validate_import_modifier_source(&source.source, program.module_id))
+            .map_err(|error| match import_range {
                 Some(range) => error.add_import_location(&path.import_name(), range),
                 None => error,
-            }
-        })
+            })
     }
 }
 
