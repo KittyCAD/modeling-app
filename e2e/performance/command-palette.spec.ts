@@ -61,18 +61,14 @@ test.beforeEach(async ({ page, homePage, cmdBar }) => {
   await page.emulateMedia({ reducedMotion: 'no-preference' })
   await page.setBodyDimensions({ width: 1200, height: 800 })
   await page.evaluate(() => document.fonts.ready)
-  // Diagnostic branch only: isolate shadow raster work from the same app build.
-  if (process.env.INTERACTION_DIAGNOSTIC_VARIANT === 'no-shadows') {
-    await page.addStyleTag({
-      content: `
-        [data-testid="command-bar"] { box-shadow: none !important; }
-        [role="tooltip"] > * {
-          filter: none !important;
-          will-change: auto !important;
-        }
-      `,
-    })
-  }
+  // Diagnostic branch only: isolate palette shadow and scale raster work.
+  const variant = process.env.INTERACTION_DIAGNOSTIC_VARIANT ?? ''
+  await page.addStyleTag({
+    content: `
+      ${variant.includes('small-shadow') ? '[data-testid="command-bar"] { box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05) !important; }' : ''}
+      ${variant.includes('no-scale') ? '[data-testid="command-bar-wrapper"] > div { transform: none !important; }' : ''}
+    `,
+  })
   await expect(cmdBar.cmdBarOpenBtn).toBeEnabled()
   await expect(page.getByTestId('command-bar-wrapper')).toBeHidden()
 })

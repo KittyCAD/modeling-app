@@ -13,10 +13,7 @@ export default defineConfig({
   workers: 1,
   retries: 0,
   repeatEach: 1,
-  projects: [
-    { name: 'home-diagnostic', grep: /command-palette\.first-use/ },
-    { name: 'modeling-diagnostic', grep: /modeling\.first-use/ },
-  ],
+  projects: [{ name: 'home-diagnostic', grep: /command-palette\.first-use/ }],
   forbidOnly: Boolean(process.env.CI),
   timeout: 120_000,
   reporter: [
