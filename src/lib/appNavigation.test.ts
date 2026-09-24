@@ -10,7 +10,7 @@ describe('appNavigation', () => {
     const openSettingsIntent = defineAppNavigationIntent<
       { tab: string },
       undefined
-    >('settings.open')
+    >('settings.open', { placement: 'additional' })
     const openSettings = vi.fn(async (_input: { tab: string }) => undefined)
     const settingsContribution = defineAppNavigationIntentContribution(
       openSettingsIntent,
@@ -21,6 +21,10 @@ describe('appNavigation', () => {
     await navigation.dispatch(openSettingsIntent, { tab: 'project' })
 
     expect(openSettings).toHaveBeenCalledWith({ tab: 'project' })
+    expect(navigation.activeAdditionalIntent.value).toEqual({
+      intent: openSettingsIntent,
+      input: { tab: 'project' },
+    })
   })
 
   test('rejects dispatch when more than one contribution claims an intent', async () => {

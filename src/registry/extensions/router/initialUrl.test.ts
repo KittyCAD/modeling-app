@@ -22,7 +22,7 @@ describe('parseInitialUrl', () => {
       destination: { type: 'project', target: '/projects/bracket' },
       additionalIntents: [
         {
-          intent: { id: 'settings.open' },
+          intent: { id: 'settings.open', placement: 'additional' },
           input: { tab: 'project', setting: 'modeling.defaultUnit' },
         },
       ],
@@ -42,7 +42,7 @@ describe('parseInitialUrl', () => {
       destination: { type: 'project', target: '/projects/bracket' },
       additionalIntents: [
         {
-          intent: { id: 'telemetry.open' },
+          intent: { id: 'telemetry.open', placement: 'additional' },
           input: { type: 'telemetry' },
         },
       ],
@@ -137,7 +137,7 @@ describe('navigation intent URL projections', () => {
           destination: { type: 'project', target: '/projects/bracket' },
           additionalIntents: [
             {
-              intent: { id: 'settings.open' },
+              intent: { id: 'settings.open', placement: 'additional' },
               input: {
                 tab: 'keybindings',
                 setting: 'editor.textWrapping',

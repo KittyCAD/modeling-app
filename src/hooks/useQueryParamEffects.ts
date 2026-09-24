@@ -8,6 +8,7 @@ import {
   CMD_NAME_QUERY_PARAM,
   CODE_QUERY_PARAM,
   CREATE_FILE_URL_PARAM,
+  DEFAULT_WEB_PROJECT_NAME,
   FILE_NAME_QUERY_PARAM,
   LEGACY_SEARCH_PARAM_ZOOKEEPER_PROMPT_KEY,
   POOL_QUERY_PARAM,
@@ -25,7 +26,6 @@ import { downloadKclSample } from '@src/lib/kclSamples'
 import { PATHS, safeEncodeForRouterPaths } from '@src/lib/paths'
 import { PERSONAL_CLOUD_PROJECT_LIBRARY_ID } from '@src/lib/projectLibraries'
 import { getProjectDirectoryNameFromTitle } from '@src/lib/projectName'
-import { DEFAULT_WEB_PROJECT_NAME } from '@src/lib/routeInit'
 import { err } from '@src/lib/trap'
 import {
   SystemIOMachineEvents,
@@ -33,7 +33,10 @@ import {
   waitForIdleState,
 } from '@src/machines/systemIO/utils'
 import { cloudSyncService } from '@src/registry/contracts/cloudSync'
-import { appNavigationService } from '@src/registry/contracts/appNavigation'
+import {
+  appNavigationService,
+  openProjectIntent,
+} from '@src/registry/contracts/appNavigation'
 import { useEffect } from 'react'
 import toast from 'react-hot-toast'
 import { useNavigate, useSearchParams } from 'react-router-dom'
@@ -217,7 +220,7 @@ export function useQueryParamEffects() {
 
       await app.registry
         .get(appNavigationService)
-        .openProject({ target: importedProject.default_file })
+        .dispatch(openProjectIntent, { target: importedProject.default_file })
     })().catch((error) => {
       if (cancelled) {
         return
@@ -263,7 +266,7 @@ export function useQueryParamEffects() {
 
           void app.registry
             .get(appNavigationService)
-            .openProject({ target: defaultFile })
+            .dispatch(openProjectIntent, { target: defaultFile })
             .then(() =>
               navigate(
                 {
@@ -351,7 +354,9 @@ export function useQueryParamEffects() {
 
         await app.registry
           .get(appNavigationService)
-          .openProject({ target: importedProject.default_file })
+          .dispatch(openProjectIntent, {
+            target: importedProject.default_file,
+          })
       })().catch((error) => {
         if (cancelled) {
           return

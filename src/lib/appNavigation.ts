@@ -1,8 +1,10 @@
+import { signal } from '@preact/signals-core'
 import type {
   AppNavigationIntent,
   AppNavigationIntentContribution,
   AppNavigationService,
 } from '@src/registry/contracts/appNavigation'
+import type { ParsedAppNavigationIntent } from '@src/registry/contracts/appUrl'
 /**
  * Build appNavigation from the contributions available before startup.
  *
@@ -11,13 +13,11 @@ import type {
  * application launch.
  */
 export function createAppNavigationService(
-  contributions: readonly AppNavigationIntentContribution[],
-  {
-    showHome,
-  }: {
-    showHome?: AppNavigationService['showHome']
-  } = {}
+  contributions: readonly AppNavigationIntentContribution[]
 ): AppNavigationService {
+  const activeAdditionalIntent = signal<ParsedAppNavigationIntent | undefined>(
+    undefined
+  )
   const contributionsById = new Map<string, AppNavigationIntentContribution>()
   const duplicateIntentIds = new Set<string>()
   for (const contribution of contributions) {
@@ -44,11 +44,20 @@ export function createAppNavigationService(
         new Error(`No application navigation intent handles ${intent.id}.`)
       )
     }
-    return contribution.dispatch(input) as Promise<Output>
+    const output = (await contribution.dispatch(input)) as Output
+    if (intent.placement === 'additional') {
+      activeAdditionalIntent.value = { intent, input }
+    } else {
+      activeAdditionalIntent.value = undefined
+    }
+    return output
   }
 
   return {
+    activeAdditionalIntent,
     dispatch,
-    showHome: showHome ?? (async () => undefined),
+    dismissAdditionalIntent: () => {
+      activeAdditionalIntent.value = undefined
+    },
   }
 }

@@ -4,7 +4,11 @@ import fsZds from '@src/lib/fs-zds'
 import { getHomeProjectDisplayName } from '@src/lib/homeProjects'
 import type { Project } from '@src/lib/project'
 import { CLOUD_PROJECT_LIBRARY_TYPE } from '@src/lib/projectLibraries'
-import { appNavigationService } from '@src/registry/contracts/appNavigation'
+import {
+  appNavigationService,
+  openProjectIntent,
+  showHomeIntent,
+} from '@src/registry/contracts/appNavigation'
 import {
   homeProjectActionsService,
   homeProjectEntriesValueSpec,
@@ -57,7 +61,7 @@ export async function moveOpenedProjectToCloudLibrary({
       cloudLibraryTarget.library.id
     )
     if (!moved?.defaultFile) {
-      await app.registry.get(appNavigationService).showHome()
+      await app.registry.get(appNavigationService).dispatch(showHomeIntent, {})
       return new Error(
         'Moving the open project did not return its new file path.'
       )
@@ -67,7 +71,7 @@ export async function moveOpenedProjectToCloudLibrary({
       moved.localProjectPath ?? fsZds.dirname(moved.defaultFile)
     await app.registry
       .get(appNavigationService)
-      .openProject({ target: moved.defaultFile })
+      .dispatch(openProjectIntent, { target: moved.defaultFile })
     return {
       defaultFile: moved.defaultFile,
       projectPath,
@@ -75,7 +79,7 @@ export async function moveOpenedProjectToCloudLibrary({
   } catch (error) {
     // The old route no longer has an active project session. Fall back to Home
     // only when relocation fails; successful publication never renders it.
-    await app.registry.get(appNavigationService).showHome()
+    await app.registry.get(appNavigationService).dispatch(showHomeIntent, {})
     return error instanceof Error
       ? error
       : new Error('Moving the open project to Personal Cloud failed.')

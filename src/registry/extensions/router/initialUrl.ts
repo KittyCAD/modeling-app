@@ -86,23 +86,23 @@ export function formatAppUrl(
 function parseDestination(pathname: string):
   | {
       destination: AppDestination
-      overlayDestination?: AppDestinationKind
-      overlayPath: string
+      intentDestination?: AppDestinationKind
+      intentPath: string
     }
   | undefined {
   const segments = webSafePathSplit(pathname).filter(Boolean)
   if (segments.length === 0) {
-    return { destination: { type: 'index' }, overlayPath: '' }
+    return { destination: { type: 'index' }, intentPath: '' }
   }
 
   const [head, encodedId, ...remainder] = segments
-  const overlayPath = remainder.length > 0 ? joinRouterPaths(...remainder) : ''
+  const intentPath = remainder.length > 0 ? joinRouterPaths(...remainder) : ''
 
   if (head === PATHS.HOME.slice(1)) {
     return {
       destination: { type: 'home' },
-      overlayDestination: 'home',
-      overlayPath:
+      intentDestination: 'home',
+      intentPath:
         encodedId === undefined ? '' : joinRouterPaths(encodedId, ...remainder),
     }
   }
@@ -113,8 +113,8 @@ function parseDestination(pathname: string):
       ? undefined
       : {
           destination: { type: 'home', libraryId },
-          overlayDestination: 'home',
-          overlayPath,
+          intentDestination: 'home',
+          intentPath,
         }
   }
 
@@ -124,13 +124,13 @@ function parseDestination(pathname: string):
       ? undefined
       : {
           destination: { type: 'project', target },
-          overlayDestination: 'project',
-          overlayPath,
+          intentDestination: 'project',
+          intentPath,
         }
   }
 
   if (head === PATHS.SIGN_IN.slice(1) && segments.length === 1) {
-    return { destination: { type: 'sign-in' }, overlayPath: '' }
+    return { destination: { type: 'sign-in' }, intentPath: '' }
   }
 
   return undefined
@@ -153,7 +153,7 @@ export function parseInitialUrl(
     return { type: 'unrecognized', ...applicationUrl }
   }
 
-  if (!parsedDestination.overlayPath) {
+  if (!parsedDestination.intentPath) {
     return {
       type: 'launch',
       destination: parsedDestination.destination,
@@ -162,13 +162,13 @@ export function parseInitialUrl(
     }
   }
 
-  if (!parsedDestination.overlayDestination) {
+  if (!parsedDestination.intentDestination) {
     return { type: 'unrecognized', ...applicationUrl }
   }
 
   const input = {
-    destination: parsedDestination.overlayDestination,
-    path: parsedDestination.overlayPath,
+    destination: parsedDestination.intentDestination,
+    path: parsedDestination.intentPath,
     search: new URLSearchParams(applicationUrl.search),
     hash: applicationUrl.hash,
   }

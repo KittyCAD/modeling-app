@@ -6,10 +6,7 @@ import { getProjectInfo, isPathNotFoundError } from '@src/lib/desktop'
 import { getParentAbsolutePath, PATHS } from '@src/lib/paths'
 import { getProjectLibraryOwnership } from '@src/lib/projectLibraryOwnership'
 import { isRequestedFileLoaded } from '@src/lib/routeLoaderNavigation'
-import {
-  loadHomeProjects,
-  webHomeRouteEnabled,
-} from '@src/lib/routeLoaderUtils'
+import { loadHomeProjects } from '@src/lib/routeLoaderUtils'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/events'
 import { SystemIOMachineStates } from '@src/machines/systemIO/states'
 import { appUrlService } from '@src/registry/contracts/appUrl'
@@ -161,25 +158,11 @@ export function createProjectNavigationDependencies(
         )
       }
     },
-    showHome: async (openProject) => {
-      if (!window.electron && !(await webHomeRouteEnabled(app))) {
-        const { initIndexRoute } = await import(
-          '@src/registry/extensions/router/legacyRouteInit'
-        )
-        const result = await initIndexRoute(app, {
-          urlState: { search: '', hash: '' },
-        })
-        if (
-          result.kind === 'transition' &&
-          result.destination.type === 'project'
-        ) {
-          await openProject({ target: result.destination.target })
-        }
-        return
-      }
-
+    showHome: async (request) => {
       loadHomeProjects(app)
-      void app.registry.get(appUrlService).navigate(PATHS.HOME)
+      if (!request.startup) {
+        void app.registry.get(appUrlService).navigate(PATHS.HOME)
+      }
     },
   }
 }

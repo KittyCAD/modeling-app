@@ -5,7 +5,10 @@ import {
   DIRECTORY_PROJECT_LIBRARY_TYPE,
 } from '@src/lib/projectLibraries'
 import { moveOpenedProjectToCloudLibrary } from '@src/lib/projectLibraries/moveOpenedProjectToCloudLibrary'
-import { appNavigationService } from '@src/registry/contracts/appNavigation'
+import {
+  appNavigationService,
+  openProjectIntent,
+} from '@src/registry/contracts/appNavigation'
 import type {
   HomeProjectActionsService,
   HomeProjectEntry,
@@ -51,8 +54,7 @@ test('moves an open directory project before navigating directly to its new file
   const closeProject = vi.fn()
   const clearProjectSettings = vi.fn()
   const fileOperations = {} as App['fileOperations']
-  const openProject = vi.fn().mockResolvedValue(undefined)
-  const showHome = vi.fn().mockResolvedValue(undefined)
+  const dispatch = vi.fn().mockResolvedValue(undefined)
   const app = {
     closeProject,
     fileOperations,
@@ -65,7 +67,7 @@ test('moves an open directory project before navigating directly to its new file
           return [homeProject]
         }
         if (valueSpec === appNavigationService) {
-          return { openProject, showHome }
+          return { dispatch }
         }
         return []
       },
@@ -90,9 +92,9 @@ test('moves an open directory project before navigating directly to its new file
     'Published example'
   )
   expect(moveToLibrary).toHaveBeenCalledWith(homeProject, 'personal-cloud')
-  expect(openProject).toHaveBeenCalledOnce()
-  expect(openProject).toHaveBeenCalledWith({
+  expect(dispatch).toHaveBeenCalledOnce()
+  expect(dispatch).toHaveBeenCalledWith(openProjectIntent, {
     target: '/cloud/example/main.kcl',
   })
-  expect(moveToLibrary).toHaveBeenCalledBefore(openProject)
+  expect(moveToLibrary).toHaveBeenCalledBefore(dispatch)
 })

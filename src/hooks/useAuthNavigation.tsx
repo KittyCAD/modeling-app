@@ -1,6 +1,9 @@
 import { useApp } from '@src/lib/boot'
 import { PATHS } from '@src/lib/paths'
-import { appNavigationService } from '@src/registry/contracts/appNavigation'
+import {
+  appNavigationService,
+  showHomeIntent,
+} from '@src/registry/contracts/appNavigation'
 import { startSignInIntent } from '@src/registry/contracts/auth'
 import { useEffect } from 'react'
 import { useLocation } from 'react-router-dom'
@@ -21,7 +24,7 @@ export function useAuthNavigation() {
       authState.matches('loggedIn') &&
       location.pathname.includes(PATHS.SIGN_IN)
     ) {
-      void app.registry.get(appNavigationService).showHome()
+      void app.registry.get(appNavigationService).dispatch(showHomeIntent, {})
     } else if (authState.matches('loggedOut')) {
       void app.registry
         .get(appNavigationService)

@@ -84,7 +84,10 @@ import {
 } from '@src/lib/layout'
 import type RustContext from '@src/lib/rustContext'
 import type { CommandBarActorType } from '@src/machines/commandBarMachine'
-import { appNavigationService } from '@src/registry/contracts/appNavigation'
+import {
+  appNavigationService,
+  openProjectIntent,
+} from '@src/registry/contracts/appNavigation'
 import { executingEditorService } from '@src/registry/contracts/executingEditor'
 import {
   findKeymapItemForCommand,
@@ -1098,7 +1101,7 @@ const OperationItem = ({
           }
           await app.registry
             .get(appNavigationService)
-            .openProject({ target: targetPath })
+            .dispatch(openProjectIntent, { target: targetPath })
           return
         }
       }

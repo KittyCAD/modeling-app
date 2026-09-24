@@ -20,6 +20,8 @@ import type { FileOperationsRegistryService } from '@src/registry/contracts/file
 import {
   defineAppNavigationIntentContribution,
   type AppNavigationIntentContribution,
+  showHomeIntent,
+  type ShowHomeRequest,
 } from '@src/registry/contracts/appNavigation'
 import {
   openProjectIntent,
@@ -41,9 +43,21 @@ export interface ProjectNavigationDependencies {
     resolution: ResolvedProjectOpen,
     request: OpenProjectRequest
   ) => void
-  showHome: (
-    openProject: (request: OpenProjectRequest) => Promise<OpenProjectOutcome>
-  ) => Promise<void>
+  showHome: (request: ShowHomeRequest) => Promise<void>
+}
+
+/** Build the Home handler while keeping project-open cancellation private. */
+export function createShowHomeIntentContribution(
+  dependencies: ProjectNavigationDependencies,
+  cancelProjectOpen: () => void
+): AppNavigationIntentContribution {
+  return defineAppNavigationIntentContribution(
+    showHomeIntent,
+    async (request) => {
+      cancelProjectOpen()
+      await dependencies.showHome(request)
+    }
+  )
 }
 
 export interface ResolvedProjectOpen {

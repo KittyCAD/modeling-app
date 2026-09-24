@@ -6,8 +6,10 @@ import {
   type ProjectNavigationDependencies,
   type ProjectOpenResolverDependencies,
   createOpenProjectIntentContribution,
+  createShowHomeIntentContribution,
   resolveProjectOpenRequest,
 } from '@src/registry/extensions/projectSession/navigation'
+import { showHomeIntent } from '@src/registry/contracts/appNavigation'
 import { openProjectIntent } from '@src/registry/contracts/projectSession'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { beforeAll, beforeEach, describe, expect, test, vi } from 'vitest'
@@ -118,7 +120,7 @@ describe('resolveProjectOpenRequest', () => {
         startup: {
           additionalIntents: [
             {
-              intent: { id: 'settings.open' },
+              intent: { id: 'settings.open', placement: 'additional' },
               input: { tab: 'project' },
             },
           ],
@@ -208,10 +210,17 @@ function navigationHarness(
   }
 
   const projectOpen = createOpenProjectIntentContribution(dependencies)
+  const showHome = createShowHomeIntentContribution(
+    dependencies,
+    projectOpen.cancelProjectOpen
+  )
   return {
     dependencies,
     projectOpen,
-    navigation: createAppNavigationService([projectOpen.contribution]),
+    navigation: createAppNavigationService([
+      projectOpen.contribution,
+      showHome,
+    ]),
   }
 }
 
@@ -268,7 +277,7 @@ describe('project.open navigation contribution', () => {
     const resolutionStarted = new Promise<void>((resolve) => {
       finishResolution = resolve
     })
-    const { navigation, projectOpen } = navigationHarness({
+    const { navigation } = navigationHarness({
       resolveProjectOpen: vi.fn(async () => {
         await resolutionStarted
         return resolvedProject
@@ -278,9 +287,19 @@ describe('project.open navigation contribution', () => {
     const firstOpen = navigation.dispatch(openProjectIntent, {
       target: '/projects/bracket',
     })
-    projectOpen.cancelProjectOpen()
+    await navigation.dispatch(showHomeIntent, {})
     finishResolution()
 
     await expect(firstOpen).rejects.toMatchObject({ name: 'AbortError' })
+  })
+
+  test('dispatches Home through its contributed intent', async () => {
+    const { dependencies, navigation } = navigationHarness()
+
+    await navigation.dispatch(showHomeIntent, { libraryId: 'personal' })
+
+    expect(dependencies.showHome).toHaveBeenCalledWith({
+      libraryId: 'personal',
+    })
   })
 })

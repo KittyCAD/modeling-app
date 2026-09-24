@@ -101,7 +101,10 @@ import {
   userFeaturesService,
 } from '@src/registry/contracts/userFeatures'
 import { wasmPromiseValueSpec } from '@src/registry/contracts/wasm'
-import { createOpenProjectIntentContribution } from '@src/registry/extensions/projectSession/navigation'
+import {
+  createOpenProjectIntentContribution,
+  createShowHomeIntentContribution,
+} from '@src/registry/extensions/projectSession/navigation'
 import { createProjectNavigationDependencies } from '@src/registry/extensions/projectSession/runtime'
 import {
   type ZdsPluginActivationSetting,
@@ -837,9 +840,14 @@ export class App implements AppSubsystems {
     const openProjectNavigation = createOpenProjectIntentContribution(
       projectNavigationDependencies
     )
+    const showHomeNavigation = createShowHomeIntentContribution(
+      projectNavigationDependencies,
+      openProjectNavigation.cancelProjectOpen
+    )
     const preloadedNavigationIntents = [
       ...this.registry.get(appNavigationIntentContributionsValueSpec),
       openProjectNavigation.contribution,
+      showHomeNavigation,
     ]
 
     this.registry.reconfigure(appRegistryServicesSlot, [
@@ -849,6 +857,10 @@ export class App implements AppSubsystems {
           provide(
             appNavigationIntentContributionsValueSpec,
             openProjectNavigation.contribution
+          ),
+          provide(
+            appNavigationIntentContributionsValueSpec,
+            showHomeNavigation
           ),
         ],
         providesServices: [
@@ -864,21 +876,7 @@ export class App implements AppSubsystems {
           // are owned and composed by registry capabilities.
           provideService(
             appNavigationService,
-            (() => {
-              let navigation: ReturnType<typeof createAppNavigationService>
-              navigation = createAppNavigationService(
-                preloadedNavigationIntents,
-                {
-                  showHome: () => {
-                    openProjectNavigation.cancelProjectOpen()
-                    return projectNavigationDependencies.showHome((request) =>
-                      navigation.dispatch(openProjectIntent, request)
-                    )
-                  },
-                }
-              )
-              return navigation
-            })()
+            createAppNavigationService(preloadedNavigationIntents)
           ),
         ],
       }),

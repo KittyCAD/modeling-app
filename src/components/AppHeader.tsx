@@ -8,7 +8,10 @@ import { isDesktop } from '@src/lib/isDesktop'
 import { PATHS } from '@src/lib/paths'
 import type { FileEntry, Project } from '@src/lib/project'
 import { appHeaderItemsValueSpec } from '@src/registry/contracts/appHeader'
-import { appNavigationService } from '@src/registry/contracts/appNavigation'
+import {
+  appNavigationService,
+  showHomeIntent,
+} from '@src/registry/contracts/appNavigation'
 import type { ReactNode } from 'react'
 import styles from './AppHeader.module.css'
 
@@ -70,7 +73,9 @@ export const AppHeader = ({
         onProjectClose={(closedFile, projectPath, redirect) => {
           lsp.onProjectClose(closedFile, projectPath, redirect)
           if (redirect) {
-            void app.registry.get(appNavigationService).showHome()
+            void app.registry
+              .get(appNavigationService)
+              .dispatch(showHomeIntent, {})
           }
         }}
         onHomeNavigate={() => {

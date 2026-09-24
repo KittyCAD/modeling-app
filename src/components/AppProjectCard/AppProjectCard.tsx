@@ -21,7 +21,10 @@ import {
 import { PATHS } from '@src/lib/paths'
 import { reportRejection, trap } from '@src/lib/trap'
 import { toSync } from '@src/lib/utils'
-import { appNavigationService } from '@src/registry/contracts/appNavigation'
+import {
+  appNavigationService,
+  openProjectIntent,
+} from '@src/registry/contracts/appNavigation'
 import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
 import type {
   HomeProjectActionsService,
@@ -632,7 +635,7 @@ function AppProjectCard({
             if (result?.defaultFile) {
               void app.registry
                 .get(appNavigationService)
-                .openProject({ target: result.defaultFile })
+                .dispatch(openProjectIntent, { target: result.defaultFile })
             }
           })
           .catch(reportRejection)

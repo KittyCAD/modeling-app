@@ -40,7 +40,11 @@ import { waitForToastAnimationEnd } from '@src/lib/toast'
 import { err, reportRejection, trap } from '@src/lib/trap'
 import type { commandBarMachine } from '@src/machines/commandBarMachine'
 import type { SettingsActorType } from '@src/machines/settingsMachine'
-import { appNavigationService } from '@src/registry/contracts/appNavigation'
+import {
+  appNavigationService,
+  openProjectIntent,
+  showHomeIntent,
+} from '@src/registry/contracts/appNavigation'
 import { useCallback, useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import {
@@ -155,7 +159,9 @@ export function useDismiss() {
           return waitFor(settings.actor, (state) => state.matches('idle'))
         })
         .then(() => {
-          void app.registry.get(appNavigationService).showHome()
+          void app.registry
+            .get(appNavigationService)
+            .dispatch(showHomeIntent, {})
           toast.success(
             'Click the question mark in the lower-right corner if you ever want to redo the tutorial!',
             {
@@ -373,7 +379,7 @@ async function createOnboardingProject(
 
   await deps.app.registry
     .get(appNavigationService)
-    .openProject({ target: project.default_file })
+    .dispatch(openProjectIntent, { target: project.default_file })
   await deps.navigate(
     joinRouterPaths(
       PATHS.FILE,
