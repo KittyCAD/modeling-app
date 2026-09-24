@@ -2619,7 +2619,14 @@ export class KclManager extends File {
             cause,
             'Failed to set the engine KCL version'
           ),
-          [ast.start, ast.end, ast.moduleId]
+          [ast.start, ast.end, ast.moduleId],
+          [],
+          [],
+          {},
+          emptyOperationsByModule(),
+          new Map(),
+          {},
+          null
         )
       )
     }
