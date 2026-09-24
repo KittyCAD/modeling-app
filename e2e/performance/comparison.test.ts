@@ -99,7 +99,7 @@ describe('paired interaction comparison', () => {
     expect(result.status).toBe('no-regression')
     expect(result.collectionErrors).toEqual([])
     expect(result.failures).toEqual([])
-    expect(result.strata).toHaveLength(48)
+    expect(result.strata).toHaveLength(96)
     for (const stratum of result.strata) {
       expect(stratum.completePairs).toBe(10)
       expect(stratum.medianDeltaMs).toBe(0)
