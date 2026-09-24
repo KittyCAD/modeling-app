@@ -2734,7 +2734,7 @@ dependencies = [
  "indexmap 2.14.2",
  "kcl-error 0.2.186",
  "kittycad-measurements",
- "kittycad-point",
+ "kittycad-point 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "kittycad-unit-conversion-derive",
  "parse-display",
  "parse-display-derive",
@@ -3148,6 +3148,17 @@ dependencies = [
  "schemars 0.8.22",
  "serde",
  "ts-rs",
+]
+
+[[package]]
+name = "kittycad-point"
+version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "07209a04eca5a827e67241465759c16c1d61f4a92936dbe4dd848ba497959581"
+dependencies = [
+ "euler 0.5.0",
+ "schemars 0.8.22",
+ "serde",
 ]
 
 [[package]]
