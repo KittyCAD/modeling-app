@@ -21,10 +21,12 @@ async function downloadProject(files: ProjectFiles, name: string) {
 export function KclMigrationDialog({
   controller,
   enabled,
+  sourceIsKcl2,
   className = '',
 }: {
   controller: MigrationController
   enabled: boolean
+  sourceIsKcl2: boolean
   className?: string
 }) {
   useSignals()
@@ -69,7 +71,7 @@ export function KclMigrationDialog({
         : []
     })
   }, [original, candidate])
-  if (!enabled && !active) return null
+  if ((!enabled || !sourceIsKcl2) && !active) return null
 
   return (
     <>
@@ -159,7 +161,7 @@ export function KclMigrationDialog({
               {['idle', 'failed', 'cancelled'].includes(phase) && (
                 <button
                   type="button"
-                  disabled={!enabled || !consent}
+                  disabled={!enabled || !sourceIsKcl2 || !consent}
                   onClick={() => {
                     void controller.start(consent)
                   }}

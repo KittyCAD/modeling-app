@@ -162,7 +162,56 @@ test.describe(
           shouldWriteToDisk: false,
         })
       }, source)
-      await page.getByRole('button', { name: 'Migrate to KCL 3' }).click()
+      const migrate = page.getByRole('button', { name: 'Migrate to KCL 3' })
+      await expect(migrate).toBeVisible()
+      for (const code of [
+        '@settings(kclVersion = 1.0)\nlength = 11mm\n',
+        candidate,
+        'length = 11mm\n',
+        '@settings(defaultLengthUnit = mm)\nlength = 11mm\n',
+        '@settings(kclVersion = 2.0)\nlength = (\n',
+      ]) {
+        await page.evaluate((code) => {
+          window.app.project?.executingEditor.value?.updateCodeEditor(code, {
+            shouldExecute: false,
+            shouldWriteToDisk: false,
+          })
+        }, code)
+        await expect(migrate).toBeHidden()
+      }
+      await page.evaluate(
+        (code) => {
+          window.app.project?.executingEditor.value?.updateCodeEditor(code, {
+            shouldExecute: false,
+            shouldWriteToDisk: false,
+          })
+        },
+        source.replace('10mm', '11mm')
+      )
+      await expect(migrate).toBeVisible()
+      // A closed entrypoint is read from disk, regardless of the active editor.
+      const entrypoint = await page.evaluate(async (code) => {
+        const project = window.app.project
+        if (!project) throw new Error('No project')
+        const info = project.projectIORefSignal.value
+        const path = window.fsZds.join(project.path, 'parts', 'preview.kcl')
+        await window.app.fileOperations.writeFile(path, code)
+        project.projectIORefSignal.value = { ...info, default_file: path }
+        return info.default_file
+      }, candidate)
+      await expect(migrate).toBeHidden()
+      await page.evaluate(async (entrypoint) => {
+        const project = window.app.project
+        if (!project) throw new Error('No project')
+        const info = project.projectIORefSignal.value
+        project.projectIORefSignal.value = {
+          ...info,
+          default_file: entrypoint,
+        }
+        await window.app.fileOperations.remove(info.default_file)
+      }, entrypoint)
+      await expect(migrate).toBeVisible()
+      await migrate.click()
       const start = page.getByRole('button', { name: 'Start Free Migration' })
       await expect(start).toBeDisabled()
       await page.getByRole('checkbox', { name: /I agree to migrate/ }).check()

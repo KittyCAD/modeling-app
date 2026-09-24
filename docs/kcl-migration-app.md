@@ -4,7 +4,7 @@ Implements the app flow for [text-to-cad#4257](https://github.com/KittyCAD/text-
 
 ## User flow
 
-The API's `zookeeper_kcl_migration` feature flag exposes **Migrate to KCL 3** in the project header. The user consents to KCL 3 preview and starts a free migration with a server-enforced 20-minute deadline. API owns eligibility, quotas and billing; this PR adds no paid-tier restriction.
+The API's `zookeeper_kcl_migration` feature flag exposes **Migrate to KCL 3** in the project header only when the entrypoint explicitly declares KCL 2.0, including unsaved edits. Existing migration results and Undo stay accessible after applying KCL 3. The user consents to KCL 3 preview and starts a free migration with a server-enforced 20-minute deadline. API owns eligibility, quotas and billing; this PR adds no paid-tier restriction.
 
 The app captures the complete project, including unsaved KCL buffers and unchanged binary/support files (excluding Git and internal filesystem metadata). It checks the explicit KCL 2 entrypoint and client support for `3.0-preview`. Unsupported paths, symbolic links, unreadable files, or projects over 256 files / 8 MiB fail before submission.
 
