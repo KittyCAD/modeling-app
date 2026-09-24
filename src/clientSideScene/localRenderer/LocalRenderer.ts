@@ -444,8 +444,11 @@ export class LocalRenderer {
   }
 
   private readonly syncPreviewCameraFromShared = () => {
-    this.clearPlaneHover()
     const cameraControls = this.kclManager.sceneInfra.camControls
+    if (cameraControls.isDragging) {
+      // Dragging should clear selections, but mouse scroll shouldn't (to avoid flickering when over a plane)
+      this.clearPlaneHover()
+    }
     const sharedCamera = cameraControls.camera
     const sharedTarget = cameraControls.target
     this.syncPlaneScale()
