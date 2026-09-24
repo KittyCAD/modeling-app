@@ -158,10 +158,8 @@ test.describe('Query parameter command', { tag: '@web' }, () => {
   }) => {
     await page.goto('/?cmd=set-layout&groupId=application&layoutId=ttc')
 
-    // The root route awaits Wasm before mounting the query-command consumer.
-    await page.evaluate(async () => {
-      await window.app.wasmPromise
-    })
+    // Home creates and opens a project before the file route applies its layout.
+    await page.waitForURL('**/file/**', { waitUntil: 'domcontentloaded' })
 
     await expect
       .poll(() =>
@@ -185,15 +183,23 @@ test.describe('Query parameter command', { tag: '@web' }, () => {
 
     const sampleTitle = 'Socket Head Cap Screw'
     const sampleSlug = 'socket-head-cap-screw'
+    const sampleLoadTimeout = 30_000
     const queryString = `?cmd=add-kcl-file-to-project&groupId=application&projectName=browser&source=kcl-samples&sample=${sampleSlug}/main.kcl`
     await page.goto(page.url() + queryString)
 
-    await page.evaluate(async () => {
-      await window.app.wasmPromise
-    })
-
-    await toolbar.openPane(DefaultLayoutPaneID.Code)
-    await editor.expectEditor.toContain(sampleTitle, { timeout: 30_000 })
-    await expect(page).toHaveURL(/socket-head-cap-screw%2Fmain\.kcl$/)
+    // Query-driven creation continues after Wasm initialization, while still on Home.
+    await test.step(
+      'Open the created sample',
+      async () => {
+        await expect(page).toHaveURL(/socket-head-cap-screw%2Fmain\.kcl$/, {
+          timeout: sampleLoadTimeout,
+        })
+        await toolbar.openPane(DefaultLayoutPaneID.Code)
+        await editor.expectEditor.toContain(sampleTitle, {
+          timeout: sampleLoadTimeout,
+        })
+      },
+      { timeout: sampleLoadTimeout }
+    )
   })
 })

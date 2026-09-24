@@ -1,0 +1,143 @@
+name: Interaction performance calibration
+
+on:
+  workflow_dispatch:
+    inputs:
+      calibration-fault:
+        description: Calibrate the dispatched commit against itself, optionally adding 64 ms to candidate Home palette opening
+        type: choice
+        default: none
+        options: [none, first, warm, stall]
+
+concurrency:
+  group: interaction-performance-calibration-${{ github.run_id }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+cache-mode: none
+
+jobs:
+  resolve:
+    # Selected application refs must not update caches used by other workflows.
+    runs-on: namespace-profile-ubuntu-2-cores;overrides.cache-tag=interaction-${{ github.run_id }}-${{ github.run_attempt }}-resolve
+    outputs:
+      base_commit: ${{ steps.plan.outputs.base_commit }}
+      candidate_commit: ${{ steps.plan.outputs.candidate_commit }}
+      pr_head_commit: ${{ steps.plan.outputs.pr_head_commit }}
+      harness_commit: ${{ steps.plan.outputs.harness_commit }}
+      harness_source: ${{ steps.plan.outputs.harness_source }}
+      harness_variant: ${{ steps.plan.outputs.harness_variant }}
+      calibration_fault: ${{ steps.plan.outputs.calibration_fault }}
+      build_matrix: ${{ steps.plan.outputs.build_matrix }}
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+          ref: ${{ github.sha }}
+      - uses: actions/setup-node@v7.0.0
+        with:
+          node-version-file: .nvmrc
+          package-manager-cache: false
+      - name: Verify build manifest producer and consumer
+        run: node --test e2e/performance/build-comparison.node-test.cjs
+      - name: Resolve immutable application and harness commits
+        id: plan
+        run: node e2e/performance/build-comparison.cjs resolve .
+      - uses: actions/upload-artifact@v7
+        with:
+          name: interaction-comparison-plan
+          path: comparison-plan.json
+          if-no-files-found: error
+          retention-days: 30
+
+  build-wasm:
+    needs: resolve
+    runs-on: namespace-profile-ubuntu-8-cores;overrides.cache-tag=interaction-${{ github.run_id }}-${{ github.run_attempt }}-wasm-${{ matrix.variant }}
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJSON(needs.resolve.outputs.build_matrix) }}
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+          ref: ${{ github.sha }}
+      - uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+          ref: ${{ github.sha }}
+          path: .performance-pipeline
+      - uses: ./.performance-pipeline/.github/actions/interaction-build-wasm
+        with:
+          variant: ${{ matrix.variant }}
+
+  build-app:
+    needs: [resolve, build-wasm]
+    runs-on: namespace-profile-ubuntu-8-cores;overrides.cache-tag=interaction-${{ github.run_id }}-${{ github.run_attempt }}-app-${{ matrix.variant }}
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJSON(needs.resolve.outputs.build_matrix) }}
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+          ref: ${{ github.sha }}
+          path: app
+      - uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+          ref: ${{ github.sha }}
+          path: harness
+      - uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+          ref: ${{ github.sha }}
+          path: .performance-pipeline
+      - uses: ./.performance-pipeline/.github/actions/interaction-build-app
+        with:
+          variant: ${{ matrix.variant }}
+          commit: ${{ github.sha }}
+
+  measure:
+    name: ${{ format('Interaction performance calibration ({0})', inputs['calibration-fault']) }}
+    needs: [resolve, build-wasm, build-app]
+    # A failed dependency must fail this check instead of leaving it skipped.
+    if: ${{ !cancelled() }}
+    runs-on: namespace-profile-macos-8-cores;overrides.cache-tag=interaction-${{ github.run_id }}-${{ github.run_attempt }}-measure
+    timeout-minutes: 15
+    steps:
+      - name: Require both instrumented builds
+        env:
+          PLAN_RESULT: ${{ needs.resolve.result }}
+          WASM_RESULT: ${{ needs.build-wasm.result }}
+          BUILD_RESULT: ${{ needs.build-app.result }}
+        run: test "$PLAN_RESULT" = success && test "$WASM_RESULT" = success && test "$BUILD_RESULT" = success
+      - uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+          ref: ${{ github.sha }}
+          path: apps/base
+      - uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+          ref: ${{ github.sha }}
+          path: apps/candidate
+      - uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+          ref: ${{ github.sha }}
+          path: .performance-pipeline
+      - uses: ./.performance-pipeline/.github/actions/interaction-measure
+        with:
+          base-commit: ${{ needs.resolve.outputs.base_commit }}
+          candidate-commit: ${{ needs.resolve.outputs.candidate_commit }}
+          pr-head-commit: ${{ needs.resolve.outputs.pr_head_commit }}
+          harness-commit: ${{ needs.resolve.outputs.harness_commit }}
+          harness-source: ${{ needs.resolve.outputs.harness_source }}
+          harness-variant: ${{ needs.resolve.outputs.harness_variant }}
+          calibration-fault: ${{ needs.resolve.outputs.calibration_fault }}
+          zoo-api-token: ${{ secrets.ZOO_API_TOKEN }}
+          tab-api-url: ${{ vars.TAB_API_URL }}
+          tab-api-key: ${{ secrets.TAB_API_KEY }}

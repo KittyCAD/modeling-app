@@ -313,6 +313,34 @@ describe('project system', () => {
     }
   })
 
+  it('does not resend unchanged engine appearance settings', async () => {
+    const app = createAppForTest()
+    const kclManager = app.singletons.kclManager
+    const engineCommandManager = kclManager.engineCommandManager
+    const previousConnection = engineCommandManager.connection
+
+    try {
+      await app.openProject(mockProject)
+      const updateTheme = vi
+        .spyOn(kclManager, 'updateTheme')
+        .mockResolvedValue(undefined)
+      const setDefaultSystemProperties = vi
+        .spyOn(engineCommandManager, 'setDefaultSystemProperties')
+        .mockResolvedValue(undefined)
+      engineCommandManager.connection = {
+        connected: true,
+      } as typeof engineCommandManager.connection
+
+      app.onSettingsUpdate(app.settings.actor.getSnapshot())
+
+      expect(updateTheme).not.toHaveBeenCalled()
+      expect(setDefaultSystemProperties).not.toHaveBeenCalled()
+    } finally {
+      engineCommandManager.connection = previousConnection
+      app.dispose()
+    }
+  })
+
   it('annotates opened projects with their owning library path', async () => {
     const app = createAppForTest()
 

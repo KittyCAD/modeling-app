@@ -1,6 +1,3 @@
-// Pins spike S1's key finding permanently: the std module's OWN experimental
-// opt-in does not cover the consumer. A file without
-// @settings(experimentalFeatures = allow) cannot use the view enums -- this
-// is the gate that makes named views experimental until enums stabilise
-// (M01 decision 3).
+// KCL V2 cannot access the view module even with experimental features allowed.
+@settings(kclVersion = 2.0, experimentalFeatures = allow)
 orientation = view::Orientation::Front

@@ -233,14 +233,29 @@ export async function deleteFromSelection(
       typeof pipeItemIndex === 'number' && pipeItemIndex > 0
         ? varDecNodeInit.body[pipeItemIndex]
         : undefined
-    const isPipedAppearance =
-      pipeItem?.type === 'CallExpressionKw' &&
-      pipeItem.callee.name.name === 'appearance'
+    // Legacy Sketch 1 segment, wall, and cap selections can point to a sketch
+    // pipe stage. Removing that stage would delete sketch code instead of the
+    // selected sketch or extrusion, so let the geometry handlers below handle it.
+    // TODO: Handle geometry selections before generic pipe deletion so this
+    // exclusion is unnecessary. Retire the Sketch 1 paths with its support/tests.
+    const isGeometrySelection =
+      selection.artifact?.type === 'segment' ||
+      selection.artifact?.type === 'wall' ||
+      selection.artifact?.type === 'cap'
     if (
-      (selection.artifact?.type === 'pattern' || isPipedAppearance) &&
+      !isGeometrySelection &&
+      pipeItem?.type === 'CallExpressionKw' &&
       typeof pipeItemIndex === 'number' &&
       varDecNodeInit.body.length > 1
     ) {
+      // Match the whole pipe stage so selecting a nested call (e.g. translate
+      // inside union) cannot delete the enclosing operation instead.
+      if (
+        pipeItem.start !== selection.codeRef.range[0] ||
+        pipeItem.end !== selection.codeRef.range[1]
+      ) {
+        return new Error('Cannot delete a nested call as a pipe stage')
+      }
       const varDecClone = getNodeFromPath<VariableDeclarator>(
         astClone,
         selection.codeRef.pathToNode,

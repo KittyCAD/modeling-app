@@ -142,6 +142,11 @@ export interface Fixtures {
   ) => Promise<{ dir: string }>
 }
 
+export interface ElectronZooLaunchOptions {
+  appDirectory?: string
+  executablePath?: string
+}
+
 export class ElectronZoo {
   private disposed = false
   private disposal: Promise<void> | undefined
@@ -155,8 +160,9 @@ export class ElectronZoo {
 
   public page!: Page
   public context!: BrowserContext
+  private tracingEnabled = false
 
-  constructor() {}
+  constructor(private readonly launchOptions: ElectronZooLaunchOptions = {}) {}
 
   async dispose(testInfo: TestInfo) {
     this.disposed = true
@@ -225,7 +231,9 @@ export class ElectronZoo {
       })
     })
 
-    await this.context.tracing.stopChunk({ path: 'trace.zip' })
+    if (this.tracingEnabled) {
+      await this.context.tracing.stopChunk({ path: 'trace.zip' })
+    }
 
     // Only after cleanup we're ready.
     this.available = true
@@ -247,19 +255,23 @@ export class ElectronZoo {
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     const that = this
 
+    const appDirectory = this.launchOptions.appDirectory
+      ? path.resolve(this.launchOptions.appDirectory)
+      : undefined
+    const executablePath =
+      this.launchOptions.executablePath ??
+      (process.env.ELECTRON_OVERRIDE_DIST_PATH
+        ? process.env.ELECTRON_OVERRIDE_DIST_PATH + 'electron'
+        : undefined)
     const options = {
-      args: ['.', '--no-sandbox'],
+      args: [appDirectory ?? '.', '--no-sandbox'],
+      ...(appDirectory ? { cwd: appDirectory } : {}),
       timeout: setupTimeout,
       env: {
         ...process.env,
         NODE_ENV: 'test',
       },
-      ...(process.env.ELECTRON_OVERRIDE_DIST_PATH
-        ? {
-            executablePath:
-              process.env.ELECTRON_OVERRIDE_DIST_PATH + 'electron',
-          }
-        : {}),
+      ...(executablePath !== undefined ? { executablePath } : {}),
       ...(process.env.PLAYWRIGHT_RECORD_VIDEO
         ? {
             recordVideo: {
@@ -304,7 +316,12 @@ export class ElectronZoo {
       await tryToGetWindowPage()
 
       this.context = this.electron.context()
-      await this.context.tracing.start({ screenshots: true, snapshots: true })
+      const trace = testInfo.project.use.trace
+      this.tracingEnabled =
+        trace !== 'off' && !(typeof trace === 'object' && trace.mode === 'off')
+      if (this.tracingEnabled) {
+        await this.context.tracing.start({ screenshots: true, snapshots: true })
+      }
 
       // We need to patch this because addInitScript will bind too late in our
       // electron tests, never running. We need to call reload() after each call
@@ -335,7 +352,9 @@ export class ElectronZoo {
     }
 
     await startRendererCrashDiagnostics(this.electron)
-    await this.context.tracing.startChunk()
+    if (this.tracingEnabled) {
+      await this.context.tracing.startChunk()
+    }
 
     await this.page.evaluate(
       ({ key, testScope }) => sessionStorage.setItem(key, testScope),

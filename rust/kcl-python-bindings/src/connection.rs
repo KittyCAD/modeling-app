@@ -23,6 +23,7 @@ use crate::bridge::physical_properties::PhysicalPropertiesRequest;
 use crate::bridge::physical_properties::PhysicalPropertiesResponse;
 use crate::bridge::sketch_constraints::SketchConstraintReport;
 use crate::into_miette;
+use crate::into_miette_for_parse;
 use crate::load_and_parse;
 use crate::measure_model_properties;
 use crate::new_context_state;
@@ -229,9 +230,19 @@ pub async fn new_kcl_session_impl(
         filename,
     } = load_and_parse(input).await?;
 
-    let (ctx, mut state) = new_context_state(path, mock, highlight_edges, false, video_res_width, video_res_height)
-        .await
-        .map_err(to_py_exception)?;
+    let (ctx, mut state) = new_context_state(
+        path,
+        mock,
+        highlight_edges,
+        false,
+        video_res_width,
+        video_res_height,
+        program
+            .language_version()
+            .map_err(|err| into_miette_for_parse(&filename, &code, err))?,
+    )
+    .await
+    .map_err(to_py_exception)?;
     let env_ref = match ctx.run(&program, &mut state).await {
         Ok((env_ref, _modeling_session_data)) => env_ref,
         Err(err) => {

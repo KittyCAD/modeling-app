@@ -12,7 +12,7 @@ description: Result of unparsing named_views_units_are_millimeters.kcl
 // millimeter equivalents. Every length written here is deliberately in a unit
 // other than millimeters, because a millimeter input cannot tell the two
 // storage conventions apart.
-@settings(experimentalFeatures = allow)
+@settings(kclVersion = "3.0-preview")
 
 // One unit throughout, on both length arguments.
 inches = view::oriented(view::Orientation::Front, target = [1inch, 2inch, 0inch], distance = 2inch)
