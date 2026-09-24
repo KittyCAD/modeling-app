@@ -91,13 +91,16 @@ test(
 
     const editor = new EditorFixture(page)
     await editor.openPane()
-    await editor.codeContent.fill('queuedCloudEdit = 42\n')
+    const initialCode = '@settings(kclVersion = 2.0)\n'
+    const queuedCode = `${initialCode}queuedCloudEdit = 42\n`
+    await editor.expectEditor.toContain(initialCode.trimEnd())
+    await editor.replaceCodeByTyping(initialCode, queuedCode)
     await expect
       .poll(
         () => readOpfsTextFiles(page, { main: `${projectPath}/main.kcl` }),
         { timeout: CLOUD_SYNC_E2E_TIMEOUT }
       )
-      .toMatchObject({ main: 'queuedCloudEdit = 42\n' })
+      .toMatchObject({ main: queuedCode })
 
     const updatedResponse = page.waitForResponse(
       (result) =>
@@ -136,7 +139,7 @@ test(
     await expect(download).toBeOK()
     const archive = await JSZip.loadAsync(await download.body())
     expect(await archive.file(/(^|\/)main\.kcl$/)[0]?.async('string')).toBe(
-      'queuedCloudEdit = 42\n'
+      queuedCode
     )
     expect(
       await archive.file(/(^|\/)project\.toml$/)[0]?.async('string')
