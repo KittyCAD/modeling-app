@@ -2,12 +2,14 @@ import {
   type AppNavigationDependencies,
   createAppNavigationService,
   createOpenProjectIntentContribution,
+  createShowHomeIntentContribution,
 } from '@src/lib/appNavigation'
 import type { ResolvedProjectOpen } from '@src/lib/projectOpen'
 import {
   defineAppNavigationIntent,
   defineAppNavigationIntentContribution,
   openProjectIntent,
+  showHomeIntent,
 } from '@src/registry/contracts/appNavigation'
 import { beforeEach, describe, expect, test, vi } from 'vitest'
 
@@ -49,15 +51,14 @@ function navigationHarness(overrides: Partial<AppNavigationDependencies> = {}) {
   }
 
   const projectOpen = createOpenProjectIntentContribution(dependencies)
-  let navigation: ReturnType<typeof createAppNavigationService>
-  navigation = createAppNavigationService([projectOpen.contribution], {
-    showHome: () => {
-      projectOpen.cancelProjectOpen()
-      return dependencies.showHome((request) =>
-        navigation.dispatch(openProjectIntent, request)
-      )
-    },
-  })
+  const showHome = createShowHomeIntentContribution(
+    dependencies,
+    projectOpen.cancelProjectOpen
+  )
+  const navigation = createAppNavigationService([
+    projectOpen.contribution,
+    showHome,
+  ])
   return {
     dependencies,
     navigation,
@@ -73,33 +74,21 @@ describe('appNavigation', () => {
     const openSettingsIntent = defineAppNavigationIntent<
       { tab: string },
       undefined
-    >('settings.open')
+    >('settings.open', { placement: 'additional' })
     const openSettings = vi.fn(async (_input: { tab: string }) => undefined)
     const settingsContribution = defineAppNavigationIntentContribution(
       openSettingsIntent,
       openSettings
     )
-    const projectOpen = createOpenProjectIntentContribution({
-      resolveProjectOpen: vi.fn(async () => resolvedProject),
-      openResolvedProject: vi.fn<
-        AppNavigationDependencies['openResolvedProject']
-      >(async () => ({
-        kind: 'opened',
-        data: {
-          code: '',
-          project: resolvedProject.project,
-          file: { ...resolvedProject.file, children: [] },
-        },
-      })),
-    })
-    const navigation = createAppNavigationService([
-      projectOpen.contribution,
-      settingsContribution,
-    ])
+    const navigation = createAppNavigationService([settingsContribution])
 
     await navigation.dispatch(openSettingsIntent, { tab: 'project' })
 
     expect(openSettings).toHaveBeenCalledWith({ tab: 'project' })
+    expect(navigation.activeAdditionalIntent.value).toEqual({
+      intent: openSettingsIntent,
+      input: { tab: 'project' },
+    })
   })
 
   test('rejects dispatch when more than one contribution claims an intent', async () => {
@@ -114,14 +103,13 @@ describe('appNavigation', () => {
       intent,
       async () => undefined
     )
-    const navigation = createAppNavigationService([first, second], {
-      supersedeProjectOpen: vi.fn(),
-    })
+    const navigation = createAppNavigationService([first, second])
 
     await expect(navigation.dispatch(intent, {})).rejects.toThrow(
       'Multiple application navigation intents handle duplicate.intent.'
     )
   })
+
   test('opens a project before projecting its location', async () => {
     const { dependencies, navigation } = navigationHarness()
     const request = { target: '/projects/bracket' }
@@ -143,12 +131,12 @@ describe('appNavigation', () => {
     )
   })
 
-  test('delegates showing Home with the same project-open command', async () => {
+  test('dispatches Home through its contributed intent', async () => {
     const { dependencies, navigation } = navigationHarness()
 
-    await navigation.showHome()
+    await navigation.dispatch(showHomeIntent, {})
 
-    expect(dependencies.showHome).toHaveBeenCalledWith(expect.any(Function))
+    expect(dependencies.showHome).toHaveBeenCalledWith({})
   })
 
   test('a newer project open aborts the in-flight open', async () => {
@@ -192,7 +180,7 @@ describe('appNavigation', () => {
     const firstOpen = navigation.dispatch(openProjectIntent, {
       target: '/projects/bracket',
     })
-    await navigation.showHome()
+    await navigation.dispatch(showHomeIntent, {})
     finishResolution()
 
     await expect(firstOpen).rejects.toMatchObject({ name: 'AbortError' })

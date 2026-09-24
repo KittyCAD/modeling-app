@@ -1,16 +1,25 @@
 import { isOnboardingPath, type OnboardingPath } from '@src/lib/onboardingPaths'
 import { PATHS } from '@src/lib/paths'
-import { defineAppNavigationIntent } from '@src/registry/contracts/appNavigation'
+import {
+  defineAppNavigationIntent,
+  defineAppNavigationIntentContribution,
+} from '@src/registry/contracts/appNavigation'
 import { defineAppNavigationUrlContribution } from '@src/registry/contracts/appUrl'
 
-export interface OnboardingOverlayState {
+export interface StartOnboardingInput {
   step?: OnboardingPath
 }
 
 export const startOnboardingIntent = defineAppNavigationIntent<
-  OnboardingOverlayState,
+  StartOnboardingInput,
   undefined
->('onboarding.start')
+>('onboarding.start', { placement: 'additional' })
+
+export const startOnboardingIntentContribution =
+  defineAppNavigationIntentContribution(
+    startOnboardingIntent,
+    async () => undefined
+  )
 
 export const onboardingNavigationUrlContribution =
   defineAppNavigationUrlContribution(startOnboardingIntent, {
@@ -27,9 +36,9 @@ export const onboardingNavigationUrlContribution =
 
       return {
         ...(parsedStep ? { step: parsedStep } : {}),
-      } satisfies OnboardingOverlayState
+      } satisfies StartOnboardingInput
     },
-    format: (state: OnboardingOverlayState) => ({
+    format: (state: StartOnboardingInput) => ({
       path: `${PATHS.ONBOARDING}${state.step ?? ''}`,
     }),
   })

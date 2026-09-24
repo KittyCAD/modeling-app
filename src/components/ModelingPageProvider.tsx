@@ -18,7 +18,10 @@ import { kclCommands } from '@src/lib/kclCommands'
 import { markOnce } from '@src/lib/performance'
 import { isArray } from '@src/lib/utils'
 import { modelingMenuCallbackMostActions } from '@src/menu/register'
-import { appNavigationService } from '@src/registry/contracts/appNavigation'
+import {
+  appNavigationService,
+  showHomeIntent,
+} from '@src/registry/contracts/appNavigation'
 import { FILE_AND_CODE_EDITOR_COMMAND_SCOPES } from '@src/registry/contracts/commands'
 import type React from 'react'
 import { use, useEffect, useMemo } from 'react'
@@ -175,7 +178,9 @@ export const ModelingPageProvider = ({
         filePath,
         FILE_AND_CODE_EDITOR_COMMAND_SCOPES,
         () => {
-          void app.registry.get(appNavigationService).showHome()
+          void app.registry
+            .get(appNavigationService)
+            .dispatch(showHomeIntent, {})
         }
       )
     commands.send({

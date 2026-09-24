@@ -32,7 +32,10 @@ import { getAllSubDirectoriesAtProjectRoot } from '@src/machines/systemIO/snapsh
 import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 import type { RequestedKCLFile } from '@src/machines/systemIO/utils'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
-import { appNavigationService } from '@src/registry/contracts/appNavigation'
+import {
+  appNavigationService,
+  openProjectIntent,
+} from '@src/registry/contracts/appNavigation'
 import {
   FILE_AND_CODE_EDITOR_COMMAND_SCOPES,
   GLOBAL_COMMAND_SCOPES,
@@ -399,7 +402,7 @@ export function createApplicationCommands({
 
             void app.registry
               .get(appNavigationService)
-              .openProject({ target: project.default_file })
+              .dispatch(openProjectIntent, { target: project.default_file })
           })
           .catch((error: unknown) => {
             trap(

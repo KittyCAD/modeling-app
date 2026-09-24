@@ -113,7 +113,7 @@ describe('resolveProjectOpenRequest', () => {
         startup: {
           additionalIntents: [
             {
-              intent: { id: 'settings.open' },
+              intent: { id: 'settings.open', placement: 'additional' },
               input: { tab: 'project' },
             },
           ],

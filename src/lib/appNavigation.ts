@@ -1,15 +1,19 @@
 import type { ResolvedProjectOpen } from '@src/lib/projectOpen'
+import { signal } from '@preact/signals-core'
 import type {
   AppNavigationIntent,
   AppNavigationIntentContribution,
   AppNavigationService,
   OpenProjectOutcome,
   OpenProjectRequest,
+  ShowHomeRequest,
 } from '@src/registry/contracts/appNavigation'
 import {
   defineAppNavigationIntentContribution,
   openProjectIntent,
+  showHomeIntent,
 } from '@src/registry/contracts/appNavigation'
+import type { ParsedAppNavigationIntent } from '@src/registry/contracts/appUrl'
 
 export interface AppNavigationDependencies {
   resolveProjectOpen: (
@@ -25,9 +29,21 @@ export interface AppNavigationDependencies {
     resolution: ResolvedProjectOpen,
     request: OpenProjectRequest
   ) => void
-  showHome: (
-    openProject: (request: OpenProjectRequest) => Promise<OpenProjectOutcome>
-  ) => Promise<void>
+  showHome: (request: ShowHomeRequest) => Promise<void>
+}
+
+/** Build the Home handler while keeping project-open cancellation private. */
+export function createShowHomeIntentContribution(
+  dependencies: AppNavigationDependencies,
+  cancelProjectOpen: () => void
+): AppNavigationIntentContribution {
+  return defineAppNavigationIntentContribution(
+    showHomeIntent,
+    async (request) => {
+      cancelProjectOpen()
+      await dependencies.showHome(request)
+    }
+  )
 }
 
 /**
@@ -106,13 +122,11 @@ export function createOpenProjectIntentContribution(
  * application launch.
  */
 export function createAppNavigationService(
-  contributions: readonly AppNavigationIntentContribution[],
-  {
-    showHome,
-  }: {
-    showHome?: AppNavigationService['showHome']
-  } = {}
+  contributions: readonly AppNavigationIntentContribution[]
 ): AppNavigationService {
+  const activeAdditionalIntent = signal<ParsedAppNavigationIntent | undefined>(
+    undefined
+  )
   const contributionsById = new Map<string, AppNavigationIntentContribution>()
   const duplicateIntentIds = new Set<string>()
   for (const contribution of contributions) {
@@ -139,11 +153,20 @@ export function createAppNavigationService(
         new Error(`No application navigation intent handles ${intent.id}.`)
       )
     }
-    return contribution.dispatch(input) as Promise<Output>
+    const output = (await contribution.dispatch(input)) as Output
+    if (intent.placement === 'additional') {
+      activeAdditionalIntent.value = { intent, input }
+    } else {
+      activeAdditionalIntent.value = undefined
+    }
+    return output
   }
 
   return {
+    activeAdditionalIntent,
     dispatch,
-    showHome: showHome ?? (async () => undefined),
+    dismissAdditionalIntent: () => {
+      activeAdditionalIntent.value = undefined
+    },
   }
 }
