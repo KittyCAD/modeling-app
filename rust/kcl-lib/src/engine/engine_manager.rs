@@ -85,6 +85,9 @@ pub struct EngineManager {
     /// If the server sends session data, it'll be copied to here.
     session_data: Arc<RwLock<Option<ModelingSessionData>>>,
 
+    /// Request ID returned by the HTTP request that upgraded to this WebSocket.
+    websocket_upgrade_request_id: Option<String>,
+
     #[builder(default)]
     stats: EngineStats,
 
@@ -101,6 +104,7 @@ impl std::fmt::Debug for EngineManager {
             .field("ids_of_async_commands", &self.ids_of_async_commands)
             .field("default_planes", &self.default_planes)
             .field("session_data", &self.session_data)
+            .field("websocket_upgrade_request_id", &self.websocket_upgrade_request_id)
             .field("stats", &self.stats)
             .field("async_tasks", &self.async_tasks)
             .finish()
@@ -127,6 +131,7 @@ impl EngineManager {
             ids_of_async_commands,
             default_planes: Default::default(),
             session_data,
+            websocket_upgrade_request_id: None,
             stats: Default::default(),
             async_tasks: Default::default(),
         }
@@ -160,7 +165,7 @@ impl EngineManager {
             Arc::clone(&session_data),
             Arc::clone(&pending_errors),
             Arc::clone(&socket_health),
-            request_id,
+            request_id.clone(),
         )
         .await;
 
@@ -172,6 +177,7 @@ impl EngineManager {
             ids_of_async_commands,
             default_planes: Default::default(),
             session_data,
+            websocket_upgrade_request_id: request_id,
             stats: Default::default(),
             async_tasks: Default::default(),
         }
@@ -195,6 +201,7 @@ impl EngineManager {
             ids_of_async_commands,
             default_planes: Default::default(),
             session_data,
+            websocket_upgrade_request_id: None,
             stats: Default::default(),
             async_tasks: Default::default(),
         }
@@ -958,6 +965,11 @@ impl EngineManager {
 
     pub async fn get_session_data(&self) -> Option<ModelingSessionData> {
         self.session_data.read().await.clone()
+    }
+
+    /// Request ID returned by the HTTP request that upgraded to this WebSocket.
+    pub fn websocket_upgrade_request_id(&self) -> Option<&str> {
+        self.websocket_upgrade_request_id.as_deref()
     }
 
     pub async fn close(&self) {
