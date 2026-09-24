@@ -34,8 +34,7 @@ export class EdgeRenderer {
     this.group.visible = visible
   }
 
-  public buildEdges(gltf: KITTYCAD_GLTF)
-  {
+  public buildEdges(gltf: KITTYCAD_GLTF) {
     console.log('gltf', gltf)
   }
 
