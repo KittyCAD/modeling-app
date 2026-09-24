@@ -50,6 +50,10 @@ function isResult(value: unknown): value is MigrationResult {
     !statuses.has(value.status) ||
     value.status === 'running' ||
     typeof value.detail !== 'string' ||
+    (value.conversion_not_started !== undefined &&
+      typeof value.conversion_not_started !== 'boolean') ||
+    (value.conversion_not_started === true &&
+      !['failed', 'unsupported', 'validation_failed'].includes(value.status)) ||
     !isFiles(value.files ?? {})
   )
     return false
