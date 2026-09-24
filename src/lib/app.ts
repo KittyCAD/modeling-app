@@ -1,6 +1,7 @@
 import {
   defineRegistryItem,
   pluginsValueSpec,
+  provide,
   provideService,
   Registry,
   type RegistryItem,
@@ -10,7 +11,10 @@ import { effect, type Signal, signal } from '@preact/signals-core'
 import { buildFSHistoryExtension } from '@src/editor/plugins/fs'
 import { File, KclManager, ZDSProject } from '@src/lang/KclManager'
 import { lspService } from '@src/lang/lsp/registry/contract'
-import { createAppNavigationService } from '@src/lib/appNavigation'
+import {
+  createAppNavigationService,
+  createOpenProjectIntentContribution,
+} from '@src/lib/appNavigation'
 import { createAppNavigationDependencies } from '@src/lib/appNavigationRuntime'
 import { type BillingRegistryService, billingService } from '@src/lib/billing'
 import { createAuthCommands } from '@src/lib/commandBarConfigs/authCommandConfig'
@@ -51,7 +55,10 @@ import {
   UserFeaturesTransition,
   userFeaturesContextHas,
 } from '@src/machines/userFeaturesMachine'
-import { appNavigationService } from '@src/registry/contracts/appNavigation'
+import {
+  appNavigationIntentContributionsValueSpec,
+  appNavigationService,
+} from '@src/registry/contracts/appNavigation'
 import {
   type AuthRegistryService,
   authService,
@@ -822,9 +829,23 @@ export class App implements AppSubsystems {
     })
     kclManager.fileOperations = this.fileOperations
 
+    const openProjectNavigation = createOpenProjectIntentContribution(
+      createAppNavigationDependencies(this)
+    )
+    const preloadedNavigationIntents = [
+      ...this.registry.get(appNavigationIntentContributionsValueSpec),
+      openProjectNavigation.contribution,
+    ]
+
     this.registry.reconfigure(appRegistryServicesSlot, [
       defineRegistryItem({
         id: 'app.runtime-services',
+        provides: [
+          provide(
+            appNavigationIntentContributionsValueSpec,
+            openProjectNavigation.contribution
+          ),
+        ],
         providesServices: [
           provideService(
             executingEditorService,
@@ -838,7 +859,9 @@ export class App implements AppSubsystems {
           // are owned and composed by registry capabilities.
           provideService(
             appNavigationService,
-            createAppNavigationService(createAppNavigationDependencies(this))
+            createAppNavigationService(preloadedNavigationIntents, {
+              supersedeProjectOpen: openProjectNavigation.supersedeProjectOpen,
+            })
           ),
         ],
       }),

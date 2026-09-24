@@ -19,7 +19,10 @@ import type { App } from '@src/lib/app'
 import { getRouterSearchFromRequestUrl, PATHS } from '@src/lib/paths'
 import { loadHomeProjects } from '@src/lib/routeLoaderUtils'
 import type { FileLoaderData, HomeLoaderData } from '@src/lib/types'
-import { appNavigationService } from '@src/registry/contracts/appNavigation'
+import {
+  appNavigationService,
+  openProjectIntent,
+} from '@src/registry/contracts/appNavigation'
 
 /**
  * What a route wants to happen, said rather than done.
@@ -91,11 +94,13 @@ export async function initFileRoute(
     return { kind: 'redirect', to: PATHS.HOME }
   }
 
-  const outcome = await app.registry.get(appNavigationService).openProject({
-    target: id,
-    requestUrl,
-    signal: requestSignal,
-  })
+  const outcome = await app.registry
+    .get(appNavigationService)
+    .dispatch(openProjectIntent, {
+      target: id,
+      requestUrl,
+      signal: requestSignal,
+    })
   return outcome.kind === 'redirect'
     ? { kind: 'redirect', to: outcome.to }
     : { kind: 'ok', data: outcome.data }

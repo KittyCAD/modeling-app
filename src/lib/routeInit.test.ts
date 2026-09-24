@@ -27,6 +27,7 @@ const mocks = vi.hoisted(() => ({
   loadAndValidateSettings: vi.fn(),
   supersedeProjectOpen: vi.fn(),
   openProject: vi.fn(),
+  dispatch: vi.fn(),
 }))
 
 vi.mock('@src/lib/routeLoaderUtils', () => ({
@@ -70,7 +71,7 @@ function fakeApp(): App {
         exists: mocks.exists,
         stat: mocks.stat,
         supersedeProjectOpen: mocks.supersedeProjectOpen,
-        openProject: mocks.openProject,
+        dispatch: mocks.dispatch,
       }),
     },
     singletons: { kclManager: { wasmInstancePromise: Promise.resolve({}) } },
@@ -84,6 +85,9 @@ function setDesktop(isDesktop: boolean) {
 }
 
 beforeEach(() => {
+  mocks.dispatch.mockImplementation((_intent, input) =>
+    mocks.openProject(input)
+  )
   mocks.exists.mockResolvedValue(true)
   mocks.loadAndValidateSettings.mockResolvedValue({
     settings: {
@@ -178,14 +182,6 @@ describe('initFileRoute', () => {
 })
 
 describe('initHomeRoute', () => {
-  test('unflagged web bounces out to the index', async () => {
-    setDesktop(false)
-    mocks.webHomeRouteEnabled.mockResolvedValue(false)
-    const result = await initHomeRoute(fakeApp())
-    expect(result).toEqual({ kind: 'redirect', to: PATHS.INDEX })
-    expect(mocks.loadHomeProjects).not.toHaveBeenCalled()
-  })
-
   test('desktop clears the open project and lists folders', async () => {
     setDesktop(true)
     const result = await initHomeRoute(fakeApp())
@@ -193,9 +189,8 @@ describe('initHomeRoute', () => {
     expect(mocks.loadHomeProjects).toHaveBeenCalledTimes(1)
   })
 
-  test('flagged web lists folders rather than bouncing', async () => {
+  test('web clears the open project and lists folders', async () => {
     setDesktop(false)
-    mocks.webHomeRouteEnabled.mockResolvedValue(true)
     const result = await initHomeRoute(fakeApp())
     expect(result).toEqual({ kind: 'ok', data: {} })
     expect(mocks.loadHomeProjects).toHaveBeenCalledTimes(1)

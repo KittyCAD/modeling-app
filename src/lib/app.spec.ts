@@ -325,7 +325,7 @@ describe('project system', () => {
     const previousConnection = engineCommandManager.connection
 
     try {
-      await app.openProject(mockProject)
+      await openProject(app, mockProject)
       const updateTheme = vi
         .spyOn(kclManager, 'updateTheme')
         .mockResolvedValue(undefined)

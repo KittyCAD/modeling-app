@@ -1,8 +1,14 @@
 import {
   type AppNavigationDependencies,
   createAppNavigationService,
+  createOpenProjectIntentContribution,
 } from '@src/lib/appNavigation'
 import type { ResolvedProjectOpen } from '@src/lib/projectOpen'
+import {
+  defineAppNavigationIntent,
+  defineAppNavigationIntentContribution,
+  openProjectIntent,
+} from '@src/registry/contracts/appNavigation'
 import { beforeEach, describe, expect, test, vi } from 'vitest'
 
 const resolvedProject: ResolvedProjectOpen = {
@@ -39,9 +45,12 @@ function navigationHarness(overrides: Partial<AppNavigationDependencies> = {}) {
     ...overrides,
   }
 
+  const projectOpen = createOpenProjectIntentContribution(dependencies)
   return {
     dependencies,
-    navigation: createAppNavigationService(dependencies),
+    navigation: createAppNavigationService([projectOpen.contribution], {
+      supersedeProjectOpen: projectOpen.supersedeProjectOpen,
+    }),
   }
 }
 
@@ -50,6 +59,36 @@ beforeEach(() => {
 })
 
 describe('appNavigation', () => {
+  test('dispatches a capability-contributed intent from the startup catalog', async () => {
+    const openSettingsIntent = defineAppNavigationIntent<{ tab: string }, void>(
+      'settings.open'
+    )
+    const openSettings = vi.fn(async (_input: { tab: string }) => undefined)
+    const settingsContribution = defineAppNavigationIntentContribution(
+      openSettingsIntent,
+      openSettings
+    )
+    const projectOpen = createOpenProjectIntentContribution({
+      resolveProjectOpen: vi.fn(async () => resolvedProject),
+      openResolvedProject: vi.fn(async () => ({
+        kind: 'opened',
+        data: {
+          code: '',
+          project: resolvedProject.project,
+          file: { ...resolvedProject.file, children: [] },
+        },
+      })),
+    })
+    const navigation = createAppNavigationService(
+      [projectOpen.contribution, settingsContribution],
+      { supersedeProjectOpen: projectOpen.supersedeProjectOpen }
+    )
+
+    await navigation.dispatch(openSettingsIntent, { tab: 'project' })
+
+    expect(openSettings).toHaveBeenCalledWith({ tab: 'project' })
+  })
+
   test('returns a canonical redirect without opening a project', async () => {
     const { dependencies, navigation } = navigationHarness({
       resolveProjectOpen: vi.fn<
@@ -61,7 +100,7 @@ describe('appNavigation', () => {
     })
 
     await expect(
-      navigation.openProject({ target: '/projects/bracket' })
+      navigation.dispatch(openProjectIntent, { target: '/projects/bracket' })
     ).resolves.toEqual({ kind: 'redirect', to: '/file/canonical' })
     expect(dependencies.openResolvedProject).not.toHaveBeenCalled()
   })
@@ -70,7 +109,7 @@ describe('appNavigation', () => {
     const { dependencies, navigation } = navigationHarness()
 
     await expect(
-      navigation.openProject({ target: '/projects/bracket' })
+      navigation.dispatch(openProjectIntent, { target: '/projects/bracket' })
     ).resolves.toMatchObject({ kind: 'opened' })
     expect(dependencies.openResolvedProject).toHaveBeenCalledWith(
       resolvedProject,
@@ -93,9 +132,11 @@ describe('appNavigation', () => {
         .mockResolvedValueOnce(resolvedProject),
     })
 
-    const firstOpen = navigation.openProject({ target: '/projects/bracket' })
+    const firstOpen = navigation.dispatch(openProjectIntent, {
+      target: '/projects/bracket',
+    })
     await expect(
-      navigation.openProject({ target: '/projects/gear' })
+      navigation.dispatch(openProjectIntent, { target: '/projects/gear' })
     ).resolves.toMatchObject({ kind: 'opened' })
     finishResolution()
 
@@ -114,7 +155,9 @@ describe('appNavigation', () => {
       }),
     })
 
-    const firstOpen = navigation.openProject({ target: '/projects/bracket' })
+    const firstOpen = navigation.dispatch(openProjectIntent, {
+      target: '/projects/bracket',
+    })
     navigation.supersedeProjectOpen()
     finishResolution()
 
@@ -134,7 +177,7 @@ describe('appNavigation', () => {
     })
     const controller = new AbortController()
 
-    const open = navigation.openProject({
+    const open = navigation.dispatch(openProjectIntent, {
       target: '/projects/bracket',
       signal: controller.signal,
     })

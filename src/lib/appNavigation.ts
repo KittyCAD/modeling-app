@@ -1,8 +1,14 @@
 import type { ResolvedProjectOpen } from '@src/lib/projectOpen'
 import type {
+  AppNavigationIntent,
+  AppNavigationIntentContribution,
   AppNavigationService,
   OpenProjectOutcome,
   OpenProjectRequest,
+} from '@src/registry/contracts/appNavigation'
+import {
+  defineAppNavigationIntentContribution,
+  openProjectIntent,
 } from '@src/registry/contracts/appNavigation'
 
 export interface AppNavigationDependencies {
@@ -28,9 +34,12 @@ export interface AppNavigationDependencies {
  * project-session effects are separate operations so neither tests nor future
  * callers need to impersonate the entire App runtime.
  */
-export function createAppNavigationService(
+export function createOpenProjectIntentContribution(
   dependencies: AppNavigationDependencies
-): AppNavigationService {
+): {
+  contribution: AppNavigationIntentContribution
+  supersedeProjectOpen: (signal?: AbortSignal) => void
+} {
   let activeProjectOpen: AbortController | undefined
 
   const beginProjectOpen = (requestSignal?: AbortSignal) => {
@@ -52,7 +61,9 @@ export function createAppNavigationService(
     }
   }
 
-  const openProject: AppNavigationService['openProject'] = async (request) => {
+  const openProject = async (
+    request: OpenProjectRequest
+  ): Promise<OpenProjectOutcome> => {
     const projectOpen = beginProjectOpen(request.signal)
     try {
       projectOpen.throwIfSuperseded()
@@ -76,11 +87,56 @@ export function createAppNavigationService(
   }
 
   return {
-    openProject,
+    contribution: defineAppNavigationIntentContribution(
+      openProjectIntent,
+      openProject
+    ),
     supersedeProjectOpen: (signal) => {
       activeProjectOpen?.abort()
       activeProjectOpen = undefined
       signal?.throwIfAborted()
     },
+  }
+}
+
+/**
+ * Build appNavigation from the contributions available before startup.
+ *
+ * The copied map deliberately does not react to later registry changes. A
+ * contribution that changes cold-start URL semantics takes effect on the next
+ * application launch.
+ */
+export function createAppNavigationService(
+  contributions: readonly AppNavigationIntentContribution[],
+  {
+    supersedeProjectOpen,
+  }: {
+    supersedeProjectOpen: AppNavigationService['supersedeProjectOpen']
+  }
+): AppNavigationService {
+  const contributionsById = new Map(
+    contributions.map((contribution) => [contribution.intentId, contribution])
+  )
+
+  if (contributionsById.size !== contributions.length) {
+    throw new Error('Application navigation intent ids must be unique.')
+  }
+
+  const dispatch = async <Input, Output>(
+    intent: AppNavigationIntent<Input, Output>,
+    input: Input
+  ): Promise<Output> => {
+    const contribution = contributionsById.get(intent.id)
+    if (!contribution) {
+      return Promise.reject(
+        new Error(`No application navigation intent handles ${intent.id}.`)
+      )
+    }
+    return contribution.dispatch(input) as Promise<Output>
+  }
+
+  return {
+    dispatch,
+    supersedeProjectOpen,
   }
 }
