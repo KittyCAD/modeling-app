@@ -37,7 +37,7 @@ export interface components {
        * @description Explicit consent to unstable preview semantics.
        * @default false
        */
-      allow_preview: boolean
+      allow_preview?: boolean
       /** @description Complete project, including unsaved edits, imports, and settings. */
       current_files: {
         [key: string]: number[]
@@ -112,13 +112,18 @@ export interface components {
     }
     /** @description A worker's terminal candidate, held separately from ordinary project edits. */
     KclMigrationResult: {
+      /**
+       * @description Confirmed rejection or failure before conversion started. Only unsuccessful attempts may set this; API excludes them from the daily attempt allowance. Missing evidence defaults to counting the attempt.
+       * @default false
+       */
+      conversion_not_started?: boolean
       /** @description User-facing outcome or failure explanation. */
       detail: string
       /**
        * @description Candidate project, returned only after successful validation.
        * @default {}
        */
-      files: {
+      files?: {
         [key: string]: number[]
       }
       /** @description Terminal state. `running` is not a valid result. */

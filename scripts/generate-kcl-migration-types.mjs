@@ -16,13 +16,17 @@ function include(name) {
 }
 include('KclMigrationClientMessage')
 include('KclMigrationServerMessage')
-const ast = await openapiTS({
-  openapi: source.openapi,
-  info: source.info,
-  paths: {},
-  components: { schemas },
-})
+const ast = await openapiTS(
+  {
+    openapi: source.openapi,
+    info: source.info,
+    paths: {},
+    components: { schemas },
+  },
+  { defaultNonNullable: false }
+)
 await writeFile(
   'src/lib/kclMigration/api.generated.ts',
-  '// Generated from KittyCAD/api#4696. Do not edit by hand.\n' + astToString(ast)
+  '// Generated from KittyCAD/api#4696. Do not edit by hand.\n' +
+    astToString(ast)
 )

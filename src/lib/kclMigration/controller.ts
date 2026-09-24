@@ -125,6 +125,10 @@ export class MigrationController {
             return
           }
           this.detail.value = operation.result?.detail ?? ''
+          if (operation.result?.conversion_not_started === true) {
+            this.detail.value +=
+              ' This attempt did not count toward your daily migration limit.'
+          }
           if (this.cancelled || operation.status === 'cancelled') {
             this.phase.value = 'cancelled'
             this.candidate.value = undefined

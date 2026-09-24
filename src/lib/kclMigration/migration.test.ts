@@ -40,6 +40,33 @@ async function review() {
 }
 
 describe('project migration', () => {
+  it.each([true, false, undefined])(
+    'reports quota exemption only with confirmed evidence (%s)',
+    async (conversionNotStarted) => {
+      await fixture.controller.start(true)
+      await vi.waitFor(() =>
+        expect(fixture.controller.phase.value).toBe('running')
+      )
+      fixture.send({
+        ...successfulOperation(fixture.request),
+        status: 'failed',
+        result: {
+          status: 'failed',
+          files: {},
+          detail: 'Migration failed.',
+          conversion_not_started: conversionNotStarted,
+        },
+      })
+      await vi.waitFor(() =>
+        expect(fixture.controller.phase.value).toBe('failed')
+      )
+      expect(fixture.controller.detail.value.includes('did not count')).toBe(
+        conversionNotStarted === true
+      )
+      expect(await fixture.readMain()).toBe(sourceCode)
+    }
+  )
+
   it('keeps nested and binary files, overlays unsaved text and validates paths', async () => {
     await writeFile(path.join(fixture.root, '._meta'), '{"mtimeMs":1}')
     const captured = await fixture.project.capture()
