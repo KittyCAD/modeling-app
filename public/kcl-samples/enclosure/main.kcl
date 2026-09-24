@@ -250,7 +250,7 @@ lidSketch = sketch(on = lidPlane) {
   ])
 }
 
-lidRegion = region(segments = [lidSketch.line1, lidSketch.line2])
+lidRegion = region(segments = [lidSketch.line4, lidSketch.line1])
 lidPlate = extrude(lidRegion, length = wallThickness)
   |> fillet(
        radius = wallThickness * 4,
@@ -419,7 +419,7 @@ lidLipSketch = sketch(on = faceOf(lidPlate, face = END)) {
   ])
 }
 
-lidLipRegion = region(segments = [lidLipSketch.line1, lidLipSketch.line2])
+lidLipRegion = region(segments = [lidLipSketch.line4, lidLipSketch.line1])
 lidLip = extrude(lidLipRegion, length = wallThickness)
   |> fillet(
        radius = wallThickness * 3,
