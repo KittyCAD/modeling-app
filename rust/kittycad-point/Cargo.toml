@@ -10,14 +10,14 @@ keywords = ["kcl", "KittyCAD", "CAD", "geometry"]
 
 [features]
 arbitrary = ["dep:arbitrary"]
-ts-rs = []
+ts-rs = ["dep:ts-rs"]
 
 [dependencies]
 arbitrary = { version = "1", features = ["derive"], optional = true }
 euler = "0.5"
 schemars = { version = "0.8.17", features = ["impl_json_schema", "indexmap2", "url", "uuid1", "preserve_order"] }
 serde = { workspace = true }
-ts-rs = { workspace = true }
+ts-rs = { workspace = true, optional = true }
 
 [lints]
 workspace = true

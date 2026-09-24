@@ -12,9 +12,9 @@ mod zero;
 #[derive(Debug, Clone, Copy, Serialize, Deserialize, JsonSchema, Default)]
 #[serde(rename = "Point2d")]
 #[serde(rename_all = "snake_case")]
-#[derive(ts_rs::TS)]
+#[cfg_attr(feature = "ts-rs", derive(ts_rs::TS))]
 #[cfg_attr(feature = "arbitrary", derive(arbitrary::Arbitrary))]
-#[ts(export_to = "ModelingCmd.ts")]
+#[cfg_attr(feature = "ts-rs", ts(export_to = "ModelingCmd.ts"))]
 pub struct Point2d<T = f32> {
     #[allow(missing_docs)]
     pub x: T,
@@ -59,11 +59,11 @@ impl<T> Point2d<T> {
 
 /// A point in 3D space
 #[repr(C)]
-#[derive(Debug, Clone, Copy, Serialize, Deserialize, JsonSchema, PartialEq, Default, ts_rs::TS)]
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, JsonSchema, Default)]
 #[serde(rename = "Point3d")]
-#[serde(rename_all = "snake_case")]
+#[cfg_attr(feature = "ts-rs", derive(ts_rs::TS))]
 #[cfg_attr(feature = "arbitrary", derive(arbitrary::Arbitrary))]
-#[ts(export_to = "ModelingCmd.ts")]
+#[cfg_attr(feature = "ts-rs", ts(export_to = "ModelingCmd.ts"))]
 pub struct Point3d<T = f32> {
     #[allow(missing_docs)]
     pub x: T,
@@ -71,6 +71,12 @@ pub struct Point3d<T = f32> {
     pub y: T,
     #[allow(missing_docs)]
     pub z: T,
+}
+
+impl<T: PartialEq> PartialEq for Point3d<T> {
+    fn eq(&self, other: &Self) -> bool {
+        self.x == other.x && self.y == other.y && self.z == other.z
+    }
 }
 
 impl std::fmt::Display for Point3d<f64> {
