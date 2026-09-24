@@ -240,7 +240,7 @@ export class ConnectionManager extends EventTarget {
     const handleMessage = this.createMessageHandler(rustContext)
 
     this.kclVersion = kclVersion
-    const url = this.generateWebsocketURL(kclVersion)
+    const url = this.generateWebsocketURL()
     this.connection = new Connection({
       url,
       token,
@@ -407,12 +407,12 @@ export class ConnectionManager extends EventTarget {
     )
   }
 
-  generateWebsocketURL(kclVersion?: KclVersion) {
+  generateWebsocketURL() {
     let additionalSettings = this.settings.enableSSAO ? '&post_effect=ssao' : ''
     additionalSettings +=
       '&show_grid=' + (this.settings.showScaleGrid ? 'true' : 'false')
-    if (kclVersion !== undefined) {
-      additionalSettings += `&kcl_version=${encodeURIComponent(kclVersion)}`
+    if (this.kclVersion !== undefined) {
+      additionalSettings += `&kcl_version=${encodeURIComponent(this.kclVersion)}`
     }
     const url = withKittycadWebSocketURL(
       `?video_res_width=${this.streamDimensions.width}&video_res_height=${this.streamDimensions.height}${additionalSettings}`
