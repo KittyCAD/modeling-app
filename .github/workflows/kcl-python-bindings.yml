@@ -72,12 +72,16 @@ jobs:
           else
             echo 'found=false' >> "$GITHUB_OUTPUT"
           fi
-  linux-x86_64:
-    name: kcl-python-bindings (linux-x86_64)
+  linux:
+    name: kcl-python-bindings (linux-${{ matrix.target }})
     runs-on: namespace-profile-ubuntu-8-cores;overrides.cache-tag=modeling-app-general-v2
     # The hourly schedule exists to observe flaky tests. It runs the test job
     # and nothing else.
     if: github.event_name != 'schedule'
+    strategy:
+      fail-fast: false
+      matrix:
+        target: [x86_64, aarch64]
     steps:
       - uses: actions/checkout@v7.0.1
       - name: sccache cache on the Namespace volume
@@ -102,7 +106,7 @@ jobs:
           SCCACHE_CACHE_SIZE: 20G
         with:
           working-directory: rust/kcl-python-bindings
-          target: x86_64
+          target: ${{ matrix.target }}
           # --strip is a backstop. Without it a debug .so exceeds PyPI's 100MB
           # limit.
           args: --release --out dist --strip -i python3.11 python3.12 python3.13 python3.14
@@ -110,6 +114,8 @@ jobs:
           # also means the container has no sccache, so before-script installs
           # one.
           sccache: 'false'
+          # Maturin selects a cross-compilation container for aarch64. Both
+          # containers run on x86_64, so they use the same sccache binary.
           manylinux: auto
           before-script-linux: |
             curl -fsSL https://github.com/mozilla/sccache/releases/download/v0.10.0/sccache-v0.10.0-x86_64-unknown-linux-musl.tar.gz \
@@ -128,7 +134,7 @@ jobs:
       - name: Upload wheels
         uses: actions/upload-artifact@v7
         with:
-          name: wheels-linux-x86_64
+          name: wheels-linux-${{ matrix.target }}
           path: rust/kcl-python-bindings/dist
   windows:
     name: kcl-python-bindings (windows)
@@ -309,7 +315,7 @@ jobs:
     permissions:
       contents: write
     if: startsWith(github.ref, 'refs/tags/')
-    needs: [linux-x86_64, windows, macos, sdist]
+    needs: [linux, windows, macos, sdist]
     steps:
       - uses: actions/checkout@v7.0.1
       - uses: actions/download-artifact@v8
@@ -340,6 +346,10 @@ jobs:
               ("CPython 3.12 Linux x86_64", f"wheels-linux-x86_64/{distribution}-cp312-cp312-manylinux*_x86_64.whl"),
               ("CPython 3.13 Linux x86_64", f"wheels-linux-x86_64/{distribution}-cp313-cp313-manylinux*_x86_64.whl"),
               ("CPython 3.14 Linux x86_64", f"wheels-linux-x86_64/{distribution}-cp314-cp314-manylinux*_x86_64.whl"),
+              ("CPython 3.11 Linux aarch64", f"wheels-linux-aarch64/{distribution}-cp311-cp311-manylinux*_aarch64.whl"),
+              ("CPython 3.12 Linux aarch64", f"wheels-linux-aarch64/{distribution}-cp312-cp312-manylinux*_aarch64.whl"),
+              ("CPython 3.13 Linux aarch64", f"wheels-linux-aarch64/{distribution}-cp313-cp313-manylinux*_aarch64.whl"),
+              ("CPython 3.14 Linux aarch64", f"wheels-linux-aarch64/{distribution}-cp314-cp314-manylinux*_aarch64.whl"),
               ("CPython 3.11 Windows x86_64", f"wheels-windows-x64/{distribution}-cp311-cp311-win_amd64.whl"),
               ("CPython 3.12 Windows x86_64", f"wheels-windows-x64/{distribution}-cp312-cp312-win_amd64.whl"),
               ("CPython 3.13 Windows x86_64", f"wheels-windows-x64/{distribution}-cp313-cp313-win_amd64.whl"),
