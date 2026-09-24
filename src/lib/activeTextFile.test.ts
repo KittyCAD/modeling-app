@@ -67,10 +67,14 @@ afterEach(() => {
 })
 
 describe('isEditableTextFile', () => {
-  it('matches .md/.txt case-insensitively and rejects other files', () => {
+  it('matches .md/.txt/.toml case-insensitively and rejects other files', () => {
     expect(mod.isEditableTextFile('/proj/readme.md')).toBe(true)
     expect(mod.isEditableTextFile('/proj/README.MD')).toBe(true)
     expect(mod.isEditableTextFile('/proj/notes.txt')).toBe(true)
+    expect(mod.isEditableTextFile('/proj/project.toml')).toBe(true)
+    expect(mod.isEditableTextFile('/proj/config/tool.toml')).toBe(true)
+    expect(mod.isEditableTextFile('/proj/CONFIG.TOML')).toBe(true)
+    expect(mod.isEditableTextFile('/proj/project.toml.bak')).toBe(false)
     expect(mod.isEditableTextFile('/proj/main.kcl')).toBe(false)
     expect(mod.isEditableTextFile('/proj/model.stp')).toBe(false)
     expect(mod.isEditableTextFile('/proj/some-folder')).toBe(false)
