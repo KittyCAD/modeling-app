@@ -1,4 +1,5 @@
 import type {
+  ApiConstraint,
   ApiObject,
   SceneGraphDelta,
   SegmentCtor,
@@ -12,6 +13,7 @@ import {
 } from '@src/lang/wasm'
 import { SKETCH_FILE_VERSION } from '@src/lib/constants'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
+import { toastToolbar } from '@src/lib/toolbarToast'
 import { roundOff } from '@src/lib/utils'
 import {
   distance2d,
@@ -25,6 +27,7 @@ import type {
 } from '@src/machines/modelingSharedTypes'
 import {
   buildCircularSizeDimensionConstraintInput,
+  findMatchingDimensionConstraint,
   getLinePoints,
   isArcSegment,
   isCircleSegment,
@@ -642,6 +645,10 @@ export const sketchSolveMachine = setup({
                 if (!constraint) {
                   return
                 }
+                if (findMatchingDimensionConstraint(constraint, objects)) {
+                  toastToolbar('That dimension already exists.')
+                  return
+                }
                 const result = await context.rustContext.addConstraint(
                   0,
                   context.sketchId,
@@ -697,18 +704,23 @@ export const sketchSolveMachine = setup({
                     (id): ConstraintSegment =>
                       id === ORIGIN_TARGET ? 'ORIGIN' : id
                   )
+            const constraint: Extract<ApiConstraint, { type: 'Distance' }> = {
+              type: 'Distance',
+              distance: { value: distance, units },
+              segments: pointsForDistance,
+              source: {
+                expr: distance.toString(),
+                is_literal: true,
+              },
+            }
+            if (findMatchingDimensionConstraint(constraint, objects)) {
+              toastToolbar('That dimension already exists.')
+              return
+            }
             const result = await context.rustContext.addConstraint(
               0,
               context.sketchId,
-              {
-                type: 'Distance',
-                distance: { value: distance, units },
-                segments: pointsForDistance,
-                source: {
-                  expr: distance.toString(),
-                  is_literal: true,
-                },
-              },
+              constraint,
               jsAppSettings(context.kclManager.systemDeps.settings),
               true
             )
