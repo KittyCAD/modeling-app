@@ -3546,6 +3546,9 @@ export fn region(
 /// Alternatively, pass a non-empty list of edges or segments which form one
 /// closed, connected, coplanar region. List items must be provided in the
 /// order they connect.
+/// If a sketch's segments are declared out of boundary order, select its boundary
+/// with `region(...)` before mirroring or patterning it, then pass the transformed
+/// region to `planarSurface`.
 /// ```kcl,no3d,sketchSolve
 /// @settings(kclVersion = 2.0, experimentalFeatures = allow)
 /// 

@@ -552,6 +552,18 @@ fn prepare_single_closed_region(curves: &mut Vec<CurveType>, source_range: crate
     if sketch.origin_sketch_id.is_some() {
         return Ok(());
     }
+    // Mirrors and pattern copies retain source path IDs. Reordering those IDs
+    // would fill the original sketch, while the current engine path may still
+    // contain pen jumps. Require an explicit region before transforming it.
+    if sketch.id != sketch.original_id || sketch.mirror.is_some() {
+        if !sketch.synthetic_jump_path_ids.is_empty() {
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                "`planarSurface` cannot use this transformed sketch directly. Select its boundary with `region(...)` before applying the transform, then pass the transformed region to `planarSurface`.".to_owned(),
+                vec![source_range],
+            )));
+        }
+        return Ok(());
+    }
 
     // Pen jumps describe replay order, not connectivity. Check the real edges
     // as an undirected cycle so declaration order and edge direction do not
@@ -802,6 +814,54 @@ surface = planarSurface({curves})
             assert!(commands.iter().any(|artifact_command| {
                 matches!(&artifact_command.command, ModelingCmd::CreatePlanarSurface(command) if command.curve_ids.len() == 4)
             }));
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn planar_surface_does_not_reuse_source_edges_after_transforming() {
+        let result = parse_execute(
+            r#"
+@settings(kclVersion = 2.0, experimentalFeatures = allow)
+profile = sketch(on = XY) {
+  bottom = line(start = [1mm, 1mm], end = [3mm, 1mm])
+  top = line(start = [3mm, 3mm], end = [1mm, 3mm])
+  right = line(start = [3mm, 1mm], end = [3mm, 3mm])
+  left = line(start = [1mm, 3mm], end = [1mm, 1mm])
+}
+resolved = mirror2d(profile, axis = Y)
+"#,
+        )
+        .await
+        .unwrap();
+        let KclValue::Sketch { value: source } = result.variable("resolved") else {
+            panic!("Expected a sketch");
+        };
+        assert!(!source.synthetic_jump_path_ids.is_empty());
+
+        // Mock mirroring does not assign engine topology. Reproduce the live
+        // metadata for a pattern copy and for a mirror whose ID is retained.
+        for mirrored in [false, true] {
+            let mut sketch = source.clone();
+            sketch.id = uuid::Uuid::new_v4();
+            if mirrored {
+                sketch.original_id = sketch.id;
+                sketch.mirror = Some(uuid::Uuid::new_v4());
+            }
+            let mut curves = vec![CurveType::Sketch(sketch.clone())];
+            let error = prepare_single_closed_region(&mut curves, crate::SourceRange::default()).unwrap_err();
+            assert!(
+                error
+                    .to_string()
+                    .contains("Select its boundary with `region(...)` before applying the transform")
+            );
+
+            // Explicit regions may retain pen jumps in their source metadata,
+            // but their current engine entity already has a traced boundary.
+            sketch.origin_sketch_id = Some(source.id);
+            let expected = CurveType::Sketch(sketch);
+            curves = vec![expected.clone()];
+            prepare_single_closed_region(&mut curves, crate::SourceRange::default()).unwrap();
+            assert_eq!(curves, vec![expected]);
         }
     }
 

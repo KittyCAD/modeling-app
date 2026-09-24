@@ -516,6 +516,111 @@ sketch001 = sketch(on = ${plane}) {
   )
 
   it.each([
+    {
+      name: 'a mirrored sketch',
+      transform: 'transformed = mirror2d(sketch001, axis = Y)',
+      centerX: -2,
+      requiresRegion: true,
+    },
+    {
+      name: 'a pattern copy',
+      transform: `copies = patternLinear2d(sketch001, instances = 2, distance = 10mm, axis = [1, 0])
+transformed = copies[1]`,
+      centerX: 12,
+      requiresRegion: true,
+    },
+    {
+      name: 'a mirrored region',
+      transform: `selected = region(segments = [sketch001.bottom, sketch001.right])
+transformed = mirror2d(selected, axis = Y)`,
+      centerX: -2,
+      requiresRegion: false,
+    },
+    {
+      name: 'a patterned region',
+      transform: `selected = region(segments = [sketch001.bottom, sketch001.right])
+copies = patternLinear2d(selected, instances = 2, distance = 10mm, axis = [1, 0])
+transformed = copies[1]`,
+      centerX: 12,
+      requiresRegion: false,
+    },
+  ])(
+    'preserves the surface position or requests a region for $name',
+    async ({ transform, centerX, requiresRegion }) => {
+      const boundary = [
+        'bottom = line(start = [1mm, 1mm], end = [3mm, 1mm])',
+        'right = line(start = [3mm, 1mm], end = [3mm, 3mm])',
+        'top = line(start = [3mm, 3mm], end = [1mm, 3mm])',
+        'left = line(start = [1mm, 3mm], end = [1mm, 1mm])',
+      ]
+      for (const order of [
+        [0, 1, 2, 3],
+        [0, 2, 1, 3],
+      ]) {
+        const { artifactGraph } =
+          await setup(`@settings(kclVersion = 2.0, experimentalFeatures = allow)
+sketch001 = sketch(on = XY) {
+  ${order.map((index) => boundary[index]).join('\n  ')}
+}
+${transform}
+surface001 = planarSurface(transformed)`)
+        if (requiresRegion && order[1] === 2) {
+          expect(kclManagerInThisFile.errors).toHaveLength(1)
+          expect(kclManagerInThisFile.errors[0].message).toContain(
+            'Select its boundary with `region(...)` before applying the transform'
+          )
+          expect(
+            [...artifactGraph.values()].some(
+              (artifact) =>
+                artifact.type === 'sweep' &&
+                artifact.subType === 'planarSurface'
+            )
+          ).toBe(false)
+          continue
+        }
+        expect(kclManagerInThisFile.errors).toEqual([])
+        const surface = [...artifactGraph.values()].find(
+          (artifact) =>
+            artifact.type === 'sweep' && artifact.subType === 'planarSurface'
+        )
+        if (!surface) throw new Error('Missing Planar Surface')
+        const boundingBox =
+          await engineCommandManagerInThisFile.sendSceneCommand({
+            type: 'modeling_cmd_req',
+            cmd_id: crypto.randomUUID(),
+            cmd: {
+              type: 'bounding_box',
+              entity_ids: [surface.id],
+              output_unit: 'mm',
+            },
+          })
+        expect(boundingBox).toMatchObject({
+          success: true,
+          resp: {
+            data: {
+              modeling_response: {
+                type: 'bounding_box',
+                data: {
+                  center: {
+                    x: expect.closeTo(centerX, 8),
+                    y: expect.closeTo(2, 8),
+                    z: expect.closeTo(0, 8),
+                  },
+                  dimensions: {
+                    x: expect.closeTo(2, 8),
+                    y: expect.closeTo(2, 8),
+                    z: expect.closeTo(0, 8),
+                  },
+                },
+              },
+            },
+          },
+        })
+      }
+    }
+  )
+
+  it.each([
     { name: 'a single region', code: circle },
     {
       name: 'one region from a sketch with two circles',

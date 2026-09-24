@@ -20,6 +20,9 @@ A sketch must contain exactly one region, and that region must be closed.
 Alternatively, pass a non-empty list of edges or segments which form one
 closed, connected, coplanar region. List items must be provided in the
 order they connect.
+If a sketch's segments are declared out of boundary order, select its boundary
+with `region(...)` before mirroring or patterning it, then pass the transformed
+region to `planarSurface`.
 
 ### Arguments
 
