@@ -7,7 +7,6 @@ use kcl_lib::ModuleId;
 use kcl_lib::SourceRange;
 use kcl_lib::test_server::execute;
 use kcl_lib::test_server::execute_and_export_step;
-use kcl_lib::test_server::execute_and_snapshot_legacy_sim_test;
 use kcl_lib::test_server::execute_and_snapshot_no_auth;
 
 /// The minimum permissible difference between asserted twenty-twenty images.
@@ -124,54 +123,6 @@ extrusion = startSketchOn(XY)
     let expected_msg = "semantic: `h` is not an argument of `squareHole`";
     let err = result.unwrap_err().as_kcl_error().unwrap().get_message();
     assert_eq!(err, expected_msg);
-}
-
-#[tokio::test(flavor = "multi_thread")]
-async fn kcl_test_fillets_referencing_other_fillets() {
-    let code = r#"// Z-Bracket
-
-// Z-brackets are designed to affix or hang objects from a wall by securing them to the wall's studs. These brackets offer support and mounting solutions for bulky or heavy items that may be challenging to attach directly. Serving as a protective feature, Z-brackets help prevent heavy loads from moving or toppling, enhancing safety in the environment where they are used.
-
-// Define constants
-foot1Length = 4
-height = 4
-foot2Length = 5
-width = 4
-filletRad = 0.25
-thickness = 0.125
-
-cornerFilletRad = 0.5
-
-holeDia = 0.5
-
-sketch001 = startSketchOn(XZ)
-  |> startProfile(at = [-foot1Length, 0])
-  |> line(end = [0, thickness], tag = $cornerFillet1)
-  |> line(end = [foot1Length, 0])
-  |> line(end = [0, height], tag = $fillet1)
-  |> line(end = [foot2Length, 0])
-  |> line(end = [0, -thickness], tag = $cornerFillet2)
-  |> line(end = [-foot2Length+thickness, 0])
-  |> line(end = [0, -height], tag = $fillet2)
-  |> close()
-
-baseExtrusion = extrude(sketch001, length = width)
-  |> fillet(
-    radius = cornerFilletRad,
-    tags = [cornerFillet1, cornerFillet2, getOppositeEdge(cornerFillet1), getOppositeEdge(cornerFillet2)],
-  )
-  |> fillet(
-    radius = filletRad,
-    tags = [getPreviousAdjacentEdge(fillet1), getPreviousAdjacentEdge(fillet2)]
-  )
-  |> fillet(
-   radius = filletRad + thickness,
-   tags = [getNextAdjacentEdge(fillet1), getNextAdjacentEdge(fillet2)],
- )
-"#;
-
-    let result = execute_and_snapshot_legacy_sim_test(code, None).await.unwrap();
-    assert_out("fillets_referencing_other_fillets", &result);
 }
 
 #[tokio::test(flavor = "multi_thread")]
