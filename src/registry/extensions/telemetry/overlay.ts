@@ -8,7 +8,7 @@ export interface TelemetryOverlayState {
 
 export const openTelemetryIntent = defineAppNavigationIntent<
   TelemetryOverlayState,
-  void
+  undefined
 >('telemetry.open')
 
 export const telemetryNavigationUrlContribution =

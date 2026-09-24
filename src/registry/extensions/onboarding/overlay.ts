@@ -9,7 +9,7 @@ export interface OnboardingOverlayState {
 
 export const startOnboardingIntent = defineAppNavigationIntent<
   OnboardingOverlayState,
-  void
+  undefined
 >('onboarding.start')
 
 export const onboardingNavigationUrlContribution =
