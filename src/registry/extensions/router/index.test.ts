@@ -1,5 +1,6 @@
 import { Registry } from '@kittycad/registry'
 import { appUrlService } from '@src/registry/contracts/appUrl'
+import { settingsNavigationUrlContribution } from '@src/registry/extensions/settings/overlay'
 import type { Location } from 'react-router-dom'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import routerRegistryItem, { createAppUrlService } from '.'
@@ -129,5 +130,44 @@ describe('router extension', () => {
     })
     void appUrl.navigate('/after-dispose')
     expect(appUrl.location.value.pathname).toBe('/after-dispose')
+  })
+
+  it('freezes startup URL contributions on the first read', () => {
+    const navigationIntents = [settingsNavigationUrlContribution]
+    const appUrl = createAppUrlService({
+      getNavigationIntents: () => navigationIntents,
+    })
+
+    expect(
+      appUrl.readInitialUrl({
+        requestUrl: 'https://app.zoo.dev/home/settings',
+        usesHashRouter: false,
+      })
+    ).toMatchObject({
+      type: 'launch',
+      additionalIntents: [
+        {
+          intent: { id: 'settings.open' },
+          input: {},
+        },
+      ],
+    })
+
+    navigationIntents.length = 0
+
+    expect(
+      appUrl.readInitialUrl({
+        requestUrl: 'https://app.zoo.dev/home/settings',
+        usesHashRouter: false,
+      })
+    ).toMatchObject({
+      type: 'launch',
+      additionalIntents: [
+        {
+          intent: { id: 'settings.open' },
+          input: {},
+        },
+      ],
+    })
   })
 })

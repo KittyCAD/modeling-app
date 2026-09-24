@@ -1,5 +1,6 @@
 import { PATHS } from '@src/lib/paths'
-import { defineAppOverlayContribution } from '@src/registry/contracts/appUrl'
+import { defineAppNavigationIntent } from '@src/registry/contracts/appNavigation'
+import { defineAppNavigationUrlContribution } from '@src/registry/contracts/appUrl'
 
 export type SettingsOverlayTab = 'user' | 'project' | 'keybindings' | 'plugins'
 
@@ -28,23 +29,28 @@ function decodeHash(hash: string): string | undefined {
   }
 }
 
-export const settingsOverlayContribution = defineAppOverlayContribution({
-  id: 'settings',
-  parse: ({ path, search, hash }) => {
-    if (path !== PATHS.SETTINGS) {
-      return undefined
-    }
+export const openSettingsIntent = defineAppNavigationIntent<
+  SettingsOverlayState,
+  void
+>('settings.open')
 
-    const requestedTab = search.get('tab')
-    const setting = decodeHash(hash)
-    return {
-      ...(isSettingsOverlayTab(requestedTab) ? { tab: requestedTab } : {}),
-      ...(setting ? { setting } : {}),
-    } satisfies SettingsOverlayState
-  },
-  format: (state: SettingsOverlayState) => ({
-    path: PATHS.SETTINGS,
-    search: state.tab ? `?tab=${state.tab}` : undefined,
-    hash: state.setting ? `#${encodeURIComponent(state.setting)}` : undefined,
-  }),
-})
+export const settingsNavigationUrlContribution =
+  defineAppNavigationUrlContribution(openSettingsIntent, {
+    parse: ({ path, search, hash }) => {
+      if (path !== PATHS.SETTINGS) {
+        return undefined
+      }
+
+      const requestedTab = search.get('tab')
+      const setting = decodeHash(hash)
+      return {
+        ...(isSettingsOverlayTab(requestedTab) ? { tab: requestedTab } : {}),
+        ...(setting ? { setting } : {}),
+      } satisfies SettingsOverlayState
+    },
+    format: (state: SettingsOverlayState) => ({
+      path: PATHS.SETTINGS,
+      search: state.tab ? `?tab=${state.tab}` : undefined,
+      hash: state.setting ? `#${encodeURIComponent(state.setting)}` : undefined,
+    }),
+  })

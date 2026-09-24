@@ -2,7 +2,7 @@ import { joinRouterPaths, PATHS, webSafePathSplit } from '@src/lib/paths'
 import type {
   AppDestination,
   AppDestinationKind,
-  AppOverlayContribution,
+  AppNavigationUrlContribution,
   InitialUrlIntent,
 } from '@src/registry/contracts/appUrl'
 
@@ -94,10 +94,10 @@ function parseDestination(pathname: string):
 export function parseInitialUrl(
   requestUrl: string,
   {
-    overlays,
+    navigationIntents,
     usesHashRouter,
   }: {
-    overlays: readonly AppOverlayContribution[]
+    navigationIntents: readonly AppNavigationUrlContribution[]
     usesHashRouter: boolean
   }
 ): InitialUrlIntent {
@@ -126,13 +126,15 @@ export function parseInitialUrl(
     search: new URLSearchParams(applicationUrl.search),
     hash: applicationUrl.hash,
   }
-  for (const contribution of overlays) {
-    const state = contribution.parse(input)
-    if (state !== undefined) {
+  for (const contribution of navigationIntents) {
+    const intentInput = contribution.parse(input)
+    if (intentInput !== undefined) {
       return {
         type: 'launch',
         destination: parsedDestination.destination,
-        overlay: { contributionId: contribution.id, state },
+        additionalIntents: [
+          { intent: contribution.intent, input: intentInput },
+        ],
         search: applicationUrl.search,
         hash: applicationUrl.hash,
       }

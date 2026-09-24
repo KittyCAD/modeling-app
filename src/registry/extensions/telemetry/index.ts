@@ -1,12 +1,14 @@
 import { defineRegistryItem, provide } from '@kittycad/registry'
-import { appOverlayContributionsValueSpec } from '@src/registry/contracts/appUrl'
-import { telemetryOverlayContribution } from './overlay'
+import { appNavigationUrlContributionsValueSpec } from '@src/registry/contracts/appUrl'
+import { telemetryNavigationUrlContribution } from './overlay'
 
 export default defineRegistryItem({
   id: 'telemetry',
   provides: [
-    provide(appOverlayContributionsValueSpec, telemetryOverlayContribution, {
-      key: telemetryOverlayContribution.id,
-    }),
+    provide(
+      appNavigationUrlContributionsValueSpec,
+      telemetryNavigationUrlContribution,
+      { key: telemetryNavigationUrlContribution.intent.id }
+    ),
   ],
 })

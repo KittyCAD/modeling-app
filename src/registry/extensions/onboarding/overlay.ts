@@ -1,29 +1,35 @@
 import { isOnboardingPath, type OnboardingPath } from '@src/lib/onboardingPaths'
 import { PATHS } from '@src/lib/paths'
-import { defineAppOverlayContribution } from '@src/registry/contracts/appUrl'
+import { defineAppNavigationIntent } from '@src/registry/contracts/appNavigation'
+import { defineAppNavigationUrlContribution } from '@src/registry/contracts/appUrl'
 
 export interface OnboardingOverlayState {
   step?: OnboardingPath
 }
 
-export const onboardingOverlayContribution = defineAppOverlayContribution({
-  id: 'onboarding',
-  parse: ({ destination, path }) => {
-    if (destination !== 'project' || !path.startsWith(PATHS.ONBOARDING)) {
-      return undefined
-    }
+export const startOnboardingIntent = defineAppNavigationIntent<
+  OnboardingOverlayState,
+  void
+>('onboarding.start')
 
-    const step = path.slice(PATHS.ONBOARDING.length)
-    if (step && !isOnboardingPath(step)) {
-      return undefined
-    }
-    const parsedStep = step as OnboardingPath | ''
+export const onboardingNavigationUrlContribution =
+  defineAppNavigationUrlContribution(startOnboardingIntent, {
+    parse: ({ destination, path }) => {
+      if (destination !== 'project' || !path.startsWith(PATHS.ONBOARDING)) {
+        return undefined
+      }
 
-    return {
-      ...(parsedStep ? { step: parsedStep } : {}),
-    } satisfies OnboardingOverlayState
-  },
-  format: (state: OnboardingOverlayState) => ({
-    path: `${PATHS.ONBOARDING}${state.step ?? ''}`,
-  }),
-})
+      const step = path.slice(PATHS.ONBOARDING.length)
+      if (step && !isOnboardingPath(step)) {
+        return undefined
+      }
+      const parsedStep = step as OnboardingPath | ''
+
+      return {
+        ...(parsedStep ? { step: parsedStep } : {}),
+      } satisfies OnboardingOverlayState
+    },
+    format: (state: OnboardingOverlayState) => ({
+      path: `${PATHS.ONBOARDING}${state.step ?? ''}`,
+    }),
+  })
