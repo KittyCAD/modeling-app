@@ -1,16 +1,12 @@
-name: Interaction performance calibration
+name: Interaction performance
 
 on:
-  workflow_dispatch:
-    inputs:
-      calibration-fault:
-        description: Calibrate the dispatched commit against itself, optionally adding 64 ms to candidate Home palette opening
-        type: choice
-        default: none
-        options: [none, first, warm, stall]
+  pull_request:
+  push:
+    branches: [main]
 
 concurrency:
-  group: interaction-performance-calibration-${{ github.run_id }}
+  group: interaction-performance-${{ github.head_ref || github.ref }}
   cancel-in-progress: true
 
 permissions:
@@ -63,7 +59,7 @@ jobs:
       - uses: actions/checkout@v7.0.1
         with:
           persist-credentials: false
-          ref: ${{ github.sha }}
+          ref: ${{ matrix.commit }}
       - uses: actions/checkout@v7.0.1
         with:
           persist-credentials: false
@@ -83,12 +79,12 @@ jobs:
       - uses: actions/checkout@v7.0.1
         with:
           persist-credentials: false
-          ref: ${{ github.sha }}
+          ref: ${{ matrix.commit }}
           path: app
       - uses: actions/checkout@v7.0.1
         with:
           persist-credentials: false
-          ref: ${{ github.sha }}
+          ref: ${{ needs.resolve.outputs.harness_commit }}
           path: harness
       - uses: actions/checkout@v7.0.1
         with:
@@ -98,10 +94,10 @@ jobs:
       - uses: ./.performance-pipeline/.github/actions/interaction-build-app
         with:
           variant: ${{ matrix.variant }}
-          commit: ${{ github.sha }}
+          commit: ${{ matrix.commit }}
 
   measure:
-    name: ${{ format('Interaction performance calibration ({0})', inputs['calibration-fault']) }}
+    name: Interaction performance regression
     needs: [resolve, build-wasm, build-app]
     # A failed dependency must fail this check instead of leaving it skipped.
     if: ${{ !cancelled() }}
@@ -117,12 +113,12 @@ jobs:
       - uses: actions/checkout@v7.0.1
         with:
           persist-credentials: false
-          ref: ${{ github.sha }}
+          ref: ${{ needs.resolve.outputs.base_commit }}
           path: apps/base
       - uses: actions/checkout@v7.0.1
         with:
           persist-credentials: false
-          ref: ${{ github.sha }}
+          ref: ${{ needs.resolve.outputs.candidate_commit }}
           path: apps/candidate
       - uses: actions/checkout@v7.0.1
         with:

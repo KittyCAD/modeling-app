@@ -3,10 +3,12 @@ import path from 'path'
 import {
   DEFAULT_PROJECT_KCL_FILE,
   LEGACY_SKETCH_MODE_FEATURE_FLAG,
+  PROJECT_IMAGE_NAME,
   REGEXP_UUIDV4,
 } from '@src/lib/constants'
 import nodeFs from 'fs/promises'
 import type { Page } from '@playwright/test'
+import { PNG } from 'pngjs'
 import { NIL as uuidNIL } from 'uuid'
 
 import {
@@ -153,8 +155,9 @@ test(
     fs,
     folderSetupFn,
   }) => {
+    let bracketDir = ''
     await folderSetupFn(async (dir) => {
-      const bracketDir = path.join(dir, 'bracket')
+      bracketDir = path.join(dir, 'bracket')
       await fs.mkdir(bracketDir, { recursive: true })
       let testFileData = await nodeFs.readFile(
         executorInputPath('cylinder-inches.kcl')
@@ -179,6 +182,19 @@ test(
     await test.step('Opening the bracket project should load the stream', async () => {
       await homePage.openProject('bracket')
       await scene.settled()
+
+      await expect(async () => {
+        const thumbnail = PNG.sync.read(
+          Buffer.from(
+            await fs.readFile(path.join(bracketDir, PROJECT_IMAGE_NAME))
+          )
+        )
+        expect(thumbnail.width).toBeGreaterThan(0)
+        expect(thumbnail.height).toBeGreaterThan(0)
+        expect(
+          thumbnail.data.some((value, index) => index % 4 === 3 && value > 0)
+        ).toBe(true)
+      }).toPass()
     })
 
     await u.doAndWaitForImageDiff(

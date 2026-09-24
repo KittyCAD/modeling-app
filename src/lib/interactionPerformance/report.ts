@@ -31,7 +31,7 @@ export interface InteractionReport {
   }[]
 }
 
-/** Validate collection independently from the report-only latency budget. */
+/** Report collection errors and latency breaches without choosing enforcement policy. */
 export function reportInteractions(
   snapshot: InteractionSnapshot,
   expected: Readonly<Record<string, number>>
