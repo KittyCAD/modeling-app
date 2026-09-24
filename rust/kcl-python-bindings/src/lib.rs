@@ -861,21 +861,6 @@ async fn execute_and_snapshot_views(
     .await
 }
 
-/// Execute the kcl code and snapshot it in a specific format.
-#[pyo3_stub_gen::derive::gen_stub_pyfunction]
-#[pyfunction(signature = (code, image_format, *, zoom=None, highlight_edges=None))]
-async fn execute_code_and_snapshot(
-    code: String,
-    image_format: ImageFormat,
-    zoom: Option<bool>,
-    highlight_edges: Option<bool>,
-) -> PyResult<Vec<u8>> {
-    let zoom = zoom.unwrap_or(true);
-    let mut snaps =
-        execute_code_and_snapshot_views(code, image_format, Vec::new(), Some(zoom), highlight_edges).await?;
-    Ok(snaps.pop().unwrap())
-}
-
 /// Execute a kcl file and measure physical properties of the resulting model.
 #[pyo3_stub_gen::derive::gen_stub_pyfunction]
 #[pyfunction(signature = (path, request, *, geometry_only=false))]
@@ -885,17 +870,6 @@ async fn execute_and_measure(
     geometry_only: bool,
 ) -> PyResult<PhysicalPropertiesResponse> {
     spawn_py(async move { execute_and_measure_impl(KclInput::Path(path), request, geometry_only).await }).await
-}
-
-/// Execute the kcl code and measure physical properties of the resulting model.
-#[pyo3_stub_gen::derive::gen_stub_pyfunction]
-#[pyfunction(signature = (code, request, *, geometry_only=false))]
-async fn execute_code_and_measure(
-    code: String,
-    request: PhysicalPropertiesRequest,
-    geometry_only: bool,
-) -> PyResult<PhysicalPropertiesResponse> {
-    spawn_py(async move { execute_and_measure_impl(KclInput::Code(code), request, geometry_only).await }).await
 }
 
 /// Execute a kcl file and return the model's bounding box.
@@ -910,22 +884,6 @@ async fn execute_and_bounding_box(
     let entity_ids = entity_ids.unwrap_or_default();
     spawn_py(async move {
         execute_and_bounding_box_impl(KclInput::Path(path), entity_ids, output_unit, geometry_only).await
-    })
-    .await
-}
-
-/// Execute the kcl code and return the model's bounding box.
-#[pyo3_stub_gen::derive::gen_stub_pyfunction]
-#[pyfunction(signature = (code, entity_ids=None, output_unit=None, *, geometry_only=false))]
-async fn execute_code_and_bounding_box(
-    code: String,
-    entity_ids: Option<Vec<String>>,
-    output_unit: Option<UnitLength>,
-    geometry_only: bool,
-) -> PyResult<BoundingBoxResponse> {
-    let entity_ids = entity_ids.unwrap_or_default();
-    spawn_py(async move {
-        execute_and_bounding_box_impl(KclInput::Code(code), entity_ids, output_unit, geometry_only).await
     })
     .await
 }
@@ -958,32 +916,6 @@ impl SnapshotOptions {
     fn isometric_view(padding: f32) -> Self {
         Self::new(None, padding)
     }
-}
-
-/// Execute the kcl code and snapshot it in a specific format.
-/// Returns one image for each camera angle you provide.
-/// If you don't provide any camera angles, a default head-on camera angle will be used.
-#[pyo3_stub_gen::derive::gen_stub_pyfunction]
-#[pyfunction(signature = (code, image_format, snapshot_options, *, zoom=None, highlight_edges=None))]
-async fn execute_code_and_snapshot_views(
-    code: String,
-    image_format: ImageFormat,
-    snapshot_options: Vec<SnapshotOptions>,
-    zoom: Option<bool>,
-    highlight_edges: Option<bool>,
-) -> PyResult<Vec<Vec<u8>>> {
-    let zoom = zoom.unwrap_or(true);
-    spawn_py(async move {
-        execute_and_snapshot_views_impl(
-            KclInput::Code(code),
-            image_format,
-            snapshot_options,
-            zoom,
-            highlight_edges,
-        )
-        .await
-    })
-    .await
 }
 
 async fn take_snaps(
@@ -1170,17 +1102,6 @@ async fn execute_and_export(
     spawn_py(async move { execute_and_export_impl(KclInput::Path(path), export_format, geometry_only).await }).await
 }
 
-/// Execute the kcl code and export it to a specific file format.
-#[pyo3_stub_gen::derive::gen_stub_pyfunction]
-#[pyfunction(signature = (code, export_format, *, geometry_only=false))]
-async fn execute_code_and_export(
-    code: String,
-    export_format: FileExportFormat,
-    geometry_only: bool,
-) -> PyResult<Vec<RawFile>> {
-    spawn_py(async move { execute_and_export_impl(KclInput::Code(code), export_format, geometry_only).await }).await
-}
-
 /// Format the kcl code. This will return the formatted code.
 #[pyo3_stub_gen::derive::gen_stub_pyfunction]
 #[pyfunction]
@@ -1328,16 +1249,11 @@ fn kcl(_py: Python, m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(get_sketch_constraint_status_code, m)?)?;
     m.add_function(wrap_pyfunction!(execute_and_snapshot, m)?)?;
     m.add_function(wrap_pyfunction!(execute_and_snapshot_views, m)?)?;
-    m.add_function(wrap_pyfunction!(execute_code_and_snapshot, m)?)?;
-    m.add_function(wrap_pyfunction!(execute_code_and_snapshot_views, m)?)?;
     m.add_function(wrap_pyfunction!(execute_and_measure, m)?)?;
-    m.add_function(wrap_pyfunction!(execute_code_and_measure, m)?)?;
     m.add_function(wrap_pyfunction!(execute_and_bounding_box, m)?)?;
-    m.add_function(wrap_pyfunction!(execute_code_and_bounding_box, m)?)?;
     m.add_function(wrap_pyfunction!(import_and_snapshot, m)?)?;
     m.add_function(wrap_pyfunction!(import_and_snapshot_views, m)?)?;
     m.add_function(wrap_pyfunction!(execute_and_export, m)?)?;
-    m.add_function(wrap_pyfunction!(execute_code_and_export, m)?)?;
     m.add_function(wrap_pyfunction!(format, m)?)?;
     m.add_function(wrap_pyfunction!(format_dir, m)?)?;
     m.add_function(wrap_pyfunction!(lint, m)?)?;
