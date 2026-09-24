@@ -25,21 +25,19 @@ export type CloudSyncFailureContext =
       point: 'cloud-api-request' | 'parse-cloud-api-response'
     }
 
-const failureContexts = new WeakMap<object, CloudSyncFailureContext>()
-
 /**
- * Preserves native Error identity for control flow such as CloudApiError
- * status handling. Primitive rejections need an Error wrapper so their typed
- * context can cross async boundaries without exposing the original value to
- * telemetry.
+ * Base error for failures crossing a cloud-sync domain boundary. Subclasses
+ * may add domain data, while ordinary runtime failures remain available as
+ * the cause for control flow and privacy-safe telemetry classification.
  */
-class CloudSyncPrimitiveFailure extends Error {
+export class CloudSyncError extends Error {
   constructor(
     readonly context: CloudSyncFailureContext,
-    readonly original: unknown
+    message: string,
+    options: ErrorOptions = {}
   ) {
-    super(typeof original === 'string' ? original : String(original))
-    this.name = 'CloudSyncPrimitiveFailure'
+    super(message, options)
+    this.name = 'CloudSyncError'
   }
 }
 
@@ -47,17 +45,15 @@ export function attachCloudSyncFailureContext(
   context: CloudSyncFailureContext,
   error: unknown
 ) {
-  if (
-    (typeof error === 'object' && error !== null) ||
-    typeof error === 'function'
-  ) {
-    if (!failureContexts.has(error)) {
-      failureContexts.set(error, context)
-    }
+  if (error instanceof CloudSyncError) {
     return error
   }
 
-  return new CloudSyncPrimitiveFailure(context, error)
+  return new CloudSyncError(
+    context,
+    error instanceof Error ? error.message : String(error),
+    { cause: error }
+  )
 }
 
 export async function withCloudSyncFailureContext<T>(
@@ -89,14 +85,8 @@ export function getCloudSyncFailureContext(error: unknown) {
 
   while (current !== undefined && current !== null && !seen.has(current)) {
     seen.add(current)
-    if (current instanceof CloudSyncPrimitiveFailure) {
+    if (current instanceof CloudSyncError) {
       return current.context
-    }
-    if (
-      (typeof current === 'object' || typeof current === 'function') &&
-      failureContexts.has(current)
-    ) {
-      return failureContexts.get(current)
     }
     current = current instanceof Error ? current.cause : undefined
   }
@@ -110,11 +100,12 @@ export function getCloudSyncFailureCause(error: unknown) {
 
   while (current !== undefined && current !== null && !seen.has(current)) {
     seen.add(current)
-    if (current instanceof CloudSyncPrimitiveFailure) {
-      current = current.original
-      continue
-    }
-    if (current instanceof Error && current.cause !== undefined) {
+    if (
+      current instanceof Error &&
+      current.cause !== undefined &&
+      (!(current instanceof CloudSyncError) ||
+        current.constructor === CloudSyncError)
+    ) {
       current = current.cause
       continue
     }

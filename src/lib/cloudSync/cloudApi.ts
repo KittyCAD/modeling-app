@@ -1,5 +1,6 @@
 import env from '@src/env'
 import {
+  CloudSyncError,
   withCloudSyncFailureContext,
   withCloudSyncFailureContextSync,
 } from '@src/lib/cloudSync/failureContext'
@@ -20,7 +21,8 @@ import type {
 import { fetchWithSessionExpiration } from '@src/lib/sessionExpired'
 import { isArray } from '@src/lib/utils'
 
-export class CloudApiError extends Error {
+/** HTTP failure returned by the cloud API request boundary. */
+export class CloudApiError extends CloudSyncError {
   status: number
   retryAfterMs?: number
 
@@ -29,7 +31,8 @@ export class CloudApiError extends Error {
     message: string,
     options: { retryAfterMs?: number } = {}
   ) {
-    super(message)
+    super({ stage: 'network', point: 'cloud-api-request' }, message)
+    this.name = 'CloudApiError'
     this.status = status
     this.retryAfterMs = options.retryAfterMs
   }

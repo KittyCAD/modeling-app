@@ -1,4 +1,5 @@
 import {
+  CloudSyncError,
   getCloudSyncFailureCause,
   getCloudSyncFailureContext,
   withCloudSyncFailureContext,
@@ -6,7 +7,7 @@ import {
 import { describe, expect, it } from 'vitest'
 
 describe('cloud sync failure context', () => {
-  it('preserves Error identity while attaching the innermost typed context', async () => {
+  it('wraps native errors once with the innermost typed context', async () => {
     const failure = new TypeError('private runtime details')
 
     const result = await withCloudSyncFailureContext(
@@ -18,7 +19,8 @@ describe('cloud sync failure context', () => {
         )
     ).catch((error: unknown) => error)
 
-    expect(result).toBe(failure)
+    expect(result).toBeInstanceOf(CloudSyncError)
+    expect(result).not.toBe(failure)
     expect(getCloudSyncFailureContext(result)).toEqual({
       stage: 'network',
       point: 'cloud-api-request',
@@ -32,7 +34,7 @@ describe('cloud sync failure context', () => {
       () => Promise.reject('ENOENT: /private/project/main.kcl')
     ).catch((error: unknown) => error)
 
-    expect(result).toBeInstanceOf(Error)
+    expect(result).toBeInstanceOf(CloudSyncError)
     expect(getCloudSyncFailureContext(result)).toEqual({
       stage: 'filesystem',
       point: 'collect-local-project-files',

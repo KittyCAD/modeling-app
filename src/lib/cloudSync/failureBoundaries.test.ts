@@ -5,6 +5,7 @@ import {
   getRemoteProject,
 } from '@src/lib/cloudSync/cloudApi'
 import {
+  CloudSyncError,
   getCloudSyncFailureCause,
   getCloudSyncFailureContext,
 } from '@src/lib/cloudSync/failureContext'
@@ -28,7 +29,7 @@ describe('cloud sync failure boundaries', () => {
     vi.unstubAllGlobals()
   })
 
-  it('classifies fetch rejections without changing their native type', async () => {
+  it('classifies fetch rejections while preserving their native cause', async () => {
     const failure = new TypeError('Failed to fetch private request')
     vi.stubGlobal('fetch', vi.fn().mockRejectedValue(failure))
 
@@ -36,7 +37,8 @@ describe('cloud sync failure boundaries', () => {
       (error: unknown) => error
     )
 
-    expect(result).toBe(failure)
+    expect(result).toBeInstanceOf(CloudSyncError)
+    expect(getCloudSyncFailureCause(result)).toBe(failure)
     expect(getCloudSyncFailureContext(result)).toEqual({
       stage: 'network',
       point: 'cloud-api-request',
@@ -53,7 +55,8 @@ describe('cloud sync failure boundaries', () => {
       (error: unknown) => error
     )
 
-    expect(result).toBeInstanceOf(SyntaxError)
+    expect(result).toBeInstanceOf(CloudSyncError)
+    expect(getCloudSyncFailureCause(result)).toBeInstanceOf(SyntaxError)
     expect(getCloudSyncFailureContext(result)).toEqual({
       stage: 'network',
       point: 'parse-cloud-api-response',
@@ -76,6 +79,7 @@ describe('cloud sync failure boundaries', () => {
     )
 
     expect(result).toBeInstanceOf(CloudApiError)
+    expect(result).toBeInstanceOf(CloudSyncError)
     expect((result as CloudApiError).status).toBe(503)
     expect(getCloudSyncFailureContext(result)).toEqual({
       stage: 'network',
@@ -108,7 +112,8 @@ describe('cloud sync failure boundaries', () => {
       },
     ]).catch((error: unknown) => error)
 
-    expect(result).toBe(failure)
+    expect(result).toBeInstanceOf(CloudSyncError)
+    expect(getCloudSyncFailureCause(result)).toBe(failure)
     expect(getCloudSyncFailureContext(result)).toEqual({
       stage: 'manifest',
       point: 'hash-project-manifest',

@@ -21,6 +21,7 @@ import {
 } from '@src/lib/cloudSync/conflictInspection'
 import {
   attachCloudSyncFailureContext,
+  getCloudSyncFailureCause,
   getCloudSyncFailureContext,
   withCloudSyncFailureContext,
 } from '@src/lib/cloudSync/failureContext'
@@ -236,8 +237,9 @@ function isProjectSyncFailureKind(
 }
 
 function projectFailureKind(error: unknown) {
-  if (typeof error === 'object' && error !== null && 'kind' in error) {
-    const kind = error.kind
+  const cause = getCloudSyncFailureCause(error)
+  if (typeof cause === 'object' && cause !== null && 'kind' in cause) {
+    const kind = cause.kind
     return isProjectSyncFailureKind(kind) ? kind : undefined
   }
   return undefined
