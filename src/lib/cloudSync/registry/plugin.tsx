@@ -51,10 +51,7 @@ import {
   classifyCloudProjectDuplicateRisk,
   deriveCloudProjectRelationships,
 } from '@src/lib/cloudSync/relationships'
-import {
-  OPFS_CLOUD_FEATURE_FLAG,
-  PROJECT_SETTINGS_FILE_NAME,
-} from '@src/lib/constants'
+import { PROJECT_SETTINGS_FILE_NAME } from '@src/lib/constants'
 import { writeProjectTitleToProjectToml } from '@src/lib/desktop'
 import fsZds from '@src/lib/fs-zds'
 import { getHomeProjectDisplayName } from '@src/lib/homeProjects'
@@ -1662,7 +1659,6 @@ export const cloudSyncPlugin = createZdsPlugin({
     hideOnLevel: 'project',
     hideOnPlatform: 'web',
     featurePolicy: {
-      feature: OPFS_CLOUD_FEATURE_FLAG,
       defaultEnabled: true,
       forceEnabledOnPlatform: 'web',
     },
