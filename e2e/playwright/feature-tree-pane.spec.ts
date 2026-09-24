@@ -127,21 +127,25 @@ export sharedValue = 42
     await toolbar.openFeatureTreePane()
 
     const tree = toolbar.featureTreePane
-    const firstValue = tree.getByText('firstValue', { exact: true })
-    const sharedValue = tree.getByText('sharedValue', { exact: true })
-    const secondValue = tree.getByText('secondValue', { exact: true })
+    const operations = tree.getByTestId('feature-tree-operation-item')
+    const firstValue = operations.getByRole('button', { name: 'firstValue' })
+    const sharedValue = operations.getByRole('button', { name: 'sharedValue' })
+    const secondValue = operations.getByRole('button', { name: 'secondValue' })
+    const sharedModule = operations.getByRole('button', {
+      name: 'sharedParameters',
+    })
 
     await test.step('Only root operations and collapsed module headings mount', async () => {
-      await expect(tree.getByText('rootValue', { exact: true })).toBeVisible()
+      await expect(
+        operations.getByRole('button', { name: 'rootValue' })
+      ).toBeVisible()
       await expect(
         tree.getByRole('button', { name: 'Expand firstAssembly', exact: true })
       ).toBeVisible()
       await expect(
         tree.getByRole('button', { name: 'Expand secondAssembly', exact: true })
       ).toBeVisible()
-      await expect(
-        tree.getByText('sharedParameters', { exact: true })
-      ).toHaveCount(0)
+      await expect(sharedModule).toHaveCount(0)
       await expect(firstValue).toHaveCount(0)
       await expect(sharedValue).toHaveCount(0)
       await expect(secondValue).toHaveCount(0)
@@ -178,7 +182,7 @@ export sharedValue = 42
         .getByRole('button', { name: 'Expand secondAssembly', exact: true })
         .click()
       await expect(secondValue).toBeVisible()
-      await tree.getByText('sharedParameters', { exact: true }).click()
+      await sharedModule.click()
 
       await expect(firstValue).toBeVisible()
       await expect(sharedValue).toBeVisible()
