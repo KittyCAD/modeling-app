@@ -8237,7 +8237,7 @@ mod snapshot_tests {
     snapshot_test!(aq, "log(number = 5, msg = \"hello\", id=aIdentifier)");
     snapshot_test!(ar, r#"5 + "a""#);
     snapshot_test!(at, "line([0, l])");
-    snapshot_test!(au, include_str!("../../tests/cylinder/input.kcl"));
+    snapshot_test!(au, include_str!("../../e2e/executor/inputs/cylinder.kcl"));
     snapshot_test!(av, "fn f(angle?) { return default(maybe=angle, otherwise=360) }");
     snapshot_test!(
         aw,

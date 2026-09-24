@@ -1588,7 +1588,6 @@ test(
       ]
       const simulationTestNames = new Set([
         'close_arc',
-        'cylinder',
         'dimensions_match',
         'extrude_custom_plane',
         'extrude_inside_fn_with_tags',
