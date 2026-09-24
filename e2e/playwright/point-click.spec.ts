@@ -1384,10 +1384,12 @@ fillet(extrude001, radius = 5, tags = [getOppositeEdge(region001.tags.line2)])`
 
       await test.step('Delete standalone unassigned fillet via feature tree selection', async () => {
         await test.step('Delete standalone unassigned fillet', async () => {
-          const operationButton = await toolbar.getFeatureTreeOperation(
-            'Fillet',
-            0
-          )
+          // The named piped fillet's tooltip also contains "Fillet".
+          // Select the standalone operation by its visible row label.
+          const operationButton = toolbar.featureTreePane
+            .getByTestId('feature-tree-operation-item')
+            .getByRole('button')
+            .filter({ has: page.getByText('Fillet', { exact: true }) })
           await operationButton.click({ button: 'left' })
           await page.keyboard.press('Delete')
           await scene.settled()
