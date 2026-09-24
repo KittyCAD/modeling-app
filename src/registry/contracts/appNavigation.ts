@@ -1,5 +1,47 @@
-import { defineContract, defineService } from '@kittycad/registry'
+import {
+  appendValueSpec,
+  defineContract,
+  defineService,
+} from '@kittycad/registry'
 import type { IndexLoaderData } from '@src/lib/types'
+
+declare const appNavigationIntentInput: unique symbol
+declare const appNavigationIntentOutput: unique symbol
+
+/**
+ * A typed token naming one application-navigation intent.
+ *
+ * Capabilities export tokens while their registry items contribute handlers,
+ * so appNavigation can dispatch an extensible catalog without knowing every
+ * capability at compile time.
+ */
+export interface AppNavigationIntent<Input, Output> {
+  readonly id: string
+  readonly [appNavigationIntentInput]?: Input
+  readonly [appNavigationIntentOutput]?: Output
+}
+
+/** A type-erased handler stored in the registry after input/output are paired. */
+export interface AppNavigationIntentContribution {
+  readonly intentId: string
+  readonly dispatch: (input: unknown) => Promise<unknown>
+}
+
+export function defineAppNavigationIntent<Input, Output>(
+  id: string
+): AppNavigationIntent<Input, Output> {
+  return { id }
+}
+
+export function defineAppNavigationIntentContribution<Input, Output>(
+  intent: AppNavigationIntent<Input, Output>,
+  dispatch: (input: Input) => Promise<Output>
+): AppNavigationIntentContribution {
+  return {
+    intentId: intent.id,
+    dispatch: (input) => dispatch(input as Input),
+  }
+}
 
 /**
  * An application-level request to enter a project.
@@ -27,6 +69,12 @@ export type OpenProjectOutcome =
    */
   | { kind: 'redirect'; to: string }
 
+/** The first application intent moved behind the navigation coordinator. */
+export const openProjectIntent = defineAppNavigationIntent<
+  OpenProjectRequest,
+  OpenProjectOutcome
+>('project.open')
+
 /**
  * Coordinates application intents without owning durable application state.
  *
@@ -34,7 +82,10 @@ export type OpenProjectOutcome =
  * resolves requests and delegates to the capability that owns the result.
  */
 export interface AppNavigationService {
-  openProject: (request: OpenProjectRequest) => Promise<OpenProjectOutcome>
+  dispatch: <Input, Output>(
+    intent: AppNavigationIntent<Input, Output>,
+    input: Input
+  ) => Promise<Output>
   /**
    * Transitional escape hatch for a legacy file route that returns before it
    * can call openProject. Remove it with the effectful loader integration.
@@ -43,9 +94,16 @@ export interface AppNavigationService {
 }
 
 export const appNavigationContract = defineContract({
+  appNavigationIntentContributionsValueSpec:
+    appendValueSpec<AppNavigationIntentContribution>(
+      'application-navigation.intents'
+    ),
   appNavigationService: defineService<AppNavigationService>(
     'application-navigation'
   ),
 })
 
-export const { appNavigationService } = appNavigationContract
+export const {
+  appNavigationIntentContributionsValueSpec,
+  appNavigationService,
+} = appNavigationContract
