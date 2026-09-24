@@ -161,6 +161,130 @@ type WebrtcDisconnectRoute =
   | 'peer-connection-disconnected'
   | 'peer-connection-closed'
 
+type WebrtcStatsRecorder = {
+  snapshots: Record<string, unknown>[]
+  timer: ReturnType<typeof setInterval>
+  collecting: boolean
+}
+
+const WEBRTC_STATS_SAMPLE_INTERVAL_MS = 5000
+const WEBRTC_STATS_SNAPSHOT_LIMIT = 12
+const webrtcStatsRecorders = new WeakMap<
+  RTCPeerConnection,
+  WebrtcStatsRecorder
+>()
+
+async function getWebrtcStatsDiagnostics(peerConnection: RTCPeerConnection) {
+  const stats = await peerConnection.getStats()
+  const reports = Array.from(stats.values())
+  const transport = reports.find((report) => report.type === 'transport')
+  const pair = transport?.selectedCandidatePairId
+    ? stats.get(transport.selectedCandidatePairId)
+    : reports.find(
+        (report) =>
+          report.type === 'candidate-pair' &&
+          report.nominated &&
+          report.state === 'succeeded'
+      )
+  const inbound = reports.find(
+    (report) => report.type === 'inbound-rtp' && report.kind === 'video'
+  )
+  const localCandidate = pair ? stats.get(pair.localCandidateId) : undefined
+  const remoteCandidate = pair ? stats.get(pair.remoteCandidateId) : undefined
+
+  return {
+    selectedCandidatePairState: pair?.state ?? null,
+    selectedCandidatePairNominated: pair?.nominated ?? null,
+    selectedCandidatePairRtt: pair?.currentRoundTripTime ?? null,
+    selectedCandidatePairBytesReceived: pair?.bytesReceived ?? null,
+    selectedCandidatePairBytesSent: pair?.bytesSent ?? null,
+    selectedCandidatePairRequestsSent: pair?.requestsSent ?? null,
+    selectedCandidatePairResponsesReceived: pair?.responsesReceived ?? null,
+    selectedCandidatePairConsentRequestsSent: pair?.consentRequestsSent ?? null,
+    selectedCandidatePairLastPacketReceived:
+      pair?.lastPacketReceivedTimestamp ?? null,
+    selectedCandidatePairLastPacketSent: pair?.lastPacketSentTimestamp ?? null,
+    localCandidateType: localCandidate?.candidateType ?? null,
+    localCandidateProtocol: localCandidate?.protocol ?? null,
+    localCandidateRelayProtocol: localCandidate?.relayProtocol ?? null,
+    remoteCandidateType: remoteCandidate?.candidateType ?? null,
+    remoteCandidateProtocol: remoteCandidate?.protocol ?? null,
+    inboundVideoPacketsReceived: inbound?.packetsReceived ?? null,
+    inboundVideoPacketsLost: inbound?.packetsLost ?? null,
+    inboundVideoBytesReceived: inbound?.bytesReceived ?? null,
+    inboundVideoFramesDecoded: inbound?.framesDecoded ?? null,
+    inboundVideoFramesDropped: inbound?.framesDropped ?? null,
+  }
+}
+
+async function recordWebrtcStats(peerConnection: RTCPeerConnection) {
+  const recorder = webrtcStatsRecorders.get(peerConnection)
+  if (!recorder || recorder.collecting) {
+    return
+  }
+  if (peerConnection.connectionState !== 'connected') {
+    clearInterval(recorder.timer)
+    webrtcStatsRecorders.delete(peerConnection)
+    return
+  }
+
+  recorder.collecting = true
+  try {
+    const stats = await getWebrtcStatsDiagnostics(peerConnection)
+    recorder.snapshots.push({
+      sampledAt: new Date().toISOString(),
+      peerConnectionState: peerConnection.connectionState,
+      iceConnectionState: peerConnection.iceConnectionState,
+      pairState: stats.selectedCandidatePairState,
+      rtt: stats.selectedCandidatePairRtt,
+      bytesReceived: stats.selectedCandidatePairBytesReceived,
+      bytesSent: stats.selectedCandidatePairBytesSent,
+      requestsSent: stats.selectedCandidatePairRequestsSent,
+      responsesReceived: stats.selectedCandidatePairResponsesReceived,
+      consentRequestsSent: stats.selectedCandidatePairConsentRequestsSent,
+      lastPacketReceived: stats.selectedCandidatePairLastPacketReceived,
+      lastPacketSent: stats.selectedCandidatePairLastPacketSent,
+      packetsReceived: stats.inboundVideoPacketsReceived,
+      packetsLost: stats.inboundVideoPacketsLost,
+    })
+    recorder.snapshots.splice(
+      0,
+      Math.max(0, recorder.snapshots.length - WEBRTC_STATS_SNAPSHOT_LIMIT)
+    )
+  } catch {
+    // The final disconnect report records collection failures.
+  } finally {
+    recorder.collecting = false
+  }
+}
+
+function startWebrtcStatsRecorder(peerConnection: RTCPeerConnection) {
+  if (webrtcStatsRecorders.has(peerConnection)) {
+    return
+  }
+
+  const recorder: WebrtcStatsRecorder = {
+    snapshots: [],
+    collecting: false,
+    timer: setInterval(
+      () => void recordWebrtcStats(peerConnection),
+      WEBRTC_STATS_SAMPLE_INTERVAL_MS
+    ),
+  }
+  webrtcStatsRecorders.set(peerConnection, recorder)
+  void recordWebrtcStats(peerConnection)
+}
+
+function stopWebrtcStatsRecorder(peerConnection: RTCPeerConnection) {
+  const recorder = webrtcStatsRecorders.get(peerConnection)
+  if (!recorder) {
+    return []
+  }
+  clearInterval(recorder.timer)
+  webrtcStatsRecorders.delete(peerConnection)
+  return recorder.snapshots
+}
+
 async function reportWebrtcDisconnect({
   connection,
   peerConnection,
@@ -173,6 +297,7 @@ async function reportWebrtcDisconnect({
   initiatedBy: ManagerTearDown['initiatedBy']
 }) {
   const sourceTime = new Date().toISOString()
+  const recentStats = stopWebrtcStatsRecorder(peerConnection)
   const state = {
     peerConnectionState: peerConnection.connectionState,
     iceConnectionState: peerConnection.iceConnectionState,
@@ -186,48 +311,9 @@ async function reportWebrtcDisconnect({
   const statsDiagnostics: Record<string, unknown> = {}
 
   try {
-    const stats = await peerConnection.getStats()
-    const reports = Array.from(stats.values())
-    const transport = reports.find((report) => report.type === 'transport')
-    const pair = transport?.selectedCandidatePairId
-      ? stats.get(transport.selectedCandidatePairId)
-      : reports.find(
-          (report) =>
-            report.type === 'candidate-pair' &&
-            report.nominated &&
-            report.state === 'succeeded'
-        )
-    const inbound = reports.find(
-      (report) => report.type === 'inbound-rtp' && report.kind === 'video'
-    )
-    const localCandidate = pair ? stats.get(pair.localCandidateId) : undefined
-    const remoteCandidate = pair ? stats.get(pair.remoteCandidateId) : undefined
-
     Object.assign(statsDiagnostics, {
       statsCollected: true,
-      selectedCandidatePairState: pair?.state ?? null,
-      selectedCandidatePairNominated: pair?.nominated ?? null,
-      selectedCandidatePairRtt: pair?.currentRoundTripTime ?? null,
-      selectedCandidatePairBytesReceived: pair?.bytesReceived ?? null,
-      selectedCandidatePairBytesSent: pair?.bytesSent ?? null,
-      selectedCandidatePairRequestsSent: pair?.requestsSent ?? null,
-      selectedCandidatePairResponsesReceived: pair?.responsesReceived ?? null,
-      selectedCandidatePairConsentRequestsSent:
-        pair?.consentRequestsSent ?? null,
-      selectedCandidatePairLastPacketReceived:
-        pair?.lastPacketReceivedTimestamp ?? null,
-      selectedCandidatePairLastPacketSent:
-        pair?.lastPacketSentTimestamp ?? null,
-      localCandidateType: localCandidate?.candidateType ?? null,
-      localCandidateProtocol: localCandidate?.protocol ?? null,
-      localCandidateRelayProtocol: localCandidate?.relayProtocol ?? null,
-      remoteCandidateType: remoteCandidate?.candidateType ?? null,
-      remoteCandidateProtocol: remoteCandidate?.protocol ?? null,
-      inboundVideoPacketsReceived: inbound?.packetsReceived ?? null,
-      inboundVideoPacketsLost: inbound?.packetsLost ?? null,
-      inboundVideoBytesReceived: inbound?.bytesReceived ?? null,
-      inboundVideoFramesDecoded: inbound?.framesDecoded ?? null,
-      inboundVideoFramesDropped: inbound?.framesDropped ?? null,
+      ...(await getWebrtcStatsDiagnostics(peerConnection)),
     })
   } catch (error) {
     Object.assign(statsDiagnostics, {
@@ -240,6 +326,7 @@ async function reportWebrtcDisconnect({
     code: ClientErrorCode.EngineWebrtcDisconnect,
     message: `WebRTC disconnected: ${route}.`,
     dedupeKey: `engine-webrtc-disconnect:${connection.id}`,
+    persistUntilSent: initiatedBy !== 'client',
     extra: {
       source: 'RTCPeerConnection',
       sourceTime,
@@ -248,6 +335,7 @@ async function reportWebrtcDisconnect({
       connectionId: connection.id,
       modelingApiCallId: connection.apiCallId ?? null,
       ...state,
+      recentStats,
       ...statsDiagnostics,
     },
   })
@@ -297,6 +385,7 @@ export function createOnConnectionStateChange({
       // From what I understand, only after have we done the ICE song and
       // dance is it safest to connect the video tracks / stream
       case 'connected':
+        startWebrtcStatsRecorder(peerConnection)
         dispatchEvent(
           new CustomEvent(EngineConnectionEvents.NewTrack, {
             detail: { conn: connection, mediaStream: connection.mediaStream },

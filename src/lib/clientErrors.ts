@@ -12,6 +12,7 @@ type ReportClientErrorParams = {
   dedupeKey?: string
   route?: string
   client?: string
+  persistUntilSent?: boolean
 }
 
 export enum ClientErrorCode {
@@ -47,12 +48,24 @@ export enum ClientErrorCode {
 }
 
 const reportedClientErrors = new Set<string>()
-const pendingReports: { body: ClientErrorReport; dedupeKey?: string }[] = []
+type PendingReport = {
+  body: ClientErrorReport
+  dedupeKey?: string
+  persistedId?: string
+}
+type PersistedReport = PendingReport & { persistedId: string }
+
+const pendingReports: PendingReport[] = []
+const persistedReportsInFlight = new Set<string>()
 let authReady = false
 let hasAuthenticated = false
 const FALLBACK_APP_RELEASE = 'unknown'
+const PERSISTED_REPORTS_KEY = 'zoo.persisted-client-error-reports'
+const MAX_PERSISTED_REPORTS = 20
 // Match the API's stack limit in Unicode characters.
 const MAX_STACK_LENGTH = 8192
+const cropStack = (stack: string) =>
+  Array.from(stack).slice(0, MAX_STACK_LENGTH).join('')
 
 const getAppRelease = () => {
   if (typeof window !== 'undefined') {
@@ -148,7 +161,7 @@ const buildStack = (params: ReportClientErrorParams) => {
     params.code !== ClientErrorCode.EngineBackendDisconnect &&
     params.code !== ClientErrorCode.EngineTeardown
   ) {
-    return JSON.stringify(context)
+    return cropStack(JSON.stringify(context))
   }
 
   let stack: string
@@ -169,7 +182,7 @@ const buildStack = (params: ReportClientErrorParams) => {
     // Still report the original error if the debugger buffer cannot serialize.
     stack = JSON.stringify(context)
   }
-  return Array.from(stack).slice(0, MAX_STACK_LENGTH).join('')
+  return cropStack(stack)
 }
 
 const buildClientErrorReport = (
@@ -186,9 +199,77 @@ const buildClientErrorReport = (
   }
 }
 
+const readPersistedReports = (): PersistedReport[] => {
+  if (typeof localStorage === 'undefined') {
+    return []
+  }
+
+  try {
+    const reports: unknown = JSON.parse(
+      localStorage.getItem(PERSISTED_REPORTS_KEY) ?? '[]'
+    )
+    if (!Array.isArray(reports)) {
+      return []
+    }
+    return reports.filter((report): report is PersistedReport => {
+      if (!report || typeof report !== 'object') {
+        return false
+      }
+      const candidate = report as Partial<PersistedReport>
+      return (
+        typeof candidate.persistedId === 'string' &&
+        typeof candidate.body === 'object' &&
+        candidate.body !== null
+      )
+    })
+  } catch {
+    return []
+  }
+}
+
+const writePersistedReports = (reports: PersistedReport[]) => {
+  if (typeof localStorage === 'undefined') {
+    return
+  }
+
+  try {
+    if (reports.length === 0) {
+      localStorage.removeItem(PERSISTED_REPORTS_KEY)
+    } else {
+      localStorage.setItem(PERSISTED_REPORTS_KEY, JSON.stringify(reports))
+    }
+  } catch {
+    // Persistence is best-effort; the immediate report can still succeed.
+  }
+}
+
+const persistReport = (body: ClientErrorReport, dedupeKey?: string) => {
+  const persistedId = crypto.randomUUID()
+  const reports = readPersistedReports().filter(
+    (report) => !dedupeKey || report.dedupeKey !== dedupeKey
+  )
+  reports.push({ body, dedupeKey, persistedId })
+  writePersistedReports(reports.slice(-MAX_PERSISTED_REPORTS))
+  return persistedId
+}
+
+const removePersistedReport = (persistedId: string) => {
+  writePersistedReports(
+    readPersistedReports().filter(
+      (report) => report.persistedId !== persistedId
+    )
+  )
+}
+
 export const reportClientError = async (params: ReportClientErrorParams) => {
   // Buffer startup errors only, with a cap if authentication never succeeds.
-  if (!authReady && (hasAuthenticated || pendingReports.length >= 100)) return
+  if (
+    !authReady &&
+    !params.persistUntilSent &&
+    (hasAuthenticated || pendingReports.length >= 100)
+  ) {
+    return
+  }
 
   const dedupeKey = params.dedupeKey
   if (dedupeKey && reportedClientErrors.has(dedupeKey)) {
@@ -199,51 +280,99 @@ export const reportClientError = async (params: ReportClientErrorParams) => {
   }
 
   const body = buildClientErrorReport(params)
+  const persistedId = params.persistUntilSent
+    ? persistReport(body, dedupeKey)
+    : undefined
   if (!authReady) {
-    pendingReports.push({ body, dedupeKey })
+    pendingReports.push({ body, dedupeKey, persistedId })
     return
   }
-  await sendClientErrorReport(body, dedupeKey)
+  await sendClientErrorReport(body, dedupeKey, persistedId)
 }
 
 async function sendClientErrorReport(
   body: ClientErrorReport,
-  dedupeKey?: string
+  dedupeKey?: string,
+  persistedId?: string
 ) {
-  const client = createKCClient(getAuthToken())
-  const result = await kcCall(() =>
-    users.report_user_client_error({
-      client,
-      body,
-    })
-  )
+  if (persistedId) {
+    persistedReportsInFlight.add(persistedId)
+  }
+  try {
+    const client = createKCClient(getAuthToken())
+    const result = await kcCall(() =>
+      users.report_user_client_error({
+        client,
+        body,
+      })
+    )
 
-  if (result instanceof Error) {
-    if (dedupeKey) {
-      reportedClientErrors.delete(dedupeKey)
+    if (result instanceof Error) {
+      if (dedupeKey) {
+        reportedClientErrors.delete(dedupeKey)
+      }
+      console.warn('Failed to report client error', result)
+      return
     }
-    console.warn('Failed to report client error', result)
+
+    if (persistedId) {
+      removePersistedReport(persistedId)
+    }
+  } finally {
+    if (persistedId) {
+      persistedReportsInFlight.delete(persistedId)
+    }
+  }
+}
+
+const flushPersistedReports = () => {
+  if (!authReady) {
+    return
+  }
+
+  for (const { body, dedupeKey, persistedId } of readPersistedReports()) {
+    if (persistedReportsInFlight.has(persistedId)) {
+      continue
+    }
+    if (dedupeKey) {
+      reportedClientErrors.add(dedupeKey)
+    }
+    void sendClientErrorReport(body, dedupeKey, persistedId).catch(
+      (error: unknown) => console.warn('Failed to report client error', error)
+    )
   }
 }
 
 export function initializeClientErrorReporting(
   isLoggedIn: ReadonlySignal<boolean>
 ) {
-  return isLoggedIn.subscribe((ready) => {
+  const handleOnline = () => flushPersistedReports()
+  window.addEventListener('online', handleOnline)
+  const unsubscribe = isLoggedIn.subscribe((ready) => {
     authReady = ready
-    if (!ready) return
-    hasAuthenticated = true
-    for (const { body, dedupeKey } of pendingReports.splice(0)) {
-      void sendClientErrorReport(body, dedupeKey).catch((error: unknown) => {
-        console.warn('Failed to report client error', error)
-      })
+    if (!ready) {
+      return
     }
+    hasAuthenticated = true
+    for (const { body, dedupeKey, persistedId } of pendingReports.splice(0)) {
+      void sendClientErrorReport(body, dedupeKey, persistedId).catch(
+        (error: unknown) => console.warn('Failed to report client error', error)
+      )
+    }
+    flushPersistedReports()
   })
+
+  return () => {
+    unsubscribe()
+    window.removeEventListener('online', handleOnline)
+  }
 }
 
 export const resetReportedClientErrorsForTests = () => {
   reportedClientErrors.clear()
   pendingReports.length = 0
+  persistedReportsInFlight.clear()
+  localStorage.removeItem(PERSISTED_REPORTS_KEY)
   authReady = false
   hasAuthenticated = false
 }
