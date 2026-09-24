@@ -1654,7 +1654,7 @@ async fn test_kcl_lsp_semantic_tokens() {
 #[tokio::test(flavor = "multi_thread")]
 async fn test_kcl_lsp_semantic_tokens_large_file() {
     let server = kcl_lsp_server(false).await.unwrap();
-    let code = include_str!("../../../kcl-lib/e2e/executor/inputs/global-tags.kcl");
+    let code = include_str!("../../../kcl-lib/tests/global_tags/input.kcl");
 
     // Send open file.
     server

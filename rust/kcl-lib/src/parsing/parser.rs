@@ -5648,7 +5648,7 @@ mySk1 = startSketchOn(XY)
 
     #[test]
     fn test_pipes_on_pipes() {
-        let test_program = include_str!("../../e2e/executor/inputs/pipes_on_pipes.kcl");
+        let test_program = include_str!("../../tests/pipes_on_pipes/input.kcl");
         let tokens = crate::parsing::token::lex(test_program, ModuleId::default()).unwrap();
         let _ = run_parser(tokens.as_slice()).unwrap();
     }

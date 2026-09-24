@@ -1586,8 +1586,30 @@ test(
         'tan_arc_x_line.kcl',
         'tangential_arc.kcl',
       ]
+      const simulationTestNames = new Set([
+        'close_arc',
+        'dimensions_match',
+        'extrude_custom_plane',
+        'extrude_inside_fn_with_tags',
+        'global_tags',
+        'helix_defaults',
+        'helix_defaults_negative_extrude',
+        'helix_with_length',
+        'lsystem',
+        'member_expression_sketch',
+        'negative_args',
+        'order_sketch_extrude_in_order',
+        'order_sketch_extrude_out_of_order',
+        'pattern_vase',
+        'pipes_on_pipes',
+        'scoped_tags',
+      ])
       for (const fileName of fileNames) {
-        const testFileData = await nodeFs.readFile(executorInputPath(fileName))
+        const testName = path.basename(fileName, '.kcl').replaceAll('-', '_')
+        const inputPath = simulationTestNames.has(testName)
+          ? path.join('rust', 'kcl-lib', 'tests', testName, 'input.kcl')
+          : executorInputPath(fileName)
+        const testFileData = await nodeFs.readFile(inputPath)
         await fs.writeFile(
           path.join(testDir, fileName),
           new Uint8Array(testFileData)
