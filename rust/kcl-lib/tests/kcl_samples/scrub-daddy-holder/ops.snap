@@ -2548,7 +2548,7 @@ description: Operations executed scrub-daddy-holder.kcl
                       },
                       {
                         "type": "TagIdentifier",
-                        "value": "line1",
+                        "value": "line2",
                         "artifact_id": "[uuid]"
                       }
                     ]
@@ -2588,7 +2588,7 @@ description: Operations executed scrub-daddy-holder.kcl
                       },
                       {
                         "type": "TagIdentifier",
-                        "value": "line2",
+                        "value": "line1",
                         "artifact_id": "[uuid]"
                       }
                     ]

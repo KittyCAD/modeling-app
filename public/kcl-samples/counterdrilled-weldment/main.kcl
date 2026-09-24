@@ -83,26 +83,26 @@ plateChamfered = chamfer(
   edges = [
     {
       sideFaces = [
-        plateRegion.tags.leftEdge,
-        plateRegion.tags.rightEdge
+        plateTopExtrude.sketch.tags.rightEdge,
+        plateTopExtrude.sketch.tags.bottomEdge
       ]
     },
     {
       sideFaces = [
-        plateRegion.tags.rightEdge,
-        plateRegion.tags.bottomEdge
+        plateTopExtrude.sketch.tags.leftEdge,
+        plateTopExtrude.sketch.tags.bottomEdge
       ]
     },
     {
       sideFaces = [
-        plateRegion.tags.topEdge,
-        plateRegion.tags.bottomEdge
+        plateTopExtrude.sketch.tags.rightEdge,
+        plateTopExtrude.sketch.tags.topEdge
       ]
     },
     {
       sideFaces = [
-        plateRegion.tags.topEdge,
-        plateRegion.tags.leftEdge
+        plateTopExtrude.sketch.tags.leftEdge,
+        plateTopExtrude.sketch.tags.topEdge
       ]
     }
   ],

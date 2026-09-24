@@ -2428,26 +2428,6 @@ description: Operations executed counterdrilled-weldment.kcl
                     "value": [
                       {
                         "type": "TagIdentifier",
-                        "value": "leftEdge",
-                        "artifact_id": "[uuid]"
-                      },
-                      {
-                        "type": "TagIdentifier",
-                        "value": "rightEdge",
-                        "artifact_id": "[uuid]"
-                      }
-                    ]
-                  }
-                }
-              },
-              {
-                "type": "Object",
-                "value": {
-                  "sideFaces": {
-                    "type": "Array",
-                    "value": [
-                      {
-                        "type": "TagIdentifier",
                         "value": "rightEdge",
                         "artifact_id": "[uuid]"
                       },
@@ -2468,7 +2448,7 @@ description: Operations executed counterdrilled-weldment.kcl
                     "value": [
                       {
                         "type": "TagIdentifier",
-                        "value": "topEdge",
+                        "value": "leftEdge",
                         "artifact_id": "[uuid]"
                       },
                       {
@@ -2488,12 +2468,32 @@ description: Operations executed counterdrilled-weldment.kcl
                     "value": [
                       {
                         "type": "TagIdentifier",
-                        "value": "topEdge",
+                        "value": "rightEdge",
                         "artifact_id": "[uuid]"
                       },
                       {
                         "type": "TagIdentifier",
+                        "value": "topEdge",
+                        "artifact_id": "[uuid]"
+                      }
+                    ]
+                  }
+                }
+              },
+              {
+                "type": "Object",
+                "value": {
+                  "sideFaces": {
+                    "type": "Array",
+                    "value": [
+                      {
+                        "type": "TagIdentifier",
                         "value": "leftEdge",
+                        "artifact_id": "[uuid]"
+                      },
+                      {
+                        "type": "TagIdentifier",
+                        "value": "topEdge",
                         "artifact_id": "[uuid]"
                       }
                     ]

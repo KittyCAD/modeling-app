@@ -2121,7 +2121,7 @@ description: Operations executed curtain-wall-anchor-plate.kcl
                     "value": [
                       {
                         "type": "TagIdentifier",
-                        "value": "line5",
+                        "value": "line3",
                         "artifact_id": "[uuid]"
                       },
                       {
@@ -2193,12 +2193,12 @@ description: Operations executed curtain-wall-anchor-plate.kcl
                     "value": [
                       {
                         "type": "TagIdentifier",
-                        "value": "line1",
+                        "value": "line6",
                         "artifact_id": "[uuid]"
                       },
                       {
                         "type": "TagIdentifier",
-                        "value": "line2",
+                        "value": "line1",
                         "artifact_id": "[uuid]"
                       }
                     ]

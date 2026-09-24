@@ -99,7 +99,6 @@ outsideBendFillet = fillet(
 
 freeEndCornerFillets = fillet(
   outsideBendFillet,
-  radius = halfBracketWidth,
   edges = [
     {
       sideFaces = [outlineRegion.tags.line3, capStart]
@@ -114,6 +113,7 @@ freeEndCornerFillets = fillet(
       sideFaces = [outlineRegion.tags.line6, capEnd]
     }
   ],
+  radius = halfBracketWidth,
 )
 
 // Step 4: Countersunk tab hole via subtractive feature

@@ -2,7 +2,7 @@
 // A scrub daddy is a sponge with a course texture which has the shape of a smiling face. This holder attaches magnetically to the wall of your sink or other locations where a sponge may be needed. The holder is designed to fit through the eye openings on the sponge. This is designed to fit magnets with a diameter of 6mm and thickness of 3 mm.
 // Categories: Home & Lifestyle; 3D Printable
 
-@settings(defaultLengthUnit = mm)
+@settings(defaultLengthUnit = mm, kclVersion = 2.0)
 
 magnetDiameter = 6.2
 magnetThickness = 3
@@ -76,7 +76,7 @@ fillet001 = fillet(
     {
       sideFaces = [
         baseRegion.tags.line3,
-        baseRegion.tags.line1
+        baseRegion.tags.line2
       ]
     },
     {
@@ -88,7 +88,7 @@ fillet001 = fillet(
     {
       sideFaces = [
         baseRegion.tags.line4,
-        baseRegion.tags.line2
+        baseRegion.tags.line1
       ]
     }
   ],

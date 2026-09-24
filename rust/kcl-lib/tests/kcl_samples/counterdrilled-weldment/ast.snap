@@ -5309,201 +5309,49 @@ description: Result of parsing counterdrilled-weldment.kcl
                                   "end": 0,
                                   "moduleId": 0,
                                   "object": {
-                                    "abs_path": false,
                                     "commentStart": 0,
+                                    "computed": false,
                                     "end": 0,
                                     "moduleId": 0,
-                                    "name": {
+                                    "object": {
+                                      "abs_path": false,
                                       "commentStart": 0,
                                       "end": 0,
                                       "moduleId": 0,
-                                      "name": "plateRegion",
+                                      "name": {
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "moduleId": 0,
+                                        "name": "plateTopExtrude",
+                                        "start": 0,
+                                        "type": "Identifier"
+                                      },
+                                      "path": [],
                                       "start": 0,
-                                      "type": "Identifier"
+                                      "type": "Name",
+                                      "type": "Name"
                                     },
-                                    "path": [],
-                                    "start": 0,
-                                    "type": "Name",
-                                    "type": "Name"
-                                  },
-                                  "property": {
-                                    "abs_path": false,
-                                    "commentStart": 0,
-                                    "end": 0,
-                                    "moduleId": 0,
-                                    "name": {
+                                    "property": {
+                                      "abs_path": false,
                                       "commentStart": 0,
                                       "end": 0,
                                       "moduleId": 0,
-                                      "name": "tags",
+                                      "name": {
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "moduleId": 0,
+                                        "name": "sketch",
+                                        "start": 0,
+                                        "type": "Identifier"
+                                      },
+                                      "path": [],
                                       "start": 0,
-                                      "type": "Identifier"
+                                      "type": "Name",
+                                      "type": "Name"
                                     },
-                                    "path": [],
                                     "start": 0,
-                                    "type": "Name",
-                                    "type": "Name"
-                                  },
-                                  "start": 0,
-                                  "type": "MemberExpression",
-                                  "type": "MemberExpression"
-                                },
-                                "property": {
-                                  "abs_path": false,
-                                  "commentStart": 0,
-                                  "end": 0,
-                                  "moduleId": 0,
-                                  "name": {
-                                    "commentStart": 0,
-                                    "end": 0,
-                                    "moduleId": 0,
-                                    "name": "leftEdge",
-                                    "start": 0,
-                                    "type": "Identifier"
-                                  },
-                                  "path": [],
-                                  "start": 0,
-                                  "type": "Name",
-                                  "type": "Name"
-                                },
-                                "start": 0,
-                                "type": "MemberExpression",
-                                "type": "MemberExpression"
-                              },
-                              {
-                                "commentStart": 0,
-                                "computed": false,
-                                "end": 0,
-                                "moduleId": 0,
-                                "object": {
-                                  "commentStart": 0,
-                                  "computed": false,
-                                  "end": 0,
-                                  "moduleId": 0,
-                                  "object": {
-                                    "abs_path": false,
-                                    "commentStart": 0,
-                                    "end": 0,
-                                    "moduleId": 0,
-                                    "name": {
-                                      "commentStart": 0,
-                                      "end": 0,
-                                      "moduleId": 0,
-                                      "name": "plateRegion",
-                                      "start": 0,
-                                      "type": "Identifier"
-                                    },
-                                    "path": [],
-                                    "start": 0,
-                                    "type": "Name",
-                                    "type": "Name"
-                                  },
-                                  "property": {
-                                    "abs_path": false,
-                                    "commentStart": 0,
-                                    "end": 0,
-                                    "moduleId": 0,
-                                    "name": {
-                                      "commentStart": 0,
-                                      "end": 0,
-                                      "moduleId": 0,
-                                      "name": "tags",
-                                      "start": 0,
-                                      "type": "Identifier"
-                                    },
-                                    "path": [],
-                                    "start": 0,
-                                    "type": "Name",
-                                    "type": "Name"
-                                  },
-                                  "start": 0,
-                                  "type": "MemberExpression",
-                                  "type": "MemberExpression"
-                                },
-                                "property": {
-                                  "abs_path": false,
-                                  "commentStart": 0,
-                                  "end": 0,
-                                  "moduleId": 0,
-                                  "name": {
-                                    "commentStart": 0,
-                                    "end": 0,
-                                    "moduleId": 0,
-                                    "name": "rightEdge",
-                                    "start": 0,
-                                    "type": "Identifier"
-                                  },
-                                  "path": [],
-                                  "start": 0,
-                                  "type": "Name",
-                                  "type": "Name"
-                                },
-                                "start": 0,
-                                "type": "MemberExpression",
-                                "type": "MemberExpression"
-                              }
-                            ],
-                            "end": 0,
-                            "moduleId": 0,
-                            "start": 0,
-                            "type": "ArrayExpression",
-                            "type": "ArrayExpression"
-                          }
-                        }
-                      ],
-                      "start": 0,
-                      "type": "ObjectExpression",
-                      "type": "ObjectExpression"
-                    },
-                    {
-                      "commentStart": 0,
-                      "end": 0,
-                      "moduleId": 0,
-                      "properties": [
-                        {
-                          "commentStart": 0,
-                          "end": 0,
-                          "key": {
-                            "commentStart": 0,
-                            "end": 0,
-                            "moduleId": 0,
-                            "name": "sideFaces",
-                            "start": 0,
-                            "type": "Identifier"
-                          },
-                          "moduleId": 0,
-                          "start": 0,
-                          "type": "ObjectProperty",
-                          "value": {
-                            "commentStart": 0,
-                            "elements": [
-                              {
-                                "commentStart": 0,
-                                "computed": false,
-                                "end": 0,
-                                "moduleId": 0,
-                                "object": {
-                                  "commentStart": 0,
-                                  "computed": false,
-                                  "end": 0,
-                                  "moduleId": 0,
-                                  "object": {
-                                    "abs_path": false,
-                                    "commentStart": 0,
-                                    "end": 0,
-                                    "moduleId": 0,
-                                    "name": {
-                                      "commentStart": 0,
-                                      "end": 0,
-                                      "moduleId": 0,
-                                      "name": "plateRegion",
-                                      "start": 0,
-                                      "type": "Identifier"
-                                    },
-                                    "path": [],
-                                    "start": 0,
-                                    "type": "Name",
-                                    "type": "Name"
+                                    "type": "MemberExpression",
+                                    "type": "MemberExpression"
                                   },
                                   "property": {
                                     "abs_path": false,
@@ -5560,22 +5408,49 @@ description: Result of parsing counterdrilled-weldment.kcl
                                   "end": 0,
                                   "moduleId": 0,
                                   "object": {
-                                    "abs_path": false,
                                     "commentStart": 0,
+                                    "computed": false,
                                     "end": 0,
                                     "moduleId": 0,
-                                    "name": {
+                                    "object": {
+                                      "abs_path": false,
                                       "commentStart": 0,
                                       "end": 0,
                                       "moduleId": 0,
-                                      "name": "plateRegion",
+                                      "name": {
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "moduleId": 0,
+                                        "name": "plateTopExtrude",
+                                        "start": 0,
+                                        "type": "Identifier"
+                                      },
+                                      "path": [],
                                       "start": 0,
-                                      "type": "Identifier"
+                                      "type": "Name",
+                                      "type": "Name"
                                     },
-                                    "path": [],
+                                    "property": {
+                                      "abs_path": false,
+                                      "commentStart": 0,
+                                      "end": 0,
+                                      "moduleId": 0,
+                                      "name": {
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "moduleId": 0,
+                                        "name": "sketch",
+                                        "start": 0,
+                                        "type": "Identifier"
+                                      },
+                                      "path": [],
+                                      "start": 0,
+                                      "type": "Name",
+                                      "type": "Name"
+                                    },
                                     "start": 0,
-                                    "type": "Name",
-                                    "type": "Name"
+                                    "type": "MemberExpression",
+                                    "type": "MemberExpression"
                                   },
                                   "property": {
                                     "abs_path": false,
@@ -5667,22 +5542,49 @@ description: Result of parsing counterdrilled-weldment.kcl
                                   "end": 0,
                                   "moduleId": 0,
                                   "object": {
-                                    "abs_path": false,
                                     "commentStart": 0,
+                                    "computed": false,
                                     "end": 0,
                                     "moduleId": 0,
-                                    "name": {
+                                    "object": {
+                                      "abs_path": false,
                                       "commentStart": 0,
                                       "end": 0,
                                       "moduleId": 0,
-                                      "name": "plateRegion",
+                                      "name": {
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "moduleId": 0,
+                                        "name": "plateTopExtrude",
+                                        "start": 0,
+                                        "type": "Identifier"
+                                      },
+                                      "path": [],
                                       "start": 0,
-                                      "type": "Identifier"
+                                      "type": "Name",
+                                      "type": "Name"
                                     },
-                                    "path": [],
+                                    "property": {
+                                      "abs_path": false,
+                                      "commentStart": 0,
+                                      "end": 0,
+                                      "moduleId": 0,
+                                      "name": {
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "moduleId": 0,
+                                        "name": "sketch",
+                                        "start": 0,
+                                        "type": "Identifier"
+                                      },
+                                      "path": [],
+                                      "start": 0,
+                                      "type": "Name",
+                                      "type": "Name"
+                                    },
                                     "start": 0,
-                                    "type": "Name",
-                                    "type": "Name"
+                                    "type": "MemberExpression",
+                                    "type": "MemberExpression"
                                   },
                                   "property": {
                                     "abs_path": false,
@@ -5715,7 +5617,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                                     "commentStart": 0,
                                     "end": 0,
                                     "moduleId": 0,
-                                    "name": "topEdge",
+                                    "name": "leftEdge",
                                     "start": 0,
                                     "type": "Identifier"
                                   },
@@ -5739,22 +5641,49 @@ description: Result of parsing counterdrilled-weldment.kcl
                                   "end": 0,
                                   "moduleId": 0,
                                   "object": {
-                                    "abs_path": false,
                                     "commentStart": 0,
+                                    "computed": false,
                                     "end": 0,
                                     "moduleId": 0,
-                                    "name": {
+                                    "object": {
+                                      "abs_path": false,
                                       "commentStart": 0,
                                       "end": 0,
                                       "moduleId": 0,
-                                      "name": "plateRegion",
+                                      "name": {
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "moduleId": 0,
+                                        "name": "plateTopExtrude",
+                                        "start": 0,
+                                        "type": "Identifier"
+                                      },
+                                      "path": [],
                                       "start": 0,
-                                      "type": "Identifier"
+                                      "type": "Name",
+                                      "type": "Name"
                                     },
-                                    "path": [],
+                                    "property": {
+                                      "abs_path": false,
+                                      "commentStart": 0,
+                                      "end": 0,
+                                      "moduleId": 0,
+                                      "name": {
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "moduleId": 0,
+                                        "name": "sketch",
+                                        "start": 0,
+                                        "type": "Identifier"
+                                      },
+                                      "path": [],
+                                      "start": 0,
+                                      "type": "Name",
+                                      "type": "Name"
+                                    },
                                     "start": 0,
-                                    "type": "Name",
-                                    "type": "Name"
+                                    "type": "MemberExpression",
+                                    "type": "MemberExpression"
                                   },
                                   "property": {
                                     "abs_path": false,
@@ -5846,6 +5775,51 @@ description: Result of parsing counterdrilled-weldment.kcl
                                   "end": 0,
                                   "moduleId": 0,
                                   "object": {
+                                    "commentStart": 0,
+                                    "computed": false,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "object": {
+                                      "abs_path": false,
+                                      "commentStart": 0,
+                                      "end": 0,
+                                      "moduleId": 0,
+                                      "name": {
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "moduleId": 0,
+                                        "name": "plateTopExtrude",
+                                        "start": 0,
+                                        "type": "Identifier"
+                                      },
+                                      "path": [],
+                                      "start": 0,
+                                      "type": "Name",
+                                      "type": "Name"
+                                    },
+                                    "property": {
+                                      "abs_path": false,
+                                      "commentStart": 0,
+                                      "end": 0,
+                                      "moduleId": 0,
+                                      "name": {
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "moduleId": 0,
+                                        "name": "sketch",
+                                        "start": 0,
+                                        "type": "Identifier"
+                                      },
+                                      "path": [],
+                                      "start": 0,
+                                      "type": "Name",
+                                      "type": "Name"
+                                    },
+                                    "start": 0,
+                                    "type": "MemberExpression",
+                                    "type": "MemberExpression"
+                                  },
+                                  "property": {
                                     "abs_path": false,
                                     "commentStart": 0,
                                     "end": 0,
@@ -5854,7 +5828,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                                       "commentStart": 0,
                                       "end": 0,
                                       "moduleId": 0,
-                                      "name": "plateRegion",
+                                      "name": "tags",
                                       "start": 0,
                                       "type": "Identifier"
                                     },
@@ -5862,6 +5836,87 @@ description: Result of parsing counterdrilled-weldment.kcl
                                     "start": 0,
                                     "type": "Name",
                                     "type": "Name"
+                                  },
+                                  "start": 0,
+                                  "type": "MemberExpression",
+                                  "type": "MemberExpression"
+                                },
+                                "property": {
+                                  "abs_path": false,
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "moduleId": 0,
+                                  "name": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "name": "rightEdge",
+                                    "start": 0,
+                                    "type": "Identifier"
+                                  },
+                                  "path": [],
+                                  "start": 0,
+                                  "type": "Name",
+                                  "type": "Name"
+                                },
+                                "start": 0,
+                                "type": "MemberExpression",
+                                "type": "MemberExpression"
+                              },
+                              {
+                                "commentStart": 0,
+                                "computed": false,
+                                "end": 0,
+                                "moduleId": 0,
+                                "object": {
+                                  "commentStart": 0,
+                                  "computed": false,
+                                  "end": 0,
+                                  "moduleId": 0,
+                                  "object": {
+                                    "commentStart": 0,
+                                    "computed": false,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "object": {
+                                      "abs_path": false,
+                                      "commentStart": 0,
+                                      "end": 0,
+                                      "moduleId": 0,
+                                      "name": {
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "moduleId": 0,
+                                        "name": "plateTopExtrude",
+                                        "start": 0,
+                                        "type": "Identifier"
+                                      },
+                                      "path": [],
+                                      "start": 0,
+                                      "type": "Name",
+                                      "type": "Name"
+                                    },
+                                    "property": {
+                                      "abs_path": false,
+                                      "commentStart": 0,
+                                      "end": 0,
+                                      "moduleId": 0,
+                                      "name": {
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "moduleId": 0,
+                                        "name": "sketch",
+                                        "start": 0,
+                                        "type": "Identifier"
+                                      },
+                                      "path": [],
+                                      "start": 0,
+                                      "type": "Name",
+                                      "type": "Name"
+                                    },
+                                    "start": 0,
+                                    "type": "MemberExpression",
+                                    "type": "MemberExpression"
                                   },
                                   "property": {
                                     "abs_path": false,
@@ -5906,7 +5961,42 @@ description: Result of parsing counterdrilled-weldment.kcl
                                 "start": 0,
                                 "type": "MemberExpression",
                                 "type": "MemberExpression"
-                              },
+                              }
+                            ],
+                            "end": 0,
+                            "moduleId": 0,
+                            "start": 0,
+                            "type": "ArrayExpression",
+                            "type": "ArrayExpression"
+                          }
+                        }
+                      ],
+                      "start": 0,
+                      "type": "ObjectExpression",
+                      "type": "ObjectExpression"
+                    },
+                    {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "properties": [
+                        {
+                          "commentStart": 0,
+                          "end": 0,
+                          "key": {
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "name": "sideFaces",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "moduleId": 0,
+                          "start": 0,
+                          "type": "ObjectProperty",
+                          "value": {
+                            "commentStart": 0,
+                            "elements": [
                               {
                                 "commentStart": 0,
                                 "computed": false,
@@ -5918,22 +6008,49 @@ description: Result of parsing counterdrilled-weldment.kcl
                                   "end": 0,
                                   "moduleId": 0,
                                   "object": {
-                                    "abs_path": false,
                                     "commentStart": 0,
+                                    "computed": false,
                                     "end": 0,
                                     "moduleId": 0,
-                                    "name": {
+                                    "object": {
+                                      "abs_path": false,
                                       "commentStart": 0,
                                       "end": 0,
                                       "moduleId": 0,
-                                      "name": "plateRegion",
+                                      "name": {
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "moduleId": 0,
+                                        "name": "plateTopExtrude",
+                                        "start": 0,
+                                        "type": "Identifier"
+                                      },
+                                      "path": [],
                                       "start": 0,
-                                      "type": "Identifier"
+                                      "type": "Name",
+                                      "type": "Name"
                                     },
-                                    "path": [],
+                                    "property": {
+                                      "abs_path": false,
+                                      "commentStart": 0,
+                                      "end": 0,
+                                      "moduleId": 0,
+                                      "name": {
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "moduleId": 0,
+                                        "name": "sketch",
+                                        "start": 0,
+                                        "type": "Identifier"
+                                      },
+                                      "path": [],
+                                      "start": 0,
+                                      "type": "Name",
+                                      "type": "Name"
+                                    },
                                     "start": 0,
-                                    "type": "Name",
-                                    "type": "Name"
+                                    "type": "MemberExpression",
+                                    "type": "MemberExpression"
                                   },
                                   "property": {
                                     "abs_path": false,
@@ -5967,6 +6084,105 @@ description: Result of parsing counterdrilled-weldment.kcl
                                     "end": 0,
                                     "moduleId": 0,
                                     "name": "leftEdge",
+                                    "start": 0,
+                                    "type": "Identifier"
+                                  },
+                                  "path": [],
+                                  "start": 0,
+                                  "type": "Name",
+                                  "type": "Name"
+                                },
+                                "start": 0,
+                                "type": "MemberExpression",
+                                "type": "MemberExpression"
+                              },
+                              {
+                                "commentStart": 0,
+                                "computed": false,
+                                "end": 0,
+                                "moduleId": 0,
+                                "object": {
+                                  "commentStart": 0,
+                                  "computed": false,
+                                  "end": 0,
+                                  "moduleId": 0,
+                                  "object": {
+                                    "commentStart": 0,
+                                    "computed": false,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "object": {
+                                      "abs_path": false,
+                                      "commentStart": 0,
+                                      "end": 0,
+                                      "moduleId": 0,
+                                      "name": {
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "moduleId": 0,
+                                        "name": "plateTopExtrude",
+                                        "start": 0,
+                                        "type": "Identifier"
+                                      },
+                                      "path": [],
+                                      "start": 0,
+                                      "type": "Name",
+                                      "type": "Name"
+                                    },
+                                    "property": {
+                                      "abs_path": false,
+                                      "commentStart": 0,
+                                      "end": 0,
+                                      "moduleId": 0,
+                                      "name": {
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "moduleId": 0,
+                                        "name": "sketch",
+                                        "start": 0,
+                                        "type": "Identifier"
+                                      },
+                                      "path": [],
+                                      "start": 0,
+                                      "type": "Name",
+                                      "type": "Name"
+                                    },
+                                    "start": 0,
+                                    "type": "MemberExpression",
+                                    "type": "MemberExpression"
+                                  },
+                                  "property": {
+                                    "abs_path": false,
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "name": {
+                                      "commentStart": 0,
+                                      "end": 0,
+                                      "moduleId": 0,
+                                      "name": "tags",
+                                      "start": 0,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
+                                    "start": 0,
+                                    "type": "Name",
+                                    "type": "Name"
+                                  },
+                                  "start": 0,
+                                  "type": "MemberExpression",
+                                  "type": "MemberExpression"
+                                },
+                                "property": {
+                                  "abs_path": false,
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "moduleId": 0,
+                                  "name": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "name": "topEdge",
                                     "start": 0,
                                     "type": "Identifier"
                                   },

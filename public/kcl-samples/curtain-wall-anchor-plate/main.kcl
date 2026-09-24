@@ -3,7 +3,7 @@
 // Categories: Architecture & Construction; Mechanical Components
 
 // Set units in millimeters (mm)
-@settings(defaultLengthUnit = mm)
+@settings(defaultLengthUnit = mm, kclVersion = 2.0)
 
 // Define parameters
 slabPlateBaseLength = 300
@@ -76,7 +76,7 @@ insideBendFillRegion = fillet(
   edges = [
     {
       sideFaces = [
-        anchorPlateRegion.tags.line5,
+        anchorPlateRegion.tags.line3,
         anchorPlateRegion.tags.line4
       ]
     }
@@ -84,13 +84,13 @@ insideBendFillRegion = fillet(
 )
 
 anchorPlateOutsideFillet = fillet(
-  anchorPlateBody,
+  insideBendFillRegion,
   radius = outsideBendRadius,
   edges = [
     {
       sideFaces = [
-        anchorPlateRegion.tags.line1,
-        anchorPlateRegion.tags.line2
+        anchorPlateRegion.tags.line6,
+        anchorPlateRegion.tags.line1
       ]
     }
   ],

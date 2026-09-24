@@ -43,7 +43,7 @@ gdt::distance(
   fontSize = 9.3333mm,
   edges = [
     {
-      sideFaces = [region001.tags.line3, capEnd001]
+      sideFaces = [capEnd001, region001.tags.line3]
     }
   ],
 )
