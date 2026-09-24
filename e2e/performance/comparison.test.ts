@@ -298,7 +298,7 @@ describe('paired interaction comparison', () => {
     }
   )
 
-  it('keeps missing Event Timing unavailable without dropping pair slots or treating it as fast', () => {
+  it('makes missing Event Timing inconclusive without dropping pair slots or treating it as slow', () => {
     const input = sessions(({ session, cycle, sample }) =>
       session.block === 4 &&
       session.variant === 'base' &&
@@ -309,7 +309,7 @@ describe('paired interaction comparison', () => {
         : sample
     )
     const result = compareInteractions(input)
-    expect(result.status).toBe('no-regression')
+    expect(result.status).toBe('inconclusive')
     expect(result.unavailablePresentationStrata).toBe(2)
     expect(result.collectionErrors).toEqual([])
     const unavailable = result.strata.filter(

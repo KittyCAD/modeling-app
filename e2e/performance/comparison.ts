@@ -351,14 +351,11 @@ export function compareInteractions(
       ? 'invalid'
       : failures.length
         ? 'regressed'
-        : strata.some(
-              (stratum) =>
-                stratum.metric === 'outcome' && stratum.status === 'unavailable'
-            )
+        : strata.some((stratum) => stratum.status === 'unavailable')
           ? 'inconclusive'
           : 'no-regression',
-    // Optional Event Timing has no completion acknowledgment. Its missing values
-    // remain unknown, while the complete outcome comparisons still own the gate.
+    // Event Timing has no completion acknowledgment. Missing values are unknown,
+    // so incomplete coverage cannot establish a passing comparison.
     unavailablePresentationStrata: strata.filter(
       (stratum) =>
         stratum.metric === 'event-timing' && stratum.status === 'unavailable'

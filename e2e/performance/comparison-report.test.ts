@@ -162,7 +162,7 @@ describe('serialized comparison report consumer', () => {
       measurement(snapshot, 'comparison.home', COMPARISON_PLAN[0]),
     ]
     const result = reportComparisonRun(input)
-    expect(result.status).toBe('no-regression')
+    expect(result.status).toBe('inconclusive')
     expect(result.unavailablePresentationStrata).toBe(1)
     expect(
       result.strata.filter((row) => row.status === 'unavailable')
@@ -273,7 +273,7 @@ describe('serialized comparison report consumer', () => {
   })
 })
 
-async function runReporter(candidateDelay: number, args: string[]) {
+async function runReporter(input: ComparisonAttempt[], args: string[]) {
   const directory = await mkdtemp(join(tmpdir(), 'interaction-comparison-'))
   try {
     const configPath = join(directory, 'playwright.config.cjs')
@@ -294,7 +294,6 @@ async function runReporter(candidateDelay: number, args: string[]) {
         })),
       })}`
     )
-    const input = attempts(candidateDelay)
     for (const project of projects) {
       // Exercise real Playwright attachments and final reporter exit status.
       // No browser or network is needed for this serialized consumer contract.
@@ -365,7 +364,7 @@ describe('Playwright comparison reporter', () => {
   ])(
     'returns $expected after all passing collection tests',
     async ({ delay, expected, exitCode }) => {
-      const result = await runReporter(delay, [])
+      const result = await runReporter(attempts(delay), [])
       expect(result.exitCode, result.output).toBe(exitCode)
       expect(result.report).toMatchObject({
         status: expected,
@@ -376,8 +375,25 @@ describe('Playwright comparison reporter', () => {
     35_000
   )
 
+  it('fails inconclusive presentation coverage even when all collection tests pass', async () => {
+    const input = attempts()
+    const snapshot = capture(COMPARISON_PLAN[0])
+    snapshot.samples[0].eventTiming = null
+    input[0].measurements = [
+      measurement(snapshot, 'comparison.home', COMPARISON_PLAN[0]),
+    ]
+    const result = await runReporter(input, [])
+    expect(result.exitCode, result.output).toBe(1)
+    expect(result.report).toMatchObject({
+      status: 'inconclusive',
+      unavailablePresentationStrata: 1,
+      collectionErrors: [],
+      attempts: Array.from({ length: 50 }, () => ({ status: 'passed' })),
+    })
+  }, 35_000)
+
   it('rejects an empty executed selection even when Playwright allows no tests', async () => {
-    const result = await runReporter(0, [
+    const result = await runReporter(attempts(), [
       '--grep',
       'no-matching-scenario',
       '--pass-with-no-tests',
@@ -387,7 +403,7 @@ describe('Playwright comparison reporter', () => {
   })
 
   it('allows discovery without publishing a passing measurement', async () => {
-    const result = await runReporter(0, ['--list'])
+    const result = await runReporter(attempts(), ['--list'])
     expect(result.exitCode, result.output).toBe(0)
     expect(result.report).toBeNull()
   })

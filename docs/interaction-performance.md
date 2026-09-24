@@ -30,8 +30,10 @@ checked by `zds/interaction-expectations`.
   presentation delay, including preceding pointer handlers. Durations are rounded
   to 8 ms. Filtered or late entries stay unreported, never zero. A one-second final
   observation window adds no inputs or measured delay, and is not a delivery
-  guarantee. Only fully observed presentation strata receive a comparison verdict;
-  incomplete strata remain explicitly unavailable. Every outcome stratum is required.
+  guarantee. Only fully observed presentation strata receive a comparison verdict.
+  Every outcome and presentation stratum is required for a passing gate; incomplete
+  coverage remains unavailable and makes the result inconclusive unless another
+  stratum already demonstrates a regression. Both results fail the check.
 
 Normal release builds exclude the recorder, completion checks, and measurement
 API. Optimized test builds opt in with `VITE_INTERACTION_PERFORMANCE=1`; even then
@@ -57,6 +59,12 @@ increases in both execution-order groups. Apply it to every outcome stratum and
 fully observed Event Timing stratum. This is an engineering rule requiring native
 A/A and injected-delay calibration, not a statistical guarantee for all changes.
 Smaller or rare slowdowns outside the sampled workload can escape detection.
+Missing Event Timing cannot remove a comparison and turn a regression green.
+The [Event Timing API](https://www.w3.org/TR/2026/WD-event-timing-20260223/)
+filters events below its minimum 16 ms threshold and has no per-input delivery
+acknowledgment. A legitimately fast or unreported event can therefore make this
+gate inconclusive. Diagnose that measurement gap; do not label it a regression,
+substitute zero, or retry it away.
 
 Missing sessions, outcomes, duplicates, unexpected inputs, invalid records,
 visibility interruptions, retries, repeats, skipped probes, changed order, and
