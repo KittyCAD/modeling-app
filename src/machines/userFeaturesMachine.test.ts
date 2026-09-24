@@ -1,4 +1,4 @@
-import type { UserFeature } from '@src/lib/userFeatures'
+import type { Feature } from '@kittycad/lib'
 import type * as ClientErrorsModule from '@src/lib/clientErrors'
 import {
   USER_FEATURES_POLL_INTERVAL_MS,
@@ -33,18 +33,18 @@ type TestFetchUserFeaturesInput = {
   token: string
 }
 
-type TestFetchUserFeaturesResult = { featureIds: Set<UserFeature> } | Error
+type TestFetchUserFeaturesResult = { featureIds: Set<Feature> } | Error
 
 describe('userFeaturesMachine', () => {
   beforeEach(() => {
     mockState.reportClientError.mockClear()
   })
 
-  it.each<UserFeature>(['sketch_experimental_features', 'dfm_review'])(
+  it.each<Feature>(['sketch_experimental_features', 'dfm_review'])(
     'loads the %s feature once for a token and answers membership from context',
     async (feature) => {
       const fetchFeatures = vi.fn(async () => ({
-        featureIds: new Set<UserFeature>([feature]),
+        featureIds: new Set<Feature>([feature]),
       }))
       const actor = createActor(
         userFeaturesMachine.provide({
@@ -82,7 +82,7 @@ describe('userFeaturesMachine', () => {
             TestFetchUserFeaturesResult,
             TestFetchUserFeaturesInput
           >(async () => ({
-            featureIds: new Set<UserFeature>(['sketch_experimental_features']),
+            featureIds: new Set<Feature>(['sketch_experimental_features']),
           })),
         },
       })
@@ -116,9 +116,7 @@ describe('userFeaturesMachine', () => {
             }
 
             return {
-              featureIds: new Set<UserFeature>([
-                'sketch_experimental_features',
-              ]),
+              featureIds: new Set<Feature>(['sketch_experimental_features']),
             }
           }),
         },
@@ -167,9 +165,9 @@ describe('userFeaturesMachine', () => {
     vi.useFakeTimers()
     const fetchFeatures = vi
       .fn()
-      .mockResolvedValueOnce({ featureIds: new Set<UserFeature>() })
+      .mockResolvedValueOnce({ featureIds: new Set<Feature>() })
       .mockResolvedValueOnce({
-        featureIds: new Set<UserFeature>(['sketch_experimental_features']),
+        featureIds: new Set<Feature>(['sketch_experimental_features']),
       })
     const actor = createActor(
       userFeaturesMachine.provide({
@@ -228,7 +226,7 @@ describe('userFeaturesMachine', () => {
       .fn()
       .mockResolvedValueOnce(new Error('feature service unavailable'))
       .mockResolvedValueOnce({
-        featureIds: new Set<UserFeature>(['sketch_experimental_features']),
+        featureIds: new Set<Feature>(['sketch_experimental_features']),
       })
     const actor = createActor(
       userFeaturesMachine.provide({

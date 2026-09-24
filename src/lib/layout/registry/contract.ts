@@ -1,4 +1,4 @@
-import type { UserFeature } from '@src/lib/userFeatures'
+import type { Feature } from '@kittycad/lib'
 import {
   defineContract,
   defineService,
@@ -21,7 +21,7 @@ import type {
  */
 export type UserFeatureLayoutTransformation = {
   id: string
-  feature: UserFeature
+  feature: Feature
   defaultValue?: boolean
   transform: (layout: Layout, enabled: boolean) => Layout
 }

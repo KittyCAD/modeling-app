@@ -1,4 +1,4 @@
-import type { UserFeature } from '@src/lib/userFeatures'
+import type { Feature } from '@kittycad/lib'
 import {
   defineRegistryItem,
   pluginsValueSpec,
@@ -363,7 +363,7 @@ function createSettingsService({
 }
 
 function createUserFeaturesService(
-  featureIds: Set<UserFeature> = new Set([OPFS_CLOUD_FEATURE_FLAG])
+  featureIds: Set<Feature> = new Set([OPFS_CLOUD_FEATURE_FLAG])
 ): UserFeaturesRegistryService {
   const context = signal({
     featureIds,
@@ -373,10 +373,10 @@ function createUserFeaturesService(
     context,
     contextSignal: context,
     ready: signal(true),
-    has: (featureFlagId: UserFeature, defaultValue: boolean) =>
+    has: (featureFlagId: Feature, defaultValue: boolean) =>
       context.value.featureIds.has(featureFlagId) ? true : defaultValue,
     useContext: () => context.value,
-    useHas: (featureFlagId: UserFeature, defaultValue: boolean) =>
+    useHas: (featureFlagId: Feature, defaultValue: boolean) =>
       context.value.featureIds.has(featureFlagId) ? true : defaultValue,
   } as unknown as UserFeaturesRegistryService
 }

@@ -1,7 +1,6 @@
-import type { UserFeature } from '@src/lib/userFeatures'
 import path from 'path'
 import * as TOML from '@iarna/toml'
-import type { OutputFormat3d } from '@kittycad/lib'
+import type { Feature, OutputFormat3d } from '@kittycad/lib'
 import type {
   BrowserContext,
   Locator,
@@ -1013,7 +1012,7 @@ export async function setup(
   context: BrowserContext,
   page: Page,
   testInfo?: TestInfo,
-  userFeatures: readonly UserFeature[] = [],
+  userFeatures: readonly Feature[] = [],
   { cloudSyncEnabled = false }: { cloudSyncEnabled?: boolean } = {}
 ) {
   const testProjectSettings =

@@ -1,4 +1,4 @@
-import type { UserFeature } from '@src/lib/userFeatures'
+import type { Feature } from '@kittycad/lib'
 import {
   appendValueSpec,
   createPlugin,
@@ -21,7 +21,7 @@ export type ZdsPluginFeatureActivationPolicy = {
   /**
    * Feature flag that controls whether this plugin may become active.
    */
-  feature: UserFeature
+  feature: Feature
   /**
    * When true, feature-flagged users get the plugin enabled by default. Existing
    * user preferences are preserved unless `forceEnabledOnPlatform` matches.
@@ -69,7 +69,7 @@ type ZdsPluginActivationSettingSpec = {
    * command bar, and plugins list through the same settings config rather than
    * a bespoke check per surface.
    */
-  hideWithoutFeature?: UserFeature
+  hideWithoutFeature?: Feature
   featurePolicy?: ZdsPluginFeatureActivationPolicy
   userToml?: { sectionKey: string; tomlKey: string }
   projectToml?: { sectionKey: string; tomlKey: string }
