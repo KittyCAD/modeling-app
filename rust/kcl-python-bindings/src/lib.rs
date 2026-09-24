@@ -219,6 +219,9 @@ fn into_kcl_exception(error: kcl_lib::KclError) -> PyErr {
 // Keep the stub for this exception manual in `kcl.pyi`. `pyo3_stub_gen`
 // generates code for this `PyException` subclass that does not compile on
 // PyPy, because it references `pyo3::prepare_freethreaded_python`.
+/// A rich KCL error that does more than just error reporting:
+/// it also lets you get data about the failed execution, like sketch reports,
+/// whether or not to retry, etc.
 #[pyclass(name = "KclError", extends = PyException, from_py_object)]
 #[derive(Debug, Clone)]
 struct PyKclError {
