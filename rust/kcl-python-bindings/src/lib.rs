@@ -92,6 +92,7 @@ fn into_miette(error: kcl_lib::KclErrorWithOutputs, filename: &str, code: &str) 
             PyKclError {
                 retryable,
                 sketch_constraint_report: Some(constraint_report),
+                partial_execution: Some(error),
             },
         )?;
         // We must set the exception's arguments here, because constructing it directly
@@ -225,17 +226,34 @@ struct PyKclError {
     retryable: bool,
     #[pyo3(get)]
     sketch_constraint_report: Option<SketchConstraintReport>,
+    partial_execution: Option<kcl_lib::KclErrorWithOutputs>,
 }
 
 #[pymethods]
 impl PyKclError {
+    // TODO: Do we even want this constructor? We surely want users
+    // to pass in the sketch constraint report and partial execution result.
     #[new]
     #[pyo3(signature = (_message, retryable = false))]
     fn new(_message: &Bound<'_, PyAny>, retryable: bool) -> Self {
         Self {
             retryable,
             sketch_constraint_report: None,
+            partial_execution: None,
         }
+    }
+
+    /// Render a sketch created before execution failed as a PNG.
+    /// Use instance_index from the partial constraint report for duplicate names.
+    #[pyo3(signature = (sketch_name, *, instance_index=None))]
+    fn render_sketch_png(&self, sketch_name: &str, instance_index: Option<usize>) -> PyResult<Vec<u8>> {
+        let partial_execution = self
+            .partial_execution
+            .as_ref()
+            .ok_or_else(|| PyException::new_err("No partial execution is available for sketch rendering"))?;
+        partial_execution
+            .render_sketch_png_instance(sketch_name, instance_index)
+            .map_err(to_py_exception)
     }
 
     fn is_retryable(&self) -> bool {

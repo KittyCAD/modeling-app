@@ -1258,5 +1258,6 @@ async def test_primary_execution_error_carries_partial_constraint_report():
     assert raised.value.is_retryable() is False
     assert str(raised.value) == str(kcl.KclError(report.kcl_error.text, False))
 
-    # TODO: Validate that the exception still gives you a sketch debug visualization.
-    pass
+    # Validate that the exception still gives you a sketch debug visualization.
+    png = bytes(raised.value.render_sketch_png("s1"))
+    assert png.startswith(b"\x89PNG\r\n\x1a\n")
