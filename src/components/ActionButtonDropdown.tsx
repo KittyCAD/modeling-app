@@ -47,7 +47,7 @@ export function ActionButtonDropdown({
           <Popover.Button
             ref={buttonRef}
             className={
-              '!border-transparent dark:!border-transparent ' +
+              '!border-transparent dark:!border-transparent ui-open:!pointer-events-auto ' +
               'bg-chalkboard-transparent dark:bg-transparent disabled:bg-transparent dark:disabled:bg-transparent ' +
               'enabled:hover:bg-chalkboard-10 dark:enabled:hover:bg-chalkboard-100 ' +
               'pressed:!bg-primary pressed:enabled:hover:!text-chalkboard-10 p-0 m-0 rounded-none !outline-none ui-open:border-primary ui-open:bg-primary'

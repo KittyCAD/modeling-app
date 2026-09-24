@@ -1,5 +1,10 @@
 import env from '@src/env'
 import {
+  CloudSyncError,
+  withCloudSyncFailureContext,
+  withCloudSyncFailureContextSync,
+} from '@src/lib/cloudSync/failureContext'
+import {
   getMimeType,
   prepareProjectFilesForCloudUpload,
   toArrayBuffer,
@@ -16,7 +21,8 @@ import type {
 import { fetchWithSessionExpiration } from '@src/lib/sessionExpired'
 import { isArray } from '@src/lib/utils'
 
-export class CloudApiError extends Error {
+/** HTTP failure returned by the cloud API request boundary. */
+export class CloudApiError extends CloudSyncError {
   status: number
   retryAfterMs?: number
 
@@ -25,7 +31,8 @@ export class CloudApiError extends Error {
     message: string,
     options: { retryAfterMs?: number } = {}
   ) {
-    super(message)
+    super({ stage: 'network', point: 'cloud-api-request' }, message)
+    this.name = 'CloudApiError'
     this.status = status
     this.retryAfterMs = options.retryAfterMs
   }
@@ -56,7 +63,7 @@ function getBaseUrl(config: CloudSyncConfig) {
   )
 }
 
-async function cloudFetch(
+async function cloudFetchUncategorized(
   config: CloudSyncConfig,
   targetPath: string,
   init: RequestInit = {}
@@ -101,13 +108,29 @@ async function cloudFetch(
   return response
 }
 
+function cloudFetch(
+  config: CloudSyncConfig,
+  targetPath: string,
+  init: RequestInit = {}
+) {
+  return withCloudSyncFailureContext(
+    { stage: 'network', point: 'cloud-api-request' },
+    () => cloudFetchUncategorized(config, targetPath, init)
+  )
+}
+
 async function cloudJson<T>(
   config: CloudSyncConfig,
   targetPath: string,
   init: RequestInit = {}
 ): Promise<T> {
-  const response = await cloudFetch(config, targetPath, init)
-  return response.json() as Promise<T>
+  return withCloudSyncFailureContext(
+    { stage: 'network', point: 'parse-cloud-api-response' },
+    async () => {
+      const response = await cloudFetch(config, targetPath, init)
+      return response.json() as Promise<T>
+    }
+  )
 }
 
 function appendExpectedRevisionParam(pathname: string, revision?: Revision) {
@@ -427,7 +450,7 @@ type BuildProjectFormDataOptions = {
   deletedPaths?: string[]
 }
 
-function buildProjectFormData(
+function buildProjectFormDataUncategorized(
   projectPath: string,
   files: ProjectArchiveFile[],
   options?: Revision | BuildProjectFormDataOptions
@@ -460,6 +483,17 @@ function buildProjectFormData(
   }
 
   return formData
+}
+
+function buildProjectFormData(
+  projectPath: string,
+  files: ProjectArchiveFile[],
+  options?: Revision | BuildProjectFormDataOptions
+) {
+  return withCloudSyncFailureContextSync(
+    { stage: 'archive', point: 'prepare-project-upload' },
+    () => buildProjectFormDataUncategorized(projectPath, files, options)
+  )
 }
 
 function getProjectUploadPublicationMetadata(

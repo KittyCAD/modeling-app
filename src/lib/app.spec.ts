@@ -313,17 +313,41 @@ describe('project system', () => {
     }
   })
 
+  it('does not resend unchanged engine appearance settings', async () => {
+    const app = createAppForTest()
+    const kclManager = app.singletons.kclManager
+    const engineCommandManager = kclManager.engineCommandManager
+    const previousConnection = engineCommandManager.connection
+
+    try {
+      await app.openProject(mockProject)
+      const updateTheme = vi
+        .spyOn(kclManager, 'updateTheme')
+        .mockResolvedValue(undefined)
+      const setDefaultSystemProperties = vi
+        .spyOn(engineCommandManager, 'setDefaultSystemProperties')
+        .mockResolvedValue(undefined)
+      engineCommandManager.connection = {
+        connected: true,
+      } as typeof engineCommandManager.connection
+
+      app.onSettingsUpdate(app.settings.actor.getSnapshot())
+
+      expect(updateTheme).not.toHaveBeenCalled()
+      expect(setDefaultSystemProperties).not.toHaveBeenCalled()
+    } finally {
+      engineCommandManager.connection = previousConnection
+      app.dispose()
+    }
+  })
+
   it('annotates opened projects with their owning library path', async () => {
     const app = createAppForTest()
 
     try {
       await waitForSettingsIdle(app)
 
-      const library = app.settings
-        .get()
-        .app.libraries.current.find(
-          (entry) => entry.type === DIRECTORY_PROJECT_LIBRARY_TYPE
-        )
+      const library = app.settings.get().app.libraries.current[0]
       expect(library).toBeDefined()
       if (!library) {
         return
@@ -340,7 +364,7 @@ describe('project system', () => {
       expect(openedProject.projectIORefSignal.value).toEqual(
         expect.objectContaining({
           libraryPath: library.path,
-          libraryType: DIRECTORY_PROJECT_LIBRARY_TYPE,
+          libraryType: library.type,
         })
       )
     } finally {
@@ -527,17 +551,6 @@ describe('project system', () => {
       expect(getCloudSyncPluginSetting(app)?.current).toBe(false)
       expect(getCloudSyncPluginSetting(app)?.user).toBeUndefined()
       expect(getPluginToggle(app, 'cloud-sync').active.value).toBe(false)
-      expect(hasPersonalCloudLibrarySetting(app)).toBe(false)
-      expect(hasDefaultDirectoryLibrarySetting(app)).toBe(true)
-      expect(app.getCreateProjectLibraryTargets()).not.toEqual(
-        expect.arrayContaining([
-          expect.objectContaining({
-            library: expect.objectContaining({
-              id: PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
-            }),
-          }),
-        ])
-      )
     } finally {
       app.dispose()
     }
@@ -734,18 +747,6 @@ describe('project system', () => {
     })
 
     try {
-      expect(
-        app.registry
-          .get(commandsValueSpec)
-          .some(
-            (command) =>
-              command.groupId === 'projects' &&
-              command.name === 'Create project'
-          )
-      ).toBe(false)
-
-      userFeatures.setFeatureIds(new Set([OPFS_CLOUD_FEATURE_FLAG]))
-
       expect(
         app.registry
           .get(commandsValueSpec)

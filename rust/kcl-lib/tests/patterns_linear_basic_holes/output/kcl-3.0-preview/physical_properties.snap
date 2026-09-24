@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties patterns_linear_basic_holes.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": 25.0,
+      "y": 25.0,
+      "z": 5.0
+    },
+    "dimensions": {
+      "x": 50.0,
+      "y": 50.0,
+      "z": 10.0
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 7734.345307682133
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 24.59421325342956
+  }
+}

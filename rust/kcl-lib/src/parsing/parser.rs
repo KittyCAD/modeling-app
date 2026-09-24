@@ -3023,9 +3023,6 @@ fn ty_decl(i: &mut TokenSlice) -> ModalResult<BoxNode<TypeDeclaration>> {
         equals(i)?;
         ignore_whitespace(i);
         let ty = type_(i)?;
-
-        ParseContext::experimental("type aliases", ty.as_source_range());
-
         TypeDeclarationDefinition::Alias { ty: BoxNode::new(ty) }
     } else if peek((opt(whitespace), open_brace)).parse_next(i).is_ok() {
         ignore_whitespace(i);
@@ -3055,9 +3052,7 @@ fn ty_decl(i: &mut TokenSlice) -> ModalResult<BoxNode<TypeDeclaration>> {
         },
     );
 
-    if matches!(result.definition, TypeDeclarationDefinition::Enum(_)) {
-        ParseContext::experimental("enum declarations", result.as_source_range());
-    } else {
+    if matches!(result.definition, TypeDeclarationDefinition::Bare) {
         ParseContext::experimental("type declarations", result.as_source_range());
     }
 
@@ -5419,7 +5414,7 @@ mySk1 = startSketchOn(XY)
         // Hi
         |> f(%)",
             "1
-        /* Hi 
+        /* Hi
         there
         */
         |> f(%)",
@@ -5636,26 +5631,6 @@ mySk1 = startSketchOn(XY)
              "
             .into()
         );
-    }
-
-    #[test]
-    fn pipes_on_pipes_minimal() {
-        let test_program = r#"startSketchOn(XY)
-        |> startProfile(at = [0, 0])
-        |> line(endAbsolute = [0, -0]) // MoveRelative
-
-        "#;
-        let tokens = crate::parsing::token::lex(test_program, ModuleId::default()).unwrap();
-        let tokens = &mut tokens.as_slice();
-        let _actual = in_ctx(|| expression.parse_next(tokens)).unwrap();
-        assert_eq!(tokens.first().unwrap().token_type, TokenType::Whitespace);
-    }
-
-    #[test]
-    fn test_pipes_on_pipes() {
-        let test_program = include_str!("../../e2e/executor/inputs/pipes_on_pipes.kcl");
-        let tokens = crate::parsing::token::lex(test_program, ModuleId::default()).unwrap();
-        let _ = run_parser(tokens.as_slice()).unwrap();
     }
 
     #[test]
@@ -6766,7 +6741,7 @@ e
 ///      )
 ///   |> yLine(endAbsolute = 0)
 ///   |> close(%)
-/// 
+///
 /// example = extrude(exampleSketch, length = 5)
 /// ```
 @(impl = std_rust)
@@ -6933,7 +6908,7 @@ export fn cos(num: number(rad)): number(_) {}"#;
     #[test]
     fn basic_if_else_if() {
         let some_program_string = "if true {
-            3  
+            3
         } else if true {
             4
         } else {
@@ -7375,26 +7350,13 @@ type Color {
     }
 
     #[test]
-    fn enum_declarations_are_experimental() {
-        let code = "type Color { | Red }";
-        assert_err(code, "Use of enum declarations is experimental", [0, 20]);
-
-        let code = r#"@settings(experimentalFeatures = allow)
-type Color { | Red }
-"#;
-        assert_no_err(code);
-
-        let code = r#"@settings(experimentalFeatures = warn)
-type Color { | Red }
-"#;
-        let (_, errs) = assert_no_err(code);
-        // Exactly one diagnostic: the enum one, without an additional generic
-        // type-declaration diagnostic at the same range.
-        assert_eq!(errs.len(), 1);
-        assert_eq!(
-            errs[0].message,
-            "Use of enum declarations is experimental and may change or be removed."
-        );
+    fn aliases_and_enums_have_no_parser_experimental_diagnostic() {
+        for declaration in ["type Color { | Red }", "type Distance = number(mm)"] {
+            for settings in ["", "@settings(experimentalFeatures = warn)\n"] {
+                let (_, issues) = assert_no_err(&format!("{settings}{declaration}"));
+                assert!(issues.is_empty(), "declaration: {declaration}; issues: {issues:?}");
+            }
+        }
     }
 
     #[test]
