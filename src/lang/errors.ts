@@ -34,13 +34,13 @@ export class KCLError extends Error {
     kind: ExtractKind<RustKclError> | 'name',
     msg: string,
     sourceRange: SourceRange,
-    kclBacktrace: BacktraceItem[],
-    nonFatal: CompilationIssue[],
-    variables: VariableMap,
-    operations: OperationsByModule,
-    artifactGraph: ArtifactGraph,
-    filenames: { [x: number]: ModulePath | undefined },
-    defaultPlanes: DefaultPlanes | null
+    kclBacktrace: BacktraceItem[] = [],
+    nonFatal: CompilationIssue[] = [],
+    variables: VariableMap = {},
+    operations: OperationsByModule = { map: {} },
+    artifactGraph: ArtifactGraph = new Map(),
+    filenames: { [x: number]: ModulePath | undefined } = {},
+    defaultPlanes: DefaultPlanes | null = null
   ) {
     super(`${kind}: ${msg}`)
     this.kind = kind

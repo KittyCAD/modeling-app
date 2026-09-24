@@ -2555,6 +2555,12 @@ export class KclManager extends File {
     return getKclLanguageVersion(this.code, instance)
   }
 
+  private async syncEngineKclVersion(code: string | Node<Program>) {
+    const version = getKclLanguageVersion(code, await this.wasmInstancePromise)
+    if (isErr(version)) return Promise.reject(version)
+    await this.engineCommandManager.setKclVersion(version)
+  }
+
   // This NEVER updates the code, if you want to update the code DO NOT add to
   // this function, too many other things that don't want it exist. For that,
   // use updateModelingState().
@@ -2591,12 +2597,7 @@ export class KclManager extends File {
     const pathThatExecuted = this.path
     let executionResult: Awaited<ReturnType<typeof executeAst>>
     try {
-      const version = getKclLanguageVersion(ast, await this.wasmInstancePromise)
-      if (isErr(version)) {
-        await Promise.reject(version)
-      } else {
-        await this.engineCommandManager.setKclVersion(version)
-      }
+      await this.syncEngineKclVersion(ast)
       if (
         this.executeIsStale ||
         this._cancelTokens.get(currentExecutionId) ||
@@ -2618,14 +2619,7 @@ export class KclManager extends File {
             cause,
             'Failed to set the engine KCL version'
           ),
-          [ast.start, ast.end, ast.moduleId],
-          [],
-          [],
-          {},
-          emptyOperationsByModule(),
-          new Map(),
-          {},
-          null
+          [ast.start, ast.end, ast.moduleId]
         )
       )
     }
@@ -3729,7 +3723,6 @@ export class KclManager extends File {
       requestId === this.lastSketchCheckpointRestoreRequestId &&
       requestedDocumentVersion === this._documentVersion
     try {
-      const instance = await this.wasmInstancePromise
       await this.waitForExecutionQueueToIdle()
       if (!isCurrentRestore()) return
       const result =
@@ -3737,12 +3730,7 @@ export class KclManager extends File {
       if (!isCurrentRestore()) return
 
       // Checkpoint restores bypass executeAst, including its version update.
-      const version = getKclLanguageVersion(result.kclSource.text, instance)
-      if (isErr(version)) {
-        await Promise.reject(version)
-      } else {
-        await this.engineCommandManager.setKclVersion(version)
-      }
+      await this.syncEngineKclVersion(result.kclSource.text)
       if (!isCurrentRestore()) return
 
       this.sendModelingEvent({
