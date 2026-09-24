@@ -6,6 +6,7 @@ import { cloudSyncService } from '@src/lib/cloudSync/registry/contract'
 import fsZds from '@src/lib/fs-zds'
 import { replaceMigrationFiles } from '@src/lib/kclMigration/apply'
 import { isErr, reportRejection } from '@src/lib/trap'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { MigrationProject } from '@src/lib/kclMigration/controller'
 import {
   equalFiles,
@@ -13,6 +14,11 @@ import {
   withEditorBuffers,
   type ProjectFiles,
 } from '@src/lib/kclMigration/snapshot'
+
+export function isKcl2MigrationSource(source: string, wasm: ModuleType) {
+  const settings = kclSettings(source, wasm)
+  return !isErr(settings) && settings?.kclVersion === '2.0'
+}
 
 /** Bind snapshots and writes to the same project object, including after navigation. */
 export function migrationProject(
@@ -80,11 +86,12 @@ export function migrationProject(
       if (!editor)
         return Promise.reject(new Error('Open a KCL file before migrating.'))
       const wasm = await editor.wasmInstancePromise
-      const settings = kclSettings(
-        new TextDecoder('utf-8', { fatal: true }).decode(source),
-        wasm
-      )
-      if (isErr(settings) || settings?.kclVersion !== '2.0') {
+      if (
+        !isKcl2MigrationSource(
+          new TextDecoder('utf-8', { fatal: true }).decode(source),
+          wasm
+        )
+      ) {
         return Promise.reject(
           new Error('Migration requires an explicit KCL 2.0 project.')
         )

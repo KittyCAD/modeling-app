@@ -17,7 +17,9 @@ afterEach(async () => {
 })
 
 it('asks for preview consent, reviews a real response, applies only on acceptance and exposes project Undo', async () => {
-  render(<KclMigrationDialog controller={fixture.controller} enabled />)
+  const view = render(
+    <KclMigrationDialog controller={fixture.controller} enabled sourceIsKcl2 />
+  )
   fireEvent.click(screen.getByRole('button', { name: 'Migrate to KCL 3' }))
   expect(
     screen.getByRole('button', { name: 'Start Free Migration' })
@@ -43,7 +45,19 @@ it('asks for preview consent, reviews a real response, applies only on acceptanc
     await screen.findByRole('button', { name: 'Undo Migration' })
   ).toBeVisible()
   expect(await fixture.readMain()).toBe(targetCode)
+  view.rerender(
+    <KclMigrationDialog
+      controller={fixture.controller}
+      enabled
+      sourceIsKcl2={false}
+    />
+  )
+  expect(screen.getByRole('button', { name: 'Undo Migration' })).toBeVisible()
   fireEvent.click(screen.getByRole('button', { name: 'Undo Migration' }))
+  await waitFor(async () => expect(await fixture.readMain()).toBe(sourceCode))
+  view.rerender(
+    <KclMigrationDialog controller={fixture.controller} enabled sourceIsKcl2 />
+  )
   await waitFor(() =>
     expect(screen.getByRole('status')).toHaveTextContent(
       'original project was restored'
@@ -53,6 +67,23 @@ it('asks for preview consent, reviews a real response, applies only on acceptanc
 })
 
 it('does not offer migration when the rollout flag is disabled', () => {
-  render(<KclMigrationDialog controller={fixture.controller} enabled={false} />)
+  render(
+    <KclMigrationDialog
+      controller={fixture.controller}
+      enabled={false}
+      sourceIsKcl2
+    />
+  )
+  expect(screen.queryByRole('button')).not.toBeInTheDocument()
+})
+
+it('does not offer migration for a project without an explicit KCL 2 entrypoint', () => {
+  render(
+    <KclMigrationDialog
+      controller={fixture.controller}
+      enabled
+      sourceIsKcl2={false}
+    />
+  )
   expect(screen.queryByRole('button')).not.toBeInTheDocument()
 })
