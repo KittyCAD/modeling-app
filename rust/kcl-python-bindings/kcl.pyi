@@ -474,6 +474,16 @@ class KclSession:
         Saved diagnostics, constraint reports, and sketch rendering from this execution.
         Available after close(); accessing it neither re-executes KCL nor copies the execution state.
         """
+    @property
+    def api_call_id(self) -> typing.Optional[builtins.str]:
+        r"""
+        Engine API call ID for correlating this modeling session with engine logs.
+        """
+    @property
+    def websocket_upgrade_request_id(self) -> typing.Optional[builtins.str]:
+        r"""
+        Request ID for the HTTP request that upgraded to this engine WebSocket.
+        """
     async def __aenter__(self) -> KclSession:
         r"""
         Enter this session without executing KCL again.

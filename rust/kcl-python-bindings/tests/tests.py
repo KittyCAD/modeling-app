@@ -96,6 +96,17 @@ async def test_kcl_execute():
     await execute_with_retries(kcl.execute, lego_file)
 
 
+@requires_engine
+@pytest.mark.asyncio
+async def test_kcl_session_connection_ids():
+    code = "@settings(kclVersion = 2.0)\nvalue = 1"
+    async with await execute_with_retries(kcl.new_kcl_session_code, code) as session:
+        assert isinstance(session.api_call_id, str)
+        assert session.api_call_id
+        assert isinstance(session.websocket_upgrade_request_id, str)
+        assert session.websocket_upgrade_request_id
+
+
 @pytest.mark.asyncio
 @pytest.mark.parametrize("from_file", [False, True])
 async def test_kcl_session_context_manager(tmp_path, from_file):

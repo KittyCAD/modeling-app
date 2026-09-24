@@ -38,6 +38,8 @@ use crate::to_py_exception;
 #[pyclass(from_py_object)]
 pub struct KclSession {
     executed_kcl: Arc<SessionState>,
+    api_call_id: Option<String>,
+    websocket_upgrade_request_id: Option<String>,
 }
 
 struct SessionState {
@@ -73,6 +75,18 @@ impl KclSession {
     #[gen_stub(override_return_type(type_repr = "ExecOutcome"))]
     fn outcome(&self) -> ExecOutcome {
         self.executed_kcl.outcome.clone()
+    }
+
+    /// Engine API call ID for correlating this modeling session with engine logs.
+    #[getter]
+    fn api_call_id(&self) -> Option<String> {
+        self.api_call_id.clone()
+    }
+
+    /// Request ID for the HTTP request that upgraded to this engine WebSocket.
+    #[getter]
+    fn websocket_upgrade_request_id(&self) -> Option<String> {
+        self.websocket_upgrade_request_id.clone()
     }
 
     // This is for entering a Python 'async with' context.
@@ -252,13 +266,15 @@ pub async fn new_kcl_session_impl(
 
     // Failures here should keep the execution outcome, so that users can still
     // call sketch report or sketch debug visualization.
-    let env_ref = match ctx.run(&program, &mut state).await {
-        Ok((env_ref, _modeling_session_data)) => env_ref,
+    let (env_ref, modeling_session_data) = match ctx.run(&program, &mut state).await {
+        Ok(result) => result,
         Err(err) => {
             ctx.close().await;
             return Err(into_rich_error(err, &filename, &code));
         }
     };
+    let api_call_id = modeling_session_data.map(|session| session.api_call_id);
+    let websocket_upgrade_request_id = ctx.engine.websocket_upgrade_request_id().map(str::to_owned);
 
     let outcome = match state.into_exec_outcome(env_ref, &ctx).await {
         Ok(inner) => ExecOutcome {
@@ -281,7 +297,11 @@ pub async fn new_kcl_session_impl(
         program,
         outcome,
     });
-    Ok(KclSession { executed_kcl })
+    Ok(KclSession {
+        executed_kcl,
+        api_call_id,
+        websocket_upgrade_request_id,
+    })
 }
 
 #[cfg(test)]
