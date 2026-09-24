@@ -18,10 +18,6 @@ import {
 } from '@src/lib/projectLibraries'
 import { invalidateProjectLibraryRealizations } from '@src/lib/projectLibraries/registry/invalidation'
 import {
-  makeZookeeperConversationStore,
-  type ZookeeperConversationStore,
-} from '@src/lib/zookeeper/zookeeperConversationStore'
-import {
   type CloudProjectRelationship,
   type CloudProjectRelationshipRealization,
   cloudProjectRelationshipsService,
@@ -411,13 +407,6 @@ export function deriveHomeProjectEntryContributions({
 const homeProjectActions = defineRegistryItemFactory((ctx) => {
   const settings = ctx.services.signal(settingsService)
   const cloudSync = ctx.services.signal(cloudSyncService)
-  let zookeeperConversationStore: ZookeeperConversationStore | undefined
-  const getZookeeperConversationStore = () => {
-    zookeeperConversationStore ??= makeZookeeperConversationStore(
-      ctx.services.get(fileOperationsService)
-    )
-    return zookeeperConversationStore
-  }
 
   const getWasmPromise = () =>
     ctx.valueSpecs.get(wasmPromiseValueSpec) ??
@@ -759,22 +748,12 @@ const homeProjectActions = defineRegistryItemFactory((ctx) => {
         project.localProjectPath,
         ...(project.duplicateProjectIdPaths ?? []),
       ].filter((projectPath): projectPath is string => Boolean(projectPath))
-      const { sharedProjectId } = await separateProjectsSharingProjectId({
+      await separateProjectsSharingProjectId({
         fileOperations: ctx.services.get(fileOperationsService),
         projectPaths,
         keepProjectPath,
       })
-      try {
-        if (!keepProjectPath) {
-          await getZookeeperConversationStore().deleteProjectConversationId(
-            sharedProjectId
-          )
-        }
-      } finally {
-        // The project files have already been updated, so refresh Home even if
-        // cleaning up the now-orphaned conversation mapping fails.
-        invalidateProjectLibraryRealizations()
-      }
+      invalidateProjectLibraryRealizations()
       toast.success(
         keepProjectPath
           ? 'Separated project copies. The selected project kept its Zookeeper history.'

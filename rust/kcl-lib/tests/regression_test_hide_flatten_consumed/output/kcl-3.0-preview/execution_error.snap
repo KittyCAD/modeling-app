@@ -1,0 +1,26 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Error from executing regression_test_hide_flatten_consumed.kcl
+---
+KCL Semantic error
+
+  × semantic: `extrude001` was already consumed by a `subtract` operation. The
+  │ operation result is now in `solid001`; use that for subsequent operations.
+    ╭─[27:14]
+ 26 │ solid001 = subtract(extrude001, tools = [extrude002])
+ 27 │ hide(flatten([extrude001, extrude002]))
+    ·              ────────────┬───────────
+    ·                          ╰── tests/regression_test_hide_flatten_consumed/input.kcl
+    ╰────
+  ╰─▶ KCL Semantic error
+      
+        × semantic: `extrude001` was already consumed by a `subtract`
+        │ operation. The operation result is now in `solid001`; use that for
+        │ subsequent operations.
+          ╭─[27:6]
+       26 │ solid001 = subtract(extrude001, tools = [extrude002])
+       27 │ hide(flatten([extrude001, extrude002]))
+          ·      ────────────────┬────────────────
+          ·                      ╰── tests/
+      regression_test_hide_flatten_consumed/input.kcl
+          ╰────

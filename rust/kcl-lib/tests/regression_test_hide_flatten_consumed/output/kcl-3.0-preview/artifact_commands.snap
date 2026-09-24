@@ -433,24 +433,6 @@ description: Artifact commands regression_test_hide_flatten_consumed.kcl
         "separate_bodies": false,
         "tolerance": 0.0000001
       }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "object_visible",
-        "object_id": "[uuid]",
-        "hidden": true
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "object_visible",
-        "object_id": "[uuid]",
-        "hidden": true
-      }
     }
   ]
 }

@@ -5,9 +5,9 @@ excerpt: "A standard camera orientation for a named view."
 layout: manual
 ---
 
-**WARNING:** This type is experimental and may change or be removed.
-
 A standard camera orientation for a named view.
+
+**Added in KCL 3.0.**
 
 ```kcl
 type Orientation {

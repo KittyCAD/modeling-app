@@ -1010,26 +1010,6 @@ description: Variables in memory after executing named_views_hide_plane.kcl
       }
     }
   },
-  "planeView": {
-    "type": "NamedView",
-    "value": {
-      "artifactId": "[uuid]",
-      "name": "Near plane",
-      "camera": {
-        "look": {
-          "type": "oriented",
-          "orientation": "Isometric"
-        },
-        "target": null,
-        "distance": null,
-        "projection": "Orthographic"
-      },
-      "baseline": "Show",
-      "exceptIds": [
-        "[uuid]"
-      ]
-    }
-  },
   "planeVisible": {
     "type": "Plane",
     "value": {

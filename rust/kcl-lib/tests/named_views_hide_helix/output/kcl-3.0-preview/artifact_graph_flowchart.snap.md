@@ -62,7 +62,7 @@ flowchart LR
     %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlockBody, SketchBlockBodyItem { index: 6 }, ExpressionStatementExpr]
   33["SketchBlockConstraint Coincident<br>[919, 955, 0]"]
     %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlockBody, SketchBlockBodyItem { index: 7 }, ExpressionStatementExpr]
-  34["NamedView "Outer helix"<br>Baseline: Show<br>[1073, 1224, 0]"]
+  34["NamedView "Outer helix"<br>Baseline: Show<br>[1093, 1244, 0]"]
     %% [ProgramBodyItem { index: 5 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   2 <--x 34
   3 --- 4

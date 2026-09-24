@@ -23,6 +23,7 @@ boxVisible = extrude(region(point = [25, 5], sketch = anchorSketch), length = 10
 
 hide(planeHidden)
 
+@(added_in = "3.0")
 planeView = view::named(
   "Near plane",
   camera = view::oriented(view::Orientation::Isometric),
