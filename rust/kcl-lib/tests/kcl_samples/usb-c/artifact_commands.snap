@@ -158,8 +158,7 @@ description: Artifact commands usb-c.kcl
         "segment": "[uuid]",
         "intersection_segment": "[uuid]",
         "intersection_index": -1,
-        "curve_clockwise": false,
-        "version": "V1"
+        "curve_clockwise": false
       }
     },
     {
@@ -456,8 +455,7 @@ description: Artifact commands usb-c.kcl
         "segment": "[uuid]",
         "intersection_segment": "[uuid]",
         "intersection_index": -1,
-        "curve_clockwise": false,
-        "version": "V1"
+        "curve_clockwise": false
       }
     },
     {
@@ -827,8 +825,7 @@ description: Artifact commands usb-c.kcl
         "segment": "[uuid]",
         "intersection_segment": "[uuid]",
         "intersection_index": -1,
-        "curve_clockwise": false,
-        "version": "V1"
+        "curve_clockwise": false
       }
     },
     {
@@ -1157,8 +1154,7 @@ description: Artifact commands usb-c.kcl
         "segment": "[uuid]",
         "intersection_segment": "[uuid]",
         "intersection_index": -1,
-        "curve_clockwise": false,
-        "version": "V1"
+        "curve_clockwise": false
       }
     },
     {

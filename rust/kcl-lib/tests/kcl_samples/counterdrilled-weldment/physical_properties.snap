@@ -5,25 +5,25 @@ description: Physical properties counterdrilled-weldment.kcl
 {
   "bounding_box": {
     "center": {
-      "x": 0.0,
-      "y": 0.0,
+      "x": 0.00000000000005684341886080803,
+      "y": -0.00000000000014210854715202006,
       "z": 31.623000000000005
     },
     "dimensions": {
-      "x": 165.10000000000036,
-      "y": 114.30000000000064,
+      "x": 165.10000000000025,
+      "y": 114.30000000000037,
       "z": 63.754000000000005
     },
     "unit": "mm"
   },
   "surface_area": {
     "unit": "mm2",
-    "value": 66384.79176012347
+    "value": 66896.33462405631
   },
   "weight": {
     "material_density": 1000.0,
     "material_density_unit": "kg:m3",
     "unit": "g",
-    "value": 250.97198460055648
+    "value": 253.02036447930985
   }
 }

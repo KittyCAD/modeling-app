@@ -2419,9 +2419,11 @@ description: Operations executed enclosure.kcl
                 "type": "Number",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
@@ -2429,8 +2431,10 @@ description: Operations executed enclosure.kcl
                 "value": 5.5,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               }
             ]
@@ -6381,8 +6385,10 @@ description: Operations executed enclosure.kcl
                 "value": 62.5,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -6390,8 +6396,10 @@ description: Operations executed enclosure.kcl
                 "value": 87.5,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               }
             ]
@@ -10297,8 +10305,10 @@ description: Operations executed enclosure.kcl
                 "value": 212.5,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -10306,8 +10316,10 @@ description: Operations executed enclosure.kcl
                 "value": 87.5,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               }
             ]

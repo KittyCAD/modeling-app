@@ -2414,17 +2414,21 @@ description: Operations executed exhaust-manifold.kcl
                 "value": 0.7725,
                 "ty": {
                   "type": "Default",
-                  "len": "in",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "in",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -4824,17 +4828,21 @@ description: Operations executed exhaust-manifold.kcl
                 "value": 0.7725,
                 "ty": {
                   "type": "Default",
-                  "len": "in",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "in",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -13809,18 +13817,22 @@ description: Operations executed exhaust-manifold.kcl
                 "type": "Number",
                 "value": -0.9,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]

@@ -18,7 +18,7 @@ description: Physical properties car-wheel-assembly.kcl
   },
   "surface_area": {
     "unit": "mm2",
-    "value": 2746390.878500078
+    "value": 2746390.878500077
   },
   "weight": {
     "material_density": 1000.0,
