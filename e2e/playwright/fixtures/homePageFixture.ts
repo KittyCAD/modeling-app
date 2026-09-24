@@ -106,10 +106,48 @@ export class HomePageFixture {
 
   waitForAuthentication = async () => {
     // A document reload can finish while Auth still hides the Home route.
-    await this.page.waitForFunction(() => {
-      const snapshot = window.app?.auth.actor.getSnapshot()
-      return snapshot !== undefined && !snapshot.matches('checkIfLoggedIn')
-    })
+    try {
+      await this.page.waitForFunction(() => {
+        const snapshot = window.app?.auth.actor.getSnapshot()
+        return snapshot !== undefined && !snapshot.matches('checkIfLoggedIn')
+      })
+    } catch (error) {
+      let diagnosticTimeout: ReturnType<typeof setTimeout> | undefined
+      try {
+        // Bound this failure-only read so a renderer hang cannot block cleanup.
+        const diagnostic = await Promise.race([
+          this.page
+            .evaluate(() => {
+              const snapshot = window.app?.auth.actor.getSnapshot()
+              return {
+                readyState: document.readyState,
+                visibility: document.visibilityState,
+                focused: document.hasFocus(),
+                appPresent: window.app !== undefined,
+                authStatus: snapshot?.status ?? null,
+                authState: snapshot?.value ?? null,
+                didAuth:
+                  performance.getEntriesByName('code/didAuth', 'mark').length >
+                  0,
+                online: navigator.onLine,
+              }
+            })
+            .catch(() => ({ diagnosticUnavailable: true })),
+          new Promise<{ diagnosticUnavailable: true }>((resolve) => {
+            diagnosticTimeout = setTimeout(
+              () => resolve({ diagnosticUnavailable: true }),
+              2000
+            )
+          }),
+        ])
+        throw new Error(
+          `Home authentication readiness failed: ${JSON.stringify(diagnostic)}`,
+          { cause: error }
+        )
+      } finally {
+        if (diagnosticTimeout) clearTimeout(diagnosticTimeout)
+      }
+    }
     expect(
       await this.page.evaluate(() => window.app.auth.actor.getSnapshot().value),
       'Home startup requires loggedIn authentication'
