@@ -17,13 +17,9 @@ import {
   insertVariableAndOffsetPathToNode,
   setCallInAst,
 } from '@src/lang/modifyAst'
-import {
-  modifyAstWithTagForCapFace,
-  mutateAstWithTagForSketchSegment,
-} from '@src/lang/modifyAst/tagManagement'
+import { modifyAstWithTagsForSelection } from '@src/lang/modifyAst/tagManagement'
 import {
   artifactToEntityRef,
-  getRegionTagExprFromSegmentId,
   getSelectedPlaneAsNode,
   getVariableExprsFromSelection,
   resolveToCodeRef,
@@ -1131,91 +1127,33 @@ export function getFacesExprsFromSelection(
       if (err(capForPath)) return []
       artifact = capForPath
     }
-    if (artifact.type === 'cap') {
-      // Add tagEnd/tagStart to the extrude and use that tag instead of END/START
-      const tagResult = modifyAstWithTagForCapFace(
+    if (artifact.type === 'cap' || artifact.type === 'wall') {
+      const result = modifyAstWithTagsForSelection(
         modifiedAst,
-        artifact,
+        { ...resolved, artifact },
         artifactGraph,
         wasmInstance
       )
-      if (err(tagResult)) {
-        console.warn('Failed to add cap tag to extrude', tagResult)
+      if (err(result)) {
+        console.warn('Failed to generate face reference', result)
         return []
       }
-      modifiedAst = tagResult.modifiedAst
-      return [createLocalName(tagResult.tag)]
-    } else if (artifact.type === 'wall' || artifact.type === 'edgeCut') {
-      let targetArtifact: Artifact | undefined
-      if (artifact.type === 'wall') {
-        const key = artifact.segId
-        const segmentArtifact = getArtifactOfTypes(
-          { key, types: ['segment'] },
-          artifactGraph
-        )
-        if (err(segmentArtifact) || segmentArtifact.type !== 'segment') {
-          console.warn('No segment found for face', v2Sel)
-          return []
-        }
-
-        const regionTagExpr = getRegionTagExprFromSegmentId(
-          modifiedAst,
-          segmentArtifact.id,
-          artifactGraph,
-          wasmInstance
-        )
-        if (regionTagExpr) {
-          return [regionTagExpr]
-        }
-
-        if (segmentArtifact.originalSegId) {
-          const originalSegmentArtifact = getArtifactOfTypes(
-            { key: segmentArtifact.originalSegId, types: ['segment'] },
-            artifactGraph
-          )
-          targetArtifact = err(originalSegmentArtifact)
-            ? segmentArtifact
-            : originalSegmentArtifact
-        } else {
-          targetArtifact = segmentArtifact
-        }
-      } else {
-        targetArtifact = artifact
-      }
-
-      const codeRef =
-        targetArtifact && 'codeRef' in targetArtifact
-          ? targetArtifact.codeRef
-          : undefined
-      if (!codeRef) {
-        console.warn('No codeRef for target artifact')
-        return []
+      modifiedAst = result.modifiedAst
+      return result.exprs
+    } else if (artifact.type === 'edgeCut') {
+      const tagInfo = {
+        node: modifiedAst,
+        pathToNode: artifact.codeRef.pathToNode,
+        wasmInstance,
       }
       const tagResult =
-        targetArtifact?.type === 'edgeCut'
-          ? targetArtifact.sourceSelectorIndex != null
-            ? addTagToEdgeCutSelector(
-                {
-                  node: modifiedAst,
-                  pathToNode: codeRef.pathToNode,
-                  wasmInstance,
-                },
-                targetArtifact.sourceSelectorIndex,
-                wasmInstance
-              )
-            : addTagToSingletonEdgeCut(
-                {
-                  node: modifiedAst,
-                  pathToNode: codeRef.pathToNode,
-                  wasmInstance,
-                },
-                wasmInstance
-              )
-          : mutateAstWithTagForSketchSegment(
-              modifiedAst,
-              codeRef.pathToNode,
+        artifact.sourceSelectorIndex != null
+          ? addTagToEdgeCutSelector(
+              tagInfo,
+              artifact.sourceSelectorIndex,
               wasmInstance
             )
+          : addTagToSingletonEdgeCut(tagInfo, wasmInstance)
       if (err(tagResult)) {
         console.warn(
           'Failed to mutate ast with tag for sketch segment',
