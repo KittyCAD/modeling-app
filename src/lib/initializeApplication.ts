@@ -9,6 +9,7 @@ import {
   appNavigationService,
   showHomeIntent,
 } from '@src/registry/contracts/appNavigation'
+import { startSignInIntent } from '@src/registry/contracts/auth'
 import {
   type AppDestination,
   type AppUrlState,
@@ -79,7 +80,12 @@ export async function initializeApplication(
         })
         break
       case 'sign-in':
-        return
+        await appNavigation.dispatch(startSignInIntent, {
+          reason: 'startup',
+          startup: urlState,
+        })
+        result = { kind: 'ready', data: undefined }
+        break
     }
 
     if (result.kind === 'ready') {
