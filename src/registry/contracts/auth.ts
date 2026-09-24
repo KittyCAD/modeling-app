@@ -12,10 +12,12 @@ import {
   defineAppNavigationIntent,
   type AppNavigationIntent,
 } from '@src/registry/contracts/appNavigation'
+import type { AppUrlState } from '@src/registry/contracts/appUrl'
 import type { ActorRefFrom, SnapshotFrom } from 'xstate'
 
 /** Why the application is entering its auth-owned sign-in destination. */
 export type StartSignInRequest =
+  | { reason: 'startup'; startup: AppUrlState }
   | { reason: 'logged-out' }
   | { reason: 'session-expired' }
   | { reason: 'user'; environment?: string }

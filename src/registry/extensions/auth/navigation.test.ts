@@ -3,6 +3,7 @@ import { createStartSignInIntentContribution } from './navigation'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 const navigate = vi.fn()
+const formatUrl = vi.fn(() => '/signin?pool=alpha')
 const getLocation = vi.fn(() => ({
   pathname: '/file/project',
   search: '?pool=alpha',
@@ -21,7 +22,8 @@ function contribution({
   mobile?: boolean
 } = {}) {
   return createStartSignInIntentContribution({
-    getAppUrl: () => ({ navigate, getLocation }) as unknown as AppUrlService,
+    getAppUrl: () =>
+      ({ navigate, formatUrl, getLocation }) as unknown as AppUrlService,
     startDesktopSignIn,
     isDesktop: () => desktop,
     isMobile: () => mobile,
@@ -37,8 +39,27 @@ describe('startSignInIntent contribution', () => {
   it('enters sign-in and starts desktop auth for an expired session', async () => {
     await contribution().dispatch({ reason: 'session-expired' })
 
-    expect(navigate).toHaveBeenCalledWith('/signin?pool=alpha')
+    expect(formatUrl).toHaveBeenCalledWith({
+      destination: { type: 'sign-in' },
+      search: '?pool=alpha',
+      hash: '',
+    })
+    expect(navigate).toHaveBeenCalledWith('/signin?pool=alpha', {
+      replace: false,
+    })
     expect(startDesktopSignIn).toHaveBeenCalledWith(undefined)
+  })
+
+  it('restores desktop sign-in without automatically starting device auth', async () => {
+    await contribution().dispatch({
+      reason: 'startup',
+      startup: { search: '?pool=alpha', hash: '#help' },
+    })
+
+    expect(navigate).toHaveBeenCalledWith('/signin?pool=alpha', {
+      replace: true,
+    })
+    expect(startDesktopSignIn).not.toHaveBeenCalled()
   })
 
   it('redirects web sign-in through the auth provider', async () => {

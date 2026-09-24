@@ -4,7 +4,6 @@ import {
 } from '@src/lib/constants'
 import { isDesktop } from '@src/lib/isDesktop'
 import { isMobile } from '@src/lib/isMobile'
-import { PATHS } from '@src/lib/paths'
 import { reportRejection } from '@src/lib/trap'
 import {
   defineAppNavigationIntentContribution,
@@ -14,7 +13,7 @@ import {
   startSignInIntent,
   type StartSignInRequest,
 } from '@src/registry/contracts/auth'
-import type { AppUrlService } from '@src/registry/contracts/appUrl'
+import type { AppUrlService, AppUrlState } from '@src/registry/contracts/appUrl'
 import { generateSignInUrl } from '@src/routes/utils'
 
 export interface StartSignInDependencies {
@@ -25,9 +24,14 @@ export interface StartSignInDependencies {
   redirectToHostedSignIn: () => void
 }
 
+const currentUrlState = (appUrl: AppUrlService): AppUrlState => {
+  const location = appUrl.getLocation()
+  return { search: location.search, hash: location.hash }
+}
+
 function shouldUseHostedSignIn(
   request: StartSignInRequest,
-  search: string,
+  urlState: AppUrlState,
   dependencies: StartSignInDependencies
 ) {
   if (dependencies.isDesktop()) return false
@@ -35,11 +39,11 @@ function shouldUseHostedSignIn(
     return true
   }
 
-  const searchParams = new URLSearchParams(search)
+  const search = new URLSearchParams(urlState.search)
   return (
-    searchParams.has(IMMEDIATE_SIGN_IN_IF_NECESSARY_QUERY_PARAM) ||
+    search.has(IMMEDIATE_SIGN_IN_IF_NECESSARY_QUERY_PARAM) ||
     !dependencies.isMobile() ||
-    searchParams.has(ALLOW_MOBILE_QUERY_PARAM)
+    search.has(ALLOW_MOBILE_QUERY_PARAM)
   )
 }
 
@@ -51,14 +55,21 @@ export function createStartSignInIntentContribution(
     startSignInIntent,
     async (request) => {
       const appUrl = dependencies.getAppUrl()
-      const { search } = appUrl.getLocation()
+      const urlState =
+        request.reason === 'startup' ? request.startup : currentUrlState(appUrl)
 
-      if (shouldUseHostedSignIn(request, search, dependencies)) {
+      if (shouldUseHostedSignIn(request, urlState, dependencies)) {
         dependencies.redirectToHostedSignIn()
         return
       }
 
-      void appUrl.navigate(`${PATHS.SIGN_IN}${search}`)
+      void appUrl.navigate(
+        appUrl.formatUrl({
+          destination: { type: 'sign-in' },
+          ...urlState,
+        }),
+        { replace: request.reason === 'startup' }
+      )
 
       if (
         dependencies.isDesktop() &&

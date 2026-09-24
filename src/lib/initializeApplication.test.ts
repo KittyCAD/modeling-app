@@ -4,6 +4,7 @@ import {
   appNavigationService,
   showHomeIntent,
 } from '@src/registry/contracts/appNavigation'
+import { startSignInIntent } from '@src/registry/contracts/auth'
 import { openSettingsIntent } from '@src/registry/extensions/settings/overlay'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -144,6 +145,22 @@ describe('initializeApplication', () => {
       tab: 'project',
     })
     expect(mocks.initFileRoute).toHaveBeenCalledBefore(mocks.dispatch)
+  })
+
+  it('dispatches the auth-owned sign-in intent at startup', async () => {
+    mocks.readInitialUrl.mockReturnValue({
+      type: 'launch',
+      destination: { type: 'sign-in' },
+      search: '?from=desktop',
+      hash: '',
+    })
+
+    await initializeApplication(fakeApp())
+
+    expect(mocks.dispatch).toHaveBeenCalledWith(startSignInIntent, {
+      reason: 'startup',
+      startup: { search: '?from=desktop', hash: '' },
+    })
   })
 
   it('leaves an unrecognized URL to the render-only routing shell', async () => {
