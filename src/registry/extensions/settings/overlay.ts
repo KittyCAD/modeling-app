@@ -31,7 +31,7 @@ function decodeHash(hash: string): string | undefined {
 
 export const openSettingsIntent = defineAppNavigationIntent<
   SettingsOverlayState,
-  void
+  undefined
 >('settings.open')
 
 export const settingsNavigationUrlContribution =
