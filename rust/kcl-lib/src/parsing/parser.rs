@@ -538,6 +538,47 @@ fn non_code_node(i: &mut TokenSlice) -> ModalResult<Node<NonCodeNode>> {
     alt((non_code_node_leading_whitespace, non_code_node_no_leading_whitespace)).parse_next(i)
 }
 
+/// Report each property whose key already appeared earlier in `properties`.
+/// Attributes have no precedence rule, so a repeated key is a fatal error.
+fn reject_repeated_keys(properties: &[Node<ObjectProperty>]) {
+    let mut seen = std::collections::HashSet::new();
+    for property in properties {
+        if !seen.insert(property.key.name.as_str()) {
+            report_repeated_key(property);
+        }
+    }
+}
+
+/// Report keys repeated across the annotations stacked on one item, such as
+/// `@(added_in = "2.0")` above `@(added_in = "3.0")`. Repeats within a single
+/// annotation are reported when it is parsed.
+fn reject_repeated_attribute_keys(annotations: &[Node<Annotation>]) {
+    let mut seen: std::collections::HashSet<&str> = std::collections::HashSet::new();
+    for annotation in annotations {
+        let Some(properties) = &annotation.properties else {
+            continue;
+        };
+        let mut reported = std::collections::HashSet::new();
+        for property in properties {
+            let key = property.key.name.as_str();
+            if seen.contains(key) && reported.insert(key) {
+                report_repeated_key(property);
+            }
+        }
+        seen.extend(properties.iter().map(|property| property.key.name.as_str()));
+    }
+}
+
+fn report_repeated_key(property: &Node<ObjectProperty>) {
+    ParseContext::err(CompilationIssue::fatal(
+        property.as_source_range(),
+        format!(
+            "`{}` is specified more than once. Remove all but one.",
+            property.key.name
+        ),
+    ));
+}
+
 fn outer_annotation(i: &mut TokenSlice) -> ModalResult<Node<Annotation>> {
     peek((at_sign, open_paren)).parse_next(i)?;
     annotation(i)
@@ -579,6 +620,7 @@ fn annotation(i: &mut TokenSlice) -> ModalResult<Node<Annotation>> {
         ignore_trailing_comma(i);
         ignore_whitespace(i);
         end = close_paren(i)?.end;
+        reject_repeated_keys(&properties);
         Some(properties)
     } else {
         None
@@ -2198,6 +2240,7 @@ fn function_body(i: &mut TokenSlice) -> ModalResult<Node<Block>> {
                 }
                 end = b.end();
                 if !pending_attrs.is_empty() {
+                    reject_repeated_attribute_keys(&pending_attrs);
                     b.set_attrs(pending_attrs);
                     pending_attrs = Vec::new();
                 }
@@ -2980,9 +3023,6 @@ fn ty_decl(i: &mut TokenSlice) -> ModalResult<BoxNode<TypeDeclaration>> {
         equals(i)?;
         ignore_whitespace(i);
         let ty = type_(i)?;
-
-        ParseContext::experimental("type aliases", ty.as_source_range());
-
         TypeDeclarationDefinition::Alias { ty: BoxNode::new(ty) }
     } else if peek((opt(whitespace), open_brace)).parse_next(i).is_ok() {
         ignore_whitespace(i);
@@ -3012,9 +3052,7 @@ fn ty_decl(i: &mut TokenSlice) -> ModalResult<BoxNode<TypeDeclaration>> {
         },
     );
 
-    if matches!(result.definition, TypeDeclarationDefinition::Enum(_)) {
-        ParseContext::experimental("enum declarations", result.as_source_range());
-    } else {
+    if matches!(result.definition, TypeDeclarationDefinition::Bare) {
         ParseContext::experimental("type declarations", result.as_source_range());
     }
 
@@ -5610,7 +5648,7 @@ mySk1 = startSketchOn(XY)
 
     #[test]
     fn test_pipes_on_pipes() {
-        let test_program = include_str!("../../e2e/executor/inputs/pipes_on_pipes.kcl");
+        let test_program = include_str!("../../tests/pipes_on_pipes/input.kcl");
         let tokens = crate::parsing::token::lex(test_program, ModuleId::default()).unwrap();
         let _ = run_parser(tokens.as_slice()).unwrap();
     }
@@ -6097,6 +6135,77 @@ height = [obj["a"] -1, 0]"#;
   return x
 }"#,
             "`removed_in` cannot be used on the unlabeled parameter",
+        );
+    }
+
+    /// Byte range of the last occurrence of `needle` in `src`.
+    fn last_range(src: &str, needle: &str) -> [usize; 2] {
+        let start = src.rfind(needle).unwrap();
+        [start, start + needle.len()]
+    }
+
+    #[test]
+    fn test_attribute_key_repeated_in_one_annotation() {
+        let src = r#"@(added_in = "2.0", added_in = "3.0")
+fn f() {
+  return 1
+}"#;
+        assert_err(
+            src,
+            "`added_in` is specified more than once. Remove all but one.",
+            last_range(src, r#"added_in = "3.0""#),
+        );
+    }
+
+    #[test]
+    fn test_attribute_key_repeated_across_stacked_annotations() {
+        let src = r#"@(added_in = "2.0")
+@(added_in = "3.0")
+fn f() {
+  return 1
+}"#;
+        assert_err(
+            src,
+            "`added_in` is specified more than once. Remove all but one.",
+            last_range(src, r#"added_in = "3.0""#),
+        );
+    }
+
+    #[test]
+    fn test_distinct_attribute_keys_across_stacked_annotations_are_fine() {
+        crate::parsing::top_level_parse(
+            r#"@(added_in = "2.0")
+@(experimental = true)
+fn f() {
+  return 1
+}"#,
+        )
+        .parse_errs_as_err()
+        .unwrap();
+    }
+
+    #[test]
+    fn test_setting_repeated_in_one_annotation() {
+        let src = "@settings(kclVersion = 2.0, kclVersion = 3.0)\nx = 1\n";
+        assert_err(
+            src,
+            "`kclVersion` is specified more than once. Remove all but one.",
+            last_range(src, "kclVersion = 3.0"),
+        );
+    }
+
+    #[test]
+    fn test_parameter_attribute_key_repeated() {
+        let src = r#"fn f(
+  @(added_in = "2.0", added_in = "3.0")
+  x?: number,
+) {
+  return x
+}"#;
+        assert_err(
+            src,
+            "`added_in` is specified more than once. Remove all but one.",
+            last_range(src, r#"added_in = "3.0""#),
         );
     }
 
@@ -7261,26 +7370,13 @@ type Color {
     }
 
     #[test]
-    fn enum_declarations_are_experimental() {
-        let code = "type Color { | Red }";
-        assert_err(code, "Use of enum declarations is experimental", [0, 20]);
-
-        let code = r#"@settings(experimentalFeatures = allow)
-type Color { | Red }
-"#;
-        assert_no_err(code);
-
-        let code = r#"@settings(experimentalFeatures = warn)
-type Color { | Red }
-"#;
-        let (_, errs) = assert_no_err(code);
-        // Exactly one diagnostic: the enum one, without an additional generic
-        // type-declaration diagnostic at the same range.
-        assert_eq!(errs.len(), 1);
-        assert_eq!(
-            errs[0].message,
-            "Use of enum declarations is experimental and may change or be removed."
-        );
+    fn aliases_and_enums_have_no_parser_experimental_diagnostic() {
+        for declaration in ["type Color { | Red }", "type Distance = number(mm)"] {
+            for settings in ["", "@settings(experimentalFeatures = warn)\n"] {
+                let (_, issues) = assert_no_err(&format!("{settings}{declaration}"));
+                assert!(issues.is_empty(), "declaration: {declaration}; issues: {issues:?}");
+            }
+        }
     }
 
     #[test]

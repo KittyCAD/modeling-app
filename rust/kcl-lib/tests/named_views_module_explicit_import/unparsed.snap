@@ -2,10 +2,9 @@
 source: kcl-lib/src/simulation_tests.rs
 description: Result of unparsing named_views_module_explicit_import.kcl
 ---
-// Pins spike S1's third finding permanently: a named item can be imported
-// from std::view explicitly. The consumer opt-in silences both experimental
-// gates (enum use, std import).
-@settings(experimentalFeatures = allow)
+// A named item can be imported from std::view explicitly. The opt-in is
+// required by explicit standard-library import syntax, not by the view enum.
+@settings(kclVersion = "3.0-preview", experimentalFeatures = allow)
 
 import Orientation from "std::view"
 

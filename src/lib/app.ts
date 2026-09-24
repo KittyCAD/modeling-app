@@ -940,23 +940,24 @@ export class App implements AppSubsystems {
     const newTheme = context.app.theme.current
     const themeChanged = this.lastSettings.app.theme !== newTheme
     const newBackfaceColor = context.modeling.backfaceColor.current
-    const themeUpdate = this.singletons.kclManager
-      .updateTheme(newTheme)
-      .then(() => {
-        if (themeChanged) {
+    const backfaceColorChanged =
+      this.lastSettings.modeling.backfaceColor !== newBackfaceColor
+    if (themeChanged) {
+      this.singletons.kclManager
+        .updateTheme(newTheme)
+        .then(() =>
           this.singletons.kclManager.sceneEntitiesManager.updateSketchGrid()
-        }
-      })
-    Promise.all([
-      themeUpdate,
-      ...(this.singletons.kclManager.engineCommandManager.connection?.connected
-        ? [
-            this.singletons.kclManager.engineCommandManager.setDefaultSystemProperties(
-              newBackfaceColor
-            ),
-          ]
-        : []),
-    ]).catch(reportRejection)
+        )
+        .catch(reportRejection)
+    }
+    if (
+      backfaceColorChanged &&
+      this.singletons.kclManager.engineCommandManager.connection?.connected
+    ) {
+      this.singletons.kclManager.engineCommandManager
+        .setDefaultSystemProperties(newBackfaceColor)
+        .catch(reportRejection)
+    }
 
     // Reapply settings to the engine
     try {
@@ -967,9 +968,6 @@ export class App implements AppSubsystems {
           context.modeling.fixedSizeGrid.current ||
         this.lastSettings.modeling.highlightEdges !==
           context.modeling.highlightEdges.current
-      const backfaceColorChanged =
-        this.lastSettings.modeling.backfaceColor !==
-        context.modeling.backfaceColor.current
       const engineConnection =
         this.singletons.kclManager.engineCommandManager.connection
 
@@ -994,6 +992,8 @@ export class App implements AppSubsystems {
     const newCurrentProjection = context.modeling.cameraProjection.current
     if (
       this.singletons.kclManager.sceneInfra.camControls &&
+      this.singletons.kclManager.sceneInfra.camControls
+        .engineCameraProjection !== newCurrentProjection &&
       !this.singletons.kclManager.modelingState?.matches('Sketch') &&
       !this.singletons.kclManager.modelingState?.matches('sketchSolveMode')
     ) {

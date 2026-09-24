@@ -40,6 +40,7 @@ import {
   getCommonFacesForEdge,
   getSourceSegmentArtifact,
   getSweepArtifactFromSelection,
+  getMergedSweepBodyArtifact,
 } from '@src/lang/std/artifactGraph'
 import {
   addTagForSketchOnFace,
@@ -225,21 +226,6 @@ export function getEdgeBodyKey(
   return JSON.stringify([selectedBodyExpr, pathIfPipe])
 }
 
-function getSelectedSweepBodyArtifact(
-  selectedSweep: Extract<Artifact, { type: 'sweep' }>,
-  artifactGraph: ArtifactGraph
-): Extract<Artifact, { type: 'compositeSolid' | 'sweep' }> | Error {
-  const path = artifactGraph.get(selectedSweep.pathId)
-  if (path?.type !== 'path' || !path.compositeSolidId) {
-    return selectedSweep
-  }
-
-  return getArtifactOfTypes(
-    { key: path.compositeSolidId, types: ['compositeSolid'] },
-    artifactGraph
-  )
-}
-
 function resolveSweepSelectionContext(
   ast: Node<Program>,
   selectedSweep: Extract<Artifact, { type: 'sweep' }>,
@@ -258,9 +244,11 @@ function resolveSweepSelectionContext(
     return sourceSweep
   }
 
-  const selectedBody = getSelectedSweepBodyArtifact(
+  // Direct profile lookups need the sketch owner, not the shared merge body.
+  const selectedBody = getMergedSweepBodyArtifact(
     selectedSweep,
-    artifactGraph
+    artifactGraph,
+    lastChildLookup
   )
   if (err(selectedBody)) {
     return selectedBody
@@ -281,7 +269,10 @@ function resolveSweepSelectionContext(
     wasmInstance,
     nodeToEdit,
     {
-      lastChildLookup,
+      // Canonical sweeps already identify the shared engine body. Walking
+      // their face sketches can select an unrelated sibling loft or sweep.
+      lastChildLookup:
+        lastChildLookup && selectedBody.type === 'compositeSolid',
       artifactTypeFilter: ['compositeSolid', 'sweep'],
     }
   )
@@ -576,24 +567,54 @@ function modifyAstWithTagsForEdgeSelection(
       const { modifiedAst, expr } = result
       astClone = modifiedAst
 
-      if (
-        selectedFace.type === 'cap' &&
-        edgeContext.selectedBody.type === 'compositeSolid'
-      ) {
-        exprs.push(expr)
-      } else if (selectedFace.type === 'cap') {
+      if (selectedFace.type === 'cap') {
+        const capSweep = getArtifactOfTypes(
+          { key: selectedFace.sweepId, types: ['sweep'] },
+          artifactGraph
+        )
+        if (err(capSweep)) return capSweep
+        const capPath = artifactGraph.get(capSweep.pathId)
+        if (
+          edgeContext.selectedBody.type === 'compositeSolid' &&
+          capPath?.type === 'path' &&
+          capPath.compositeSolidId
+        ) {
+          // Caps inherited by a boolean use their original global tag.
+          // Later merged outputs still need their own qualified cap tags.
+          exprs.push(expr)
+          continue
+        }
         const tagName = getExprName(expr)
         if (!tagName) {
           return new Error(
             'Could not resolve the cap tag for the selected edge'
           )
         }
+        let capBodyExpr = edgeContext.selectedBodyExpr
+        if (!edgeContext.isClone) {
+          // Merged sweeps share a solid, but each output retains its own
+          // cap tags. Qualify a cap through the sweep that introduced it.
+          const capBody = getVariableExprsFromSelection(
+            {
+              graphSelections: [
+                { artifact: capSweep, codeRef: capSweep.codeRef },
+              ],
+              otherSelections: [],
+            },
+            artifactGraph,
+            astClone,
+            wasmInstance,
+            options?.nodeToEdit
+          )
+          if (err(capBody)) return capBody
+          if (capBody.exprs.length !== 1) {
+            return new Error('Could not resolve the cap tag owner')
+          }
+          capBodyExpr = capBody.exprs[0]
+        }
         exprs.push(
           createMemberExpression(
-            createMemberExpression(
-              structuredClone(edgeContext.selectedBodyExpr),
-              'faces'
-            ),
+            createMemberExpression(structuredClone(capBodyExpr), 'faces'),
             tagName
           )
         )

@@ -320,6 +320,7 @@ fn render_type_page(ty: &TyData, example_name: &str) -> Result<String> {
         "definition": definition,
         "summary": ty.summary.clone(),
         "description": ty.description.clone(),
+        "added_in": ty.properties.added_in.as_ref().map(ToString::to_string),
         "deprecated": ty.properties.deprecated,
         "deprecated_since": ty.properties.deprecated_since.as_ref().map(ToString::to_string),
         "experimental": ty.properties.experimental,
@@ -448,6 +449,7 @@ fn render_function_page(function: &FnData, example_name: &str, kcl_std: &ModData
         "module": mod_name_std(&function.module_name),
         "summary": function.summary.clone(),
         "description": function.description.clone(),
+        "added_in": function.properties.added_in.as_ref().map(ToString::to_string),
         "deprecated": function.properties.deprecated,
         "deprecated_since": function.properties.deprecated_since.as_ref().map(ToString::to_string),
         "experimental": function.properties.experimental,
@@ -495,11 +497,8 @@ fn docs_for_type(ty: &str, kcl_std: &ModData) -> Option<String> {
     None
 }
 
-fn generate_const_from_kcl(cnst: &ConstData, file_name: String, example_name: String, kcl_std: &ModData) -> Result<()> {
-    if cnst.properties.doc_hidden {
-        return Ok(());
-    }
-
+/// Render the markdown page for a constant; split out so it can be unit tested.
+fn render_const_page(cnst: &ConstData, example_name: &str, kcl_std: &ModData) -> Result<String> {
     check_deprecation_attrs(&cnst.qual_name, &cnst.properties)?;
 
     let hbs = init_handlebars()?;
@@ -508,7 +507,7 @@ fn generate_const_from_kcl(cnst: &ConstData, file_name: String, example_name: St
         .examples
         .iter()
         .enumerate()
-        .filter_map(|(index, example)| generate_example(index, &example.0, &example.1, &example_name))
+        .filter_map(|(index, example)| generate_example(index, &example.0, &example.1, example_name))
         .collect();
 
     let data = json!({
@@ -516,6 +515,7 @@ fn generate_const_from_kcl(cnst: &ConstData, file_name: String, example_name: St
         "module": mod_name_std(&cnst.module_name),
         "summary": cnst.summary.clone(),
         "description": cnst.description.clone(),
+        "added_in": cnst.properties.added_in.as_ref().map(ToString::to_string),
         "deprecated": cnst.properties.deprecated,
         "deprecated_since": cnst.properties.deprecated_since.as_ref().map(ToString::to_string),
         "experimental": cnst.properties.experimental,
@@ -527,7 +527,15 @@ fn generate_const_from_kcl(cnst: &ConstData, file_name: String, example_name: St
         "value": cnst.value.as_deref().unwrap_or(""),
     });
 
-    let output = hbs.render("const", &data)?;
+    Ok(hbs.render("const", &data)?)
+}
+
+fn generate_const_from_kcl(cnst: &ConstData, file_name: String, example_name: String, kcl_std: &ModData) -> Result<()> {
+    if cnst.properties.doc_hidden {
+        return Ok(());
+    }
+
+    let output = render_const_page(cnst, &example_name, kcl_std)?;
     let output = cleanup_types(&output, kcl_std);
     write_doc_output(&file_name, &output)?;
 
@@ -665,6 +673,7 @@ fn test_render_type_page_enum_variants() {
         preferred_name: "turns::Direction".to_owned(),
         qual_name: "std::turns::Direction".to_owned(),
         properties: Properties {
+            added_in: None,
             deprecated: false,
             deprecated_since: None,
             experimental: true,
@@ -751,6 +760,7 @@ fn test_render_function_page_marks_arg_lifecycle() {
         args: vec![new_arg, old_arg],
         return_type: None,
         properties: Properties {
+            added_in: None,
             deprecated: false,
             deprecated_since: None,
             experimental: false,
@@ -778,6 +788,86 @@ fn test_render_function_page_marks_arg_lifecycle() {
         ),
         "expected the lifecycle markers in order, got:\n{page}"
     );
+}
+
+/// Synthetic pages cover the added-in line while std declares no `added_in`
+/// item; real-page whitespace is pinned by test_generate_stdlib_markdown_docs.
+#[test]
+fn test_render_pages_mark_added_in() {
+    let kcl_std = crate::docs::kcl_doc::walk_stdlib();
+    let properties = |added_in: Option<&str>| Properties {
+        added_in: added_in.and_then(crate::execution::annotations::VersionConstraint::parse),
+        deprecated: false,
+        deprecated_since: None,
+        experimental: false,
+        doc_hidden: false,
+        exported: true,
+        impl_kind: crate::execution::annotations::Impl::Kcl,
+        doc_category: None,
+    };
+    const ADDED_IN_LINE: &str = "**Added in KCL 3.0.**";
+
+    let mut function = FnData {
+        name: "foo".to_owned(),
+        preferred_name: "foo".to_owned(),
+        qual_name: "std::foo".to_owned(),
+        args: Vec::new(),
+        return_type: None,
+        properties: properties(Some("3.0")),
+        summary: Some("Does a thing.".to_owned()),
+        description: None,
+        examples: Vec::new(),
+        module_name: "std".to_owned(),
+    };
+    let page = render_function_page(&function, "std-foo", &kcl_std).unwrap();
+    assert!(
+        page.contains("Does a thing.\n\n**Added in KCL 3.0.**\n\n```kcl\nfoo()"),
+        "expected the added-in line between the summary and the signature, got:\n{page}"
+    );
+    assert_eq!(page.matches(ADDED_IN_LINE).count(), 1, "{page}");
+    // Without the attribute the page is unchanged.
+    function.properties = properties(None);
+    let page = render_function_page(&function, "std-foo", &kcl_std).unwrap();
+    assert!(page.contains("Does a thing.\n\n```kcl\nfoo()"), "{page}");
+    assert!(!page.contains("Added in"), "{page}");
+
+    let ty = TyData {
+        name: "Pair".to_owned(),
+        preferred_name: "Pair".to_owned(),
+        qual_name: "std::types::Pair".to_owned(),
+        properties: properties(Some("3.0")),
+        alias: Some("[number; 2]".to_owned()),
+        variants: Vec::new(),
+        summary: Some("Two numbers.".to_owned()),
+        description: None,
+        examples: Vec::new(),
+        module_name: "types".to_owned(),
+    };
+    let page = render_type_page(&ty, "std-types-Pair").unwrap();
+    assert!(
+        page.contains("Two numbers.\n\n**Added in KCL 3.0.**\n\n```kcl\ntype Pair = [number; 2]"),
+        "expected the added-in line between the summary and the definition, got:\n{page}"
+    );
+    assert_eq!(page.matches(ADDED_IN_LINE).count(), 1, "{page}");
+
+    let cnst = ConstData {
+        name: "FOO".to_owned(),
+        preferred_name: "FOO".to_owned(),
+        qual_name: "std::FOO".to_owned(),
+        value: Some("1".to_owned()),
+        ty: Some("number".to_owned()),
+        properties: properties(Some("3.0")),
+        summary: Some("A constant.".to_owned()),
+        description: None,
+        examples: Vec::new(),
+        module_name: "std".to_owned(),
+    };
+    let page = render_const_page(&cnst, "std-FOO", &kcl_std).unwrap();
+    assert!(
+        page.contains("A constant.\n\n**Added in KCL 3.0.**\n\n```kcl\n"),
+        "expected the added-in line between the summary and the value, got:\n{page}"
+    );
+    assert_eq!(page.matches(ADDED_IN_LINE).count(), 1, "{page}");
 }
 
 #[test]

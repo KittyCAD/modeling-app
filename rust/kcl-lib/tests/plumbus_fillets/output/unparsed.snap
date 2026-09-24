@@ -1,0 +1,64 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing plumbus_fillets.kcl
+---
+fn make_circle(ext, face, pos, radius) {
+  sg = startSketchOn(ext, face = face)
+    |> startProfile(at = [pos[0] + radius, pos[1]])
+    |> arc(
+         angleEnd = 360,
+         angleStart = 0,
+         radius = radius,
+         tag = $arc1,
+       )
+    |> close()
+
+  return sg
+}
+
+fn pentagon(@len) {
+  sg = startSketchOn(XY)
+    |> startProfile(at = [-len / 2, -len / 2])
+    |> angledLine(angle = 0, length = len, tag = $a)
+    |> angledLine(angle = segAng(a) + 180 - 108, length = len, tag = $b)
+    |> angledLine(angle = segAng(b) + 180 - 108, length = len, tag = $c)
+    |> angledLine(angle = segAng(c) + 180 - 108, length = len, tag = $d)
+    |> angledLine(angle = segAng(d) + 180 - 108, length = len)
+
+  return sg
+}
+
+p = pentagon(32)
+  |> extrude(length = 10)
+
+circle0 = make_circle(
+  ext = p,
+  face = p.sketch.tags.a,
+  pos = [0, 0],
+  radius = 2.5,
+)
+plumbus0 = circle0
+  |> extrude(length = 10)
+  |> fillet(
+       radius = 0.5,
+       tags = [
+         circle0.tags.arc1,
+         getOppositeEdge(circle0.tags.arc1)
+       ],
+     )
+
+circle1 = make_circle(
+  ext = p,
+  face = p.sketch.tags.b,
+  pos = [0, 0],
+  radius = 2.5,
+)
+plumbus1 = circle1
+  |> extrude(length = 10)
+  |> fillet(
+       radius = 0.5,
+       tags = [
+         circle1.tags.arc1,
+         getOppositeEdge(circle1.tags.arc1)
+       ],
+     )
