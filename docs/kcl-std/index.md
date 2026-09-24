@@ -275,6 +275,8 @@ See also the [types overview](/docs/kcl-lang/types)
   * [`none`](/docs/kcl-std/types/std-types-none) Experimental
   * [`number`](/docs/kcl-std/types/std-types-number)
   * [`string`](/docs/kcl-std/types/std-types-string)
+* [**std::gdt**](/docs/kcl-std/modules/std-gdt)
+  * [`gdt::LeaderType`](/docs/kcl-std/types/std-gdt-LeaderType) Experimental
 * [**std::types**](/docs/kcl-std/modules/std-types)
   * [`Axis2d`](/docs/kcl-std/types/std-types-Axis2d)
   * [`Axis3d`](/docs/kcl-std/types/std-types-Axis3d)

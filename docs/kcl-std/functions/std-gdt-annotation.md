@@ -14,6 +14,7 @@ gdt::annotation(
   edges?: [Edge | any; 1+],
   framePosition?: Point2d,
   framePlane?: Plane,
+  leaderType?: LeaderType,
   leaderScale?: number(_),
   fontSize?: number(Length),
   annotationName?: string,
@@ -31,7 +32,8 @@ This is part of model-based definition (MBD).
 | `edges` | [[`Edge`](/docs/kcl-std/types/std-types-Edge) or [`any`](/docs/kcl-std/types/std-types-any); 1+] | The edges to be annotated. Edge specifier objects (`{ sideFaces = [...], endFaces? = [...], index? = 0 }`) are experimental; do not use them in generated or user-facing KCL yet. | No |
 | `framePosition` | [`Point2d`](/docs/kcl-std/types/std-types-Point2d) | The position of the annotation relative to the leader arrow. The default is `[100mm, 100mm]`. | No |
 | `framePlane` | [`Plane`](/docs/kcl-std/types/std-types-Plane) | The plane in which to display the annotation. The default is `XY`. Other standard planes like `XZ` and `YZ` can also be used. The annotation may be displayed in a plane parallel to the given plane. | No |
-| `leaderScale` | [`number(_)`](/docs/kcl-std/types/std-types-number) | Visual scale of the leader dot. The default is `1.0`, which maps to the calibrated normal dot size. The value is normalized against `fontSize` so the dot stays consistent as text size changes. Must be greater than `0`. | No |
+| `leaderType` | [`LeaderType`](/docs/kcl-std/types/std-gdt-LeaderType) | The leader's end marker. The default is `gdt::LeaderType::Dot`. `None` hides only the marker, not the leader line. | No |
+| `leaderScale` | [`number(_)`](/docs/kcl-std/types/std-types-number) | Visual scale of the leader marker. The default is `1.0`. Dots stay the same screen size as `fontSize` changes; arrowheads scale with `fontSize`. Has no visual effect for `None`. Must be greater than `0`. | No |
 | `fontSize` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | The model-space height to use for annotation text. The default is `10mm`. Explicit units are supported; bare numbers use the file's default length unit. This changes the scene size, not the internal raster texture quality. | No |
 | `annotationName` | [`string`](/docs/kcl-std/types/std-types-string) | Human-friendly name for this annotation in exports and model metadata. This is not displayed visually. | No |
 
