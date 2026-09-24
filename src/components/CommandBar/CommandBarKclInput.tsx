@@ -39,6 +39,7 @@ import {
   setNoAutofillAttributes,
 } from '@src/lib/autofill'
 import styles from './CommandBarKclInput.module.css'
+import { MarkdownText } from '../MarkdownText'
 
 // TODO: remove the need for this selector once we decouple all actors from React
 const machineContextSelector = (snapshot?: SnapshotFrom<AnyStateMachine>) =>
@@ -386,6 +387,12 @@ function CommandBarKclInput({
           )}
         </span>
       </label>
+      {arg.description && (
+        <MarkdownText
+          text={arg.description}
+          className="mx-4 mb-4 select-text text-sm leading-relaxed text-chalkboard-70 dark:text-chalkboard-40 parsed-markdown [&_*]:select-text [&_strong]:font-semibold [&_strong]:text-chalkboard-90 dark:[&_strong]:text-chalkboard-20"
+        />
+      )}
       {arg.createVariable !== 'disallow' && (
         <div className="flex items-baseline gap-4 mx-4">
           <input
