@@ -1151,6 +1151,7 @@ async def test_primary_execution_error_carries_partial_constraint_report():
     with pytest.raises(kcl.KclError) as raised:
         await kcl.new_kcl_session_code(execution_error_after_sketch_code, mock=True)
 
+    # Validate that the exception still gives you a sketch report.
     report = raised.value.sketch_constraint_report
     assert report is not None
     assert report.total_sketches() == 1
@@ -1163,3 +1164,7 @@ async def test_primary_execution_error_carries_partial_constraint_report():
     assert raised.value.args == (report.kcl_error.text, False)
     assert raised.value.is_retryable() is False
     assert str(raised.value) == str(kcl.KclError(report.kcl_error.text, False))
+
+    # Validate that the exception still gives you a sketch debug visualization.
+    png = bytes(raised.value.render_sketch_png("s1"))
+    assert png.startswith(b"\x89PNG\r\n\x1a\n")

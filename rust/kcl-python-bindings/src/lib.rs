@@ -81,7 +81,7 @@ where
     task.await.map_err(|err| PyException::new_err(err.to_string()))?
 }
 
-fn into_miette(error: kcl_lib::KclErrorWithOutputs, filename: &str, code: &str) -> PyErr {
+fn into_rich_error(error: kcl_lib::KclErrorWithOutputs, filename: &str, code: &str) -> PyErr {
     let retryable = error.is_retryable();
     let error_text = render_miette(error.clone(), code);
     let constraint_report = sketch_constraint_report_from_error(&error, filename, code, error_text.clone());
@@ -91,9 +91,11 @@ fn into_miette(error: kcl_lib::KclErrorWithOutputs, filename: &str, code: &str) 
             PyKclError {
                 retryable,
                 sketch_constraint_report: Some(constraint_report),
+                partial_execution: Some(error),
             },
         )?;
-        // Direct Rust construction bypasses the Python constructor's exception arguments.
+        // We must set the exception's arguments here, because constructing it directly
+        // in Rust (above) bypasses the usual Python constructor, which usually sets the exception arguments.
         exception.setattr("args", (error_text, retryable))?;
         Ok(PyErr::from_value(exception.into_any()))
     })
@@ -217,23 +219,43 @@ fn into_kcl_exception(error: kcl_lib::KclError) -> PyErr {
 // Keep the stub for this exception manual in `kcl.pyi`. `pyo3_stub_gen`
 // generates code for this `PyException` subclass that does not compile on
 // PyPy, because it references `pyo3::prepare_freethreaded_python`.
+/// A rich KCL error that does more than just error reporting:
+/// it also lets you get data about the failed execution, like sketch reports,
+/// whether or not to retry, etc.
 #[pyclass(name = "KclError", extends = PyException, from_py_object)]
 #[derive(Debug, Clone)]
 struct PyKclError {
     retryable: bool,
     #[pyo3(get)]
     sketch_constraint_report: Option<SketchConstraintReport>,
+    partial_execution: Option<kcl_lib::KclErrorWithOutputs>,
 }
 
 #[pymethods]
 impl PyKclError {
+    // TODO: Do we even want this constructor? We surely want users
+    // to pass in the sketch constraint report and partial execution result.
     #[new]
     #[pyo3(signature = (_message, retryable = false))]
     fn new(_message: &Bound<'_, PyAny>, retryable: bool) -> Self {
         Self {
             retryable,
             sketch_constraint_report: None,
+            partial_execution: None,
         }
+    }
+
+    /// Render a sketch created before execution failed as a PNG.
+    /// Use instance_index from the partial constraint report for duplicate names.
+    #[pyo3(signature = (sketch_name, *, instance_index=None))]
+    fn render_sketch_png(&self, sketch_name: &str, instance_index: Option<usize>) -> PyResult<Vec<u8>> {
+        let partial_execution = self
+            .partial_execution
+            .as_ref()
+            .ok_or_else(|| PyException::new_err("No partial execution is available for sketch rendering"))?;
+        partial_execution
+            .render_sketch_png_instance(sketch_name, instance_index)
+            .map_err(to_py_exception)
     }
 
     fn is_retryable(&self) -> bool {
@@ -424,7 +446,7 @@ async fn run_kcl(
         Ok(result) => result,
         Err(err) => {
             ctx.close().await;
-            return Err(into_miette(err, &filename, &code));
+            return Err(into_rich_error(err, &filename, &code));
         }
     };
     Ok(ExecutedKcl {
@@ -501,7 +523,7 @@ async fn sketch_constraint_report_impl(input: KclInput) -> PyResult<SketchConstr
         }
         Err(err) => {
             if err.is_retryable() {
-                return Err(into_miette(err, &filename, &code));
+                return Err(into_rich_error(err, &filename, &code));
             }
             let error_text = render_miette(err.clone(), &code);
             Ok(sketch_constraint_report_from_error(&err, &filename, &code, error_text))
