@@ -90,7 +90,7 @@ test(
 
     const editor = new EditorFixture(page)
     await editor.openPane()
-    const initialCode = '@settings(kclVersion = 2.0)\n'
+    const initialCode = '@settings(kclVersion = "3.0-preview")\n'
     const queuedCode = `${initialCode}queuedCloudEdit = 42\n`
     await editor.expectEditor.toContain(initialCode.trimEnd())
     await editor.replaceCodeByTyping(initialCode, queuedCode)
