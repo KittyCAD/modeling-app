@@ -3,8 +3,12 @@ import {
   defineContract,
   defineService,
 } from '@kittycad/registry'
+import type { ReadonlySignal } from '@preact/signals-core'
 import type { IndexLoaderData } from '@src/lib/types'
-import type { AppUrlState } from '@src/registry/contracts/appUrl'
+import type {
+  AppUrlState,
+  ParsedAppNavigationIntent,
+} from '@src/registry/contracts/appUrl'
 
 declare const appNavigationIntentInput: unique symbol
 declare const appNavigationIntentOutput: unique symbol
@@ -18,6 +22,7 @@ declare const appNavigationIntentOutput: unique symbol
  */
 export interface AppNavigationIntent<Input, Output> {
   readonly id: string
+  readonly placement: 'primary' | 'additional'
   readonly [appNavigationIntentInput]?: Input
   readonly [appNavigationIntentOutput]?: Output
 }
@@ -29,9 +34,10 @@ export interface AppNavigationIntentContribution {
 }
 
 export function defineAppNavigationIntent<Input, Output>(
-  id: string
+  id: string,
+  { placement = 'primary' }: { placement?: 'primary' | 'additional' } = {}
 ): AppNavigationIntent<Input, Output> {
-  return { id }
+  return { id, placement }
 }
 
 export function defineAppNavigationIntentContribution<Input, Output>(
@@ -65,6 +71,18 @@ export const openProjectIntent = defineAppNavigationIntent<
   OpenProjectOutcome
 >('project.open')
 
+export interface ShowHomeRequest {
+  libraryId?: string
+  /** Parsed URL-owned state, present only while restoring cold startup. */
+  startup?: AppUrlState
+}
+
+/** Enter Home and optionally restore its selected project library. */
+export const showHomeIntent = defineAppNavigationIntent<
+  ShowHomeRequest,
+  undefined
+>('home.show')
+
 /**
  * Coordinates application intents without owning durable application state.
  *
@@ -72,11 +90,13 @@ export const openProjectIntent = defineAppNavigationIntent<
  * resolves requests and delegates to the capability that owns the result.
  */
 export interface AppNavigationService {
+  /** The additional application intent currently presented over a destination. */
+  activeAdditionalIntent: ReadonlySignal<ParsedAppNavigationIntent | undefined>
   dispatch: <Input, Output>(
     intent: AppNavigationIntent<Input, Output>,
     input: Input
   ) => Promise<Output>
-  showHome: () => Promise<void>
+  dismissAdditionalIntent: () => void
 }
 
 export const appNavigationContract = defineContract({

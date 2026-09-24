@@ -30,7 +30,10 @@ import {
   SystemIOMachineEvents,
   SystemIOMachineStates,
 } from '@src/machines/systemIO/utils'
-import { appNavigationService } from '@src/registry/contracts/appNavigation'
+import {
+  appNavigationService,
+  openProjectIntent,
+} from '@src/registry/contracts/appNavigation'
 import { appUrlService } from '@src/registry/contracts/appUrl'
 import { shouldNavigateToRequestedPath } from '@src/routes/Onboarding/navigation'
 import { useEffect } from 'react'
@@ -135,7 +138,7 @@ export function SystemIOMachineLogicListener() {
 
     void registry
       .get(appNavigationService)
-      .openProject({ target })
+      .dispatch(openProjectIntent, { target })
       .then(() =>
         registry
           .get(appUrlService)

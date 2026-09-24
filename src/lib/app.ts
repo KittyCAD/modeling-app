@@ -14,6 +14,7 @@ import { lspService } from '@src/lang/lsp/registry/contract'
 import {
   createAppNavigationService,
   createOpenProjectIntentContribution,
+  createShowHomeIntentContribution,
 } from '@src/lib/appNavigation'
 import { createAppNavigationDependencies } from '@src/lib/appNavigationRuntime'
 import { type BillingRegistryService, billingService } from '@src/lib/billing'
@@ -838,9 +839,14 @@ export class App implements AppSubsystems {
     const openProjectNavigation = createOpenProjectIntentContribution(
       navigationDependencies
     )
+    const showHomeNavigation = createShowHomeIntentContribution(
+      navigationDependencies,
+      openProjectNavigation.cancelProjectOpen
+    )
     const preloadedNavigationIntents = [
       ...this.registry.get(appNavigationIntentContributionsValueSpec),
       openProjectNavigation.contribution,
+      showHomeNavigation,
     ]
 
     this.registry.reconfigure(appRegistryServicesSlot, [
@@ -850,6 +856,10 @@ export class App implements AppSubsystems {
           provide(
             appNavigationIntentContributionsValueSpec,
             openProjectNavigation.contribution
+          ),
+          provide(
+            appNavigationIntentContributionsValueSpec,
+            showHomeNavigation
           ),
         ],
         providesServices: [
@@ -865,21 +875,7 @@ export class App implements AppSubsystems {
           // are owned and composed by registry capabilities.
           provideService(
             appNavigationService,
-            (() => {
-              let navigation: ReturnType<typeof createAppNavigationService>
-              navigation = createAppNavigationService(
-                preloadedNavigationIntents,
-                {
-                  showHome: () => {
-                    openProjectNavigation.cancelProjectOpen()
-                    return navigationDependencies.showHome((request) =>
-                      navigation.dispatch(openProjectIntent, request)
-                    )
-                  },
-                }
-              )
-              return navigation
-            })()
+            createAppNavigationService(preloadedNavigationIntents)
           ),
         ],
       }),

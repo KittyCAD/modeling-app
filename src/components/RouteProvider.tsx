@@ -7,7 +7,10 @@ import { getAppSettingsFilePath } from '@src/lib/desktop'
 import { getStringAfterLastSeparator, PATHS } from '@src/lib/paths'
 import { markOnce } from '@src/lib/performance'
 import { trap } from '@src/lib/trap'
-import { appNavigationService } from '@src/registry/contracts/appNavigation'
+import {
+  appNavigationService,
+  showHomeIntent,
+} from '@src/registry/contracts/appNavigation'
 import type { ReactNode } from 'react'
 import { createContext, useEffect, useState } from 'react'
 import { useLocation, useNavigation } from 'react-router-dom'
@@ -126,7 +129,9 @@ export function RouteProvider({ children }: { children: ReactNode }) {
           ) {
             return
           }
-          void app.registry.get(appNavigationService).showHome()
+          void app.registry
+            .get(appNavigationService)
+            .dispatch(showHomeIntent, {})
           return
         }
       }

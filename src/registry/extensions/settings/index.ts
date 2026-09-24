@@ -16,6 +16,7 @@ import {
   settingsMachine,
 } from '@src/machines/settingsMachine'
 import { commandSystemService } from '@src/registry/contracts/commands'
+import { appNavigationIntentContributionsValueSpec } from '@src/registry/contracts/appNavigation'
 import { fileOperationsService } from '@src/registry/contracts/fileOperations'
 import {
   projectLibrarySettingDefaultPoliciesValueSpec,
@@ -31,7 +32,10 @@ import { statusBarGlobalItemsValueSpec } from '@src/registry/contracts/statusBar
 import { wasmPromiseValueSpec } from '@src/registry/contracts/wasm'
 import { useSelector } from '@xstate/react'
 import { createActor } from 'xstate'
-import { settingsNavigationUrlContribution } from './overlay'
+import {
+  openSettingsIntentContribution,
+  settingsNavigationUrlContribution,
+} from './overlay'
 
 export const settingsExtension = defineRegistryItemFactory((ctx) => {
   const settingsSignal = signal<SettingsType>(createSettings())
@@ -112,6 +116,11 @@ export const settingsExtension = defineRegistryItemFactory((ctx) => {
 const settingsRegistryItem = defineRegistryItem({
   id: 'settings',
   provides: [
+    provide(
+      appNavigationIntentContributionsValueSpec,
+      openSettingsIntentContribution,
+      { key: openSettingsIntentContribution.intentId }
+    ),
     provide(
       appNavigationUrlContributionsValueSpec,
       settingsNavigationUrlContribution,

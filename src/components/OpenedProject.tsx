@@ -42,7 +42,10 @@ import { xStateValueToString } from '@src/lib/xStateValueToString'
 
 import { useFolders, useLastOperation } from '@src/machines/systemIO/hooks'
 import { SystemIOMachineStates } from '@src/machines/systemIO/utils'
-import { appNavigationService } from '@src/registry/contracts/appNavigation'
+import {
+  appNavigationService,
+  showHomeIntent,
+} from '@src/registry/contracts/appNavigation'
 import {
   filterStatusBarItemsForScopes,
   statusBarGlobalItemsValueSpec,
@@ -129,7 +132,7 @@ export function OpenedProject() {
         return
       }
       if (presence.type === 'missing') {
-        void app.registry.get(appNavigationService).showHome()
+        void app.registry.get(appNavigationService).dispatch(showHomeIntent, {})
       }
     })
 

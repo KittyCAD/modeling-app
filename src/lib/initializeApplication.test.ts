@@ -1,5 +1,10 @@
 import type { App } from '@src/lib/app'
 import { initializeApplication } from '@src/lib/initializeApplication'
+import {
+  appNavigationService,
+  showHomeIntent,
+} from '@src/registry/contracts/appNavigation'
+import { openSettingsIntent } from '@src/registry/extensions/settings/overlay'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 const mocks = vi.hoisted(() => ({
@@ -9,6 +14,7 @@ const mocks = vi.hoisted(() => ({
   readInitialUrl: vi.fn(),
   formatUrl: vi.fn(),
   navigate: vi.fn(),
+  dispatch: vi.fn(async () => undefined),
 }))
 
 vi.mock('@src/lib/routeInit', () => ({
@@ -20,11 +26,14 @@ vi.mock('@src/lib/routeInit', () => ({
 function fakeApp(): App {
   return {
     registry: {
-      get: () => ({
-        readInitialUrl: mocks.readInitialUrl,
-        formatUrl: mocks.formatUrl,
-        navigate: mocks.navigate,
-      }),
+      get: (service: unknown) =>
+        service === appNavigationService
+          ? { dispatch: mocks.dispatch }
+          : {
+              readInitialUrl: mocks.readInitialUrl,
+              formatUrl: mocks.formatUrl,
+              navigate: mocks.navigate,
+            },
     },
   } as unknown as App
 }
@@ -96,7 +105,6 @@ describe('initializeApplication', () => {
       destination: { type: 'home' },
       urlState: { search: '?pool=alpha', hash: '' },
     })
-    mocks.initHomeRoute.mockResolvedValue({ kind: 'ready', data: {} })
     mocks.formatUrl.mockReturnValue('/home?pool=alpha')
 
     await initializeApplication(fakeApp(), {
@@ -112,7 +120,30 @@ describe('initializeApplication', () => {
     expect(mocks.navigate).toHaveBeenCalledWith('/home?pool=alpha', {
       replace: true,
     })
-    expect(mocks.initHomeRoute).toHaveBeenCalledBefore(mocks.navigate)
+    expect(mocks.dispatch).toHaveBeenCalledWith(showHomeIntent, {
+      startup: { search: '?pool=alpha', hash: '' },
+    })
+    expect(mocks.dispatch).toHaveBeenCalledBefore(mocks.navigate)
+  })
+
+  it('dispatches contributed additional intents after the primary destination', async () => {
+    mocks.readInitialUrl.mockReturnValue({
+      type: 'launch',
+      destination: { type: 'project', target: '/projects/bracket' },
+      additionalIntents: [
+        { intent: openSettingsIntent, input: { tab: 'project' } },
+      ],
+      search: '?tab=project',
+      hash: '',
+    })
+    mocks.initFileRoute.mockResolvedValue({ kind: 'ready', data: {} })
+
+    await initializeApplication(fakeApp())
+
+    expect(mocks.dispatch).toHaveBeenCalledWith(openSettingsIntent, {
+      tab: 'project',
+    })
+    expect(mocks.initFileRoute).toHaveBeenCalledBefore(mocks.dispatch)
   })
 
   it('leaves an unrecognized URL to the render-only routing shell', async () => {
