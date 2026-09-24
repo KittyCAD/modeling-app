@@ -151,6 +151,30 @@ afterEach(() => {
 })
 
 describe('KclManager engine language version', () => {
+  it('recovers when an invalid KCL version is corrected', async () => {
+    const { kclManager } = createKclManagerTestHarness(
+      '@settings(kclVersion = "abcd")\nx = 1'
+    )
+    kclManager.engineCommandManager.started = true
+    const setVersion = vi.spyOn(
+      kclManager.engineCommandManager,
+      'setKclVersion'
+    )
+    const execute = vi
+      .spyOn(kclManager.rustContext, 'execute')
+      .mockResolvedValue(emptyExecState())
+
+    await kclManager.executeCode()
+    expect(kclManager.hasErrors()).toBe(true)
+    expect(setVersion).not.toHaveBeenCalled()
+    expect(execute).not.toHaveBeenCalled()
+
+    await kclManager.executeCode('@settings(kclVersion = 2.0)\nx = 1')
+    expect(setVersion).toHaveBeenCalledExactlyOnceWith('2.0')
+    expect(execute).toHaveBeenCalledOnce()
+    expect(kclManager.hasErrors()).toBe(false)
+  })
+
   it.each(['direct editor', 'checkpoint fallback'] as const)(
     'stops %s sketch execution after a rejected version and recovers on retry',
     async (executionPath) => {
