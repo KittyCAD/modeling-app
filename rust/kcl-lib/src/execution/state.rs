@@ -1615,9 +1615,12 @@ impl ExecState {
 
     /// Check an imported file before executing it. Version mismatches take
     /// priority over versioned syntax restrictions.
+    /// The loader-assigned module ID identifies source and syntax metadata;
+    /// an empty parsed program retains the default AST module ID.
     pub(crate) fn validate_imported_module(
         &self,
         path: &ModulePath,
+        module_id: ModuleId,
         program: &Node<Program>,
         import_range: Option<SourceRange>,
     ) -> Result<(), KclError> {
@@ -1626,7 +1629,7 @@ impl ExecState {
             return Ok(());
         }
 
-        let ranges = self.global.never_type_ranges.get(&program.module_id).ok_or_else(|| {
+        let ranges = self.global.never_type_ranges.get(&module_id).ok_or_else(|| {
             KclError::new_internal(KclErrorDetails::new(
                 format!("Missing `never` type ranges for imported KCL module `{path}`"),
                 import_range.into_iter().collect(),
@@ -1644,15 +1647,15 @@ impl ExecState {
             return Ok(());
         }
 
-        let source = self.global.id_to_source.get(&program.module_id).ok_or_else(|| {
+        let source = self.global.id_to_source.get(&module_id).ok_or_else(|| {
             KclError::new_internal(KclErrorDetails::new(
                 format!("Missing source for imported KCL module `{path}`"),
                 import_range.into_iter().collect(),
             ))
         })?;
-        let validation = crate::parsing::validate_use_keyword_source(&source.source, program.module_id)
-            .and_then(|_| crate::parsing::validate_enum_keyword_source(&source.source, program.module_id))
-            .and_then(|_| crate::parsing::validate_import_modifier_source(&source.source, program.module_id));
+        let validation = crate::parsing::validate_use_keyword_source(&source.source, module_id)
+            .and_then(|_| crate::parsing::validate_enum_keyword_source(&source.source, module_id))
+            .and_then(|_| crate::parsing::validate_import_modifier_source(&source.source, module_id));
         validation.map_err(|error| match import_range {
             Some(range) => error.add_import_location(&path.import_name(), range),
             None => error,

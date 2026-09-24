@@ -1070,7 +1070,7 @@ impl ExecutorContext {
         // Check the imported file's declared version and effective keyword
         // restrictions before executing its body.
         exec_state
-            .validate_imported_module(path, program, None)
+            .validate_imported_module(path, module_id, program, None)
             .map_err(|err| (err, None, None))?;
 
         // When executing only the new statements in incremental execution or
@@ -1384,7 +1384,7 @@ impl ExecutorContext {
             && let Some(ModuleRepr::Kcl(program, _)) =
                 exec_state.global.module_infos.get(&module_id).map(|info| &info.repr)
         {
-            exec_state.validate_imported_module(&module_path, program, Some(source_range))?;
+            exec_state.validate_imported_module(&module_path, module_id, program, Some(source_range))?;
         }
 
         if let ModulePath::Local { value, .. } = &module_path {
