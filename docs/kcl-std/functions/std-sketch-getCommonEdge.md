@@ -5,6 +5,8 @@ excerpt: "Get the shared edge between two faces."
 layout: manual
 ---
 
+**WARNING:** This function is deprecated as of KCL 3.0.
+
 Get the shared edge between two faces.
 
 ```kcl
