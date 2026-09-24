@@ -1,5 +1,9 @@
 import { ClientErrorCode, reportClientError } from '@src/lib/clientErrors'
 import { CloudApiError } from '@src/lib/cloudSync/cloudApi'
+import {
+  getCloudSyncFailureCause,
+  getCloudSyncFailureContext,
+} from '@src/lib/cloudSync/failureContext'
 import type { ProjectManifest, Revision } from '@src/lib/cloudSync/types'
 import { hashString } from '@src/lib/stringUtils'
 import { reportRejection } from '@src/lib/trap'
@@ -280,8 +284,16 @@ export function reportCloudSyncFailure(
   operation: CloudSyncFailureOperation,
   error: unknown
 ) {
-  const categoryError =
-    error instanceof Error && error.cause !== undefined ? error.cause : error
+  const categoryError = getCloudSyncFailureCause(error)
+  const attachedContext = getCloudSyncFailureContext(error)
+  const failureStage =
+    attachedContext?.stage ??
+    (categoryError instanceof CloudApiError ? 'network' : 'unknown')
+  const failurePoint =
+    attachedContext?.point ??
+    (categoryError instanceof CloudApiError
+      ? 'cloud-api-request'
+      : 'unclassified')
   const failureKind =
     typeof categoryError === 'object' &&
     categoryError !== null &&
@@ -305,10 +317,12 @@ export function reportCloudSyncFailure(
     errorName: 'CloudSyncFailure',
     message: `Cloud sync failed during ${operation}.`,
     route,
-    dedupeKey: `CloudSync:failure:${operation}:${errorType}:${cloudApiStatus ?? 'none'}:${failureKind ?? 'unknown'}`,
+    dedupeKey: `CloudSync:failure:${operation}:${failureStage}:${failurePoint}:${errorType}:${cloudApiStatus ?? 'none'}:${failureKind ?? 'unknown'}`,
     extra: {
       source: 'CloudSyncEngine',
       operation,
+      failureStage,
+      failurePoint,
       errorType,
       cloudApiStatus,
       failureKind,
