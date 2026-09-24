@@ -51,6 +51,20 @@ describe('parseInitialUrl', () => {
     })
   })
 
+  it('treats a desktop document URL without a route hash as the index', () => {
+    expect(
+      parseInitialUrl(
+        'file:///Applications/Zoo.app/index.html/?cmd=app.theme&groupId=settings',
+        { navigationIntents, usesHashRouter: true }
+      )
+    ).toEqual({
+      type: 'launch',
+      destination: { type: 'index' },
+      search: '?cmd=app.theme&groupId=settings',
+      hash: '',
+    })
+  })
+
   it('parses a selected library as home state', () => {
     expect(
       parseInitialUrl(
