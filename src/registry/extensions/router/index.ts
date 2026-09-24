@@ -6,11 +6,11 @@ import {
 } from '@kittycad/registry'
 import { signal } from '@preact/signals-core'
 import {
-  type AppOverlayContribution,
+  type AppNavigationUrlContribution,
   type AppUrlRuntimeValues,
   type AppUrlService,
+  appNavigationUrlContributionsValueSpec,
   appUrlService,
-  appOverlayContributionsValueSpec,
 } from '@src/registry/contracts/appUrl'
 import {
   createPath,
@@ -105,9 +105,9 @@ const createUnseededNavigate =
   }
 
 export const createAppUrlService = ({
-  getOverlayContributions = () => [],
+  getNavigationIntents = () => [],
 }: {
-  getOverlayContributions?: () => readonly AppOverlayContribution[]
+  getNavigationIntents?: () => readonly AppNavigationUrlContribution[]
 } = {}): AppUrlService => {
   const location = signal<Location>(readBrowserLocation())
   const isReady = signal(false)
@@ -115,6 +115,17 @@ export const createAppUrlService = ({
     location.value = readBrowserLocation()
   }
   let activeNavigate = createUnseededNavigate(syncBrowserLocation)
+  let preloadedNavigationIntents:
+    | readonly AppNavigationUrlContribution[]
+    | undefined
+  /**
+   * Freeze startup-time URL codecs on first use. Runtime extension changes take
+   * effect after an application restart instead of racing initial URL parsing.
+   */
+  const getPreloadedNavigationIntents = () => {
+    preloadedNavigationIntents ??= [...getNavigationIntents()]
+    return preloadedNavigationIntents
+  }
 
   const navigate: NavigateFunction = (
     toOrDelta: To | number,
@@ -146,7 +157,7 @@ export const createAppUrlService = ({
       usesHashRouter = Boolean(window.electron),
     } = {}) =>
       parseInitialUrl(requestUrl, {
-        overlays: getOverlayContributions(),
+        navigationIntents: getPreloadedNavigationIntents(),
         usesHashRouter,
       }),
     getLocation: () => location.value,
@@ -175,8 +186,8 @@ export const createAppUrlService = ({
 
 export const routerExtension = defineRegistryItemFactory((ctx) => {
   const serviceImpl = createAppUrlService({
-    getOverlayContributions: () =>
-      ctx.valueSpecs.get(appOverlayContributionsValueSpec),
+    getNavigationIntents: () =>
+      ctx.valueSpecs.get(appNavigationUrlContributionsValueSpec),
   })
 
   return {

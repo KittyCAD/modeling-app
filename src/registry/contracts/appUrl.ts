@@ -4,6 +4,7 @@ import {
   defineService,
 } from '@kittycad/registry'
 import type { ReadonlySignal } from '@preact/signals-core'
+import type { AppNavigationIntent } from '@src/registry/contracts/appNavigation'
 import type { Location, NavigateFunction } from 'react-router-dom'
 
 export type AppUrlRuntimeValues = {
@@ -13,13 +14,13 @@ export type AppUrlRuntimeValues = {
 
 export type AppDestinationKind = 'home' | 'project'
 
-export interface AppOverlayUrlParts {
+export interface AppNavigationUrlParts {
   path: string
   search?: string
   hash?: string
 }
 
-export interface ParseAppOverlayInput {
+export interface ParseAppNavigationUrlInput {
   destination: AppDestinationKind
   path: string
   search: URLSearchParams
@@ -27,15 +28,16 @@ export interface ParseAppOverlayInput {
 }
 
 /**
- * One capability-owned overlay that can be restored from and projected to a
- * URL. The registry erases each contribution's private state type only after
- * its parser and projector have been paired.
+ * The URL codec for one capability-owned application-navigation intent.
+ *
+ * The registry erases each intent's private input type only after its parser
+ * and projector have been paired with the same typed intent token.
  */
-export interface AppOverlayContribution {
-  id: string
+export interface AppNavigationUrlContribution {
+  intent: AppNavigationIntent<unknown, unknown>
   /** Returning `undefined` means this contribution did not match. */
-  parse: (input: ParseAppOverlayInput) => unknown
-  format: (state: unknown) => AppOverlayUrlParts
+  parse: (input: ParseAppNavigationUrlInput) => unknown
+  format: (input: unknown) => AppNavigationUrlParts
 }
 
 export type AppDestination =
@@ -44,9 +46,9 @@ export type AppDestination =
   | { type: 'project'; target: string }
   | { type: 'sign-in' }
 
-export interface ParsedAppOverlay {
-  contributionId: string
-  state: unknown
+export interface ParsedAppNavigationIntent {
+  intent: AppNavigationIntent<unknown, unknown>
+  input: unknown
 }
 
 /** The application intent represented by the URL at cold startup. */
@@ -54,7 +56,7 @@ export type InitialUrlIntent =
   | {
       type: 'launch'
       destination: AppDestination
-      overlay?: ParsedAppOverlay
+      additionalIntents?: readonly ParsedAppNavigationIntent[]
       search: string
       hash: string
     }
@@ -65,18 +67,18 @@ export type InitialUrlIntent =
       hash: string
     }
 
-export interface TypedAppOverlayContribution<State> {
-  id: string
-  parse: (input: ParseAppOverlayInput) => State | undefined
-  format: (state: State) => AppOverlayUrlParts
+export interface TypedAppNavigationUrlContribution<Input> {
+  parse: (input: ParseAppNavigationUrlInput) => Input | undefined
+  format: (input: Input) => AppNavigationUrlParts
 }
 
-export const defineAppOverlayContribution = <State>(
-  contribution: TypedAppOverlayContribution<State>
-): AppOverlayContribution => ({
-  id: contribution.id,
+export const defineAppNavigationUrlContribution = <Input, Output>(
+  intent: AppNavigationIntent<Input, Output>,
+  contribution: TypedAppNavigationUrlContribution<Input>
+): AppNavigationUrlContribution => ({
+  intent,
   parse: contribution.parse,
-  format: (state) => contribution.format(state as State),
+  format: (input) => contribution.format(input as Input),
 })
 
 /**
@@ -103,10 +105,11 @@ export type AppUrlService = {
 
 export const appUrlContract = defineContract({
   appUrlService: defineService<AppUrlService>('application-url.service'),
-  appOverlayContributionsValueSpec: appendValueSpec<AppOverlayContribution>(
-    'application-overlays'
-  ),
+  appNavigationUrlContributionsValueSpec:
+    appendValueSpec<AppNavigationUrlContribution>(
+      'application-navigation.url-contributions'
+    ),
 })
 
-export const { appOverlayContributionsValueSpec, appUrlService } =
+export const { appNavigationUrlContributionsValueSpec, appUrlService } =
   appUrlContract
