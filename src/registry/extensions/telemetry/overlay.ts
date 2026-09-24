@@ -1,15 +1,21 @@
 import { PATHS } from '@src/lib/paths'
-import { defineAppOverlayContribution } from '@src/registry/contracts/appUrl'
+import { defineAppNavigationIntent } from '@src/registry/contracts/appNavigation'
+import { defineAppNavigationUrlContribution } from '@src/registry/contracts/appUrl'
 
 export interface TelemetryOverlayState {
   readonly type: 'telemetry'
 }
 
-export const telemetryOverlayContribution = defineAppOverlayContribution({
-  id: 'telemetry',
-  parse: ({ path }) =>
-    path === PATHS.TELEMETRY
-      ? ({ type: 'telemetry' } satisfies TelemetryOverlayState)
-      : undefined,
-  format: (_state: TelemetryOverlayState) => ({ path: PATHS.TELEMETRY }),
-})
+export const openTelemetryIntent = defineAppNavigationIntent<
+  TelemetryOverlayState,
+  void
+>('telemetry.open')
+
+export const telemetryNavigationUrlContribution =
+  defineAppNavigationUrlContribution(openTelemetryIntent, {
+    parse: ({ path }) =>
+      path === PATHS.TELEMETRY
+        ? ({ type: 'telemetry' } satisfies TelemetryOverlayState)
+        : undefined,
+    format: (_state: TelemetryOverlayState) => ({ path: PATHS.TELEMETRY }),
+  })

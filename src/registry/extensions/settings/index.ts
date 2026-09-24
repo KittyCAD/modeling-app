@@ -21,7 +21,7 @@ import {
   projectLibrarySettingDefaultPoliciesValueSpec,
   projectLibrarySettingDefaultsValueSpec,
 } from '@src/registry/contracts/projectLibraries'
-import { appOverlayContributionsValueSpec } from '@src/registry/contracts/appUrl'
+import { appNavigationUrlContributionsValueSpec } from '@src/registry/contracts/appUrl'
 import {
   type SettingsRegistryService,
   settingsService,
@@ -31,7 +31,7 @@ import { statusBarGlobalItemsValueSpec } from '@src/registry/contracts/statusBar
 import { wasmPromiseValueSpec } from '@src/registry/contracts/wasm'
 import { useSelector } from '@xstate/react'
 import { createActor } from 'xstate'
-import { settingsOverlayContribution } from './overlay'
+import { settingsNavigationUrlContribution } from './overlay'
 
 export const settingsExtension = defineRegistryItemFactory((ctx) => {
   const settingsSignal = signal<SettingsType>(createSettings())
@@ -112,9 +112,11 @@ export const settingsExtension = defineRegistryItemFactory((ctx) => {
 const settingsRegistryItem = defineRegistryItem({
   id: 'settings',
   provides: [
-    provide(appOverlayContributionsValueSpec, settingsOverlayContribution, {
-      key: settingsOverlayContribution.id,
-    }),
+    provide(
+      appNavigationUrlContributionsValueSpec,
+      settingsNavigationUrlContribution,
+      { key: settingsNavigationUrlContribution.intent.id }
+    ),
     provide(statusBarGlobalItemsValueSpec, {
       id: 'settings',
       element: 'link',
