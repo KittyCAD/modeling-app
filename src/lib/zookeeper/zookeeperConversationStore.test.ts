@@ -103,7 +103,7 @@ describe('project-backed Zookeeper conversations', () => {
   it('resumes on another device using only the synced project.toml', async () => {
     await store().saveProjectConversationId({ projectId, conversationId })
     const syncedToml = files.get(projectTomlPath)!
-    expect(syncedToml).toContain('[settings.zookeeper."zoo.dev"]')
+    expect(syncedToml).toContain('[zookeeper."zoo.dev"]')
     expect(
       getZookeeperConversationMetadataFromProjectTomlContents(
         syncedToml,
@@ -387,7 +387,7 @@ describe('project-backed Zookeeper conversations', () => {
   ])(
     'rejects malformed conversation metadata without replacing it: %s',
     async (metadata) => {
-      const contents = `${initialToml}\n[settings.zookeeper."zoo.dev"]\n${metadata}\n`
+      const contents = `${initialToml}\n[zookeeper."zoo.dev"]\n${metadata}\n`
       files.set(projectTomlPath, contents)
       await expect(store().getProjectConversationId(projectId)).rejects.toThrow(
         'Invalid Zookeeper conversation ID'

@@ -168,7 +168,7 @@ export function setProjectIdInProjectTomlContents(
     settings.meta = {}
   }
   settings.meta.id = projectId
-  delete settings.zookeeper
+  delete table.zookeeper
 
   return stringifyProjectToml(table)
 }
@@ -185,10 +185,10 @@ export function getZookeeperConversationMetadataFromProjectTomlContents(
       'Unable to parse project.toml while reading Zookeeper conversation'
     )
   }
-  if (!isTomlTable(table.settings) || table.settings.zookeeper === undefined) {
+  if (table.zookeeper === undefined) {
     return { conversationIds: [], canMigrateLegacyConversation: true }
   }
-  const zookeeper = table.settings.zookeeper
+  const zookeeper = table.zookeeper
   if (!isTomlTable(zookeeper)) {
     return new Error('Invalid Zookeeper metadata in project.toml')
   }
@@ -239,14 +239,10 @@ export function setZookeeperConversationInProjectTomlContents(
       'Unable to parse project.toml while saving Zookeeper conversation'
     )
   }
-  if (!isTomlTable(table.settings)) {
-    table.settings = {}
+  if (!isTomlTable(table.zookeeper)) {
+    table.zookeeper = {}
   }
-  const settings = table.settings
-  if (!isTomlTable(settings.zookeeper)) {
-    settings.zookeeper = {}
-  }
-  const zookeeper = settings.zookeeper
+  const zookeeper = table.zookeeper
   if (!isTomlTable(zookeeper[environmentName])) {
     zookeeper[environmentName] = {}
   }
@@ -295,7 +291,7 @@ export function prepareProjectTomlForDuplication(
     settings.meta = {}
   }
   settings.meta.id = projectId
-  delete settings.zookeeper
+  delete table.zookeeper
 
   return stringifyProjectToml(table)
 }
@@ -323,17 +319,6 @@ export function preserveProjectTomlMetadataInProjectSettingsContents(
     if (key !== 'settings' && !(key in nextTable)) {
       nextTable[key] = value
     }
-  }
-
-  // Conversation metadata is owned by the conversation store, not the settings form.
-  if (
-    isTomlTable(existingTable.settings) &&
-    existingTable.settings.zookeeper !== undefined
-  ) {
-    if (!isTomlTable(nextTable.settings)) {
-      nextTable.settings = {}
-    }
-    nextTable.settings.zookeeper = existingTable.settings.zookeeper
   }
 
   return stringifyProjectToml(nextTable)

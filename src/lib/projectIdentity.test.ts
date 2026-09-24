@@ -61,7 +61,7 @@ describe('separateProjectsSharingProjectId', () => {
   it('keeps the selected project id and gives every other copy a new id', async () => {
     fsZdsMocks.readFile.mockResolvedValue(
       new TextEncoder().encode(
-        `${projectToml('shared-project-id')}\n[settings.zookeeper."zoo.dev"]\nconversation_ids = ["old-conversation"]\n`
+        `${projectToml('shared-project-id')}\n[zookeeper."zoo.dev"]\nconversation_ids = ["old-conversation"]\n`
       )
     )
     await expect(

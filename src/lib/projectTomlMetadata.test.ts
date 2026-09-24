@@ -9,6 +9,7 @@ import {
   setCloudProjectIdInProjectTomlContents,
   setProjectIdInProjectTomlContents,
   setProjectTitleInProjectTomlContents,
+  getZookeeperConversationMetadataFromProjectTomlContents,
 } from '@src/lib/projectTomlMetadata'
 import { describe, expect, it } from 'vitest'
 
@@ -84,7 +85,7 @@ describe('projectTomlMetadata', () => {
 
   it('prepares duplicated projects without dropping unrelated metadata', () => {
     const toml = prepareProjectTomlForDuplication(
-      'title = "Original"\ndefault_file = "nested/part.kcl"\n\n[custom]\nvalue = "kept"\n\n[settings.meta]\nid = "old-local-id"\n\n[settings.zookeeper."zoo.dev"]\nconversation_ids = ["old-conversation"]\n\n[cloud."zoo.dev"]\nproject_id = "old-cloud-id"\n',
+      'title = "Original"\ndefault_file = "nested/part.kcl"\n\n[custom]\nvalue = "kept"\n\n[settings.meta]\nid = "old-local-id"\n\n[zookeeper."zoo.dev"]\nconversation_ids = ["old-conversation"]\n\n[cloud."zoo.dev"]\nproject_id = "old-cloud-id"\n',
       'Original-1',
       'new-local-id'
     )
@@ -102,24 +103,22 @@ describe('projectTomlMetadata', () => {
     expect(toml).not.toContain('old-conversation')
   })
 
-  it('preserves the latest conversation metadata over a stale settings snapshot', () => {
-    const toml = preserveProjectTomlMetadataInProjectSettingsContents(
-      '[settings.meta]\nid = "project-id"\n[settings.zookeeper."zoo.dev"]\nconversation_ids = ["new-conversation"]\n',
-      '[settings.meta]\nid = "project-id"\n[settings.modeling]\nbase_unit = "mm"\n[settings.zookeeper."zoo.dev"]\nconversation_ids = ["old-conversation"]\n'
-    )
-    expect(toml).toContain('new-conversation')
-    expect(toml).not.toContain('old-conversation')
-    expect(toml).toContain('base_unit = "mm"')
-  })
-
-  it('preserves a cleared conversation list over stale settings', () => {
-    const toml = preserveProjectTomlMetadataInProjectSettingsContents(
-      '[settings.zookeeper."zoo.dev"]\nconversation_ids = []\n',
-      '[settings.zookeeper."zoo.dev"]\nconversation_ids = ["old-conversation"]\n'
-    )
-    expect(toml).toContain('conversation_ids = []')
-    expect(toml).not.toContain('old-conversation')
-  })
+  it.each([
+    { conversationIds: ['22222222-2222-4222-8222-222222222222'] },
+    { conversationIds: [] },
+  ])(
+    'preserves conversation IDs $conversationIds when replacing project settings',
+    ({ conversationIds }) => {
+      const toml = preserveProjectTomlMetadataInProjectSettingsContents(
+        `[settings.meta]\nid = "project-id"\n[zookeeper."zoo.dev"]\nconversation_ids = ${JSON.stringify(conversationIds)}\n`,
+        '[settings.meta]\nid = "project-id"\n[settings.modeling]\nbase_unit = "mm"\n'
+      )
+      expect(
+        getZookeeperConversationMetadataFromProjectTomlContents(toml, 'zoo.dev')
+      ).toEqual({ conversationIds, canMigrateLegacyConversation: false })
+      expect(toml).toContain('base_unit = "mm"')
+    }
+  )
 
   it('preserves top-level project metadata when replacing project settings', () => {
     const toml = preserveProjectTomlMetadataInProjectSettingsContents(
