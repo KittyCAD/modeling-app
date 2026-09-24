@@ -17,14 +17,12 @@ import {
 } from '@e2e/playwright/lib/cloudSyncTestUtils'
 import {
   createProject,
-  expectCloudFeatureEnabled,
   mockClientErrorReports,
   setup,
   token,
 } from '@e2e/playwright/test-utils'
 import type { Page } from '@playwright/test'
 import type { CreatedRemoteProject } from '@src/lib/cloudSync/types'
-import { OPFS_CLOUD_FEATURE_FLAG } from '@src/lib/constants'
 import JSZip from 'jszip'
 
 const CLOUD_SYNC_E2E_TIMEOUT = 20_000
@@ -59,10 +57,11 @@ test(
     const projectName = firstUploadProject.name
     const projectPath = `${PROJECT_DIR}/${projectName}`
 
-    await setup(context, page, testInfo, [OPFS_CLOUD_FEATURE_FLAG], {
+    await setup(context, page, testInfo, [], {
       cloudSyncEnabled: true,
     })
-    await expectCloudFeatureEnabled(page)
+    await page.goto('/home')
+    await expectCloudSyncHomeReady(page)
     // The shared CI account has thousands of projects. Filter their cards
     // through the UI without replacing the real project-list response.
     await page.getByPlaceholder(/^Search projects/).fill(projectName)
@@ -179,10 +178,10 @@ test(
       },
     })
 
-    await setup(context, page, testInfo, [OPFS_CLOUD_FEATURE_FLAG], {
+    await setup(context, page, testInfo, [], {
       cloudSyncEnabled: true,
     })
-    await expectCloudFeatureEnabled(page)
+    await page.goto('/home')
     await expectCloudSyncHomeReady(page)
 
     await page.getByTestId('home-create-from-sample').click()
@@ -273,10 +272,10 @@ test(
       brokenArchiveProjectIds: ['remote-empty-broken'],
     })
 
-    await setup(context, page, testInfo, [OPFS_CLOUD_FEATURE_FLAG], {
+    await setup(context, page, testInfo, [], {
       cloudSyncEnabled: true,
     })
-    await expectCloudFeatureEnabled(page)
+    await page.goto('/home')
     await expectCloudSyncHomeReady(page)
     await expect(
       page.getByTestId('project-library-empty').first()
@@ -426,7 +425,7 @@ test(
       },
     })
 
-    await setup(context, page, testInfo, [OPFS_CLOUD_FEATURE_FLAG], {
+    await setup(context, page, testInfo, [], {
       cloudSyncEnabled: true,
     })
     // Open the shared link directly. Visiting Home first interrupts its pending
@@ -588,10 +587,10 @@ test(
       )
 
     await mockClientErrorReports(context)
-    await setup(context, page, testInfo, [OPFS_CLOUD_FEATURE_FLAG], {
+    await setup(context, page, testInfo, [], {
       cloudSyncEnabled: true,
     })
-    await expectCloudFeatureEnabled(page)
+    await page.goto('/home')
     await expectCloudSyncHomeReady(page)
 
     const cleanSyncedFiles = {
