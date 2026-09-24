@@ -6,9 +6,9 @@ import {
 } from '@src/lang/wasm'
 import {
   DEFAULT_DEFAULT_LENGTH_UNIT,
-  DEFAULT_KCL_VERSION,
   PROJECT_ENTRYPOINT,
 } from '@src/lib/constants'
+import { DEFAULT_KCL_VERSION } from '@src/lib/kclVersion'
 import { ensureDirectory } from '@src/lib/fileSystem/ensureDirectory'
 import fsZds from '@src/lib/fs-zds'
 import { err } from '@src/lib/trap'

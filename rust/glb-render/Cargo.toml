@@ -12,7 +12,7 @@ workspace = true
 
 [dependencies]
 bevy_math = "0.19.1"
-gltf = { git = "https://github.com/KittyCAD/gltf-rs", rev = "176933c96e36f9dc56566a7e986f6a4edbf43b09", default-features = false, features = ["utils", "KITTYCAD_boundary_representation"] }
+gltf = { git = "https://github.com/KittyCAD/gltf-rs", rev = "7e90eff77f296530e9573bd3680a742d740cde52", default-features = false, features = ["utils", "KITTYCAD_boundary_representation"] }
 image = { version = "0.25", default-features = false, features = ["png"] }
 
 [dev-dependencies]

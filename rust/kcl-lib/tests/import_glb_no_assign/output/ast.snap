@@ -1,0 +1,57 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of parsing import_glb_no_assign.kcl
+---
+{
+  "Ok": {
+    "body": [
+      {
+        "commentStart": 0,
+        "end": 0,
+        "moduleId": 0,
+        "path": {
+          "type": "Foreign",
+          "path": "../../e2e/executor/inputs/cube.glb"
+        },
+        "selector": {
+          "type": "None",
+          "alias": null
+        },
+        "start": 0,
+        "type": "ImportStatement",
+        "type": "ImportStatement"
+      },
+      {
+        "commentStart": 0,
+        "end": 0,
+        "expression": {
+          "abs_path": false,
+          "commentStart": 0,
+          "end": 0,
+          "moduleId": 0,
+          "name": {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "name": "cube",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "path": [],
+          "start": 0,
+          "type": "Name",
+          "type": "Name"
+        },
+        "moduleId": 0,
+        "start": 0,
+        "type": "ExpressionStatement",
+        "type": "ExpressionStatement"
+      }
+    ],
+    "commentStart": 0,
+    "end": 0,
+    "moduleId": 0,
+    "start": 0,
+    "type": "Program"
+  }
+}

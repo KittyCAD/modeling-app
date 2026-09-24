@@ -1,0 +1,28 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Artifact commands import_gltf_with_bin.kcl
+---
+{
+  "rust/kcl-lib/e2e/executor/inputs/cube.gltf": [
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "import_files",
+        "files": [
+          {
+            "path": "cube.gltf",
+            "data": []
+          },
+          {
+            "path": "cube.bin",
+            "data": []
+          }
+        ],
+        "format": {
+          "type": "gltf"
+        }
+      }
+    }
+  ]
+}

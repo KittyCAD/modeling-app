@@ -3,7 +3,7 @@
 // is outside it, which is why the message names the view rather than relying on
 // the range alone. The unit tests in execution::named_views cover the rule
 // itself; this covers what the author is shown.
-@settings(experimentalFeatures = allow)
+@settings(kclVersion = "3.0-preview")
 
 front = view::named(
   "Front",

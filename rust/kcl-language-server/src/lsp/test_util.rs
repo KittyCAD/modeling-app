@@ -10,7 +10,10 @@ pub async fn kcl_lsp_server(execute: bool) -> Result<crate::lsp::kcl::Backend> {
         kcl_lib::lsp_support::engine::new_zoo_client(if execute { None } else { Some("bad_token".to_string()) }, None)?;
 
     let executor_ctx = if execute {
-        Some(crate::execution::ExecutorContext::new(&zoo_client, Default::default()).await?)
+        Some(
+            crate::execution::ExecutorContext::new(&zoo_client, Default::default(), kcl_lib::KclVersion::default())
+                .await?,
+        )
     } else {
         None
     };

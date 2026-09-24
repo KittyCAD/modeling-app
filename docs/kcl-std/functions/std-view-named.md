@@ -5,9 +5,9 @@ excerpt: "Create a named view: a camera paired with the objects the view shows o
 layout: manual
 ---
 
-**WARNING:** This function is experimental and may change or be removed.
-
 Create a named view: a camera paired with the objects the view shows or hides.
+
+**Added in KCL 3.0.**
 
 ```kcl
 view::named(
@@ -106,7 +106,7 @@ original `planeOf()` result remains unsupported.
 ### Examples
 
 ```kcl
-@settings(kclVersion = 2.0, experimentalFeatures = allow)
+@settings(kclVersion = "3.0-preview")
 
 // Two bodies to look at: a plate, and a boss standing on it. Declaring a
 // view never changes what a program builds, so this part is ordinary KCL.
