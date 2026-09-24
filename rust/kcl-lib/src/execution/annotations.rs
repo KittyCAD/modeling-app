@@ -349,6 +349,11 @@ impl Default for FnAttrs {
 pub struct VersionConstraint(Vec<u32>);
 
 impl VersionConstraint {
+    /// Construct a major.minor version boundary from numeric components.
+    pub(crate) fn new(major: u32, minor: u32) -> Self {
+        Self(vec![major, minor])
+    }
+
     /// Parse a dotted version string like "1.0" or "2.1.3". Returns `None` for empty
     /// input or any component that doesn't parse as a non-negative integer.
     pub fn parse(s: &str) -> Option<Self> {

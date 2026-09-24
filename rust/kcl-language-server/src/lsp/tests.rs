@@ -4632,27 +4632,29 @@ fn assert_single_error(diagnostics: &[Diagnostic], expected_message_fragment: &s
 
 #[tokio::test(flavor = "multi_thread")]
 async fn exec_time_error_issue_reaches_diagnostics() {
-    // `Orientation` is a std enum, and using an enum without
-    // `@settings(experimentalFeatures = allow)` raises an Error-severity
-    // compilation issue while the program runs. The program parses cleanly and
-    // the run succeeds, so this covers the execution half of the plumbing on
-    // its own.
+    // Calling a function with an explicitly experimental parameter records an
+    // Error-severity issue during execution while the call still returns a
+    // value. The language server must publish that issue after parsing.
     let server = kcl_lsp_server_mock_execution().await.unwrap();
 
-    server.did_open(did_open_params("o = view::Orientation::Front\n")).await;
+    let code = r#"@settings(kclVersion = 2.0)
+fn inc(@x, @(experimental = true) amount? = 1) {
+  return x + amount
+}
+answer = inc(5, amount = 2)
+"#;
+    server.did_open(did_open_params(code)).await;
 
     let diagnostics = server
         .diagnostics_map
         .get("file:///test.kcl")
         .expect("execution raised an issue but nothing was published");
-    assert_single_error(&diagnostics, "Use of the enum `Orientation` is experimental");
+    assert_single_error(&diagnostics, "Use of `inc(amount)` is experimental");
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn parse_time_error_issue_survives_execution() {
-    // An enum declaration is gated in the parser, so its Error-severity issue
-    // is published before the program runs. A run that raises nothing of its
-    // own must leave that issue in place.
+async fn enum_version_error_reaches_diagnostics() {
+    // The declaration fails during execution when the entry point uses KCL V1.
     let server = kcl_lsp_server_mock_execution().await.unwrap();
 
     server.did_open(did_open_params("type Color { | Red }\n")).await;
@@ -4660,8 +4662,8 @@ async fn parse_time_error_issue_survives_execution() {
     let diagnostics = server
         .diagnostics_map
         .get("file:///test.kcl")
-        .expect("the parse issue was published and then lost");
-    assert_single_error(&diagnostics, "Use of enum declarations is experimental");
+        .expect("the version error was not published");
+    assert_single_error(&diagnostics, "Enum declarations require KCL 3.0-preview");
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -4682,9 +4684,7 @@ async fn repeated_pass_settles_on_the_same_diagnostics() {
     // clearing mistake shows up: the set would come back empty or doubled.
     let server = kcl_lsp_server_mock_execution().await.unwrap();
 
-    // Both halves at once. The declaration is gated in the parser and the use
-    // is gated at execution, so the settled set holds two errors that reach it
-    // by different routes.
+    // The declaration's version error must remain stable across repeated passes.
     let code = "type Color { | Red }\nc = Color::Red\n";
 
     server.did_open(did_open_params(code)).await;
@@ -4693,7 +4693,7 @@ async fn repeated_pass_settles_on_the_same_diagnostics() {
         .get("file:///test.kcl")
         .expect("nothing was published")
         .clone();
-    assert_eq!(settled.len(), 2, "settled on {settled:#?}");
+    assert_eq!(settled.len(), 1, "settled on {settled:#?}");
     assert!(settled.iter().all(|d| d.severity == Some(DiagnosticSeverity::ERROR)));
 
     server.did_change(did_change_params(code, 2)).await;
