@@ -60,9 +60,10 @@ beforeEach(() => {
 
 describe('appNavigation', () => {
   test('dispatches a capability-contributed intent from the startup catalog', async () => {
-    const openSettingsIntent = defineAppNavigationIntent<{ tab: string }, void>(
-      'settings.open'
-    )
+    const openSettingsIntent = defineAppNavigationIntent<
+      { tab: string },
+      undefined
+    >('settings.open')
     const openSettings = vi.fn(async (_input: { tab: string }) => undefined)
     const settingsContribution = defineAppNavigationIntentContribution(
       openSettingsIntent,
@@ -70,7 +71,9 @@ describe('appNavigation', () => {
     )
     const projectOpen = createOpenProjectIntentContribution({
       resolveProjectOpen: vi.fn(async () => resolvedProject),
-      openResolvedProject: vi.fn(async () => ({
+      openResolvedProject: vi.fn<
+        AppNavigationDependencies['openResolvedProject']
+      >(async () => ({
         kind: 'opened',
         data: {
           code: '',
@@ -87,6 +90,27 @@ describe('appNavigation', () => {
     await navigation.dispatch(openSettingsIntent, { tab: 'project' })
 
     expect(openSettings).toHaveBeenCalledWith({ tab: 'project' })
+  })
+
+  test('rejects dispatch when more than one contribution claims an intent', async () => {
+    const intent = defineAppNavigationIntent<Record<string, never>, undefined>(
+      'duplicate.intent'
+    )
+    const first = defineAppNavigationIntentContribution(
+      intent,
+      async () => undefined
+    )
+    const second = defineAppNavigationIntentContribution(
+      intent,
+      async () => undefined
+    )
+    const navigation = createAppNavigationService([first, second], {
+      supersedeProjectOpen: vi.fn(),
+    })
+
+    await expect(navigation.dispatch(intent, {})).rejects.toThrow(
+      'Multiple application navigation intents handle duplicate.intent.'
+    )
   })
 
   test('returns a canonical redirect without opening a project', async () => {

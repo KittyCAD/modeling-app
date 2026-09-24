@@ -114,18 +114,26 @@ export function createAppNavigationService(
     supersedeProjectOpen: AppNavigationService['supersedeProjectOpen']
   }
 ): AppNavigationService {
-  const contributionsById = new Map(
-    contributions.map((contribution) => [contribution.intentId, contribution])
-  )
-
-  if (contributionsById.size !== contributions.length) {
-    throw new Error('Application navigation intent ids must be unique.')
+  const contributionsById = new Map<string, AppNavigationIntentContribution>()
+  const duplicateIntentIds = new Set<string>()
+  for (const contribution of contributions) {
+    if (contributionsById.has(contribution.intentId)) {
+      duplicateIntentIds.add(contribution.intentId)
+    }
+    contributionsById.set(contribution.intentId, contribution)
   }
 
   const dispatch = async <Input, Output>(
     intent: AppNavigationIntent<Input, Output>,
     input: Input
   ): Promise<Output> => {
+    if (duplicateIntentIds.has(intent.id)) {
+      return Promise.reject(
+        new Error(
+          `Multiple application navigation intents handle ${intent.id}.`
+        )
+      )
+    }
     const contribution = contributionsById.get(intent.id)
     if (!contribution) {
       return Promise.reject(
