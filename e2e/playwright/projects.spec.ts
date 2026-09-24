@@ -1571,7 +1571,6 @@ test(
         'pattern_vase.kcl',
         'pentagon_fillet_sugar.kcl',
         'pipe_as_arg.kcl',
-        'pipes_on_pipes.kcl',
         'riddle.kcl',
         'riddle_small.kcl',
         'router-template-slate.kcl',
@@ -1601,7 +1600,6 @@ test(
         'order_sketch_extrude_in_order',
         'order_sketch_extrude_out_of_order',
         'pattern_vase',
-        'pipes_on_pipes',
         'scoped_tags',
       ])
       for (const fileName of fileNames) {

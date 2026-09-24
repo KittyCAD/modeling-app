@@ -41,7 +41,6 @@ async fn kcl_lsp_semantic_tokens(code: &str) {
 
 fn bench_kcl_lsp_semantic_tokens(c: &mut Criterion) {
     for (name, code) in [
-        ("pipes_on_pipes", PIPES_PROGRAM),
         ("big_kitt", KITT_PROGRAM),
         ("cube", CUBE_PROGRAM),
         ("math", MATH_PROGRAM),
@@ -64,7 +63,6 @@ criterion_group!(benches, bench_kcl_lsp_semantic_tokens);
 criterion_main!(benches);
 
 const KITT_PROGRAM: &str = include_str!("../../kcl-lib/e2e/executor/inputs/kittycad_svg.kcl");
-const PIPES_PROGRAM: &str = include_str!("../../kcl-lib/tests/pipes_on_pipes/input.kcl");
 const CUBE_PROGRAM: &str = include_str!("../../kcl-lib/e2e/executor/inputs/cube.kcl");
 const MATH_PROGRAM: &str = include_str!("../../kcl-lib/e2e/executor/inputs/math.kcl");
 const MIKE_STRESS_TEST_PROGRAM: &str = include_str!("../../kcl-lib/tests/mike_stress_test/input.kcl");
