@@ -43,7 +43,6 @@ async function expectProjectFileRoute(page: Page) {
 }
 
 async function expectCloudSyncHomeReady(page: Page) {
-  await page.goto('/home')
   await expect(
     page.getByRole('heading', { name: /^(Project Libraries|Personal Cloud)$/ })
   ).toBeVisible({ timeout: CLOUD_SYNC_E2E_TIMEOUT })
@@ -96,6 +95,7 @@ test(
       await setup(context, page, testInfo, [], {
         cloudSyncEnabled: true,
       })
+      await page.goto('/home')
       await expectCloudSyncHomeReady(page)
       // The shared CI account has thousands of projects. Filter their cards
       // through the UI without replacing the real project-list response.
@@ -221,6 +221,7 @@ test(
     await setup(context, page, testInfo, [], {
       cloudSyncEnabled: true,
     })
+    await page.goto('/home')
     await expectCloudSyncHomeReady(page)
 
     await page.getByTestId('home-create-from-sample').click()
@@ -314,6 +315,7 @@ test(
     await setup(context, page, testInfo, [], {
       cloudSyncEnabled: true,
     })
+    await page.goto('/home')
     await expectCloudSyncHomeReady(page)
     await expect(
       page.getByTestId('project-library-empty').first()
@@ -628,6 +630,7 @@ test(
     await setup(context, page, testInfo, [], {
       cloudSyncEnabled: true,
     })
+    await page.goto('/home')
     await expectCloudSyncHomeReady(page)
 
     const cleanSyncedFiles = {
