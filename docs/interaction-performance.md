@@ -9,16 +9,32 @@ No retries, discarded warm-up inputs, or Test Analysis Bot overrides are allowed
 ## What is measured
 
 Home measures command-palette open and close. A loaded small modeling project
-measures those actions plus Code Editor and Project Files open and close. Modeling
-starts with Code open and Files closed, so Code runs close-then-open. The fixture
-is `rust/kcl-lib/tests/named_views_hide_extrude/input.kcl` from the selected harness.
-Large projects, keyboard shortcuts, native menus, panel-header close buttons, and
-new controls outside this inventory are not covered by this gate.
+measures those actions plus:
+
+- Code Editor and Project Files open and close.
+- Feature Tree open and close, including expanding and collapsing its first
+  sketch group.
+- Transform tools menu open and close.
+- Extrude launch from the toolbar and cancellation from its selection prompt.
+
+These controls are chosen from core modeling workflows, not usage telemetry.
+Modeling starts with Code open and Files/Feature Tree closed, so Code runs
+close-then-open. Each cycle restores that layout without discarded setup clicks.
+The fixture is `rust/kcl-lib/tests/named_views_hide_extrude/input.kcl` from the
+selected harness. Large projects, file switching, typing, keyboard shortcuts,
+native menus, panel-header close buttons, camera motion, and completed modeling
+operations are not covered by this gate.
 
 `definitions.ts` fixes the identities and 150 ms targets. `outcomes.ts` matches
 existing test IDs and pre-click toggle state, then checks usable content or
 unmount. Code opening requires visible editable CodeMirror content; Files opening
-requires visible enabled entries. The same collector and outcome definitions are
+requires visible enabled entries. Feature Tree and sketch-group opening require
+visible, enabled operation buttons; expanding a caret alone is insufficient.
+Transform opening requires usable Translate and Rotate choices. Extrude opening
+requires its visible selection prompt and enabled input, whose transparent overlay
+is intentional. Cancellation and search-palette closing have distinct identities.
+These are UI readiness endpoints, not engine-result measurements.
+The same collector and outcome definitions are
 built into both revisions. Candidate interaction annotations cannot change the
 comparison's coverage or expectations. Existing annotations are additionally
 checked by `zds/interaction-expectations`.
@@ -44,7 +60,7 @@ or application appearance change.
 
 The fixed schedule has ten paired blocks, five base-first and five candidate-first,
 with one fresh Electron process per context and variant. Every renderer performs
-one first-use cycle and ten repeated cycles. All 1,760 ordinary clicks are retained.
+one first-use cycle and ten repeated cycles. All 3,520 ordinary clicks are retained.
 First-use means the first input to the control in that renderer, not a cold host
 GPU cache or the first mount of a default-open pane.
 
@@ -71,7 +87,8 @@ visibility interruptions, retries, repeats, skipped probes, changed order, and
 partial CLI selections fail collection. Timing decisions happen after the complete
 schedule so a slow sample cannot restart a worker and alter subsequent conditions.
 Five mandatory harness probes then run on each build: delayed click, delayed
-pointerdown, missing measurement, secondary-click/restart, and delayed pane content.
+pointerdown, missing measurement, secondary-click/restart, and delayed modeling
+content (Code, Files, Feature Tree, sketch children, transform tools, and Extrude).
 They exercise the real application and verify that the collector rejects bad data
 and includes injected delays.
 

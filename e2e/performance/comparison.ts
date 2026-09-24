@@ -69,6 +69,14 @@ export const COMPARISON_ACTIONS: Readonly<
     interactions.codePaneOpen.id,
     interactions.filesPaneOpen.id,
     interactions.filesPaneClose.id,
+    interactions.featureTreeOpen.id,
+    interactions.sketchGroupExpand.id,
+    interactions.sketchGroupCollapse.id,
+    interactions.featureTreeClose.id,
+    interactions.transformMenuOpen.id,
+    interactions.transformMenuClose.id,
+    interactions.extrudeOpen.id,
+    interactions.extrudeCancel.id,
   ]),
 })
 

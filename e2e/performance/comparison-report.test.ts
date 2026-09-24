@@ -149,7 +149,7 @@ describe('serialized comparison report consumer', () => {
   it('evaluates attached raw captures rather than using passing test status as the performance decision', () => {
     const result = reportComparisonRun(attempts(32))
     expect(result.status).toBe('regressed')
-    expect(result.failures).toHaveLength(48)
+    expect(result.failures).toHaveLength(96)
     expect(result.attempts.every((row) => row.status === 'passed')).toBe(true)
     expect(result.targetBreaches).toEqual([])
   })

@@ -40,4 +40,54 @@ export const interactions = {
     budgetMs: 150,
     outcome: 'Project files pane is no longer rendered',
   },
+  featureTreeOpen: {
+    id: 'zds.featureTree.open',
+    testId: 'feature-tree-pane-button',
+    budgetMs: 150,
+    outcome: 'Feature tree has visible, enabled operations',
+  },
+  featureTreeClose: {
+    id: 'zds.featureTree.close',
+    testId: 'feature-tree-pane-button',
+    budgetMs: 150,
+    outcome: 'Feature tree pane is no longer rendered',
+  },
+  sketchGroupExpand: {
+    id: 'zds.featureTree.sketchGroup.expand',
+    testId: 'operation-group-caret',
+    budgetMs: 150,
+    outcome: 'The first sketch group has visible, enabled child operations',
+  },
+  sketchGroupCollapse: {
+    id: 'zds.featureTree.sketchGroup.collapse',
+    testId: 'operation-group-caret',
+    budgetMs: 150,
+    outcome:
+      'The first sketch group is collapsed and its children are unmounted',
+  },
+  transformMenuOpen: {
+    id: 'zds.toolbar.transformMenu.open',
+    testId: 'toolbar',
+    budgetMs: 150,
+    outcome: 'Transform menu has visible, enabled Translate and Rotate tools',
+  },
+  transformMenuClose: {
+    id: 'zds.toolbar.transformMenu.close',
+    testId: 'toolbar',
+    budgetMs: 150,
+    outcome: 'Transform menu and its tools are no longer visible',
+  },
+  extrudeOpen: {
+    id: 'zds.toolbar.extrude.open',
+    testId: 'extrude',
+    budgetMs: 150,
+    outcome:
+      'Extrude has a visible selection prompt and enabled selection input',
+  },
+  extrudeCancel: {
+    id: 'zds.toolbar.extrude.cancel',
+    testId: 'command-bar-close-button',
+    budgetMs: 150,
+    outcome: 'Extrude command palette is no longer rendered',
+  },
 } satisfies Record<string, InteractionDescription>

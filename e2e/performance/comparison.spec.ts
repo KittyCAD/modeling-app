@@ -57,7 +57,7 @@ for (const session of COMPARISON_PLAN) {
         // The first cycle is retained as first-use; the next ten are warm.
         // No discarded inputs prepare this renderer for measurement.
         for (let cycle = 1; cycle <= COMPARISON_WARM_CYCLES + 1; cycle++) {
-          for (const { definition, verify } of actions) {
+          for (const { definition, control, verify } of actions) {
             if (
               session.variant === 'candidate' &&
               session.context === 'home' &&
@@ -79,7 +79,7 @@ for (const session of COMPARISON_PLAN) {
                 )
               })
             }
-            await page.getByTestId(definition.testId).click()
+            await (control ?? page.getByTestId(definition.testId)).click()
             await waitForSample(page, definition.id, cycle)
             await verify()
           }
