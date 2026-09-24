@@ -203,7 +203,6 @@ function expectedRuntimeFlags(
   useCekExecutor: 'On' | 'Off'
 ) {
   return JSON.stringify({
-    enable_z0006_lint: 'Off',
     use_cek_executor: useCekExecutor,
     use_new_lexer_parser: useNewLexerParser,
   })

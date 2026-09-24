@@ -745,10 +745,6 @@ async fn physical_properties(ctx: &ExecutorContext) -> Option<serde_json::Value>
 }
 
 async fn execute_once(test: &Test, kcl_version: Option<&str>) {
-    crate::set_kcl_runtime_flags(crate::KclRuntimeFlags {
-        enable_z0006_lint: crate::RuntimeFlag::On,
-        ..Default::default()
-    });
     let input = test.read();
     let mut ast = crate::Program::parse_no_errs(&input).unwrap();
     let program_to_lint = ast.clone();

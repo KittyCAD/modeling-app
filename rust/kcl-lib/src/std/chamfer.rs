@@ -217,8 +217,7 @@ async fn inner_chamfer(
             EdgeReference::Uuid(u) => *u,
             EdgeReference::Tag(t) => args.get_tag_engine_info(exec_state, t)?.id,
         };
-        if crate::runtime_flags::z0006_refactor_metadata_enabled()
-            && let Ok(face_ids) = super::edge::get_face_ids_for_edge(exec_state, solid.id, edge_id, &args).await
+        if let Ok(face_ids) = super::edge::get_face_ids_for_edge(exec_state, solid.id, edge_id, &args).await
             && let [a, b] = face_ids.as_slice()
         {
             let tag_identifier = match edge_ref {
@@ -380,8 +379,7 @@ async fn inner_chamfer_v2(
             EdgeReference::Uuid(_) => String::new(),
         };
         for edge_id in ids {
-            if crate::runtime_flags::z0006_refactor_metadata_enabled()
-                && let Ok(face_ids) = super::edge::get_face_ids_for_edge(exec_state, solid.id, edge_id, &args).await
+            if let Ok(face_ids) = super::edge::get_face_ids_for_edge(exec_state, solid.id, edge_id, &args).await
                 && let [a, b] = face_ids.as_slice()
             {
                 if !tag_identifier.is_empty() {

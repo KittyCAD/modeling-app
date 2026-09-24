@@ -1643,9 +1643,6 @@ part = bracket()
           webrtc: false,
           pool: 'cpu',
         })
-      instance.set_kcl_runtime_flags(
-        JSON.stringify({ enable_z0006_lint: 'On' })
-      )
       instanceInThisFile = instance
       kclManagerInThisFile = kclManager
       engineCommandManagerInThisFile = engineCommandManager
