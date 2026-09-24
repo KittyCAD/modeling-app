@@ -6,7 +6,7 @@ import {
   createUniqueDirectory as createUniqueDirectoryOperation,
   createUniqueFile as createUniqueFileOperation,
   exists as existsOperation,
-  type FileOperations,
+  FileOperations,
   fileOperationsLayer,
   move as moveOperation,
   pendingFileOperations,
@@ -72,8 +72,15 @@ export function createFileOperationsRuntime(
     )
 
   const operations: FileOperationsRegistryService = {
+    withDirectoryLock: (path, operation) =>
+      runRuntimePromise(
+        FileOperations.pipe(
+          Effect.flatMap((files) => files.withDirectoryLock(path, operation))
+        )
+      ),
     pending: () => runRuntimePromise(pendingFileOperations),
-    stat: (path) => runFileOperationsPromise('stat', statOperation(path)),
+    stat: (path, options) =>
+      runFileOperationsPromise('stat', statOperation(path, options)),
     canReadWrite: (path) =>
       runFileOperationsPromise('access', canReadWriteOperation(path)),
     exists: (path) => runFileOperationsPromise('exists', existsOperation(path)),

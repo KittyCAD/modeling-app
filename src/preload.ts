@@ -174,8 +174,10 @@ const writeFile = (
   options?: { flag?: 'w' | 'wx' }
 ) => fs.writeFile(path, data, { encoding: 'utf-8', flag: options?.flag ?? 'w' })
 const readdir = (path: string) => fs.readdir(path, 'utf-8')
-const stat = (path: string) => {
-  return fs.stat(path).catch((e) => Promise.reject(e.code))
+const stat = (path: string, options?: { followSymlinks?: boolean }) => {
+  return (
+    options?.followSymlinks === false ? fs.lstat(path) : fs.stat(path)
+  ).catch((e) => Promise.reject(e.code))
 }
 
 /**

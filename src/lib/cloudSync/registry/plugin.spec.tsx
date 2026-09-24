@@ -245,6 +245,7 @@ function CloudSyncDialogHostContribution({ app }: { app: App }) {
 
 function createCloudSyncService(): CloudSyncRegistryService {
   return {
+    withLocalProjectMutation: (operation) => operation(),
     status: signal(cloudSyncStatus.value),
     configure: vi.fn(),
     installFileSystemObserver: vi.fn(),

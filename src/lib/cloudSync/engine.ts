@@ -195,6 +195,19 @@ function releaseCloudSyncOperation() {
   syncIdleWaiters.clear()
 }
 
+/** Let a project replacement and its recovery finish before the next sync pass. */
+export async function withCloudSyncPaused<A>(
+  operation: () => Promise<A>
+): Promise<A> {
+  await acquireCloudSyncOperation()
+  try {
+    return await operation()
+  } finally {
+    releaseCloudSyncOperation()
+    scheduleSync()
+  }
+}
+
 export const cloudSyncStatus = signal<CloudSyncStatus>({
   enabled: false,
   state: 'disabled',

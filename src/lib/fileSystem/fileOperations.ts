@@ -15,9 +15,10 @@ import {
   type PathLockRequirement,
   pathLockRequirements,
 } from '@src/lib/fileSystem/pathLocking'
-import type { IZooDesignStudioFS } from '@src/lib/fs-zds/interface'
+import type { IZooDesignStudioFS, StatOptions } from '@src/lib/fs-zds/interface'
 import * as Context from 'effect/Context'
 import * as Effect from 'effect/Effect'
+import * as Either from 'effect/Either'
 import * as Layer from 'effect/Layer'
 import * as Stream from 'effect/Stream'
 import * as SubscriptionRef from 'effect/SubscriptionRef'
@@ -39,6 +40,14 @@ interface PathLockEntry {
  * change the submitted write.
  */
 export type FileContents = string | Uint8Array
+
+/** IO scoped to a directory lock; do not call the locking facade from its callback. */
+export interface LockedDirectoryOperations {
+  readonly stat: (path: string, options?: StatOptions) => Promise<FileStat>
+  readonly readDirectory: (path: string) => Promise<readonly string[]>
+  readonly readFile: (path: string) => Promise<Uint8Array>
+  readonly writeFile: (path: string, contents: FileContents) => Promise<void>
+}
 
 export interface CopyOptions {
   /** Whether an existing destination entry may be replaced. */
@@ -62,10 +71,17 @@ function snapshotFileContents(contents: FileContents): OwnedFileContents {
  * while a coordinated mutation of that path is in progress.
  */
 export interface FileOperationsService {
+  readonly withDirectoryLock: <A>(
+    path: string,
+    operation: (files: LockedDirectoryOperations) => Promise<A>
+  ) => Effect.Effect<A, unknown>
   readonly pending: Effect.Effect<number>
   readonly pendingChanges: Stream.Stream<number>
   /** Observe one path while coordinated mutations of it are excluded. */
-  readonly stat: (path: string) => Effect.Effect<FileStat, FileSystemError>
+  readonly stat: (
+    path: string,
+    options?: StatOptions
+  ) => Effect.Effect<FileStat, FileSystemError>
   /** Check read/write access while coordinated mutations of this path wait. */
   readonly canReadWrite: (
     path: string
@@ -395,10 +411,35 @@ const makeFileOperations = (backing: IZooDesignStudioFS) =>
         yield* fileSystem.remove(source)
       })
 
+    const runLocked = async <A>(
+      operation: Effect.Effect<A, FileSystemError>
+    ) => {
+      const result = await Effect.runPromise(Effect.either(operation))
+      return Either.isLeft(result) ? Promise.reject(result.left) : result.right
+    }
+    const lockedFiles: LockedDirectoryOperations = {
+      stat: (path, options) => runLocked(fileSystem.stat(path, options)),
+      readDirectory: (path) => runLocked(fileSystem.readDirectory(path)),
+      readFile: (path) => runLocked(fileSystem.readFile(path)),
+      writeFile: (path, contents) =>
+        runLocked(fileSystem.writeFile(path, snapshotFileContents(contents))),
+    }
+
     return FileOperations.of({
+      withDirectoryLock: (path, operation) =>
+        trackMutation(
+          withPathLocks(
+            pathLockRequirements(backing, [path]),
+            Effect.tryPromise({
+              try: () => operation(lockedFiles),
+              catch: (error) => error,
+            }).pipe(Effect.uninterruptible)
+          )
+        ),
       pending: SubscriptionRef.get(pending),
       pendingChanges: pending.changes,
-      stat: (path) => coordinateRead(path, fileSystem.stat(path)),
+      stat: (path, options) =>
+        coordinateRead(path, fileSystem.stat(path, options)),
       canReadWrite: (path) =>
         coordinateRead(path, fileSystem.canReadWrite(path)),
       exists: (path) => coordinateRead(path, fileSystem.exists(path)),
@@ -480,8 +521,10 @@ export const fileOperationChanges = FileOperations.pipe(
   Stream.unwrap
 )
 
-export const stat = (path: string) =>
-  FileOperations.pipe(Effect.flatMap((operations) => operations.stat(path)))
+export const stat = (path: string, options?: StatOptions) =>
+  FileOperations.pipe(
+    Effect.flatMap((operations) => operations.stat(path, options))
+  )
 
 export const canReadWrite = (path: string) =>
   FileOperations.pipe(
