@@ -3,6 +3,7 @@ import { Color, Group, Object3D } from 'three'
 import { LineSegmentsGeometry } from 'three/examples/jsm/lines/LineSegmentsGeometry.js'
 import { LineSegments2 } from 'three/examples/jsm/lines/webgpu/LineSegments2.js'
 import { Line2NodeMaterial } from 'three/webgpu'
+import { KITTYCAD_GLTF } from './LocalRenderer'
 
 const LIGHT_THEME_EDGE_COLOR = new Color(0x1c1c1c)
 const DARK_THEME_EDGE_COLOR = new Color(0xf9f9f9)
@@ -33,6 +34,11 @@ export class EdgeRenderer {
     this.group.visible = visible
   }
 
+  public buildEdges(gltf: KITTYCAD_GLTF)
+  {
+    console.log('gltf', gltf)
+  }
+
   addTo(parent: Object3D) {
     this.group.add(this.lines)
     parent.add(this.group)
@@ -40,10 +46,6 @@ export class EdgeRenderer {
 
   removeFromParent() {
     this.group.removeFromParent()
-  }
-
-  isLineObject(object: Object3D) {
-    return object === this.lines
   }
 
   setBackgroundColor(backgroundColor: string) {

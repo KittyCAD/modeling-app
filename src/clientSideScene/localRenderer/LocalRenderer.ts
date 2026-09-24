@@ -43,7 +43,7 @@ import {
   Vector2,
   Vector3,
 } from 'three'
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
+import { GLTF, GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 import type DenoiseNode from 'three/examples/jsm/tsl/display/DenoiseNode.js'
 import { denoise } from 'three/examples/jsm/tsl/display/DenoiseNode.js'
 import type GTAONode from 'three/examples/jsm/tsl/display/GTAONode.js'
@@ -872,11 +872,10 @@ export class LocalRenderer {
       return
     }
 
-    const edgeRenderer = new EdgeRenderer(
+    this.edgeRenderer = new EdgeRenderer(
       this.backgroundColor,
       this.highlightEdges
     )
-    this.edgeRenderer = edgeRenderer
     // Keep reference planes separate from the GLB and its fit-to-model bounds.
     this.planeRenderer = new PlaneRenderer(this.theme)
     this.planeRenderer.addTo(scene)
@@ -1010,7 +1009,7 @@ export class LocalRenderer {
       }
 
       const bytes = new Uint8Array(file.contents)
-      const gltf = await this.gltfLoader.parseAsync(bytes.buffer, '')
+      const gltf = await this.gltfLoader.parseAsync(bytes.buffer, '') as KITTYCAD_GLTF
       if (!isCurrent()) {
         disposeObject3D(gltf.scene)
         return
@@ -1019,6 +1018,7 @@ export class LocalRenderer {
       this.clearModel()
       this.currentModel = gltf.scene
       this.scene?.add(gltf.scene)
+      this.edgeRenderer?.buildEdges(gltf);
       this.rebuildPlaneTargets()
       const bounds = new Box3().setFromObject(gltf.scene)
       this.updateAmbientOcclusionScale(bounds)
@@ -1150,4 +1150,68 @@ function convertEngineWorldVectorToGltfWorld(
   scale = 1
 ): Vector3 {
   return new Vector3(vector.x * scale, vector.z * scale, -vector.y * scale)
+}
+
+export type KITTYCAD_GLTF = GLTF & {
+  userData: {
+    KITTYCAD_boundary_representation: {
+      solids: KITTYCAD_GLTF_SOLID[],
+      shells: KITTYCAD_GLTF_SHELL[],
+      faces: KITTYCAD_GLTF_FACE[],
+      loops: KITTYCAD_GLTF_LOOP[],
+      edges: KITTYCAD_GLTF_EDGE[],
+      vertices: KIITYCAD_GLTF_VERTEX[],
+      surfaces: KIITYCAD_GLTF_SURFACE[],
+      curves3D: KITTYCAD_GLTF_CURVE3D[]
+    }
+  }
+}
+
+type KITTYCAD_GLTF_SOLID = {
+  sheels: number[][],
+  mesh: number,
+  extras: {
+    KITTYCAD: {
+      material: number
+    }
+  }
+}
+
+type KITTYCAD_GLTF_SHELL = {
+  faces: KITTYCAD_GLTF_FACE[]
+}
+
+type KITTYCAD_GLTF_FACE = {
+  surface: number[][],
+  loops: number[][],
+}
+
+type KITTYCAD_GLTF_LOOP = {
+  edges: number[][],
+}
+
+type KITTYCAD_GLTF_EDGE = {
+  curve: number[], //[number, number] ?
+  start: number,
+  end: number,
+  t: [number, number]
+}
+
+type KIITYCAD_GLTF_VERTEX = [number, number, number]
+
+type KIITYCAD_GLTF_SURFACE = {
+  type: "plane",
+  plane: {
+    xAxis: [number, number, number],
+    yAxis: [number, number, number],
+    origin: [number, number, number],
+  }
+}
+
+type KITTYCAD_GLTF_CURVE3D = {
+  type: "line",
+  line: {
+    origin: [number, number, number],
+    direction: [number, number, number],
+  }
 }
