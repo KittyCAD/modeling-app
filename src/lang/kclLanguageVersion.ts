@@ -1,7 +1,7 @@
 import type { KclVersion } from '@rust/kcl-lib/bindings/KclVersion'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { Program } from '@src/lang/wasm'
-import { kclSettings, parse, resultIsOk } from '@src/lang/wasm'
+import { parse, resultIsOk } from '@src/lang/wasm'
 import { err, isErr } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
@@ -61,9 +61,6 @@ export function programUsesKclV3(
   program: Node<Program>,
   instance: ModuleType
 ): boolean {
-  const settings = kclSettings(program, instance)
-  if (err(settings) || settings === null) {
-    return false
-  }
-  return isAtLeastKclV3(settings.kclVersion)
+  const version = getKclLanguageVersion(program, instance)
+  return !err(version) && isAtLeastKclV3(version)
 }
