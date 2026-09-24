@@ -5,7 +5,7 @@ description: Variables in memory after executing named_views_module_explicit_imp
 {
   "__ty_Orientation": {
     "type": "Type",
-    "experimental": true
+    "experimental": false
   },
   "front": {
     "type": "Enum",

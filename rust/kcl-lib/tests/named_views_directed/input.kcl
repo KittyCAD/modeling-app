@@ -5,7 +5,7 @@
 // normalized, so the [0, 1, -2] direction appears as unit-length components
 // in the program memory snapshot. The ops snapshot additionally pins that
 // each call emits a feature tree operation recording its arguments.
-@settings(experimentalFeatures = allow)
+@settings(kclVersion = "3.0-preview")
 
 minimal = view::directed([0, 1, -2])
 

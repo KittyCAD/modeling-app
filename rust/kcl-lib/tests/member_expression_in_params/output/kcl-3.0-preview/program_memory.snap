@@ -1,0 +1,9 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Variables in memory after executing member_expression_in_params.kcl
+---
+{
+  "capScrew": {
+    "type": "Function"
+  }
+}

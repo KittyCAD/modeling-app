@@ -1804,7 +1804,7 @@ fn failOrReturn(@shouldFail: bool): never {
 
     #[tokio::test(flavor = "multi_thread")]
     async fn never_type_alias_contract_is_path_dependent() {
-        let function = r#"@settings(experimentalFeatures = allow)
+        let function = r#"@settings(kclVersion = "3.0-preview", experimentalFeatures = allow)
 type impossible = never
 fn failOrReturn(@shouldFail: bool): impossible {
   return if shouldFail {

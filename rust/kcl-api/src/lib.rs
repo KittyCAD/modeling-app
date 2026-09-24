@@ -21,7 +21,7 @@ mod front;
 pub mod kcl_value_view;
 mod kcl_version;
 mod numeric_type;
-pub mod point;
+pub use kittycad_point as point;
 mod units;
 
 #[derive(Debug, Clone, Serialize, Deserialize, ts_rs::TS, PartialEq, Default)]

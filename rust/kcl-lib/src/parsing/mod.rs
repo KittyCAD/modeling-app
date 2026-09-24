@@ -40,7 +40,7 @@ pub fn parse_str(code: &str, module_id: ModuleId) -> ParseResult {
 }
 
 /// Parse local imported KCL before comparing its declared version with the
-/// entry point. Defer `use` validation so a version mismatch is reported first.
+/// entry point. Defer V3 keyword validation so a version mismatch is reported first.
 pub(crate) fn parse_str_deferred_use_keyword(code: &str, module_id: ModuleId) -> ParseResult {
     let tokens = pr_try!(crate::parsing::token::lex(code, module_id));
     parse_tokens_with_use_policy(tokens, UseKeywordPolicy::Deferred)
@@ -48,6 +48,8 @@ pub(crate) fn parse_str_deferred_use_keyword(code: &str, module_id: ModuleId) ->
 
 pub(crate) const RESERVED_USE_MESSAGE: &str =
     "`use` is a reserved keyword in KCL 3.0 and cannot be used as an identifier";
+pub(crate) const RESERVED_ENUM_MESSAGE: &str =
+    "`enum` is a reserved keyword in KCL 3.0 and cannot be used as an identifier";
 
 /// Check an imported source using the same lexer classification as ordinary
 /// parsing, including the `use(` function-name exception.
@@ -63,6 +65,60 @@ pub(crate) fn validate_use_keyword_source(code: &str, module_id: ModuleId) -> Re
         RESERVED_USE_MESSAGE.to_owned(),
         vec![token.as_source_range()],
     )))
+}
+
+/// Reject `enum` in every identifier position of an imported V3 module.
+pub(crate) fn validate_enum_keyword_source(code: &str, module_id: ModuleId) -> Result<(), KclError> {
+    let tokens = crate::parsing::token::lex(code, module_id)?;
+    let Some(issue) = reserved_enum_issues(&tokens).into_iter().next() else {
+        return Ok(());
+    };
+    Err(KclError::new_syntax(issue.into()))
+}
+
+fn reserved_enum_issues(tokens: &TokenStream) -> Vec<CompilationIssue> {
+    tokens
+        .iter()
+        .filter(|token| token.token_type == TokenType::Word && token.value == "enum")
+        .map(|token| CompilationIssue::err(token.as_source_range(), RESERVED_ENUM_MESSAGE))
+        .collect()
+}
+
+/// Reject names reserved for future import modifiers in the first import slot.
+pub(crate) fn validate_import_modifier_source(code: &str, module_id: ModuleId) -> Result<(), KclError> {
+    let tokens = crate::parsing::token::lex(code, module_id)?;
+    let Some(issue) = reserved_import_modifier_issues(&tokens).into_iter().next() else {
+        return Ok(());
+    };
+    Err(KclError::new_syntax(issue.into()))
+}
+
+fn reserved_import_modifier_issues(tokens: &TokenStream) -> Vec<CompilationIssue> {
+    let tokens = tokens.as_slice();
+    tokens
+        .iter()
+        .enumerate()
+        .filter_map(|(index, token)| {
+            if token.token_type != TokenType::Keyword || token.value != "import" {
+                return None;
+            }
+            let first_item = tokens[index + 1..]
+                .iter()
+                .find(|next| !next.token_type.is_whitespace())?;
+            if first_item.token_type != TokenType::Word
+                || !matches!(first_item.value.as_str(), "template" | "lazy" | "component")
+            {
+                return None;
+            }
+            Some(CompilationIssue::err(
+                first_item.as_source_range(),
+                format!(
+                    "`{}` is reserved as an import modifier in KCL 3.0 and cannot be the first imported item",
+                    first_item.value
+                ),
+            ))
+        })
+        .collect()
 }
 
 #[derive(Clone, Copy)]
@@ -101,21 +157,25 @@ fn parse_tokens_with_use_policy(mut tokens: TokenStream, use_policy: UseKeywordP
         return Node::<Program>::default().into();
     }
 
+    let mut reserved_issues = reserved_import_modifier_issues(&tokens);
+    reserved_issues.extend(reserved_enum_issues(&tokens));
     let use_keyword_ranges = tokens.allow_use_identifiers();
+    reserved_issues.extend(
+        use_keyword_ranges
+            .into_iter()
+            .map(|range| CompilationIssue::err(range, RESERVED_USE_MESSAGE)),
+    );
+    reserved_issues.sort_by_key(|issue| issue.source_range.start());
     let mut result = parser::run_parser(tokens.as_slice());
     if matches!(use_policy, UseKeywordPolicy::DeclaredVersion)
         && let Ok((Some(program), issues)) = &mut result.0
-        && !use_keyword_ranges.is_empty()
+        && !reserved_issues.is_empty()
         && matches!(
             crate::execution::declared_kcl_version(program),
             Ok(Some((version, _))) if version >= crate::KclVersion::V3Preview
         )
     {
-        issues.extend(
-            use_keyword_ranges
-                .into_iter()
-                .map(|range| CompilationIssue::err(range, RESERVED_USE_MESSAGE)),
-        );
+        issues.extend(reserved_issues);
     }
     result
 }
@@ -318,6 +378,157 @@ mod tests {
             let _guard = LexerMode::override_for_test(mode);
             let code = "@settings(kclVersion = \"3.0-preview\")\nuseful = \"use\" // use\n";
             assert!(top_level_parse(code).is_ok(), "{mode:?}: {code}");
+        }
+    }
+
+    #[test]
+    fn enum_identifiers_remain_valid_before_v3() {
+        for mode in [LexerMode::Old, LexerMode::New] {
+            let _guard = LexerMode::override_for_test(mode);
+            for version in [None, Some("1.0"), Some("2.0")] {
+                let settings = version.map_or(String::new(), |version| format!("@settings(kclVersion = {version})\n"));
+                for body in [
+                    "enum = 1\nvalue = enum\n",
+                    "fn enum() { return 1 }\n",
+                    "import enum from \"dep.kcl\"\n",
+                ] {
+                    let code = format!("{settings}{body}");
+                    assert!(top_level_parse(&code).is_ok(), "{mode:?}: {code}");
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn enum_tag_and_label_identifiers_remain_valid_before_v3() {
+        for mode in [LexerMode::Old, LexerMode::New] {
+            let _guard = LexerMode::override_for_test(mode);
+            for version in [None, Some("1.0"), Some("2.0")] {
+                let settings = version.map_or_else(
+                    || "@settings(experimentalFeatures = allow)\n".to_owned(),
+                    |version| format!("@settings(kclVersion = {version}, experimentalFeatures = allow)\n"),
+                );
+                for body in ["value = $enum\n", "line(end = [1, 0], tag = $enum)\n", "2 as enum\n"] {
+                    let code = format!("{settings}{body}");
+                    assert!(top_level_parse(&code).is_ok(), "{mode:?}: {code}");
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn enum_is_reserved_in_every_v3_identifier_position() {
+        for mode in [LexerMode::Old, LexerMode::New] {
+            let _guard = LexerMode::override_for_test(mode);
+            for body in [
+                "enum = 1\n",
+                "value = enum\n",
+                "fn enum() { return 1 }\n",
+                "type enum = number\n",
+                "import enum from \"dep.kcl\"\n",
+                "import other as enum from \"dep.kcl\"\n",
+                "import \"dep.kcl\" as enum\n",
+                "@settings(enum = 1)\nvalue = 1\n",
+                "value = $enum\n",
+                "line(end = [1, 0], tag = $enum)\n",
+                "2 as enum\n",
+            ] {
+                let code = format!("@settings(kclVersion = \"3.0-preview\", experimentalFeatures = allow)\n{body}");
+                let result = top_level_parse(&code);
+                let errors: Vec<_> = result.unwrap_errs().collect();
+                assert_eq!(errors.len(), 1, "{mode:?}: {code}: {errors:#?}");
+                let start = code.find("enum").unwrap();
+                assert_eq!(
+                    errors[0].source_range,
+                    SourceRange::new(start, start + "enum".len(), ModuleId::default())
+                );
+                assert_eq!(errors[0].message, RESERVED_ENUM_MESSAGE);
+            }
+        }
+    }
+
+    #[test]
+    fn enum_reservation_uses_last_declared_version() {
+        for mode in [LexerMode::Old, LexerMode::New] {
+            let _guard = LexerMode::override_for_test(mode);
+            let late_v3 = "enum = 1\n@settings(kclVersion = \"3.0-preview\")\n";
+            assert!(!top_level_parse(late_v3).is_ok(), "{mode:?}: {late_v3}");
+
+            let last_v2 = "@settings(kclVersion = \"3.0-preview\")\n@settings(kclVersion = 2.0)\nenum = 1\n";
+            assert!(top_level_parse(last_v2).is_ok(), "{mode:?}: {last_v2}");
+        }
+    }
+
+    #[test]
+    fn enum_text_in_strings_comments_and_longer_names_is_not_reserved() {
+        for mode in [LexerMode::Old, LexerMode::New] {
+            let _guard = LexerMode::override_for_test(mode);
+            let code = "@settings(kclVersion = \"3.0-preview\")\nenumeration = \"enum\" // enum\n";
+            assert!(top_level_parse(code).is_ok(), "{mode:?}: {code}");
+        }
+    }
+
+    #[test]
+    fn import_modifier_words_are_reserved_in_the_first_import_slot_in_v3() {
+        for mode in [LexerMode::Old, LexerMode::New] {
+            let _guard = LexerMode::override_for_test(mode);
+            for word in ["template", "lazy", "component"] {
+                for version in [None, Some("1.0"), Some("2.0")] {
+                    let settings =
+                        version.map_or(String::new(), |version| format!("@settings(kclVersion = {version})\n"));
+                    let code = format!("{settings}import {word} from \"dep.kcl\"\n");
+                    assert!(top_level_parse(&code).is_ok(), "{mode:?}: {code}");
+                }
+
+                for selector in [word.to_owned(), format!("{word} as alias, other")] {
+                    let code = format!("@settings(kclVersion = \"3.0-preview\")\nimport {selector} from \"dep.kcl\"\n");
+                    let result = top_level_parse(&code);
+                    let errors: Vec<_> = result.unwrap_errs().collect();
+                    assert_eq!(errors.len(), 1, "{mode:?}: {code}: {errors:#?}");
+                    let start = code.find(&format!("import {word}")).unwrap() + "import ".len();
+                    assert_eq!(
+                        errors[0].source_range,
+                        SourceRange::new(start, start + word.len(), ModuleId::default())
+                    );
+                    assert_eq!(
+                        errors[0].message,
+                        format!(
+                            "`{word}` is reserved as an import modifier in KCL 3.0 and cannot be the first imported item"
+                        )
+                    );
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn import_modifier_words_remain_valid_outside_the_first_import_slot() {
+        for mode in [LexerMode::Old, LexerMode::New] {
+            let _guard = LexerMode::override_for_test(mode);
+            for word in ["template", "lazy", "component"] {
+                for code in [
+                    format!(
+                        "@settings(kclVersion = \"3.0-preview\")\n{word} = \"{word}\" // import {word} from \"dep.kcl\"\n"
+                    ),
+                    format!("@settings(kclVersion = \"3.0-preview\")\nimport other, {word} from \"dep.kcl\"\n"),
+                    format!("@settings(kclVersion = \"3.0-preview\")\nimport \"dep.kcl\" as {word}\n"),
+                ] {
+                    assert!(top_level_parse(&code).is_ok(), "{mode:?}: {code}");
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn import_modifier_reservation_uses_last_declared_version() {
+        for mode in [LexerMode::Old, LexerMode::New] {
+            let _guard = LexerMode::override_for_test(mode);
+            let late_v3 = "import lazy from \"dep.kcl\"\n@settings(kclVersion = \"3.0-preview\")\n";
+            assert!(!top_level_parse(late_v3).is_ok(), "{mode:?}: {late_v3}");
+
+            let last_v2 =
+                "@settings(kclVersion = \"3.0-preview\")\n@settings(kclVersion = 2.0)\nimport lazy from \"dep.kcl\"\n";
+            assert!(top_level_parse(last_v2).is_ok(), "{mode:?}: {last_v2}");
         }
     }
 
