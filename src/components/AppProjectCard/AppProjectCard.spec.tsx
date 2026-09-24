@@ -24,6 +24,7 @@ const fileOperations = {
   stat: vi.fn().mockResolvedValue({}),
   readFile: vi.fn().mockResolvedValue(new Uint8Array()),
 }
+const openProject = vi.fn(async (_target: string) => undefined)
 
 const now = Date.now()
 let createObjectURLMock: ReturnType<typeof vi.fn>
@@ -137,6 +138,7 @@ function renderProjectCard({
         fileOperations={fileOperations}
         projectStatus={projectStatus}
         showCloudSyncUi={showCloudSyncUi}
+        openProject={openProject}
       />
     </BrowserRouter>
   )
@@ -220,6 +222,7 @@ describe('ProjectCard', () => {
         projectStatuses: new Map<string, ProjectStatus>(),
         showCloudSyncUi: true,
         onMoveToLibrary: vi.fn(),
+        openProject,
       }
       const { unmount } = render(
         <BrowserRouter>
@@ -308,6 +311,7 @@ describe('ProjectCard', () => {
           project={project}
           projectActions={projectActions}
           fileOperations={fileOperations}
+          openProject={openProject}
         />
       </BrowserRouter>
     )
@@ -702,6 +706,7 @@ describe('ProjectCard', () => {
           projectActions={createProjectActions()}
           fileOperations={fileOperations}
           onMoveToLibrary={onMoveToLibrary}
+          openProject={openProject}
         />
       </BrowserRouter>
     )
@@ -818,6 +823,7 @@ describe('ProjectCard', () => {
           project={cloudProject}
           projectActions={projectActions}
           fileOperations={fileOperations}
+          openProject={openProject}
         />
       </BrowserRouter>
     )
@@ -840,6 +846,7 @@ describe('ProjectCard', () => {
           }}
           projectActions={projectActions}
           fileOperations={fileOperations}
+          openProject={openProject}
         />
       </BrowserRouter>
     )
@@ -899,6 +906,7 @@ describe('ProjectCard', () => {
     await waitFor(() =>
       expect(projectActions.open).toHaveBeenCalledWith(project)
     )
+    expect(openProject).toHaveBeenCalledWith(project.defaultFile)
     expect(
       screen.queryByTestId('cloud-conflict-dialog')
     ).not.toBeInTheDocument()

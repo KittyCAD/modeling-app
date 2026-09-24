@@ -12,7 +12,6 @@ import { ContextMenu, ContextMenuItem } from '@src/components/ContextMenu'
 import { DeleteConfirmationDialog } from '@src/components/DeleteProjectDialog'
 import Tooltip from '@src/components/Tooltip'
 import type { ProjectStatus } from '@src/hooks/useProjectStatus'
-import { useApp } from '@src/lib/boot'
 import {
   getHomeProjectDeleteWarningMessage,
   getHomeProjectDisplayName,
@@ -21,10 +20,6 @@ import {
 import { PATHS } from '@src/lib/paths'
 import { reportRejection, trap } from '@src/lib/trap'
 import { toSync } from '@src/lib/utils'
-import {
-  appNavigationService,
-  openProjectIntent,
-} from '@src/registry/contracts/appNavigation'
 import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
 import type {
   HomeProjectActionsService,
@@ -46,6 +41,7 @@ type AppProjectCardProps = HTMLAttributes<HTMLLIElement> & {
   showDetails?: boolean
   showSourceStatusBadges?: boolean
   onMoveToLibrary?: (project: HomeProjectEntry) => void
+  openProject: (target: string) => Promise<unknown>
 }
 
 const homeProjectStatusBadgeLabels: Record<HomeProjectEntry['status'], string> =
@@ -158,6 +154,7 @@ function AppProjectCard({
   showDetails = true,
   showSourceStatusBadges = true,
   onMoveToLibrary,
+  openProject,
   ...props
 }: AppProjectCardProps) {
   const cardRef = useRef<HTMLLIElement>(null)
@@ -184,7 +181,6 @@ function AppProjectCard({
     }
   }, [isInView, remoteProjectId, hasLocalThumbnail, projectActions])
 
-  const app = useApp()
   useHotkeys('esc', () => setIsEditing(false))
   const [isEditing, setIsEditing] = useState(false)
   const [isConfirmingDelete, setIsConfirmingDelete] = useState(false)
@@ -633,9 +629,7 @@ function AppProjectCard({
           .open(project)
           .then((result) => {
             if (result?.defaultFile) {
-              void app.registry
-                .get(appNavigationService)
-                .dispatch(openProjectIntent, { target: result.defaultFile })
+              return openProject(result.defaultFile)
             }
           })
           .catch(reportRejection)
