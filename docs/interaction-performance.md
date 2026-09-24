@@ -80,12 +80,20 @@ The initial rollout explicitly uses the candidate harness when the base has no
 comparison entrypoint. An incompatible existing base harness fails rather than
 silently switching policy.
 
-Manual dispatch is calibration-only: both application variants and the harness
-use the dispatched `github.sha`, and baseline override inputs are rejected.
-Automatic PR and push comparisons retain distinct baseline and candidate commits.
-The workflow denies GitHub cache reads and writes with `cache-mode: none`, disables
-automatic dependency caching, and uses isolated Namespace runner cache identities.
-The shared Wasm workflow keeps its existing behavior.
+The automatic `interaction-performance-regression.yml` workflow runs only for PRs
+and pushes. The existing `interaction-performance.yml` workflow accepts manual
+dispatches only: every source checkout uses the dispatched `github.sha`, and
+baseline override inputs are rejected. Automatic comparisons retain distinct
+baseline and candidate commits.
+
+Source selection stays explicit in each workflow. Three local composite actions
+share the post-checkout Wasm build, application build, and native measurement
+steps; their implementation comes from a separate checkout of that run's
+`github.sha`. Each variant still builds independently and uses its selected
+harness and locked dependencies. Both workflows deny GitHub cache reads and
+writes with `cache-mode: none`, disable automatic dependency caching, and use
+isolated Namespace runner cache identities. The shared Wasm workflow keeps its
+existing behavior.
 
 Source, locks, workload, harness files, and built artifacts are hashed and checked
 before measurements. Build failures fail the final check. The raw comparison,
@@ -131,15 +139,15 @@ npm exec -- playwright show-report playwright-report/interaction-performance
 ## Calibration and rollout
 
 Before treating this gate as stable, run a predeclared set of independent manual
-A/A workflows against the exact same commit, preserving every attempt. Select the
-workflow revision to dispatch and use `calibration-fault: none`; no baseline ref
-is accepted. Both builds use that run's immutable `github.sha`. Verify artifact
-identity before calling it an identical-build comparison. The injected modes
+A/A workflows against the exact same commit, preserving every attempt. Dispatch
+the **Interaction performance calibration** workflow at the selected revision
+with `calibration-fault: none`; no baseline ref is accepted. Both builds use that
+run's immutable `github.sha`. Verify artifact identity before calling it an
+identical-build comparison. The injected modes
 `first`, `warm`, and `stall` add 64 ms to the candidate Home palette's real click
 handler on its first input, every repeated input, or one of ten repeated inputs
 respectively. They are allowed only for manual A/A runs and must fail the ordinary
-comparison. They never
-convert an expected failure into a green performance check.
+comparison. They never convert an expected failure into a green performance check.
 
 Manual jobs are named `Interaction performance calibration (<mode>)` so deliberate
 failed calibration jobs are distinct from the PR's `Interaction performance

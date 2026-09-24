@@ -245,6 +245,59 @@ describe('paired interaction comparison', () => {
     }
   })
 
+  it.each([
+    {
+      difference: 'native A/A cancellation residue',
+      candidateMs: 235.20000000001164,
+      positivePairs: 8,
+      expected: 'no-regression',
+    },
+    {
+      difference: 'one microsecond increase',
+      candidateMs: 235.19999999995343 + 0.001,
+      positivePairs: 9,
+      expected: 'regressed',
+    },
+  ])(
+    'classifies $difference without changing the raw paired values',
+    ({ candidateMs, positivePairs, expected }) => {
+      const baseMs = 235.19999999995343
+      const input = sessions(({ session, cycle, sample }) => {
+        if (session.context !== 'modeling' || cycle !== 0 || sample.id !== open)
+          return sample
+        if (session.block === 8)
+          return {
+            ...sample,
+            outcomeMs: session.variant === 'base' ? baseMs : candidateMs,
+          }
+        return session.variant === 'candidate'
+          ? delayed(sample, session.block < 8 ? 32 : -32)
+          : sample
+      })
+      const before = structuredClone(input)
+      const result = compareInteractions(input)
+      const first = result.strata.find(
+        (row) =>
+          row.context === 'modeling' &&
+          row.id === open &&
+          row.phase === 'first' &&
+          row.metric === 'outcome'
+      )
+      expect(result.collectionErrors).toEqual([])
+      expect(result.status).toBe(expected)
+      expect(first?.medianDeltaMs).toBe(32)
+      expect(first?.positivePairs).toBe(positivePairs)
+      expect(first?.pairs[8]).toMatchObject({
+        baseValues: [baseMs],
+        candidateValues: [candidateMs],
+        baseMs,
+        candidateMs,
+        deltaMs: candidateMs - baseMs,
+      })
+      expect(input).toEqual(before)
+    }
+  )
+
   it('keeps missing Event Timing unavailable without dropping pair slots or treating it as fast', () => {
     const input = sessions(({ session, cycle, sample }) =>
       session.block === 4 &&

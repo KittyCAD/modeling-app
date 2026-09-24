@@ -11,6 +11,10 @@ export const COMPARISON_MINIMUM_DELTA_MS = 24
 export const COMPARISON_MINIMUM_POSITIVE_PAIRS = 9
 export const COMPARISON_TARGET_MS = 150
 
+// Ignore up to one nanosecond of subtraction noise in sign tests. This is a
+// numerical tie guard, not a clock-resolution claim; raw values stay intact.
+const NUMERICAL_TIE_TOLERANCE_MS = 1e-6
+
 export type ComparisonVariant = 'base' | 'candidate'
 export type ComparisonContext = 'home' | 'modeling'
 export type ComparisonPhase = 'first' | 'warm-median' | 'warm-maximum'
@@ -307,15 +311,17 @@ export function compareInteractions(
           const medianDeltaMs = complete ? median(deltas) : null
           const baseFirstMedianDeltaMs = orderMedian('base')
           const candidateFirstMedianDeltaMs = orderMedian('candidate')
-          const positivePairs = deltas.filter((delta) => delta > 0).length
+          const positivePairs = deltas.filter(
+            (delta) => delta > NUMERICAL_TIE_TOLERANCE_MS
+          ).length
           const regressed =
             medianDeltaMs !== null &&
             medianDeltaMs >= COMPARISON_MINIMUM_DELTA_MS &&
             positivePairs >= COMPARISON_MINIMUM_POSITIVE_PAIRS &&
             baseFirstMedianDeltaMs !== null &&
-            baseFirstMedianDeltaMs > 0 &&
+            baseFirstMedianDeltaMs > NUMERICAL_TIE_TOLERANCE_MS &&
             candidateFirstMedianDeltaMs !== null &&
-            candidateFirstMedianDeltaMs > 0
+            candidateFirstMedianDeltaMs > NUMERICAL_TIE_TOLERANCE_MS
           strata.push({
             context,
             id,
