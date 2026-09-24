@@ -191,7 +191,7 @@ jobs:
           retention-days: 7
 
   measure:
-    name: Interaction performance regression
+    name: ${{ github.event_name == 'workflow_dispatch' && format('Interaction performance calibration ({0})', inputs['calibration-fault']) || 'Interaction performance regression' }}
     needs: [resolve, build-wasm, build-app]
     # A failed dependency must fail this check instead of leaving it skipped.
     if: ${{ !cancelled() }}

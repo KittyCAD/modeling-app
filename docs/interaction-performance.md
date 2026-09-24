@@ -141,6 +141,10 @@ respectively. They are allowed only for manual A/A runs and must fail the ordina
 comparison. They never
 convert an expected failure into a green performance check.
 
+Manual jobs are named `Interaction performance calibration (<mode>)` so deliberate
+failed calibration jobs are distinct from the PR's `Interaction performance
+regression` check.
+
 Examine the whole gate's false failures and detection results, not only individual
 medians. Record all artifacts and the calibrated sensitivity. Passing a few A/A
 runs cannot prove zero flakes; preserve the ability to diagnose future failures.
