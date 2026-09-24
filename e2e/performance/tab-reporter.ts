@@ -43,6 +43,10 @@ export default class InteractionTabReporter implements Reporter {
 
   async onEnd(_result: Readonly<FullResult>) {
     if (this.listOnly) return
+    // TAB identifies final results without a run ID. Manual controls and injected
+    // faults must not replace the PR comparison or enter its shared health status.
+    // Their decisions and raw measurements remain in the GitHub run artifacts.
+    if (process.env.GITHUB_EVENT_NAME === 'workflow_dispatch') return
     const apiUrl = process.env.TAB_API_URL
     const apiKey = process.env.TAB_API_KEY
     if (!apiUrl || !apiKey) return

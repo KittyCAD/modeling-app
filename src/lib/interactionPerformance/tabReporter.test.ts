@@ -112,6 +112,7 @@ async function runReporter({
   responseBlock = false,
   headRef = 'test-branch',
   list = false,
+  eventName = 'pull_request',
 }: {
   comparison: InteractionComparison
   failFirstRepeat?: boolean
@@ -119,6 +120,7 @@ async function runReporter({
   responseBlock?: boolean
   headRef?: string
   list?: boolean
+  eventName?: 'pull_request' | 'workflow_dispatch'
 }) {
   const directory = await mkdtemp(join(tmpdir(), 'interaction-tab-'))
   const requests: CapturedRequest[] = []
@@ -235,6 +237,7 @@ for (const scenario of scenarios) {
           GITHUB_SHA: 'test-sha',
           GITHUB_HEAD_REF: headRef,
           GITHUB_REF_NAME: 'main',
+          GITHUB_EVENT_NAME: eventName,
           CI_COMMIT_SHA: 'test-sha',
           CI_PR_NUMBER: '42',
           TARGET: 'desktop',
@@ -271,6 +274,24 @@ for (const scenario of scenarios) {
 }
 
 describe('interaction performance TAB publication', () => {
+  it.each([0, 64])(
+    'keeps manual calibration with %i ms delay out of PR health',
+    async (delayMs) => {
+      const comparison = comparisonWithCandidateDelay(delayMs)
+      expect(comparison.status).toBe(
+        delayMs === 0 ? 'no-regression' : 'regressed'
+      )
+      const result = await runReporter({
+        comparison,
+        eventName: 'workflow_dispatch',
+      })
+      expect(result.exitCode, result.output).toBe(0)
+      expect(result.report.stats.expected).toBe(4)
+      expect(result.requests.map((request) => request.url)).toEqual([])
+    },
+    60_000
+  )
+
   it('does not publish an existing comparison artifact while listing tests', async () => {
     const comparison = comparisonWithCandidateDelay()
     expect(comparison.status).toBe('no-regression')

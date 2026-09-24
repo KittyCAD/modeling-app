@@ -100,6 +100,9 @@ before measurements. Build failures fail the final check. The raw comparison,
 missing presentation evidence, 150 ms breaches, metadata, and all attempts are
 retained for 30 days. TAB receives the final aggregate decision with every capture;
 its responses cannot change CI's result.
+Manual calibration is retained in GitHub artifacts and never published to TAB,
+whose result identity does not distinguish calibration runs from PR comparisons.
+This prevents either a passing control or an injected failure replacing PR health.
 
 This prevents ordinary test edits in a feature PR from weakening that PR's
 comparison. It is not a security boundary against a malicious PR that rewrites the
