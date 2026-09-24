@@ -2163,6 +2163,11 @@ impl ExecutorContext {
         program: &crate::Program,
         exec_state: &mut ExecState,
     ) -> Result<(Universe, UniverseMap), KclErrorWithOutputs> {
+        // Import validation needs the entry point's version even when a fresh
+        // state is created only to check imports in a cached execution.
+        exec_state
+            .set_entry_point_kcl_version(program)
+            .map_err(KclErrorWithOutputs::no_outputs)?;
         exec_state.add_root_module_contents(program);
 
         let mut universe = std::collections::HashMap::new();
@@ -6039,6 +6044,95 @@ face = disc()
             assert!(!ranges[0].module_id().is_top_level());
             assert!(ranges[1].module_id().is_top_level());
         }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn imported_never_type_follows_entry_point_version() {
+        let dep = "export fn stop(): never {}\n";
+        for version in ["1.0", "2.0"] {
+            let main = format!("@settings(kclVersion = {version})\nimport stop from \"dep.kcl\"\nx = 1\n");
+            for run_mock in [false, true] {
+                let error = if run_mock {
+                    run_versioned_modules_mock(&main, &[("dep.kcl", dep)]).await
+                } else {
+                    run_versioned_modules(&main, &[("dep.kcl", dep)]).await
+                }
+                .expect_err("older KCL versions must reject imported `never` types");
+                assert!(matches!(error, KclError::Syntax { .. }), "{error:#?}");
+                assert_eq!(
+                    error.message(),
+                    format!("The `never` type requires KCL 3.0-preview, but this program uses KCL {version}.")
+                );
+                let ranges = error.source_ranges();
+                assert_eq!(ranges.len(), 2, "{ranges:#?}");
+                let start = dep.find("never").unwrap();
+                assert_eq!((ranges[0].start(), ranges[0].end()), (start, start + "never".len()));
+                assert!(!ranges[0].module_id().is_top_level());
+                assert!(ranges[1].module_id().is_top_level());
+            }
+        }
+
+        let main_v3 = "@settings(kclVersion = \"3.0-preview\")\nimport stop from \"dep.kcl\"\nx = 1\n";
+        run_versioned_modules(main_v3, &[("dep.kcl", dep)]).await.unwrap();
+
+        let dep_v2 = format!("@settings(kclVersion = 2.0)\n{dep}");
+        let error = run_versioned_modules(main_v3, &[("dep.kcl", &dep_v2)])
+            .await
+            .expect_err("version mismatch must precede `never` validation");
+        assert_kcl_version_mismatch(&error, "2.0");
+
+        let main_v2 = "@settings(kclVersion = 2.0)\nimport stop from \"dep.kcl\"\nx = 1\n";
+        let dep_v3 = format!("@settings(kclVersion = \"3.0-preview\")\n{dep}");
+        let error = run_versioned_modules(main_v2, &[("dep.kcl", &dep_v3)])
+            .await
+            .expect_err("version mismatch must precede `never` validation");
+        assert!(
+            error
+                .message()
+                .starts_with("Mixing KCL versions in a single program is not allowed.")
+        );
+
+        // Mock execution must validate a whole-module import even when it is unused.
+        let unused_import = "@settings(kclVersion = 2.0)\nimport \"dep.kcl\" as dep\nx = 1\n";
+        let error = run_versioned_modules_mock(unused_import, &[("dep.kcl", dep)])
+            .await
+            .expect_err("an unused imported module must not bypass `never` validation");
+        assert_eq!(
+            error.message(),
+            "The `never` type requires KCL 3.0-preview, but this program uses KCL 2.0."
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn never_type_resolution_rejects_an_unvalidated_v2_ast() {
+        let source = "@settings(kclVersion = 2.0)\nfn stop(): never {}\n";
+        let (ast, _) = crate::parsing::parse_str_syntax(source, ModuleId::default()).unwrap();
+        let program = crate::Program {
+            ast,
+            original_file_contents: source.to_owned(),
+        };
+        let ctx = versioned_modules_context(&[]);
+        let mut exec_state = ExecState::new(&ctx);
+        let error = ctx.run(&program, &mut exec_state).await.unwrap_err().error;
+        ctx.close().await;
+
+        assert!(matches!(error, KclError::Syntax { .. }), "{error:#?}");
+        assert_eq!(
+            error.message(),
+            "The `never` type requires KCL 3.0-preview, but this program uses KCL 2.0."
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn import_universe_uses_entry_point_version_in_a_fresh_state() {
+        let main = "@settings(kclVersion = \"3.0-preview\")\nimport stop from \"dep.kcl\"\nx = 1\n";
+        let ctx = versioned_modules_context(&[("dep.kcl", "export fn stop(): never {}\n")]);
+        let program = crate::Program::parse_no_errs(main).unwrap();
+        let mut exec_state = ExecState::new(&ctx);
+
+        ctx.get_universe(&program, &mut exec_state).await.unwrap();
+        assert_eq!(exec_state.global.entry_point_kcl_version, Some(KclVersion::V3Preview));
+        ctx.close().await;
     }
 
     #[tokio::test(flavor = "multi_thread")]

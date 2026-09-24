@@ -1888,8 +1888,14 @@ impl ExecutorContext {
                 exec_state.add_path_to_source_id(resolved_path.clone(), id);
                 let source = resolved_path.source(&self.fs, source_range).await?;
                 exec_state.add_id_to_source(id, source.clone());
-                // TODO handle parsing errors properly
-                let parsed = crate::parsing::parse_str_deferred_use_keyword(&source.source, id).parse_errs_as_err()?;
+                // A version mismatch must be reported before versioned syntax errors.
+                let (parsed, never_type_ranges) = crate::parsing::parse_str_syntax(&source.source, id)?;
+                exec_state.check_imported_module_kcl_version(resolved_path, &parsed, Some(source_range))?;
+                crate::parsing::validate_never_type_ranges(
+                    &never_type_ranges,
+                    crate::parsing::SyntaxSource::UserCode(exec_state.entry_point_kcl_version()),
+                )
+                .map_err(|error| error.add_import_location(&resolved_path.import_name(), source_range))?;
                 exec_state.add_module(id, resolved_path.clone(), ModuleRepr::Kcl(parsed, None));
 
                 Ok(id)
@@ -1925,9 +1931,12 @@ impl ExecutorContext {
                 exec_state.add_path_to_source_id(resolved_path.clone(), id);
                 let source = resolved_path.source(&self.fs, source_range).await?;
                 exec_state.add_id_to_source(id, source.clone());
-                let parsed = crate::parsing::parse_str(&source.source, id)
-                    .parse_errs_as_err()
-                    .unwrap();
+                let (parsed, never_type_ranges) = crate::parsing::parse_str_syntax(&source.source, id).unwrap();
+                crate::parsing::validate_never_type_ranges(
+                    &never_type_ranges,
+                    crate::parsing::SyntaxSource::BundledStdlib,
+                )
+                .unwrap();
                 exec_state.add_module(id, resolved_path.clone(), ModuleRepr::Kcl(parsed, None));
                 Ok(id)
             }
