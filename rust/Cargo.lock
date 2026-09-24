@@ -2734,6 +2734,7 @@ dependencies = [
  "indexmap 2.14.2",
  "kcl-error 0.2.186",
  "kittycad-measurements",
+ "kittycad-point",
  "kittycad-unit-conversion-derive",
  "parse-display",
  "parse-display-derive",
@@ -3136,6 +3137,17 @@ dependencies = [
  "proc-macro2",
  "quote",
  "syn 3.0.5",
+]
+
+[[package]]
+name = "kittycad-point"
+version = "0.1.0"
+dependencies = [
+ "arbitrary",
+ "euler 0.5.0",
+ "schemars 0.8.22",
+ "serde",
+ "ts-rs",
 ]
 
 [[package]]
