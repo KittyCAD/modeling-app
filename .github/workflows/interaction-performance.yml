@@ -6,12 +6,8 @@ on:
     branches: [main]
   workflow_dispatch:
     inputs:
-      baseline-ref:
-        description: Baseline commit (default candidate parent; candidate SHA gives manual A/A)
-        type: string
-        default: ""
       calibration-fault:
-        description: Manual A/A only, add 64 ms to candidate Home palette opening
+        description: Calibrate the dispatched commit against itself, optionally adding 64 ms to candidate Home palette opening
         type: choice
         default: none
         options: [none, first, warm, stall]
@@ -22,6 +18,9 @@ concurrency:
 
 permissions:
   contents: read
+
+# Revoke the cache token's read/write capabilities, including for manual runs.
+cache-mode: none
 
 jobs:
   resolve:
@@ -65,9 +64,15 @@ jobs:
       matrix: ${{ fromJSON(needs.resolve.outputs.build_matrix) }}
     steps:
       - uses: actions/checkout@v7.0.1
+        if: ${{ github.event_name != 'workflow_dispatch' }}
         with:
           persist-credentials: false
           ref: ${{ matrix.commit }}
+      - uses: actions/checkout@v7.0.1
+        if: ${{ github.event_name == 'workflow_dispatch' }}
+        with:
+          persist-credentials: false
+          ref: ${{ github.sha }}
       - uses: actions/checkout@v7.0.1
         with:
           persist-credentials: false
@@ -117,14 +122,28 @@ jobs:
       matrix: ${{ fromJSON(needs.resolve.outputs.build_matrix) }}
     steps:
       - uses: actions/checkout@v7.0.1
+        if: ${{ github.event_name != 'workflow_dispatch' }}
         with:
           persist-credentials: false
           ref: ${{ matrix.commit }}
           path: app
       - uses: actions/checkout@v7.0.1
+        if: ${{ github.event_name == 'workflow_dispatch' }}
+        with:
+          persist-credentials: false
+          ref: ${{ github.sha }}
+          path: app
+      - uses: actions/checkout@v7.0.1
+        if: ${{ github.event_name != 'workflow_dispatch' }}
         with:
           persist-credentials: false
           ref: ${{ needs.resolve.outputs.harness_commit }}
+          path: harness
+      - uses: actions/checkout@v7.0.1
+        if: ${{ github.event_name == 'workflow_dispatch' }}
+        with:
+          persist-credentials: false
+          ref: ${{ github.sha }}
           path: harness
       - uses: actions/setup-node@v7.0.0
         with:
@@ -186,14 +205,28 @@ jobs:
           BUILD_RESULT: ${{ needs.build-app.result }}
         run: test "$PLAN_RESULT" = success && test "$WASM_RESULT" = success && test "$BUILD_RESULT" = success
       - uses: actions/checkout@v7.0.1
+        if: ${{ github.event_name != 'workflow_dispatch' }}
         with:
           persist-credentials: false
           ref: ${{ needs.resolve.outputs.base_commit }}
           path: apps/base
       - uses: actions/checkout@v7.0.1
+        if: ${{ github.event_name == 'workflow_dispatch' }}
+        with:
+          persist-credentials: false
+          ref: ${{ github.sha }}
+          path: apps/base
+      - uses: actions/checkout@v7.0.1
+        if: ${{ github.event_name != 'workflow_dispatch' }}
         with:
           persist-credentials: false
           ref: ${{ needs.resolve.outputs.candidate_commit }}
+          path: apps/candidate
+      - uses: actions/checkout@v7.0.1
+        if: ${{ github.event_name == 'workflow_dispatch' }}
+        with:
+          persist-credentials: false
+          ref: ${{ github.sha }}
           path: apps/candidate
       - uses: actions/setup-node@v7.0.0
         with:

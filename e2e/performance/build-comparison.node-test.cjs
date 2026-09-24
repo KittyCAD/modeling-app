@@ -102,12 +102,7 @@ test('bootstrap is allowed only while the immutable base lacks the harness', (t)
   assert.equal(normal.harnessCommit, candidate)
   assert.equal(normal.harnessSource, 'base')
   assert.equal(
-    resolvePlan(
-      root,
-      'workflow_dispatch',
-      { inputs: { 'baseline-ref': next } },
-      next
-    ).calibration,
+    resolvePlan(root, 'workflow_dispatch', {}, next).calibration,
     'manual-aa'
   )
   assert.throws(
@@ -183,7 +178,7 @@ test('PR comparison uses the tested baseline when the event base is behind', (t)
         { inputs: { 'baseline-ref': unrelatedBase } },
         candidate
       ),
-    /Manual baseline must be an ancestor/
+    /Manual calibration does not accept a baseline ref/
   )
   assert.throws(
     () =>
@@ -308,11 +303,48 @@ test('real manifests support committed lockfiles larger than the Git output buff
   )
 })
 
+test('manual calibration fixes both sources to the triggered commit and rejects baseline inputs', (t) => {
+  const { root, base, candidate } = fixture(t)
+  const plan = resolvePlan(root, 'workflow_dispatch', {}, candidate)
+  assert.equal(plan.baseCommit, candidate)
+  assert.equal(plan.candidateCommit, candidate)
+  assert.equal(plan.harnessCommit, candidate)
+  assert.equal(plan.calibration, 'manual-aa')
+  assert.equal(plan.calibrationFault, 'none')
+  for (const baseline of [base, candidate, 'main', '']) {
+    assert.throws(
+      () =>
+        resolvePlan(
+          root,
+          'workflow_dispatch',
+          { inputs: { 'baseline-ref': baseline } },
+          candidate
+        ),
+      /Manual calibration does not accept a baseline ref/
+    )
+  }
+  const file = path.join(root, 'plan.json')
+  fs.writeFileSync(file, JSON.stringify(plan))
+  assert.deepEqual(readPlan(file), plan)
+  for (const invalid of [
+    {
+      ...plan,
+      baseCommit: base,
+      harnessCommit: base,
+      calibration: 'none',
+    },
+    { ...plan, candidateCommit: base, calibration: 'none' },
+  ]) {
+    fs.writeFileSync(file, JSON.stringify(invalid))
+    assert.throws(() => readPlan(file), /Invalid comparison plan/)
+  }
+})
+
 test('injected calibration is confined to explicit manual A/A plans', (t) => {
   const { root, base, candidate } = fixture(t)
   for (const fault of ['first', 'warm', 'stall']) {
     const event = {
-      inputs: { 'baseline-ref': candidate, 'calibration-fault': fault },
+      inputs: { 'calibration-fault': fault },
     }
     const plan = resolvePlan(root, 'workflow_dispatch', event, candidate)
     assert.equal(plan.calibration, 'manual-aa')
@@ -330,7 +362,7 @@ test('injected calibration is confined to explicit manual A/A plans', (t) => {
           { inputs: { ...event.inputs, 'baseline-ref': base } },
           candidate
         ),
-      /require manual dispatch with identical commits/
+      /Manual calibration does not accept a baseline ref/
     )
     assert.throws(
       () => resolvePlan(root, 'push', { ...event, before: base }, candidate),
@@ -356,7 +388,7 @@ test('injected calibration is confined to explicit manual A/A plans', (t) => {
         root,
         'workflow_dispatch',
         {
-          inputs: { 'baseline-ref': candidate, 'calibration-fault': 'unknown' },
+          inputs: { 'calibration-fault': 'unknown' },
         },
         candidate
       ),
@@ -365,15 +397,10 @@ test('injected calibration is confined to explicit manual A/A plans', (t) => {
 })
 
 test('manual A/A rejects independently valid builds with different bytes', (t) => {
-  const { root, candidate } = fixture(t)
+  const { root, base, candidate } = fixture(t)
   const baseRoot = path.join(path.dirname(root), 'same-commit-base')
   git(root, 'worktree', 'add', '--detach', baseRoot, candidate)
-  const plan = resolvePlan(
-    root,
-    'workflow_dispatch',
-    { inputs: { 'baseline-ref': candidate } },
-    candidate
-  )
+  const plan = resolvePlan(root, 'workflow_dispatch', {}, candidate)
   for (const [directory, variant] of [
     [baseRoot, 'base'],
     [root, 'candidate'],
@@ -394,4 +421,8 @@ test('manual A/A rejects independently valid builds with different bytes', (t) =
     () => verifyPair(baseRoot, root, plan),
     /A\/A application build identity/
   )
+  // The measuring checkout must also match the dispatched commit, even if its
+  // downloaded artifact and manifest came from the correct calibration build.
+  git(root, 'checkout', '--detach', base)
+  assert.throws(() => verifyPair(baseRoot, root, plan), /Application commit/)
 })

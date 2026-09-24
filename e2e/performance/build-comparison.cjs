@@ -91,20 +91,13 @@ function resolvePlan(root, eventName, event, candidateRef) {
   } else if (eventName === 'push') {
     baseRef = event.before
   } else if (eventName === 'workflow_dispatch') {
-    baseRef = event.inputs?.['baseline-ref'] || `${candidateCommit}^1`
+    if (event.inputs?.['baseline-ref'] !== undefined)
+      throw new Error('Manual calibration does not accept a baseline ref')
+    baseRef = candidateCommit
   } else {
     throw new Error('Unsupported comparison event')
   }
   let baseCommit = commit(root, baseRef)
-  if (eventName === 'workflow_dispatch') {
-    // A manual run on main must not execute an unrelated, unreviewed ref with
-    // the default branch's workflow privileges.
-    try {
-      git(root, 'merge-base', '--is-ancestor', baseCommit, candidateCommit)
-    } catch {
-      throw new Error('Manual baseline must be an ancestor of the candidate')
-    }
-  }
   const calibrationFault = event.inputs?.['calibration-fault'] || 'none'
   if (!['none', 'first', 'warm', 'stall'].includes(calibrationFault)) {
     throw new Error('Invalid calibration fault')
@@ -159,10 +152,7 @@ function resolvePlan(root, eventName, event, candidateRef) {
     harnessCommit,
     harnessSource,
     harnessVariant: harnessSource === 'base' ? 'base' : 'candidate',
-    calibration:
-      eventName === 'workflow_dispatch' && baseCommit === candidateCommit
-        ? 'manual-aa'
-        : 'none',
+    calibration: eventName === 'workflow_dispatch' ? 'manual-aa' : 'none',
     calibrationFault,
   }
 }
@@ -188,11 +178,10 @@ function readPlan(file) {
       (plan.harnessSource === 'base'
         ? plan.baseCommit
         : plan.candidateCommit) ||
+    (plan.event === 'workflow_dispatch' &&
+      plan.baseCommit !== plan.candidateCommit) ||
     plan.calibration !==
-      (plan.event === 'workflow_dispatch' &&
-      plan.baseCommit === plan.candidateCommit
-        ? 'manual-aa'
-        : 'none') ||
+      (plan.event === 'workflow_dispatch' ? 'manual-aa' : 'none') ||
     !['none', 'first', 'warm', 'stall'].includes(plan.calibrationFault) ||
     (plan.calibrationFault !== 'none' && plan.calibration !== 'manual-aa')
   )

@@ -80,9 +80,12 @@ The initial rollout explicitly uses the candidate harness when the base has no
 comparison entrypoint. An incompatible existing base harness fails rather than
 silently switching policy.
 
-Manual baselines must be ancestors of the candidate. Comparison jobs disable
-automatic dependency caching and use isolated runner cache identities; the shared
-Wasm workflow keeps its existing behavior.
+Manual dispatch is calibration-only: both application variants and the harness
+use the dispatched `github.sha`, and baseline override inputs are rejected.
+Automatic PR and push comparisons retain distinct baseline and candidate commits.
+The workflow denies GitHub cache reads and writes with `cache-mode: none`, disables
+automatic dependency caching, and uses isolated Namespace runner cache identities.
+The shared Wasm workflow keeps its existing behavior.
 
 Source, locks, workload, harness files, and built artifacts are hashed and checked
 before measurements. Build failures fail the final check. The raw comparison,
@@ -128,12 +131,14 @@ npm exec -- playwright show-report playwright-report/interaction-performance
 ## Calibration and rollout
 
 Before treating this gate as stable, run a predeclared set of independent manual
-A/A workflows against the exact same commit, preserving every attempt. Set
-`baseline-ref` to the selected candidate commit. Verify artifact identity before
-calling it an identical-build comparison. The injected modes `first`, `warm`, and
-`stall` add 64 ms to the candidate Home palette's real click handler on its first
-input, every repeated input, or one of ten repeated inputs respectively. They are
-allowed only for manual A/A runs and must fail the ordinary comparison. They never
+A/A workflows against the exact same commit, preserving every attempt. Select the
+workflow revision to dispatch and use `calibration-fault: none`; no baseline ref
+is accepted. Both builds use that run's immutable `github.sha`. Verify artifact
+identity before calling it an identical-build comparison. The injected modes
+`first`, `warm`, and `stall` add 64 ms to the candidate Home palette's real click
+handler on its first input, every repeated input, or one of ten repeated inputs
+respectively. They are allowed only for manual A/A runs and must fail the ordinary
+comparison. They never
 convert an expected failure into a green performance check.
 
 Examine the whole gate's false failures and detection results, not only individual
