@@ -209,7 +209,7 @@ box = startSketchOn(XY)
   |> line(end = [20, 0])
   |> line(end = [0, -20], tag = $revolveAxis)
   |> close()
-  |> extrude(length = 20)
+  |> extrude(length = 20, tagEnd = $capEnd001)
 
 sketch001 = startSketchOn(box, face = END)
   |> circle(center = [10, 10], radius = 4)
