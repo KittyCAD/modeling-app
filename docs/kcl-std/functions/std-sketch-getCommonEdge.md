@@ -27,25 +27,25 @@ getCommonEdge(faces: [TaggedFace; 2]): Edge
 ### Examples
 
 ```kcl
-// Get an edge shared between two faces, created after a chamfer.
+@settings(defaultLengthUnit = mm, kclVersion = 2.0)
 
-scale = 20
-part001 = startSketchOn(XY)
-  |> startProfile(at = [0, 0])
-  |> line(end = [0, scale])
-  |> line(end = [scale, 0])
-  |> line(end = [0, -scale])
-  |> close(tag = $line0)
-  |> extrude(length = 20, tagEnd = $end0)
-  // We tag the chamfer to reference it later.
-  |> chamfer(length = 10, tags = [getOppositeEdge(line0)], tag = $chamfer0)
+scale = 20mm
+partSketch = sketch(on = XY) {
+  left = line(start = [var 0mm, var 0mm], end = [var 0mm, var 20mm])
+  top = line(start = [var 0mm, var 20mm], end = [var 20mm, var 20mm])
+  right = line(start = [var 20mm, var 20mm], end = [var 20mm, var 0mm])
+  line0 = line(start = [var 20mm, var 0mm], end = [var 0mm, var 0mm])
+  coincident([left.end, top.start])
+  coincident([top.end, right.start])
+  coincident([right.end, line0.start])
+  coincident([line0.end, left.start])
+}
+partRegion = region(segments = [partSketch.left, partSketch.top])
+part001 = extrude(partRegion, length = scale, tagEnd = $end0)
+  |> chamfer(length = 10mm, tags = [getOppositeEdge(partRegion.tags.line0)], tag = $chamfer0)
 
-// Get the shared edge between the chamfer and the extrusion.
+// Select the edge shared by the chamfer and the extrusion's end face.
 commonEdge = { sideFaces = [chamfer0, end0] }
-
-// Chamfer the shared edge.
-// TODO: uncomment this when ssi for fillets lands
-// chamfer(part001, length = 5, tags = [commonEdge])
 
 ```
 
@@ -53,7 +53,7 @@ commonEdge = { sideFaces = [chamfer0, end0] }
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the getCommonEdge function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-getCommonEdge0_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-getCommonEdge0_output.glb"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-getCommonEdge0.png"

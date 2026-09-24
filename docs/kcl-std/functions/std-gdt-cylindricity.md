@@ -61,7 +61,7 @@ cylinderSketch = sketch(on = XY) {
   perimeter = circle(start = [var 5mm, var 0mm], center = [var 0mm, var 0mm])
 }
 
-cylinder = extrude(region(point = cylinderSketch.perimeter.center, sketch = cylinderSketch), length = 10mm)
+cylinder = extrude(region(segments = [cylinderSketch.perimeter]), length = 10mm)
 gdt::cylindricity(
   faces = [cylinder.sketch.tags.perimeter],
   tolerance = 0.02mm,
@@ -81,7 +81,7 @@ cylinderSketch = sketch(on = XY) {
   perimeter = circle(start = [var 5mm, var 0mm], center = [var 0mm, var 0mm])
 }
 
-cylinderRegion = region(point = cylinderSketch.perimeter.center, sketch = cylinderSketch)
+cylinderRegion = region(segments = [cylinderSketch.perimeter])
 hide(cylinderSketch)
 cylinder = extrude(cylinderRegion, length = 10mm)
 gdt::cylindricity(edges = [cylinderRegion.tags.perimeter], tolerance = 0.05mm, framePosition = [-12mm, 8mm])
@@ -98,7 +98,7 @@ cylinderSketch = sketch(on = XY) {
   perimeter = circle(start = [var 5mm, var 0mm], center = [var 0mm, var 0mm])
 }
 
-cylinder = extrude(region(point = cylinderSketch.perimeter.center, sketch = cylinderSketch), length = 10mm, tagEnd = $top)
+cylinder = extrude(region(segments = [cylinderSketch.perimeter]), length = 10mm, tagEnd = $top)
 topEdge = {
   sideFaces = [cylinder.sketch.tags.perimeter, top]
 }
