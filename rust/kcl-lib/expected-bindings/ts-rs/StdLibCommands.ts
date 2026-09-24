@@ -4873,7 +4873,7 @@ export default {
     "returnType": "Edge",
     "addedIn": null,
     "deprecated": false,
-    "deprecatedSince": null,
+    "deprecatedSince": "3.0",
     "experimental": false,
     "docHidden": false,
     "args": [
@@ -4899,7 +4899,7 @@ export default {
     "returnType": "Edge",
     "addedIn": null,
     "deprecated": false,
-    "deprecatedSince": null,
+    "deprecatedSince": "3.0",
     "experimental": false,
     "docHidden": false,
     "args": [
@@ -4925,7 +4925,7 @@ export default {
     "returnType": "Edge",
     "addedIn": null,
     "deprecated": false,
-    "deprecatedSince": null,
+    "deprecatedSince": "3.0",
     "experimental": false,
     "docHidden": false,
     "args": [
@@ -4951,7 +4951,7 @@ export default {
     "returnType": "Edge",
     "addedIn": null,
     "deprecated": false,
-    "deprecatedSince": null,
+    "deprecatedSince": "3.0",
     "experimental": false,
     "docHidden": false,
     "args": [
