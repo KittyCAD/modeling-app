@@ -1,6 +1,7 @@
 //! The executor for the AST.
 
 use std::collections::BTreeMap;
+use std::future::Future;
 use std::sync::Arc;
 
 use anyhow::Result;
@@ -71,10 +72,12 @@ pub use state::KclVersion;
 pub use state::LegacyAngleRefactorMeta;
 pub use state::MetaSettings;
 pub(crate) use state::ModuleArtifactState;
+pub use state::NotYetAdded;
 pub(crate) use state::PendingEdgeRefactorMeta;
 pub(crate) use state::PendingLegacyAngleRefactorMeta;
 pub use state::RefactorMetadata;
 pub(crate) use state::TangencyMode;
+pub(crate) use state::declared_kcl_version;
 
 use crate::CompilationIssue;
 use crate::ExecError;
@@ -1169,9 +1172,10 @@ impl ExecutorContext {
         Self::new_with_engine_and_fs(engine, crate::fs::new_file_system_handle(FileManager::new()), settings)
     }
 
-    /// Create a new default executor context.
+    /// Open an engine session for the entrypoint's resolved `Program::language_version()`.
+    /// The version is fixed for the lifetime of this connection.
     #[cfg(not(target_arch = "wasm32"))]
-    pub async fn new(client: &kittycad::Client, settings: ExecutorSettings) -> Result<Self> {
+    pub async fn new(client: &kittycad::Client, settings: ExecutorSettings, kcl_version: KclVersion) -> Result<Self> {
         let pr = std::env::var("ZOO_ENGINE_PR").ok().and_then(|s| s.parse().ok());
         let (ws, headers) = client
             .modeling()
@@ -1192,12 +1196,16 @@ impl ExecutorContext {
                     settings.pool.clone()
                 },
                 geometry_only: Some(settings.geometry_only),
-                kcl_version: None,
                 pr,
                 unlocked_framerate: None,
                 webrtc: Some(false),
                 video_res_width: settings.video_res_width,
                 video_res_height: settings.video_res_height,
+                kcl_version: Some(match kcl_version {
+                    KclVersion::V1 => kittycad::types::KclVersion::One0,
+                    KclVersion::V2 => kittycad::types::KclVersion::Two0,
+                    KclVersion::V3Preview => kittycad::types::KclVersion::Three0Preview,
+                }),
             })
             .await?;
 
@@ -1290,28 +1298,46 @@ impl ExecutorContext {
         settings: ExecutorSettings,
         token: Option<String>,
         engine_addr: Option<String>,
+        kcl_version: KclVersion,
     ) -> Result<Self> {
         // Create the client.
         let client = crate::engine::new_zoo_client(token, engine_addr)?;
 
-        let ctx = Self::new(&client, settings).await?;
+        let ctx = Self::new(&client, settings, kcl_version).await?;
         Ok(ctx)
     }
 
     /// Create a new default executor context.
-    /// With the default kittycad client.
+    /// With a kittycad client.
     /// This allows for passing in `ZOO_API_TOKEN` and `ZOO_HOST` as environment
     /// variables.
+    /// But also allows for passing in a token and engine address directly.
+    #[cfg(not(target_arch = "wasm32"))]
+    pub async fn new_with_version(kcl_version: KclVersion) -> Result<Self> {
+        Self::new_with_client(Default::default(), None, None, kcl_version).await
+    }
+
+    /// Create a new default executor context.
+    /// With the default kittycad client and the default (unannotated) KCL version.
+    /// For a versioned entrypoint, use `new_with_client` or `new_with_version`
+    /// with `Program::language_version()`.
+    /// This allows for passing in `ZOO_API_TOKEN` and `ZOO_HOST` as environment
+    /// variables.
+    #[cfg_attr(not(test), deprecated(note = "use fn new_with_version() instead"))]
     #[cfg(not(target_arch = "wasm32"))]
     pub async fn new_with_default_client() -> Result<Self> {
-        // Create the client.
-        let ctx = Self::new_with_client(Default::default(), None, None).await?;
-        Ok(ctx)
+        Self::new_with_client(Default::default(), None, None, KclVersion::default()).await
     }
 
     /// Create a geometry-only executor context with the default client.
     #[cfg(not(target_arch = "wasm32"))]
     pub async fn new_geometry_only_with_default_client() -> Result<Self> {
+        Self::new_geometry_only_with_version(KclVersion::default()).await
+    }
+
+    /// Create a geometry-only executor context for the entrypoint's KCL version.
+    #[cfg(not(target_arch = "wasm32"))]
+    pub async fn new_geometry_only_with_version(kcl_version: KclVersion) -> Result<Self> {
         Self::new_with_client(
             ExecutorSettings {
                 geometry_only: true,
@@ -1319,13 +1345,14 @@ impl ExecutorContext {
             },
             None,
             None,
+            kcl_version,
         )
         .await
     }
 
     /// For executing unit tests.
     #[cfg(not(target_arch = "wasm32"))]
-    pub async fn new_for_unit_test(engine_addr: Option<String>) -> Result<Self> {
+    pub async fn new_for_unit_test(engine_addr: Option<String>, kcl_version: KclVersion) -> Result<Self> {
         let ctx = ExecutorContext::new_with_client(
             ExecutorSettings {
                 highlight_edges: true,
@@ -1345,6 +1372,7 @@ impl ExecutorContext {
             },
             None,
             engine_addr,
+            kcl_version,
         )
         .await?;
         Ok(ctx)
@@ -1423,6 +1451,7 @@ impl ExecutorContext {
         exec_state.global.module_infos = mem.module_infos;
         exec_state.global.path_to_source_id = mem.path_to_source_id;
         exec_state.global.id_to_source = mem.id_to_source;
+        exec_state.global.std_not_yet_added = mem.std_not_yet_added;
         exec_state.mod_local.constraint_state = mem.constraint_state;
         let len = _mock_config
             .sketch_block_id
@@ -1465,6 +1494,8 @@ impl ExecutorContext {
         let id_to_source = exec_state.global.id_to_source.clone();
         let constraint_state = exec_state.mod_local.constraint_state.clone();
         let scene_objects = exec_state.global.root_module_artifacts.scene_objects.clone();
+        let std_not_yet_added = exec_state.global.std_not_yet_added.clone();
+        let kcl_version = exec_state.entry_point_kcl_version();
         let outcome = exec_state
             .into_exec_outcome(main_ref, self)
             .await
@@ -1478,6 +1509,8 @@ impl ExecutorContext {
             id_to_source,
             constraint_state,
             scene_objects,
+            std_not_yet_added,
+            kcl_version,
         };
         cache::write_old_memory(state).await;
 
@@ -1500,10 +1533,20 @@ impl ExecutorContext {
 
         let use_prev_memory = mock_config.use_prev_memory;
         let mut exec_state = ExecState::new_mock(self, mock_config);
+        // Before the prelude runs below, so that `added_in` gating in std sees
+        // the program's version rather than the default.
+        exec_state
+            .set_entry_point_kcl_version(program)
+            .map_err(KclErrorWithOutputs::no_outputs)?;
         if use_prev_memory {
             match cache::read_old_memory().await {
-                Some(mem) => Self::restore_mock_memory(&mut exec_state, mem, mock_config)?,
-                None => self.prepare_mem(&mut exec_state).await?,
+                Some(mem) if mem.reusable_for(exec_state.entry_point_kcl_version()) => {
+                    Self::restore_mock_memory(&mut exec_state, mem, mock_config)?
+                }
+                // No memory, or memory from another effective kclVersion, whose
+                // bindings, module outcomes, and prelude this program must not
+                // see.
+                _ => self.prepare_mem(&mut exec_state).await?,
             }
         } else {
             self.prepare_mem(&mut exec_state).await?
@@ -1523,6 +1566,16 @@ impl ExecutorContext {
 
     pub async fn run_with_caching(&self, program: crate::Program) -> Result<ExecOutcome, KclErrorWithOutputs> {
         assert!(!self.is_mock());
+        let result = self
+            .with_engine_execution(Box::pin(self.run_with_caching_inner(program)))
+            .await;
+        if result.is_err() {
+            cache::bust_cache().await;
+        }
+        result
+    }
+
+    async fn run_with_caching_inner(&self, program: crate::Program) -> Result<ExecOutcome, KclErrorWithOutputs> {
         let grid_scale = if self.settings.fixed_size_grid {
             GridScaleBehavior::Fixed(program.meta_settings().ok().flatten().map(|s| s.default_length_units))
         } else {
@@ -1700,7 +1753,7 @@ impl ExecutorContext {
                             .map_err(KclErrorWithOutputs::no_outputs)?;
 
                         let result = self
-                            .run_concurrent(
+                            .run_concurrent_inner(
                                 &program,
                                 &mut new_exec_state,
                                 Some((new_universe, new_universe_map)),
@@ -1720,7 +1773,7 @@ impl ExecutorContext {
                             .map_err(KclErrorWithOutputs::no_outputs)?;
 
                         let result = self
-                            .run_concurrent(&program, &mut exec_state, None, PreserveMem::Normal)
+                            .run_concurrent_inner(&program, &mut exec_state, None, PreserveMem::Normal)
                             .await;
 
                         (exec_state, result)
@@ -1733,7 +1786,7 @@ impl ExecutorContext {
                             .map_err(KclErrorWithOutputs::no_outputs)?;
 
                         let result = self
-                            .run_concurrent(&program, &mut exec_state, None, PreserveMem::Always)
+                            .run_concurrent_inner(&program, &mut exec_state, None, PreserveMem::Always)
                             .await;
 
                         (exec_state, result)
@@ -1749,16 +1802,12 @@ impl ExecutorContext {
                     .map_err(KclErrorWithOutputs::no_outputs)?;
 
                 let result = self
-                    .run_concurrent(&program, &mut exec_state, None, PreserveMem::Normal)
+                    .run_concurrent_inner(&program, &mut exec_state, None, PreserveMem::Normal)
                     .await;
 
                 (program, exec_state, result)
             }
         };
-
-        if result.is_err() {
-            cache::bust_cache().await;
-        }
 
         // Throw the error.
         let result = result?;
@@ -1804,10 +1853,70 @@ impl ExecutorContext {
         universe_info: Option<(Universe, UniverseMap)>,
         preserve_mem: PreserveMem,
     ) -> Result<(EnvironmentRef, Option<ModelingSessionData>), KclErrorWithOutputs> {
+        self.with_engine_execution(Box::pin(self.run_concurrent_inner(
+            program,
+            exec_state,
+            universe_info,
+            preserve_mem,
+        )))
+        .await
+    }
+
+    /// Enclose the entire execution, including scene setup and cached settings updates.
+    async fn with_engine_execution<T>(
+        &self,
+        execution: impl Future<Output = Result<T, KclErrorWithOutputs>>,
+    ) -> Result<T, KclErrorWithOutputs> {
+        self.send_execution_boundary(ModelingCmd::from(
+            mcmd::BeginExecution::builder().enable_render(true).build(),
+        ))
+        .await
+        .map_err(KclErrorWithOutputs::no_outputs)?;
+
+        let exec_res = execution.await;
+        let flush_res = self.engine.ensure_async_commands_completed(&self.engine_batch).await;
+        if flush_res.is_err() {
+            // Do not carry unexecuted commands from a failed flush into the next execution.
+            self.engine.clear_queues(&self.engine_batch).await;
+        }
+        // Always end execution, even when evaluation or the final flush failed.
+        let end_res = self
+            .send_execution_boundary(ModelingCmd::from(mcmd::EndExecution::default()))
+            .await;
+        match (exec_res, flush_res.and(end_res)) {
+            (Ok(res), Ok(())) => Ok(res),
+            (Err(e), _) => Err(e),
+            (Ok(_), Err(e)) => Err(KclErrorWithOutputs::no_outputs(e)),
+        }
+    }
+
+    async fn send_execution_boundary(&self, cmd: ModelingCmd) -> Result<(), KclError> {
+        // A separate, empty queue keeps these commands outside all modeling batches.
+        // Their IDs must not consume or collide with the model's stable artifact IDs.
+        self.engine
+            .send_modeling_cmd(
+                &EngineBatchContext::new(),
+                uuid::Uuid::new_v4(),
+                SourceRange::synthetic(),
+                &cmd,
+            )
+            .await
+            .map(|_| ())
+    }
+
+    async fn run_concurrent_inner(
+        &self,
+        program: &crate::Program,
+        exec_state: &mut ExecState,
+        universe_info: Option<(Universe, UniverseMap)>,
+        preserve_mem: PreserveMem,
+    ) -> Result<(EnvironmentRef, Option<ModelingSessionData>), KclErrorWithOutputs> {
         // Record the entry point's kclVersion before anything executes;
         // imported modules pre-execute on clones of this state below and must
         // inherit it.
-        exec_state.set_entry_point_kcl_version(program);
+        exec_state
+            .set_entry_point_kcl_version(program)
+            .map_err(KclErrorWithOutputs::no_outputs)?;
 
         // Reuse our cached universe if we have one.
 
@@ -2086,7 +2195,9 @@ impl ExecutorContext {
         // Record the entry point's kclVersion. Mock execution reaches here
         // without going through run_concurrent; on the engine path this
         // re-assigns the same value, which is harmless.
-        exec_state.set_entry_point_kcl_version(program);
+        exec_state
+            .set_entry_point_kcl_version(program)
+            .map_err(KclErrorWithOutputs::no_outputs)?;
 
         // Re-apply the settings, in case the cache was busted.
         let grid_scale = if self.settings.fixed_size_grid {
@@ -2135,6 +2246,8 @@ impl ExecutorContext {
                 id_to_source: exec_state.global.id_to_source.clone(),
                 constraint_state: exec_state.mod_local.constraint_state.clone(),
                 scene_objects: exec_state.global.root_module_artifacts.scene_objects.clone(),
+                std_not_yet_added: exec_state.global.std_not_yet_added.clone(),
+                kcl_version: exec_state.entry_point_kcl_version(),
             };
             cache::write_old_memory(state).await;
             Ok(())
@@ -2266,9 +2379,11 @@ impl ExecutorContext {
             let id = self
                 .open_module(&ImportPath::Std { path }, &[], &resolved_path, exec_state, source_range)
                 .await?;
-            let (module_memory, _) = self.exec_module_for_items(id, exec_state, source_range).await?;
+            let prelude = self.exec_module_for_items(id, exec_state, source_range).await?;
 
-            exec_state.mut_stack().memory.set_std(module_memory)?;
+            exec_state.mut_stack().memory.set_std(prelude.environment)?;
+            // Root environments reach the prelude without an import, so its records live here.
+            exec_state.global.std_not_yet_added = prelude.not_yet_added;
 
             // Operations generated by the prelude are not useful, so clear them
             // out.
@@ -2432,10 +2547,32 @@ pub(crate) async fn parse_execute_with_executor_kind(
     project_directory: Option<TypedPath>,
     executor_kind: machine::ExecutorKind,
 ) -> Result<ExecTestResults, KclError> {
+    parse_execute_inner(code, project_directory, executor_kind, false).await
+}
+
+/// Like [`parse_execute_with_project_dir`], but missing names are explained
+/// for user declarations too, not only std's. Only for tests of the `added_in`
+/// hint itself, which std gives no declaration to exercise yet.
+#[cfg(test)]
+pub(crate) async fn parse_execute_hinting_all(
+    code: &str,
+    project_directory: Option<TypedPath>,
+) -> Result<ExecTestResults, KclError> {
+    parse_execute_inner(code, project_directory, machine::ExecutorKind::resolve(), true).await
+}
+
+#[cfg(test)]
+async fn parse_execute_inner(
+    code: &str,
+    project_directory: Option<TypedPath>,
+    executor_kind: machine::ExecutorKind,
+    hint_all_not_yet_added: bool,
+) -> Result<ExecTestResults, KclError> {
     let program = crate::Program::parse_no_errs(code)?;
 
     let exec_ctxt = new_mock_executor_context(project_directory, executor_kind);
     let mut exec_state = ExecState::new(&exec_ctxt);
+    exec_state.global.hint_all_not_yet_added = hint_all_not_yet_added;
     let result = exec_ctxt.run(&program, &mut exec_state).await?;
 
     Ok(ExecTestResults {
@@ -2530,6 +2667,61 @@ mod tests {
         ($file:literal) => {
             include_str!(concat!("../../e2e/executor/inputs/", $file, ".kcl"))
         };
+    }
+
+    #[cfg(not(target_arch = "wasm32"))]
+    #[tokio::test]
+    async fn native_websocket_sends_entrypoint_kcl_version() {
+        use tokio::io::AsyncReadExt;
+        use tokio::io::AsyncWriteExt;
+
+        for (source, expected) in [
+            ("", "1.0"),
+            ("@settings(defaultLengthUnit = mm)", "1.0"),
+            ("@settings(kclVersion = 2.0)", "2.0"),
+            ("@settings(kclVersion = \"3.0-preview\")", "3.0-preview"),
+        ] {
+            let program = crate::Program::parse_no_errs(source).unwrap();
+            let listener = tokio::net::TcpListener::bind("127.0.0.1:0").await.unwrap();
+            let address = listener.local_addr().unwrap();
+            let request = tokio::spawn(async move {
+                let (mut socket, _) = listener.accept().await.unwrap();
+                let mut request = Vec::new();
+                let mut buffer = [0; 1024];
+                while !request.windows(4).any(|bytes| bytes == b"\r\n\r\n") {
+                    let count = socket.read(&mut buffer).await.unwrap();
+                    assert_ne!(count, 0, "connection closed before sending HTTP headers");
+                    request.extend_from_slice(&buffer[..count]);
+                }
+                // Inspect the handshake without starting an engine session.
+                socket
+                    .write_all(b"HTTP/1.1 400 Bad Request\r\nContent-Length: 0\r\nConnection: close\r\n\r\n")
+                    .await
+                    .unwrap();
+                String::from_utf8(request).unwrap()
+            });
+            let mut client = kittycad::Client::new("test-token");
+            client.set_base_url(format!("http://{address}"));
+            let result = tokio::time::timeout(
+                std::time::Duration::from_secs(5),
+                ExecutorContext::new(&client, Default::default(), program.language_version().unwrap()),
+            )
+            .await
+            .unwrap();
+            assert!(result.is_err(), "the test server deliberately rejects the upgrade");
+            let request = tokio::time::timeout(std::time::Duration::from_secs(5), request)
+                .await
+                .unwrap()
+                .unwrap();
+            let target = request.lines().next().unwrap().split_whitespace().nth(1).unwrap();
+            let url = url::Url::parse(&format!("http://localhost{target}")).unwrap();
+            let versions: Vec<_> = url
+                .query_pairs()
+                .filter(|(key, _)| key == "kcl_version")
+                .map(|(_, value)| value.into_owned())
+                .collect();
+            assert_eq!(versions, vec![expected]);
+        }
     }
 
     #[test]
@@ -3508,7 +3700,7 @@ answer = returnX()"#;
 
     #[tokio::test(flavor = "multi_thread")]
     async fn type_aliases() {
-        let text = r#"@settings(experimentalFeatures = allow)
+        let text = r#"@settings(kclVersion = "3.0-preview")
 type MyTy = [number; 2]
 fn foo(@x: MyTy) {
     return x[0]
@@ -4544,8 +4736,10 @@ w = f() + f()
 )
 "#;
 
-        let ctx = crate::test_server::new_context(true, None, true).await.unwrap();
         let old_program = crate::Program::parse_no_errs(code).unwrap();
+        let ctx = crate::test_server::new_context(true, None, true, old_program.language_version().unwrap())
+            .await
+            .unwrap();
 
         // Execute the program.
         if let Err(err) = ctx.run_with_caching(old_program).await {
@@ -4597,8 +4791,10 @@ w = f() + f()
 )
 "#;
 
-        let mut ctx = crate::test_server::new_context(true, None, true).await.unwrap();
         let old_program = crate::Program::parse_no_errs(code).unwrap();
+        let mut ctx = crate::test_server::new_context(true, None, true, old_program.language_version().unwrap())
+            .await
+            .unwrap();
 
         // Execute the program.
         ctx.run_with_caching(old_program.clone()).await.unwrap();
@@ -5811,6 +6007,196 @@ face = disc()
         run_versioned_modules_mock(main, &[("dep.kcl", "export width = 10\n")])
             .await
             .unwrap();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn imported_use_keyword_follows_entry_point_version() {
+        let dep = "use = 10\nexport width = use\n";
+        for main_header in ["", "@settings(kclVersion = 1.0)\n", "@settings(kclVersion = 2.0)\n"] {
+            let main = format!("{main_header}import width from \"dep.kcl\"\nx = width\n");
+            run_versioned_modules(&main, &[("dep.kcl", dep)])
+                .await
+                .unwrap_or_else(|error| panic!("main={main_header:?}: {error:#?}"));
+        }
+
+        let main_v1 = "@settings(kclVersion = 1.0)\nimport width from \"dep.kcl\"\nx = width\n";
+        let dep_v2 = format!("@settings(kclVersion = 2.0)\n{dep}");
+        run_versioned_modules(main_v1, &[("dep.kcl", &dep_v2)]).await.unwrap();
+
+        for dep in [
+            dep.to_owned(),
+            format!("@settings(kclVersion = \"3.0-preview\")\n{dep}"),
+        ] {
+            let error = run_versioned_modules(V3_MAIN_IMPORTING_DEP, &[("dep.kcl", &dep)])
+                .await
+                .expect_err("V3 imports must reject a use identifier");
+            assert!(matches!(error, KclError::Syntax { .. }), "{error:#?}");
+            assert_eq!(error.message(), crate::parsing::RESERVED_USE_MESSAGE);
+            let ranges = error.source_ranges();
+            assert_eq!(ranges.len(), 2, "{ranges:#?}");
+            let start = dep.find("use =").unwrap();
+            assert_eq!((ranges[0].start(), ranges[0].end()), (start, start + 3));
+            assert!(!ranges[0].module_id().is_top_level());
+            assert!(ranges[1].module_id().is_top_level());
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn imported_enum_identifier_follows_entry_point_version() {
+        let dep = "enum = 10\nexport width = enum\n";
+        for main_header in ["", "@settings(kclVersion = 1.0)\n", "@settings(kclVersion = 2.0)\n"] {
+            let main = format!("{main_header}import width from \"dep.kcl\"\nx = width\n");
+            run_versioned_modules(&main, &[("dep.kcl", dep)])
+                .await
+                .unwrap_or_else(|error| panic!("main={main_header:?}: {error:#?}"));
+        }
+
+        for run_mock in [false, true] {
+            let error = if run_mock {
+                run_versioned_modules_mock(V3_MAIN_IMPORTING_DEP, &[("dep.kcl", dep)]).await
+            } else {
+                run_versioned_modules(V3_MAIN_IMPORTING_DEP, &[("dep.kcl", dep)]).await
+            }
+            .expect_err("V3 imports must reject an enum identifier");
+            assert!(matches!(error, KclError::Syntax { .. }), "{error:#?}");
+            assert_eq!(error.message(), crate::parsing::RESERVED_ENUM_MESSAGE);
+            let ranges = error.source_ranges();
+            assert_eq!(ranges.len(), 2, "{ranges:#?}");
+            assert_eq!((ranges[0].start(), ranges[0].end()), (0, "enum".len()));
+            assert!(!ranges[0].module_id().is_top_level());
+            assert!(ranges[1].module_id().is_top_level());
+        }
+
+        let dep_v2 = format!("@settings(kclVersion = 2.0)\n{dep}");
+        let error = run_versioned_modules(V3_MAIN_IMPORTING_DEP, &[("dep.kcl", &dep_v2)])
+            .await
+            .expect_err("version mismatch must precede enum validation");
+        assert_kcl_version_mismatch(&error, "2.0");
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn imported_import_modifiers_follow_entry_point_version() {
+        for word in ["template", "lazy", "component"] {
+            let dep = format!("import {word} from \"nested.kcl\"\nexport width = 10\n");
+            let nested = format!("export {word} = 1\n");
+            for main_header in ["", "@settings(kclVersion = 1.0)\n", "@settings(kclVersion = 2.0)\n"] {
+                let main = format!("{main_header}import width from \"dep.kcl\"\nx = width\n");
+                run_versioned_modules(&main, &[("dep.kcl", &dep), ("nested.kcl", &nested)])
+                    .await
+                    .unwrap_or_else(|error| panic!("main={main_header:?}, word={word}: {error:#?}"));
+            }
+
+            for run_mock in [false, true] {
+                let error = if run_mock {
+                    run_versioned_modules_mock(V3_MAIN_IMPORTING_DEP, &[("dep.kcl", &dep), ("nested.kcl", &nested)])
+                        .await
+                } else {
+                    run_versioned_modules(V3_MAIN_IMPORTING_DEP, &[("dep.kcl", &dep), ("nested.kcl", &nested)]).await
+                }
+                .expect_err("V3 imports must reject a reserved import modifier");
+                assert!(matches!(error, KclError::Syntax { .. }), "{error:#?}");
+                assert_eq!(
+                    error.message(),
+                    format!(
+                        "`{word}` is reserved as an import modifier in KCL 3.0 and cannot be the first imported item"
+                    )
+                );
+                let ranges = error.source_ranges();
+                assert_eq!(ranges.len(), 2, "{ranges:#?}");
+                let start = dep.find(word).unwrap();
+                assert_eq!((ranges[0].start(), ranges[0].end()), (start, start + word.len()));
+                assert!(!ranges[0].module_id().is_top_level());
+                assert!(ranges[1].module_id().is_top_level());
+            }
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn import_version_mismatch_precedes_import_modifier_error() {
+        let dep = "@settings(kclVersion = 2.0)\nimport lazy from \"nested.kcl\"\nexport width = 10\n";
+        let nested = "export lazy = 1\n";
+        for run_mock in [false, true] {
+            let error = if run_mock {
+                run_versioned_modules_mock(V3_MAIN_IMPORTING_DEP, &[("dep.kcl", dep), ("nested.kcl", nested)]).await
+            } else {
+                run_versioned_modules(V3_MAIN_IMPORTING_DEP, &[("dep.kcl", dep), ("nested.kcl", nested)]).await
+            }
+            .expect_err("version mismatch must precede import modifier validation");
+            assert_kcl_version_mismatch(&error, "2.0");
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn imported_use_function_name_is_allowed_under_v3() {
+        let dep = "fn use() { return 10 }\nexport width = use()\n";
+        run_versioned_modules(V3_MAIN_IMPORTING_DEP, &[("dep.kcl", dep)])
+            .await
+            .unwrap();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn import_version_mismatch_precedes_use_keyword_error() {
+        let dep_v2 = "@settings(kclVersion = 2.0)\nuse = 10\nexport width = use\n";
+        let error = run_versioned_modules(V3_MAIN_IMPORTING_DEP, &[("dep.kcl", dep_v2)])
+            .await
+            .expect_err("version mismatch must precede the use keyword error");
+        assert_kcl_version_mismatch(&error, "2.0");
+
+        let main_v2 = "@settings(kclVersion = 2.0)\nimport width from \"dep.kcl\"\nx = width\n";
+        let dep_v3 = "@settings(kclVersion = \"3.0-preview\")\nuse = 10\nexport width = use\n";
+        let error = run_versioned_modules(main_v2, &[("dep.kcl", dep_v3)])
+            .await
+            .expect_err("version mismatch must precede the use keyword error");
+        assert!(
+            error
+                .message()
+                .starts_with("Mixing KCL versions in a single program is not allowed.")
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unreferenced_whole_module_import_checks_use_keyword_in_mock_execution() {
+        let main = "@settings(kclVersion = \"3.0-preview\")\nimport \"dep.kcl\" as dep\nx = 1\n";
+        let dep = "use = 10\n";
+        let error = run_versioned_modules_mock(main, &[("dep.kcl", dep)])
+            .await
+            .expect_err("mock import must reject a use identifier");
+        assert_eq!(error.message(), crate::parsing::RESERVED_USE_MESSAGE);
+        let ranges = error.source_ranges();
+        assert_eq!(ranges.len(), 2, "{ranges:#?}");
+        assert!(!ranges[0].module_id().is_top_level());
+        assert!(ranges[1].module_id().is_top_level());
+
+        let dep_v2 = "@settings(kclVersion = 2.0)\nuse = 10\n";
+        let error = run_versioned_modules_mock(main, &[("dep.kcl", dep_v2)])
+            .await
+            .expect_err("version mismatch must precede the use keyword error in mock execution");
+        assert_kcl_version_mismatch(&error, "2.0");
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn transitive_import_checks_use_keyword_under_v3_entry_point() {
+        let main = "@settings(kclVersion = \"3.0-preview\")\nimport doubled from \"a.kcl\"\nx = doubled\n";
+        let a = "import width from \"b.kcl\"\nexport doubled = width * 2\n";
+        let b = "use = 10\nexport width = use\n";
+        let error = run_versioned_modules(main, &[("a.kcl", a), ("b.kcl", b)])
+            .await
+            .expect_err("transitive import must reject a use identifier");
+        assert!(matches!(error, KclError::Syntax { .. }), "{error:#?}");
+        assert_eq!(error.message(), crate::parsing::RESERVED_USE_MESSAGE);
+        let ranges = error.source_ranges();
+        assert_eq!(ranges.len(), 3, "{ranges:#?}");
+        assert!(!ranges[0].module_id().is_top_level());
+        assert!(!ranges[1].module_id().is_top_level());
+        assert!(ranges[2].module_id().is_top_level());
+        assert_eq!(
+            error
+                .backtrace()
+                .iter()
+                .map(|frame| frame.fn_name.as_deref())
+                .collect::<Vec<_>>(),
+            [Some("import b.kcl"), Some("import a.kcl"), None]
+        );
     }
 
     /// Standard library modules declare kclVersion 1.0 but are exempt: they
@@ -7062,7 +7448,9 @@ fillet(solid001, radius = 0.1, tags = yoyo)
 
     async fn run_constraint_report(kcl: &str) -> SketchConstraintReport {
         let program = crate::Program::parse_no_errs(kcl).unwrap();
-        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
+        let ctx = ExecutorContext::new_geometry_only_with_version(program.language_version().unwrap())
+            .await
+            .unwrap();
         let mut exec_state = ExecState::new(&ctx);
         let (env_ref, _) = ctx.run(&program, &mut exec_state).await.unwrap();
         let outcome = exec_state
@@ -7301,14 +7689,42 @@ second = makeSketch()
     }
 
     #[tokio::test(flavor = "multi_thread")]
-    async fn test_enum_declaration_is_experimental() {
-        // Without opting in, executing a program with an enum declaration
-        // fails at the parsing stage with the experimental diagnostic.
-        let code = "type Color { | Red }";
-        assert_eq!(
-            parse_execute(code).await.unwrap_err().message(),
-            "Use of enum declarations is experimental and may change or be removed."
-        );
+    async fn user_aliases_and_enums_require_v3_even_with_experimental_opt_in() {
+        for version in ["1.0", "2.0"] {
+            for opt_in in ["", ", experimentalFeatures = allow"] {
+                for (feature, declaration) in [
+                    ("Type aliases", "type Distance = number(mm)"),
+                    ("Enum declarations", "type Color { | Red }"),
+                ] {
+                    let code = format!("@settings(kclVersion = \"{version}\"{opt_in})\n{declaration}\n");
+                    assert_eq!(
+                        parse_execute(&code).await.unwrap_err().message(),
+                        format!("{feature} require KCL 3.0-preview, but this program uses KCL {version}."),
+                        "code: {code}"
+                    );
+                }
+            }
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn user_aliases_and_enums_execute_in_v3_without_experimental_opt_in() {
+        for code in [
+            "@settings(kclVersion = \"3.0-preview\")\ntype Distance = number(mm)\nx = 1mm: Distance\n",
+            "@settings(kclVersion = \"3.0-preview\")\ntype Color { | Red }\nx = Color::Red\n",
+        ] {
+            let result = parse_execute(code).await.unwrap();
+            assert!(result.exec_state.issues().is_empty(), "code: {code}");
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn standard_library_type_aliases_remain_available_before_v3() {
+        for version in ["1.0", "2.0"] {
+            let code = format!("@settings(kclVersion = \"{version}\")\nx = 1mm: mm\n");
+            let result = parse_execute(&code).await.unwrap();
+            assert!(result.exec_state.issues().is_empty(), "code: {code}");
+        }
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -7316,18 +7732,18 @@ second = makeSketch()
         // Plain and exported declarations both execute. Nothing references the
         // enum yet, so this only asserts that declaring one is no longer an
         // error; constructor use is exercised separately.
-        let code = r#"@settings(experimentalFeatures = allow)
+        let code = r#"@settings(kclVersion = "3.0-preview", experimentalFeatures = allow)
 type Color { | Red | Green }
 "#;
         parse_execute(code).await.unwrap();
 
-        let code = r#"@settings(experimentalFeatures = allow)
+        let code = r#"@settings(kclVersion = "3.0-preview", experimentalFeatures = allow)
 export type Color { | Red | Green }
 "#;
         parse_execute(code).await.unwrap();
 
         // A zero-variant enum is a valid declaration.
-        let code = r#"@settings(experimentalFeatures = allow)
+        let code = r#"@settings(kclVersion = "3.0-preview", experimentalFeatures = allow)
 type Empty { | }
 "#;
         parse_execute(code).await.unwrap();
@@ -7341,7 +7757,7 @@ type Empty { | }
         //
         // The rule is about nesting, not about one kind of block, so all routes
         // to `BodyType::Block` are covered here.
-        let allow = "@settings(experimentalFeatures = allow)\n";
+        let allow = "@settings(kclVersion = \"3.0-preview\", experimentalFeatures = allow)\n";
         for (case, code) in [
             (
                 "function body",
@@ -7374,7 +7790,7 @@ type Empty { | }
         // harmlessly, while two nested `type Color` declarations would be one type
         // with two variant sets. Tightening aliases to match, or relaxing enums,
         // has to break this test first.
-        let allow = "@settings(experimentalFeatures = allow)\n";
+        let allow = "@settings(kclVersion = \"3.0-preview\", experimentalFeatures = allow)\n";
         for (case, code) in [
             (
                 "function body",
@@ -7395,7 +7811,7 @@ type Empty { | }
 
     #[tokio::test(flavor = "multi_thread")]
     async fn enum_declaration_rejects_duplicate() {
-        let code = r#"@settings(experimentalFeatures = allow)
+        let code = r#"@settings(kclVersion = "3.0-preview", experimentalFeatures = allow)
 type Color { | Red | Green | Red }
 "#;
         assert_eq!(
@@ -7412,6 +7828,20 @@ type Color { | Red | Green | Red }
         }
 
         parse_execute_with_project_dir(main, Some(crate::TypedPath(tmpdir.path().into()))).await
+    }
+
+    /// Like [`execute_with_modules`], with hints enabled for user declarations;
+    /// see [`parse_execute_hinting_all`].
+    async fn execute_with_modules_hinting_all(
+        main: &str,
+        modules: &[(&str, &str)],
+    ) -> Result<ExecTestResults, KclError> {
+        let tmpdir = tempfile::TempDir::with_prefix("zma_kcl_added_in").unwrap();
+        for (name, source) in modules {
+            tokio::fs::write(tmpdir.path().join(name), source).await.unwrap();
+        }
+
+        parse_execute_hinting_all(main, Some(crate::TypedPath(tmpdir.path().into()))).await
     }
 
     /// Runs `main` with an empty imported module named `m.kcl` in mock
@@ -7563,38 +7993,38 @@ x = m + 1
         let plain_module = ("Color.kcl", "export x = 1\n");
         let enum_module = (
             "enums.kcl",
-            "@settings(experimentalFeatures = allow)\nexport type Color { | Red }\n",
+            "@settings(kclVersion = \"3.0-preview\", experimentalFeatures = allow)\nexport type Color { | Red }\n",
         );
 
         for (case, main, modules) in [
             (
                 "module then enum",
-                "@settings(experimentalFeatures = allow)\nimport \"Color.kcl\"\ntype Color { | Red }\n",
+                "@settings(kclVersion = \"3.0-preview\", experimentalFeatures = allow)\nimport \"Color.kcl\"\ntype Color { | Red }\n",
                 vec![plain_module],
             ),
             (
                 "enum then module",
-                "@settings(experimentalFeatures = allow)\ntype Color { | Red }\nimport \"Color.kcl\"\n",
+                "@settings(kclVersion = \"3.0-preview\", experimentalFeatures = allow)\ntype Color { | Red }\nimport \"Color.kcl\"\n",
                 vec![plain_module],
             ),
             (
                 "named import of an enum",
-                "@settings(experimentalFeatures = allow)\nimport \"Color.kcl\"\nimport Color from 'enums.kcl'\n",
+                "@settings(kclVersion = \"3.0-preview\", experimentalFeatures = allow)\nimport \"Color.kcl\"\nimport Color from 'enums.kcl'\n",
                 vec![plain_module, enum_module],
             ),
             (
                 "glob import of an enum",
-                "@settings(experimentalFeatures = allow)\nimport \"Color.kcl\"\nimport * from 'enums.kcl'\n",
+                "@settings(kclVersion = \"3.0-preview\", experimentalFeatures = allow)\nimport \"Color.kcl\"\nimport * from 'enums.kcl'\n",
                 vec![plain_module, enum_module],
             ),
             (
                 "module then enum alias",
-                "@settings(experimentalFeatures = allow)\ntype Base { | Red }\nimport \"Color.kcl\"\ntype Color = Base\n",
+                "@settings(kclVersion = \"3.0-preview\", experimentalFeatures = allow)\ntype Base { | Red }\nimport \"Color.kcl\"\ntype Color = Base\n",
                 vec![plain_module],
             ),
             (
                 "enum alias then module",
-                "@settings(experimentalFeatures = allow)\ntype Base { | Red }\ntype Color = Base\nimport \"Color.kcl\"\n",
+                "@settings(kclVersion = \"3.0-preview\", experimentalFeatures = allow)\ntype Base { | Red }\ntype Color = Base\nimport \"Color.kcl\"\n",
                 vec![plain_module],
             ),
         ] {
@@ -7609,7 +8039,7 @@ x = m + 1
 
     #[tokio::test(flavor = "multi_thread")]
     async fn enum_alias_can_shadow_module_from_outer_scope() {
-        let main = r#"@settings(experimentalFeatures = allow)
+        let main = r#"@settings(kclVersion = "3.0-preview", experimentalFeatures = allow)
 type Color { | Red }
 import "Shade.kcl"
 
@@ -7631,10 +8061,10 @@ result = pick()
 
     #[tokio::test(flavor = "multi_thread")]
     async fn enum_constructs_variant() {
-        let allow = "@settings(experimentalFeatures = allow)\n";
+        let allow = "@settings(kclVersion = \"3.0-preview\", experimentalFeatures = allow)\n";
         let colors = (
             "colors.kcl",
-            "@settings(experimentalFeatures = allow)\nexport type Color { | Red | Green }\n",
+            "@settings(kclVersion = \"3.0-preview\", experimentalFeatures = allow)\nexport type Color { | Red | Green }\n",
         );
 
         for (case, main, modules) in [
@@ -7675,7 +8105,7 @@ result = pick()
 
     #[tokio::test(flavor = "multi_thread")]
     async fn enum_aliases_preserve_the_original_declaration() {
-        let code = r#"@settings(experimentalFeatures = allow)
+        let code = r#"@settings(kclVersion = "3.0-preview", experimentalFeatures = allow)
 type Color { | Red | Green }
 type C = Color
 type D = C
@@ -7730,7 +8160,7 @@ passed = passThroughAlias(D::Green)
 
     #[tokio::test(flavor = "multi_thread")]
     async fn enum_aliases_survive_qualified_imports_and_reexports() {
-        let main = r#"@settings(experimentalFeatures = allow)
+        let main = r#"@settings(kclVersion = "3.0-preview", experimentalFeatures = allow)
 import "colors.kcl"
 import "aliases.kcl"
 import "tones.kcl"
@@ -7759,19 +8189,19 @@ fromOriginal = throughOriginal(colors::Color::Red)
         let modules = [
             (
                 "colors.kcl",
-                "@settings(experimentalFeatures = allow)\nexport type Color { | Red | Green }\n",
+                "@settings(kclVersion = \"3.0-preview\", experimentalFeatures = allow)\nexport type Color { | Red | Green }\n",
             ),
             (
                 "palette.kcl",
-                "@settings(experimentalFeatures = allow)\nimport \"colors.kcl\" as swatches\nexport type Shade = swatches::Color\n",
+                "@settings(kclVersion = \"3.0-preview\", experimentalFeatures = allow)\nimport \"colors.kcl\" as swatches\nexport type Shade = swatches::Color\n",
             ),
             (
                 "aliases.kcl",
-                "@settings(experimentalFeatures = allow)\nimport \"palette.kcl\"\nexport type Paint = palette::Shade\n",
+                "@settings(kclVersion = \"3.0-preview\", experimentalFeatures = allow)\nimport \"palette.kcl\"\nexport type Paint = palette::Shade\n",
             ),
             (
                 "tones.kcl",
-                "@settings(experimentalFeatures = allow)\nimport Color from \"colors.kcl\"\nexport type Tint = Color\n",
+                "@settings(kclVersion = \"3.0-preview\", experimentalFeatures = allow)\nimport Color from \"colors.kcl\"\nexport type Tint = Color\n",
             ),
         ];
 
@@ -7824,12 +8254,11 @@ fromOriginal = throughOriginal(colors::Color::Red)
     async fn signature_types_resolve_in_declaring_module() {
         let colors = (
             "colors.kcl",
-            "@settings(experimentalFeatures = allow)\nexport type Color { | Red | Green }\n\nexport fn paint(@c: Color) {\n  return c\n}\n",
+            "@settings(kclVersion = \"3.0-preview\", experimentalFeatures = allow)\nexport type Color { | Red | Green }\n\nexport fn paint(@c: Color) {\n  return c\n}\n",
         );
         // The caller can reach `colors::Color` but never binds the bare name
         // `Color`, so resolving the signature in the caller's scope would fail.
-        let main =
-            "@settings(experimentalFeatures = allow)\nimport \"colors.kcl\"\nr = colors::paint(colors::Color::Red)\n";
+        let main = "@settings(kclVersion = \"3.0-preview\", experimentalFeatures = allow)\nimport \"colors.kcl\"\nr = colors::paint(colors::Color::Red)\n";
 
         let result = execute_with_modules(main, &[colors]).await.unwrap();
         let KclValue::Enum { value } = mem_get_json(result.exec_state.stack(), result.mem_env, "r") else {
@@ -7840,7 +8269,7 @@ fromOriginal = throughOriginal(colors::Color::Red)
 
     #[tokio::test(flavor = "multi_thread")]
     async fn qualified_type_paths_resolve_in_aliases_and_ascriptions() {
-        let main = r#"@settings(experimentalFeatures = allow)
+        let main = r#"@settings(kclVersion = "3.0-preview", experimentalFeatures = allow)
 type ViewOrientation = view::Orientation
 front = view::Orientation::Front: view::Orientation
 "#;
@@ -7863,9 +8292,9 @@ front = view::Orientation::Front: view::Orientation
         // resolve identically under any alias.
         let colors = (
             "colors.kcl",
-            "@settings(experimentalFeatures = allow)\nexport type Color { | Red | Green }\n\nexport fn paint(@c: Color) {\n  return c\n}\n",
+            "@settings(kclVersion = \"3.0-preview\", experimentalFeatures = allow)\nexport type Color { | Red | Green }\n\nexport fn paint(@c: Color) {\n  return c\n}\n",
         );
-        let main = "@settings(experimentalFeatures = allow)\nimport \"colors.kcl\" as painter\nr = painter::paint(painter::Color::Red)\n";
+        let main = "@settings(kclVersion = \"3.0-preview\", experimentalFeatures = allow)\nimport \"colors.kcl\" as painter\nr = painter::paint(painter::Color::Red)\n";
 
         let result = execute_with_modules(main, &[colors]).await.unwrap();
         let KclValue::Enum { value } = mem_get_json(result.exec_state.stack(), result.mem_env, "r") else {
@@ -7882,9 +8311,9 @@ front = view::Orientation::Front: view::Orientation
         // caller's binding.
         let broken = (
             "broken.kcl",
-            "@settings(experimentalFeatures = allow)\nexport fn f(@x: Missing) {\n  return x\n}\n",
+            "@settings(kclVersion = \"3.0-preview\", experimentalFeatures = allow)\nexport fn f(@x: Missing) {\n  return x\n}\n",
         );
-        let main = "@settings(experimentalFeatures = allow)\ntype Missing = string\nimport \"broken.kcl\"\nr = broken::f(\"hi\")\n";
+        let main = "@settings(kclVersion = \"3.0-preview\", experimentalFeatures = allow)\ntype Missing = string\nimport \"broken.kcl\"\nr = broken::f(\"hi\")\n";
 
         let err = execute_with_modules(main, &[broken]).await.unwrap_err();
         assert!(
@@ -7899,7 +8328,7 @@ front = view::Orientation::Front: view::Orientation
         // Resolution happens when the declaration executes, so a type declared
         // later in the file is not visible. The function is never called; the
         // error must surface at the declaration itself.
-        let main = "@settings(experimentalFeatures = allow)\nfn f(@x: Later) {\n  return x\n}\ntype Later = string\n";
+        let main = "@settings(kclVersion = \"3.0-preview\", experimentalFeatures = allow)\nfn f(@x: Later) {\n  return x\n}\ntype Later = string\n";
 
         let err = parse_execute(main).await.unwrap_err();
         assert!(
@@ -7915,7 +8344,7 @@ front = view::Orientation::Front: view::Orientation
         // module: the anonymous function's signature must see the alias in the
         // enclosing function body. Caller-scope resolution would use the
         // module-level `Width = string` and fail to coerce `42`.
-        let main = "@settings(experimentalFeatures = allow)\ntype Width = string\nfn makeMeasure() {\n  type Width = number(mm)\n  return fn(@w: Width) { return w }\n}\nmeasure = makeMeasure()\nr = measure(42)\n";
+        let main = "@settings(kclVersion = \"3.0-preview\", experimentalFeatures = allow)\ntype Width = string\nfn makeMeasure() {\n  type Width = number(mm)\n  return fn(@w: Width) { return w }\n}\nmeasure = makeMeasure()\nr = measure(42)\n";
 
         let result = parse_execute(main).await.unwrap();
         let KclValue::Number { value, .. } = mem_get_json(result.exec_state.stack(), result.mem_env, "r") else {
@@ -7990,10 +8419,9 @@ front = view::Orientation::Front: view::Orientation
     async fn signature_types_use_declaring_scope_when_both_scopes_define_the_name() {
         let m1 = (
             "m1.kcl",
-            "@settings(experimentalFeatures = allow)\ntype A = string\n\nexport fn test(@a: A) {\n  return a\n}\n",
+            "@settings(kclVersion = \"3.0-preview\", experimentalFeatures = allow)\ntype A = string\n\nexport fn test(@a: A) {\n  return a\n}\n",
         );
-        let main =
-            "@settings(experimentalFeatures = allow)\nimport * from \"m1.kcl\"\ntype A = number(mm)\nx = test(2mm)\n";
+        let main = "@settings(kclVersion = \"3.0-preview\", experimentalFeatures = allow)\nimport * from \"m1.kcl\"\ntype A = number(mm)\nx = test(2mm)\n";
 
         let err = execute_with_modules(main, &[m1]).await.unwrap_err();
         assert_eq!(
@@ -8004,7 +8432,7 @@ front = view::Orientation::Front: view::Orientation
 
     #[tokio::test(flavor = "multi_thread")]
     async fn enum_rejects_bad_variant_paths() {
-        let allow = "@settings(experimentalFeatures = allow)\n";
+        let allow = "@settings(kclVersion = \"3.0-preview\", experimentalFeatures = allow)\n";
 
         for (case, main, modules, message) in [
             (
@@ -8042,7 +8470,7 @@ front = view::Orientation::Front: view::Orientation
                 format!("{allow}import \"colors.kcl\"\nx = colors::Color::Red\n"),
                 vec![(
                     "colors.kcl",
-                    "@settings(experimentalFeatures = allow)\ntype Color { | Red }\n",
+                    "@settings(kclVersion = \"3.0-preview\", experimentalFeatures = allow)\ntype Color { | Red }\n",
                 )],
                 "Item Color not found in module's exported items",
             ),
@@ -8063,7 +8491,7 @@ front = view::Orientation::Front: view::Orientation
                 format!("{allow}import \"types.kcl\"\nx = types::T::foo\n"),
                 vec![(
                     "types.kcl",
-                    "@settings(experimentalFeatures = allow)\nexport type T = number(_)\n",
+                    "@settings(kclVersion = \"3.0-preview\", experimentalFeatures = allow)\nexport type T = number(_)\n",
                 )],
                 "`T` is a type that does not resolve to an enum, so it cannot be used as the head of a `::` path.",
             ),
@@ -8089,7 +8517,7 @@ front = view::Orientation::Front: view::Orientation
 
     #[tokio::test(flavor = "multi_thread")]
     async fn enum_compares_by_variant() {
-        let code = r#"@settings(experimentalFeatures = allow)
+        let code = r#"@settings(kclVersion = "3.0-preview", experimentalFeatures = allow)
 type Color { | Red | Green }
 sameEq = Color::Red == Color::Red
 sameNeq = Color::Red != Color::Red
@@ -8121,7 +8549,7 @@ otherNeq = Color::Red != Color::Green
         // `assertIs` runs inside the block because block-local bindings live in a
         // child scope that the root environment cannot read afterwards. A wrong
         // comparison therefore fails this test instead of passing unnoticed.
-        let code = r#"@settings(experimentalFeatures = allow)
+        let code = r#"@settings(kclVersion = "3.0-preview", experimentalFeatures = allow)
 type Color { | Red | Green }
 sketch(on = XY) {
   c = Color::Red
@@ -8146,7 +8574,7 @@ sketch(on = XY) {
         //
         // `!=` is deliberately absent: the interception tests `Eq` only, so `!=`
         // still compares, which `enum_usable_inside_sketch_block` covers.
-        let allow = "@settings(experimentalFeatures = allow)\n";
+        let allow = "@settings(kclVersion = \"3.0-preview\", experimentalFeatures = allow)\n";
         let tail = "  l1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])\n}\n";
         for (case, declaration, comparison, types) in [
             (
@@ -8172,7 +8600,7 @@ sketch(on = XY) {
         // Two names for one declaration, so they are the same type and compare
         // equal. Identity is the declaration, not the binding, which is what makes
         // this different from two files that each declare a `Color`.
-        let main = r#"@settings(experimentalFeatures = allow)
+        let main = r#"@settings(kclVersion = "3.0-preview", experimentalFeatures = allow)
 import Color as A from 'colors.kcl'
 import Color as B from 'colors.kcl'
 x = A::Red == B::Red
@@ -8182,7 +8610,7 @@ y = A::Red == B::Green
             main,
             &[(
                 "colors.kcl",
-                "@settings(experimentalFeatures = allow)\nexport type Color { | Red | Green }\n",
+                "@settings(kclVersion = \"3.0-preview\", experimentalFeatures = allow)\nexport type Color { | Red | Green }\n",
             )],
         )
         .await
@@ -8198,14 +8626,14 @@ y = A::Red == B::Green
 
     #[tokio::test(flavor = "multi_thread")]
     async fn enum_rejects_comparison_across_types() {
-        let allow = "@settings(experimentalFeatures = allow)\n";
+        let allow = "@settings(kclVersion = \"3.0-preview\", experimentalFeatures = allow)\n";
         let color = (
             "a.kcl",
-            "@settings(experimentalFeatures = allow)\nexport type Color { | Red }\n",
+            "@settings(kclVersion = \"3.0-preview\", experimentalFeatures = allow)\nexport type Color { | Red }\n",
         );
         let other_color = (
             "b.kcl",
-            "@settings(experimentalFeatures = allow)\nexport type Color { | Red }\n",
+            "@settings(kclVersion = \"3.0-preview\", experimentalFeatures = allow)\nexport type Color { | Red }\n",
         );
 
         for (case, main, modules, message) in [
@@ -8252,10 +8680,10 @@ y = A::Red == B::Green
 
     #[tokio::test(flavor = "multi_thread")]
     async fn enum_rejects_bare_type_name_as_value() {
-        let allow = "@settings(experimentalFeatures = allow)\n";
+        let allow = "@settings(kclVersion = \"3.0-preview\", experimentalFeatures = allow)\n";
         let colors = (
             "colors.kcl",
-            "@settings(experimentalFeatures = allow)\nexport type Color { | Red | Green }\n",
+            "@settings(kclVersion = \"3.0-preview\", experimentalFeatures = allow)\nexport type Color { | Red | Green }\n",
         );
 
         for (case, main, modules, message) in [
@@ -8306,55 +8734,60 @@ y = A::Red == B::Green
     }
 
     #[tokio::test(flavor = "multi_thread")]
-    async fn enum_use_gated_by_consuming_module() {
-        // The declaring modules allow experimental features; the consuming one
-        // does not, so constructing the imported enum is what trips the gate.
-        // The gate follows the consumer's settings through both the original
-        // binding and a re-exported type alias.
-        //
-        // Experimental use is reported as a compilation issue rather than by
-        // aborting the run, which is how `RuntimeType::from_alias` reports it too,
-        // so execution succeeds and the diagnostic is what carries the complaint.
-        let colors = (
-            "colors.kcl",
-            "@settings(experimentalFeatures = allow)\nexport type Color { | Red }\n",
-        );
-        let aliases = (
-            "aliases.kcl",
-            "@settings(experimentalFeatures = allow)\nimport \"colors.kcl\"\nexport type Shade = colors::Color\n",
-        );
-
-        for (case, main, modules) in [
-            (
-                "original binding",
-                "import \"colors.kcl\"\nx = colors::Color::Red\n",
-                vec![colors],
-            ),
-            (
-                "re-exported alias",
-                "import \"aliases.kcl\"\nx = aliases::Shade::Red\n",
-                vec![colors, aliases],
-            ),
-        ] {
-            let result = execute_with_modules(main, &modules)
-                .await
-                .unwrap_or_else(|err| panic!("case: {case}: {}", err.message()));
-
-            let issues = &result.exec_state.global.issues;
-            assert_eq!(issues.len(), 1, "case: {case}: issues: {issues:?}");
-            assert_eq!(
-                issues[0].message, "Use of the enum `Color` is experimental and may change or be removed.",
-                "case: {case}"
-            );
-            assert_eq!(issues[0].severity, Severity::Error, "case: {case}");
+    async fn imported_user_type_declarations_require_v3_even_with_opt_in() {
+        for version in ["1.0", "2.0"] {
+            for module_settings in [format!("@settings(kclVersion = \"{version}\")\n"), String::new()] {
+                for (feature, declaration, use_type) in [
+                    (
+                        "Type aliases",
+                        "export type Distance = number(mm)",
+                        "x = 1mm: types::Distance",
+                    ),
+                    (
+                        "Enum declarations",
+                        "export type Color { | Red }",
+                        "x = types::Color::Red",
+                    ),
+                ] {
+                    let main = format!(
+                        "@settings(kclVersion = \"{version}\", experimentalFeatures = allow)\nimport \"types.kcl\"\n{use_type}\n"
+                    );
+                    let module = format!("{module_settings}{declaration}\n");
+                    let err = execute_with_modules(&main, &[("types.kcl", &module)])
+                        .await
+                        .unwrap_err();
+                    assert_eq!(
+                        err.message(),
+                        format!("{feature} require KCL 3.0-preview, but this program uses KCL {version}."),
+                        "main: {main}; module: {module}"
+                    );
+                }
+            }
         }
     }
 
     #[tokio::test(flavor = "multi_thread")]
-    async fn enum_use_not_gated_when_consumer_allows_it() {
-        // The other half of the gate: with the setting present, using an enum
-        // raises nothing at all.
-        let code = r#"@settings(experimentalFeatures = allow)
+    async fn named_view_access_in_unversioned_import_uses_entry_point_version() {
+        let dep = "export camera = view::directed([0, 1, -2])\n";
+        for version in ["1.0", "2.0"] {
+            let main = format!("@settings(kclVersion = \"{version}\")\nimport \"dep.kcl\"\nx = dep::camera\n");
+            let err = execute_with_modules(&main, &[("dep.kcl", dep)]).await.unwrap_err();
+            assert!(
+                err.message()
+                    .contains(&format!("added in KCL 3.0, but this program uses KCL {version}")),
+                "error: {}",
+                err.message()
+            );
+        }
+
+        let main = "@settings(kclVersion = \"3.0-preview\")\nimport \"dep.kcl\"\nx = dep::camera\n";
+        let result = execute_with_modules(main, &[("dep.kcl", dep)]).await.unwrap();
+        assert!(result.exec_state.issues().is_empty());
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn enum_use_is_not_experimental_in_v3() {
+        let code = r#"@settings(kclVersion = "3.0-preview")
 type Color { | Red }
 x = Color::Red
 "#;
@@ -8364,6 +8797,51 @@ x = Color::Red
             "issues: {:?}",
             result.exec_state.global.issues
         );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn v3_enum_variant_warning_follows_explicit_annotations() {
+        for (case, declarations, binding, expected_warnings) in [
+            ("unannotated enum", "type Color { | Red }", "Color", 0),
+            (
+                "annotated enum",
+                "@(experimental = true)\ntype Color { | Red }",
+                "Color",
+                1,
+            ),
+            (
+                "alias of annotated enum",
+                "@(experimental = true)\ntype Color { | Red }\ntype Shade = Color",
+                "Shade",
+                1,
+            ),
+            (
+                "annotated alias",
+                "type Color { | Red }\n@(experimental = true)\ntype Shade = Color",
+                "Shade",
+                1,
+            ),
+        ] {
+            let code = format!(
+                "@settings(kclVersion = \"3.0-preview\", experimentalFeatures = warn)\n{declarations}\nx = {binding}::Red\n"
+            );
+            let result = parse_execute(&code)
+                .await
+                .unwrap_or_else(|err| panic!("case: {case}: {}", err.message()));
+            let variant_warnings: Vec<_> = result
+                .exec_state
+                .issues()
+                .iter()
+                .filter(|issue| {
+                    issue.message == "Use of the enum `Color` is experimental and may change or be removed."
+                })
+                .collect();
+            assert_eq!(variant_warnings.len(), expected_warnings, "case: {case}");
+            assert!(
+                variant_warnings.iter().all(|issue| issue.severity == Severity::Warning),
+                "case: {case}"
+            );
+        }
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -8380,12 +8858,12 @@ x = Color::Red
                 // The module arrives second, which is the path carrying the
                 // "only `TypeDef::Enum` conflicts" guard.
                 "an alias may share a name with a module",
-                "@settings(experimentalFeatures = allow)\ntype Temperature = number(_)\nimport \"Temperature.kcl\"\nx = Temperature::x\n",
+                "@settings(kclVersion = \"3.0-preview\", experimentalFeatures = allow)\ntype Temperature = number(_)\nimport \"Temperature.kcl\"\nx = Temperature::x\n",
                 vec![("Temperature.kcl", "export x = 1\n")],
             ),
             (
                 "a value may share a name with an enum",
-                "@settings(experimentalFeatures = allow)\ntype Color { | Red }\nColor = 5\n",
+                "@settings(kclVersion = \"3.0-preview\", experimentalFeatures = allow)\ntype Color { | Red }\nColor = 5\n",
                 vec![],
             ),
         ] {
@@ -8397,7 +8875,7 @@ x = Color::Red
 
     #[tokio::test(flavor = "multi_thread")]
     async fn enum_declaration_rejects_redefinition() {
-        let code = r#"@settings(experimentalFeatures = allow)
+        let code = r#"@settings(kclVersion = "3.0-preview", experimentalFeatures = allow)
 type Color { | Red }
 type Color { | Green }
 "#;
@@ -8415,7 +8893,7 @@ type Color { | Green }
     #[tokio::test(flavor = "multi_thread")]
     async fn enum_projects_to_string() {
         let header = r#"
-            @settings(experimentalFeatures = allow)
+            @settings(kclVersion = "3.0-preview", experimentalFeatures = allow)
             type Color { | Red | Green }
             type Label = string
         "#;
@@ -8462,7 +8940,7 @@ type Color { | Green }
     #[tokio::test(flavor = "multi_thread")]
     async fn enum_ascription_keeps_the_enum() {
         let header = r#"
-            @settings(experimentalFeatures = allow)
+            @settings(kclVersion = "3.0-preview", experimentalFeatures = allow)
             type Color { | Red | Green }
             type Paint = Color
         "#;
@@ -8492,7 +8970,7 @@ type Color { | Green }
     #[tokio::test(flavor = "multi_thread")]
     async fn enum_projection_is_not_implicit() {
         let header = r#"
-            @settings(experimentalFeatures = allow)
+            @settings(kclVersion = "3.0-preview", experimentalFeatures = allow)
             type Color { | Red | Green }
         "#;
         let found = "but found a value of enum `Color` (with type `Color`).";
@@ -8548,7 +9026,7 @@ type Color { | Green }
     #[tokio::test(flavor = "multi_thread")]
     async fn enum_ascription_rejections() {
         let header = r#"
-            @settings(experimentalFeatures = allow)
+            @settings(kclVersion = "3.0-preview", experimentalFeatures = allow)
             type Color { | Red }
             type Shade { | Red }
         "#;
@@ -8592,7 +9070,7 @@ type Color { | Green }
     #[tokio::test(flavor = "multi_thread")]
     async fn enum_flows_through_declared_types() {
         let header = r#"
-            @settings(experimentalFeatures = allow)
+            @settings(kclVersion = "3.0-preview", experimentalFeatures = allow)
             type Color { | Red | Green }
             type Paint = Color
             type Shade { | Red }
@@ -8707,5 +9185,494 @@ type Color { | Green }
                 ),
             }
         }
+    }
+
+    // ---- `added_in` on whole declarations ----
+
+    /// Runs `body` under `kcl_version` and returns the fatal error message, or
+    /// `None` if it ran without issues. Experimental features are allowed for
+    /// unrelated syntax in the test programs. Hints are enabled for user
+    /// declarations, since in production only std gets them.
+    async fn added_in_error(kcl_version: &str, body: &str) -> Option<String> {
+        let program = format!("@settings(kclVersion = {kcl_version}, experimentalFeatures = allow)\n{body}");
+        match parse_execute_hinting_all(&program, None).await {
+            Ok(result) => {
+                assert!(
+                    result.issues().is_empty(),
+                    "kclVersion {kcl_version}: unexpected issues: {:#?}",
+                    result.issues()
+                );
+                None
+            }
+            Err(err) => Some(err.message().to_owned()),
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn not_yet_added_function_is_undefined() {
+        let body = r#"@(added_in = "3.0")
+fn newFn() { return 1 }
+x = newFn()
+"#;
+        assert_eq!(
+            added_in_error("2.0", body).await.as_deref(),
+            Some("`newFn` is not defined; it was added in KCL 3.0, but this program uses KCL 2.0")
+        );
+        assert_eq!(added_in_error("\"3.0-preview\"", body).await, None);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn not_yet_added_function_cannot_be_referenced_as_a_value() {
+        // Any reference fails, not only a call: the name is simply not bound.
+        let body = r#"@(added_in = "3.0")
+fn newFn() { return 1 }
+f = newFn
+"#;
+        assert_eq!(
+            added_in_error("2.0", body).await.as_deref(),
+            Some("`newFn` is not defined; it was added in KCL 3.0, but this program uses KCL 2.0")
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn added_in_boundary_is_inclusive_and_prerelease_counts_as_release() {
+        for (kcl_version, added_in) in [
+            ("1.0", "1.0"),
+            ("2.0", "1.0"),
+            ("2.0", "2.0"),
+            ("\"3.0-preview\"", "3.0"),
+        ] {
+            let body = format!("@(added_in = \"{added_in}\")\nfn newFn() {{ return 1 }}\nx = newFn()\n");
+            assert_eq!(
+                added_in_error(kcl_version, &body).await,
+                None,
+                "kclVersion {kcl_version}, added_in {added_in}"
+            );
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn not_yet_added_error_reports_default_kcl_version() {
+        // No `@settings(kclVersion = ...)`: the message names the default version.
+        let program = r#"@(added_in = "2.0")
+fn newFn() { return 1 }
+x = newFn()
+"#;
+        assert_eq!(
+            parse_execute_hinting_all(program, None).await.unwrap_err().message(),
+            "`newFn` is not defined; it was added in KCL 2.0, but this program uses KCL 1.0"
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn not_yet_added_constant_is_undefined() {
+        let body = r#"@(added_in = "3.0")
+newConst = 5
+x = newConst
+"#;
+        assert_eq!(
+            added_in_error("2.0", body).await.as_deref(),
+            Some("`newConst` is not defined; it was added in KCL 3.0, but this program uses KCL 2.0")
+        );
+        assert_eq!(added_in_error("\"3.0-preview\"", body).await, None);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn not_yet_added_type_is_unknown() {
+        let body = r#"@(added_in = "3.0")
+type NewT = [number; 2]
+x = [1, 2]: NewT
+"#;
+        assert_eq!(
+            added_in_error("2.0", body).await.as_deref(),
+            Some("Unknown type: NewT; it was added in KCL 3.0, but this program uses KCL 2.0")
+        );
+        assert_eq!(added_in_error("\"3.0-preview\"", body).await, None);
+    }
+
+    /// A function naming a later-added type in its signature fails at its
+    /// declaration with the type's error, unless it is gated at or above the type.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn function_using_not_yet_added_type_fails_at_its_declaration() {
+        let ty = "@(added_in = \"3.0\")\ntype NewT = [number; 2]\n";
+        let type_error = Some("Unknown type: NewT; it was added in KCL 3.0, but this program uses KCL 2.0");
+
+        // Ungated function: the type is missing on 2.0.
+        let body = format!("{ty}fn usesNew(@p: NewT) {{ return p }}\n");
+        assert_eq!(added_in_error("2.0", &body).await.as_deref(), type_error);
+        // Gated below the type: same.
+        let body = format!("{ty}@(added_in = \"2.0\")\nfn usesNew(@p: NewT) {{ return p }}\n");
+        assert_eq!(added_in_error("2.0", &body).await.as_deref(), type_error);
+        // The return type is part of the signature too.
+        let body = format!("{ty}fn makesNew(): NewT {{ return [1, 2] }}\n");
+        assert_eq!(added_in_error("2.0", &body).await.as_deref(), type_error);
+
+        // Gated at the type's version: both are skipped.
+        let body = format!("{ty}@(added_in = \"3.0\")\nfn usesNew(@p: NewT) {{ return p }}\n");
+        assert_eq!(added_in_error("2.0", &body).await, None);
+        let body = format!("{body}x = usesNew([1, 2])\n");
+        assert_eq!(
+            added_in_error("2.0", &body).await.as_deref(),
+            Some("`usesNew` is not defined; it was added in KCL 3.0, but this program uses KCL 2.0")
+        );
+
+        // On a new enough program, nothing is gated.
+        let body = format!("{ty}fn usesNew(@p: NewT) {{ return p }}\nx = usesNew([1, 2])\n");
+        assert_eq!(added_in_error("\"3.0-preview\"", &body).await, None);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn not_yet_added_declaration_is_absent_from_imports() {
+        // The module runs on a cloned state, so these also cover the record's
+        // trip through the module's execution outcome.
+        let dep = "@(added_in = \"3.0\")\nexport fn newFn() { return 1 }\nexport fn oldFn() { return 2 }\n";
+
+        // An explicit import fails with the version help.
+        let main = "@settings(kclVersion = 2.0)\nimport newFn from \"dep.kcl\"\nx = newFn()\n";
+        assert_eq!(
+            execute_with_modules_hinting_all(main, &[("dep.kcl", dep)])
+                .await
+                .unwrap_err()
+                .message(),
+            "newFn is not defined in module; it was added in KCL 3.0, but this program uses KCL 2.0"
+        );
+
+        // So does a qualified path.
+        let main = "@settings(kclVersion = 2.0)\nimport \"dep.kcl\"\nx = dep::newFn()\n";
+        assert_eq!(
+            execute_with_modules_hinting_all(main, &[("dep.kcl", dep)])
+                .await
+                .unwrap_err()
+                .message(),
+            "`newFn` is not defined; it was added in KCL 3.0, but this program uses KCL 2.0"
+        );
+
+        // A glob import silently omits it while the rest of the module works.
+        let main = "@settings(kclVersion = 2.0)\nimport * from \"dep.kcl\"\nx = oldFn()\ny = newFn()\n";
+        assert_eq!(
+            execute_with_modules_hinting_all(main, &[("dep.kcl", dep)])
+                .await
+                .unwrap_err()
+                .message(),
+            "`newFn` is not defined; it was added in KCL 3.0, but this program uses KCL 2.0"
+        );
+
+        // On a new enough program the import works.
+        let main = "@settings(kclVersion = \"3.0-preview\")\nimport newFn from \"dep.kcl\"\nx = newFn()\n";
+        let result = execute_with_modules_hinting_all(main, &[("dep.kcl", dep)])
+            .await
+            .unwrap();
+        assert_eq!(variable_f64(&result, "x"), 1.0);
+    }
+
+    /// In production only std declarations get the version help; user
+    /// declarations keep the plain message.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn not_yet_added_user_declarations_get_no_hint() {
+        let program = "@settings(kclVersion = 2.0)\n@(added_in = \"3.0\")\nfn newFn() { return 1 }\nx = newFn()\n";
+        assert_eq!(
+            parse_execute(program).await.unwrap_err().message(),
+            "`newFn` is not defined"
+        );
+
+        let dep = "@(added_in = \"3.0\")\nexport fn newFn() { return 1 }\n";
+        let main = "@settings(kclVersion = 2.0)\nimport newFn from \"dep.kcl\"\n";
+        assert_eq!(
+            execute_with_modules(main, &[("dep.kcl", dep)])
+                .await
+                .unwrap_err()
+                .message(),
+            "newFn is not defined in module"
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn not_yet_added_records_whether_the_declaration_is_std() {
+        let ctx = new_mock_executor_context(None, machine::ExecutorKind::resolve());
+        let mut exec_state = ExecState::new(&ctx);
+        let version = |s: &str| annotations::VersionConstraint::parse(s).unwrap();
+
+        exec_state.record_not_yet_added("userFn".to_owned(), version("3.0"), false);
+        exec_state.mod_local.path = ModulePath::Std {
+            value: "solid".to_owned(),
+        };
+        exec_state.record_not_yet_added("stdFn".to_owned(), version("3.0"), true);
+
+        let records = &exec_state.mod_local.not_yet_added;
+        assert!(!records["userFn"].item.is_std);
+        assert!(!records["userFn"].exported);
+        assert!(records["stdFn"].item.is_std);
+        assert!(records["stdFn"].exported);
+        ctx.close().await;
+    }
+
+    /// `export import *` re-exports records along with names.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn not_yet_added_records_follow_glob_re_exports() {
+        let dep = "@(added_in = \"3.0\")\nexport fn newFn() { return 1 }\n";
+        let mid = "export import * from \"dep.kcl\"\n";
+        let modules = [("dep.kcl", dep), ("mid.kcl", mid)];
+
+        let main = "@settings(kclVersion = 2.0)\nimport * from \"mid.kcl\"\nx = newFn()\n";
+        assert_eq!(
+            execute_with_modules_hinting_all(main, &modules)
+                .await
+                .unwrap_err()
+                .message(),
+            "`newFn` is not defined; it was added in KCL 3.0, but this program uses KCL 2.0"
+        );
+
+        let main = "@settings(kclVersion = 2.0)\nimport newFn from \"mid.kcl\"\nx = newFn()\n";
+        assert_eq!(
+            execute_with_modules_hinting_all(main, &modules)
+                .await
+                .unwrap_err()
+                .message(),
+            "newFn is not defined in module; it was added in KCL 3.0, but this program uses KCL 2.0"
+        );
+    }
+
+    /// A record is as private as its name: no `export`, no hint for importers.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn private_not_yet_added_records_stay_private() {
+        let dep = "@(added_in = \"3.0\")\nfn privateFn() { return 1 }\nexport fn oldFn() { return 2 }\n";
+
+        let main = "@settings(kclVersion = 2.0)\nimport * from \"dep.kcl\"\nx = privateFn()\n";
+        assert_eq!(
+            execute_with_modules_hinting_all(main, &[("dep.kcl", dep)])
+                .await
+                .unwrap_err()
+                .message(),
+            "`privateFn` is not defined"
+        );
+
+        let main = "@settings(kclVersion = 2.0)\nimport privateFn from \"dep.kcl\"\n";
+        assert_eq!(
+            execute_with_modules_hinting_all(main, &[("dep.kcl", dep)])
+                .await
+                .unwrap_err()
+                .message(),
+            "privateFn is not defined in module"
+        );
+
+        // `mid` imports the record without `export`, so it does not pass it on.
+        let dep = "@(added_in = \"3.0\")\nexport fn newFn() { return 1 }\n";
+        let mid = "import * from \"dep.kcl\"\nexport fn other() { return 2 }\n";
+        let main = "@settings(kclVersion = 2.0)\nimport * from \"mid.kcl\"\nx = newFn()\n";
+        assert_eq!(
+            execute_with_modules_hinting_all(main, &[("dep.kcl", dep), ("mid.kcl", mid)])
+                .await
+                .unwrap_err()
+                .message(),
+            "`newFn` is not defined"
+        );
+    }
+
+    /// The mock memory cache carries std's records, since a run reusing cached
+    /// memory skips the prelude that writes them.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn std_not_yet_added_records_survive_the_mock_memory_cache() {
+        let ctx = new_mock_executor_context(None, machine::ExecutorKind::resolve());
+        let mut exec_state = ExecState::new(&ctx);
+        let version = |s: &str| annotations::VersionConstraint::parse(s).unwrap();
+        let program = crate::Program::parse_no_errs("x = 1").unwrap();
+        let (main_ref, _) = ctx.run(&program, &mut exec_state).await.unwrap();
+        exec_state.global.std_not_yet_added.insert(
+            "cube".to_owned(),
+            NotYetAdded {
+                added_in: version("3.0"),
+                is_std: true,
+            },
+        );
+
+        let cached = cache::GlobalState::new(exec_state, ctx.settings.clone(), program.ast.clone(), main_ref);
+        let mem = cached.mock_memory_state().unwrap();
+        assert_eq!(mem.std_not_yet_added["cube"].added_in, version("3.0"));
+
+        let mock_config = MockConfig::default();
+        let mut restored = ExecState::new_mock(&ctx, &mock_config);
+        ExecutorContext::restore_mock_memory(&mut restored, mem, &mock_config).unwrap();
+        assert!(
+            !restored.stack().memory.requires_std(),
+            "cached memory already has the prelude"
+        );
+        assert_eq!(
+            restored.not_yet_added_in_scope("cube").map(|r| &r.added_in),
+            Some(&version("3.0"))
+        );
+        // A std record explains a failed lookup without any test override.
+        let err = KclError::new_undefined_value(
+            KclErrorDetails::new("`cube` is not defined".to_owned(), Vec::new()),
+            None,
+        );
+        assert_eq!(
+            restored.with_not_yet_added_hint(&["cube"], err).message(),
+            "`cube` is not defined; it was added in KCL 3.0, but this program uses KCL 1.0"
+        );
+        ctx.close().await;
+    }
+
+    // ---- mock memory reuse across settings changes ----
+
+    /// Runs `code` in mock execution reusing the previous memory, as the LSP
+    /// worker does for every execution.
+    async fn run_mock_reusing_memory(ctx: &ExecutorContext, code: &str) -> Result<ExecOutcome, KclErrorWithOutputs> {
+        let program = crate::Program::parse_no_errs(code).unwrap();
+        ctx.run_mock(
+            &program,
+            &MockConfig {
+                use_prev_memory: true,
+                ..Default::default()
+            },
+        )
+        .await
+    }
+
+    #[track_caller]
+    fn outcome_f64(outcome: &ExecOutcome, name: &str) -> f64 {
+        let Some(KclValueView::Number { value, .. }) = outcome.variables.get(name) else {
+            panic!(
+                "expected `{name}` to be a number, got {:?}",
+                outcome.variables.get(name)
+            );
+        };
+        *value
+    }
+
+    /// Memory written under one kclVersion still binds declarations the other
+    /// version skips, so a mock run reusing it must rebuild instead. Nothing
+    /// else invalidates the LSP worker's memory.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn mock_memory_is_rebuilt_on_a_kcl_version_downgrade() {
+        clear_mem_cache().await;
+        let ctx = ExecutorContext::new_mock(None).await;
+        let body = "@(added_in = \"3.0\")\nfn newFn() {\n  return 42\n}\n\nanswer = newFn()\n";
+
+        let outcome = run_mock_reusing_memory(&ctx, &format!("@settings(kclVersion = \"3.0-preview\")\n{body}"))
+            .await
+            .unwrap();
+        assert_eq!(outcome_f64(&outcome, "answer"), 42.0);
+
+        // Only the version changes; `newFn` is still bound in the cached memory.
+        let err = run_mock_reusing_memory(&ctx, &format!("@settings(kclVersion = 2.0)\n{body}"))
+            .await
+            .unwrap_err();
+        assert_eq!(err.error.message(), "`newFn` is not defined");
+
+        clear_mem_cache().await;
+        ctx.close().await;
+    }
+
+    /// A mock execution context whose project directory holds `modules`.
+    async fn mock_context_with_modules(modules: &[(&str, &str)]) -> (ExecutorContext, tempfile::TempDir) {
+        let tmpdir = tempfile::TempDir::with_prefix("zma_kcl_mock_memory").unwrap();
+        for (name, source) in modules {
+            tokio::fs::write(tmpdir.path().join(name), source).await.unwrap();
+        }
+        let ctx = ExecutorContext::new_mock(Some(ExecutorSettings {
+            project_directory: Some(crate::TypedPath(tmpdir.path().into())),
+            ..Default::default()
+        }))
+        .await;
+        (ctx, tmpdir)
+    }
+
+    const GATED_DEP: &str =
+        "@(added_in = \"3.0\")\nexport fn newFn() {\n  return 42\n}\nexport fn oldFn() {\n  return 1\n}\n";
+
+    /// A module's cached outcome keeps the exports of the version it ran
+    /// under, so an upgrade must rebuild to see newly available functions.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn mock_memory_is_rebuilt_on_a_kcl_version_upgrade_with_imports() {
+        clear_mem_cache().await;
+        let (ctx, _tmpdir) = mock_context_with_modules(&[("dep.kcl", GATED_DEP)]).await;
+
+        let outcome = run_mock_reusing_memory(
+            &ctx,
+            "@settings(kclVersion = 2.0)\nimport * from \"dep.kcl\"\nx = oldFn()\n",
+        )
+        .await
+        .unwrap();
+        assert_eq!(outcome_f64(&outcome, "x"), 1.0);
+
+        let outcome = run_mock_reusing_memory(
+            &ctx,
+            "@settings(kclVersion = \"3.0-preview\")\nimport * from \"dep.kcl\"\nanswer = newFn()\n",
+        )
+        .await
+        .unwrap();
+        assert_eq!(outcome_f64(&outcome, "answer"), 42.0);
+
+        clear_mem_cache().await;
+        ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn mock_memory_is_rebuilt_on_a_kcl_version_downgrade_with_imports() {
+        clear_mem_cache().await;
+        let (ctx, _tmpdir) = mock_context_with_modules(&[("dep.kcl", GATED_DEP)]).await;
+
+        let outcome = run_mock_reusing_memory(
+            &ctx,
+            "@settings(kclVersion = \"3.0-preview\")\nimport newFn from \"dep.kcl\"\nanswer = newFn()\n",
+        )
+        .await
+        .unwrap();
+        assert_eq!(outcome_f64(&outcome, "answer"), 42.0);
+
+        let err = run_mock_reusing_memory(
+            &ctx,
+            "@settings(kclVersion = 2.0)\nimport newFn from \"dep.kcl\"\nanswer = newFn()\n",
+        )
+        .await
+        .unwrap_err();
+        assert_eq!(err.error.message(), "newFn is not defined in module");
+
+        clear_mem_cache().await;
+        ctx.close().await;
+    }
+
+    /// Only the version decides reuse. Adding the first spline makes the
+    /// frontend add `experimentalFeatures = allow` and then execute just that
+    /// sketch, which needs the cached memory and cannot rebuild it.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn mock_memory_is_reused_when_only_other_settings_change() {
+        clear_mem_cache().await;
+        let ctx = ExecutorContext::new_mock(None).await;
+
+        run_mock_reusing_memory(&ctx, "@settings(kclVersion = 2.0)\nx = 2\n")
+            .await
+            .unwrap();
+        let outcome = run_mock_reusing_memory(
+            &ctx,
+            "@settings(kclVersion = 2.0, experimentalFeatures = allow)\ny = x\n",
+        )
+        .await
+        .unwrap();
+        assert_eq!(outcome_f64(&outcome, "y"), 2.0);
+
+        clear_mem_cache().await;
+        ctx.close().await;
+    }
+
+    /// An undeclared version is the default version, so declaring the default
+    /// explicitly is not a change, while declaring another version is.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn mock_memory_treats_an_undeclared_kcl_version_as_the_default() {
+        clear_mem_cache().await;
+        let ctx = ExecutorContext::new_mock(None).await;
+
+        run_mock_reusing_memory(&ctx, "x = 2\n").await.unwrap();
+        let outcome = run_mock_reusing_memory(&ctx, "@settings(kclVersion = 1.0)\ny = x\n")
+            .await
+            .unwrap();
+        assert_eq!(outcome_f64(&outcome, "y"), 2.0);
+        let err = run_mock_reusing_memory(&ctx, "@settings(kclVersion = 2.0)\nz = x\n")
+            .await
+            .unwrap_err();
+        assert_eq!(err.error.message(), "`x` is not defined");
+
+        clear_mem_cache().await;
+        ctx.close().await;
     }
 }

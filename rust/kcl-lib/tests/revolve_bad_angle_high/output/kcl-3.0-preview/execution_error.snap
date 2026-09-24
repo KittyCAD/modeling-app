@@ -1,0 +1,23 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Error from executing revolve_bad_angle_high.kcl
+---
+KCL Semantic error
+
+  × semantic: Expected angle to be between -360 and 360 and not 0, found `455`
+    ╭─[11:6]
+ 10 │   |> close()
+ 11 │   |> revolve(axis = Y, angle = 455)
+    ·      ───────────────┬──────────────
+    ·                     ╰── tests/revolve_bad_angle_high/input.kcl
+    ╰────
+  ╰─▶ KCL Semantic error
+      
+        × semantic: Expected angle to be between -360 and 360 and not 0, found
+        │ `455`
+          ╭─[11:6]
+       10 │   |> close()
+       11 │   |> revolve(axis = Y, angle = 455)
+          ·      ───────────────┬──────────────
+          ·                     ╰── tests/revolve_bad_angle_high/input.kcl
+          ╰────

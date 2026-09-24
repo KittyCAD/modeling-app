@@ -70,6 +70,6 @@ criterion_group!(benches, bench_ast);
 criterion_main!(benches);
 
 const KITT_PROGRAM: &str = include_str!("../e2e/executor/inputs/kittycad_svg.kcl");
-const PIPES_PROGRAM: &str = include_str!("../e2e/executor/inputs/pipes_on_pipes.kcl");
+const PIPES_PROGRAM: &str = include_str!("../tests/pipes_on_pipes/input.kcl");
 const MIKE_STRESS_TEST_PROGRAM: &str = include_str!("../tests/mike_stress_test/input.kcl");
-const LSYSTEM_PROGRAM: &str = include_str!("../e2e/executor/inputs/lsystem.kcl");
+const LSYSTEM_PROGRAM: &str = include_str!("../tests/lsystem/input.kcl");

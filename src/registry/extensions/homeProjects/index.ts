@@ -18,10 +18,6 @@ import {
 } from '@src/lib/projectLibraries'
 import { invalidateProjectLibraryRealizations } from '@src/lib/projectLibraries/registry/invalidation'
 import {
-  makeZookeeperConversationStore,
-  type ZookeeperConversationStore,
-} from '@src/lib/zookeeper/zookeeperConversationStore'
-import {
   type CloudProjectRelationship,
   type CloudProjectRelationshipRealization,
   cloudProjectRelationshipsService,
@@ -42,6 +38,7 @@ import { projectExplorerProjectMenuItemsValueSpec } from '@src/registry/contract
 import {
   getProjectLibraryOperation,
   type ProjectLibraryRealization,
+  type ProjectLibraryRelationshipMembershipPolicy,
   type ProjectLibraryTypeOperations,
   projectLibraryRealizationsValueSpec,
   projectLibraryTypesValueSpec,
@@ -98,9 +95,8 @@ function realizationDeletesRemoteOnDelete(
 }
 
 /**
- * Converts a local realization that is not part of a cloud relationship into a
- * Home card. This path must stay local-only; cloud ID observations on the
- * realization are not enough for Home to infer relationship identity.
+ * Converts a local realization into a Home card without relationship actions.
+ * Cloud ID observations alone do not give Home relationship identity.
  */
 function homeProjectEntryFromRealization(
   realization: ProjectLibraryRealization,
@@ -278,14 +274,18 @@ function homeProjectEntryFromCloudRelationship(
 /**
  * Builds Home project cards from explicit inputs:
  * - one card for each cloud relationship;
+ * - org-owned projects are excluded from Personal Cloud, preserving explicit
+ *   copies in other libraries at their own local paths;
  * - one local-only card for each realization not claimed by a relationship.
  */
 export function deriveHomeProjectEntryContributions({
   realizations,
   cloudRelationships,
+  relationshipMembershipPolicies = [],
 }: {
   realizations: readonly ProjectLibraryRealization[]
   cloudRelationships: readonly CloudProjectRelationship[]
+  relationshipMembershipPolicies?: readonly ProjectLibraryRelationshipMembershipPolicy[]
 }): HomeProjectEntryContribution[] {
   const duplicateProjectIdPaths =
     duplicateProjectIdPathsByLocalPath(realizations)
@@ -296,13 +296,95 @@ export function deriveHomeProjectEntryContributions({
       )
     )
   )
-  const relationshipEntries = cloudRelationships.map((relationship) => {
+  const relationshipMembershipPoliciesByLibraryId = new Map<
+    string,
+    ProjectLibraryRelationshipMembershipPolicy[]
+  >()
+  for (const policy of relationshipMembershipPolicies) {
+    const policies =
+      relationshipMembershipPoliciesByLibraryId.get(policy.libraryId) ?? []
+    policies.push(policy)
+    relationshipMembershipPoliciesByLibraryId.set(policy.libraryId, policies)
+  }
+  const relationshipEntries = cloudRelationships.flatMap((relationship) => {
     const canonicalPath =
       relationship.canonicalRealization?.realization.localProjectPath
-    return homeProjectEntryFromCloudRelationship(
+    const entry = homeProjectEntryFromCloudRelationship(
       relationship,
       canonicalPath ? duplicateProjectIdPaths.get(canonicalPath) : undefined
     )
+    const includedPolicyLibraryIds = new Set(
+      Array.from(relationshipMembershipPoliciesByLibraryId)
+        .filter(([, policies]) =>
+          policies.every((policy) => policy.includes({ relationship }))
+        )
+        .map(([libraryId]) => libraryId)
+    )
+    const originalLibraryIds = entry.libraryIds ?? []
+    const projectedLibraryIds = Array.from(
+      new Set([
+        ...originalLibraryIds.filter(
+          (libraryId) =>
+            !relationshipMembershipPoliciesByLibraryId.has(libraryId)
+        ),
+        ...includedPolicyLibraryIds,
+      ])
+    )
+    const removedObservedMembership = originalLibraryIds.some(
+      (libraryId) =>
+        relationshipMembershipPoliciesByLibraryId.has(libraryId) &&
+        !includedPolicyLibraryIds.has(libraryId)
+    )
+
+    if (!removedObservedMembership) {
+      return projectedLibraryIds.length > 0
+        ? [{ ...entry, libraryIds: projectedLibraryIds }]
+        : []
+    }
+
+    // When policy removes a relationship's observed library, keep its other
+    // local realizations at their own paths. Their actions must not target the
+    // hidden canonical realization owned by the filtered library.
+    const policyRelationshipEntries = projectedLibraryIds.filter(
+      (libraryId) => !originalLibraryIds.includes(libraryId)
+    )
+    const localEntries = relationship.localRealizations.flatMap(
+      ({ realization }) => {
+        const libraryIds = realization.libraryIds.filter(
+          (libraryId) =>
+            !relationshipMembershipPoliciesByLibraryId.has(libraryId) ||
+            includedPolicyLibraryIds.has(libraryId)
+        )
+        if (libraryIds.length === 0) {
+          return []
+        }
+        const isCanonical = realization.localProjectPath === canonicalPath
+        return [
+          homeProjectEntryFromRealization(
+            {
+              ...realization,
+              cloudProjectId: relationship.remoteProjectId,
+              libraryIds,
+              libraryRefs: realization.libraryRefs.filter(({ id }) =>
+                libraryIds.includes(id)
+              ),
+              conflict: isCanonical ? entry.conflict : realization.conflict,
+              syncFailure: isCanonical
+                ? entry.syncFailure
+                : realization.syncFailure,
+            },
+            duplicateProjectIdPaths.get(realization.localProjectPath)
+          ),
+        ]
+      }
+    )
+
+    return [
+      ...(policyRelationshipEntries.length > 0
+        ? [{ ...entry, libraryIds: policyRelationshipEntries }]
+        : []),
+      ...localEntries,
+    ]
   })
   const localOnlyEntries = realizations
     .filter(
@@ -325,13 +407,6 @@ export function deriveHomeProjectEntryContributions({
 const homeProjectActions = defineRegistryItemFactory((ctx) => {
   const settings = ctx.services.signal(settingsService)
   const cloudSync = ctx.services.signal(cloudSyncService)
-  let zookeeperConversationStore: ZookeeperConversationStore | undefined
-  const getZookeeperConversationStore = () => {
-    zookeeperConversationStore ??= makeZookeeperConversationStore(
-      ctx.services.get(fileOperationsService)
-    )
-    return zookeeperConversationStore
-  }
 
   const getWasmPromise = () =>
     ctx.valueSpecs.get(wasmPromiseValueSpec) ??
@@ -673,22 +748,12 @@ const homeProjectActions = defineRegistryItemFactory((ctx) => {
         project.localProjectPath,
         ...(project.duplicateProjectIdPaths ?? []),
       ].filter((projectPath): projectPath is string => Boolean(projectPath))
-      const { sharedProjectId } = await separateProjectsSharingProjectId({
+      await separateProjectsSharingProjectId({
         fileOperations: ctx.services.get(fileOperationsService),
         projectPaths,
         keepProjectPath,
       })
-      try {
-        if (!keepProjectPath) {
-          await getZookeeperConversationStore().deleteProjectConversationId(
-            sharedProjectId
-          )
-        }
-      } finally {
-        // The project files have already been updated, so refresh Home even if
-        // cleaning up the now-orphaned conversation mapping fails.
-        invalidateProjectLibraryRealizations()
-      }
+      invalidateProjectLibraryRealizations()
       toast.success(
         keepProjectPath
           ? 'Separated project copies. The selected project kept its Zookeeper history.'
@@ -719,11 +784,19 @@ const homeProjectEntryViewModels = defineRegistryItemFactory((ctx) => {
   const cloudProjectRelationships = ctx.services.signal(
     cloudProjectRelationshipsService
   )
+  const projectLibraryTypes = ctx.valueSpecs.signal(
+    projectLibraryTypesValueSpec
+  )
   const entries = computed(() =>
     deriveHomeProjectEntryContributions({
       realizations: projectLibraryRealizations.value,
       cloudRelationships:
         cloudProjectRelationships.value?.relationships.value ?? [],
+      relationshipMembershipPolicies: Array.from(
+        projectLibraryTypes.value.values()
+      ).flatMap(
+        (libraryType) => libraryType.relationshipMembershipPolicies ?? []
+      ),
     })
   )
 

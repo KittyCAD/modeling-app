@@ -1167,6 +1167,8 @@ async function writeLocalProjectCloudProjectId(
     return false
   }
 
+  // TODO: Coordinate cloud ID updates with settings saves.
+  // An overlapping save can overwrite the ID or newer settings.
   return updateLocalProjectToml(projectPath, (projectToml) =>
     getCloudProjectIdFromProjectTomlContents(projectToml, environmentName) ===
     projectId
@@ -1192,7 +1194,7 @@ async function removeLocalProjectCloudProjectId(projectPath: string) {
 
 async function updateLocalProjectToml(
   projectPath: string,
-  update: (contents: string) => string
+  update: (contents: string) => string | Error
 ) {
   const projectTomlPath = localFs.join(projectPath, PROJECT_SETTINGS_FILE_NAME)
   let projectToml = ''
@@ -1203,6 +1205,9 @@ async function updateLocalProjectToml(
   }
 
   const nextProjectToml = update(projectToml)
+  if (isErr(nextProjectToml)) {
+    return Promise.reject(nextProjectToml)
+  }
   if (nextProjectToml === projectToml) {
     return false
   }
@@ -1304,7 +1309,10 @@ async function collectLocalProjectFiles(projectRoot: string) {
         localFs.relative(projectRoot, absolutePath)
       )
       const isDirectory = statIsDirectory(stat)
-      if (isPathIgnoredByGitignore(gitignoreStack, relativePath, isDirectory)) {
+      if (
+        (!isDirectory && isCloudSyncGeneratedArtifactPath(relativePath)) ||
+        isPathIgnoredByGitignore(gitignoreStack, relativePath, isDirectory)
+      ) {
         continue
       }
 
@@ -1493,22 +1501,49 @@ async function findLocalProjectPathsByRemoteProjectId(
       continue
     }
     const candidatePath = localFs.join(projectDirectory, entry)
-    if (!(await exists(candidatePath))) {
-      continue
-    }
-    const candidateMetadata = await getProjectMetadata(candidatePath)
-    if (isProjectSyncExcluded(candidateMetadata)) {
-      continue
-    }
-    const candidateRemoteProjectId = await readProjectTomlCloudProjectId(
-      candidatePath
-    ).catch(() => undefined)
+    const candidateRemoteProjectId =
+      await readSyncableLocalProjectRemoteId(candidatePath)
     if (candidateRemoteProjectId === remoteProjectId) {
       projectPaths.push(normalizePathForSync(candidatePath))
     }
   }
 
   return projectPaths
+}
+
+async function readSyncableLocalProjectRemoteId(projectPath: string) {
+  if (!(await exists(projectPath))) {
+    return undefined
+  }
+  const metadata = await getProjectMetadata(projectPath)
+  if (isProjectSyncExcluded(metadata)) {
+    return undefined
+  }
+  return readProjectTomlCloudProjectId(projectPath).catch(() => undefined)
+}
+
+async function indexLocalProjectPathsByRemoteId(projectDirectory: string) {
+  const projects = new Map<string, string[]>()
+  const entries = await localFs.readdir(projectDirectory).catch((error) => {
+    if (error === 'ENOENT') {
+      return []
+    }
+    return Promise.reject(error)
+  })
+  for (const entry of entries) {
+    if (entry.startsWith('.')) {
+      continue
+    }
+    const projectPath = localFs.join(projectDirectory, entry)
+    const remoteId = await readSyncableLocalProjectRemoteId(projectPath)
+    if (!remoteId) {
+      continue
+    }
+    const paths = projects.get(remoteId) ?? []
+    paths.push(normalizePathForSync(projectPath))
+    projects.set(remoteId, paths)
+  }
+  return projects
 }
 
 type LocalProjectRealizationCandidate = {
@@ -3066,6 +3101,17 @@ async function syncProject(
         pendingProjectPaths: new Set(),
       })
     }
+    if (
+      metadata.remoteProjectId &&
+      syncBase &&
+      remoteRevision === syncBase.revision &&
+      cloudBinding.kind === 'unbound'
+    ) {
+      await writeLocalProjectCloudProjectId(
+        metadata.localProjectPath,
+        metadata.remoteProjectId
+      )
+    }
     const localFiles = await collectLocalProjectFiles(metadata.localProjectPath)
     const localManifest = await projectManifestFromFiles(localFiles)
     const syncCheckpoint: ProjectSyncCheckpoint = {
@@ -3113,27 +3159,39 @@ async function syncProject(
         throttleProjectApiRequest,
         () => createRemoteProject(config, metadata.localProjectPath, localFiles)
       )
+      // The response hashes include the API's changes to project.toml.
+      const baseManifest: ProjectManifest = { files: {} }
+      for (const file of created.files) {
+        baseManifest.files[normalizeRelativePath(file.relative_path)] = {
+          byteSize: file.byte_size,
+          sha256: file.sha256,
+        }
+      }
+      metadata = {
+        ...metadata,
+        remoteProjectId: created.id,
+        remoteRevision: created.revision,
+        remoteUpdatedAt: getRemoteUpdatedAt(created),
+        baseManifest,
+        conflict: undefined,
+        lastFailure: undefined,
+      }
+      await putProjectMetadata(metadata)
+      publishScopedProjectCloudProjectId(metadata)
       await clearProjectOutboxIfCheckpointCurrent(
         metadata.localProjectPath,
         syncCheckpoint
       )
-      const uploadedMetadata: ProjectMetadata = {
-        ...metadata,
-        remoteProjectId: created.id,
-        remoteRevision: undefined,
-        remoteUpdatedAt: undefined,
-        baseManifest: localManifest,
-        conflict: undefined,
-        lastFailure: undefined,
-      }
-      await putProjectMetadata(uploadedMetadata)
-      publishScopedProjectCloudProjectId(uploadedMetadata)
       await appendOutboxEntry({
         projectPath: metadata.localProjectPath,
         kind: 'upsert',
         targetPath: metadata.localProjectPath,
         createdAt: nowIso(),
       })
+      await writeLocalProjectCloudProjectId(
+        metadata.localProjectPath,
+        created.id
+      )
       scheduleSync(0)
       return
     }
@@ -3422,6 +3480,7 @@ async function syncRemoteIndex(
     }
   }
 
+  const localProjectsByDirectory = new Map<string, Map<string, string[]>>()
   for (const remoteProject of remoteProjects) {
     const skipAction = getCloudSyncRemoteIndexAction({
       hasRemoteProjectId: Boolean(remoteProject.id),
@@ -3561,12 +3620,38 @@ async function syncRemoteIndex(
       const projectName = localProjectNameForRemoteProject(remoteProject)
       let existingProjectDirectory: string | undefined
       let existingProjectPath: string | undefined
+      // Discover local bindings once per reconciliation, rather than scanning
+      // every local directory again for each remote-only project. Revalidate
+      // matches before use; concurrent local edits remain in the fresh outbox
+      // read after this index pass. Destructive duplicate cleanup reads afresh.
       for (const projectDirectory of projectDirectories) {
-        existingProjectPath = await findLocalProjectPathByRemoteProjectId(
-          projectDirectory,
-          remoteProject.id,
-          projectName
+        let localProjects = localProjectsByDirectory.get(projectDirectory)
+        if (!localProjects) {
+          localProjects =
+            await indexLocalProjectPathsByRemoteId(projectDirectory)
+          localProjectsByDirectory.set(projectDirectory, localProjects)
+        }
+        const candidates = localProjects.get(remoteProject.id) ?? []
+        const preferredPath = normalizePathForSync(
+          localFs.join(projectDirectory, projectName)
         )
+        // The preferred spelling may resolve to a differently cased directory.
+        const orderedCandidates =
+          candidates.length > 0
+            ? [
+                preferredPath,
+                ...candidates.filter((path) => path !== preferredPath),
+              ]
+            : candidates
+        for (const candidatePath of orderedCandidates) {
+          if (
+            (await readSyncableLocalProjectRemoteId(candidatePath)) ===
+            remoteProject.id
+          ) {
+            existingProjectPath = candidatePath
+            break
+          }
+        }
         if (existingProjectPath) {
           existingProjectDirectory = projectDirectory
           break

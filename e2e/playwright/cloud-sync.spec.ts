@@ -1,4 +1,6 @@
-import { expect, test } from '@e2e/playwright/base-test'
+import { expect } from '@e2e/playwright/base-test'
+import { test } from '@e2e/playwright/fixtures/cloudSyncProjectFixture'
+import { EditorFixture } from '@e2e/playwright/fixtures/editorFixture'
 import {
   type CloudProject,
   cloudProjectResponse,
@@ -14,12 +16,16 @@ import {
   zipProject,
 } from '@e2e/playwright/lib/cloudSyncTestUtils'
 import {
+  createProject,
   expectCloudFeatureEnabled,
   mockClientErrorReports,
   setup,
+  token,
 } from '@e2e/playwright/test-utils'
 import type { Page } from '@playwright/test'
+import type { CreatedRemoteProject } from '@src/lib/cloudSync/types'
 import { OPFS_CLOUD_FEATURE_FLAG } from '@src/lib/constants'
+import JSZip from 'jszip'
 
 const CLOUD_SYNC_E2E_TIMEOUT = 20_000
 
@@ -43,6 +49,108 @@ async function expectCloudSyncHomeReady(page: Page) {
     page.getByRole('heading', { name: /^(Project Libraries|Personal Cloud)$/ })
   ).toBeVisible({ timeout: CLOUD_SYNC_E2E_TIMEOUT })
 }
+
+test(
+  'syncs an edit queued during first upload with the real development API',
+  { tag: ['@web'] },
+  async ({ context, page, request, firstUploadProject }, testInfo) => {
+    const apiUrl = 'https://api.dev.zoo.dev'
+    const headers = { Authorization: `Bearer ${token}` }
+    const projectName = firstUploadProject.name
+    const projectPath = `${PROJECT_DIR}/${projectName}`
+
+    await setup(context, page, testInfo, [OPFS_CLOUD_FEATURE_FLAG], {
+      cloudSyncEnabled: true,
+    })
+    await expectCloudFeatureEnabled(page)
+    // The shared CI account has thousands of projects. Filter their cards
+    // through the UI without replacing the real project-list response.
+    await page.getByPlaceholder(/^Search projects/).fill(projectName)
+    // Fuzzy search can return other UUID-named projects; check exact collisions.
+    await expect(
+      page.getByTestId('project-link').filter({
+        has: page.getByText(projectName, { exact: true }),
+      })
+    ).toHaveCount(0)
+    await createProject({ name: projectName, page })
+    await expectProjectFileRoute(page)
+
+    const response = await firstUploadProject.firstUpload
+    expect(response.ok()).toBe(true)
+    const created: CreatedRemoteProject = await response.json()
+    expect(created.id).toBeTruthy()
+    expect(created.title).toBe(projectName)
+    expect(created.revision).toBeTruthy()
+    expect(created.files.map((file) => file.relative_path)).toEqual(
+      expect.arrayContaining(['main.kcl', 'project.toml'])
+    )
+    for (const file of created.files) {
+      expect(file.sha256).toMatch(/^[a-f0-9]{64}$/)
+      expect(file.byte_size).toBeGreaterThanOrEqual(0)
+    }
+
+    const editor = new EditorFixture(page)
+    await editor.openPane()
+    const initialCode = '@settings(kclVersion = 2.0)\n'
+    const queuedCode = `${initialCode}queuedCloudEdit = 42\n`
+    await editor.expectEditor.toContain(initialCode.trimEnd())
+    await editor.replaceCodeByTyping(initialCode, queuedCode)
+    await expect
+      .poll(
+        () => readOpfsTextFiles(page, { main: `${projectPath}/main.kcl` }),
+        { timeout: CLOUD_SYNC_E2E_TIMEOUT }
+      )
+      .toMatchObject({ main: queuedCode })
+
+    const updatedResponse = page.waitForResponse(
+      (result) =>
+        new URL(result.url()).pathname === `/user/projects/${created.id}` &&
+        result.request().method() === 'PUT',
+      { timeout: CLOUD_SYNC_E2E_TIMEOUT }
+    )
+    firstUploadProject.releaseUpload()
+    const uploaded = await updatedResponse
+    expect(uploaded.ok()).toBe(true)
+    expect(new URL(uploaded.url()).searchParams.get('expected_revision')).toBe(
+      created.revision
+    )
+    const updated = await uploaded.json()
+    await expect
+      .poll(() => readCloudSyncProjectMetadata(page, projectPath), {
+        timeout: CLOUD_SYNC_E2E_TIMEOUT,
+      })
+      .toMatchObject({
+        remoteProjectId: created.id,
+        remoteRevision: updated.revision,
+        lastSyncedAt: expect.any(String),
+        pendingCount: 0,
+        conflict: undefined,
+        lastFailure: undefined,
+      })
+    const files = await readOpfsTextFiles(page, {
+      projectToml: `${projectPath}/project.toml`,
+    })
+    expect(files.projectToml).toContain(`project_id = "${created.id}"`)
+
+    const download = await request.get(
+      `${apiUrl}/user/projects/${created.id}/download?format=zip`,
+      { headers }
+    )
+    await expect(download).toBeOK()
+    const archive = await JSZip.loadAsync(await download.body())
+    expect(await archive.file(/(^|\/)main\.kcl$/)[0]?.async('string')).toBe(
+      queuedCode
+    )
+    expect(
+      await archive.file(/(^|\/)project\.toml$/)[0]?.async('string')
+    ).toContain(`project_id = "${created.id}"`)
+    expect(firstUploadProject.createCount).toBe(1)
+    await expect(
+      page.getByTestId('project-sidebar-cloud-conflict-badge')
+    ).toHaveCount(0)
+    await expect(page.getByTestId('cloud-conflict-dialog')).toHaveCount(0)
+  }
+)
 
 test(
   'creates a multi-file sample in Personal Cloud from Home',
@@ -243,7 +351,6 @@ test(
     const publicProjectTitle = '!!!'
     const publicProjectDirectoryName = 'shared-project'
     const publicProjectSettingsId = '29501ba6-dfa1-486f-b51d-aa9331ee441e'
-    const personalCloudSettingsId = '29501ba6-dfa1-486f-b51d-aa9331ee442f'
     const publicProjectFiles = {
       'main.kcl': 'aquariumShared = 1\n',
       'project.toml': [
@@ -258,22 +365,10 @@ test(
       revision: 'personal-cloud-copy-rev-1',
       files: {
         'main.kcl': publicProjectFiles['main.kcl'],
-        'project.toml': [
-          'project_id = "personal-cloud-copy"',
-          '',
-          '[settings.meta]',
-          `id = "${personalCloudSettingsId}"`,
-          '',
-        ].join('\n'),
       },
     }
     const publicProjectArchive = await zipProject(publicProjectFiles)
     let publicProjectDownloads = 0
-    let releasePersonalCloudDownload!: () => void
-    const personalCloudDownloadGate = new Promise<void>((resolve) => {
-      releasePersonalCloudDownload = resolve
-    })
-    let personalCloudDownloadStarted = false
     await context.route(
       `**/projects/public/${publicProjectId}**`,
       async (route) => {
@@ -309,16 +404,27 @@ test(
     const { calls: apiCalls } = await routeCloudProjects(context, {
       remoteProjects: [personalCloudProject],
       listedProjects: [],
-      createProject: () => personalCloudProject,
+      createProject: async () => {
+        const files = await readOpfsTextFiles(page, {
+          projectToml: `${PROJECT_DIR}/${publicProjectDirectoryName}/project.toml`,
+        })
+        personalCloudProject.files['project.toml'] = [
+          files.projectToml,
+          '[cloud."dev.zoo.dev"]',
+          'project_id = "personal-cloud-copy"',
+          '',
+        ].join('\n')
+        return personalCloudProject
+      },
+      updateProject: ({ projectId, url }) => {
+        expect(projectId).toBe(personalCloudProject.id)
+        expect(new URL(url).searchParams.get('expected_revision')).toBe(
+          personalCloudProject.revision
+        )
+        personalCloudProject.revision = 'personal-cloud-copy-rev-2'
+        return { status: 200, body: cloudProjectResponse(personalCloudProject) }
+      },
     })
-    await context.route(
-      `**/user/projects/${personalCloudProject.id}/download**`,
-      async (route) => {
-        personalCloudDownloadStarted = true
-        await personalCloudDownloadGate
-        await route.fallback()
-      }
-    )
 
     await setup(context, page, testInfo, [OPFS_CLOUD_FEATURE_FLAG], {
       cloudSyncEnabled: true,
@@ -334,14 +440,6 @@ test(
       })
       .toBe(1)
     expect(publicProjectDownloads).toBe(1)
-    await expect
-      .poll(() => personalCloudDownloadStarted, {
-        timeout: CLOUD_SYNC_E2E_TIMEOUT,
-      })
-      .toBe(true)
-    await expect(page).not.toHaveURL(/\/file\//)
-    releasePersonalCloudDownload()
-
     await expectProjectFileRoute(page)
     await expect
       .poll(() =>
@@ -352,24 +450,33 @@ test(
       )
       .toBe(true)
     await expect
-      .poll(async () => {
-        try {
-          const files = await readOpfsTextFiles(page, {
-            projectToml: `${PROJECT_DIR}/${publicProjectDirectoryName}/project.toml`,
-          })
-          return files.projectToml
-        } catch {
-          // Replacing a project archive briefly removes the old directory.
-          return ''
-        }
+      .poll(
+        () =>
+          readCloudSyncProjectMetadata(
+            page,
+            `${PROJECT_DIR}/${publicProjectDirectoryName}`
+          ),
+        { timeout: CLOUD_SYNC_E2E_TIMEOUT }
+      )
+      .toMatchObject({
+        remoteProjectId: personalCloudProject.id,
+        lastSyncedAt: expect.any(String),
+        pendingCount: 0,
+        conflict: undefined,
+        lastFailure: undefined,
       })
-      .toContain('project_id = "personal-cloud-copy"')
-
+    await expect(
+      page.getByTestId('project-sidebar-cloud-conflict-badge')
+    ).toHaveCount(0)
+    await expect(page.getByTestId('cloud-conflict-dialog')).toHaveCount(0)
     const files = await readOpfsTextFiles(page, {
       main: `${PROJECT_DIR}/${publicProjectDirectoryName}/main.kcl`,
       projectToml: `${PROJECT_DIR}/${publicProjectDirectoryName}/project.toml`,
     })
     expect(files.main).toContain('aquariumShared = 1')
+    expect(files.projectToml).toContain('project_id = "personal-cloud-copy"')
+    expect(apiCalls.creates).toHaveLength(1)
+    expect(apiCalls.downloads).toHaveLength(0)
     const clonedProjectSettingsId = files.projectToml.match(
       /\[settings\.meta\]\s*\nid = "([^"]+)"/
     )?.[1]

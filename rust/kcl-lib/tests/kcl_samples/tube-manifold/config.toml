@@ -1,1 +1,4 @@
 redact_uuids = true
+
+[test_graphics.EngineRender]
+reason = "BooleanSubtract fails on CPU engine"

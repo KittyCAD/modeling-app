@@ -803,11 +803,13 @@ describe('Testing deleteFromSelection', () => {
       name: 'an explicit pipe input',
       sketch: circleSketch,
       surface: '[sketch001.circle1] |> planarSurface(%)',
+      remaining: '\nsurface001 = [sketch001.circle1]',
     },
     {
       name: 'an implicit pipe input',
       sketch: circleSketch,
       surface: '[sketch001.circle1] |> planarSurface()',
+      remaining: '\nsurface001 = [sketch001.circle1]',
     },
     {
       name: 'a pipe with a downstream flip',
@@ -816,7 +818,7 @@ describe('Testing deleteFromSelection', () => {
     },
   ])(
     'deletes a planar surface made from $name without deleting its source sketch',
-    async ({ sketch, surface }) => {
+    async ({ sketch, surface, remaining = '' }) => {
       const sourceCode = `@settings(kclVersion = 2.0, experimentalFeatures = allow)
 
 ${sketch}`
@@ -848,7 +850,10 @@ ${sketch}`
       )
       if (err(result)) throw result
       expect(recast(result, instanceInThisFile)).toBe(
-        recast(assertParse(sourceCode, instanceInThisFile), instanceInThisFile)
+        recast(
+          assertParse(sourceCode + remaining, instanceInThisFile),
+          instanceInThisFile
+        )
       )
       await enginelessExecutor(result, rustContextInThisFile)
     }
@@ -1047,7 +1052,7 @@ plane003 = offsetPlane(plane001, offset = 10)`
   })
 
   it('deletes a KCL named view selected from the feature tree operation range', async () => {
-    const codeBefore = `@settings(kclVersion = 2.0, experimentalFeatures = allow)
+    const codeBefore = `@settings(kclVersion = "3.0-preview")
 
 sketch001 = sketch(on = XY) {
   line1 = line(start = [var 0mm, var 0mm], end = [var 4mm, var 0mm])

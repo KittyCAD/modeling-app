@@ -872,9 +872,9 @@ export const doExport = async (
   if (exportFrom === 'dropdown') {
     await page.getByTestId('project-sidebar-toggle').click()
 
-    const exportMenuButton = page.getByRole('button', {
-      name: 'Export current part',
-    })
+    const exportMenuButton = page
+      .getByTestId('project-sidebar-menu')
+      .getByRole('button', { name: 'Export' })
     await expect(exportMenuButton).toBeVisible()
     await exportMenuButton.click()
   } else if (exportFrom === 'sidebarButton') {
@@ -1015,6 +1015,10 @@ export async function expectCloudFeatureEnabled(page: Page) {
     page,
     `'${OPFS_CLOUD_FEATURE_FLAG}' feature not enabled: / did not redirect to /home`
   ).toHaveURL(/\/home$/)
+  // Home can mount while the default project-library settings are still loading.
+  await page.waitForFunction(() =>
+    window.app.settings.actor.getSnapshot().matches('idle')
+  )
   await expect(
     page.getByText(PERSONAL_CLOUD_PROJECT_LIBRARY_TITLE, { exact: true }),
     `'${OPFS_CLOUD_FEATURE_FLAG}' feature not enabled: "${PERSONAL_CLOUD_PROJECT_LIBRARY_TITLE}" not visible`

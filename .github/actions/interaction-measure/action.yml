@@ -1,0 +1,124 @@
+name: interaction-measure
+description: Verify both prepared applications and run the fixed native comparison schedule.
+inputs:
+  base-commit:
+    description: Immutable baseline application commit.
+    required: true
+  candidate-commit:
+    description: Immutable candidate application commit.
+    required: true
+  pr-head-commit:
+    description: Original PR head commit, when comparing a pull request.
+    required: false
+  harness-commit:
+    description: Immutable selected harness commit.
+    required: true
+  harness-source:
+    description: Harness selection, base or bootstrap-candidate.
+    required: true
+  harness-variant:
+    description: Application containing the harness, base or candidate.
+    required: true
+  calibration-fault:
+    description: Validated calibration mode, none, first, warm, or stall.
+    required: true
+  zoo-api-token:
+    description: API token used only by the native measurement process.
+    required: true
+  tab-api-url:
+    description: TAB endpoint used only by the native measurement process.
+    required: false
+  tab-api-key:
+    description: TAB key used only by the native measurement process.
+    required: false
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-node@v7.0.0
+      with:
+        node-version-file: apps/base/.nvmrc
+        package-manager-cache: false
+    - run: npm ci
+      shell: bash
+      working-directory: apps/base
+    - uses: actions/setup-node@v7.0.0
+      with:
+        node-version-file: apps/candidate/.nvmrc
+        package-manager-cache: false
+    - run: npm ci
+      shell: bash
+      working-directory: apps/candidate
+    # Node/Playwright belong to the selected harness; each app launches its own Electron.
+    - uses: actions/setup-node@v7.0.0
+      with:
+        node-version-file: apps/${{ inputs['harness-variant'] }}/.nvmrc
+        package-manager-cache: false
+    - uses: actions/download-artifact@v8
+      with:
+        name: interaction-comparison-plan
+        path: provenance
+    - uses: actions/download-artifact@v8
+      with:
+        name: interaction-performance-build-base
+        path: apps/base
+    - uses: actions/download-artifact@v8
+      with:
+        name: interaction-performance-build-candidate
+        path: apps/candidate
+    - uses: actions/download-artifact@v8
+      with:
+        name: prepared-wasm-interaction-base
+        path: apps/base/rust/kcl-wasm-lib/pkg
+    - uses: actions/download-artifact@v8
+      with:
+        name: prepared-wasm-interaction-candidate
+        path: apps/candidate/rust/kcl-wasm-lib/pkg
+    - uses: actions/download-artifact@v8
+      with:
+        name: prepared-ts-rs-bindings-interaction-base
+        path: apps/base/rust/kcl-lib/bindings
+    - uses: actions/download-artifact@v8
+      with:
+        name: prepared-ts-rs-bindings-interaction-candidate
+        path: apps/candidate/rust/kcl-lib/bindings
+    - name: Verify both applications against the selected harness
+      env:
+        HARNESS_VARIANT: ${{ inputs['harness-variant'] }}
+      shell: bash
+      run: |
+        HARNESS_DIR="$GITHUB_WORKSPACE/apps/$HARNESS_VARIANT"
+        node "$HARNESS_DIR/e2e/performance/build-comparison.cjs" verify-pair apps/base apps/candidate provenance/comparison-plan.json
+    - name: Compare native interaction performance
+      working-directory: apps/${{ inputs['harness-variant'] }}
+      shell: bash
+      run: env -u HEADLESS npm exec -- playwright test --config=playwright.performance.config.ts --headed
+      env:
+        NODE_ENV: production
+        TARGET: desktop
+        VITE_ZOO_BASE_DOMAIN: dev.zoo.dev
+        VITE_ZOO_API_TOKEN: ${{ inputs['zoo-api-token'] }}
+        TAB_API_URL: ${{ inputs['tab-api-url'] }}
+        TAB_API_KEY: ${{ inputs['tab-api-key'] }}
+        CI_COMMIT_SHA: ${{ inputs['pr-head-commit'] || inputs['candidate-commit'] }}
+        CI_PR_NUMBER: ${{ github.event.pull_request.number }}
+        INTERACTION_BASE_APP_DIR: ${{ github.workspace }}/apps/base
+        INTERACTION_CANDIDATE_APP_DIR: ${{ github.workspace }}/apps/candidate
+        INTERACTION_BASE_COMMIT: ${{ inputs['base-commit'] }}
+        INTERACTION_CANDIDATE_COMMIT: ${{ inputs['candidate-commit'] }}
+        INTERACTION_PR_HEAD_COMMIT: ${{ inputs['pr-head-commit'] }}
+        INTERACTION_HARNESS_COMMIT: ${{ inputs['harness-commit'] }}
+        INTERACTION_HARNESS_SOURCE: ${{ inputs['harness-source'] }}
+        INTERACTION_CALIBRATION_FAULT: ${{ inputs['calibration-fault'] }}
+    # A successful comparison does not establish A/A noise or fault-injection calibration.
+    - name: Preserve measurements, provenance, and failures
+      if: ${{ !cancelled() }}
+      uses: actions/upload-artifact@v7
+      with:
+        name: interaction-performance-${{ github.sha }}-${{ github.run_attempt }}
+        path: |
+          provenance/comparison-plan.json
+          apps/*/interaction-build-manifest.json
+          apps/*/test-results/interaction-performance/
+          apps/*/playwright-report/interaction-performance/
+        if-no-files-found: error
+        retention-days: 30
