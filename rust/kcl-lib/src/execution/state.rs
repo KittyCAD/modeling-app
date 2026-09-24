@@ -1240,9 +1240,6 @@ impl ExecState {
         edge_id: Uuid,
         argument_source_range: SourceRange,
     ) -> Option<PendingEdgeRefactorMeta> {
-        if !crate::runtime_flags::z0006_refactor_metadata_enabled() {
-            return None;
-        }
         if let Some(pending) = self
             .mod_local
             .artifacts

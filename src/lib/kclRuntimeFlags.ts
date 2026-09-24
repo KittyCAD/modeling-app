@@ -1,6 +1,5 @@
 import type { KclRuntimeFlags } from '@rust/kcl-lib/bindings/KclRuntimeFlags'
 import {
-  ENABLE_Z0006_LINT_FLAG,
   KCL_CEK_EXECUTOR_FEATURE_FLAG,
   KCL_NEW_LEXER_PARSER_FEATURE_FLAG,
 } from '@src/lib/constants'
@@ -22,9 +21,6 @@ export function kclRuntimeFlagsFromUserFeatures(
   userFeatures: RuntimeFlagUserFeatures
 ): KclRuntimeFlags {
   return {
-    enable_z0006_lint: userFeatures.has(ENABLE_Z0006_LINT_FLAG, false)
-      ? 'On'
-      : 'Off',
     use_cek_executor: userFeatures.has(KCL_CEK_EXECUTOR_FEATURE_FLAG, false)
       ? 'On'
       : 'Off',
