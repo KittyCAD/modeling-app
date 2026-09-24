@@ -14,13 +14,21 @@ interface ApplicationUrl {
 }
 
 function readApplicationUrl(url: URL, usesHashRouter: boolean): ApplicationUrl {
-  if (usesHashRouter && url.hash.startsWith('#/')) {
-    const hashUrl = new URL(url.hash.slice(1), 'http://application.local')
-    return {
-      pathname: hashUrl.pathname,
-      search: hashUrl.search,
-      hash: hashUrl.hash,
+  if (usesHashRouter) {
+    if (url.hash.startsWith('#/')) {
+      const hashUrl = new URL(url.hash.slice(1), 'http://application.local')
+      return {
+        pathname: hashUrl.pathname,
+        search: hashUrl.search,
+        hash: hashUrl.hash,
+      }
     }
+
+    // A hash router treats the desktop document URL as the application index
+    // until a route hash exists. The filesystem pathname names index.html; it
+    // is not an application route. Keep outer query parameters because desktop
+    // launch commands use them before the canonical hash URL is projected.
+    return { pathname: '/', search: url.search, hash: '' }
   }
 
   return {
