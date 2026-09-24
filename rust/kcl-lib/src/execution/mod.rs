@@ -1470,6 +1470,7 @@ impl ExecutorContext {
         exec_state.global.module_infos = mem.module_infos;
         exec_state.global.path_to_source_id = mem.path_to_source_id;
         exec_state.global.id_to_source = mem.id_to_source;
+        exec_state.global.never_type_ranges = mem.never_type_ranges;
         exec_state.global.std_not_yet_added = mem.std_not_yet_added;
         exec_state.mod_local.constraint_state = mem.constraint_state;
         let len = _mock_config
@@ -1511,6 +1512,7 @@ impl ExecutorContext {
         let module_infos = exec_state.global.module_infos.clone();
         let path_to_source_id = exec_state.global.path_to_source_id.clone();
         let id_to_source = exec_state.global.id_to_source.clone();
+        let never_type_ranges = exec_state.global.never_type_ranges.clone();
         let constraint_state = exec_state.mod_local.constraint_state.clone();
         let scene_objects = exec_state.global.root_module_artifacts.scene_objects.clone();
         let std_not_yet_added = exec_state.global.std_not_yet_added.clone();
@@ -1526,6 +1528,7 @@ impl ExecutorContext {
             module_infos,
             path_to_source_id,
             id_to_source,
+            never_type_ranges,
             constraint_state,
             scene_objects,
             std_not_yet_added,
@@ -2268,6 +2271,7 @@ impl ExecutorContext {
                 module_infos: exec_state.global.module_infos.clone(),
                 path_to_source_id: exec_state.global.path_to_source_id.clone(),
                 id_to_source: exec_state.global.id_to_source.clone(),
+                never_type_ranges: exec_state.global.never_type_ranges.clone(),
                 constraint_state: exec_state.mod_local.constraint_state.clone(),
                 scene_objects: exec_state.global.root_module_artifacts.scene_objects.clone(),
                 std_not_yet_added: exec_state.global.std_not_yet_added.clone(),
@@ -5068,12 +5072,16 @@ solid7 = extrude(r7, length = width)
                     crate::execution::ConstraintState::Tangency(crate::execution::TangencyMode::LineCircle(ezpz::LineSide::Left))
             },
         );
+        let imported_id = ModuleId::from_usize(42);
+        mem.never_type_ranges
+            .insert(imported_id, vec![SourceRange::new(0, 5, imported_id)]);
 
         let mut exec_state = ExecState::new_mock(&ctx, &MockConfig::default());
         ExecutorContext::restore_mock_memory(&mut exec_state, mem.clone(), &MockConfig::default()).unwrap();
 
         assert_eq!(exec_state.global.path_to_source_id, mem.path_to_source_id);
         assert_eq!(exec_state.global.id_to_source, mem.id_to_source);
+        assert_eq!(exec_state.global.never_type_ranges, mem.never_type_ranges);
         assert_eq!(exec_state.global.module_infos, mem.module_infos);
         assert_eq!(exec_state.mod_local.constraint_state, mem.constraint_state);
 
@@ -6099,6 +6107,14 @@ face = disc()
             .await
             .expect_err("version mismatch must precede `never` validation");
         assert_kcl_version_mismatch(&error, "2.0");
+        assert_eq!(
+            error
+                .backtrace()
+                .iter()
+                .map(|frame| frame.fn_name.as_deref())
+                .collect::<Vec<_>>(),
+            [Some("import dep.kcl"), None]
+        );
 
         let main_v2 = "@settings(kclVersion = 2.0)\nimport stop from \"dep.kcl\"\nx = 1\n";
         let dep_v3 = format!("@settings(kclVersion = \"3.0-preview\")\n{dep}");
