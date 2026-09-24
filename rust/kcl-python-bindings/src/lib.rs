@@ -81,6 +81,7 @@ where
     task.await.map_err(|err| PyException::new_err(err.to_string()))?
 }
 
+// TODO: Rename
 fn into_miette(error: kcl_lib::KclErrorWithOutputs, filename: &str, code: &str) -> PyErr {
     let retryable = error.is_retryable();
     let error_text = render_miette(error.clone(), code);
@@ -93,7 +94,8 @@ fn into_miette(error: kcl_lib::KclErrorWithOutputs, filename: &str, code: &str) 
                 sketch_constraint_report: Some(constraint_report),
             },
         )?;
-        // Direct Rust construction bypasses the Python constructor's exception arguments.
+        // We must set the exception's arguments here, because constructing it directly
+        // in Rust (above) bypasses the usual Python constructor, which usually sets the exception arguments.
         exception.setattr("args", (error_text, retryable))?;
         Ok(PyErr::from_value(exception.into_any()))
     })

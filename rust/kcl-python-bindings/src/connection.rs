@@ -223,6 +223,9 @@ pub async fn new_kcl_session_impl(
     video_res_width: Option<u32>,
     video_res_height: Option<u32>,
 ) -> PyResult<KclSession> {
+    // I/O or parse failures should raise an exception.
+    // There's no more useful data to include.
+    // So it's fine to use ? here.
     let KclProgram {
         code,
         program,
@@ -230,6 +233,9 @@ pub async fn new_kcl_session_impl(
         filename,
     } = load_and_parse(input).await?;
 
+    // Connect to the engine.
+    // If you can't even connect to the engine, just raise an exception.
+    // So it's fine to use ? here.
     let (ctx, mut state) = new_context_state(
         path,
         mock,
@@ -243,6 +249,9 @@ pub async fn new_kcl_session_impl(
     )
     .await
     .map_err(to_py_exception)?;
+
+    // Failures here should keep the execution outcome, so that users can still
+    // call sketch report or sketch debug visualization.
     let env_ref = match ctx.run(&program, &mut state).await {
         Ok((env_ref, _modeling_session_data)) => env_ref,
         Err(err) => {
@@ -250,6 +259,7 @@ pub async fn new_kcl_session_impl(
             return Err(into_miette(err, &filename, &code));
         }
     };
+
     let outcome = match state.into_exec_outcome(env_ref, &ctx).await {
         Ok(inner) => ExecOutcome {
             inner: Arc::new(inner),
