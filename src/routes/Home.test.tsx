@@ -76,6 +76,7 @@ function renderProjectLibraryPreviewRow(library: ProjectLibrary) {
         }}
         showCloudSyncUi={true}
         onMoveToLibrary={vi.fn()}
+        openProject={vi.fn(async () => undefined)}
       />
     </MemoryRouter>
   )

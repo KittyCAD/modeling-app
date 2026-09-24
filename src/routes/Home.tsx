@@ -49,6 +49,10 @@ import {
 import { SystemIOMachineStates } from '@src/machines/systemIO/utils'
 import type { WebContentSendPayload } from '@src/menu/channels'
 import { HOME_COMMAND_SCOPE } from '@src/registry/contracts/commands'
+import {
+  appNavigationService,
+  openProjectIntent,
+} from '@src/registry/contracts/appNavigation'
 import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
 import {
   type HomeProjectActionsService,
@@ -340,6 +344,13 @@ const Home = () => {
     )
     .join('|')
   const homeProjectActions = registry.get(homeProjectActionsService)
+  const openProject = useCallback(
+    (target: string) =>
+      registry
+        .get(appNavigationService)
+        .dispatch(openProjectIntent, { target }),
+    [registry]
+  )
   const session = registry.get(projectSession)
   const { libraryId } = useParams()
   const routeSelectedProjectLibrary = libraryId
@@ -772,6 +783,7 @@ const Home = () => {
             showCloudSyncUi
             showSourceStatusBadges={false}
             onMoveToLibrary={moveProjectToLibrary}
+            openProject={openProject}
             projectLibraryEmptyTestId="project-library-empty"
             className="flex-1 col-start-2 -col-end-1 overflow-y-auto pr-2 pb-24"
           />
@@ -788,6 +800,7 @@ const Home = () => {
             fileOperations={app.fileOperations}
             showCloudSyncUi
             onMoveToLibrary={moveProjectToLibrary}
+            openProject={openProject}
             projectLibraryDrag={projectLibraryDrag}
             projectLibraryTypes={projectLibraryTypes}
             className="flex-1 col-start-2 -col-end-1 overflow-y-auto pr-2 pb-24"
@@ -833,6 +846,7 @@ interface ProjectLibraryOverviewProps extends HTMLProps<HTMLDivElement> {
   fileOperations: FileOperationsRegistryService
   showCloudSyncUi: boolean
   onMoveToLibrary: (project: HomeProjectEntry) => void
+  openProject: (target: string) => Promise<unknown>
   projectLibraryDrag?: ProjectLibraryDragController
   projectLibraryTypes: ReadonlyMap<string, ProjectLibraryTypeContribution>
 }
@@ -858,6 +872,7 @@ function ProjectLibraryOverview({
   fileOperations,
   showCloudSyncUi,
   onMoveToLibrary,
+  openProject,
   projectLibraryDrag,
   projectLibraryTypes,
   ...rest
@@ -913,6 +928,7 @@ function ProjectLibraryOverview({
                   fileOperations={fileOperations}
                   showCloudSyncUi={showCloudSyncUi}
                   onMoveToLibrary={onMoveToLibrary}
+                  openProject={openProject}
                   projectLibraryDrag={projectLibraryDrag}
                   projectLibraryTypes={projectLibraryTypes}
                 />
@@ -979,6 +995,7 @@ interface ProjectGridProps extends HTMLProps<HTMLDivElement> {
   fileOperations: FileOperationsRegistryService
   showCloudSyncUi: boolean
   onMoveToLibrary: (project: HomeProjectEntry) => void
+  openProject: (target: string) => Promise<unknown>
   showSourceStatusBadges?: boolean
   projectLibraryEmptyTestId?: string
 }
@@ -994,6 +1011,7 @@ function ProjectGrid({
   fileOperations,
   showCloudSyncUi,
   onMoveToLibrary,
+  openProject,
   showSourceStatusBadges = true,
   projectLibraryEmptyTestId,
   ...rest
@@ -1020,6 +1038,7 @@ function ProjectGrid({
               fileOperations={fileOperations}
               showCloudSyncUi={showCloudSyncUi}
               onMoveToLibrary={onMoveToLibrary}
+              openProject={openProject}
               showSourceStatusBadges={showSourceStatusBadges}
             />
           ) : (
