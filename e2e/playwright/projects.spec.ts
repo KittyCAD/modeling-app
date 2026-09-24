@@ -17,6 +17,7 @@ import {
   getUtils,
   isOutOfViewInScrollContainer,
   runningOnWindows,
+  tomlToPerProjectSettings,
 } from '@e2e/playwright/test-utils'
 import { throwTronAppMissing } from '@e2e/playwright/lib/electron-helpers'
 import { expect, test } from '@e2e/playwright/zoo-test'
@@ -1852,25 +1853,33 @@ test.describe('Project id', { tag: ['@desktop'] }, () => {
     toolbar,
     context,
     homePage,
+    folderSetupFn,
   }, testInfo) => {
     const u = await getUtils(page)
+    const { dir } = await folderSetupFn(async () => {})
     await page.setBodyDimensions({ width: 1200, height: 500 })
     await createProject({ name: 'new-project', page, returnHome: true })
     await homePage.goToModelingScene()
     await u.waitForPageLoad()
 
-    const inputProjectId = page.getByTestId('project-id')
-
     await test.step('Open the project settings modal', async () => {
       await toolbar.projectSidebarToggle.click()
       await page.getByTestId('project-settings').click()
-      // Give time to system for writing to a persistent store
-      await page.waitForTimeout(1000)
+      await expect(page.getByRole('radio', { name: 'Project' })).toBeChecked()
+      await expect(page.getByTestId('project-id')).toHaveCount(0)
     })
 
     await test.step('Check project id is not the NIL UUID and not empty', async () => {
-      await expect(inputProjectId).not.toHaveValue(uuidNIL)
-      await expect(inputProjectId).toHaveValue(REGEXP_UUIDV4)
+      await expect(async () => {
+        const settings = tomlToPerProjectSettings(
+          await nodeFs.readFile(
+            path.join(dir, 'test-project', 'project.toml'),
+            'utf8'
+          )
+        )
+        expect(settings.settings?.meta?.id).not.toBe(uuidNIL)
+        expect(settings.settings?.meta?.id).toMatch(REGEXP_UUIDV4)
+      }).toPass()
     })
   })
   test('is created on existing project without one', async ({
@@ -1882,7 +1891,7 @@ test.describe('Project id', { tag: ['@desktop'] }, () => {
     folderSetupFn,
   }, testInfo) => {
     const u = await getUtils(page)
-
+    const { dir } = await folderSetupFn(async () => {})
     await page.setBodyDimensions({ width: 1200, height: 500 })
 
     await createProject({ name: 'new-project', page, returnHome: true })
@@ -1890,18 +1899,24 @@ test.describe('Project id', { tag: ['@desktop'] }, () => {
 
     await u.waitForPageLoad()
 
-    const inputProjectId = page.getByTestId('project-id')
-
     await test.step('Open the project settings modal', async () => {
       await toolbar.projectSidebarToggle.click()
       await page.getByTestId('project-settings').click()
-      // Give time to system for writing to a persistent store
-      await page.waitForTimeout(1000)
+      await expect(page.getByRole('radio', { name: 'Project' })).toBeChecked()
+      await expect(page.getByTestId('project-id')).toHaveCount(0)
     })
 
     await test.step('Check project id is not the NIL UUID and not empty', async () => {
-      await expect(inputProjectId).not.toHaveValue(uuidNIL)
-      await expect(inputProjectId).toHaveValue(REGEXP_UUIDV4)
+      await expect(async () => {
+        const settings = tomlToPerProjectSettings(
+          await nodeFs.readFile(
+            path.join(dir, 'test-project', 'project.toml'),
+            'utf8'
+          )
+        )
+        expect(settings.settings?.meta?.id).not.toBe(uuidNIL)
+        expect(settings.settings?.meta?.id).toMatch(REGEXP_UUIDV4)
+      }).toPass()
     })
   })
 })
