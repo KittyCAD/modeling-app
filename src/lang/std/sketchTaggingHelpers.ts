@@ -150,6 +150,20 @@ export function addTagToEdgeCutSelector(
   sourceSelectorIndex: number,
   wasmInstance: ModuleType
 ): { modifiedAst: Node<Program>; tag: string } | Error {
+  const result = addTagsToEdgeCutSelectors(
+    tagInfo,
+    [sourceSelectorIndex],
+    wasmInstance
+  )
+  if (err(result)) return result
+  return { modifiedAst: result.modifiedAst, tag: result.tags[0] }
+}
+
+export function addTagsToEdgeCutSelectors(
+  tagInfo: AddTagInfo,
+  sourceSelectorIndices: number[],
+  wasmInstance: ModuleType
+): { modifiedAst: Node<Program>; tags: string[] } | Error {
   const modifiedAst = structuredClone(tagInfo.node)
   let pipeIndex = 0
   for (let i = 0; i < tagInfo.pathToNode.length; i++) {
@@ -190,36 +204,65 @@ export function addTagToEdgeCutSelector(
   if (!edges || edges.type !== 'ArrayExpression') {
     return new Error('Face API edge cut must have an edges array')
   }
-  if (sourceSelectorIndex < 0 || sourceSelectorIndex >= edges.elements.length) {
+  if (
+    sourceSelectorIndices.some(
+      (index) => index < 0 || index >= edges.elements.length
+    )
+  ) {
     return new Error('Edge cut source selector index is out of bounds')
   }
   if (edges.elements.length === 1) {
-    return addTagKw(`${operation}Face`)(tagInfo)
+    const result = addTagKw(`${operation}Face`)({
+      ...tagInfo,
+      node: modifiedAst,
+    })
+    if (err(result)) return result
+    return {
+      modifiedAst: result.modifiedAst,
+      tags: sourceSelectorIndices.map(() => result.tag),
+    }
   }
 
-  const selectedEdge = edges.elements[sourceSelectorIndex]
-  edges.elements.splice(sourceSelectorIndex, 1)
-
-  const selectedCall = structuredClone(callExpr)
-  const selectedEdges = findKwArg('edges', selectedCall)
-  if (!selectedEdges || selectedEdges.type !== 'ArrayExpression') {
-    return new Error('Face API edge cut must have an edges array')
+  // Split once using original selector indices. Keep unselected edges together,
+  // and retain a mapping so face expressions can follow the user's selection order.
+  const indices = [...new Set(sourceSelectorIndices)].sort((a, b) => a - b)
+  const selectedCalls = indices.map((index) => {
+    const call = structuredClone(callExpr)
+    call.arguments = call.arguments.map((arg) =>
+      arg.label?.name === 'edges'
+        ? createLabeledArg(
+            'edges',
+            createArrayExpression([edges.elements[index]])
+          )
+        : arg
+    )
+    return call
+  })
+  edges.elements = edges.elements.filter((_, index) => !indices.includes(index))
+  const calls =
+    edges.elements.length > 0 ? [...selectedCalls, callExpr] : selectedCalls
+  for (const call of calls.slice(1)) {
+    call.unlabeled = null
   }
-  selectedEdges.elements = [selectedEdge]
-  const tag = createTagDeclarator(
-    findUniqueName(modifiedAst, `${operation}Face`, 2)
-  )
-  selectedCall.arguments.push(createLabeledArg('tag', tag))
-
   if (isPipeExpression) {
-    selectedCall.unlabeled = null
-    pipeExpr.node.body.splice(pipeIndex, 0, selectedCall)
+    pipeExpr.node.body.splice(pipeIndex, 1, ...calls)
   } else {
-    callExpr.unlabeled = null
-    variableDec.node.init = createPipeExpression([selectedCall, callExpr])
+    variableDec.node.init = createPipeExpression(calls)
   }
 
-  return { modifiedAst, tag: tag.value }
+  // Insert calls before allocating names so each new tag is visible to the next.
+  const tags = new Map<number, string>()
+  for (const [i, call] of selectedCalls.entries()) {
+    const tag = createTagDeclarator(
+      findUniqueName(modifiedAst, `${operation}Face`, 2)
+    )
+    call.arguments.push(createLabeledArg('tag', tag))
+    tags.set(indices[i], tag.value)
+  }
+  return {
+    modifiedAst,
+    tags: sourceSelectorIndices.map((index) => tags.get(index)!),
+  }
 }
 
 function addTagToEdgeCut(

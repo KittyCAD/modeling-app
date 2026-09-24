@@ -44,10 +44,12 @@ import {
 } from '@src/lang/std/artifactGraph'
 import {
   addTagForSketchOnFace,
+  addTagsToEdgeCutSelectors,
   addTagToEdgeCutSelector,
   addTagToSingletonEdgeCut,
   isTaggableSketchSegment,
 } from '@src/lang/std/sketchTaggingHelpers'
+import { findKwArg } from '@src/lang/util'
 import type {
   ArtifactGraph,
   CallExpressionKw,
@@ -166,6 +168,98 @@ export function modifyAstWithTagsForSelection(
 
   // Unsupported selection type
   return new Error(`Unsupported selection type: ${selection.artifact.type}`)
+}
+
+/**
+ * Tag resolved selections as a batch. Faces from the same edge treatment must
+ * be split together, before their original selector indices or paths change.
+ * Failed selections are logged and skipped; successful references retain their order.
+ */
+export function modifyAstWithTagsForSelections(
+  ast: Node<Program>,
+  selections: ResolvedGraphSelection[],
+  artifactGraph: ArtifactGraph,
+  wasmInstance: ModuleType
+): { modifiedAst: Node<Program>; exprs: Expr[] } {
+  let modifiedAst = ast
+  const exprs: Expr[][] = selections.map(() => [])
+  const edgeCuts = new Map<
+    string,
+    {
+      artifact: Extract<Artifact, { type: 'edgeCut' }>
+      selections: { selectionIndex: number; selectorIndex: number }[]
+    }
+  >()
+  for (const [selectionIndex, selection] of selections.entries()) {
+    const artifact = selection.artifact
+    if (artifact?.type === 'edgeCut' && artifact.sourceSelectorIndex != null) {
+      const key = JSON.stringify(artifact.codeRef.pathToNode)
+      const group = edgeCuts.get(key) ?? { artifact, selections: [] }
+      group.selections.push({
+        selectionIndex,
+        selectorIndex: artifact.sourceSelectorIndex,
+      })
+      edgeCuts.set(key, group)
+    } else {
+      // Tag ordinary faces before any split can shift their paths in a pipeline.
+      const result = modifyAstWithTagsForSelection(
+        modifiedAst,
+        selection,
+        artifactGraph,
+        wasmInstance
+      )
+      if (err(result)) continue
+      modifiedAst = result.modifiedAst
+      exprs[selectionIndex] = result.exprs
+    }
+  }
+
+  // Work backwards through the source so splitting later calls cannot shift the
+  // original paths of earlier calls in the same pipeline.
+  const groups = [...edgeCuts.values()].sort(
+    (a, b) => b.artifact.codeRef.range[0] - a.artifact.codeRef.range[0]
+  )
+  for (const { artifact, selections } of groups) {
+    const call = getNodeFromPath<CallExpressionKw>(
+      modifiedAst,
+      artifact.codeRef.pathToNode,
+      wasmInstance,
+      'CallExpressionKw'
+    )
+    if (err(call)) continue
+    const edges = findKwArg('edges', call.node)
+    // Skip a bad face without discarding valid faces from the same treatment.
+    const validSelections = selections.filter(({ selectorIndex }) => {
+      if (
+        edges?.type !== 'ArrayExpression' ||
+        selectorIndex < 0 ||
+        selectorIndex >= edges.elements.length
+      ) {
+        console.warn(
+          'Cannot tag edge cut face at selector index',
+          selectorIndex
+        )
+        return false
+      }
+      return true
+    })
+    if (validSelections.length === 0) continue
+    const result = addTagsToEdgeCutSelectors(
+      {
+        node: modifiedAst,
+        pathToNode: artifact.codeRef.pathToNode,
+        wasmInstance,
+      },
+      validSelections.map((selection) => selection.selectorIndex),
+      wasmInstance
+    )
+    if (err(result)) continue
+    modifiedAst = result.modifiedAst
+    for (const [i, selection] of validSelections.entries()) {
+      exprs[selection.selectionIndex] = [createLocalName(result.tags[i])]
+    }
+  }
+  return { modifiedAst, exprs: exprs.flat() }
 }
 
 export type EdgeSelectionContext = {

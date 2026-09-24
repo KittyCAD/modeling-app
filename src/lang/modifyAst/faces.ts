@@ -17,7 +17,7 @@ import {
   insertVariableAndOffsetPathToNode,
   setCallInAst,
 } from '@src/lang/modifyAst'
-import { modifyAstWithTagsForSelection } from '@src/lang/modifyAst/tagManagement'
+import { modifyAstWithTagsForSelections } from '@src/lang/modifyAst/tagManagement'
 import {
   artifactToEntityRef,
   getSelectedPlaneAsNode,
@@ -1111,8 +1111,7 @@ export function getFacesExprsFromSelection(
   artifactGraph: ArtifactGraph,
   wasmInstance: ModuleType
 ) {
-  let modifiedAst = ast
-  const exprs = faces.graphSelections.flatMap((v2Sel) => {
+  const resolvedFaces = faces.graphSelections.flatMap((v2Sel) => {
     const resolved = resolveToCodeRef(v2Sel, artifactGraph)
     if (!resolved?.artifact) {
       console.warn('No artifact found for face', v2Sel)
@@ -1125,24 +1124,18 @@ export function getFacesExprsFromSelection(
       artifact = capForPath
     }
     if (isFaceArtifact(artifact)) {
-      const result = modifyAstWithTagsForSelection(
-        modifiedAst,
-        { ...resolved, artifact },
-        artifactGraph,
-        wasmInstance
-      )
-      if (err(result)) {
-        console.warn('Failed to generate face reference', result)
-        return []
-      }
-      modifiedAst = result.modifiedAst
-      return result.exprs
+      return [{ ...resolved, artifact }]
     } else {
       console.warn('Face was not a cap, wall, or edge cut', v2Sel)
       return []
     }
   })
-  return { modifiedAst, exprs }
+  return modifyAstWithTagsForSelections(
+    ast,
+    resolvedFaces,
+    artifactGraph,
+    wasmInstance
+  )
 }
 
 // Check if an artifact is a face type (cap, wall, or edgeCut)

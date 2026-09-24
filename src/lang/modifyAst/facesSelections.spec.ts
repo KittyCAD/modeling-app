@@ -1,5 +1,9 @@
 import { createLiteral, createLocalName } from '@src/lang/create'
-import { addShell, getFacesExprsFromSelection } from '@src/lang/modifyAst/faces'
+import {
+  addDeleteFace,
+  addShell,
+  getFacesExprsFromSelection,
+} from '@src/lang/modifyAst/faces'
 import { modifyAstWithTagsForSelection } from '@src/lang/modifyAst/tagManagement'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import { topLevelRange } from '@src/lang/util'
@@ -245,6 +249,7 @@ cutBody = ${operation}(body001, edges = [${selectedEdge}], ${sizeArg} = 1mm, tag
           graph,
           instance
         )
+        if (err(faceResult)) throw faceResult
         for (const result of [sharedResult, faceResult]) {
           expect(result.exprs).toEqual([createLocalName(tag)])
           expect(recast(result.modifiedAst, instance)).toBe(
@@ -254,5 +259,244 @@ cutBody = ${operation}(body001, edges = [${selectedEdge}], ${sizeArg} = 1mm, tag
         expect(ast).toEqual(originalAst)
       }
     )
+  }
+)
+
+// Engine artifacts for every face of one treatment share a code path, but carry
+// different original selector indices. Splitting for one must not lose the rest.
+describe.each(['fillet', 'chamfer'] as const)(
+  '%s multi-face selection',
+  (operation) => {
+    it.each([
+      { name: 'all faces', count: 2, selected: [0, 1], piped: false },
+      {
+        name: 'reverse selection order',
+        count: 2,
+        selected: [1, 0],
+        piped: false,
+      },
+      {
+        name: 'subset with unselected edges',
+        count: 4,
+        selected: [3, 1],
+        piped: false,
+      },
+      { name: 'existing pipeline', count: 2, selected: [1, 0], piped: true },
+    ])('Shell and Delete Face retain $name', ({ count, selected, piped }) => {
+      const sizeArg = operation === 'fillet' ? 'radius' : 'length'
+      const edges = Array.from(
+        { length: count },
+        (_, i) => `{ sideFaces = [side${i}, top] }`
+      )
+      const call = `${operation}(${piped ? '' : 'body001, '}edges = [${edges.join(', ')}], ${sizeArg} = 1mm)`
+      const prefix =
+        '@settings(defaultLengthUnit = mm, kclVersion = 2.0)\ncutBody = '
+      const code =
+        prefix + (piped ? 'extrude(profile, length = 10mm) |> ' : '') + call
+      const ast = assertParse(code, instance)
+      const originalAst = structuredClone(ast)
+      const range = topLevelRange(code.indexOf(call), code.length)
+      const codeRef: CodeRef = {
+        range,
+        pathToNode: getNodePathFromSourceRange(ast, range),
+        nodePath: { steps: [] },
+      }
+      const graph: ArtifactGraph = new Map(
+        selected.map((index) => {
+          const artifact: Extract<Artifact, { type: 'edgeCut' }> = {
+            type: 'edgeCut',
+            id: `face${index}`,
+            subType: operation,
+            sourceSelectorIndex: index,
+            codeRef,
+            edgeIds: [],
+          }
+          return [artifact.id, artifact]
+        })
+      )
+      const faces = {
+        graphSelections: selected.map((index) => ({
+          entityRef: { type: 'face' as const, face_id: `face${index}` },
+          codeRef,
+        })),
+        otherSelections: [],
+      }
+      const ordered = [...selected].sort((a, b) => a - b)
+      const tagFor = (index: number) =>
+        `${operation}Face0${ordered.indexOf(index) + 1}`
+      const calls = ordered.map(
+        (index, i) =>
+          `${operation}(${!piped && i === 0 ? 'body001, ' : ''}edges = [${edges[index]}], ${sizeArg} = 1mm, tag = $${tagFor(index)})`
+      )
+      const remaining = edges.filter((_, index) => !selected.includes(index))
+      if (remaining.length) {
+        calls.push(
+          `${operation}(edges = [${remaining.join(', ')}], ${sizeArg} = 1mm)`
+        )
+      }
+      const splitCode =
+        prefix +
+        (piped ? 'extrude(profile, length = 10mm) |> ' : '') +
+        calls.join(' |> ')
+      for (const command of ['shell', 'deleteFace'] as const) {
+        const args = {
+          ast,
+          artifactGraph: graph,
+          faces,
+          wasmInstance: instance,
+        }
+        const result =
+          command === 'shell'
+            ? addShell({
+                ...args,
+                thickness: {
+                  valueAst: createLiteral(1, instance),
+                  valueText: '1',
+                  valueCalculated: '1',
+                },
+              })
+            : addDeleteFace(args)
+        if (err(result)) throw result
+        const name = command === 'shell' ? 'shell001' : 'surface001'
+        const expected = `${splitCode}\n${name} = ${command}(cutBody, faces = [${selected.map(tagFor).join(', ')}]${command === 'shell' ? ', thickness = 1' : ''})`
+        expect(recast(result.modifiedAst, instance)).toBe(
+          recast(assertParse(expected, instance), instance)
+        )
+        expect(ast).toEqual(originalAst)
+      }
+    })
+  }
+)
+
+describe.each(['fillet', 'chamfer'] as const)(
+  '%s face tagging across calls',
+  (operation) => {
+    it('preserves paths across multiple splits and reuses an existing singleton tag', () => {
+      const sizeArg = operation === 'fillet' ? 'radius' : 'length'
+      const edges = [0, 1, 2, 3].map(
+        (index) => `{ sideFaces = [side${index}, top] }`
+      )
+      const calls = [
+        `${operation}(edges = [${edges[0]}, ${edges[1]}], ${sizeArg} = 1mm)`,
+        `${operation}(edges = [${edges[2]}, ${edges[3]}], ${sizeArg} = 2mm)`,
+        `${operation}(tags = [edge005], ${sizeArg} = 3mm, tag = $${operation}Face01)`,
+      ]
+      const prefix =
+        '@settings(defaultLengthUnit = mm, kclVersion = 2.0)\ncutBody = extrude(profile, length = 10mm) |> '
+      const code = prefix + calls.join(' |> ')
+      const ast = assertParse(code, instance)
+      const originalAst = structuredClone(ast)
+      const selected = [
+        { call: 0, selector: 0 },
+        { call: 1, selector: 1 },
+        { call: 2, selector: undefined },
+        { call: 0, selector: 1 },
+        { call: 1, selector: 0 },
+      ]
+      const artifacts: Extract<Artifact, { type: 'edgeCut' }>[] = selected.map(
+        ({ call, selector }, index) => {
+          const start = code.indexOf(calls[call])
+          const range = topLevelRange(start, start + calls[call].length)
+          return {
+            type: 'edgeCut',
+            id: `face${index}`,
+            subType: operation,
+            sourceSelectorIndex: selector,
+            edgeIds: [],
+            codeRef: {
+              range,
+              pathToNode: getNodePathFromSourceRange(ast, range),
+              nodePath: { steps: [] },
+            },
+          }
+        }
+      )
+      const result = addShell({
+        ast,
+        artifactGraph: new Map(
+          artifacts.map((artifact) => [artifact.id, artifact])
+        ),
+        faces: {
+          graphSelections: artifacts.map((artifact) => ({
+            artifact,
+            codeRef: artifact.codeRef,
+          })),
+          otherSelections: [],
+        },
+        thickness: {
+          valueAst: createLiteral(1, instance),
+          valueText: '1',
+          valueCalculated: '1',
+        },
+        wasmInstance: instance,
+      })
+      if (err(result)) throw result
+      const expectedCalls = [4, 5, 2, 3].map(
+        (tagNumber, index) =>
+          `${operation}(edges = [${edges[index]}], ${sizeArg} = ${index < 2 ? 1 : 2}mm, tag = $${operation}Face0${tagNumber})`
+      )
+      const expected =
+        prefix +
+        [...expectedCalls, calls[2]].join(' |> ') +
+        `\nshell001 = shell(cutBody, faces = [${[4, 3, 1, 5, 2].map((n) => `${operation}Face0${n}`).join(', ')}], thickness = 1)`
+      expect(recast(result.modifiedAst, instance)).toBe(
+        recast(assertParse(expected, instance), instance)
+      )
+      expect(ast).toEqual(originalAst)
+    })
+
+    it.each([
+      [0, 2],
+      [2, 0],
+      // Without selector metadata, this multi-edge call cannot be tagged as a singleton.
+      [undefined, 0],
+      [0, undefined],
+    ])('skips failed face tagging in selection order %j, %j', (...indices) => {
+      const code = `@settings(defaultLengthUnit = mm, kclVersion = 2.0)
+cutBody = ${operation}(body001, edges = [{ sideFaces = [a, b] }, { sideFaces = [a, c] }], ${operation === 'fillet' ? 'radius' : 'length'} = 1mm)`
+      const ast = assertParse(code, instance)
+      const originalAst = structuredClone(ast)
+      const range = topLevelRange(code.indexOf(`${operation}(`), code.length)
+      const codeRef: CodeRef = {
+        range,
+        pathToNode: getNodePathFromSourceRange(ast, range),
+        nodePath: { steps: [] },
+      }
+      const artifacts: Extract<Artifact, { type: 'edgeCut' }>[] = indices.map(
+        (sourceSelectorIndex) => ({
+          type: 'edgeCut',
+          id: `face${sourceSelectorIndex}`,
+          subType: operation,
+          sourceSelectorIndex,
+          edgeIds: [],
+          codeRef,
+        })
+      )
+      const result = addShell({
+        ast,
+        artifactGraph: new Map(
+          artifacts.map((artifact) => [artifact.id, artifact])
+        ),
+        faces: {
+          graphSelections: artifacts.map((artifact) => ({ artifact, codeRef })),
+          otherSelections: [],
+        },
+        thickness: {
+          valueAst: createLiteral(1, instance),
+          valueText: '1',
+          valueCalculated: '1',
+        },
+        wasmInstance: instance,
+      })
+      if (err(result)) throw result
+      const expected = `@settings(defaultLengthUnit = mm, kclVersion = 2.0)
+cutBody = ${operation}(body001, edges = [{ sideFaces = [a, b] }], ${operation === 'fillet' ? 'radius' : 'length'} = 1mm, tag = $${operation}Face01)
+  |> ${operation}(edges = [{ sideFaces = [a, c] }], ${operation === 'fillet' ? 'radius' : 'length'} = 1mm)
+shell001 = shell(cutBody, faces = ${operation}Face01, thickness = 1)`
+      expect(recast(result.modifiedAst, instance)).toBe(
+        recast(assertParse(expected, instance), instance)
+      )
+      expect(ast).toEqual(originalAst)
+    })
   }
 )
