@@ -22,8 +22,8 @@ use crate::SnapshotOptions;
 use crate::bridge::physical_properties::PhysicalPropertiesRequest;
 use crate::bridge::physical_properties::PhysicalPropertiesResponse;
 use crate::bridge::sketch_constraints::SketchConstraintReport;
-use crate::into_miette;
 use crate::into_miette_for_parse;
+use crate::into_rich_error;
 use crate::load_and_parse;
 use crate::measure_model_properties;
 use crate::new_context_state;
@@ -256,7 +256,7 @@ pub async fn new_kcl_session_impl(
         Ok((env_ref, _modeling_session_data)) => env_ref,
         Err(err) => {
             ctx.close().await;
-            return Err(into_miette(err, &filename, &code));
+            return Err(into_rich_error(err, &filename, &code));
         }
     };
 
@@ -266,11 +266,16 @@ pub async fn new_kcl_session_impl(
             code: code.into(),
             filename: filename.into(),
         },
+        // This error case only occurs when there's an internal error inside KCL's memory implementation.
+        // Ideally this would still return a rich error, however, ZK is very unlikely to hit this.
+        // If we hit it, we should upgrade this. Or make KCL's memory infallible.
         Err(err) => {
             ctx.close().await;
             return Err(to_py_exception(err));
         }
     };
+
+    // Execution succeeded, return the data.
     let executed_kcl = Arc::new(SessionState {
         ctx: Mutex::new(Some(ctx)),
         program,

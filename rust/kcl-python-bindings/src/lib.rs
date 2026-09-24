@@ -81,8 +81,7 @@ where
     task.await.map_err(|err| PyException::new_err(err.to_string()))?
 }
 
-// TODO: Rename
-fn into_miette(error: kcl_lib::KclErrorWithOutputs, filename: &str, code: &str) -> PyErr {
+fn into_rich_error(error: kcl_lib::KclErrorWithOutputs, filename: &str, code: &str) -> PyErr {
     let retryable = error.is_retryable();
     let error_text = render_miette(error.clone(), code);
     let constraint_report = sketch_constraint_report_from_error(&error, filename, code, error_text.clone());
@@ -444,7 +443,7 @@ async fn run_kcl(
         Ok(result) => result,
         Err(err) => {
             ctx.close().await;
-            return Err(into_miette(err, &filename, &code));
+            return Err(into_rich_error(err, &filename, &code));
         }
     };
     Ok(ExecutedKcl {
@@ -521,7 +520,7 @@ async fn sketch_constraint_report_impl(input: KclInput) -> PyResult<SketchConstr
         }
         Err(err) => {
             if err.is_retryable() {
-                return Err(into_miette(err, &filename, &code));
+                return Err(into_rich_error(err, &filename, &code));
             }
             let error_text = render_miette(err.clone(), &code);
             Ok(sketch_constraint_report_from_error(&err, &filename, &code, error_text))
