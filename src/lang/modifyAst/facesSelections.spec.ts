@@ -1,5 +1,6 @@
-import { createLiteral } from '@src/lang/create'
-import { addShell } from '@src/lang/modifyAst/faces'
+import { createLiteral, createLocalName } from '@src/lang/create'
+import { addShell, getFacesExprsFromSelection } from '@src/lang/modifyAst/faces'
+import { modifyAstWithTagsForSelection } from '@src/lang/modifyAst/tagManagement'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import { topLevelRange } from '@src/lang/util'
 import {
@@ -180,3 +181,78 @@ clonedBody = clone(originalBody) |> translate(x = 20mm)`
     }
   )
 })
+
+// Both entry points must identify the selected generated face and leave the
+// caller's AST untouched, including when one edge treatment must be split.
+describe.each(['chamfer', 'fillet'] as const)(
+  '%s face tagging',
+  (operation) => {
+    it.each([undefined, 0, 1])(
+      'tags the face for selector %s',
+      (sourceSelectorIndex) => {
+        const sizeArg = operation === 'chamfer' ? 'length' : 'radius'
+        const firstEdge = '{ sideFaces = [bottomFace, endCap] }'
+        const secondEdge = '{ sideFaces = [rightFace, endCap] }'
+        const selectorArg =
+          sourceSelectorIndex === undefined
+            ? 'tags = [edge001]'
+            : `edges = [${firstEdge}, ${secondEdge}]`
+        const code = `@settings(defaultLengthUnit = mm, kclVersion = 2.0)
+cutBody = ${operation}(body001, ${selectorArg}, ${sizeArg} = 1mm)`
+        const ast = assertParse(code, instance)
+        const originalAst = structuredClone(ast)
+        const range = topLevelRange(code.indexOf(`${operation}(`), code.length)
+        const codeRef: CodeRef = {
+          range,
+          pathToNode: getNodePathFromSourceRange(ast, range),
+          nodePath: { steps: [] },
+        }
+        const artifact: Extract<Artifact, { type: 'edgeCut' }> = {
+          type: 'edgeCut',
+          id: 'cut-face',
+          subType: operation,
+          sourceSelectorIndex,
+          edgeIds: [],
+          codeRef,
+        }
+        const graph: ArtifactGraph = new Map([[artifact.id, artifact]])
+        const selectedEdge = sourceSelectorIndex === 0 ? firstEdge : secondEdge
+        const remainingEdge = sourceSelectorIndex === 0 ? secondEdge : firstEdge
+        const tag = `${operation}Face01`
+        const expectedCode =
+          sourceSelectorIndex === undefined
+            ? `@settings(defaultLengthUnit = mm, kclVersion = 2.0)
+cutBody = ${operation}(body001, tags = [edge001], ${sizeArg} = 1mm, tag = $${tag})`
+            : `@settings(defaultLengthUnit = mm, kclVersion = 2.0)
+cutBody = ${operation}(body001, edges = [${selectedEdge}], ${sizeArg} = 1mm, tag = $${tag})
+  |> ${operation}(edges = [${remainingEdge}], ${sizeArg} = 1mm)`
+
+        const sharedResult = modifyAstWithTagsForSelection(
+          ast,
+          { artifact, codeRef },
+          graph,
+          instance
+        )
+        if (err(sharedResult)) throw sharedResult
+        const faceResult = getFacesExprsFromSelection(
+          ast,
+          {
+            graphSelections: [
+              { entityRef: { type: 'face', face_id: artifact.id }, codeRef },
+            ],
+            otherSelections: [],
+          },
+          graph,
+          instance
+        )
+        for (const result of [sharedResult, faceResult]) {
+          expect(result.exprs).toEqual([createLocalName(tag)])
+          expect(recast(result.modifiedAst, instance)).toBe(
+            recast(assertParse(expectedCode, instance), instance)
+          )
+        }
+        expect(ast).toEqual(originalAst)
+      }
+    )
+  }
+)

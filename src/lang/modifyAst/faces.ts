@@ -32,10 +32,7 @@ import {
   getCapForPathId,
   getFaceCodeRef,
 } from '@src/lang/std/artifactGraph'
-import {
-  addTagToEdgeCutSelector,
-  addTagToSingletonEdgeCut,
-} from '@src/lang/std/sketchTaggingHelpers'
+import { addTagToSingletonEdgeCut } from '@src/lang/std/sketchTaggingHelpers'
 import {
   type Artifact,
   type ArtifactGraph,
@@ -1127,7 +1124,7 @@ export function getFacesExprsFromSelection(
       if (err(capForPath)) return []
       artifact = capForPath
     }
-    if (artifact.type === 'cap' || artifact.type === 'wall') {
+    if (isFaceArtifact(artifact)) {
       const result = modifyAstWithTagsForSelection(
         modifiedAst,
         { ...resolved, artifact },
@@ -1140,32 +1137,8 @@ export function getFacesExprsFromSelection(
       }
       modifiedAst = result.modifiedAst
       return result.exprs
-    } else if (artifact.type === 'edgeCut') {
-      const tagInfo = {
-        node: modifiedAst,
-        pathToNode: artifact.codeRef.pathToNode,
-        wasmInstance,
-      }
-      const tagResult =
-        artifact.sourceSelectorIndex != null
-          ? addTagToEdgeCutSelector(
-              tagInfo,
-              artifact.sourceSelectorIndex,
-              wasmInstance
-            )
-          : addTagToSingletonEdgeCut(tagInfo, wasmInstance)
-      if (err(tagResult)) {
-        console.warn(
-          'Failed to mutate ast with tag for sketch segment',
-          tagResult
-        )
-        return []
-      }
-
-      modifiedAst = tagResult.modifiedAst
-      return [createLocalName(tagResult.tag)]
     } else {
-      console.warn('Face was not a cap or wall or chamfer', v2Sel)
+      console.warn('Face was not a cap, wall, or edge cut', v2Sel)
       return []
     }
   })
