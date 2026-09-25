@@ -1,16 +1,23 @@
+import type { StatOptions } from '@src/lib/fs-zds/interface'
 import { defineContract, defineService } from '@kittycad/registry'
 import type { FileNameParts } from '@src/lib/fileSystem/fileNames'
 import type {
   CopyOptions,
   FileContents,
   FileStat,
+  LockedDirectoryOperations,
 } from '@src/lib/fileSystem/fileOperations'
 
 /** Promise facade for coordinated project-directory and file operations. */
 export interface FileOperationsRegistryService {
+  /** Coordinate a multi-file operation with all reads and writes below this directory. */
+  readonly withDirectoryLock: <A>(
+    path: string,
+    operation: (files: LockedDirectoryOperations) => Promise<A>
+  ) => Promise<A>
   readonly pending: () => Promise<number>
   /** Observe one path while coordinated mutations of it are excluded. */
-  readonly stat: (path: string) => Promise<FileStat>
+  readonly stat: (path: string, options?: StatOptions) => Promise<FileStat>
   /** Check whether the current platform grant allows reading and writing. */
   readonly canReadWrite: (path: string) => Promise<boolean>
   /**

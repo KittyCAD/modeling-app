@@ -241,6 +241,7 @@ function createCloudSyncService(
   overrides: Partial<CloudSyncRegistryService> = {}
 ): CloudSyncRegistryService {
   return {
+    withLocalProjectMutation: (operation) => operation(),
     status: signal({
       enabled: true,
       state: 'idle',
