@@ -207,7 +207,7 @@ export function getViewUniverse(
  *   (`rust/kcl-lib/src/execution/artifact.rs:1286-1294`). `pathId` here
  *   addresses the source body.
  */
-function engineIdForSweep(
+export function engineIdForSweep(
   sweep: Extract<Artifact, { type: 'sweep' }>,
   artifactGraph: ArtifactGraph
 ): ArtifactId {
