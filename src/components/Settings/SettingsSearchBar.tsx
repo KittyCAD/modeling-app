@@ -1,5 +1,5 @@
-import { Combobox } from '@headlessui/react'
 import type { Feature } from '@kittycad/lib'
+import { Combobox } from '@headlessui/react'
 import { useSignalEffect } from '@preact/signals-react'
 import { useSignals } from '@preact/signals-react/runtime'
 import { getKeybindingRows } from '@src/components/Settings/keybindingRows'
