@@ -892,7 +892,7 @@ impl ExampleSketchSyntax {
 #[derive(Debug, Clone)]
 pub struct ExampleProperties {
     #[allow(dead_code)]
-    pub norun: bool,
+    pub no_render: bool,
     #[allow(dead_code)]
     pub engine_render: bool,
     pub inline: bool,
@@ -1346,14 +1346,14 @@ trait ApplyMeta {
                 } else {
                     let args = l[3..].split(',');
                     let mut inline = false;
-                    let mut norun = false;
+                    let mut no_render = false;
                     let mut engine_render = false;
                     let mut sketch_syntax = ExampleSketchSyntax::SketchSyntaxAgnostic;
                     let mut sketch_syntax_explicit = false;
                     for a in args {
                         match a.trim() {
                             "inline" => inline = true,
-                            "norun" | "no_run" => norun = true,
+                            "noRender" => no_render = true,
                             "engineRender" => engine_render = true,
                             other => {
                                 if let Some(tag) = ExampleSketchSyntax::from_attr(other) {
@@ -1366,7 +1366,7 @@ trait ApplyMeta {
                     example = Some((
                         String::new(),
                         ExampleProperties {
-                            norun,
+                            no_render,
                             engine_render,
                             inline,
                             sketch_syntax,
@@ -1882,7 +1882,7 @@ export FOO = 1
                 };
 
                 for (i, (_, props)) in f.examples.iter().enumerate() {
-                    if props.norun {
+                    if props.no_render {
                         continue;
                     }
                     let name = format!("{}-{i}", f.qual_name.replace("::", "-"));
@@ -1940,7 +1940,7 @@ export FOO = 1
             eprintln!("KCL program:\n---\n{}\n---", eg.0.trim_end());
 
             let result =
-                match crate::test_server::kcl_doc_execute_and_snapshot(&eg.0, None, eg.1.engine_render, eg.1.norun)
+                match crate::test_server::kcl_doc_execute_and_snapshot(&eg.0, None, eg.1.engine_render, eg.1.no_render)
                     .await
                 {
                     Err(crate::errors::ExecError::Kcl(e)) => {

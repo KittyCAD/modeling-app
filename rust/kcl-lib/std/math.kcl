@@ -147,7 +147,7 @@ export fn asin(@num: number(Count)): number(rad) {}
 ///
 /// Consider using `atan2()` instead for the true inverse of tangent.
 ///
-/// ```no_run,legacySketch
+/// ```noRender,legacySketch
 /// sketch001 = startSketchOn(XZ)
 ///   |> startProfile(at = [0, 0])
 ///   |> angledLine(
@@ -190,7 +190,7 @@ export fn atan2(y: number(Length), x: number(Length)): number(rad) {}
 ///   |> line(end = [segEndX(thing), 0])
 ///   |> line(end = [-20, 10])
 ///   |> close()
-///  
+///
 /// example = extrude(exampleSketch, length = 5)
 /// ```
 @(feature_tree = false)
@@ -203,7 +203,7 @@ export fn polar(angle: number(rad), length: number(Length)): Point2d {
 /// Compute the remainder after dividing `num` by `div`.
 /// If `num` is negative, the result will be too.
 ///
-/// ```kcl,norun,sketchSyntaxAgnostic
+/// ```kcl,noRender,sketchSyntaxAgnostic
 /// assert(rem( 7,    divisor =   4), isEqualTo =   3, error = "remainder is 3")
 /// assert(rem(-7,    divisor =   4), isEqualTo =  -3, error = "remainder is -3")
 /// assert(rem( 7,    divisor =  -4), isEqualTo =   3, error = "remainder is 3")
@@ -438,7 +438,7 @@ export fn ln(@input: number): number {}
 
 /// Compute the length of the given leg.
 ///
-/// ```kcl,no_run,sketchSyntaxAgnostic
+/// ```kcl,noRender,sketchSyntaxAgnostic
 /// legLen(hypotenuse = 5, leg = 3)
 /// ```
 @(impl = std_rust, feature_tree = false)
@@ -451,7 +451,7 @@ export fn legLen(
 
 /// Compute the angle of the given leg for x.
 ///
-/// ```kcl,no_run,sketchSyntaxAgnostic
+/// ```kcl,noRender,sketchSyntaxAgnostic
 /// legAngX(hypotenuse = 5, leg = 3)
 /// ```
 @(impl = std_rust, feature_tree = false)
@@ -464,7 +464,7 @@ export fn legAngX(
 
 /// Compute the angle of the given leg for y.
 ///
-/// ```kcl,no_run,sketchSyntaxAgnostic
+/// ```kcl,noRender,sketchSyntaxAgnostic
 /// legAngY(hypotenuse = 5, leg = 3)
 /// ```
 @(impl = std_rust, feature_tree = false)

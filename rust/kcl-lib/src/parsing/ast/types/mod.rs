@@ -913,7 +913,7 @@ impl Program {
         item.get_expr_for_position(pos)
     }
 
-    /// Checks if the ast has any import statements.    
+    /// Checks if the ast has any import statements.
     pub fn has_import_statements(&self) -> bool {
         for item in &self.body {
             if let BodyItem::ImportStatement(_) = item {
@@ -1138,7 +1138,7 @@ impl Program {
 /// A shebang.
 /// This is a special type of comment that is at the top of the file.
 /// It looks like this:
-/// ```python,no_run
+/// ```python,noRender
 /// #!/usr/bin/env python
 /// ```
 #[derive(Debug, Default, Clone, PartialEq, Eq, Hash, Deserialize, Serialize, ts_rs::TS)]
@@ -2283,7 +2283,7 @@ pub enum NonCodeValue {
     },
     /// A block comment.
     /// An example of this is the following:
-    /// ```no_run
+    /// ```noRender
     /// /* This is a
     /// block comment */
     /// 1 + 1
