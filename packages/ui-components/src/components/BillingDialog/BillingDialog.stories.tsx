@@ -6,7 +6,7 @@ import {
 } from '@kittycad/ui-components'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 
-const recordedBalance = {
+const overdueBalance = {
   created_at: '2026-01-02T21:57:20.048Z',
   monthly_api_credits_remaining: 0,
   monthly_api_credits_remaining_monetary_value: 0,
@@ -36,7 +36,7 @@ const meta = {
     balance: 8,
     allowance: 20,
     userPaymentBalance: {
-      ...recordedBalance,
+      ...overdueBalance,
       total_due: 0,
       monthly_api_credits_refresh_at: new Date(
         Date.now() + 3.5 * 86_400_000
@@ -58,23 +58,9 @@ export const UnlimitedPlan: Story = {
   },
 }
 
-export const RecordedCharges: Story = {
+export const PaymentOverdue: Story = {
   args: {
-    balance: 0,
-    userPaymentBalance: recordedBalance,
-  },
-}
-
-export const CreditsAndRecordedCharges: Story = {
-  args: {
-    balance: 596,
-    allowance: 400,
-    userPaymentBalance: {
-      ...recordedBalance,
-      monthly_api_credits_remaining_monetary_value: 107.32,
-      stable_api_credits_remaining_monetary_value: 204.82,
-      total_due: 35.53,
-    },
+    userPaymentBalance: overdueBalance,
   },
 }
 

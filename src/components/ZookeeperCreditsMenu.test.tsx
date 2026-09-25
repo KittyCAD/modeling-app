@@ -56,14 +56,14 @@ test('expires the live estimate after twenty minutes and keeps the reported bala
 
   fireEvent.click(screen.getByTestId('billing-remaining-bar'))
   expect(
-    screen.getByText('596 min of Zookeeper reasoning time remaining')
+    screen.getByText('596 min of Zookeeper reasoning time remaining this month')
   ).toBeVisible()
 
   useBillingContext.mockReturnValue({ ...context, balance: 590 })
   rerender(<ZookeeperCreditsMenu />)
   expect(screen.getByTestId('billing-balance')).toHaveTextContent('590 min')
   expect(
-    screen.getByText('590 min of Zookeeper reasoning time remaining')
+    screen.getByText('590 min of Zookeeper reasoning time remaining this month')
   ).toBeVisible()
 })
 

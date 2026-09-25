@@ -116,7 +116,7 @@ test('Shows infinite balance for Pro subscription data', async () => {
   expect(queryByTestId('billing-remaining-error-indicator')).toBeNull()
 })
 
-test('Hides recorded charges when total due is zero', async () => {
+test('Hides overrun when total due is zero', async () => {
   const { queryByText } = render(
     <BillingRemaining
       mode={BillingRemainingMode.ProgressBarFixed}
@@ -124,7 +124,7 @@ test('Hides recorded charges when total due is zero', async () => {
     />
   )
 
-  expect(queryByText('Recorded charges')).toBeNull()
+  expect(queryByText('Overrun')).toBeNull()
 })
 
 test('Shows total due with two decimal places', async () => {
@@ -138,31 +138,7 @@ test('Shows total due with two decimal places', async () => {
     />
   )
 
-  expect(queryByText('Recorded charges')).toBeVisible()
+  expect(queryByText('Overrun')).toBeVisible()
   expect(queryByText('1.30')).toBeVisible()
   expect(queryByText('1.3')).toBeNull()
-})
-
-test('Shows historical charges neutrally alongside remaining monthly and one-time credits', () => {
-  const { getByText, queryByText, getByTestId } = render(
-    <BillingRemaining
-      mode={BillingRemainingMode.ProgressBarFixed}
-      balance={596}
-      allowance={400}
-      userPaymentBalance={{
-        ...userPaymentBalance,
-        monthly_api_credits_remaining_monetary_value: 107.32,
-        stable_api_credits_remaining_monetary_value: 204.82,
-        total_due: 35.53,
-      }}
-    />
-  )
-
-  expect(getByTestId('billing-balance')).toHaveTextContent('596 min')
-  expect(getByText('Recorded charges')).toBeVisible()
-  expect(getByText('35.53')).toBeVisible()
-  expect(queryByText('Overrun')).toBeNull()
-  expect(
-    getByTestId('billing-remaining').querySelector('.text-red-500')
-  ).toBeNull()
 })

@@ -18,11 +18,16 @@ export interface BillingRemainingProps {
   userPaymentBalance?: CustomerBalance
 }
 
-function RecordedCharges({ amount }: { amount: string }) {
+function TotalDue({ amount }: { amount: string }) {
   return (
-    <div className="flex flex-none flex-col leading-none text-chalkboard-90">
+    <div
+      className={classNames(
+        'flex flex-none flex-col leading-none',
+        Number(amount) > 0 ? 'text-red-500' : 'text-chalkboard-90'
+      )}
+    >
       <div className="border-t border-ml-black text-[0.9em] text-chalkboard-90">
-        Recorded charges
+        Overrun
       </div>
       <div className="pt-[0.1em] font-mono text-[0.95em] tracking-normal">
         <span>$</span>
@@ -117,7 +122,7 @@ export function BillingRemaining(props: BillingRemainingProps) {
   const isFlex = props.mode === BillingRemainingMode.ProgressBarStretch
   const totalDue = props.userPaymentBalance?.total_due ?? 0
   const totalDueString = getCurrencyAmountString(totalDue)
-  const hasRecordedCharges = Number(totalDue) > 0
+  const hasOverrun = Number(totalDue) > 0
   const [showSpinner, setShowSpinner] = useState<boolean>(true)
 
   useEffect(() => {
@@ -171,9 +176,7 @@ export function BillingRemaining(props: BillingRemainingProps) {
             </div>
           )}
         </div>
-        {!isFlex && hasRecordedCharges && (
-          <RecordedCharges amount={totalDueString} />
-        )}
+        {!isFlex && hasOverrun && <TotalDue amount={totalDueString} />}
       </div>
       {isFlex && (
         <div className="flex min-w-0 flex-row items-center gap-1 text-chalkboard-90">
@@ -181,7 +184,7 @@ export function BillingRemaining(props: BillingRemainingProps) {
             props.balance !== Number.POSITIVE_INFINITY ? (
               <>
                 {getBalanceString(props.balance)} of Zookeeper reasoning time
-                remaining
+                remaining this month
               </>
             ) : null
           ) : (
