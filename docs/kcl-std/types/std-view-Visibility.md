@@ -5,9 +5,9 @@ excerpt: "Whether the objects of a named view start visible or hidden."
 layout: manual
 ---
 
-**WARNING:** This type is experimental and may change or be removed.
-
 Whether the objects of a named view start visible or hidden.
+
+**Added in KCL 3.0.**
 
 ```kcl
 type Visibility {

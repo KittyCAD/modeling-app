@@ -343,6 +343,7 @@ const datumsProps = {
   kclValueToInput: kclDatumArrayToInput,
   valueSummary: summarizeDatumKclValue,
   required: false,
+  description: 'Comma separated list of 1-3 characters',
 } satisfies CommandArgumentConfig<KclCommandValue, ModelingMachineContext>
 
 const gdtFrameDisplayArgOverrides = {

@@ -5,6 +5,8 @@ import {
   type TomlTable,
   type TomlValue,
 } from 'smol-toml'
+import { REGEXP_UUIDV4 } from '@src/lib/constants'
+import { isErr } from '@src/lib/trap'
 
 function parseProjectToml(contents: string): TomlTable | undefined {
   try {
@@ -166,7 +168,96 @@ export function setProjectIdInProjectTomlContents(
     settings.meta = {}
   }
   settings.meta.id = projectId
+  delete table.zookeeper
 
+  return stringifyProjectToml(table)
+}
+
+export function getZookeeperConversationMetadataFromProjectTomlContents(
+  contents: string,
+  environmentName: string
+):
+  | { conversationIds: string[]; canMigrateLegacyConversation: boolean }
+  | Error {
+  const table = parseProjectToml(contents)
+  if (!table) {
+    return new Error(
+      'Unable to parse project.toml while reading Zookeeper conversation'
+    )
+  }
+  if (table.zookeeper === undefined) {
+    return { conversationIds: [], canMigrateLegacyConversation: true }
+  }
+  const zookeeper = table.zookeeper
+  if (!isTomlTable(zookeeper)) {
+    return new Error('Invalid Zookeeper metadata in project.toml')
+  }
+  const environment = zookeeper[environmentName]
+  // Once migrated, never reuse the unscoped legacy mapping in another environment.
+  if (environment === undefined) {
+    return { conversationIds: [], canMigrateLegacyConversation: false }
+  }
+  if (!isTomlTable(environment)) {
+    return new Error('Invalid Zookeeper environment metadata in project.toml')
+  }
+  const conversationIds = environment.conversation_ids ?? []
+  if (
+    !isArray(conversationIds) ||
+    !conversationIds.every(
+      (id): id is string => typeof id === 'string' && REGEXP_UUIDV4.test(id)
+    )
+  ) {
+    return new Error('Invalid Zookeeper conversation IDs in project.toml')
+  }
+  return {
+    conversationIds,
+    // An explicit list, including [], is authoritative over the legacy JSON mapping.
+    canMigrateLegacyConversation:
+      environment.conversation_ids === undefined &&
+      Object.keys(zookeeper).length === 1,
+  }
+}
+
+export function setZookeeperConversationInProjectTomlContents(
+  contents: string,
+  environmentName: string,
+  conversationId: string | undefined
+): string | Error {
+  const current = getZookeeperConversationMetadataFromProjectTomlContents(
+    contents,
+    environmentName
+  )
+  if (isErr(current)) {
+    return current
+  }
+  if (conversationId !== undefined && !REGEXP_UUIDV4.test(conversationId)) {
+    return new Error('Invalid Zookeeper conversation ID')
+  }
+  const table = parseProjectToml(contents)
+  if (!table) {
+    return new Error(
+      'Unable to parse project.toml while saving Zookeeper conversation'
+    )
+  }
+  if (!isTomlTable(table.zookeeper)) {
+    table.zookeeper = {}
+  }
+  const zookeeper = table.zookeeper
+  if (!isTomlTable(zookeeper[environmentName])) {
+    zookeeper[environmentName] = {}
+  }
+  const environment = zookeeper[environmentName]
+  const { conversationIds } = current
+  const alreadySaved =
+    conversationId === undefined
+      ? conversationIds.length === 0
+      : conversationIds.includes(conversationId)
+  if (alreadySaved && environment.conversation_ids !== undefined) {
+    return contents
+  }
+  // Keep an empty list so another device cannot restore the cleared legacy mapping.
+  environment.conversation_ids =
+    conversationId === undefined ? [] : [...conversationIds, conversationId]
   return stringifyProjectToml(table)
 }
 
@@ -200,6 +291,7 @@ export function prepareProjectTomlForDuplication(
     settings.meta = {}
   }
   settings.meta.id = projectId
+  delete table.zookeeper
 
   return stringifyProjectToml(table)
 }
@@ -237,7 +329,12 @@ export function setCloudProjectIdInProjectTomlContents(
   environmentName: string,
   projectId: string
 ) {
-  const table = parseProjectToml(contents) ?? {}
+  const table = parseProjectToml(contents)
+  if (!table) {
+    return new Error(
+      'Unable to parse project.toml while updating cloud project ID'
+    )
+  }
   if (!isTomlTable(table.cloud)) {
     table.cloud = {}
   }

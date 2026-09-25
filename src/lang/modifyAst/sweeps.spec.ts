@@ -69,7 +69,7 @@ beforeEach(async () => {
   }
 
   const { instance, kclManager, engineCommandManager, rustContext } =
-    await buildTheWorldAndConnectToEngine({ webrtc: false })
+    await buildTheWorldAndConnectToEngine({ webrtc: false, pool: 'cpu' })
   instanceInThisFile = instance
   kclManagerInThisFile = kclManager
   engineCommandManagerInThisFile = engineCommandManager
@@ -1001,6 +1001,69 @@ extrude001 = extrude(region001, length = 1, bodyType = SURFACE)`
         rustContextInThisFile
       )
       expect(error).not.toBeInstanceOf(Error)
+    })
+
+    it('should keep the sketch-tag owner when extruding a merged body edge', async () => {
+      const code = `@settings(kclVersion = 2.0)
+
+baseSketch = sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 30mm, var 0mm])
+  line2 = line(start = [var 30mm, var 0mm], end = [var 30mm, var 20mm])
+  line3 = line(start = [var 30mm, var 20mm], end = [var 0mm, var 20mm])
+  line4 = line(start = [var 0mm, var 20mm], end = [var 0mm, var 0mm])
+}
+baseRegion = region(point = [15mm, 10mm], sketch = baseSketch)
+base = extrude(baseRegion, length = 5)
+faceSketch = sketch(on = faceOf(base, face = END)) {
+  circle1 = circle(start = [var 8mm, var 10mm], center = [var 5mm, var 10mm])
+}
+faceRegion = region(point = [5mm, 10mm], sketch = faceSketch)
+merged = extrude(faceRegion, length = 2)`
+      const { ast, artifactGraph } = await getAstAndArtifactGraph(
+        code,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      expect(kclManagerInThisFile.errors).toEqual([])
+      const merged = [...artifactGraph.values()].find(
+        (artifact) =>
+          artifact.type === 'sweep' &&
+          artifact.codeRef.range[0] >= code.indexOf('merged =')
+      )
+      if (!merged) throw new Error('Missing merged output')
+      const edge = [...artifactGraph.values()].find(
+        (artifact) =>
+          artifact.type === 'sweepEdge' &&
+          artifact.subType === 'opposite' &&
+          artifact.sweepId === merged.id
+      )
+      if (!edge) throw new Error('Missing merged output top edge')
+      const length = await getKclCommandValue(
+        '2',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const result = addExtrude({
+        ast,
+        sketches: createSelectionFromArtifacts([edge], artifactGraph),
+        length,
+        method: 'NEW',
+        bodyType: 'SURFACE',
+        artifactGraph,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) throw result
+
+      expect(recast(result.modifiedAst, instanceInThisFile)).toBe(`${code}
+extrude001 = extrude(
+  getOppositeEdge(merged.sketch.tags.circle1),
+  length = 2,
+  method = NEW,
+  bodyType = SURFACE,
+)
+`)
+      await kclManagerInThisFile.executeAst({ ast: result.modifiedAst })
+      expect(kclManagerInThisFile.errors).toEqual([])
     })
 
     it('should add a surface extrude from an edge on a cloned body', async () => {

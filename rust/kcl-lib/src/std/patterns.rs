@@ -683,10 +683,10 @@ mod tests {
             .join("tests")
             .join("inputs")
             .join("main.kcl");
-        let ctx = crate::test_server::new_context_engine_graphics(true, Some(current_file))
+        let program = crate::Program::parse_no_errs(code).unwrap();
+        let ctx = crate::test_server::new_context(true, Some(current_file), true, program.language_version().unwrap())
             .await
             .unwrap();
-        let program = crate::Program::parse_no_errs(code).unwrap();
         let result = ctx.run_with_caching(program).await.unwrap();
 
         let KclValueView::HomArray { value } = result.variables.get("patterned").unwrap() else {

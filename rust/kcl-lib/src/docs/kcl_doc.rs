@@ -460,6 +460,7 @@ impl ConstData {
             ty,
             properties: Properties {
                 exported: !var.visibility.is_default(),
+                added_in: None,
                 deprecated: false,
                 deprecated_since: None,
                 experimental: false,
@@ -558,6 +559,7 @@ impl ModData {
             module_name,
             properties: Properties {
                 exported: false,
+                added_in: None,
                 deprecated: false,
                 deprecated_since: None,
                 experimental: false,
@@ -649,6 +651,7 @@ impl FnData {
             return_type: expr.return_type.as_ref().map(|t| t.to_string()),
             properties: Properties {
                 exported: !var.visibility.is_default(),
+                added_in: None,
                 deprecated: false,
                 deprecated_since: None,
                 experimental: false,
@@ -844,6 +847,8 @@ impl DocCategory {
 
 #[derive(Debug, Clone)]
 pub struct Properties {
+    /// KCL version in which this item was added, e.g. "3.0".
+    pub added_in: Option<VersionConstraint>,
     pub deprecated: bool,
     /// Constraint on the KCL version at or after which this item is deprecated,
     /// e.g. "2.0".
@@ -1185,6 +1190,7 @@ impl TyData {
             qual_name,
             properties: Properties {
                 exported: !ty.visibility.is_default(),
+                added_in: None,
                 deprecated: false,
                 deprecated_since: None,
                 experimental: false,
@@ -1301,6 +1307,7 @@ trait ApplyMeta {
         description: Option<String>,
         examples: Vec<(String, ExampleProperties)>,
     );
+    fn added_in(&mut self, added_in: Option<VersionConstraint>);
     fn deprecated(&mut self, deprecated: bool);
     fn deprecated_since(&mut self, deprecated_since: Option<VersionConstraint>);
     fn experimental(&mut self, experimental: bool);
@@ -1441,6 +1448,13 @@ trait ApplyMeta {
                                 self.impl_kind(annotations::Impl::from_str(s).unwrap());
                             }
                         }
+                        annotations::ADDED_IN => {
+                            if let Some(s) = p.value.literal_str()
+                                && let Some(v) = VersionConstraint::parse(s)
+                            {
+                                self.added_in(Some(v));
+                            }
+                        }
                         annotations::DEPRECATED => {
                             if let Some(b) = p.value.literal_bool() {
                                 self.deprecated(b);
@@ -1490,6 +1504,10 @@ impl ApplyMeta for ConstData {
         self.examples = examples;
     }
 
+    fn added_in(&mut self, added_in: Option<VersionConstraint>) {
+        self.properties.added_in = added_in;
+    }
+
     fn deprecated(&mut self, deprecated: bool) {
         self.properties.deprecated = deprecated;
     }
@@ -1523,6 +1541,10 @@ impl ApplyMeta for FnData {
         self.summary = summary;
         self.description = description;
         self.examples = examples;
+    }
+
+    fn added_in(&mut self, added_in: Option<VersionConstraint>) {
+        self.properties.added_in = added_in;
     }
 
     fn deprecated(&mut self, deprecated: bool) {
@@ -1562,6 +1584,10 @@ impl ApplyMeta for ModData {
         assert!(examples.is_empty());
     }
 
+    fn added_in(&mut self, added_in: Option<VersionConstraint>) {
+        assert!(added_in.is_none(), "added_in is not supported for modules");
+    }
+
     fn deprecated(&mut self, deprecated: bool) {
         assert!(!deprecated);
     }
@@ -1595,6 +1621,10 @@ impl ApplyMeta for TyData {
         self.summary = summary;
         self.description = description;
         self.examples = examples;
+    }
+
+    fn added_in(&mut self, added_in: Option<VersionConstraint>) {
+        self.properties.added_in = added_in;
     }
 
     fn deprecated(&mut self, deprecated: bool) {
@@ -1638,6 +1668,10 @@ impl ApplyMeta for ArgData {
         }
 
         self.docs = Some(docs);
+    }
+
+    fn added_in(&mut self, _added_in: Option<VersionConstraint>) {
+        unreachable!();
     }
 
     fn deprecated(&mut self, _deprecated: bool) {
@@ -1776,6 +1810,48 @@ mod test {
 
         assert_eq!(arg.added_in, VersionConstraint::parse("3.0"));
         assert_eq!(arg.kind, ArgKind::Labelled(true));
+    }
+
+    #[test]
+    fn declaration_docs_carry_added_in() {
+        use crate::parsing::ast::types::BodyItem;
+
+        let program = crate::parsing::top_level_parse(
+            r#"@(added_in = "3.0")
+export fn foo() {
+  return 1
+}
+
+@(added_in = "2.1", experimental = true)
+export type Pair = [number; 2]
+
+@(added_in = "3.0")
+export FOO = 1
+"#,
+        )
+        .unwrap();
+
+        let BodyItem::VariableDeclaration(var) = &program.body[0] else {
+            panic!("expected a function declaration");
+        };
+        let mut func = FnData::from_ast(var, "std::".to_owned(), "", "std");
+        func.with_meta(&var.outer_attrs);
+        assert_eq!(func.properties.added_in, VersionConstraint::parse("3.0"));
+
+        let BodyItem::TypeDeclaration(ty) = &program.body[1] else {
+            panic!("expected a type declaration");
+        };
+        let mut ty_data = TyData::from_ast(ty, "std::".to_owned(), "", "std");
+        ty_data.with_meta(&ty.outer_attrs);
+        assert_eq!(ty_data.properties.added_in, VersionConstraint::parse("2.1"));
+        assert!(ty_data.properties.experimental);
+
+        let BodyItem::VariableDeclaration(var) = &program.body[2] else {
+            panic!("expected a constant declaration");
+        };
+        let mut cnst = ConstData::from_ast(var, "std::".to_owned(), "", "std");
+        cnst.with_meta(&var.outer_attrs);
+        assert_eq!(cnst.properties.added_in, VersionConstraint::parse("3.0"));
     }
 
     #[test]

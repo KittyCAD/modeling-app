@@ -1,5 +1,6 @@
 import type * as ClientErrorsModule from '@src/lib/clientErrors'
 import { CloudApiError } from '@src/lib/cloudSync/cloudApi'
+import { withCloudSyncFailureContext } from '@src/lib/cloudSync/failureContext'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 const mocks = vi.hoisted(() => ({
@@ -169,21 +170,29 @@ describe('cloud sync client error reporting', () => {
 
     const [first, second, third, fourth] =
       mocks.reportClientError.mock.calls.map(([report]) => report)
-    expect(first.dedupeKey).toBe('CloudSync:failure:sync:Error:none:unknown')
+    expect(first.dedupeKey).toBe(
+      'CloudSync:failure:sync:unknown:unclassified:Error:none:unknown'
+    )
     expect(second.dedupeKey).toBe(first.dedupeKey)
     expect(third).toMatchObject({
-      dedupeKey: 'CloudSync:failure:sync:Error:none:remote-upload-forbidden',
+      dedupeKey:
+        'CloudSync:failure:sync:unknown:unclassified:Error:none:remote-upload-forbidden',
       extra: {
         operation: 'sync',
+        failureStage: 'unknown',
+        failurePoint: 'unclassified',
         errorType: 'Error',
         failureKind: 'remote-upload-forbidden',
       },
     })
     expect(fourth).toMatchObject({
       code: 'cloud_sync_failure',
-      dedupeKey: 'CloudSync:failure:remote-index:CloudApiError:503:unknown',
+      dedupeKey:
+        'CloudSync:failure:remote-index:network:cloud-api-request:CloudApiError:503:unknown',
       extra: {
         operation: 'remote-index',
+        failureStage: 'network',
+        failurePoint: 'cloud-api-request',
         errorType: 'CloudApiError',
         cloudApiStatus: 503,
       },
@@ -194,6 +203,36 @@ describe('cloud sync client error reporting', () => {
     )
     expect(JSON.stringify([first, second, third, fourth])).not.toContain(
       'Remote index is unavailable'
+    )
+  })
+
+  it('reports typed failure stages without leaking primitive error details', async () => {
+    const failure = await withCloudSyncFailureContext(
+      { stage: 'filesystem', point: 'collect-local-project-files' },
+      () => Promise.reject('ENOENT: /projects/private/main.kcl')
+    ).catch((error: unknown) => error)
+
+    reportCloudSyncFailure('sync', failure)
+
+    expect(mocks.reportClientError).toHaveBeenCalledWith({
+      code: 'cloud_sync_failure',
+      errorName: 'CloudSyncFailure',
+      message: 'Cloud sync failed during sync.',
+      route: '/cloud-sync',
+      dedupeKey:
+        'CloudSync:failure:sync:filesystem:collect-local-project-files:string:none:unknown',
+      extra: {
+        source: 'CloudSyncEngine',
+        operation: 'sync',
+        failureStage: 'filesystem',
+        failurePoint: 'collect-local-project-files',
+        errorType: 'string',
+        cloudApiStatus: undefined,
+        failureKind: undefined,
+      },
+    })
+    expect(JSON.stringify(mocks.reportClientError.mock.calls)).not.toContain(
+      '/projects/private'
     )
   })
 

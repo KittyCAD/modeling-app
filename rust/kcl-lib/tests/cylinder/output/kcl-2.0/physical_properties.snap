@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties cylinder.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": -0.000000000000003552713678800501,
+      "y": -0.000000000000003552713678800501,
+      "z": 7.0
+    },
+    "dimensions": {
+      "x": 52.8,
+      "y": 52.8,
+      "z": 14.0
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 4974.867502824054
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 21.27888508496323
+  }
+}

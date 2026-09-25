@@ -1,14 +1,18 @@
 import { signal } from '@preact/signals-core'
-import { act, render, screen, waitFor } from '@testing-library/react'
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { MemoryRouter, useLocation } from 'react-router-dom'
 import { beforeEach, describe, expect, test, vi } from 'vitest'
 
 const conversationRender = vi.hoisted(() => vi.fn())
 
 vi.mock('@src/lib/zookeeper/components/ZookeeperConversation', () => ({
-  ZookeeperConversation: (props: unknown) => {
+  ZookeeperConversation: (props: ZookeeperConversationProps) => {
     conversationRender(props)
-    return null
+    return (
+      <button type="button" onClick={props.onClickClearChat}>
+        Clear chat
+      </button>
+    )
   },
 }))
 
@@ -369,7 +373,6 @@ describe('ZookeeperConversationPane', () => {
 
     props.onProcess('make a cylinder', 'edit', [attachment])
     props.onFetchAttachment?.(attachmentRef)
-    props.onClickClearChat()
     props.onReconnect()
     props.onCheckBilling?.()
     props.onCancel()
@@ -385,7 +388,7 @@ describe('ZookeeperConversationPane', () => {
       type: ZookeeperManagerTransitions.AttachmentFetch,
       attachmentRef,
     })
-    expect(fake.clearConversation).toHaveBeenCalledOnce()
+    expect(fake.clearConversation).not.toHaveBeenCalled()
     expect(fake.reconnect).toHaveBeenCalledOnce()
     expect(fake.checkBillingAccess).toHaveBeenCalledOnce()
     expect(fake.cancel).toHaveBeenCalledOnce()
@@ -393,6 +396,155 @@ describe('ZookeeperConversationPane', () => {
     expect(fake.removeQueued).toHaveBeenCalledWith('queued-message')
     expect(fake.steer).toHaveBeenCalledWith('steered-message')
     expect(onMlCopilotModeChange).toHaveBeenCalledWith('ask')
+  })
+
+  test.each([
+    { chatState: 'idle', awaitingResponse: false },
+    { chatState: 'active', awaitingResponse: true },
+  ])(
+    'requires confirmation before clearing an $chatState chat',
+    async ({ awaitingResponse }) => {
+      const queuedMessage: QueuedMessage = {
+        id: 'queued-message',
+        text: 'keep this queued prompt',
+        attachments: [],
+      }
+      const fake = createFakeController({
+        actorContext: {
+          awaitingResponse,
+          conversation: completedConversation,
+          conversationId: 'conversation-id',
+        },
+        queue: [queuedMessage],
+      })
+      render(
+        <MemoryRouter>
+          <ZookeeperConversationPane {...createPaneProps(fake.controller)} />
+        </MemoryRouter>
+      )
+
+      fireEvent.click(screen.getByRole('button', { name: 'Clear chat' }))
+      const dialog = screen.getByRole('dialog', { name: 'Start a new chat?' })
+      expect(dialog).toHaveTextContent(
+        'Your current chat will no longer be accessible from this project.'
+      )
+      expect(dialog).toHaveTextContent(
+        'Changes already made to project files will not be undone.'
+      )
+      if (awaitingResponse) {
+        expect(dialog).toHaveTextContent(
+          'This will stop the current Zookeeper response and start a new conversation.'
+        )
+      } else {
+        expect(dialog).toHaveTextContent('This will start a new conversation.')
+        expect(dialog).not.toHaveTextContent(
+          'stop the current Zookeeper response'
+        )
+      }
+      await waitFor(() => {
+        expect(
+          screen.getByRole('button', { name: 'Keep current chat' })
+        ).toHaveFocus()
+      })
+      expect(fake.clearConversation).not.toHaveBeenCalled()
+      expect(fake.cancel).not.toHaveBeenCalled()
+      expect(fake.actor.send).not.toHaveBeenCalled()
+      expect(latestConversationProps().conversation).toBe(completedConversation)
+      expect(latestConversationProps().queue).toEqual([queuedMessage])
+      expect(latestConversationProps().isProcessing).toBe(awaitingResponse)
+
+      fireEvent.click(screen.getByRole('button', { name: 'Start new chat' }))
+
+      expect(fake.clearConversation).toHaveBeenCalledOnce()
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+    }
+  )
+
+  test.each([
+    { chatState: 'idle', awaitingResponse: false },
+    { chatState: 'active', awaitingResponse: true },
+  ])(
+    'preserves an $chatState chat on every dismissal path',
+    async ({ awaitingResponse }) => {
+      const queuedMessage: QueuedMessage = {
+        id: 'queued-message',
+        text: 'keep this queued prompt',
+        attachments: [],
+      }
+      const fake = createFakeController({
+        actorContext: {
+          awaitingResponse,
+          conversation: completedConversation,
+          conversationId: 'conversation-id',
+        },
+        queue: [queuedMessage],
+      })
+      render(
+        <MemoryRouter>
+          <ZookeeperConversationPane {...createPaneProps(fake.controller)} />
+        </MemoryRouter>
+      )
+
+      for (const dismiss of ['button', 'Escape', 'outside']) {
+        fireEvent.click(screen.getByRole('button', { name: 'Clear chat' }))
+        const dismissButton = screen.getByRole('button', {
+          name: 'Keep current chat',
+        })
+        await waitFor(() => expect(dismissButton).toHaveFocus())
+
+        if (dismiss === 'button') {
+          fireEvent.click(dismissButton)
+        } else if (dismiss === 'Escape') {
+          fireEvent.keyDown(window, { key: 'Escape' })
+        } else {
+          fireEvent.mouseDown(document.body)
+          fireEvent.click(document.body)
+        }
+
+        expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+        expect(fake.clearConversation).not.toHaveBeenCalled()
+        expect(fake.cancel).not.toHaveBeenCalled()
+        expect(fake.actor.send).not.toHaveBeenCalled()
+        expect(fake.queueSignal.value).toEqual([queuedMessage])
+        expect(fake.actor.getSnapshot().context.conversationId).toBe(
+          'conversation-id'
+        )
+        expect(latestConversationProps().conversation).toBe(
+          completedConversation
+        )
+        expect(latestConversationProps().isProcessing).toBe(awaitingResponse)
+      }
+    }
+  )
+
+  test('dismisses a pending clear confirmation when the session controller changes', () => {
+    const oldSession = createFakeController({
+      actorContext: { conversation: completedConversation },
+    })
+    const nextSession = createFakeController({
+      actorContext: { conversation: completedConversation },
+    })
+    const { rerender } = render(
+      <MemoryRouter>
+        <ZookeeperConversationPane
+          {...createPaneProps(oldSession.controller)}
+        />
+      </MemoryRouter>
+    )
+    fireEvent.click(screen.getByRole('button', { name: 'Clear chat' }))
+    expect(screen.getByRole('dialog')).toBeInTheDocument()
+
+    rerender(
+      <MemoryRouter>
+        <ZookeeperConversationPane
+          {...createPaneProps(nextSession.controller)}
+        />
+      </MemoryRouter>
+    )
+
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+    expect(oldSession.clearConversation).not.toHaveBeenCalled()
+    expect(nextSession.clearConversation).not.toHaveBeenCalled()
   })
 
   test('checks billing access after returning from the billing page', () => {

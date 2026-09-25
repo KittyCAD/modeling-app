@@ -81,7 +81,7 @@ where
     task.await.map_err(|err| PyException::new_err(err.to_string()))?
 }
 
-fn into_miette(error: kcl_lib::KclErrorWithOutputs, filename: &str, code: &str) -> PyErr {
+fn into_rich_error(error: kcl_lib::KclErrorWithOutputs, filename: &str, code: &str) -> PyErr {
     let retryable = error.is_retryable();
     let error_text = render_miette(error.clone(), code);
     let constraint_report = sketch_constraint_report_from_error(&error, filename, code, error_text.clone());
@@ -91,9 +91,11 @@ fn into_miette(error: kcl_lib::KclErrorWithOutputs, filename: &str, code: &str) 
             PyKclError {
                 retryable,
                 sketch_constraint_report: Some(constraint_report),
+                partial_execution: Some(error),
             },
         )?;
-        // Direct Rust construction bypasses the Python constructor's exception arguments.
+        // We must set the exception's arguments here, because constructing it directly
+        // in Rust (above) bypasses the usual Python constructor, which usually sets the exception arguments.
         exception.setattr("args", (error_text, retryable))?;
         Ok(PyErr::from_value(exception.into_any()))
     })
@@ -217,23 +219,43 @@ fn into_kcl_exception(error: kcl_lib::KclError) -> PyErr {
 // Keep the stub for this exception manual in `kcl.pyi`. `pyo3_stub_gen`
 // generates code for this `PyException` subclass that does not compile on
 // PyPy, because it references `pyo3::prepare_freethreaded_python`.
+/// A rich KCL error that does more than just error reporting:
+/// it also lets you get data about the failed execution, like sketch reports,
+/// whether or not to retry, etc.
 #[pyclass(name = "KclError", extends = PyException, from_py_object)]
 #[derive(Debug, Clone)]
 struct PyKclError {
     retryable: bool,
     #[pyo3(get)]
     sketch_constraint_report: Option<SketchConstraintReport>,
+    partial_execution: Option<kcl_lib::KclErrorWithOutputs>,
 }
 
 #[pymethods]
 impl PyKclError {
+    // TODO: Do we even want this constructor? We surely want users
+    // to pass in the sketch constraint report and partial execution result.
     #[new]
     #[pyo3(signature = (_message, retryable = false))]
     fn new(_message: &Bound<'_, PyAny>, retryable: bool) -> Self {
         Self {
             retryable,
             sketch_constraint_report: None,
+            partial_execution: None,
         }
+    }
+
+    /// Render a sketch created before execution failed as a PNG.
+    /// Use instance_index from the partial constraint report for duplicate names.
+    #[pyo3(signature = (sketch_name, *, instance_index=None))]
+    fn render_sketch_png(&self, sketch_name: &str, instance_index: Option<usize>) -> PyResult<Vec<u8>> {
+        let partial_execution = self
+            .partial_execution
+            .as_ref()
+            .ok_or_else(|| PyException::new_err("No partial execution is available for sketch rendering"))?;
+        partial_execution
+            .render_sketch_png_instance(sketch_name, instance_index)
+            .map_err(to_py_exception)
     }
 
     fn is_retryable(&self) -> bool {
@@ -311,6 +333,7 @@ async fn new_context_state(
     geometry_only: bool,
     video_res_width: Option<u32>,
     video_res_height: Option<u32>,
+    kcl_version: kcl_lib::KclVersion,
 ) -> Result<(ExecutorContext, kcl_lib::ExecState)> {
     let mut settings = executor_settings(current_file, highlight_edges, geometry_only);
     settings.video_res_width = video_res_width;
@@ -318,7 +341,7 @@ async fn new_context_state(
     let ctx = if mock {
         ExecutorContext::new_mock(Some(settings)).await
     } else {
-        ExecutorContext::new_with_client(settings, None, None).await?
+        ExecutorContext::new_with_client(settings, None, None, kcl_version).await?
     };
     let state = kcl_lib::ExecState::new(&ctx);
     Ok((ctx, state))
@@ -406,14 +429,24 @@ async fn run_kcl(
         filename,
     } = load_and_parse(input).await?;
 
-    let (ctx, mut state) = new_context_state(path, mock, highlight_edges, geometry_only, None, None)
-        .await
-        .map_err(to_py_exception)?;
+    let (ctx, mut state) = new_context_state(
+        path,
+        mock,
+        highlight_edges,
+        geometry_only,
+        None,
+        None,
+        program
+            .language_version()
+            .map_err(|err| into_miette_for_parse(&filename, &code, err))?,
+    )
+    .await
+    .map_err(to_py_exception)?;
     let (env_ref, _) = match ctx.run(&program, &mut state).await {
         Ok(result) => result,
         Err(err) => {
             ctx.close().await;
-            return Err(into_miette(err, &filename, &code));
+            return Err(into_rich_error(err, &filename, &code));
         }
     };
     Ok(ExecutedKcl {
@@ -468,7 +501,15 @@ async fn sketch_constraint_report_impl(input: KclInput) -> PyResult<SketchConstr
         }
     };
 
-    let (ctx, mut state) = new_context_state(path, false, None, false, None, None)
+    let kcl_version = match program.language_version() {
+        Ok(version) => version,
+        Err(err) => {
+            let error_text = render_miette_for_parse(&filename, &code, err);
+            return Ok(incomplete_sketch_constraint_report("parse", error_text));
+        }
+    };
+
+    let (ctx, mut state) = new_context_state(path, false, None, false, None, None, kcl_version)
         .await
         .map_err(to_py_exception)?;
     let result = match ctx.run(&program, &mut state).await {
@@ -482,7 +523,7 @@ async fn sketch_constraint_report_impl(input: KclInput) -> PyResult<SketchConstr
         }
         Err(err) => {
             if err.is_retryable() {
-                return Err(into_miette(err, &filename, &code));
+                return Err(into_rich_error(err, &filename, &code));
             }
             let error_text = render_miette(err.clone(), &code);
             Ok(sketch_constraint_report_from_error(&err, &filename, &code, error_text))
@@ -737,9 +778,17 @@ async fn import_and_snapshot_views(
 ) -> PyResult<Vec<Vec<u8>>> {
     let zoom = zoom.unwrap_or(true);
     spawn_py(async move {
-        let (ctx, _state) = new_context_state(None, false, highlight_edges, false, None, None)
-            .await
-            .map_err(to_py_exception)?;
+        let (ctx, _state) = new_context_state(
+            None,
+            false,
+            highlight_edges,
+            false,
+            None,
+            None,
+            kcl_lib::KclVersion::default(),
+        )
+        .await
+        .map_err(to_py_exception)?;
         if let Err(e) = import(&ctx, filepaths, format).await {
             ctx.close().await;
             return Err(e);
@@ -834,21 +883,6 @@ async fn execute_and_snapshot_views(
     .await
 }
 
-/// Execute the kcl code and snapshot it in a specific format.
-#[pyo3_stub_gen::derive::gen_stub_pyfunction]
-#[pyfunction(signature = (code, image_format, *, zoom=None, highlight_edges=None))]
-async fn execute_code_and_snapshot(
-    code: String,
-    image_format: ImageFormat,
-    zoom: Option<bool>,
-    highlight_edges: Option<bool>,
-) -> PyResult<Vec<u8>> {
-    let zoom = zoom.unwrap_or(true);
-    let mut snaps =
-        execute_code_and_snapshot_views(code, image_format, Vec::new(), Some(zoom), highlight_edges).await?;
-    Ok(snaps.pop().unwrap())
-}
-
 /// Execute a kcl file and measure physical properties of the resulting model.
 #[pyo3_stub_gen::derive::gen_stub_pyfunction]
 #[pyfunction(signature = (path, request, *, geometry_only=false))]
@@ -858,17 +892,6 @@ async fn execute_and_measure(
     geometry_only: bool,
 ) -> PyResult<PhysicalPropertiesResponse> {
     spawn_py(async move { execute_and_measure_impl(KclInput::Path(path), request, geometry_only).await }).await
-}
-
-/// Execute the kcl code and measure physical properties of the resulting model.
-#[pyo3_stub_gen::derive::gen_stub_pyfunction]
-#[pyfunction(signature = (code, request, *, geometry_only=false))]
-async fn execute_code_and_measure(
-    code: String,
-    request: PhysicalPropertiesRequest,
-    geometry_only: bool,
-) -> PyResult<PhysicalPropertiesResponse> {
-    spawn_py(async move { execute_and_measure_impl(KclInput::Code(code), request, geometry_only).await }).await
 }
 
 /// Execute a kcl file and return the model's bounding box.
@@ -883,22 +906,6 @@ async fn execute_and_bounding_box(
     let entity_ids = entity_ids.unwrap_or_default();
     spawn_py(async move {
         execute_and_bounding_box_impl(KclInput::Path(path), entity_ids, output_unit, geometry_only).await
-    })
-    .await
-}
-
-/// Execute the kcl code and return the model's bounding box.
-#[pyo3_stub_gen::derive::gen_stub_pyfunction]
-#[pyfunction(signature = (code, entity_ids=None, output_unit=None, *, geometry_only=false))]
-async fn execute_code_and_bounding_box(
-    code: String,
-    entity_ids: Option<Vec<String>>,
-    output_unit: Option<UnitLength>,
-    geometry_only: bool,
-) -> PyResult<BoundingBoxResponse> {
-    let entity_ids = entity_ids.unwrap_or_default();
-    spawn_py(async move {
-        execute_and_bounding_box_impl(KclInput::Code(code), entity_ids, output_unit, geometry_only).await
     })
     .await
 }
@@ -931,32 +938,6 @@ impl SnapshotOptions {
     fn isometric_view(padding: f32) -> Self {
         Self::new(None, padding)
     }
-}
-
-/// Execute the kcl code and snapshot it in a specific format.
-/// Returns one image for each camera angle you provide.
-/// If you don't provide any camera angles, a default head-on camera angle will be used.
-#[pyo3_stub_gen::derive::gen_stub_pyfunction]
-#[pyfunction(signature = (code, image_format, snapshot_options, *, zoom=None, highlight_edges=None))]
-async fn execute_code_and_snapshot_views(
-    code: String,
-    image_format: ImageFormat,
-    snapshot_options: Vec<SnapshotOptions>,
-    zoom: Option<bool>,
-    highlight_edges: Option<bool>,
-) -> PyResult<Vec<Vec<u8>>> {
-    let zoom = zoom.unwrap_or(true);
-    spawn_py(async move {
-        execute_and_snapshot_views_impl(
-            KclInput::Code(code),
-            image_format,
-            snapshot_options,
-            zoom,
-            highlight_edges,
-        )
-        .await
-    })
-    .await
 }
 
 async fn take_snaps(
@@ -1057,148 +1038,46 @@ async fn measure_model_properties(
     ctx: &ExecutorContext,
     request: PhysicalPropertiesRequest,
 ) -> PyResult<PhysicalPropertiesResponse> {
+    let Some(command) = request.modeling_cmd() else {
+        return Ok(PhysicalPropertiesResponse::default());
+    };
+    let response = ctx
+        .engine
+        .send_modeling_cmd(
+            &ctx.engine_batch,
+            uuid::Uuid::new_v4(),
+            kcl_lib::SourceRange::default(),
+            &command,
+        )
+        .await
+        .map_err(into_kcl_exception)?;
+    let OkWebSocketResponseData::Modeling { modeling_response } = response else {
+        return Err(PyException::new_err(format!(
+            "Unexpected response from engine: {response:?}"
+        )));
+    };
     let mut out = PhysicalPropertiesResponse::default();
-    let PhysicalPropertiesRequest {
-        volume,
-        mass,
-        center_of_mass,
-        surface_area,
-        density,
-        bounding_box,
-    } = request;
-    // volume
-    if let Some(volume_req) = volume {
-        let volume_resp = ctx
-            .engine
-            .send_modeling_cmd(
-                &ctx.engine_batch,
-                uuid::Uuid::new_v4(),
-                kcl_lib::SourceRange::default(),
-                &ModelingCmd::from(volume_req),
-            )
-            .await
-            .map_err(into_kcl_exception)?;
-        let OkWebSocketResponseData::Modeling {
-            modeling_response: OkModelingCmdResponse::Volume(volume_resp),
-        } = volume_resp
-        else {
-            return Err(pyo3::exceptions::PyException::new_err(format!(
-                "Unexpected response from engine: {volume_resp:?}",
+    match modeling_response {
+        OkModelingCmdResponse::PhysicalProperties(properties) => {
+            out.volume = request.volume.map(|_| properties.volume);
+            out.mass = request.mass.map(|_| properties.mass);
+            out.center_of_mass = request.center_of_mass.map(|_| properties.center_of_mass);
+            out.surface_area = request.surface_area.map(|_| properties.surface_area);
+            out.density = request.density.map(|_| properties.density);
+            out.bounding_box = request.bounding_box.map(|_| properties.bounding_box);
+        }
+        OkModelingCmdResponse::Volume(value) => out.volume = Some(value),
+        OkModelingCmdResponse::Mass(value) => out.mass = Some(value),
+        OkModelingCmdResponse::CenterOfMass(value) => out.center_of_mass = Some(value),
+        OkModelingCmdResponse::SurfaceArea(value) => out.surface_area = Some(value),
+        OkModelingCmdResponse::Density(value) => out.density = Some(value),
+        OkModelingCmdResponse::BoundingBox(value) => out.bounding_box = Some(value),
+        other => {
+            return Err(PyException::new_err(format!(
+                "Unexpected response from engine: {other:?}"
             )));
-        };
-        out.volume = Some(volume_resp);
+        }
     }
-    // mass
-    if let Some(mass_req) = mass {
-        let mass_resp = ctx
-            .engine
-            .send_modeling_cmd(
-                &ctx.engine_batch,
-                uuid::Uuid::new_v4(),
-                kcl_lib::SourceRange::default(),
-                &ModelingCmd::from(mass_req),
-            )
-            .await
-            .map_err(into_kcl_exception)?;
-        let OkWebSocketResponseData::Modeling {
-            modeling_response: OkModelingCmdResponse::Mass(mass_resp),
-        } = mass_resp
-        else {
-            return Err(pyo3::exceptions::PyException::new_err(format!(
-                "Unexpected response from engine: {mass_resp:?}",
-            )));
-        };
-        out.mass = Some(mass_resp);
-    }
-    // center_of_mass
-    if let Some(center_of_mass_req) = center_of_mass {
-        let center_of_mass_resp = ctx
-            .engine
-            .send_modeling_cmd(
-                &ctx.engine_batch,
-                uuid::Uuid::new_v4(),
-                kcl_lib::SourceRange::default(),
-                &ModelingCmd::from(center_of_mass_req),
-            )
-            .await
-            .map_err(into_kcl_exception)?;
-        let OkWebSocketResponseData::Modeling {
-            modeling_response: OkModelingCmdResponse::CenterOfMass(center_of_mass_resp),
-        } = center_of_mass_resp
-        else {
-            return Err(pyo3::exceptions::PyException::new_err(format!(
-                "Unexpected response from engine: {center_of_mass_resp:?}",
-            )));
-        };
-        out.center_of_mass = Some(center_of_mass_resp);
-    }
-    // density
-    if let Some(density_req) = density {
-        let density_resp = ctx
-            .engine
-            .send_modeling_cmd(
-                &ctx.engine_batch,
-                uuid::Uuid::new_v4(),
-                kcl_lib::SourceRange::default(),
-                &ModelingCmd::from(density_req),
-            )
-            .await
-            .map_err(into_kcl_exception)?;
-        let OkWebSocketResponseData::Modeling {
-            modeling_response: OkModelingCmdResponse::Density(density_resp),
-        } = density_resp
-        else {
-            return Err(pyo3::exceptions::PyException::new_err(format!(
-                "Unexpected response from engine: {density_resp:?}",
-            )));
-        };
-        out.density = Some(density_resp);
-    }
-    // surface_area
-    if let Some(surface_area_req) = surface_area {
-        let surface_area_resp = ctx
-            .engine
-            .send_modeling_cmd(
-                &ctx.engine_batch,
-                uuid::Uuid::new_v4(),
-                kcl_lib::SourceRange::default(),
-                &ModelingCmd::from(surface_area_req),
-            )
-            .await
-            .map_err(into_kcl_exception)?;
-        let OkWebSocketResponseData::Modeling {
-            modeling_response: OkModelingCmdResponse::SurfaceArea(surface_area_resp),
-        } = surface_area_resp
-        else {
-            return Err(pyo3::exceptions::PyException::new_err(format!(
-                "Unexpected response from engine: {surface_area_resp:?}",
-            )));
-        };
-        out.surface_area = Some(surface_area_resp);
-    }
-    // Bounding box
-    if let Some(bb_req) = bounding_box {
-        let bb_resp = ctx
-            .engine
-            .send_modeling_cmd(
-                &ctx.engine_batch,
-                uuid::Uuid::new_v4(),
-                kcl_lib::SourceRange::default(),
-                &ModelingCmd::from(bb_req),
-            )
-            .await
-            .map_err(into_kcl_exception)?;
-        let OkWebSocketResponseData::Modeling {
-            modeling_response: OkModelingCmdResponse::BoundingBox(bb_resp),
-        } = bb_resp
-        else {
-            return Err(pyo3::exceptions::PyException::new_err(format!(
-                "Unexpected response from engine: {bb_resp:?}",
-            )));
-        };
-        out.bounding_box = Some(bb_resp);
-    }
-
     Ok(out)
 }
 
@@ -1243,17 +1122,6 @@ async fn execute_and_export(
     geometry_only: bool,
 ) -> PyResult<Vec<RawFile>> {
     spawn_py(async move { execute_and_export_impl(KclInput::Path(path), export_format, geometry_only).await }).await
-}
-
-/// Execute the kcl code and export it to a specific file format.
-#[pyo3_stub_gen::derive::gen_stub_pyfunction]
-#[pyfunction(signature = (code, export_format, *, geometry_only=false))]
-async fn execute_code_and_export(
-    code: String,
-    export_format: FileExportFormat,
-    geometry_only: bool,
-) -> PyResult<Vec<RawFile>> {
-    spawn_py(async move { execute_and_export_impl(KclInput::Code(code), export_format, geometry_only).await }).await
 }
 
 /// Format the kcl code. This will return the formatted code.
@@ -1403,16 +1271,11 @@ fn kcl(_py: Python, m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(get_sketch_constraint_status_code, m)?)?;
     m.add_function(wrap_pyfunction!(execute_and_snapshot, m)?)?;
     m.add_function(wrap_pyfunction!(execute_and_snapshot_views, m)?)?;
-    m.add_function(wrap_pyfunction!(execute_code_and_snapshot, m)?)?;
-    m.add_function(wrap_pyfunction!(execute_code_and_snapshot_views, m)?)?;
     m.add_function(wrap_pyfunction!(execute_and_measure, m)?)?;
-    m.add_function(wrap_pyfunction!(execute_code_and_measure, m)?)?;
     m.add_function(wrap_pyfunction!(execute_and_bounding_box, m)?)?;
-    m.add_function(wrap_pyfunction!(execute_code_and_bounding_box, m)?)?;
     m.add_function(wrap_pyfunction!(import_and_snapshot, m)?)?;
     m.add_function(wrap_pyfunction!(import_and_snapshot_views, m)?)?;
     m.add_function(wrap_pyfunction!(execute_and_export, m)?)?;
-    m.add_function(wrap_pyfunction!(execute_code_and_export, m)?)?;
     m.add_function(wrap_pyfunction!(format, m)?)?;
     m.add_function(wrap_pyfunction!(format_dir, m)?)?;
     m.add_function(wrap_pyfunction!(lint, m)?)?;

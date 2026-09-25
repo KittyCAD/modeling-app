@@ -11,7 +11,7 @@ description: Physical properties sheet-metal-bracket.kcl
     },
     "dimensions": {
       "x": 256.031998531744,
-      "y": 139.7,
+      "y": 139.70000000000002,
       "z": 79.00653557566464
     },
     "unit": "mm"
