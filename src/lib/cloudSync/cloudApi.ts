@@ -170,7 +170,12 @@ export async function listRemoteProjects(
         : undefined
     const items = legacy ? response : page?.items
     if (!isArray(items) || !items.every(isRemoteProjectSummary)) {
-      return Promise.reject(new Error('Invalid remote project list.'))
+      return Promise.reject(
+        new CloudSyncError(
+          { stage: 'network', point: 'parse-cloud-api-response' },
+          'Invalid remote project list.'
+        )
+      )
     }
 
     // Accept legacy arrays so this app can ship before API pagination and survive
@@ -194,7 +199,10 @@ export async function listRemoteProjects(
       seenCursors.has(cursor)
     ) {
       return Promise.reject(
-        new Error('Invalid remote project pagination cursor.')
+        new CloudSyncError(
+          { stage: 'network', point: 'parse-cloud-api-response' },
+          'Invalid remote project pagination cursor.'
+        )
       )
     }
     seenCursors.add(cursor)

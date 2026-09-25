@@ -5,6 +5,7 @@ import {
   cloudSyncStatus,
   configureCloudSyncEngine,
   configureCloudSyncLocalFileSystem,
+  disableCloudSyncEngineForTest,
   getCloudSyncProjectMetadata,
 } from '@src/lib/cloudSync'
 import {
@@ -68,7 +69,7 @@ async function expectLocalPreserved() {
 
 describe('remote inventory pagination and local data safety', () => {
   beforeEach(async () => {
-    configureCloudSyncEngine({ enabled: false })
+    await disableCloudSyncEngineForTest()
     await deleteCloudSyncTestDatabase()
     files = new Map([
       [`${projectPath}/main.kcl`, 'x = 1'],
@@ -97,7 +98,7 @@ describe('remote inventory pagination and local data safety', () => {
   })
 
   afterEach(async () => {
-    configureCloudSyncEngine({ enabled: false })
+    await disableCloudSyncEngineForTest()
     vi.unstubAllGlobals()
     await deleteCloudSyncTestDatabase()
   })

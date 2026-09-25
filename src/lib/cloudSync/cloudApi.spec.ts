@@ -401,9 +401,10 @@ describe('remote project pagination', () => {
         'fetch',
         vi.fn<typeof fetch>().mockResolvedValueOnce(json(body))
       )
-      await expect(listRemoteProjects(config)).rejects.toThrow(
-        'Invalid remote project'
-      )
+      await expect(listRemoteProjects(config)).rejects.toMatchObject({
+        message: expect.stringContaining('Invalid remote project'),
+        context: { stage: 'network', point: 'parse-cloud-api-response' },
+      })
     }
   )
 
@@ -414,9 +415,10 @@ describe('remote project pagination', () => {
         json({ items: [{ id: 'one' }], next_page: 'repeat' })
       )
     vi.stubGlobal('fetch', fetchMock)
-    await expect(listRemoteProjects(config)).rejects.toThrow(
-      'pagination cursor'
-    )
+    await expect(listRemoteProjects(config)).rejects.toMatchObject({
+      message: expect.stringContaining('pagination cursor'),
+      context: { stage: 'network', point: 'parse-cloud-api-response' },
+    })
     expect(fetchMock).toHaveBeenCalledTimes(2)
   })
 })
