@@ -174,11 +174,10 @@ impl TestGraphicsParams {
     fn geometry_only(&self) -> bool {
         matches!(self, Self::ExportAndRender | Self::None)
     }
-    /// kcl tests have `engineRender` or `norun` flags in their declaration.
-    /// `norun` means "no graphics" and "engineRender" means we want graphics but the model can't yet be exported for local rendering.
+    /// kcl doc examples have `engineRender` or `noRender` flags in their declaration if an export and CPU render is not desirable for that example.
     /// Translate these requirements into a more descriptive type here.
-    fn from_kcl_sample_spec(engine_render: bool, no_run: bool) -> Self {
-        match (engine_render, no_run) {
+    fn from_kcl_sample_spec(engine_render: bool, no_render: bool) -> Self {
+        match (engine_render, no_render) {
             (true, false) => Self::EngineRender {
                 // It would be nice for the kcl sample itself to contain richer information about why it's marked engineRender.
                 // But this is the best info we have for now.
@@ -230,9 +229,9 @@ pub async fn kcl_doc_execute_and_snapshot(
     code: &str,
     current_file: Option<PathBuf>,
     engine_render: bool,
-    no_run: bool,
+    no_render: bool,
 ) -> Result<TestGraphicsArtifact, ExecError> {
-    let graphics = TestGraphicsParams::from_kcl_sample_spec(engine_render, no_run);
+    let graphics = TestGraphicsParams::from_kcl_sample_spec(engine_render, no_render);
     let program = Program::parse_no_errs(code).map_err(KclErrorWithOutputs::no_outputs)?;
     let version = program.language_version().map_err(KclErrorWithOutputs::no_outputs)?;
     let ctx = new_context(true, current_file, graphics.geometry_only(), version).await?;

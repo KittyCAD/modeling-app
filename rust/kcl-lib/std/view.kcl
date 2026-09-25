@@ -97,7 +97,7 @@ export type NamedView
 /// behind that point; both are errors rather than a camera nobody can
 /// resolve. A `target` is a point, so its coordinates may be negative.
 ///
-/// ```kcl,norun
+/// ```kcl,noRender
 /// @settings(kclVersion = "3.0-preview")
 ///
 /// isoView = view::oriented(view::Orientation::Isometric)
@@ -153,7 +153,7 @@ export fn oriented(
 /// behind that point; both are errors rather than a camera nobody can
 /// resolve. A `target` is a point, so its coordinates may be negative.
 ///
-/// ```kcl,norun
+/// ```kcl,noRender
 /// @settings(kclVersion = "3.0-preview")
 ///
 /// overheadView = view::directed([0, 1, -2])
@@ -258,7 +258,7 @@ export fn directed(
 /// result is supported if it is not subsequently used as sketch support; the
 /// original `planeOf()` result remains unsupported.
 ///
-/// ```kcl,norun
+/// ```kcl,noRender
 /// @settings(kclVersion = "3.0-preview")
 ///
 /// // Two bodies to look at: a plate, and a boss standing on it. Declaring a

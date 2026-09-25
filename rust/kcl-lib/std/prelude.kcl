@@ -633,7 +633,7 @@ export fn clone(
 
 /// Asserts that a value is the boolean value true.
 ///
-/// ```kcl,norun,sketchSyntaxAgnostic
+/// ```kcl,noRender,sketchSyntaxAgnostic
 /// kclIsFun = true
 /// assertIs(kclIsFun)
 /// ```
@@ -650,7 +650,7 @@ export fn assertIs(
 /// Use `fail` when evaluation cannot continue and the caller should receive a
 /// specific error message. `fail` never returns a value.
 ///
-/// ```kcl,norun,sketchSyntaxAgnostic
+/// ```kcl,noRender,sketchSyntaxAgnostic
 /// fn positive(@value: number): number {
 ///   return if value > 0 {
 ///     value
@@ -668,7 +668,7 @@ export fn fail(
 /// Check a value meets some expected conditions at runtime. Program terminates with an error if conditions aren't met.
 /// If you provide multiple conditions, they will all be checked and all must be met.
 ///
-/// ```kcl,norun,sketchSyntaxAgnostic
+/// ```kcl,noRender,sketchSyntaxAgnostic
 /// n = 10
 /// assert(n, isEqualTo = 10)
 /// assert(n, isGreaterThanOrEqual = 0, isLessThan = 100, error = "number should be between 0 and 100")
