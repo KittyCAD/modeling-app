@@ -142,6 +142,12 @@ class SessionController implements ZookeeperSessionController {
       isSessionCurrent: () => this.active && this.getZdsProject() !== undefined,
       kclManager: deps.kclManager,
       systemIOActor: deps.systemIO.actor,
+      onEditApplied: (response) => {
+        this.actor.send({
+          type: ZookeeperManagerTransitions.EditApplied,
+          response,
+        })
+      },
     })
 
     this.actorSubscription = this.actor.subscribe((snapshot) => {

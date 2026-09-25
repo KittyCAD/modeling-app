@@ -20,6 +20,12 @@ import {
   type ConflictInspection,
 } from '@src/lib/cloudSync/conflictInspection'
 import {
+  attachCloudSyncFailureContext,
+  getCloudSyncFailureCause,
+  getCloudSyncFailureContext,
+  withCloudSyncFailureContext,
+} from '@src/lib/cloudSync/failureContext'
+import {
   isCloudSyncExcludedPath,
   isProjectRootPath,
   normalizePathForSync,
@@ -231,8 +237,9 @@ function isProjectSyncFailureKind(
 }
 
 function projectFailureKind(error: unknown) {
-  if (typeof error === 'object' && error !== null && 'kind' in error) {
-    const kind = error.kind
+  const cause = getCloudSyncFailureCause(error)
+  if (typeof cause === 'object' && cause !== null && 'kind' in cause) {
+    const kind = cause.kind
     return isProjectSyncFailureKind(kind) ? kind : undefined
   }
   return undefined
@@ -253,13 +260,17 @@ function projectFailureError(
 }
 
 function remoteUploadFailureFromError(error: unknown) {
-  return error instanceof CloudApiError && error.status === 403
-    ? projectFailureError(
-        'remote-upload-forbidden',
-        REMOTE_UPLOAD_FORBIDDEN_MESSAGE,
-        { retryAfterMs: error.retryAfterMs }
-      )
-    : error
+  if (!(error instanceof CloudApiError && error.status === 403)) {
+    return error
+  }
+
+  const failure = projectFailureError(
+    'remote-upload-forbidden',
+    REMOTE_UPLOAD_FORBIDDEN_MESSAGE,
+    { retryAfterMs: error.retryAfterMs }
+  )
+  const context = getCloudSyncFailureContext(error)
+  return context ? attachCloudSyncFailureContext(context, failure) : failure
 }
 
 function rejectRemoteUploadFailure(error: unknown): Promise<never> {
@@ -1290,7 +1301,7 @@ async function isExistingDirectory(targetPath: string) {
   }
 }
 
-async function collectLocalProjectFiles(projectRoot: string) {
+async function collectLocalProjectFilesUncategorized(projectRoot: string) {
   const files: ProjectArchiveFile[] = []
 
   const walk = async (
@@ -1342,6 +1353,13 @@ async function collectLocalProjectFiles(projectRoot: string) {
   await walk(projectRoot, gitignoreStack)
   return normalizeProjectArchiveFilesForCloudSync(files).sort((a, b) =>
     a.relativePath.localeCompare(b.relativePath)
+  )
+}
+
+function collectLocalProjectFiles(projectRoot: string) {
+  return withCloudSyncFailureContext(
+    { stage: 'filesystem', point: 'collect-local-project-files' },
+    () => collectLocalProjectFilesUncategorized(projectRoot)
   )
 }
 

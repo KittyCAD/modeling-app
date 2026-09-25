@@ -8,7 +8,8 @@ import { fsZdsConstants } from '@src/lib/fs-zds/constants'
 import * as fs from 'fs/promises'
 
 import { changeKclVersion } from '@src/lang/wasm'
-import { DEFAULT_KCL_VERSION, PROJECT_ENTRYPOINT } from '@src/lib/constants'
+import { DEFAULT_KCL_VERSION } from '@src/lib/kclVersion'
+import { PROJECT_ENTRYPOINT } from '@src/lib/constants'
 import {
   isExtensionARelevantExtension,
   isExtensionAnImportExtension,

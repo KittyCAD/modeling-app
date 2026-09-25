@@ -621,41 +621,60 @@ impl ExecOutcome {
         sketch_name: &str,
         instance_index: Option<usize>,
     ) -> std::result::Result<Vec<u8>, crate::tooling::sketch_visualizer::SketchVisualizationError> {
-        use crate::front::ObjectKind;
-        use crate::tooling::sketch_visualizer::SketchVisualizationError;
+        render_sketch_png_from_scene_objects(&self.scene_objects, sketch_name, instance_index)
+    }
+}
 
-        let sketches = self
-            .scene_objects
-            .iter()
-            .filter_map(|object| match &object.kind {
-                ObjectKind::Sketch(sketch) if object.label == sketch_name => Some(sketch),
-                _ => None,
-            })
-            .collect::<Vec<_>>();
-        let sketch = match (sketches.as_slice(), instance_index) {
-            ([], _) => {
-                return Err(SketchVisualizationError::SketchNotFound {
-                    name: sketch_name.to_owned(),
-                });
-            }
-            (_, Some(index)) => *sketches
+pub(crate) fn render_sketch_png_from_scene_objects(
+    scene_objects: &[crate::front::Object],
+    sketch_name: &str,
+    instance_index: Option<usize>,
+) -> std::result::Result<Vec<u8>, crate::tooling::sketch_visualizer::SketchVisualizationError> {
+    use crate::front::ObjectKind;
+    use crate::tooling::sketch_visualizer::SketchVisualizationError;
+
+    let sketches_matching_name = scene_objects
+        .iter()
+        .filter_map(|object| match &object.kind {
+            ObjectKind::Sketch(sketch) if object.label == sketch_name => Some(sketch),
+            _ => None,
+        })
+        .collect::<Vec<_>>();
+
+    // Select the correct sketch, from all sketches matching the name.
+    let sketch = match (sketches_matching_name.as_slice(), instance_index) {
+        // No sketches matched the name.
+        ([], _) => {
+            return Err(SketchVisualizationError::SketchNotFound {
+                name: sketch_name.to_owned(),
+            });
+        }
+        // At least one sketch matched the name, and the user gave an index.
+        (_nonempty, Some(index)) => {
+            *sketches_matching_name
                 .get(index)
                 .ok_or_else(|| SketchVisualizationError::InstanceNotFound {
                     name: sketch_name.to_owned(),
                     index,
-                    count: sketches.len(),
-                })?,
-            ([sketch], None) => *sketch,
-            (_, None) => {
-                return Err(SketchVisualizationError::AmbiguousSketchName {
-                    name: sketch_name.to_owned(),
-                    count: sketches.len(),
-                });
-            }
-        };
+                    count: sketches_matching_name.len(),
+                })?
+        }
+        // Exactly one sketch matched the name, the user didn't need any
+        // index because there is no ambiguity about which sketch.
+        ([sketch], None) => *sketch,
 
-        crate::tooling::sketch_visualizer::render_sketch_png(&self.scene_objects, sketch)
-    }
+        // More than one sketch matched the name, but there's no index
+        // to disambiguate.
+        (_nonempty, None) => {
+            return Err(SketchVisualizationError::AmbiguousSketchName {
+                name: sketch_name.to_owned(),
+                count: sketches_matching_name.len(),
+            });
+        }
+    };
+
+    // Now that we've selected the right sketch, visualize it.
+    crate::tooling::sketch_visualizer::render_sketch_png(scene_objects, sketch)
 }
 
 /// Configuration for mock execution.

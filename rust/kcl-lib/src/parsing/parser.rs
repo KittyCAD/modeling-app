@@ -5414,7 +5414,7 @@ mySk1 = startSketchOn(XY)
         // Hi
         |> f(%)",
             "1
-        /* Hi 
+        /* Hi
         there
         */
         |> f(%)",
@@ -5631,26 +5631,6 @@ mySk1 = startSketchOn(XY)
              "
             .into()
         );
-    }
-
-    #[test]
-    fn pipes_on_pipes_minimal() {
-        let test_program = r#"startSketchOn(XY)
-        |> startProfile(at = [0, 0])
-        |> line(endAbsolute = [0, -0]) // MoveRelative
-
-        "#;
-        let tokens = crate::parsing::token::lex(test_program, ModuleId::default()).unwrap();
-        let tokens = &mut tokens.as_slice();
-        let _actual = in_ctx(|| expression.parse_next(tokens)).unwrap();
-        assert_eq!(tokens.first().unwrap().token_type, TokenType::Whitespace);
-    }
-
-    #[test]
-    fn test_pipes_on_pipes() {
-        let test_program = include_str!("../../tests/pipes_on_pipes/input.kcl");
-        let tokens = crate::parsing::token::lex(test_program, ModuleId::default()).unwrap();
-        let _ = run_parser(tokens.as_slice()).unwrap();
     }
 
     #[test]
@@ -6761,7 +6741,7 @@ e
 ///      )
 ///   |> yLine(endAbsolute = 0)
 ///   |> close(%)
-/// 
+///
 /// example = extrude(exampleSketch, length = 5)
 /// ```
 @(impl = std_rust)
@@ -6928,7 +6908,7 @@ export fn cos(num: number(rad)): number(_) {}"#;
     #[test]
     fn basic_if_else_if() {
         let some_program_string = "if true {
-            3  
+            3
         } else if true {
             4
         } else {

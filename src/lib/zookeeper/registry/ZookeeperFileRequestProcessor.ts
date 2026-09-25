@@ -1,4 +1,4 @@
-import type { MlToolResult } from '@kittycad/lib'
+import type { MlCopilotServerMessage, MlToolResult } from '@kittycad/lib'
 import type { KclManager } from '@src/lang/KclManager'
 import fsZds from '@src/lib/fs-zds'
 import type { FileEntry, Project } from '@src/lib/project'
@@ -20,6 +20,7 @@ interface ZookeeperFileRequestProcessorDependencies {
   isSessionCurrent: () => boolean
   kclManager: KclManager
   systemIOActor: SystemIOActor
+  onEditApplied: (response: MlCopilotServerMessage) => void
 }
 
 type ZookeeperNewFileRequest = {
@@ -109,15 +110,18 @@ export class ZookeeperFileRequestProcessor {
       })
     )
 
-    this.enqueue({
-      toolOutput: lastResponse.tool_output.result,
-      projectNameCurrentlyOpened: projectName,
-      fileFocusedOnInEditor: snapshot.context.fileFocusedOnInEditor,
-      filesToDelete: Array.from(filesToDelete, (requestedFileName) => ({
-        requestedFileName,
-      })),
-      exchangeId: exchanges.length - 1,
-    })
+    this.enqueue(
+      {
+        toolOutput: lastResponse.tool_output.result,
+        projectNameCurrentlyOpened: projectName,
+        fileFocusedOnInEditor: snapshot.context.fileFocusedOnInEditor,
+        filesToDelete: Array.from(filesToDelete, (requestedFileName) => ({
+          requestedFileName,
+        })),
+        exchangeId: exchanges.length - 1,
+      },
+      () => this.deps.onEditApplied(lastResponse)
+    )
 
     this.deps.kclManager.engineCommandManager.modelingSend({
       type: 'Set selection',
@@ -125,7 +129,7 @@ export class ZookeeperFileRequestProcessor {
     })
   }
 
-  private enqueue(request: ZookeeperNewFileRequest) {
+  private enqueue(request: ZookeeperNewFileRequest, onApplied: () => void) {
     const project = this.deps.getProject()
     const { kclManager, systemIOActor } = this.deps
     const abortSignal = this.abortController.signal
@@ -191,7 +195,9 @@ export class ZookeeperFileRequestProcessor {
           let dispatched = false
           let settled = false
           let fileSystemCompleted = false
+          let fileSystemSucceeded = false
           let historyCompleted = !shouldRecordHistory
+          let historySucceeded = !shouldRecordHistory
           let postWriteCompleted = !shouldRefreshActiveEditor
           const requestCanFinish = () =>
             dispatched
@@ -205,6 +211,11 @@ export class ZookeeperFileRequestProcessor {
             settled = true
             abortSignal.removeEventListener('abort', cancelPostWrite)
             resolve()
+            // The queued request and undo history now own everything needed
+            // for the edit. The transcript may release its redundant copy.
+            if (fileSystemSucceeded && historySucceeded && requestIsCurrent()) {
+              onApplied()
+            }
           }
           function cancelPostWrite() {
             postWriteCompleted = true
@@ -303,6 +314,7 @@ export class ZookeeperFileRequestProcessor {
                   ) {
                     return
                   }
+                  fileSystemSucceeded = true
                   if (!postWriteCompleted) {
                     if (
                       abortSignal.aborted ||
@@ -347,6 +359,9 @@ export class ZookeeperFileRequestProcessor {
                         requestIsCurrent: requestCanFinish,
                         patch: payload.zookeeperEditPatch,
                         projectPath: requestProjectPath,
+                      })
+                      .then(() => {
+                        historySucceeded = true
                       })
                       .catch((error: unknown) => {
                         console.error(

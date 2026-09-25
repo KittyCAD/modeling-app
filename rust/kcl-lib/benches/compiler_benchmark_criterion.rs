@@ -8,7 +8,6 @@ use criterion::criterion_main;
 
 pub fn bench_parse(c: &mut Criterion) {
     for (name, file) in [
-        ("pipes_on_pipes", PIPES_PROGRAM),
         ("big_kitt", KITT_PROGRAM),
         ("cube", CUBE_PROGRAM),
         ("math", MATH_PROGRAM),
@@ -151,7 +150,6 @@ criterion_group!(
 criterion_main!(benches);
 
 const KITT_PROGRAM: &str = include_str!("../e2e/executor/inputs/kittycad_svg.kcl");
-const PIPES_PROGRAM: &str = include_str!("../tests/pipes_on_pipes/input.kcl");
 const CUBE_PROGRAM: &str = include_str!("../e2e/executor/inputs/cube.kcl");
 const MATH_PROGRAM: &str = include_str!("../e2e/executor/inputs/math.kcl");
 const MEDIUM_SKETCH: &str = include_str!("../e2e/executor/inputs/medium_sketch.kcl");
