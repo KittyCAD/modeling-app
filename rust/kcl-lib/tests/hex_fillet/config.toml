@@ -1,0 +1,4 @@
+# This test is to show the tangent-chain arg of fillets in kcl v3.
+redact_uuids = true
+kcl_versions = ["3.0-preview"]
+test_graphics = "ExportAndRender"
