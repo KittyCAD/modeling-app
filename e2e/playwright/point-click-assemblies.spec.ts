@@ -700,6 +700,7 @@ test.describe(
           const bracketDir = path.join(dir, projectName)
           await fsp.mkdir(bracketDir, { recursive: true })
           await Promise.all([
+            fsp.mkdir(path.join(bracketDir, 'folder.prt')),
             fsp.copyFile(
               testsInputPath('cube.step'),
               path.join(bracketDir, 'cube.step')
@@ -731,17 +732,37 @@ test.describe(
         await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
       })
 
-      await test.step('Import second foreign part by clicking', async () => {
+      await test.step('Import second foreign part from the context menu', async () => {
         await toolbar.openPane(DefaultLayoutPaneID.Files)
         await toolbar.expectFileTreeState([
+          'folder.prt',
           complexPlmFileName,
           'cube.step',
           'main.kcl',
         ])
-        await toolbar.openFile(complexPlmFileName)
+        const importPrompt = page.getByText('Import into my current file')
+        const importAction = page.getByRole('button', {
+          name: 'Import in current file',
+          exact: true,
+        })
+        const folder = page.getByRole('treeitem', {
+          name: 'folder.prt',
+          exact: true,
+        })
+        await folder.click()
+        await expect(folder).toHaveAttribute('aria-expanded', 'true')
+        await expect(importPrompt).not.toBeVisible()
+        await folder.click({ button: 'right' })
+        await expect(page.getByTestId('context-menu-rename')).toBeVisible()
+        await expect(importAction).not.toBeVisible()
+        await page.keyboard.press('Escape')
 
-        // Go through the ToastInsert prompt
-        await page.getByText('Import into my current file').click()
+        await toolbar.openFile(complexPlmFileName)
+        await expect(importPrompt).not.toBeVisible()
+        await page
+          .getByRole('treeitem', { name: complexPlmFileName, exact: true })
+          .click({ button: 'right' })
+        await importAction.click()
 
         // Check getPathFilenameInVariableCase output
         const parsedValueFromFile =

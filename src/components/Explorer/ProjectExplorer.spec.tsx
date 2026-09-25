@@ -39,9 +39,10 @@ beforeAll(async () => {
 const projectName = 'project-001'
 const applicationDirectory = 'applicationDirectory'
 
-// Actual wasmInstance not used by these tests, only when drag and dropping external files,
-// so no real wasmInstance used here as it would make these tests unnecessarily heavier -
-const wasmInstance = {} as ModuleType
+// Only the supported extensions are needed to render the import menu item.
+const wasmInstance = {
+  import_file_extensions: () => ['step', 'sldprt', 'prt'],
+} as ModuleType
 const createFile = (name: string, parent?: string): FileEntry => {
   return {
     name: name,
@@ -85,6 +86,44 @@ describe('ProjectExplorer', () => {
   afterEach(() => {
     cleanup()
   })
+  it.each([
+    { entry: createFile('cube.step'), canImport: true },
+    { entry: createFile('cube.STEP'), canImport: true },
+    { entry: createFile('cube.prt.1'), canImport: true },
+    { entry: createFile('part.kcl'), canImport: true },
+    { entry: oneFile, canImport: false },
+    { entry: createFile('notes.txt'), canImport: false },
+    { entry: createFile('notes.md'), canImport: false },
+    { entry: createFolder('folder.prt'), canImport: false },
+  ])(
+    'shows the import action for $entry.name: $canImport',
+    async ({ entry, canImport }) => {
+      project.children = [entry]
+      render(
+        <ProjectExplorer
+          wasmInstance={wasmInstance}
+          project={project}
+          file={oneFile}
+          createFilePressed={-1}
+          createFolderPressed={-1}
+          refreshExplorerPressed={-1}
+          collapsePressed={-1}
+          onRowClicked={() => {}}
+          onRowEnter={() => {}}
+          readOnly={false}
+          canNavigate={true}
+        />
+      )
+
+      fireEvent.contextMenu(screen.getByRole('treeitem', { name: entry.name }))
+      await screen.findByRole('button', { name: 'Rename' })
+      expect(
+        Boolean(
+          screen.queryByRole('button', { name: 'Import in current file' })
+        )
+      ).toBe(canImport)
+    }
+  )
   it('should render no rows', () => {
     render(
       <ProjectExplorer
