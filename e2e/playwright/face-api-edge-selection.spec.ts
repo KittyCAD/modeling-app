@@ -54,11 +54,13 @@ test.describe('Face API edge selection', { tag: '@web' }, () => {
     page,
     toolbar,
     editor,
+    homePage,
   }) => {
     await context.addInitScript((code) => {
       localStorage.setItem('persistCode', code)
     }, testCode)
 
+    await homePage.goToModelingScene()
     await scene.settled(cmdBar)
     await scene.waitForExecutionDoneAfter(() =>
       editor.replaceCode('', testCode)
@@ -274,6 +276,7 @@ test.describe('Face API edge selection', { tag: '@web' }, () => {
     page,
     toolbar,
     editor,
+    homePage,
   }) => {
     const [clickEdge] = scene.makeMouseHelpers(0.1709, 0.4864, {
       format: 'ratio',
@@ -282,6 +285,7 @@ test.describe('Face API edge selection', { tag: '@web' }, () => {
       localStorage.setItem('persistCode', code)
     }, testCode)
 
+    await homePage.goToModelingScene()
     await scene.settled(cmdBar)
     await scene.waitForExecutionDoneAfter(() =>
       editor.replaceCode('', testCode)
@@ -351,6 +355,7 @@ test.describe('Face API edge selection', { tag: '@web' }, () => {
     editor,
     toolbar,
     tronApp,
+    homePage,
   }) => {
     const code = `@settings(defaultLengthUnit = mm)
 
@@ -392,6 +397,7 @@ hide(sketch001)`
       }
     )
     await page.setBodyDimensions({ width: 1200, height: 800 })
+    await homePage.goToModelingScene()
     await scene.settled(cmdBar)
     await scene.waitForExecutionDoneAfter(() => editor.replaceCode('', code))
     await editor.expectEditor.toContain('surface001 = extrude')

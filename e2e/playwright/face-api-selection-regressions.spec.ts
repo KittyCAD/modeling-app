@@ -75,12 +75,14 @@ test.describe('Face API selection regressions', { tag: '@web' }, () => {
     editor,
     toolbar,
     tronApp,
+    homePage,
   }) => {
     if (tronApp) await tronApp.cleanProjectDir()
     await context.addInitScript((code) => {
       localStorage.setItem('persistCode', code)
     }, edgeTreatmentCode)
     await page.setBodyDimensions({ width: 1200, height: 800 })
+    await homePage.goToModelingScene()
     await scene.settled(cmdBar)
     await scene.waitForExecutionDoneAfter(() =>
       editor.replaceCode('', edgeTreatmentCode)
@@ -117,12 +119,14 @@ test.describe('Face API selection regressions', { tag: '@web' }, () => {
     editor,
     toolbar,
     tronApp,
+    homePage,
   }) => {
     if (tronApp) await tronApp.cleanProjectDir()
     await context.addInitScript((code) => {
       localStorage.setItem('persistCode', code)
     }, shellCode)
     await page.setBodyDimensions({ width: 1200, height: 800 })
+    await homePage.goToModelingScene()
     await scene.settled(cmdBar)
     await scene.waitForExecutionDoneAfter(() =>
       editor.replaceCode('', shellCode)
@@ -175,12 +179,14 @@ test.describe('Face API selection regressions', { tag: '@web' }, () => {
     editor,
     toolbar,
     tronApp,
+    homePage,
   }) => {
     if (tronApp) await tronApp.cleanProjectDir()
     await context.addInitScript((code) => {
       localStorage.setItem('persistCode', code)
     }, csgSurfaceExtrudeCode)
     await page.setBodyDimensions({ width: 1200, height: 800 })
+    await homePage.goToModelingScene()
     await scene.settled(cmdBar)
     await scene.waitForExecutionDoneAfter(() =>
       editor.replaceCode('', csgSurfaceExtrudeCode)
@@ -234,12 +240,14 @@ test.describe('Face API selection regressions', { tag: '@web' }, () => {
     cmdBar,
     editor,
     tronApp,
+    homePage,
   }) => {
     if (tronApp) await tronApp.cleanProjectDir()
     await context.addInitScript((code) => {
       localStorage.setItem('persistCode', code)
     }, standaloneHelixCode)
     await page.setBodyDimensions({ width: 1200, height: 800 })
+    await homePage.goToModelingScene()
     await scene.settled(cmdBar)
     await scene.waitForExecutionDoneAfter(() =>
       editor.replaceCode('', standaloneHelixCode)
