@@ -560,6 +560,10 @@ filleted = fillet(
       sideFaces = [
         body.faces.capEnd001,
         baseRegion.tags.edge1
+      ],
+      endFaces = [
+        baseRegion.tags.edge4,
+        baseRegion.tags.edge2
       ]
     }
   ],
@@ -1795,8 +1799,11 @@ part = bracket()
         kcl: SAMPLE_KCL,
         expected: [
           'extrude(length = 5, tagEnd = $capEnd001)',
-          'fillet(radius = 1, edges = [',
+          'fillet(',
+          'radius = 1',
+          'edges = [',
           'sideFaces = [capEnd001, e1]',
+          'endFaces = [seg01, seg02]',
         ],
       },
       {
@@ -2203,7 +2210,7 @@ surface001 = extrude(
         expect(n).toContain(
           'sideFaces = [ baseRegion.tags.line2, baseRegion.tags.yoyo ]'
         )
-        expect(n).not.toContain('endFaces')
+        expect(n).toContain('endFaces = [startCap, cutRegion.tags.line3]')
         expect(n).not.toContain(removed)
       })
     }
@@ -2521,16 +2528,20 @@ surface001 = extrude(
        radius = radius,
        edges = [
          {
-           sideFaces = [bs.tags.edge7, bs.tags.edge6]
+           sideFaces = [bs.tags.edge7, bs.tags.edge6],
+           endFaces = [capEnd001, capStart001]
          },
          {
-           sideFaces = [bs.tags.edge1, bs.tags.edge2]
+           sideFaces = [bs.tags.edge1, bs.tags.edge2],
+           endFaces = [capEnd001, capStart001]
          },
          {
-           sideFaces = [bs.tags.edge2, bs.tags.edge3]
+           sideFaces = [bs.tags.edge2, bs.tags.edge3],
+           endFaces = [capEnd001, capStart001]
          },
          {
-           sideFaces = [bs.tags.edge5, bs.tags.edge6]
+           sideFaces = [bs.tags.edge5, bs.tags.edge6],
+           endFaces = [capEnd001, capStart001]
          }
        ],
      )`
