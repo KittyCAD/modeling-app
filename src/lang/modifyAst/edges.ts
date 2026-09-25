@@ -1592,7 +1592,7 @@ function findFilletChamferCallsToFixUnified(
 
 interface RevolveHelixCallToFix {
   range: Z0006SourceRange
-  faceIds: [string, string]
+  payload: FilletEdgeRefPayload
   argument: 'axis' | 'across'
   /** When range is 0,0 we use this path to find the call (fallback). */
   pathToCall?: PathToNode
@@ -1699,7 +1699,7 @@ export function findRevolveHelixCallsToFix(
         if (hasFaceIds(meta)) {
           results.push({
             range: [call.start, call.end, call.moduleId],
-            faceIds: [meta.faceIds[0], meta.faceIds[1]],
+            payload: edgeRefactorMetaToPayload(meta),
             argument,
             pathToCall: callPath,
           })
@@ -1722,7 +1722,7 @@ export function findRevolveHelixCallsToFix(
     if (hasFaceIds(meta)) {
       results.push({
         range: [callStart, callEnd, moduleId],
-        faceIds: [meta.faceIds[0], meta.faceIds[1]],
+        payload: edgeRefactorMetaToPayload(meta),
         argument,
         pathToCall: callPath,
       })
@@ -1968,9 +1968,7 @@ export function findGdtEdgesCallsToFix(
           continue
         }
 
-        orderedPayloads.push({
-          side_faces: meta.faceIds,
-        })
+        orderedPayloads.push(edgeRefactorMetaToPayload(meta))
       }
 
       if (hasUnconvertedEdgesElement || orderedPayloads.length === 0) return
@@ -2024,9 +2022,7 @@ export function findGdtDistanceEndpointCallsToFix(
 
         endpoints.push({
           label,
-          payload: {
-            side_faces: meta.faceIds,
-          },
+          payload: edgeRefactorMetaToPayload(meta),
         })
       }
 
@@ -2073,9 +2069,7 @@ export function findBoundedEdgeCallsToFix(
 
       results.push({
         range: [call.start, call.end, call.moduleId],
-        payload: {
-          side_faces: meta.faceIds,
-        },
+        payload: edgeRefactorMetaToPayload(meta),
         pathToCall: pathToNode,
       })
     },
@@ -2093,10 +2087,10 @@ function refactorRevolveHelixAxisToEdgeRefInPlace(
 ): Node<Program> {
   if (toFix.length === 0) return modifiedAst
   for (let i = 0; i < toFix.length; i++) {
-    const { faceIds, argument, pathToCall } = toFix[i]
+    const { payload, argument, pathToCall } = toFix[i]
     const path = pathToCall && pathToCall.length > 0 ? pathToCall : pathList[i]
     const result = createEdgeRefObjectExpression(
-      { side_faces: faceIds },
+      payload,
       wasmInstance,
       modifiedAst,
       artifactGraph

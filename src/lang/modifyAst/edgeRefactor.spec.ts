@@ -990,18 +990,54 @@ describe('refactorZ0006Unified', () => {
   })
 
   describe('unit (no engine)', () => {
-    describe.each(['fillet', 'chamfer'])(
-      '%s split-edge migration',
-      (operation) => {
-        it.each([
-          ['inline', KCL_SKETCH_BLOCK_EDGE_ID_INLINE],
-          ['variable', KCL_SKETCH_BLOCK_EDGE_ID_VARIABLE],
-        ])('preserves endFaces for %s edgeId selection', (_, sample) => {
-          const code =
-            `@settings(defaultLengthUnit = mm, kclVersion = 2.0)\n${sample}`.replace(
-              'fillet(solid001, radius = 0.1',
-              `${operation}(solid001, ${operation === 'fillet' ? 'radius' : 'length'} = 0.1`
-            )
+    describe.each([
+      ['fillet', 'fillet(solid001, radius = 0.1, tags = [EDGE])'],
+      ['chamfer', 'chamfer(solid001, length = 0.1, tags = [EDGE])'],
+      [
+        'helix',
+        'helix(axis = EDGE, radius = 1mm, length = 5mm, revolutions = 2)',
+      ],
+      ['revolve', 'revolve(baseRegion, axis = EDGE, angle = 90deg)'],
+      ['mirror3d', 'mirror3d(solid001, across = EDGE)'],
+      ['GD&T edges', 'gdt::straightness(edges = [EDGE], tolerance = 0.1mm)'],
+      [
+        'GD&T from',
+        'gdt::distance(from = EDGE, to = [0, 0, 0], tolerance = 0.1mm)',
+      ],
+      [
+        'GD&T to',
+        'gdt::distance(from = [0, 0, 0], to = EDGE, tolerance = 0.1mm)',
+      ],
+      ['getBoundedEdge', 'getBoundedEdge(solid001, edge = EDGE)'],
+      ['extrude target', 'extrude(EDGE, length = 5mm, bodyType = SURFACE)'],
+      ['extrude to', 'extrude(baseRegion, to = EDGE)'],
+      [
+        'extrude direction',
+        'extrude(baseRegion, direction = EDGE, length = 5mm)',
+      ],
+    ])('%s split-edge migration', (operation, call) => {
+      const selections =
+        operation === 'getBoundedEdge'
+          ? ['inline']
+          : operation === 'mirror3d'
+            ? ['inline', 'variable', 'direct tag']
+            : ['inline', 'variable']
+      it.each(selections)(
+        'preserves endFaces for %s selection',
+        (selection) => {
+          const edge =
+            selection === 'variable'
+              ? 'yo'
+              : selection === 'direct tag'
+                ? 'myExtrude.sketch.tags.yoyo'
+                : 'edgeId(solid001, index = 5)'
+          const sample =
+            selection === 'variable'
+              ? KCL_SKETCH_BLOCK_EDGE_ID_VARIABLE
+              : KCL_SKETCH_BLOCK_EDGE_ID_INLINE
+          const code = `@settings(defaultLengthUnit = mm, kclVersion = 2.0)\n${sample.slice(0, sample.lastIndexOf('\nfillet('))}
+${call.replace('EDGE', edge)}
+`
           const ast = assertParse(code, wasmInstance)
           const [start, end] = sourceRangeForCall(ast, 'extrude')
           const graph = defaultArtifactGraph()
@@ -1042,10 +1078,13 @@ describe('refactorZ0006Unified', () => {
           const metadata: EdgeRefactorMeta[] = [
             {
               edgeId: 'split-edge',
-              sourceRange: sourceRangeForCall(ast, 'edgeId'),
+              sourceRange:
+                selection === 'direct tag'
+                  ? sourceRangeForSnippet(code, edge)
+                  : sourceRangeForCall(ast, 'edgeId'),
               faceIds: facePair('wall-hi', 'wall-yoyo'),
               endFaceIds: ['cap-end'],
-              stdlibFn: 'edgeId',
+              stdlibFn: selection === 'direct tag' ? 'directEdgeTag' : 'edgeId',
             },
           ]
           const result = refactorZ0006Unified(
@@ -1060,9 +1099,12 @@ describe('refactorZ0006Unified', () => {
             'sideFaces=[baseRegion.tags.hi,baseRegion.tags.yoyo],endFaces=[endCap]'
           )
           expect(norm(result)).not.toContain('tags = [')
-        })
-      }
-    )
+          expect(
+            sourceRangesForCalls(assertParse(result, wasmInstance), 'edgeId')
+          ).toHaveLength(selection === 'variable' ? 1 : 0)
+        }
+      )
+    })
 
     it('returns Error when edgeRefactorMetadata is empty', () => {
       const code =
@@ -1274,7 +1316,7 @@ describe('refactorZ0006Unified', () => {
       ]
       const toFix = findRevolveHelixCallsToFix(ast, metadata)
       expect(toFix.length).toBeGreaterThanOrEqual(1)
-      expect(toFix[0]?.faceIds).toHaveLength(2)
+      expect(toFix[0]?.payload.side_faces).toHaveLength(2)
       expect(toFix[0]?.pathToCall?.length ?? 0).toBeGreaterThan(0)
     })
 
