@@ -12,6 +12,7 @@ import {
 } from '@src/lib/sessionExpired'
 import { reportRejection } from '@src/lib/trap'
 import { authMachine } from '@src/machines/authMachine'
+import { appNavigationIntentContributionsValueSpec } from '@src/registry/contracts/appNavigation'
 import {
   type AuthRegistryService,
   type AuthSessionExpiredListener,
@@ -19,8 +20,14 @@ import {
   authSessionExpiredListenersValueSpec,
 } from '@src/registry/contracts/auth'
 import { fileOperationsService } from '@src/registry/contracts/fileOperations'
+import { routerService } from '@src/registry/contracts/router'
 import { useSelector } from '@xstate/react'
 import { createActor } from 'xstate'
+import { createDesktopSignIn } from './desktopSignIn'
+import {
+  createStartSignInIntentContribution,
+  defaultStartSignInDependencies,
+} from './navigation'
 
 const expireAuthSession: AuthSessionExpiredListener = ({ auth }) => {
   if (!auth.actor.getSnapshot().matches('loggedIn')) {
@@ -45,6 +52,9 @@ export const authExtension = defineRegistryItemFactory((ctx) => {
   const token = computed(() => authState.value.context.token)
   const user = computed(() => authState.value.context.user)
   const isLoggedIn = computed(() => authState.value.matches('loggedIn'))
+  const desktopSignIn = createDesktopSignIn({
+    send: (...args) => authActor.send(...args),
+  })
 
   const serviceImpl: AuthRegistryService = {
     actor: authActor,
@@ -56,6 +66,8 @@ export const authExtension = defineRegistryItemFactory((ctx) => {
     isLoggedIn,
     sessionExpiredNotice,
     clearSessionExpiredNotice,
+    desktopSignInState: desktopSignIn.state,
+    cancelDesktopSignIn: desktopSignIn.cancel,
     useAuthState: () => useSelector(authActor, (state) => state),
     useToken: () => useSelector(authActor, (state) => state.context.token),
     useUser: () => useSelector(authActor, (state) => state.context.user),
@@ -78,11 +90,22 @@ export const authExtension = defineRegistryItemFactory((ctx) => {
       }
     }
   )
+  const startSignInContribution = createStartSignInIntentContribution(
+    defaultStartSignInDependencies(
+      () => ctx.services.get(routerService),
+      desktopSignIn.start
+    )
+  )
 
   return {
     item: defineRuntimeRegistryItem({
       id: 'auth-extension',
       provides: [
+        provide(
+          appNavigationIntentContributionsValueSpec,
+          startSignInContribution,
+          { key: startSignInContribution.intentId }
+        ),
         provide(authSessionExpiredListenersValueSpec, expireAuthSession, {
           key: 'auth-extension:expire-auth-session',
         }),

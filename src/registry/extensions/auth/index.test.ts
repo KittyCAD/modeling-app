@@ -3,9 +3,11 @@ import {
   clearSessionExpiredNotice,
   notifySessionExpired,
 } from '@src/lib/sessionExpired'
+import { appNavigationIntentContributionsValueSpec } from '@src/registry/contracts/appNavigation'
 import {
   authService,
   provideAuthSessionExpiredListener,
+  startSignInIntent,
 } from '@src/registry/contracts/auth'
 import authRegistryItem from '@src/registry/extensions/auth'
 import { afterEach, describe, expect, it, vi } from 'vitest'
@@ -37,6 +39,11 @@ describe('auth extension', () => {
     auth.send({ type: 'Log out' })
 
     expect(send).toHaveBeenCalledWith({ type: 'Log out' })
+    expect(
+      registry
+        .get(appNavigationIntentContributionsValueSpec)
+        .map(({ intentId }) => intentId)
+    ).toContain(startSignInIntent.id)
   })
 
   it('ignores stale session-expired notices emitted before the extension starts', async () => {
