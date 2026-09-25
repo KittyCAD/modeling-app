@@ -921,7 +921,7 @@ impl Program {
         item.get_expr_for_position(pos)
     }
 
-    /// Checks if the ast has any import statements.    
+    /// Checks if the ast has any import statements.
     pub fn has_import_statements(&self) -> bool {
         for item in &self.body {
             if let BodyItem::ImportStatement(_) = item {

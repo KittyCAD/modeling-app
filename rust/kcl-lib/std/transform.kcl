@@ -37,7 +37,7 @@ import Axis2d, Axis3d, Edge, GdtAnnotation, Helix, Plane, Point3d, Segment, Sket
 /// example = extrude(sketch001, length = 10)
 /// ```
 ///
-/// ```kcl,no3d,legacySketch
+/// ```kcl,engineRender,legacySketch
 /// // Mirror a un-closed sketch across an edge.
 /// helper001 = startSketchOn(XZ)
 ///  |> startProfile(at = [0, 0])
@@ -52,7 +52,7 @@ import Axis2d, Axis3d, Edge, GdtAnnotation, Helix, Plane, Point3d, Segment, Sket
 /// // example = extrude(sketch001, length = 10)
 /// ```
 ///
-/// ```kcl,sketchSolve,no3d
+/// ```kcl,sketchSolve,engineRender
 /// // Mirror an un-closed sketch across a line from a sketch block.
 /// helper001 = sketch(on = XZ) {
 ///   line1 = line(start = [var 0mm, var 0mm], end = [var 0mm, var 10mm])
@@ -762,7 +762,7 @@ export fn scale(
 /// Hiding can be useful to see hard-to-reach vantages, or clarify overlapping geometry
 /// while you work.
 ///
-/// ```kcl,legacySketch,no3d
+/// ```kcl,legacySketch,engineRender
 /// // Hide a body, leaving a sketch on face intact
 /// cylinder = startSketchOn(XY)
 ///   |> circle(center = [0, 0], radius = 2)
@@ -771,7 +771,7 @@ export fn scale(
 ///   |> circle(center = [0, 0], radius = 1)
 /// hide(cylinder)
 /// ```
-/// ```kcl,legacySketch,no3d
+/// ```kcl,legacySketch,engineRender
 /// // Hide an imported model, leaving a local sketch.
 /// import "tests/inputs/cube.sldprt" as cube
 ///
@@ -820,7 +820,7 @@ export fn hide(
 
 /// Deletes something from the scene. Once it's deleted, you can't use it anymore.
 /// This means deleting something twice is an error, as is hiding something after you delete it.
-/// ```kcl,sketchSolve,no3d
+/// ```kcl,sketchSolve,engineRender
 /// // Basic example, showing deleting something.
 /// @settings(kclVersion = 2.0)
 ///

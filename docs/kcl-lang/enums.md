@@ -39,7 +39,7 @@ That is a valid enum, though it might look odd and is of limited use. With no
 variants there is no value to write, so nothing can ever have the type `Nothing`.
 [Asking for a variant](#using-a-variant) of it fails, whatever name you ask for:
 
-```kcl,norun
+```kcl,noRender
 @settings(kclVersion = "3.0-preview")
 
 type Nothing { | }
@@ -60,7 +60,7 @@ Leaving the marker out is not an empty enum but a mistake, and KCL says so:
 Four more rules follow from a declaration naming an enum type. First, the name is a type
 and not a value, so it cannot be used on its own:
 
-```kcl,norun
+```kcl,noRender
 @settings(kclVersion = "3.0-preview")
 
 type Fit { | Loose | Normal | Press }
@@ -72,7 +72,7 @@ chosen = Fit
 
 Second, a name can only be declared once in a file, whatever variants follow it:
 
-```kcl,norun
+```kcl,noRender
 @settings(kclVersion = "3.0-preview")
 
 type Fit { | Loose | Normal | Press }
@@ -85,7 +85,7 @@ type Fit { | Tight | Free }
 Third, a declaration belongs at the top level, so it cannot sit inside a function or
 a block:
 
-```kcl,norun
+```kcl,noRender
 @settings(kclVersion = "3.0-preview")
 
 fn pick() {
@@ -101,7 +101,7 @@ chosen = pick()
 
 Fourth, the variants of one enum must have different names:
 
-```kcl,norun
+```kcl,noRender
 @settings(kclVersion = "3.0-preview")
 
 // Error:
@@ -127,7 +127,7 @@ In this code snippet, the variable `holeFit` now holds the value `Fit::Press`.
 The name after `::` must be one of the variants in the declaration. Anything else
 fails, and the error lists the variants that do exist:
 
-```kcl,norun
+```kcl,noRender
 @settings(kclVersion = "3.0-preview")
 
 type Fit { | Loose | Normal | Press }
@@ -209,7 +209,7 @@ toleranceIsLoose = Tolerance::Loose == Tolerance::Loose
 Comparing one against the other is an error — a shared variant name does not make two
 enums the same type:
 
-```kcl,norun
+```kcl,noRender
 @settings(kclVersion = "3.0-preview")
 
 type Fit { | Loose | Normal | Press }
@@ -223,7 +223,7 @@ bothLoose = Fit::Loose == Tolerance::Loose
 Comparing a variant with a value of another kind is an error for the same reason. Each
 comparison below fails on its own; evaluation stops at the first one:
 
-```kcl,norun
+```kcl,noRender
 @settings(kclVersion = "3.0-preview")
 
 type Fit { | Loose | Normal | Press }
@@ -285,7 +285,7 @@ When no if-branch matches, `fail`
 For example, in the code below `startView` is never assigned and execution stops at
 that point:
 
-```kcl,norun
+```kcl,noRender
 @settings(kclVersion = "3.0-preview")
 
 type View { | Front | Top | Right | Isometric }
@@ -380,7 +380,7 @@ Every other argument is an error, and the message names both the type the parame
 wants and the value it was given. Each call below fails on its own; evaluation stops
 at the first one:
 
-```kcl,norun
+```kcl,noRender
 @settings(kclVersion = "3.0-preview")
 
 type Fit { | Loose | Normal | Press }

@@ -6,14 +6,14 @@ layout: manual
 
 It can be hard to read repeated function calls, because of all the nested brackets.
 
-```norun
+```noRender
 i = 1
 x = h(g(f(i)))
 ```
 
 You can make this easier to read by breaking it into many declarations, but that is a bit annoying.
 
-```norun
+```noRender
 i  = 1
 x0 = f(i)
 x1 = g(x0)
@@ -28,7 +28,7 @@ the `%` in the right-hand side.
 So, this means `x |> f(%) |> g(%)` is shorthand for `g(f(x))`. The code example above, with its
 somewhat-clunky `x0` and `x1` constants could be rewritten as
 
-```norun
+```noRender
 i = 1
 x = i
   |> f(%)
@@ -42,7 +42,7 @@ This helps keep your code neat and avoid unnecessary declarations.
 
 Say you have a long pipeline of functions that modify a solid, like this:
 
-```kcl,norun
+```kcl,noRender
 solid
   |> appearance(%, color = "#ff0000")
   |> appearance(%, metalness = 50)
@@ -56,7 +56,7 @@ If a function call uses an unlabeled first parameter, it will default to `%` if 
 means that `|> appearance(%, color = "#ff0000")` and `|> appearance(color = "#ff0000")` are equivalent! So the above
 could be rewritten as 
 
-```kcl,norun
+```kcl,noRender
 solid
   |> appearance(color = "#ff0000")
   |> appearance(metalness = 50)

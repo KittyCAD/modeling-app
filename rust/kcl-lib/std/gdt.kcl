@@ -10,7 +10,7 @@ import Edge, Face, GdtAnnotation, Plane, Point2d, TaggedFace from "std::types"
 ///
 /// This is part of model-based definition (MBD).
 ///
-/// ```kcl,no3d,legacySketch
+/// ```kcl,engineRender,legacySketch
 /// width = 5
 ///
 /// startSketchOn(XY)
@@ -30,7 +30,7 @@ import Edge, Face, GdtAnnotation, Plane, Point2d, TaggedFace from "std::types"
 /// )
 /// ```
 ///
-/// ```kcl,no3d,sketchSolve
+/// ```kcl,engineRender,sketchSolve
 ///
 /// blockProfile = sketch(on = XY) {
 ///   edge1 = line(start = [var 0mm, var 0mm], end = [var 8mm, var 0mm])
@@ -83,7 +83,7 @@ export fn datum(
 ///
 /// This is part of model-based definition (MBD).
 ///
-/// ```kcl,no3d,legacySketch
+/// ```kcl,engineRender,legacySketch
 ///
 /// startSketchOn(XY)
 ///   |> startProfile(at = [0, 0])
@@ -96,7 +96,7 @@ export fn datum(
 /// gdt::flatness(faces = [face1], tolerance = 0.1mm)
 /// ```
 ///
-/// ```kcl,no3d,legacySketch
+/// ```kcl,engineRender,legacySketch
 ///
 /// startSketchOn(XY)
 ///   |> startProfile(at = [0, 0])
@@ -109,7 +109,7 @@ export fn datum(
 /// gdt::flatness(faces = [face1], tolerance = 0.02mm, framePosition = [10mm, 20mm], framePlane = XZ)
 /// ```
 ///
-/// ```kcl,no3d,legacySketch
+/// ```kcl,engineRender,legacySketch
 ///
 /// startSketchOn(XY)
 ///   |> startProfile(at = [0, 0])
@@ -122,7 +122,7 @@ export fn datum(
 /// gdt::flatness(faces = [face1], tolerance = 0.02mm, framePosition = [10mm, 20mm], framePlane = XZ)
 /// ```
 ///
-/// ```kcl,no3d,sketchSolve
+/// ```kcl,engineRender,sketchSolve
 ///
 /// blockProfile = sketch(on = XY) {
 ///   edge1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
@@ -180,7 +180,7 @@ export fn flatness(
 /// Straightness should usually be applied to edges. But depending on the view,
 /// a face normal may appear like an edge.
 ///
-/// ```kcl,no3d,sketchSolve
+/// ```kcl,engineRender,sketchSolve
 /// @settings(kclVersion = 2.0)
 ///
 /// blockSketch = sketch(on = XY) {
@@ -204,7 +204,7 @@ export fn flatness(
 /// gdt::straightness(edges = [blockRegion.tags.edge2], tolerance = 0.05mm)
 /// ```
 ///
-/// ```kcl,no3d,sketchSolve
+/// ```kcl,engineRender,sketchSolve
 /// @settings(kclVersion = 2.0)
 ///
 /// blockProfile = sketch(on = XY) {
@@ -226,7 +226,7 @@ export fn flatness(
 /// gdt::straightness(faces = [top], tolerance = 0.02mm, framePosition = [12mm, 8mm], framePlane = XZ)
 /// ```
 ///
-/// ```kcl,no3d,sketchSolve
+/// ```kcl,engineRender,sketchSolve
 /// @settings(kclVersion = 2.0)
 ///
 /// blockProfile = sketch(on = XY) {
@@ -290,7 +290,7 @@ export fn straightness(
 ///
 /// Circularity is a form tolerance, so it does not reference datums.
 ///
-/// ```kcl,no3d,sketchSolve
+/// ```kcl,engineRender,sketchSolve
 /// @settings(kclVersion = 2.0)
 ///
 /// cylinderSketch = sketch(on = XY) {
@@ -303,7 +303,7 @@ export fn straightness(
 /// gdt::circularity(edges = [cylinderRegion.tags.perimeter], tolerance = 0.05mm, framePosition = [-12mm, 8mm])
 /// ```
 ///
-/// ```kcl,no3d,sketchSolve
+/// ```kcl,engineRender,sketchSolve
 /// @settings(kclVersion = 2.0)
 ///
 /// cylinderSketch = sketch(on = XY) {
@@ -314,7 +314,7 @@ export fn straightness(
 /// gdt::circularity(faces = [cylinder.sketch.tags.perimeter], tolerance = 0.02mm, framePosition = [-12mm, 8mm], framePlane = XZ)
 /// ```
 ///
-/// ```kcl,no3d,sketchSolve
+/// ```kcl,engineRender,sketchSolve
 /// @settings(kclVersion = 2.0)
 ///
 /// cylinderSketch = sketch(on = XY) {
@@ -368,7 +368,7 @@ export fn circularity(
 ///
 /// Cylindricity is a form tolerance, so it does not reference datums.
 ///
-/// ```kcl,no3d,sketchSolve
+/// ```kcl,engineRender,sketchSolve
 /// @settings(kclVersion = 2.0)
 ///
 /// cylinderSketch = sketch(on = XY) {
@@ -379,7 +379,7 @@ export fn circularity(
 /// gdt::cylindricity(faces = [cylinder.sketch.tags.perimeter], tolerance = 0.02mm, framePosition = [-12mm, 8mm], framePlane = XZ)
 /// ```
 ///
-/// ```kcl,no3d,sketchSolve
+/// ```kcl,engineRender,sketchSolve
 /// @settings(kclVersion = 2.0)
 ///
 /// cylinderSketch = sketch(on = XY) {
@@ -392,7 +392,7 @@ export fn circularity(
 /// gdt::cylindricity(edges = [cylinderRegion.tags.perimeter], tolerance = 0.05mm, framePosition = [-12mm, 8mm])
 /// ```
 ///
-/// ```kcl,no3d,sketchSolve
+/// ```kcl,engineRender,sketchSolve
 /// @settings(kclVersion = 2.0)
 ///
 /// cylinderSketch = sketch(on = XY) {
@@ -447,7 +447,7 @@ export fn cylindricity(
 /// removed concentricity in favor of other controls such as position or runout
 /// where appropriate. ISO standards use the name coaxiality for this concept.
 ///
-/// ```kcl,no3d,sketchSolve
+/// ```kcl,engineRender,sketchSolve
 /// @settings(kclVersion = 2.0)
 ///
 /// datumSketch = sketch(on = XY) {
@@ -472,7 +472,7 @@ export fn cylindricity(
 /// gdt::concentricity(faces = [controlledCylinder.sketch.tags.perimeter], tolerance = 0.05mm, datums = ["A"], framePosition = [12mm, 8mm], framePlane = XZ)
 /// ```
 ///
-/// ```kcl,no3d,sketchSolve
+/// ```kcl,engineRender,sketchSolve
 /// @settings(kclVersion = 2.0)
 ///
 /// datumSketch = sketch(on = XY) {
@@ -542,7 +542,7 @@ export fn concentricity(
 /// applied regardless of feature size (RFS) and does not use maximum material
 /// condition (MMC) or least material condition (LMC) modifiers.
 ///
-/// ```kcl,no3d,sketchSolve
+/// ```kcl,engineRender,sketchSolve
 /// @settings(kclVersion = 2.0)
 ///
 /// latchProfile = sketch(on = XZ) {
@@ -579,7 +579,7 @@ export fn concentricity(
 /// gdt::symmetry(faces = [latchBlock.sketch.tags.grooveFloor], tolerance = 0.2mm, datums = ["A"], framePosition = [-24mm, 14mm], framePlane = XZ)
 /// ```
 ///
-/// ```kcl,no3d,sketchSolve
+/// ```kcl,engineRender,sketchSolve
 /// @settings(kclVersion = 2.0)
 ///
 /// latchProfile = sketch(on = XZ) {
@@ -658,7 +658,7 @@ export fn symmetry(
 ///
 /// Runout is applied regardless of feature size and does not use MMC or LMC.
 ///
-/// ```kcl,no3d,sketchSolve
+/// ```kcl,engineRender,sketchSolve
 /// @settings(kclVersion = 2.0)
 ///
 /// annotationPlane = offsetPlane(XZ, offset = 24mm)
@@ -754,7 +754,7 @@ export fn runout(
 /// Provide at least one of `faces` or `edges`. Supplying both is allowed, but
 /// omitting both is an error.
 ///
-/// ```kcl,no3d,sketchSolve
+/// ```kcl,engineRender,sketchSolve
 /// @settings(kclVersion = 2.0)
 ///
 /// basicAngle = 30deg
@@ -804,7 +804,7 @@ export fn runout(
 /// gdt::angularity(faces = [stampedPart.sketch.tags.controlledSurface], tolerance = 0.1mm, datums = ["A"], framePosition = [-12mm, 11mm], framePlane = XZ, fontSize = annotationFont)
 /// ```
 ///
-/// ```kcl,no3d,sketchSolve
+/// ```kcl,engineRender,sketchSolve
 /// @settings(kclVersion = 2.0)
 ///
 /// basicAngle = 30deg
@@ -891,7 +891,7 @@ export fn angularity(
 ///
 /// This is part of model-based definition (MBD).
 ///
-/// ```kcl,no3d,legacySketch
+/// ```kcl,engineRender,legacySketch
 ///
 /// startSketchOn(XY)
 ///   |> startProfile(at = [0, 0])
@@ -906,7 +906,7 @@ export fn angularity(
 /// gdt::perpendicularity(faces = [side], tolerance = 0.05mm, datums = ["A"], framePosition = [12mm, 8mm], framePlane = XZ)
 /// ```
 ///
-/// ```kcl,no3d,sketchSolve
+/// ```kcl,engineRender,sketchSolve
 ///
 /// blockProfile = sketch(on = XY) {
 ///   edge1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
@@ -963,7 +963,7 @@ export fn perpendicularity(
 ///
 /// This is part of model-based definition (MBD).
 ///
-/// ```kcl,no3d,legacySketch
+/// ```kcl,engineRender,legacySketch
 ///
 /// startSketchOn(XY)
 ///   |> startProfile(at = [0, 0])
@@ -978,7 +978,7 @@ export fn perpendicularity(
 /// gdt::parallelism(faces = [side], tolerance = 0.05mm, datums = ["A"], framePosition = [12mm, 8mm], framePlane = XZ)
 /// ```
 ///
-/// ```kcl,no3d,sketchSolve
+/// ```kcl,engineRender,sketchSolve
 ///
 /// blockProfile = sketch(on = XY) {
 ///   edge1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
@@ -1035,7 +1035,7 @@ export fn parallelism(
 ///
 /// This is part of model-based definition (MBD).
 ///
-/// ```kcl,no3d,legacySketch
+/// ```kcl,engineRender,legacySketch
 ///
 /// startSketchOn(XY)
 ///   |> startProfile(at = [0, 0])
@@ -1050,7 +1050,7 @@ export fn parallelism(
 /// gdt::position(faces = [side], tolerance = 0.05mm, datums = ["A"], framePosition = [12mm, 8mm], framePlane = XZ)
 /// ```
 ///
-/// ```kcl,no3d,sketchSolve
+/// ```kcl,engineRender,sketchSolve
 ///
 /// blockProfile = sketch(on = XY) {
 ///   edge1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
@@ -1107,7 +1107,7 @@ export fn position(
 ///
 /// This is part of model-based definition (MBD).
 ///
-/// ```kcl,no3d,legacySketch
+/// ```kcl,engineRender,legacySketch
 ///
 /// startSketchOn(XY)
 ///   |> startProfile(at = [0, 0])
@@ -1121,7 +1121,7 @@ export fn position(
 /// gdt::annotation(faces = [top], annotation = "Break all sharp edges", framePosition = [12mm, 8mm], framePlane = XZ)
 /// ```
 ///
-/// ```kcl,no3d,sketchSolve
+/// ```kcl,engineRender,sketchSolve
 ///
 /// blockProfile = sketch(on = XY) {
 ///   edge1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
@@ -1174,7 +1174,7 @@ export fn annotation(
 /// and is placed directly on a plane. By default it lives on the world `XY` plane, but any plane
 /// (a standard plane like `XZ`/`YZ`, or a user-defined plane) can be supplied via `framePlane`.
 ///
-/// ```kcl,no3d,sketchSolve
+/// ```kcl,engineRender,sketchSolve
 /// @settings(kclVersion = 2.0)
 ///
 /// // A note on the default world (XY) plane.
@@ -1197,7 +1197,7 @@ export fn annotation(
 /// gdt::note(note = "Note on XY", framePosition = [12mm, 8mm])
 /// ```
 ///
-/// ```kcl,no3d,sketchSolve
+/// ```kcl,engineRender,sketchSolve
 /// @settings(kclVersion = 2.0)
 ///
 /// // A note on a user-defined plane.
@@ -1242,7 +1242,7 @@ export fn note(
 ///
 /// This is part of model-based definition (MBD).
 ///
-/// ```kcl,no3d,legacySketch
+/// ```kcl,engineRender,legacySketch
 /// @settings(kclVersion = 2.0)
 ///
 /// startSketchOn(XY)
@@ -1258,7 +1258,7 @@ export fn note(
 /// gdt::distance(edges = [lengthEdge], tolerance = 0.05mm, framePosition = [12mm, 8mm], framePlane = XZ)
 /// ```
 ///
-/// ```kcl,no3d,sketchSolve
+/// ```kcl,engineRender,sketchSolve
 /// @settings(kclVersion = 2.0)
 ///
 /// blockProfile = sketch(on = XY) {
@@ -1280,7 +1280,7 @@ export fn note(
 /// lengthEdge = getCommonEdge(faces = [block.sketch.tags.edge1, top])
 /// gdt::distance(edges = [lengthEdge], tolerance = 0.05mm, framePosition = [12mm, 8mm], framePlane = XZ)
 /// ```
-/// ```kcl,no3d,sketchSolve
+/// ```kcl,engineRender,sketchSolve
 /// @settings(kclVersion = 2.0)
 ///
 /// // Example of a distance annotation with no tolerance.
@@ -1356,7 +1356,7 @@ export fn distance(
 /// `profileLine`; passing `faces` delegates to `profileSurface`. Passing both,
 /// or neither, is a KCL error.
 ///
-/// ```kcl,no3d,legacySketch
+/// ```kcl,engineRender,legacySketch
 ///
 /// startSketchOn(XY)
 ///   |> startProfile(at = [0, 0])
@@ -1378,7 +1378,7 @@ export fn distance(
 /// )
 /// ```
 ///
-/// ```kcl,no3d,sketchSolve
+/// ```kcl,engineRender,sketchSolve
 ///
 /// cylinderSketch = sketch(on = XY) {
 ///   perimeter = circle(start = [var 5mm, var 0mm], center = [var 0mm, var 0mm])
@@ -1424,7 +1424,7 @@ export fn profile(
 ///
 /// Profile of a line is a two-dimensional tolerance zone for a cross-section or edge-like profile.
 ///
-/// ```kcl,no3d,legacySketch
+/// ```kcl,engineRender,legacySketch
 ///
 /// startSketchOn(XY)
 ///   |> startProfile(at = [0, 0])
@@ -1446,7 +1446,7 @@ export fn profile(
 /// )
 /// ```
 ///
-/// ```kcl,no3d,sketchSolve
+/// ```kcl,engineRender,sketchSolve
 ///
 /// blockProfile = sketch(on = XY) {
 ///   edge1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
@@ -1502,7 +1502,7 @@ export fn profileLine(
 ///
 /// Profile of a surface is a three-dimensional tolerance zone that applies across the whole annotated surface.
 ///
-/// ```kcl,no3d,sketchSolve
+/// ```kcl,engineRender,sketchSolve
 ///
 /// cylinderSketch = sketch(on = XY) {
 ///   perimeter = circle(start = [var 5mm, var 0mm], center = [var 0mm, var 0mm])

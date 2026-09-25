@@ -507,7 +507,7 @@ some files of a project is an error either way.
 
 KCL 2.0:
 
-```kcl,norun
+```kcl,noRender
 // main.kcl
 @settings(kclVersion = 2.0)
 
@@ -516,7 +516,7 @@ import width from "dimensions.kcl"
 x = width
 ```
 
-```kcl,norun
+```kcl,noRender
 // dimensions.kcl
 @settings(kclVersion = 1.0)
 
@@ -525,7 +525,7 @@ export width = 10mm
 
 KCL 3.0:
 
-```kcl,norun
+```kcl,noRender
 // main.kcl
 @settings(kclVersion = "3.0-preview")
 
@@ -534,7 +534,7 @@ import width from "dimensions.kcl"
 x = width
 ```
 
-```kcl,norun
+```kcl,noRender
 // dimensions.kcl
 @settings(kclVersion = "3.0-preview")
 

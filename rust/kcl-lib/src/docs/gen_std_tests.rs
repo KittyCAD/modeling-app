@@ -249,7 +249,7 @@ fn generate_index(kcl_lib: &ModData) -> Result<()> {
 }
 
 fn generate_example(index: usize, src: &str, props: &ExampleProperties, file_name: &str) -> Option<serde_json::Value> {
-    if props.inline && props.norun {
+    if props.inline && props.no_render {
         return None;
     }
 
@@ -259,7 +259,7 @@ fn generate_example(index: usize, src: &str, props: &ExampleProperties, file_nam
         crate::unparser::fmt(src).unwrap()
     };
 
-    let gltf_path = if props.norun || props.no3d {
+    let gltf_path = if props.no_render || props.engine_render {
         String::new()
     } else {
         // Refers to the specific path of zoo.dev that assets are served under.
@@ -269,7 +269,7 @@ fn generate_example(index: usize, src: &str, props: &ExampleProperties, file_nam
         format!("/kcl-test-outputs/models/serial_test_example_{file_name}{index}_output.glb")
     };
 
-    let image_path = if props.norun {
+    let image_path = if props.no_render {
         String::new()
     } else {
         // Refers to the specific path of zoo.dev that assets are served under.
@@ -899,7 +899,7 @@ async fn test_code_in_topics() {
         let text = std::fs::read_to_string(&path).unwrap();
 
         for (i, (eg, attr)) in find_examples(&text, &path).into_iter().enumerate() {
-            if attr.contains("norun") || attr == "no_run" || !attr.contains("kcl") {
+            if attr.contains("noRender") || !attr.contains("kcl") {
                 continue;
             }
 

@@ -174,15 +174,14 @@ impl TestGraphicsParams {
     fn geometry_only(&self) -> bool {
         matches!(self, Self::ExportAndRender | Self::None)
     }
-    /// kcl tests have `no3d` or `norun` flags in their declaration.
-    /// `norun` means "no graphics" and "no3d" means we want graphics but the model can't yet be exported for local rendering.
+    /// kcl doc examples have `engineRender` or `noRender` flags in their declaration if an export and CPU render is not desirable for that example.
     /// Translate these requirements into a more descriptive type here.
-    fn from_kcl_sample_spec(no_3d: bool, no_run: bool) -> Self {
-        match (no_3d, no_run) {
+    fn from_kcl_sample_spec(engine_render: bool, no_render: bool) -> Self {
+        match (engine_render, no_render) {
             (true, false) => Self::EngineRender {
-                // It would be nice for the kcl sample itself to contain richer information about why it's marked no3d.
+                // It would be nice for the kcl sample itself to contain richer information about why it's marked engineRender.
                 // But this is the best info we have for now.
-                reason: "KCL sample marked 'no3d'".to_string(),
+                reason: "KCL sample marked 'engineRender'".to_string(),
             },
             (false, false) => Self::ExportAndRender,
             (true, true) | (false, true) => Self::None,
@@ -229,10 +228,10 @@ async fn execute_from_graphics_params(
 pub async fn kcl_doc_execute_and_snapshot(
     code: &str,
     current_file: Option<PathBuf>,
-    no_3d: bool,
-    no_run: bool,
+    engine_render: bool,
+    no_render: bool,
 ) -> Result<TestGraphicsArtifact, ExecError> {
-    let graphics = TestGraphicsParams::from_kcl_sample_spec(no_3d, no_run);
+    let graphics = TestGraphicsParams::from_kcl_sample_spec(engine_render, no_render);
     let program = Program::parse_no_errs(code).map_err(KclErrorWithOutputs::no_outputs)?;
     let version = program.language_version().map_err(KclErrorWithOutputs::no_outputs)?;
     let ctx = new_context(true, current_file, graphics.geometry_only(), version).await?;

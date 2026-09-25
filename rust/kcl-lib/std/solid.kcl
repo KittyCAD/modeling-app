@@ -1538,7 +1538,7 @@ export fn subtract(
 ///        roughness = 50
 ///    )
 /// ```
-/// ```kcl,no3d
+/// ```kcl,engineRender
 /// offsetPlane(XZ, offset = 4mm)
 /// |> appearance(color = "#ff0000", opacity = 50)
 /// ```
