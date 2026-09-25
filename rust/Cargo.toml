@@ -108,3 +108,6 @@ debug = "line-tables-only"
 # [patch.crates-io]
 # ezpz = { git = "https://github.com/KittyCAD/ezpz.git", branch = "david/circle-circle-tangent" }
 # kittycad-modeling-cmds = { path = "../../modeling-api/modeling-cmds" }
+
+[patch.crates-io]
+kittycad-modeling-cmds = { git = "https://github.com/KittyCAD/modeling-api", rev = "9017773fb1d8f99ba5a3bd8e2b644afc27658e61" }

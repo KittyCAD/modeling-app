@@ -1457,7 +1457,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "39cab71617ae0d63f51a36d69f866391735b51691dbda63cf6f96d042b63efeb"
 dependencies = [
  "libc",
- "windows-sys 0.52.0",
+ "windows-sys 0.59.0",
 ]
 
 [[package]]
@@ -2596,7 +2596,7 @@ checksum = "3640c1c38b8e4e43584d8df18be5fc6b0aa314ce6ebf51b53313d4306cca8e46"
 dependencies = [
  "hermit-abi",
  "libc",
- "windows-sys 0.52.0",
+ "windows-sys 0.59.0",
 ]
 
 [[package]]
@@ -3085,9 +3085,8 @@ dependencies = [
 
 [[package]]
 name = "kittycad-modeling-cmds"
-version = "0.2.239"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "208f2fa3b00b6561a7becd898db8fe1d725f115d81ba29e42a37dc1ebbf09ac1"
+version = "0.2.240"
+source = "git+https://github.com/KittyCAD/modeling-api?rev=9017773fb1d8f99ba5a3bd8e2b644afc27658e61#9017773fb1d8f99ba5a3bd8e2b644afc27658e61"
 dependencies = [
  "anyhow",
  "bon",
@@ -3101,6 +3100,7 @@ dependencies = [
  "kcl-api 0.2.186 (registry+https://github.com/rust-lang/crates.io-index)",
  "kittycad-measurements",
  "kittycad-modeling-cmds-macros",
+ "kittycad-point 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "kittycad-unit-conversion-derive",
  "parse-display",
  "parse-display-derive",
@@ -3119,8 +3119,7 @@ dependencies = [
 [[package]]
 name = "kittycad-modeling-cmds-macros"
 version = "0.1.14"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "50c9f1366e47999291754861f2362774f1c98bf478819d3788e70b978381e230"
+source = "git+https://github.com/KittyCAD/modeling-api?rev=9017773fb1d8f99ba5a3bd8e2b644afc27658e61#9017773fb1d8f99ba5a3bd8e2b644afc27658e61"
 dependencies = [
  "kittycad-modeling-cmds-macros-impl",
  "proc-macro2",
@@ -3131,8 +3130,7 @@ dependencies = [
 [[package]]
 name = "kittycad-modeling-cmds-macros-impl"
 version = "0.1.15"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "101a9b33a3af1c80223b1e34d8d4a28c7e09b61b43fa8ad643efba35bd2cc10e"
+source = "git+https://github.com/KittyCAD/modeling-api?rev=9017773fb1d8f99ba5a3bd8e2b644afc27658e61#9017773fb1d8f99ba5a3bd8e2b644afc27658e61"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -3159,6 +3157,7 @@ dependencies = [
  "euler 0.5.0",
  "schemars 0.8.22",
  "serde",
+ "ts-rs",
 ]
 
 [[package]]
@@ -4419,7 +4418,7 @@ dependencies = [
  "once_cell",
  "socket2 0.6.3",
  "tracing",
- "windows-sys 0.52.0",
+ "windows-sys 0.59.0",
 ]
 
 [[package]]
@@ -4857,7 +4856,7 @@ dependencies = [
  "errno",
  "libc",
  "linux-raw-sys 0.12.1",
- "windows-sys 0.52.0",
+ "windows-sys 0.59.0",
 ]
 
 [[package]]
@@ -4914,7 +4913,7 @@ dependencies = [
  "security-framework",
  "security-framework-sys",
  "webpki-root-certs",
- "windows-sys 0.52.0",
+ "windows-sys 0.59.0",
 ]
 
 [[package]]
@@ -5710,7 +5709,7 @@ dependencies = [
  "getrandom 0.4.3",
  "once_cell",
  "rustix 1.1.4",
- "windows-sys 0.52.0",
+ "windows-sys 0.59.0",
 ]
 
 [[package]]
@@ -6677,7 +6676,7 @@ version = "0.1.11"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c2a7b1c03c876122aa43f3020e6c3c3ee5c05081c9a00739faf7503aeba10d22"
 dependencies = [
- "windows-sys 0.52.0",
+ "windows-sys 0.59.0",
 ]
 
 [[package]]

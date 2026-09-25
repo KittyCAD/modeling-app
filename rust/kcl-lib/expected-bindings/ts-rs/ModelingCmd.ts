@@ -1694,7 +1694,11 @@ entity_ids: Array<string>,
 /**
  * The file format to export to.
  */
-format: OutputFormat3d, };
+format: OutputFormat3d, 
+/**
+ * KCL source to embed in formats that support source metadata.
+ */
+kcl_source?: KclSource | null, };
 
 /**
  * Export a sketch to a file.
@@ -1722,7 +1726,11 @@ entity_ids: Array<string>,
 /**
  * The file format to export to.
  */
-format: OutputFormat3d, };
+format: OutputFormat3d, 
+/**
+ * KCL source to embed in formats that support source metadata.
+ */
+kcl_source?: KclSource | null, };
 
 /**
  * Extend a path by adding a new segment which starts at the path's "pen".
@@ -2149,6 +2157,19 @@ coords: System,
  * Defaults to `false` but is implicitly `true` when importing into the engine.
  */
 split_closed_faces: boolean, };
+
+/**
+ * KCL source to embed in exported files that support source metadata.
+ */
+export type KclSource = { 
+/**
+ * Project-relative path of the entrypoint KCL file.
+ */
+entrypoint: string, 
+/**
+ * Project-relative file paths mapped to their exact KCL source text.
+ */
+files: { [key in string]: string }, };
 
 /**
  * A length unit is wrapper around an f64 that represents a length in some unit.

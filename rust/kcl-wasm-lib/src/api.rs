@@ -153,7 +153,7 @@ impl Context {
         let program = program.fill_node_paths();
 
         let ctx = self
-            .create_executor_ctx(settings, None, false)
+            .create_current_executor_ctx(settings, false)
             .map_err(|e| format!("Could not create KCL executor context for new sketch. {TRUE_BUG} Details: {e}"))?;
 
         let frontend = Arc::clone(&self.frontend);
@@ -184,7 +184,7 @@ impl Context {
             serde_json::from_str(sketch_json).map_err(|e| format!("Could not deserialize ObjectId: {e}"))?;
 
         let ctx = self
-            .create_executor_ctx(settings, None, true)
+            .create_current_executor_ctx(settings, true)
             .map_err(|e| format!("Could not create KCL executor context for new sketch. {TRUE_BUG} Details: {e}"))?;
 
         let frontend = Arc::clone(&self.frontend);
@@ -229,7 +229,7 @@ impl Context {
             serde_json::from_str(args_json).map_err(|e| format!("Could not deserialize SketchCtor: {e}"))?;
 
         let ctx = self
-            .create_executor_ctx(settings, None, false)
+            .create_current_executor_ctx(settings, false)
             .map_err(|e| format!("Could not create KCL executor context for new sketch. {TRUE_BUG} Details: {e}"))?;
 
         let frontend = Arc::clone(&self.frontend);
@@ -275,7 +275,7 @@ impl Context {
             serde_json::from_str(sketch_json).map_err(|e| format!("Could not deserialize sketch ObjectId: {e}"))?;
 
         let ctx = self
-            .create_executor_ctx(settings, None, true)
+            .create_current_executor_ctx(settings, true)
             .map_err(|e| format!("Could not create KCL executor context for edit sketch. {TRUE_BUG} Details: {e}"))?;
 
         let frontend = Arc::clone(&self.frontend);
@@ -308,7 +308,7 @@ impl Context {
             serde_json::from_str(sketch_json).map_err(|e| format!("Could not deserialize ObjectId: {e}"))?;
 
         let ctx = self
-            .create_executor_ctx(settings, None, false)
+            .create_current_executor_ctx(settings, false)
             .map_err(|e| format!("Could not create KCL executor context for exit sketch. {TRUE_BUG} Details: {e}"))?;
 
         let frontend = Arc::clone(&self.frontend);
@@ -338,7 +338,7 @@ impl Context {
             serde_json::from_str(sketch_json).map_err(|e| format!("Could not deserialize sketch ObjectId: {e}"))?;
 
         let ctx = self
-            .create_executor_ctx(settings, None, false)
+            .create_current_executor_ctx(settings, false)
             .map_err(|e| format!("Could not create KCL executor context for delete sketch. {TRUE_BUG} Details: {e}"))?;
 
         let frontend = Arc::clone(&self.frontend);
@@ -373,7 +373,7 @@ impl Context {
             serde_json::from_str(segment_json).map_err(|e| format!("Could not deserialize SegmentCtor: {e}"))?;
 
         let ctx = self
-            .create_executor_ctx(settings, None, true)
+            .create_current_executor_ctx(settings, true)
             .map_err(|e| format!("Could not create KCL executor context for add segment. {TRUE_BUG} Details: {e}"))?;
 
         let frontend = Arc::clone(&self.frontend);
@@ -439,7 +439,7 @@ impl Context {
                 .map_err(|e| format!("Could not deserialize constraint label edits: {e}"))?;
 
         let ctx = self
-            .create_executor_ctx(settings, None, true)
+            .create_current_executor_ctx(settings, true)
             .map_err(|e| format!("Could not create KCL executor context for edit segment. {TRUE_BUG} Details: {e}"))?;
 
         let frontend = Arc::clone(&self.frontend);
@@ -502,7 +502,7 @@ impl Context {
             serde_json::from_str(segment_ids_json).map_err(|e| format!("Could not deserialize Segment IDs: {e}"))?;
 
         let ctx = self
-            .create_executor_ctx(settings, None, true)
+            .create_current_executor_ctx(settings, true)
             .map_err(|e| format!("Could not create KCL executor context for edit segment. {TRUE_BUG} Details: {e}"))?;
 
         let frontend = Arc::clone(&self.frontend);
@@ -550,7 +550,7 @@ impl Context {
         let constraint: kcl_lib::front::Constraint =
             serde_json::from_str(constraint_json).map_err(|e| format!("Could not deserialize ConstraintCtor: {e}"))?;
 
-        let ctx = self.create_executor_ctx(settings, None, true).map_err(|e| {
+        let ctx = self.create_current_executor_ctx(settings, true).map_err(|e| {
             format!("Could not create KCL executor context for add constraint. {TRUE_BUG} Details: {e}")
         })?;
 
@@ -600,7 +600,7 @@ impl Context {
         let constraint_id: kcl_lib::front::ObjectId =
             serde_json::from_str(constraint_id_json).map_err(|e| format!("Could not deserialize ObjectId: {e}"))?;
 
-        let ctx = self.create_executor_ctx(settings, None, true).map_err(|e| {
+        let ctx = self.create_current_executor_ctx(settings, true).map_err(|e| {
             format!("Could not create KCL executor context for edit constraint value. {TRUE_BUG} Details: {e}")
         })?;
 
@@ -661,7 +661,7 @@ impl Context {
             return Err("edit_angle_constraint requires an Angle constraint".into());
         };
 
-        let ctx = self.create_executor_ctx(settings, None, true).map_err(|e| {
+        let ctx = self.create_current_executor_ctx(settings, true).map_err(|e| {
             format!("Could not create KCL executor context for edit angle constraint. {TRUE_BUG} Details: {e}")
         })?;
 
@@ -736,7 +736,7 @@ impl Context {
             return Err("edit_distance_constraint requires a distance constraint".into());
         }
 
-        let ctx = self.create_executor_ctx(settings, None, true).map_err(|e| {
+        let ctx = self.create_current_executor_ctx(settings, true).map_err(|e| {
             format!("Could not create KCL executor context for edit distance constraint. {TRUE_BUG} Details: {e}")
         })?;
 
@@ -806,7 +806,7 @@ impl Context {
         let anchor_segment_ids: Vec<kcl_lib::front::ObjectId> = serde_json::from_str(anchor_segment_ids_json)
             .map_err(|e| format!("Could not deserialize anchor segment ids: {e}"))?;
 
-        let ctx = self.create_executor_ctx(settings, None, true).map_err(|e| {
+        let ctx = self.create_current_executor_ctx(settings, true).map_err(|e| {
             format!("Could not create KCL executor context for edit constraint label. {TRUE_BUG} Details: {e}")
         })?;
 
@@ -871,7 +871,7 @@ impl Context {
         }
 
         let ctx = self
-            .create_executor_ctx(settings, None, true)
+            .create_current_executor_ctx(settings, true)
             .map_err(|e| format!("Could not create KCL executor context for trim. {TRUE_BUG} Details: {e}"))?;
 
         let frontend = Arc::clone(&self.frontend);
@@ -997,7 +997,7 @@ impl Context {
             serde_json::from_str(segment_json).map_err(|e| format!("Could not deserialize SegmentCtor: {e}"))?;
 
         let ctx = self
-            .create_executor_ctx(settings, None, true)
+            .create_current_executor_ctx(settings, true)
             .map_err(|e| format!("Could not create KCL executor context for chain segment. {TRUE_BUG} Details: {e}"))?;
 
         let frontend = Arc::clone(&self.frontend);
