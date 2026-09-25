@@ -75,8 +75,8 @@ fn visit_module(name: &str, preferred_prefix: &str, names: WalkForNames) -> Resu
     let mut result = ModData::new(name, preferred_prefix);
 
     let source = crate::modules::read_std(name).unwrap();
-    let parsed = crate::parsing::parse_str(source, ModuleId::from_usize(0))
-        .parse_errs_as_err()
+    let (parsed, never_type_ranges) = crate::parsing::parse_str_syntax(source, ModuleId::from_usize(0)).unwrap();
+    crate::parsing::validate_never_type_ranges(&never_type_ranges, crate::parsing::SyntaxSource::BundledStdlib)
         .unwrap();
 
     let mut summary = String::new();

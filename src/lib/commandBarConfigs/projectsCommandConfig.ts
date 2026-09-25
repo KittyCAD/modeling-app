@@ -61,13 +61,8 @@ interface HomeProjectCommandTarget {
   project: HomeProjectEntry
 }
 
-function defaultEnableProjectDirectoryCommands() {
-  return typeof window !== 'undefined' && Boolean(window.electron)
-}
-
 export function createProjectCommands({
   systemIOActor,
-  enableProjectDirectoryCommands = defaultEnableProjectDirectoryCommands(),
   getCurrentProjectDirectoryName,
   getCurrentProjectLibraryId,
   getCreateProjectLibraryTargets,
@@ -75,7 +70,6 @@ export function createProjectCommands({
   getHomeProjectEntries,
 }: {
   systemIOActor: ActorRefFrom<typeof systemIOMachine>
-  enableProjectDirectoryCommands?: boolean
   getCurrentProjectDirectoryName?: () => string | undefined
   getCurrentProjectLibraryId?: () => string | undefined
   getCreateProjectLibraryTargets?: () => readonly CreateProjectLibraryTarget[]
@@ -687,16 +681,12 @@ export function createProjectCommands({
     },
   }
 
-  const projectCommands = enableProjectDirectoryCommands
-    ? [
-        openProjectCommand,
-        createProjectCommand,
-        moveToLibraryCommand,
-        deleteProjectCommand,
-        renameProjectCommand,
-        importFileFromURL,
-      ]
-    : [importFileFromURL]
-
-  return projectCommands
+  return [
+    openProjectCommand,
+    createProjectCommand,
+    moveToLibraryCommand,
+    deleteProjectCommand,
+    renameProjectCommand,
+    importFileFromURL,
+  ]
 }

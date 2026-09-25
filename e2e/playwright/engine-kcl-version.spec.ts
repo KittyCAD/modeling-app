@@ -1,9 +1,6 @@
 import { expect, test } from '@e2e/playwright/zoo-test'
 import { getUtils } from '@e2e/playwright/test-utils'
 import type { EngineCommand } from '@src/lang/std/artifactGraph'
-import { OPFS_CLOUD_FEATURE_FLAG } from '@src/lib/constants'
-
-test.use({ userFeatures: [OPFS_CLOUD_FEATURE_FLAG] })
 
 const kcl2 = `@settings(kclVersion = 2.0)
 profile = sketch(on = XY) {

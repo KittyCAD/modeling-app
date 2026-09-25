@@ -14,7 +14,7 @@ layout: manual
   * [`clone`](/docs/kcl-std/functions/std-clone)
   * [`edgeId`](/docs/kcl-std/functions/std-edgeId)
   * [`faceId`](/docs/kcl-std/functions/std-faceId)
-  * [`fail`](/docs/kcl-std/functions/std-fail) Experimental
+  * [`fail`](/docs/kcl-std/functions/std-fail)
   * [`helix`](/docs/kcl-std/functions/std-helix)
   * [`offsetPlane`](/docs/kcl-std/functions/std-offsetPlane)
 * [**std::appearance**](/docs/kcl-std/modules/std-appearance)
@@ -271,7 +271,7 @@ See also the [types overview](/docs/kcl-lang/types)
   * [`any`](/docs/kcl-std/types/std-types-any)
   * [`bool`](/docs/kcl-std/types/std-types-bool)
   * [`fn`](/docs/kcl-std/types/std-types-fn)
-  * [`never`](/docs/kcl-std/types/std-types-never) Experimental
+  * [`never`](/docs/kcl-std/types/std-types-never)
   * [`none`](/docs/kcl-std/types/std-types-none) Experimental
   * [`number`](/docs/kcl-std/types/std-types-number)
   * [`string`](/docs/kcl-std/types/std-types-string)

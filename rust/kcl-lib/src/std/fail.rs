@@ -24,11 +24,15 @@ mod tests {
     use crate::docs::kcl_doc::walk_prelude;
 
     #[test]
-    fn fail_prelude_contract_is_experimental_and_returns_never() {
+    fn fail_prelude_contract_is_added_in_v3_and_returns_never() {
         let prelude = walk_prelude();
         let fail = prelude.find_by_name("fail").unwrap();
 
-        assert!(fail.is_experimental());
+        assert!(!fail.is_experimental());
+        assert_eq!(
+            fail.properties().added_in.as_ref().map(ToString::to_string).as_deref(),
+            Some("3.0")
+        );
         let DocData::Fn(fail) = fail else {
             panic!("expected fail to be a function, found {fail:?}");
         };

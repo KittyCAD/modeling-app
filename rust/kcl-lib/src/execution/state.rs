@@ -91,6 +91,8 @@ pub(super) struct GlobalState {
     pub id_to_source: IndexMap<ModuleId, ModuleSource>,
     /// Map from module ID to module info.
     pub module_infos: ModuleInfoMap,
+    /// `never` type uses in local imports, retained until their versions are validated.
+    pub never_type_ranges: IndexMap<ModuleId, Vec<SourceRange>>,
     /// Module loader.
     pub mod_loader: ModuleLoader,
     /// Errors and warnings.
@@ -1612,31 +1614,52 @@ impl ExecState {
     }
 
     /// Check an imported file before executing it. Version mismatches take
-    /// priority over V3 keyword restrictions.
+    /// priority over versioned syntax restrictions.
+    /// The loader-assigned module ID identifies source and syntax metadata;
+    /// an empty parsed program retains the default AST module ID.
     pub(crate) fn validate_imported_module(
         &self,
         path: &ModulePath,
+        module_id: ModuleId,
         program: &Node<Program>,
         import_range: Option<SourceRange>,
     ) -> Result<(), KclError> {
         self.check_imported_module_kcl_version(path, program, import_range)?;
-        if !path.is_local() || !self.entry_point_version_is_v3_or_higher() {
+        if !path.is_local() {
             return Ok(());
         }
 
-        let source = self.global.id_to_source.get(&program.module_id).ok_or_else(|| {
+        let ranges = self.global.never_type_ranges.get(&module_id).ok_or_else(|| {
+            KclError::new_internal(KclErrorDetails::new(
+                format!("Missing `never` type ranges for imported KCL module `{path}`"),
+                import_range.into_iter().collect(),
+            ))
+        })?;
+        crate::parsing::validate_never_type_ranges(
+            ranges,
+            crate::parsing::SyntaxSource::UserCode(self.entry_point_kcl_version()),
+        )
+        .map_err(|error| match import_range {
+            Some(range) => error.add_import_location(&path.import_name(), range),
+            None => error,
+        })?;
+        if !self.entry_point_version_is_v3_or_higher() {
+            return Ok(());
+        }
+
+        let source = self.global.id_to_source.get(&module_id).ok_or_else(|| {
             KclError::new_internal(KclErrorDetails::new(
                 format!("Missing source for imported KCL module `{path}`"),
                 import_range.into_iter().collect(),
             ))
         })?;
-        crate::parsing::validate_use_keyword_source(&source.source, program.module_id)
-            .and_then(|_| crate::parsing::validate_enum_keyword_source(&source.source, program.module_id))
-            .and_then(|_| crate::parsing::validate_import_modifier_source(&source.source, program.module_id))
-            .map_err(|error| match import_range {
-                Some(range) => error.add_import_location(&path.import_name(), range),
-                None => error,
-            })
+        let validation = crate::parsing::validate_use_keyword_source(&source.source, module_id)
+            .and_then(|_| crate::parsing::validate_enum_keyword_source(&source.source, module_id))
+            .and_then(|_| crate::parsing::validate_import_modifier_source(&source.source, module_id));
+        validation.map_err(|error| match import_range {
+            Some(range) => error.add_import_location(&path.import_name(), range),
+            None => error,
+        })
     }
 }
 
@@ -1676,6 +1699,7 @@ impl GlobalState {
             machine_depth_high_water: 0,
             path_to_source_id: Default::default(),
             module_infos: Default::default(),
+            never_type_ranges: Default::default(),
             artifacts: Default::default(),
             root_module_artifacts: Default::default(),
             mod_loader: Default::default(),

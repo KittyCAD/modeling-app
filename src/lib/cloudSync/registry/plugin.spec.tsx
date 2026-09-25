@@ -16,7 +16,6 @@ import {
   cloudSyncProjectLibraryType,
   getCloudSyncStatusBarPresentation,
 } from '@src/lib/cloudSync/registry/plugin'
-import { OPFS_CLOUD_FEATURE_FLAG } from '@src/lib/constants'
 import { testFileOperations } from '@src/lib/fileSystem/testRuntime'
 import fsZds from '@src/lib/fs-zds'
 import { fsZdsConstants } from '@src/lib/fs-zds/constants'
@@ -363,7 +362,7 @@ function createSettingsService({
 }
 
 function createUserFeaturesService(
-  featureIds: Set<Feature> = new Set([OPFS_CLOUD_FEATURE_FLAG])
+  featureIds: Set<Feature> = new Set()
 ): UserFeaturesRegistryService {
   const context = signal({
     featureIds,

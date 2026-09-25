@@ -593,7 +593,6 @@ export class App implements AppSubsystems {
           ),
           ...createProjectCommands({
             systemIOActor: this.systemIOActor,
-            enableProjectDirectoryCommands: true,
             getCurrentProjectDirectoryName: () =>
               this.settings.actor.getSnapshot().context.currentProject?.name,
             getCurrentProjectLibraryId: () =>
@@ -691,6 +690,9 @@ export class App implements AppSubsystems {
         platform !== undefined &&
         featurePolicy.forceEnabledOnPlatform === platform &&
         !isPlaywright()
+      if (isPlaywright() && !forceEnabled) {
+        continue
+      }
       if (!forceEnabled && settingValue.user !== undefined) {
         continue
       }

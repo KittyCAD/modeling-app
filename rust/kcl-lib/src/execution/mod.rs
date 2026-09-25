@@ -621,41 +621,60 @@ impl ExecOutcome {
         sketch_name: &str,
         instance_index: Option<usize>,
     ) -> std::result::Result<Vec<u8>, crate::tooling::sketch_visualizer::SketchVisualizationError> {
-        use crate::front::ObjectKind;
-        use crate::tooling::sketch_visualizer::SketchVisualizationError;
+        render_sketch_png_from_scene_objects(&self.scene_objects, sketch_name, instance_index)
+    }
+}
 
-        let sketches = self
-            .scene_objects
-            .iter()
-            .filter_map(|object| match &object.kind {
-                ObjectKind::Sketch(sketch) if object.label == sketch_name => Some(sketch),
-                _ => None,
-            })
-            .collect::<Vec<_>>();
-        let sketch = match (sketches.as_slice(), instance_index) {
-            ([], _) => {
-                return Err(SketchVisualizationError::SketchNotFound {
-                    name: sketch_name.to_owned(),
-                });
-            }
-            (_, Some(index)) => *sketches
+pub(crate) fn render_sketch_png_from_scene_objects(
+    scene_objects: &[crate::front::Object],
+    sketch_name: &str,
+    instance_index: Option<usize>,
+) -> std::result::Result<Vec<u8>, crate::tooling::sketch_visualizer::SketchVisualizationError> {
+    use crate::front::ObjectKind;
+    use crate::tooling::sketch_visualizer::SketchVisualizationError;
+
+    let sketches_matching_name = scene_objects
+        .iter()
+        .filter_map(|object| match &object.kind {
+            ObjectKind::Sketch(sketch) if object.label == sketch_name => Some(sketch),
+            _ => None,
+        })
+        .collect::<Vec<_>>();
+
+    // Select the correct sketch, from all sketches matching the name.
+    let sketch = match (sketches_matching_name.as_slice(), instance_index) {
+        // No sketches matched the name.
+        ([], _) => {
+            return Err(SketchVisualizationError::SketchNotFound {
+                name: sketch_name.to_owned(),
+            });
+        }
+        // At least one sketch matched the name, and the user gave an index.
+        (_nonempty, Some(index)) => {
+            *sketches_matching_name
                 .get(index)
                 .ok_or_else(|| SketchVisualizationError::InstanceNotFound {
                     name: sketch_name.to_owned(),
                     index,
-                    count: sketches.len(),
-                })?,
-            ([sketch], None) => *sketch,
-            (_, None) => {
-                return Err(SketchVisualizationError::AmbiguousSketchName {
-                    name: sketch_name.to_owned(),
-                    count: sketches.len(),
-                });
-            }
-        };
+                    count: sketches_matching_name.len(),
+                })?
+        }
+        // Exactly one sketch matched the name, the user didn't need any
+        // index because there is no ambiguity about which sketch.
+        ([sketch], None) => *sketch,
 
-        crate::tooling::sketch_visualizer::render_sketch_png(&self.scene_objects, sketch)
-    }
+        // More than one sketch matched the name, but there's no index
+        // to disambiguate.
+        (_nonempty, None) => {
+            return Err(SketchVisualizationError::AmbiguousSketchName {
+                name: sketch_name.to_owned(),
+                count: sketches_matching_name.len(),
+            });
+        }
+    };
+
+    // Now that we've selected the right sketch, visualize it.
+    crate::tooling::sketch_visualizer::render_sketch_png(scene_objects, sketch)
 }
 
 /// Configuration for mock execution.
@@ -1451,6 +1470,7 @@ impl ExecutorContext {
         exec_state.global.module_infos = mem.module_infos;
         exec_state.global.path_to_source_id = mem.path_to_source_id;
         exec_state.global.id_to_source = mem.id_to_source;
+        exec_state.global.never_type_ranges = mem.never_type_ranges;
         exec_state.global.std_not_yet_added = mem.std_not_yet_added;
         exec_state.mod_local.constraint_state = mem.constraint_state;
         let len = _mock_config
@@ -1492,6 +1512,7 @@ impl ExecutorContext {
         let module_infos = exec_state.global.module_infos.clone();
         let path_to_source_id = exec_state.global.path_to_source_id.clone();
         let id_to_source = exec_state.global.id_to_source.clone();
+        let never_type_ranges = exec_state.global.never_type_ranges.clone();
         let constraint_state = exec_state.mod_local.constraint_state.clone();
         let scene_objects = exec_state.global.root_module_artifacts.scene_objects.clone();
         let std_not_yet_added = exec_state.global.std_not_yet_added.clone();
@@ -1507,6 +1528,7 @@ impl ExecutorContext {
             module_infos,
             path_to_source_id,
             id_to_source,
+            never_type_ranges,
             constraint_state,
             scene_objects,
             std_not_yet_added,
@@ -2163,6 +2185,11 @@ impl ExecutorContext {
         program: &crate::Program,
         exec_state: &mut ExecState,
     ) -> Result<(Universe, UniverseMap), KclErrorWithOutputs> {
+        // Import validation needs the entry point's version even when a fresh
+        // state is created only to check imports in a cached execution.
+        exec_state
+            .set_entry_point_kcl_version(program)
+            .map_err(KclErrorWithOutputs::no_outputs)?;
         exec_state.add_root_module_contents(program);
 
         let mut universe = std::collections::HashMap::new();
@@ -2244,6 +2271,7 @@ impl ExecutorContext {
                 module_infos: exec_state.global.module_infos.clone(),
                 path_to_source_id: exec_state.global.path_to_source_id.clone(),
                 id_to_source: exec_state.global.id_to_source.clone(),
+                never_type_ranges: exec_state.global.never_type_ranges.clone(),
                 constraint_state: exec_state.mod_local.constraint_state.clone(),
                 scene_objects: exec_state.global.root_module_artifacts.scene_objects.clone(),
                 std_not_yet_added: exec_state.global.std_not_yet_added.clone(),
@@ -5044,12 +5072,16 @@ solid7 = extrude(r7, length = width)
                     crate::execution::ConstraintState::Tangency(crate::execution::TangencyMode::LineCircle(ezpz::LineSide::Left))
             },
         );
+        let imported_id = ModuleId::from_usize(42);
+        mem.never_type_ranges
+            .insert(imported_id, vec![SourceRange::new(0, 5, imported_id)]);
 
         let mut exec_state = ExecState::new_mock(&ctx, &MockConfig::default());
         ExecutorContext::restore_mock_memory(&mut exec_state, mem.clone(), &MockConfig::default()).unwrap();
 
         assert_eq!(exec_state.global.path_to_source_id, mem.path_to_source_id);
         assert_eq!(exec_state.global.id_to_source, mem.id_to_source);
+        assert_eq!(exec_state.global.never_type_ranges, mem.never_type_ranges);
         assert_eq!(exec_state.global.module_infos, mem.module_infos);
         assert_eq!(exec_state.mod_local.constraint_state, mem.constraint_state);
 
@@ -6039,6 +6071,103 @@ face = disc()
             assert!(!ranges[0].module_id().is_top_level());
             assert!(ranges[1].module_id().is_top_level());
         }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn imported_never_type_follows_entry_point_version() {
+        let dep = "export fn stop(): never {}\n";
+        for version in ["1.0", "2.0"] {
+            let main = format!("@settings(kclVersion = {version})\nimport stop from \"dep.kcl\"\nx = 1\n");
+            for run_mock in [false, true] {
+                let error = if run_mock {
+                    run_versioned_modules_mock(&main, &[("dep.kcl", dep)]).await
+                } else {
+                    run_versioned_modules(&main, &[("dep.kcl", dep)]).await
+                }
+                .expect_err("older KCL versions must reject imported `never` types");
+                assert!(matches!(error, KclError::Syntax { .. }), "{error:#?}");
+                assert_eq!(
+                    error.message(),
+                    format!("The `never` type requires KCL 3.0-preview, but this program uses KCL {version}.")
+                );
+                let ranges = error.source_ranges();
+                assert_eq!(ranges.len(), 2, "{ranges:#?}");
+                let start = dep.find("never").unwrap();
+                assert_eq!((ranges[0].start(), ranges[0].end()), (start, start + "never".len()));
+                assert!(!ranges[0].module_id().is_top_level());
+                assert!(ranges[1].module_id().is_top_level());
+            }
+        }
+
+        let main_v3 = "@settings(kclVersion = \"3.0-preview\")\nimport stop from \"dep.kcl\"\nx = 1\n";
+        run_versioned_modules(main_v3, &[("dep.kcl", dep)]).await.unwrap();
+
+        let dep_v2 = format!("@settings(kclVersion = 2.0)\n{dep}");
+        let error = run_versioned_modules(main_v3, &[("dep.kcl", &dep_v2)])
+            .await
+            .expect_err("version mismatch must precede `never` validation");
+        assert_kcl_version_mismatch(&error, "2.0");
+        assert_eq!(
+            error
+                .backtrace()
+                .iter()
+                .map(|frame| frame.fn_name.as_deref())
+                .collect::<Vec<_>>(),
+            [Some("import dep.kcl"), None]
+        );
+
+        let main_v2 = "@settings(kclVersion = 2.0)\nimport stop from \"dep.kcl\"\nx = 1\n";
+        let dep_v3 = format!("@settings(kclVersion = \"3.0-preview\")\n{dep}");
+        let error = run_versioned_modules(main_v2, &[("dep.kcl", &dep_v3)])
+            .await
+            .expect_err("version mismatch must precede `never` validation");
+        assert!(
+            error
+                .message()
+                .starts_with("Mixing KCL versions in a single program is not allowed.")
+        );
+
+        // Mock execution must validate a whole-module import even when it is unused.
+        let unused_import = "@settings(kclVersion = 2.0)\nimport \"dep.kcl\" as dep\nx = 1\n";
+        let error = run_versioned_modules_mock(unused_import, &[("dep.kcl", dep)])
+            .await
+            .expect_err("an unused imported module must not bypass `never` validation");
+        assert_eq!(
+            error.message(),
+            "The `never` type requires KCL 3.0-preview, but this program uses KCL 2.0."
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn never_type_resolution_rejects_an_unvalidated_v2_ast() {
+        let source = "@settings(kclVersion = 2.0)\nfn stop(): never {}\n";
+        let (ast, _) = crate::parsing::parse_str_syntax(source, ModuleId::default()).unwrap();
+        let program = crate::Program {
+            ast,
+            original_file_contents: source.to_owned(),
+        };
+        let ctx = versioned_modules_context(&[]);
+        let mut exec_state = ExecState::new(&ctx);
+        let error = ctx.run(&program, &mut exec_state).await.unwrap_err().error;
+        ctx.close().await;
+
+        assert!(matches!(error, KclError::Syntax { .. }), "{error:#?}");
+        assert_eq!(
+            error.message(),
+            "The `never` type requires KCL 3.0-preview, but this program uses KCL 2.0."
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn import_universe_uses_entry_point_version_in_a_fresh_state() {
+        let main = "@settings(kclVersion = \"3.0-preview\")\nimport stop from \"dep.kcl\"\nx = 1\n";
+        let ctx = versioned_modules_context(&[("dep.kcl", "export fn stop(): never {}\n")]);
+        let program = crate::Program::parse_no_errs(main).unwrap();
+        let mut exec_state = ExecState::new(&ctx);
+
+        ctx.get_universe(&program, &mut exec_state).await.unwrap();
+        assert_eq!(exec_state.global.entry_point_kcl_version, Some(KclVersion::V3Preview));
+        ctx.close().await;
     }
 
     #[tokio::test(flavor = "multi_thread")]
