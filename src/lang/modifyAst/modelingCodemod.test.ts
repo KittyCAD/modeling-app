@@ -33,6 +33,7 @@ describe('createModelingCodemodReviewValidation', () => {
     const wasmInstance = {
       recast_wasm: vi.fn().mockReturnValue(proposedCode),
     } as unknown as ModuleType
+    const currentPath = 'project/main.kcl'
     const kclManager = {
       get ast() {
         return currentAst
@@ -41,7 +42,9 @@ describe('createModelingCodemodReviewValidation', () => {
         return currentCode
       },
       fileSettings: {},
+      path: currentPath,
     } as KclManager
+    const rustContext = {} as RustContext
     const executionError = new Error('Mock execution failed')
     vi.mocked(mockExecAstAndReportErrors).mockResolvedValueOnce(executionError)
 
@@ -74,7 +77,7 @@ describe('createModelingCodemodReviewValidation', () => {
               connection: { connected: true },
             } as unknown as ConnectionManager,
             kclManager,
-            rustContext: {} as RustContext,
+            rustContext,
           },
         }),
       }
@@ -85,7 +88,15 @@ describe('createModelingCodemodReviewValidation', () => {
     const result = await resultPromise
 
     expect(run).toHaveBeenCalledOnce()
+    expect(mockExecAstAndReportErrors).toHaveBeenCalledWith(
+      modifiedAst,
+      rustContext,
+      currentPath
+    )
     expect(result).toBeInstanceOf(Error)
+    if (!(result instanceof Error)) {
+      throw new Error('Expected review validation to fail')
+    }
     expect(result?.message).toBe(executionError.message)
     expect(result?.cause).toBe(executionError)
     expect(result?.reviewDetails).toEqual({
@@ -96,5 +107,54 @@ describe('createModelingCodemodReviewValidation', () => {
     expect(wasmInstance.recast_wasm).toHaveBeenCalledWith(
       JSON.stringify(modifiedAst)
     )
+  })
+
+  it('returns the code diff when mock execution succeeds', async () => {
+    const currentCode = 'part = extrude(sketch, length = 10)'
+    const proposedCode = 'part = extrude(sketch, length = 20)'
+    const currentAst = { start: 0, end: currentCode.length } as Node<Program>
+    const modifiedAst = { start: 0, end: proposedCode.length } as Node<Program>
+    const wasmInstance = {
+      recast_wasm: vi.fn().mockReturnValue(proposedCode),
+    } as unknown as ModuleType
+    const rustContext = {} as RustContext
+    const kclManager = {
+      ast: currentAst,
+      code: currentCode,
+      fileSettings: {},
+      path: 'project/main.kcl',
+    } as KclManager
+    vi.mocked(mockExecAstAndReportErrors).mockResolvedValueOnce(undefined)
+
+    const validate = createModelingCodemodReviewValidation(
+      defineModelingCodemod({
+        run: () => ({ modifiedAst, pathToNode: [] }),
+      })
+    )
+    const result = await validate(
+      {
+        argumentsToSubmit: {},
+        wasmInstancePromise: Promise.resolve(wasmInstance),
+      },
+      {
+        getSnapshot: () => ({
+          context: {
+            engineCommandManager: {
+              connection: { connected: true },
+            } as unknown as ConnectionManager,
+            kclManager,
+            rustContext,
+          },
+        }),
+      }
+    )
+
+    expect(result).toEqual({
+      reviewDetails: {
+        type: 'codemod',
+        currentCode,
+        proposedCode,
+      },
+    })
   })
 })

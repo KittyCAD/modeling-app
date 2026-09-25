@@ -1,3 +1,4 @@
+import { posix } from 'path'
 import type { Block } from '@rust/kcl-lib/bindings/Block'
 import type { ElseIf } from '@rust/kcl-lib/bindings/ElseIf'
 import type { FunctionExpression } from '@rust/kcl-lib/bindings/FunctionExpression'
@@ -1195,6 +1196,13 @@ export function getVariableNameFromNodePath(
     return undefined
   }
 
+  const importAlias = findImportNodeAndAlias(
+    program,
+    pathToNode,
+    wasmInstance
+  )?.alias
+  if (importAlias) return importAlias
+
   const call = getNodeFromPath<CallExpressionKw | SketchBlock>(
     program,
     pathToNode,
@@ -2030,7 +2038,7 @@ export function locateVariableWithCallOrPipe(
 }
 
 export function findImportNodeAndAlias(
-  ast: Node<Program>,
+  ast: Program,
   pathToNode: PathToNode,
   wasmInstance: ModuleType
 ) {
@@ -2040,20 +2048,30 @@ export function findImportNodeAndAlias(
     wasmInstance,
     ['ImportStatement']
   )
-  if (
-    !err(importNode) &&
-    importNode.node.type === 'ImportStatement' &&
-    importNode.node.selector.type === 'None' &&
-    importNode.node.selector.alias &&
-    importNode.node.selector.alias?.type === 'Identifier'
-  ) {
-    return {
-      node: importNode.node,
-      alias: importNode.node.selector.alias.name,
-    }
+  if (err(importNode)) return undefined
+
+  const node = importNode.node
+  if (node.type !== 'ImportStatement' || node.selector.type !== 'None') {
+    return undefined
   }
 
-  return undefined
+  if (node.selector.alias) {
+    return { node, alias: node.selector.alias.name }
+  }
+
+  // Match ImportStatement::module_name: an unaliased import uses its file
+  // stem, except a directory's main.kcl uses the directory name.
+  if (node.path.type === 'Std') {
+    const alias = node.path.path.at(-1)
+    return alias ? { node, alias } : undefined
+  }
+  const importPath = (
+    node.path.type === 'Kcl' ? node.path.filename : node.path.path
+  ).replaceAll('\\', '/')
+  const alias = importPath.endsWith('/main.kcl')
+    ? posix.basename(posix.dirname(importPath))
+    : posix.parse(importPath).name
+  return alias ? { node, alias } : undefined
 }
 
 /* Starting from the path to the import node, look for all pipe expressions

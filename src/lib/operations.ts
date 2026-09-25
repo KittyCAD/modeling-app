@@ -1,4 +1,3 @@
-import type { ImportStatement } from '@rust/kcl-lib/bindings/ImportStatement'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type {
   OpArg,
@@ -3632,6 +3631,7 @@ export function getOperationLabel(op: Operation): string {
         return '' // unreachable
       }
     case 'ModuleInstance':
+    case 'ImportedGeometry':
       return op.name
     case 'GroupEnd':
       return 'Group end'
@@ -3679,6 +3679,7 @@ export function getOperationIcon(op: Operation): CustomIconName {
       }
       return 'make-variable'
     case 'ModuleInstance':
+    case 'ImportedGeometry':
       return 'import' // TODO: Use insert icon.
     case 'GroupEnd':
       return 'questionMark'
@@ -3740,7 +3741,8 @@ export function getOperationVariableName(
     op.type !== 'StdLibCall' &&
     !(op.type === 'GroupBegin' && op.group.type === 'SketchBlock') &&
     !(op.type === 'GroupBegin' && op.group.type === 'FunctionCall') &&
-    op.type !== 'ModuleInstance'
+    op.type !== 'ModuleInstance' &&
+    op.type !== 'ImportedGeometry'
   ) {
     return undefined
   }
@@ -3752,27 +3754,7 @@ export function getOperationVariableName(
   // Find the AST node.
   const pathToNode = pathToNodeFromRustNodePath(op.nodePath)
 
-  // If this is a module instance, the variable name is the import alias.
-  if (op.type === 'ModuleInstance') {
-    const statement = getNodeFromPath<ImportStatement>(
-      program,
-      pathToNode,
-      wasmInstance,
-      'ImportStatement'
-    )
-    if (
-      err(statement) ||
-      statement.node.type !== 'ImportStatement' ||
-      statement.node.selector.type !== 'None' ||
-      !statement.node.selector.alias
-    ) {
-      return undefined
-    }
-
-    return statement.node.selector.alias.name
-  }
-
-  // Otherwise, this is a StdLibCall or a function call and we need to find the node then the variable
+  // Imports use their explicit or inferred alias; calls use their variable.
   return getVariableNameFromNodePath(pathToNode, program, wasmInstance)
 }
 
