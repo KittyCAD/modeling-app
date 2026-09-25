@@ -1414,34 +1414,269 @@ async fn step_apply(
     ctx: &ExecutorContext,
 ) -> Result<Control, KclError> {
     match kont {
-        Kont::BlockSeq { .. } => apply_block_seq(kont, applied, konts, exec_state, ctx).await,
-        Kont::BinaryLhsDone { node } => apply_binary_lhs_done(node, applied, konts),
-        Kont::BinaryRhsDone { node, left } => apply_binary_rhs_done(node, left, applied, exec_state, ctx).await,
-        Kont::UnaryDone { node } => apply_unary_done(node, applied, exec_state),
-        Kont::ArrayElems { node, index, done } => apply_array_elems(node, index, done, applied, konts),
-        Kont::ObjectProps { node, index, done } => apply_object_props(node, index, done, applied, konts),
-        Kont::RangeStartDone { node } => apply_range_start_done(node, applied, konts),
-        Kont::RangeEndDone { node, start } => apply_range_end_done(node, start, applied, exec_state),
-        Kont::LegacyMemberPropDone { node } => apply_legacy_member_prop_done(node, applied, konts),
-        Kont::LegacyMemberObjDone { node, property } => {
-            apply_legacy_member_obj_done(node, property, applied, exec_state, ctx).await
+        Kont::BlockSeq { .. } => {
+            apply_async(|| async move { step_block(kont, Some(applied), konts, exec_state, ctx).await }).await
         }
-        Kont::MemberObjDone { node } => apply_member_obj_done(node, applied, konts, exec_state, ctx).await,
-        Kont::MemberPropDone { node, object } => apply_member_prop_done(node, object, applied, exec_state, ctx).await,
-        Kont::IfCondDone { node, arm } => apply_if_cond_done(node, arm, applied, konts, exec_state, ctx).await,
-        Kont::IfArmDone { node, env_pushed } => apply_if_arm_done(node, env_pushed, applied, exec_state),
-        Kont::AscribeDone { node } => apply_ascribe_done(node, applied, exec_state, ctx).await,
-        Kont::LabelDone { node } => apply_label_done(node, applied, exec_state),
-        Kont::PipeFirstDone { node } => apply_pipe_first_done(node, applied, konts, exec_state),
+        Kont::BinaryLhsDone { node } => apply_sync(|| {
+            let left = applied.expect_value()?;
+            let right = EvalRequest::binary_part(&node.right);
+            konts.push(Kont::BinaryRhsDone { node, left });
+            Ok(Control::Eval(Box::new(right)))
+        }),
+        Kont::BinaryRhsDone { node, left } => {
+            apply_async(|| async move {
+                let right = applied.expect_value()?;
+                let value = node.apply_operator(exec_state, ctx, left, right).await?;
+                Ok(Control::Apply(Applied::Value(value)))
+            })
+            .await
+        }
+        Kont::UnaryDone { node } => apply_sync(|| {
+            let operand = applied.expect_value()?;
+            let value = node.apply_unary(operand, exec_state)?;
+            Ok(Control::Apply(Applied::Value(value)))
+        }),
+        Kont::ArrayElems { node, index, mut done } => apply_sync(|| {
+            done.push(applied.expect_value()?);
+            let next = index + 1;
+            if next < node.elements.len() {
+                let elem = EvalRequest::expr(&node.elements[next]);
+                konts.push(Kont::ArrayElems {
+                    node,
+                    index: next,
+                    done,
+                });
+                Ok(Control::Eval(Box::new(elem)))
+            } else {
+                Ok(Control::Apply(Applied::Value(KclValue::HomArray {
+                    value: done,
+                    ty: RuntimeType::Primitive(PrimitiveType::Any),
+                })))
+            }
+        }),
+        Kont::ObjectProps { node, index, mut done } => apply_sync(|| {
+            let value = applied.expect_value()?;
+            done.insert(node.properties[index].key.name.clone(), value);
+            let next = index + 1;
+            if next < node.properties.len() {
+                let prop = EvalRequest::expr(&node.properties[next].value);
+                konts.push(Kont::ObjectProps {
+                    node,
+                    index: next,
+                    done,
+                });
+                Ok(Control::Eval(Box::new(prop)))
+            } else {
+                Ok(Control::Apply(Applied::Value(KclValue::Object {
+                    value: done,
+                    meta: vec![Metadata {
+                        source_range: SourceRange::from(node.as_ref()),
+                    }],
+                    constrainable: false,
+                    object_kind: crate::execution::kcl_value::KclObjectKind::Default,
+                })))
+            }
+        }),
+        Kont::RangeStartDone { node } => apply_sync(|| {
+            let start = applied.expect_value()?;
+            // Match the recursive executor: a bad start is reported before
+            // the end element is ever evaluated.
+            node.validate_range_start(&start)?;
+            let end = EvalRequest::expr(&node.end_element);
+            konts.push(Kont::RangeEndDone { node, start });
+            Ok(Control::Eval(Box::new(end)))
+        }),
+        Kont::RangeEndDone { node, start } => apply_sync(|| {
+            let end = applied.expect_value()?;
+            let value = node.build_range(start, end, exec_state)?;
+            Ok(Control::Apply(Applied::Value(value)))
+        }),
+        Kont::LegacyMemberPropDone { node } => apply_sync(|| {
+            let prop_value = applied.expect_value()?;
+            let property = Property::from_value(prop_value, SourceRange::from(node.as_ref()))?;
+            let object = EvalRequest::expr(&node.object);
+            konts.push(Kont::LegacyMemberObjDone { node, property });
+            Ok(Control::Eval(Box::new(object)))
+        }),
+        Kont::LegacyMemberObjDone { node, property } => {
+            apply_async(|| async move {
+                let object = applied.expect_value()?;
+                let cf = node.apply_member(object, property, exec_state, ctx).await?;
+                // apply_member only ever produces Continue values.
+                Ok(Control::Apply(Applied::Value(cf.into_value())))
+            })
+            .await
+        }
+        Kont::MemberObjDone { node } => {
+            apply_async(|| async move {
+                let object = applied.expect_value()?;
+                if node.computed {
+                    let prop = EvalRequest::expr(&node.property);
+                    konts.push(Kont::MemberPropDone { node, object });
+                    Ok(Control::Eval(Box::new(prop)))
+                } else {
+                    // Non-computed properties are identifier names, not evaluated.
+                    let property = Property::from_static_name(&node.property, SourceRange::from(node.as_ref()))?;
+                    let cf = node.apply_member(object, property, exec_state, ctx).await?;
+                    Ok(Control::Apply(Applied::Value(cf.into_value())))
+                }
+            })
+            .await
+        }
+        Kont::MemberPropDone { node, object } => {
+            apply_async(|| async move {
+                let prop_value = applied.expect_value()?;
+                let property = Property::from_value(prop_value, SourceRange::from(node.as_ref()))?;
+                let cf = node.apply_member(object, property, exec_state, ctx).await?;
+                // apply_member only ever produces Continue values.
+                Ok(Control::Apply(Applied::Value(cf.into_value())))
+            })
+            .await
+        }
+        Kont::IfCondDone { node, arm } => {
+            apply_async(|| async move {
+                let cond_value = applied.expect_value()?;
+                if cond_value.get_bool()? {
+                    let block = if arm == 0 {
+                        BlockRef::Program(node.then_val.arc())
+                    } else {
+                        BlockRef::Program(node.else_ifs[arm - 1].then_val.arc())
+                    };
+                    // An error here leaves no env pushed and IfArmDone unpushed,
+                    // so unwinding stays balanced.
+                    let env_pushed = crate::execution::exec_ast::if_arm_scope_begin(exec_state)?;
+                    konts.push(Kont::IfArmDone { node, env_pushed });
+                    push_block(block, BodyType::Block, konts);
+                    step_block_kick(konts, exec_state, ctx).await
+                } else if arm < node.else_ifs.len() {
+                    let cond = EvalRequest {
+                        node: EvalNode::Expr(node.else_ifs[arm].cond.clone()),
+                        metadata: Metadata::from(node.as_ref()),
+                        decl_name: None,
+                        annotations: Vec::new(),
+                    };
+                    konts.push(Kont::IfCondDone { node, arm: arm + 1 });
+                    Ok(Control::Eval(Box::new(cond)))
+                } else {
+                    let block = BlockRef::Program(node.final_else.arc());
+                    let env_pushed = crate::execution::exec_ast::if_arm_scope_begin(exec_state)?;
+                    konts.push(Kont::IfArmDone { node, env_pushed });
+                    push_block(block, BodyType::Block, konts);
+                    step_block_kick(konts, exec_state, ctx).await
+                }
+            })
+            .await
+        }
+        Kont::IfArmDone { node, env_pushed } => apply_sync(|| {
+            // Pop the arm scope before unwrapping; values escaping the arm
+            // stay valid because environments that may still be referenced
+            // are preserved.
+            if env_pushed {
+                exec_state.mut_stack().pop_env()?;
+            }
+            let block_result = applied.expect_block()?;
+            // Blocks used as if arms must end in an expression (enforced by
+            // the parser), so this is always Some.
+            let Some(cf) = block_result else {
+                return Err(KclError::new_internal(KclErrorDetails::new(
+                    "if-expression arm produced no value".to_owned(),
+                    vec![SourceRange::from(node.as_ref())],
+                )));
+            };
+            Ok(Control::Apply(Applied::Value(cf.into_value())))
+        }),
+        Kont::AscribeDone { node } => {
+            apply_async(|| async move {
+                let value = applied.expect_value()?;
+                let value = crate::execution::exec_ast::apply_ascription(
+                    &value,
+                    &node.ty,
+                    exec_state,
+                    ctx,
+                    SourceRange::from(node.as_ref()),
+                )
+                .await?;
+                Ok(Control::Apply(Applied::Value(value)))
+            })
+            .await
+        }
+        Kont::LabelDone { node } => apply_sync(|| {
+            let value = applied.expect_value()?;
+            exec_state
+                .mut_stack()
+                .add(node.label.name.clone(), value.clone(), SourceRange::from(node.as_ref()))?;
+            // TODO this lets us use the label as a variable name, but not as a tag in most cases
+            Ok(Control::Apply(Applied::Value(value)))
+        }),
+        Kont::PipeFirstDone { node } => apply_sync(|| {
+            let output = applied.expect_value()?;
+            // Now that the first element is evaluated, following elements use
+            // it as %; the parent's pipe value is restored when this pipe
+            // finishes (or unwinds).
+            let saved_pipe_value = exec_state.mod_local.pipe_value.replace(output);
+            pipe_advance(node, 1, saved_pipe_value, konts, exec_state)
+        }),
         Kont::PipeSeq {
             node,
             index,
             saved_pipe_value,
-        } => apply_pipe_seq(node, index, saved_pipe_value, applied, konts, exec_state),
-        Kont::CallArgs(state) => apply_call_args(state, applied, konts, exec_state, ctx).await,
-        Kont::CallBoundary(boundary) => apply_call_boundary(boundary, applied, konts, exec_state, ctx).await,
-        Kont::SketchArgs(state) => apply_sketch_args(state, applied, konts, exec_state, ctx).await,
-        Kont::SketchBody(state) => apply_sketch_body(state, applied, exec_state, ctx).await,
+        } => apply_sync(|| {
+            let output = applied.expect_value()?;
+            exec_state.mod_local.pipe_value = Some(output);
+            pipe_advance(node, index + 1, saved_pipe_value, konts, exec_state)
+        }),
+        Kont::CallArgs(state) => {
+            apply_async(|| async move { call_args_step(*state, applied, konts, exec_state, ctx).await }).await
+        }
+        Kont::CallBoundary(boundary) => {
+            apply_async(|| async move {
+                exec_state.mod_local.machine_call_depth = exec_state.mod_local.machine_call_depth.saturating_sub(1);
+                let BoundaryState {
+                    state,
+                    fn_src,
+                    fn_name,
+                    callsite,
+                    expects,
+                    completion,
+                } = *boundary;
+                let result = match expects {
+                    BoundaryExpects::KclBlock => {
+                        // Read __return from the callee env (still pushed).
+                        let block_result = applied.expect_block()?;
+                        fn_src.kcl_body_result(Ok(block_result), exec_state)
+                    }
+                    BoundaryExpects::StdValue => {
+                        let value = applied.expect_value()?;
+                        Ok(Some(value.continue_()))
+                    }
+                };
+                match completion {
+                    BoundaryCompletion::CallExpr { fn_meta } => {
+                        let finished = fn_src
+                            .call_finish(state, result, exec_state)
+                            .map_err(|e| e.add_unwind_location(fn_name.clone(), callsite))?;
+                        finish_call_value(finished, fn_name, callsite, fn_meta)
+                    }
+                    BoundaryCompletion::Callback => {
+                        let finished = fn_src.call_finish(state, result, exec_state)?;
+                        match finished {
+                            Some(cf) if cf.is_some_return() => Ok(Control::Exit(cf)),
+                            Some(cf) => {
+                                resume_drive(Feed::Callback(Some(cf.into_value())), konts, exec_state, ctx).await
+                            }
+                            None => resume_drive(Feed::Callback(None), konts, exec_state, ctx).await,
+                        }
+                    }
+                }
+            })
+            .await
+        }
+        Kont::SketchArgs(state) => {
+            apply_async(|| async move { sketch_args_step(*state, applied, konts, exec_state, ctx).await }).await
+        }
+        Kont::SketchBody(state) => {
+            apply_async(|| async move { sketch_body_finish(*state, applied, exec_state, ctx).await }).await
+        }
         Kont::Resume(_) => Err(KclError::new_internal(KclErrorDetails::new(
             "machine executor: a value applied directly to resumable-builtin loop state".to_owned(),
             Vec::new(),
@@ -1449,443 +1684,19 @@ async fn step_apply(
     }
 }
 
+/// Keep synchronous arm temporaries out of the dispatcher's debug stack frame.
 #[cfg_attr(debug_assertions, inline(never))]
 #[cfg_attr(not(debug_assertions), inline(always))]
-fn apply_block_seq<'a>(
-    kont: Kont,
-    applied: Applied,
-    konts: &'a mut Vec<Kont>,
-    exec_state: &'a mut ExecState,
-    ctx: &'a ExecutorContext,
-) -> impl Future<Output = Result<Control, KclError>> + 'a {
-    debug_boxed_future!(async move { step_block(kont, Some(applied), konts, exec_state, ctx).await })
+fn apply_sync<T>(f: impl FnOnce() -> T) -> T {
+    f()
 }
 
+/// Construct the future inside this call boundary so its large debug-build
+/// temporary stays out of the dispatcher, which only receives the boxed handle.
 #[cfg_attr(debug_assertions, inline(never))]
 #[cfg_attr(not(debug_assertions), inline(always))]
-fn apply_binary_lhs_done(
-    node: Arc<Node<BinaryExpression>>,
-    applied: Applied,
-    konts: &mut Vec<Kont>,
-) -> Result<Control, KclError> {
-    let left = applied.expect_value()?;
-    let right = EvalRequest::binary_part(&node.right);
-    konts.push(Kont::BinaryRhsDone { node, left });
-    Ok(Control::Eval(Box::new(right)))
-}
-
-#[cfg_attr(debug_assertions, inline(never))]
-#[cfg_attr(not(debug_assertions), inline(always))]
-fn apply_binary_rhs_done<'a>(
-    node: Arc<Node<BinaryExpression>>,
-    left: KclValue,
-    applied: Applied,
-    exec_state: &'a mut ExecState,
-    ctx: &'a ExecutorContext,
-) -> impl Future<Output = Result<Control, KclError>> + 'a {
-    debug_boxed_future!(async move {
-        let right = applied.expect_value()?;
-        let value = node.apply_operator(exec_state, ctx, left, right).await?;
-        Ok(Control::Apply(Applied::Value(value)))
-    })
-}
-
-#[cfg_attr(debug_assertions, inline(never))]
-#[cfg_attr(not(debug_assertions), inline(always))]
-fn apply_unary_done(
-    node: Arc<Node<UnaryExpression>>,
-    applied: Applied,
-    exec_state: &mut ExecState,
-) -> Result<Control, KclError> {
-    let operand = applied.expect_value()?;
-    let value = node.apply_unary(operand, exec_state)?;
-    Ok(Control::Apply(Applied::Value(value)))
-}
-
-#[cfg_attr(debug_assertions, inline(never))]
-#[cfg_attr(not(debug_assertions), inline(always))]
-fn apply_array_elems(
-    node: Arc<Node<ArrayExpression>>,
-    index: usize,
-    mut done: Vec<KclValue>,
-    applied: Applied,
-    konts: &mut Vec<Kont>,
-) -> Result<Control, KclError> {
-    done.push(applied.expect_value()?);
-    let next = index + 1;
-    if next < node.elements.len() {
-        let elem = EvalRequest::expr(&node.elements[next]);
-        konts.push(Kont::ArrayElems {
-            node,
-            index: next,
-            done,
-        });
-        Ok(Control::Eval(Box::new(elem)))
-    } else {
-        Ok(Control::Apply(Applied::Value(KclValue::HomArray {
-            value: done,
-            ty: RuntimeType::Primitive(PrimitiveType::Any),
-        })))
-    }
-}
-
-#[cfg_attr(debug_assertions, inline(never))]
-#[cfg_attr(not(debug_assertions), inline(always))]
-fn apply_object_props(
-    node: Arc<Node<ObjectExpression>>,
-    index: usize,
-    mut done: KclObjectFields,
-    applied: Applied,
-    konts: &mut Vec<Kont>,
-) -> Result<Control, KclError> {
-    let value = applied.expect_value()?;
-    done.insert(node.properties[index].key.name.clone(), value);
-    let next = index + 1;
-    if next < node.properties.len() {
-        let prop = EvalRequest::expr(&node.properties[next].value);
-        konts.push(Kont::ObjectProps {
-            node,
-            index: next,
-            done,
-        });
-        Ok(Control::Eval(Box::new(prop)))
-    } else {
-        Ok(Control::Apply(Applied::Value(KclValue::Object {
-            value: done,
-            meta: vec![Metadata {
-                source_range: SourceRange::from(node.as_ref()),
-            }],
-            constrainable: false,
-            object_kind: crate::execution::kcl_value::KclObjectKind::Default,
-        })))
-    }
-}
-
-#[cfg_attr(debug_assertions, inline(never))]
-#[cfg_attr(not(debug_assertions), inline(always))]
-fn apply_range_start_done(
-    node: Arc<Node<ArrayRangeExpression>>,
-    applied: Applied,
-    konts: &mut Vec<Kont>,
-) -> Result<Control, KclError> {
-    let start = applied.expect_value()?;
-    // Match the recursive executor: a bad start is reported before
-    // the end element is ever evaluated.
-    node.validate_range_start(&start)?;
-    let end = EvalRequest::expr(&node.end_element);
-    konts.push(Kont::RangeEndDone { node, start });
-    Ok(Control::Eval(Box::new(end)))
-}
-
-#[cfg_attr(debug_assertions, inline(never))]
-#[cfg_attr(not(debug_assertions), inline(always))]
-fn apply_range_end_done(
-    node: Arc<Node<ArrayRangeExpression>>,
-    start: KclValue,
-    applied: Applied,
-    exec_state: &mut ExecState,
-) -> Result<Control, KclError> {
-    let end = applied.expect_value()?;
-    let value = node.build_range(start, end, exec_state)?;
-    Ok(Control::Apply(Applied::Value(value)))
-}
-
-#[cfg_attr(debug_assertions, inline(never))]
-#[cfg_attr(not(debug_assertions), inline(always))]
-fn apply_legacy_member_prop_done(
-    node: Arc<Node<MemberExpression>>,
-    applied: Applied,
-    konts: &mut Vec<Kont>,
-) -> Result<Control, KclError> {
-    let prop_value = applied.expect_value()?;
-    let property = Property::from_value(prop_value, SourceRange::from(node.as_ref()))?;
-    let object = EvalRequest::expr(&node.object);
-    konts.push(Kont::LegacyMemberObjDone { node, property });
-    Ok(Control::Eval(Box::new(object)))
-}
-
-#[cfg_attr(debug_assertions, inline(never))]
-#[cfg_attr(not(debug_assertions), inline(always))]
-fn apply_legacy_member_obj_done<'a>(
-    node: Arc<Node<MemberExpression>>,
-    property: Property,
-    applied: Applied,
-    exec_state: &'a mut ExecState,
-    ctx: &'a ExecutorContext,
-) -> impl Future<Output = Result<Control, KclError>> + 'a {
-    debug_boxed_future!(async move {
-        let object = applied.expect_value()?;
-        let cf = node.apply_member(object, property, exec_state, ctx).await?;
-        // apply_member only ever produces Continue values.
-        Ok(Control::Apply(Applied::Value(cf.into_value())))
-    })
-}
-
-#[cfg_attr(debug_assertions, inline(never))]
-#[cfg_attr(not(debug_assertions), inline(always))]
-fn apply_member_obj_done<'a>(
-    node: Arc<Node<MemberExpression>>,
-    applied: Applied,
-    konts: &'a mut Vec<Kont>,
-    exec_state: &'a mut ExecState,
-    ctx: &'a ExecutorContext,
-) -> impl Future<Output = Result<Control, KclError>> + 'a {
-    debug_boxed_future!(async move {
-        let object = applied.expect_value()?;
-        if node.computed {
-            let prop = EvalRequest::expr(&node.property);
-            konts.push(Kont::MemberPropDone { node, object });
-            Ok(Control::Eval(Box::new(prop)))
-        } else {
-            // Non-computed properties are identifier names, not evaluated.
-            let property = Property::from_static_name(&node.property, SourceRange::from(node.as_ref()))?;
-            let cf = node.apply_member(object, property, exec_state, ctx).await?;
-            Ok(Control::Apply(Applied::Value(cf.into_value())))
-        }
-    })
-}
-
-#[cfg_attr(debug_assertions, inline(never))]
-#[cfg_attr(not(debug_assertions), inline(always))]
-fn apply_member_prop_done<'a>(
-    node: Arc<Node<MemberExpression>>,
-    object: KclValue,
-    applied: Applied,
-    exec_state: &'a mut ExecState,
-    ctx: &'a ExecutorContext,
-) -> impl Future<Output = Result<Control, KclError>> + 'a {
-    debug_boxed_future!(async move {
-        let prop_value = applied.expect_value()?;
-        let property = Property::from_value(prop_value, SourceRange::from(node.as_ref()))?;
-        let cf = node.apply_member(object, property, exec_state, ctx).await?;
-        // apply_member only ever produces Continue values.
-        Ok(Control::Apply(Applied::Value(cf.into_value())))
-    })
-}
-
-#[cfg_attr(debug_assertions, inline(never))]
-#[cfg_attr(not(debug_assertions), inline(always))]
-fn apply_if_cond_done<'a>(
-    node: Arc<Node<IfExpression>>,
-    arm: usize,
-    applied: Applied,
-    konts: &'a mut Vec<Kont>,
-    exec_state: &'a mut ExecState,
-    ctx: &'a ExecutorContext,
-) -> impl Future<Output = Result<Control, KclError>> + 'a {
-    debug_boxed_future!(async move {
-        let cond_value = applied.expect_value()?;
-        if cond_value.get_bool()? {
-            let block = if arm == 0 {
-                BlockRef::Program(node.then_val.arc())
-            } else {
-                BlockRef::Program(node.else_ifs[arm - 1].then_val.arc())
-            };
-            // An error here leaves no env pushed and IfArmDone unpushed,
-            // so unwinding stays balanced.
-            let env_pushed = crate::execution::exec_ast::if_arm_scope_begin(exec_state)?;
-            konts.push(Kont::IfArmDone { node, env_pushed });
-            push_block(block, BodyType::Block, konts);
-            step_block_kick(konts, exec_state, ctx).await
-        } else if arm < node.else_ifs.len() {
-            let cond = EvalRequest {
-                node: EvalNode::Expr(node.else_ifs[arm].cond.clone()),
-                metadata: Metadata::from(node.as_ref()),
-                decl_name: None,
-                annotations: Vec::new(),
-            };
-            konts.push(Kont::IfCondDone { node, arm: arm + 1 });
-            Ok(Control::Eval(Box::new(cond)))
-        } else {
-            let block = BlockRef::Program(node.final_else.arc());
-            let env_pushed = crate::execution::exec_ast::if_arm_scope_begin(exec_state)?;
-            konts.push(Kont::IfArmDone { node, env_pushed });
-            push_block(block, BodyType::Block, konts);
-            step_block_kick(konts, exec_state, ctx).await
-        }
-    })
-}
-
-#[cfg_attr(debug_assertions, inline(never))]
-#[cfg_attr(not(debug_assertions), inline(always))]
-fn apply_if_arm_done(
-    node: Arc<Node<IfExpression>>,
-    env_pushed: bool,
-    applied: Applied,
-    exec_state: &mut ExecState,
-) -> Result<Control, KclError> {
-    // Pop the arm scope before unwrapping; values escaping the arm
-    // stay valid because environments that may still be referenced
-    // are preserved.
-    if env_pushed {
-        exec_state.mut_stack().pop_env()?;
-    }
-    let block_result = applied.expect_block()?;
-    // Blocks used as if arms must end in an expression (enforced by
-    // the parser), so this is always Some.
-    let Some(cf) = block_result else {
-        return Err(KclError::new_internal(KclErrorDetails::new(
-            "if-expression arm produced no value".to_owned(),
-            vec![SourceRange::from(node.as_ref())],
-        )));
-    };
-    Ok(Control::Apply(Applied::Value(cf.into_value())))
-}
-
-#[cfg_attr(debug_assertions, inline(never))]
-#[cfg_attr(not(debug_assertions), inline(always))]
-fn apply_ascribe_done<'a>(
-    node: Arc<Node<AscribedExpression>>,
-    applied: Applied,
-    exec_state: &'a mut ExecState,
-    ctx: &'a ExecutorContext,
-) -> impl Future<Output = Result<Control, KclError>> + 'a {
-    debug_boxed_future!(async move {
-        let value = applied.expect_value()?;
-        let value = crate::execution::exec_ast::apply_ascription(
-            &value,
-            &node.ty,
-            exec_state,
-            ctx,
-            SourceRange::from(node.as_ref()),
-        )
-        .await?;
-        Ok(Control::Apply(Applied::Value(value)))
-    })
-}
-
-#[cfg_attr(debug_assertions, inline(never))]
-#[cfg_attr(not(debug_assertions), inline(always))]
-fn apply_label_done(
-    node: Arc<Node<LabelledExpression>>,
-    applied: Applied,
-    exec_state: &mut ExecState,
-) -> Result<Control, KclError> {
-    let value = applied.expect_value()?;
-    exec_state
-        .mut_stack()
-        .add(node.label.name.clone(), value.clone(), SourceRange::from(node.as_ref()))?;
-    // TODO this lets us use the label as a variable name, but not as a tag in most cases
-    Ok(Control::Apply(Applied::Value(value)))
-}
-
-#[cfg_attr(debug_assertions, inline(never))]
-#[cfg_attr(not(debug_assertions), inline(always))]
-fn apply_pipe_first_done(
-    node: Arc<Node<PipeExpression>>,
-    applied: Applied,
-    konts: &mut Vec<Kont>,
-    exec_state: &mut ExecState,
-) -> Result<Control, KclError> {
-    let output = applied.expect_value()?;
-    // Now that the first element is evaluated, following elements use
-    // it as %; the parent's pipe value is restored when this pipe
-    // finishes (or unwinds).
-    let saved_pipe_value = exec_state.mod_local.pipe_value.replace(output);
-    pipe_advance(node, 1, saved_pipe_value, konts, exec_state)
-}
-
-#[cfg_attr(debug_assertions, inline(never))]
-#[cfg_attr(not(debug_assertions), inline(always))]
-fn apply_pipe_seq(
-    node: Arc<Node<PipeExpression>>,
-    index: usize,
-    saved_pipe_value: Option<KclValue>,
-    applied: Applied,
-    konts: &mut Vec<Kont>,
-    exec_state: &mut ExecState,
-) -> Result<Control, KclError> {
-    let output = applied.expect_value()?;
-    exec_state.mod_local.pipe_value = Some(output);
-    pipe_advance(node, index + 1, saved_pipe_value, konts, exec_state)
-}
-
-#[cfg_attr(debug_assertions, inline(never))]
-#[cfg_attr(not(debug_assertions), inline(always))]
-#[allow(clippy::boxed_local)] // Unbox in the helper to keep dispatcher temporaries small.
-fn apply_call_args<'a>(
-    state: Box<CallArgsState>,
-    applied: Applied,
-    konts: &'a mut Vec<Kont>,
-    exec_state: &'a mut ExecState,
-    ctx: &'a ExecutorContext,
-) -> impl Future<Output = Result<Control, KclError>> + 'a {
-    debug_boxed_future!(async move { call_args_step(*state, applied, konts, exec_state, ctx).await })
-}
-
-#[cfg_attr(debug_assertions, inline(never))]
-#[cfg_attr(not(debug_assertions), inline(always))]
-#[allow(clippy::boxed_local)] // Unbox in the helper to keep dispatcher temporaries small.
-fn apply_call_boundary<'a>(
-    boundary: Box<BoundaryState>,
-    applied: Applied,
-    konts: &'a mut Vec<Kont>,
-    exec_state: &'a mut ExecState,
-    ctx: &'a ExecutorContext,
-) -> impl Future<Output = Result<Control, KclError>> + 'a {
-    debug_boxed_future!(async move {
-        exec_state.mod_local.machine_call_depth = exec_state.mod_local.machine_call_depth.saturating_sub(1);
-        let BoundaryState {
-            state,
-            fn_src,
-            fn_name,
-            callsite,
-            expects,
-            completion,
-        } = *boundary;
-        let result = match expects {
-            BoundaryExpects::KclBlock => {
-                // Read __return from the callee env (still pushed).
-                let block_result = applied.expect_block()?;
-                fn_src.kcl_body_result(Ok(block_result), exec_state)
-            }
-            BoundaryExpects::StdValue => {
-                let value = applied.expect_value()?;
-                Ok(Some(value.continue_()))
-            }
-        };
-        match completion {
-            BoundaryCompletion::CallExpr { fn_meta } => {
-                let finished = fn_src
-                    .call_finish(state, result, exec_state)
-                    .map_err(|e| e.add_unwind_location(fn_name.clone(), callsite))?;
-                finish_call_value(finished, fn_name, callsite, fn_meta)
-            }
-            BoundaryCompletion::Callback => {
-                let finished = fn_src.call_finish(state, result, exec_state)?;
-                match finished {
-                    Some(cf) if cf.is_some_return() => Ok(Control::Exit(cf)),
-                    Some(cf) => resume_drive(Feed::Callback(Some(cf.into_value())), konts, exec_state, ctx).await,
-                    None => resume_drive(Feed::Callback(None), konts, exec_state, ctx).await,
-                }
-            }
-        }
-    })
-}
-
-#[cfg_attr(debug_assertions, inline(never))]
-#[cfg_attr(not(debug_assertions), inline(always))]
-#[allow(clippy::boxed_local)] // Unbox in the helper to keep dispatcher temporaries small.
-fn apply_sketch_args<'a>(
-    state: Box<SketchArgsState>,
-    applied: Applied,
-    konts: &'a mut Vec<Kont>,
-    exec_state: &'a mut ExecState,
-    ctx: &'a ExecutorContext,
-) -> impl Future<Output = Result<Control, KclError>> + 'a {
-    debug_boxed_future!(async move { sketch_args_step(*state, applied, konts, exec_state, ctx).await })
-}
-
-#[cfg_attr(debug_assertions, inline(never))]
-#[cfg_attr(not(debug_assertions), inline(always))]
-#[allow(clippy::boxed_local)] // Unbox in the helper to keep dispatcher temporaries small.
-fn apply_sketch_body<'a>(
-    state: Box<SketchBodyState>,
-    applied: Applied,
-    exec_state: &'a mut ExecState,
-    ctx: &'a ExecutorContext,
-) -> impl Future<Output = Result<Control, KclError>> + 'a {
-    debug_boxed_future!(async move { sketch_body_finish(*state, applied, exec_state, ctx).await })
+fn apply_async<F: Future>(make_future: impl FnOnce() -> F) -> impl Future<Output = F::Output> {
+    debug_boxed_future!(make_future())
 }
 
 /// Route a control-flow value produced by shared (recursive-style) helper code
