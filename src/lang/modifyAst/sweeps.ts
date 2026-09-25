@@ -17,11 +17,11 @@ import {
   insertVariableAndOffsetPathToNode,
   setCallInAst,
 } from '@src/lang/modifyAst'
-import { retrieveEdgeSelectionsFromSingleEdgeRef } from '@src/lang/modifyAst/edges'
 import {
   getEdgeTagCall,
   getPrimitiveEdgeSelections,
   insertPrimitiveEdgeVariablesAndOffsetPathToNode,
+  retrieveEdgeSelectionsFromSingleEdgeRef,
 } from '@src/lang/modifyAst/edges'
 import {
   getFacesExprsFromSelection,
@@ -36,7 +36,6 @@ import { addHide } from '@src/lang/modifyAst/transforms'
 import {
   createSketchTagMemberExpression,
   getNodeFromPath,
-  getRegionSketchTagExprFromSourceSurface,
   getSketchSegmentName,
   getSketchSegmentNameFromSourceSurface,
   getVariableExprsFromSelection,
@@ -226,7 +225,36 @@ export function addExtrude({
     )
     if (err(tagResult)) return tagResult
     modifiedAst = tagResult.modifiedAst
-    toExpr = [createLabeledArg('to', tagResult.exprs[0])]
+    let toValue = tagResult.exprs[0]
+    const toArtifact = to.graphSelections[0].artifact
+    if (toArtifact?.type === 'wall' && toValue.type === 'Name') {
+      const owningSweep = artifactGraph.get(toArtifact.sweepId)
+      if (owningSweep?.type !== 'sweep') {
+        return new Error('Could not resolve the selected wall body.')
+      }
+      const owningBody = getVariableExprsFromSelection(
+        {
+          graphSelections: [
+            { artifact: owningSweep, codeRef: owningSweep.codeRef },
+          ],
+          otherSelections: [],
+        },
+        artifactGraph,
+        modifiedAst,
+        wasmInstance,
+        mNodeToEdit,
+        { lastChildLookup: false }
+      )
+      if (err(owningBody)) return owningBody
+      if (owningBody.exprs.length !== 1) {
+        return new Error('Could not resolve the selected wall body.')
+      }
+      toValue = createSketchTagMemberExpression(
+        owningBody.exprs[0],
+        toValue.name.name
+      )
+    }
+    toExpr = [createLabeledArg('to', toValue)]
   }
   const symmetricExpr =
     symmetric !== undefined
@@ -1332,7 +1360,8 @@ function getEdgeProfileExprsFromSelection({
       edgeArtifact,
       artifactGraph,
       modifiedAst,
-      wasmInstance
+      wasmInstance,
+      { resolveNamedSweepInput: true }
     )
     if (!sketchSegmentName) {
       sketchSegmentName = getSketchSegmentName(
@@ -1368,18 +1397,6 @@ function getEdgeProfileExprsFromSelection({
       continue
     }
 
-    const regionSketchTagExpr = getRegionSketchTagExprFromSourceSurface(
-      sourceSurfaceArtifact,
-      edgeArtifact,
-      artifactGraph,
-      modifiedAst,
-      wasmInstance
-    )
-    if (regionSketchTagExpr && !edgeContext.isClone) {
-      exprs.push(getEdgeTagCall(regionSketchTagExpr, edgeArtifact))
-      continue
-    }
-
     const tagResult = modifyAstWithTagsForSelection(
       modifiedAst,
       selection,
@@ -1394,7 +1411,34 @@ function getEdgeProfileExprsFromSelection({
       return new Error("Couldn't retrieve edge profile expression.")
     }
 
-    exprs.push(getEdgeTagCall(tagResult.exprs[0], edgeArtifact))
+    const insertedSketchSegmentName =
+      getSketchSegmentName(
+        modifiedAst,
+        edgeArtifact.segId,
+        artifactGraph,
+        wasmInstance
+      ) ??
+      (originalSegment && originalSegment.id !== edgeArtifact.segId
+        ? getSketchSegmentName(
+            modifiedAst,
+            originalSegment.id,
+            artifactGraph,
+            wasmInstance
+          )
+        : null)
+    if (!insertedSketchSegmentName) {
+      return new Error("Couldn't resolve the sweep edge's sketch tag.")
+    }
+
+    exprs.push(
+      getEdgeTagCall(
+        createSketchTagMemberExpression(
+          sourceSurfaceExpr,
+          insertedSketchSegmentName
+        ),
+        edgeArtifact
+      )
+    )
   }
 
   if (unresolvedPrimitiveEdgeSelections.length > 0) {

@@ -618,7 +618,7 @@ function modifyAstWithTagsForEdgeSelection(
             tagName
           )
         )
-      } else if (edgeContext.isClone) {
+      } else {
         const tagName = getExprName(expr)
         if (!tagName) {
           return new Error(
@@ -631,8 +631,6 @@ function modifyAstWithTagsForEdgeSelection(
             tagName
           )
         )
-      } else {
-        exprs.push(expr)
       }
     }
 
