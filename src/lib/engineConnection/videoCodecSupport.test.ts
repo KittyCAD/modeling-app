@@ -1,6 +1,7 @@
 import {
   ENGINE_SUPPORTED_VIDEO_CODECS,
   preflightEngineVideoCodecSupport,
+  UNSUPPORTED_ENGINE_VIDEO_CODEC_MESSAGE,
   UnsupportedEngineVideoCodecError,
 } from '@src/lib/engineConnection/videoCodecSupport'
 import { EngineConnectionErrorKind } from '@src/lib/engineConnection/utils'
@@ -60,6 +61,7 @@ test('returns a typed terminal error when the offer lacks H.264', async () => {
     terminal: true,
     browserCodecs: ['video/vp8', 'video/vp9'],
     engineCodecs: ENGINE_SUPPORTED_VIDEO_CODECS,
+    message: UNSUPPORTED_ENGINE_VIDEO_CODEC_MESSAGE,
   })
   expect(close).toHaveBeenCalledOnce()
 })

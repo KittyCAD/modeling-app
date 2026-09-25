@@ -71,6 +71,10 @@ interface ThreeCamValues {
   target: Vector3
 }
 
+export interface CameraStateSnapshot extends ThreeCamValues {
+  perspectiveFovY: number
+}
+
 export type ReactCameraProperties =
   | {
       type: 'perspective'
@@ -121,6 +125,7 @@ export class CameraControls {
   worldDownPosition: Vector3
   cameraDown: Camera
   oldCameraState: undefined | CameraViewState
+  cameraStateBeforeReconnect: CameraStateSnapshot | undefined = undefined
   rotationSpeed = 0.3
   enableRotate = true
   enablePan = true
@@ -1016,6 +1021,49 @@ export class CameraControls {
     return modelingResponse.data.view
   }
 
+  captureCameraState(): CameraStateSnapshot {
+    return {
+      position: this.camera.position.clone(),
+      quaternion: this.camera.quaternion.clone(),
+      zoom: this.camera.zoom,
+      isPerspective: this.isPerspective,
+      target: this.target.clone(),
+      perspectiveFovY:
+        this.camera instanceof PerspectiveCamera
+          ? this.camera.fov
+          : this.perspectiveFovBeforeOrtho || this.lastPerspectiveFov || 45,
+    }
+  }
+
+  captureCameraStateBeforeReconnect() {
+    this.cameraStateBeforeReconnect ??= this.captureCameraState()
+  }
+
+  async restoreCameraState(snapshot: CameraStateSnapshot): Promise<void> {
+    const view = convertThreeCamValuesToEngineCam(
+      snapshot,
+      snapshot.perspectiveFovY
+    )
+
+    await this.engineCommandManager.sendSceneCommand(
+      {
+        type: 'modeling_cmd_req',
+        cmd_id: uuidv4(),
+        cmd: {
+          type: 'default_camera_perspective_settings',
+          ...view,
+          fov_y: snapshot.perspectiveFovY,
+        },
+      },
+      true
+    )
+    await this.engineCommandManager.sendSceneCommand({
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: { type: 'default_camera_get_settings' },
+    })
+  }
+
   async setCameraView(view: CameraViewState): Promise<void> {
     await this.engineCommandManager.sendSceneCommand({
       type: 'modeling_cmd_req',
@@ -1245,12 +1293,14 @@ export class CameraControls {
     })
   }
 
-  /**
-   * After we successfully save the old camera state and then enable
-   * it in the try connect loop, clear it. It shouldn't be set unless it idles
-   */
+  /** Clear the Engine snapshot saved before an idle teardown. */
   clearOldCameraState() {
     this.oldCameraState = undefined
+  }
+
+  /** Clear the local snapshot saved immediately before a connection teardown. */
+  clearCameraStateBeforeReconnect() {
+    this.cameraStateBeforeReconnect = undefined
   }
 
   saveRemoteCameraState(): Promise<void> {
