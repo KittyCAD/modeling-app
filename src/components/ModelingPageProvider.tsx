@@ -1,16 +1,13 @@
 import { EditorSelection } from '@codemirror/state'
 import { EditorView } from '@codemirror/view'
-import React, { use, useEffect, useMemo } from 'react'
-import { useLocation, useNavigate } from 'react-router-dom'
-
 import { useSignals } from '@preact/signals-react/runtime'
 import { useAbsoluteFilePath } from '@src/hooks/useAbsoluteFilePath'
 import { useMenuListener } from '@src/hooks/useMenu'
+import { sourceRangeToUtf16 } from '@src/lang/errors'
 import {
   type PendingFeatureTreeSourceSelection,
   updateOutsideEditorEvent,
 } from '@src/lang/KclManager'
-import { sourceRangeToUtf16 } from '@src/lang/errors'
 import { useApp, useSingletons } from '@src/lib/boot'
 import { createNamedViewsCommand } from '@src/lib/commandBarConfigs/namedViewsConfig'
 import { createRouteCommands } from '@src/lib/commandBarConfigs/routeCommandConfig'
@@ -21,7 +18,14 @@ import { kclCommands } from '@src/lib/kclCommands'
 import { markOnce } from '@src/lib/performance'
 import { isArray } from '@src/lib/utils'
 import { modelingMenuCallbackMostActions } from '@src/menu/register'
+import {
+  appNavigationService,
+  showHomeIntent,
+} from '@src/registry/contracts/appNavigation'
 import { FILE_AND_CODE_EDITOR_COMMAND_SCOPES } from '@src/registry/contracts/commands'
+import type React from 'react'
+import { use, useEffect, useMemo } from 'react'
+import { useLocation, useNavigate } from 'react-router-dom'
 
 function isNumberArray(value: unknown): value is number[] {
   return isArray(value) && value.every((item) => typeof item === 'number')
@@ -61,7 +65,8 @@ export const ModelingPageProvider = ({
   children: React.ReactNode
 }) => {
   useSignals()
-  const { auth, commands, settings, project, systemIOActor } = useApp()
+  const app = useApp()
+  const { auth, commands, settings, project, systemIOActor } = app
   const { kclManager } = useSingletons()
   const wasmInstance = use(kclManager.wasmInstancePromise)
   const navigate = useNavigate()
@@ -171,7 +176,12 @@ export const ModelingPageProvider = ({
         navigate,
         location,
         filePath,
-        FILE_AND_CODE_EDITOR_COMMAND_SCOPES
+        FILE_AND_CODE_EDITOR_COMMAND_SCOPES,
+        () => {
+          void app.registry
+            .get(appNavigationService)
+            .dispatch(showHomeIntent, {})
+        }
       )
     commands.send({
       type: 'Add commands',
@@ -195,7 +205,7 @@ export const ModelingPageProvider = ({
         },
       })
     }
-  }, [commands, filePath, location, navigate])
+  }, [app.registry, commands, filePath, location, navigate])
 
   const cb = modelingMenuCallbackMostActions({
     authActor: auth.actor,
@@ -215,7 +225,7 @@ export const ModelingPageProvider = ({
     if (projectIORef?.value.children && file?.path) {
       const projectPath = projectIORef.value.path
       const filePath = file.path
-      let children = structuredClone(projectIORef.value.children)
+      const children = structuredClone(projectIORef.value.children)
       while (children.length > 0) {
         const v = children.pop()
         if (!v) {

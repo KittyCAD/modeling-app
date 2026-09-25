@@ -29,7 +29,7 @@ import type {
 import type { FormEvent, HTMLAttributes } from 'react'
 import { useEffect, useRef, useState } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 
 type AppProjectCardProps = HTMLAttributes<HTMLLIElement> & {
   project: HomeProjectEntry
@@ -41,6 +41,7 @@ type AppProjectCardProps = HTMLAttributes<HTMLLIElement> & {
   showDetails?: boolean
   showSourceStatusBadges?: boolean
   onMoveToLibrary?: (project: HomeProjectEntry) => void
+  openProject: (target: string) => Promise<unknown>
 }
 
 const homeProjectStatusBadgeLabels: Record<HomeProjectEntry['status'], string> =
@@ -153,6 +154,7 @@ function AppProjectCard({
   showDetails = true,
   showSourceStatusBadges = true,
   onMoveToLibrary,
+  openProject,
   ...props
 }: AppProjectCardProps) {
   const cardRef = useRef<HTMLLIElement>(null)
@@ -179,7 +181,6 @@ function AppProjectCard({
     }
   }, [isInView, remoteProjectId, hasLocalThumbnail, projectActions])
 
-  const navigate = useNavigate()
   useHotkeys('esc', () => setIsEditing(false))
   const [isEditing, setIsEditing] = useState(false)
   const [isConfirmingDelete, setIsConfirmingDelete] = useState(false)
@@ -628,9 +629,7 @@ function AppProjectCard({
           .open(project)
           .then((result) => {
             if (result?.defaultFile) {
-              void navigate(
-                `${PATHS.FILE}/${encodeURIComponent(result.defaultFile)}`
-              )
+              return openProject(result.defaultFile)
             }
           })
           .catch(reportRejection)

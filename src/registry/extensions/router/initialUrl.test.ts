@@ -2,7 +2,7 @@ import { onboardingNavigationUrlContribution } from '@src/registry/extensions/on
 import { settingsNavigationUrlContribution } from '@src/registry/extensions/settings/overlay'
 import { telemetryNavigationUrlContribution } from '@src/registry/extensions/telemetry/overlay'
 import { describe, expect, it } from 'vitest'
-import { parseInitialUrl } from './initialUrl'
+import { formatAppUrl, parseInitialUrl } from './initialUrl'
 
 const navigationIntents = [
   settingsNavigationUrlContribution,
@@ -22,7 +22,7 @@ describe('parseInitialUrl', () => {
       destination: { type: 'project', target: '/projects/bracket' },
       additionalIntents: [
         {
-          intent: { id: 'settings.open' },
+          intent: { id: 'settings.open', placement: 'additional' },
           input: { tab: 'project', setting: 'modeling.defaultUnit' },
         },
       ],
@@ -42,11 +42,25 @@ describe('parseInitialUrl', () => {
       destination: { type: 'project', target: '/projects/bracket' },
       additionalIntents: [
         {
-          intent: { id: 'telemetry.open' },
+          intent: { id: 'telemetry.open', placement: 'additional' },
           input: { type: 'telemetry' },
         },
       ],
       search: '?pool=alpha',
+      hash: '',
+    })
+  })
+
+  it('treats a desktop document URL without a route hash as the index', () => {
+    expect(
+      parseInitialUrl(
+        'file:///Applications/Zoo.app/index.html/?cmd=app.theme&groupId=settings',
+        { navigationIntents, usesHashRouter: true }
+      )
+    ).toEqual({
+      type: 'launch',
+      destination: { type: 'index' },
+      search: '?cmd=app.theme&groupId=settings',
       hash: '',
     })
   })
@@ -114,6 +128,46 @@ describe('parseInitialUrl', () => {
 })
 
 describe('navigation intent URL projections', () => {
+  it('formats a canonical project target with structured startup state', () => {
+    expect(
+      formatAppUrl(
+        {
+          destination: {
+            type: 'project',
+            target: '/projects/bracket/main.kcl',
+          },
+          search: '?pool=alpha',
+          hash: '',
+        },
+        navigationIntents
+      )
+    ).toBe('/file/%2Fprojects%2Fbracket%2Fmain.kcl?pool=alpha')
+  })
+
+  it('lets an additional intent project its capability-owned URL fields', () => {
+    expect(
+      formatAppUrl(
+        {
+          destination: { type: 'project', target: '/projects/bracket' },
+          additionalIntents: [
+            {
+              intent: { id: 'settings.open', placement: 'additional' },
+              input: {
+                tab: 'keybindings',
+                setting: 'editor.textWrapping',
+              },
+            },
+          ],
+          search: '?discarded=by-overlay',
+          hash: '#discarded-by-overlay',
+        },
+        navigationIntents
+      )
+    ).toBe(
+      '/file/%2Fprojects%2Fbracket/settings?tab=keybindings#editor.textWrapping'
+    )
+  })
+
   it('keeps each capability responsible for its own URL shape', () => {
     expect(
       settingsNavigationUrlContribution.format({

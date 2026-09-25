@@ -4,18 +4,20 @@ import { projectFsManager } from '@src/lang/std/fileSystemManager'
 import type { App } from '@src/lib/app'
 import type { AppNavigationDependencies } from '@src/lib/appNavigation'
 import { getProjectInfo, isPathNotFoundError } from '@src/lib/desktop'
-import { getParentAbsolutePath } from '@src/lib/paths'
+import { getParentAbsolutePath, PATHS } from '@src/lib/paths'
 import {
   resolveProjectOpenRequest,
   type ResolvedProjectOpen,
 } from '@src/lib/projectOpen'
 import { getProjectLibraryOwnership } from '@src/lib/projectLibraryOwnership'
 import { isRequestedFileLoaded } from '@src/lib/routeLoaderNavigation'
+import { loadHomeProjects } from '@src/lib/routeLoaderUtils'
 import { loadRouteSettings } from '@src/lib/routeSettings'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/events'
 import { SystemIOMachineStates } from '@src/machines/systemIO/states'
 import { fileOperationsService } from '@src/registry/contracts/fileOperations'
 import { projectSession } from '@src/registry/contracts/projectSession'
+import { appUrlService } from '@src/registry/contracts/appUrl'
 import { waitFor } from 'xstate'
 
 /**
@@ -127,12 +129,40 @@ export function createAppNavigationDependencies(
           setProjectDirectory: (projectPath) => {
             projectFsManager.dir = projectPath
           },
-          isDesktop: () => Boolean(window.electron),
         },
         request,
         throwIfSuperseded
       ),
     openResolvedProject: (resolution, throwIfSuperseded) =>
       openResolvedProject(app, resolution, throwIfSuperseded),
+    projectOpened: (outcome, resolution, request) => {
+      const appUrl = app.registry.get(appUrlService)
+      if (request.startup) {
+        void appUrl.navigate(
+          appUrl.formatUrl({
+            destination: {
+              type: 'project',
+              target: resolution.canonicalTarget,
+            },
+            ...request.startup,
+          }),
+          { replace: true }
+        )
+        return
+      }
+
+      const openedFilePath = outcome.data.file?.path
+      if (openedFilePath) {
+        void appUrl.navigate(
+          `${PATHS.FILE}/${encodeURIComponent(openedFilePath)}`
+        )
+      }
+    },
+    showHome: async (request) => {
+      loadHomeProjects(app)
+      if (!request.startup) {
+        void app.registry.get(appUrlService).navigate(PATHS.HOME)
+      }
+    },
   }
 }

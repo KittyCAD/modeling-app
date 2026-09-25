@@ -7,9 +7,13 @@ import { getAppSettingsFilePath } from '@src/lib/desktop'
 import { getStringAfterLastSeparator, PATHS } from '@src/lib/paths'
 import { markOnce } from '@src/lib/performance'
 import { trap } from '@src/lib/trap'
+import {
+  appNavigationService,
+  showHomeIntent,
+} from '@src/registry/contracts/appNavigation'
 import type { ReactNode } from 'react'
 import { createContext, useEffect, useState } from 'react'
-import { useLocation, useNavigate, useNavigation } from 'react-router-dom'
+import { useLocation, useNavigation } from 'react-router-dom'
 
 export const RouteProviderContext = createContext({})
 
@@ -27,7 +31,6 @@ export function RouteProvider({ children }: { children: ReactNode }) {
     undefined
   )
   const navigation = useNavigation()
-  const navigate = useNavigate()
   const location = useLocation()
 
   useEffect(() => {
@@ -126,7 +129,9 @@ export function RouteProvider({ children }: { children: ReactNode }) {
           ) {
             return
           }
-          void navigate(PATHS.HOME)
+          void app.registry
+            .get(appNavigationService)
+            .dispatch(showHomeIntent, {})
           return
         }
       }

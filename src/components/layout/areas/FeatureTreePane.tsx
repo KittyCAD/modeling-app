@@ -82,9 +82,12 @@ import {
   type Layout,
   togglePaneLayoutNode,
 } from '@src/lib/layout'
-import { PATHS } from '@src/lib/paths'
 import type RustContext from '@src/lib/rustContext'
 import type { CommandBarActorType } from '@src/machines/commandBarMachine'
+import {
+  appNavigationService,
+  openProjectIntent,
+} from '@src/registry/contracts/appNavigation'
 import { executingEditorService } from '@src/registry/contracts/executingEditor'
 import {
   findKeymapItemForCommand,
@@ -93,7 +96,6 @@ import {
   keymapService,
 } from '@src/registry/contracts/keymap'
 import { APP_COMMAND_IDS } from '@src/registry/extensions/commands/appCommands'
-import { useNavigate } from 'react-router-dom'
 
 type Singletons = ReturnType<typeof useSingletons>
 
@@ -985,7 +987,6 @@ const OperationItem = ({
 }: OperationProps) => {
   useSignals()
   const app = useApp()
-  const navigate = useNavigate()
   const { layout } = app
   const { kclManager, commandBarActor } = systemDeps
   const useSketchSolveMode =
@@ -1098,7 +1099,9 @@ const OperationItem = ({
             path: targetPath,
             range: providedSourceRange ?? item.sourceRange,
           }
-          await navigate(`${PATHS.FILE}/${encodeURIComponent(targetPath)}`)
+          await app.registry
+            .get(appNavigationService)
+            .dispatch(openProjectIntent, { target: targetPath })
           return
         }
       }
@@ -1110,7 +1113,7 @@ const OperationItem = ({
 
       onSelect(targetRange)
     },
-    [app, item, kclManager, layout, navigate, onSelect]
+    [app, item, kclManager, layout, onSelect]
   )
 
   const enterEditFlow = useCallback(() => {

@@ -1,10 +1,13 @@
 import { PATHS } from '@src/lib/paths'
-import { defineAppNavigationIntent } from '@src/registry/contracts/appNavigation'
+import {
+  defineAppNavigationIntent,
+  defineAppNavigationIntentContribution,
+} from '@src/registry/contracts/appNavigation'
 import { defineAppNavigationUrlContribution } from '@src/registry/contracts/appUrl'
 
 export type SettingsOverlayTab = 'user' | 'project' | 'keybindings' | 'plugins'
 
-export interface SettingsOverlayState {
+export interface OpenSettingsInput {
   tab?: SettingsOverlayTab
   setting?: string
 }
@@ -30,9 +33,15 @@ function decodeHash(hash: string): string | undefined {
 }
 
 export const openSettingsIntent = defineAppNavigationIntent<
-  SettingsOverlayState,
+  OpenSettingsInput,
   undefined
->('settings.open')
+>('settings.open', { placement: 'additional' })
+
+export const openSettingsIntentContribution =
+  defineAppNavigationIntentContribution(
+    openSettingsIntent,
+    async () => undefined
+  )
 
 export const settingsNavigationUrlContribution =
   defineAppNavigationUrlContribution(openSettingsIntent, {
@@ -46,9 +55,9 @@ export const settingsNavigationUrlContribution =
       return {
         ...(isSettingsOverlayTab(requestedTab) ? { tab: requestedTab } : {}),
         ...(setting ? { setting } : {}),
-      } satisfies SettingsOverlayState
+      } satisfies OpenSettingsInput
     },
-    format: (state: SettingsOverlayState) => ({
+    format: (state: OpenSettingsInput) => ({
       path: PATHS.SETTINGS,
       search: state.tab ? `?tab=${state.tab}` : undefined,
       hash: state.setting ? `#${encodeURIComponent(state.setting)}` : undefined,

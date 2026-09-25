@@ -1,4 +1,3 @@
-import { PATHS } from '@src/lib/paths'
 import { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
 import type { Project } from '@src/lib/project'
 import {
@@ -42,7 +41,6 @@ function resolverHarness(
     isPathNotFoundError: (error) =>
       error instanceof Error && error.message === 'ENOENT',
     setProjectDirectory: vi.fn(),
-    isDesktop: () => false,
     ...overrides,
   }
 
@@ -56,26 +54,32 @@ beforeEach(() => {
 })
 
 describe('resolveProjectOpenRequest', () => {
-  test('canonicalizes a project URL to its default file', async () => {
+  test('resolves a project target to its default file and canonical target', async () => {
     const dependencies = resolverHarness()
 
     const result = await resolveProjectOpenRequest(
       dependencies,
       {
         target: '/library/proj',
-        requestUrl: `http://localhost${PATHS.FILE}/%2Flibrary%2Fproj?pool=alpha`,
+        startup: { search: '?pool=alpha', hash: '' },
       },
       throwIfSuperseded
     )
 
-    expect(result).toEqual({
-      kind: 'redirect',
-      to: `http://localhost${PATHS.FILE}/%2Flibrary%2Fproj%2Fmain.kcl?pool=alpha`,
+    expect(result).toMatchObject({
+      kind: 'resolved',
+      file: {
+        name: 'main.kcl',
+        path: '/library/proj/main.kcl',
+      },
+      canonicalTarget: '/library/proj/main.kcl',
     })
-    expect(dependencies.setProjectDirectory).not.toHaveBeenCalled()
+    expect(dependencies.setProjectDirectory).toHaveBeenCalledWith(
+      '/library/proj'
+    )
   })
 
-  test('redirects a missing file while preserving the query string', async () => {
+  test('resolves a missing file to the default and preserves URL state', async () => {
     const dependencies = resolverHarness({
       stat: vi.fn(() => Promise.reject(new Error('ENOENT'))),
     })
@@ -84,14 +88,18 @@ describe('resolveProjectOpenRequest', () => {
       dependencies,
       {
         target: '/library/proj/nope.kcl',
-        requestUrl: `http://localhost${PATHS.FILE}/%2Flibrary%2Fproj%2Fnope.kcl?pool=alpha`,
+        startup: { search: '?pool=alpha', hash: '' },
       },
       throwIfSuperseded
     )
 
-    expect(result).toEqual({
-      kind: 'redirect',
-      to: `${PATHS.FILE}/${encodeURIComponent('/library/proj/main.kcl')}?pool=alpha`,
+    expect(result).toMatchObject({
+      kind: 'resolved',
+      file: {
+        name: 'main.kcl',
+        path: '/library/proj/main.kcl',
+      },
+      canonicalTarget: '/library/proj/main.kcl',
     })
   })
 
@@ -102,7 +110,16 @@ describe('resolveProjectOpenRequest', () => {
       dependencies,
       {
         target: '/library/proj',
-        requestUrl: `http://localhost${PATHS.FILE}/%2Flibrary%2Fproj/settings`,
+        startup: {
+          additionalIntents: [
+            {
+              intent: { id: 'settings.open', placement: 'additional' },
+              input: { tab: 'project' },
+            },
+          ],
+          search: '',
+          hash: '',
+        },
       },
       throwIfSuperseded
     )
@@ -110,19 +127,8 @@ describe('resolveProjectOpenRequest', () => {
     expect(result).toMatchObject({
       kind: 'resolved',
       projectPath: '/library/proj',
+      canonicalTarget: '/library/proj',
     })
-  })
-
-  test('rejects a missing target for the route error boundary', async () => {
-    const dependencies = resolverHarness()
-
-    await expect(
-      resolveProjectOpenRequest(
-        dependencies,
-        { target: undefined, requestUrl: 'http://localhost/file' },
-        throwIfSuperseded
-      )
-    ).rejects.toThrow('bug: projectPathData undefined')
   })
 
   test('resolves a warm project open to its default file', async () => {
@@ -137,6 +143,7 @@ describe('resolveProjectOpenRequest', () => {
     expect(result).toMatchObject({
       kind: 'resolved',
       file: { path: '/library/proj/main.kcl', name: 'main.kcl' },
+      canonicalTarget: '/library/proj/main.kcl',
     })
     expect(dependencies.setProjectDirectory).toHaveBeenCalledWith(
       '/library/proj'
@@ -155,6 +162,7 @@ describe('resolveProjectOpenRequest', () => {
     expect(result).toMatchObject({
       kind: 'resolved',
       file: { path: '/library/proj/part.kcl', name: 'part.kcl' },
+      canonicalTarget: '/library/proj/part.kcl',
     })
   })
 })

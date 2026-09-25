@@ -12,6 +12,7 @@ const mocks = vi.hoisted(() => ({
     () => '/file/tutorial-project/main.kcl'
   ),
   navigate: vi.fn(),
+  dispatch: vi.fn(() => Promise.resolve()),
   settingsActor: {},
   settingsSend: vi.fn(),
   settingsWaitFor: vi.fn(() => Promise.resolve()),
@@ -23,6 +24,9 @@ vi.mock('@src/hooks/useAbsoluteFilePath', () => ({
 
 vi.mock('@src/lib/boot', () => ({
   useApp: () => ({
+    registry: {
+      get: () => ({ dispatch: mocks.dispatch }),
+    },
     settings: {
       actor: mocks.settingsActor,
       send: mocks.settingsSend,
@@ -81,10 +85,10 @@ describe('onboarding navigation', () => {
         data: { level: 'user', value: 'completed' },
       })
     })
-    expect(mocks.navigate).not.toHaveBeenCalled()
+    expect(mocks.dispatch).not.toHaveBeenCalled()
     idleAfterUpdate.resolve()
     await waitForAssertion(() => {
-      expect(mocks.navigate).toHaveBeenCalledWith('/home', { replace: true })
+      expect(mocks.dispatch).toHaveBeenCalledTimes(1)
     })
     expect(mocks.settingsWaitFor).toHaveBeenCalledTimes(2)
   })
@@ -97,7 +101,7 @@ describe('onboarding navigation', () => {
     })
 
     await waitForAssertion(() => {
-      expect(mocks.navigate).toHaveBeenCalledWith('/home', { replace: true })
+      expect(mocks.dispatch).toHaveBeenCalledTimes(1)
     })
     expect(mocks.settingsSend).toHaveBeenCalledWith({
       type: 'set.app.onboardingStatus',
@@ -114,7 +118,7 @@ describe('onboarding navigation', () => {
     })
 
     await waitForAssertion(() => {
-      expect(mocks.navigate).toHaveBeenCalledWith('/home', { replace: true })
+      expect(mocks.dispatch).toHaveBeenCalledTimes(1)
     })
   })
 

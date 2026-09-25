@@ -3,7 +3,12 @@ import {
   defineContract,
   defineService,
 } from '@kittycad/registry'
+import type { ReadonlySignal } from '@preact/signals-core'
 import type { IndexLoaderData } from '@src/lib/types'
+import type {
+  AppUrlState,
+  ParsedAppNavigationIntent,
+} from '@src/registry/contracts/appUrl'
 
 declare const appNavigationIntentInput: unique symbol
 declare const appNavigationIntentOutput: unique symbol
@@ -17,6 +22,7 @@ declare const appNavigationIntentOutput: unique symbol
  */
 export interface AppNavigationIntent<Input, Output> {
   readonly id: string
+  readonly placement: 'primary' | 'additional'
   readonly [appNavigationIntentInput]?: Input
   readonly [appNavigationIntentOutput]?: Output
 }
@@ -28,9 +34,10 @@ export interface AppNavigationIntentContribution {
 }
 
 export function defineAppNavigationIntent<Input, Output>(
-  id: string
+  id: string,
+  { placement = 'primary' }: { placement?: 'primary' | 'additional' } = {}
 ): AppNavigationIntent<Input, Output> {
-  return { id }
+  return { id, placement }
 }
 
 export function defineAppNavigationIntentContribution<Input, Output>(
@@ -51,29 +58,30 @@ export function defineAppNavigationIntentContribution<Input, Output>(
  * and optional initial editor is the coordinator's responsibility.
  */
 export interface OpenProjectRequest {
-  target?: string
-  requestUrl?: string
-  /**
-   * Transitional React Router loader cancellation. Once startup is no longer
-   * loader-owned, appNavigation keeps latest-intent cancellation private.
-   */
-  signal?: AbortSignal
+  target: string
+  /** Parsed URL-owned state, present only while restoring cold startup. */
+  startup?: AppUrlState
 }
 
-export type OpenProjectOutcome =
-  | { kind: 'opened'; data: IndexLoaderData }
-  /**
-   * Transitional loader-compatible result used while React Router still
-   * initiates project opens. The final inversion replaces this with opening
-   * normalized project state and projecting its canonical URL afterward.
-   */
-  | { kind: 'redirect'; to: string }
+export type OpenProjectOutcome = { kind: 'opened'; data: IndexLoaderData }
 
 /** The first application intent moved behind the navigation coordinator. */
 export const openProjectIntent = defineAppNavigationIntent<
   OpenProjectRequest,
   OpenProjectOutcome
 >('project.open')
+
+export interface ShowHomeRequest {
+  libraryId?: string
+  /** Parsed URL-owned state, present only while restoring cold startup. */
+  startup?: AppUrlState
+}
+
+/** Enter Home and optionally restore its selected project library. */
+export const showHomeIntent = defineAppNavigationIntent<
+  ShowHomeRequest,
+  undefined
+>('home.show')
 
 /**
  * Coordinates application intents without owning durable application state.
@@ -82,15 +90,13 @@ export const openProjectIntent = defineAppNavigationIntent<
  * resolves requests and delegates to the capability that owns the result.
  */
 export interface AppNavigationService {
+  /** The additional application intent currently presented over a destination. */
+  activeAdditionalIntent: ReadonlySignal<ParsedAppNavigationIntent | undefined>
   dispatch: <Input, Output>(
     intent: AppNavigationIntent<Input, Output>,
     input: Input
   ) => Promise<Output>
-  /**
-   * Transitional escape hatch for a legacy file route that returns before it
-   * can call openProject. Remove it with the effectful loader integration.
-   */
-  supersedeProjectOpen: (signal?: AbortSignal) => void
+  dismissAdditionalIntent: () => void
 }
 
 export const appNavigationContract = defineContract({

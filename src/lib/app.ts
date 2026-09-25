@@ -14,6 +14,7 @@ import { lspService } from '@src/lang/lsp/registry/contract'
 import {
   createAppNavigationService,
   createOpenProjectIntentContribution,
+  createShowHomeIntentContribution,
 } from '@src/lib/appNavigation'
 import { createAppNavigationDependencies } from '@src/lib/appNavigationRuntime'
 import { type BillingRegistryService, billingService } from '@src/lib/billing'
@@ -58,6 +59,7 @@ import {
 import {
   appNavigationIntentContributionsValueSpec,
   appNavigationService,
+  openProjectIntent,
 } from '@src/registry/contracts/appNavigation'
 import {
   type AuthRegistryService,
@@ -621,6 +623,10 @@ export class App implements AppSubsystems {
           ),
           ...createProjectCommands({
             systemIOActor: this.systemIOActor,
+            openProject: (target) =>
+              this.registry
+                .get(appNavigationService)
+                .dispatch(openProjectIntent, { target }),
             enableProjectDirectoryCommands: true,
             getCurrentProjectDirectoryName: () =>
               this.settings.actor.getSnapshot().context.currentProject?.name,
@@ -829,12 +835,18 @@ export class App implements AppSubsystems {
     })
     kclManager.fileOperations = this.fileOperations
 
+    const navigationDependencies = createAppNavigationDependencies(this)
     const openProjectNavigation = createOpenProjectIntentContribution(
-      createAppNavigationDependencies(this)
+      navigationDependencies
+    )
+    const showHomeNavigation = createShowHomeIntentContribution(
+      navigationDependencies,
+      openProjectNavigation.cancelProjectOpen
     )
     const preloadedNavigationIntents = [
       ...this.registry.get(appNavigationIntentContributionsValueSpec),
       openProjectNavigation.contribution,
+      showHomeNavigation,
     ]
 
     this.registry.reconfigure(appRegistryServicesSlot, [
@@ -844,6 +856,10 @@ export class App implements AppSubsystems {
           provide(
             appNavigationIntentContributionsValueSpec,
             openProjectNavigation.contribution
+          ),
+          provide(
+            appNavigationIntentContributionsValueSpec,
+            showHomeNavigation
           ),
         ],
         providesServices: [
@@ -859,9 +875,7 @@ export class App implements AppSubsystems {
           // are owned and composed by registry capabilities.
           provideService(
             appNavigationService,
-            createAppNavigationService(preloadedNavigationIntents, {
-              supersedeProjectOpen: openProjectNavigation.supersedeProjectOpen,
-            })
+            createAppNavigationService(preloadedNavigationIntents)
           ),
         ],
       }),
