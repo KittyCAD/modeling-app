@@ -39,7 +39,7 @@ import {
   setNoAutofillAttributes,
 } from '@src/lib/autofill'
 import styles from './CommandBarKclInput.module.css'
-import { MarkdownText } from '../MarkdownText'
+import { MarkdownText } from '@src/components/MarkdownText'
 
 // TODO: remove the need for this selector once we decouple all actors from React
 const machineContextSelector = (snapshot?: SnapshotFrom<AnyStateMachine>) =>
