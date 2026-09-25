@@ -172,8 +172,10 @@ import type RustContext from '@src/lib/rustContext'
 import {
   getDefaultSketchPlaneData,
   getEventForSegmentSelection,
+  getKclBodyIdFromEnginePrimitiveSelection,
   getOffsetSketchPlaneData,
   getPlaneDataFromSketchBlock,
+  getPrimitiveSelectionForEntity,
   handleSelectionBatch,
   isEnginePrimitiveSelection,
   isEngineRegionSelection,
@@ -199,6 +201,28 @@ function sourceRangesEqual(
   b: [number, number, number]
 ) {
   return a[0] === b[0] && a[1] === b[1] && a[2] === b[2]
+}
+
+function getNextSelectionOrder(selections: Selections): number {
+  const orders = selections.graphSelections.flatMap((selection) =>
+    selection.selectionOrder === undefined ? [] : [selection.selectionOrder]
+  )
+  for (const selection of selections.otherSelections) {
+    if (
+      typeof selection === 'object' &&
+      'selectionOrder' in selection &&
+      typeof selection.selectionOrder === 'number'
+    ) {
+      orders.push(selection.selectionOrder)
+    }
+  }
+
+  return (
+    Math.max(
+      selections.graphSelections.length + selections.otherSelections.length - 1,
+      ...orders
+    ) + 1
+  )
 }
 
 function sourceRangeForPath(
@@ -1737,7 +1761,9 @@ export const modelingMachine = setup({
             }
           } else if (setSelections.selection && !kclManager.isShiftDown) {
             selections = {
-              graphSelections: [setSelections.selection],
+              graphSelections: [
+                { ...setSelections.selection, selectionOrder: 0 },
+              ],
               otherSelections: [],
             }
           } else if (setSelections.selection && kclManager.isShiftDown) {
@@ -1775,7 +1801,10 @@ export const modelingMachine = setup({
                 // add it
                 updatedSelections = [
                   ...selectionRanges.graphSelections,
-                  setSelections.selection,
+                  {
+                    ...setSelections.selection,
+                    selectionOrder: getNextSelectionOrder(selectionRanges),
+                  },
                 ]
               }
             } else {
@@ -1802,7 +1831,10 @@ export const modelingMachine = setup({
                 // add it
                 updatedSelections = [
                   ...selectionRanges.graphSelections,
-                  setSelections.selection,
+                  {
+                    ...setSelections.selection,
+                    selectionOrder: getNextSelectionOrder(selectionRanges),
+                  },
                 ]
               }
             }
@@ -1868,6 +1900,12 @@ export const modelingMachine = setup({
               selection.entityId === setSelections.selection.entityId
           )
 
+          const orderedSelection = {
+            ...setSelections.selection,
+            selectionOrder: kclManager.isShiftDown
+              ? getNextSelectionOrder(selectionRanges)
+              : 0,
+          }
           const otherSelections = kclManager.isShiftDown
             ? shouldDeselect
               ? selectionRanges.otherSelections.filter(
@@ -1877,8 +1915,8 @@ export const modelingMachine = setup({
                       selection.entityId === setSelections.selection.entityId
                     )
                 )
-              : [...selectionRanges.otherSelections, setSelections.selection]
-            : [setSelections.selection]
+              : [...selectionRanges.otherSelections, orderedSelection]
+            : [orderedSelection]
 
           const selections: Selections = {
             graphSelections: kclManager.isShiftDown
@@ -3262,7 +3300,7 @@ export const modelingMachine = setup({
         }
         const {
           artifactOrPlaneId,
-          primitiveFaceSelection,
+          primitiveFaceSelection: selectedPrimitiveFace,
           kclManager,
           rustContext,
           engineCommandManager,
@@ -3276,14 +3314,38 @@ export const modelingMachine = setup({
             new Error('Unable to enter sketch while KCL has parse errors.')
           )
         }
+        let primitiveFaceSelection = selectedPrimitiveFace
+        if (!primitiveFaceSelection) {
+          const selectedArtifact =
+            kclManager.artifactGraph.get(artifactOrPlaneId)
+          if (selectedArtifact?.type === 'primitiveFace') {
+            const resolvedPrimitive = await getPrimitiveSelectionForEntity(
+              selectedArtifact.id,
+              engineCommandManager,
+              kclManager.artifactGraph
+            )
+            if (resolvedPrimitive?.primitiveType !== 'face') {
+              return reject(
+                new Error('Could not resolve the selected primitive face.')
+              )
+            }
+            primitiveFaceSelection = resolvedPrimitive
+          }
+        }
         let result: DefaultPlane | OffsetPlane | ExtrudeFacePlane | null = null
+        const primitiveKclBodyId = primitiveFaceSelection
+          ? getKclBodyIdFromEnginePrimitiveSelection(primitiveFaceSelection)
+          : undefined
         const primitiveFace =
-          primitiveFaceSelection?.parentEntityId === undefined
-            ? null
-            : {
-                solidId: primitiveFaceSelection.parentEntityId,
+          primitiveFaceSelection && primitiveKclBodyId
+            ? {
+                solidId: primitiveKclBodyId,
                 index: primitiveFaceSelection.primitiveIndex,
+                ...(primitiveFaceSelection.bodyPath?.length
+                  ? { bodyPath: primitiveFaceSelection.bodyPath }
+                  : {}),
               }
+            : null
 
         if (primitiveFaceSelection && !primitiveFace) {
           return reject(

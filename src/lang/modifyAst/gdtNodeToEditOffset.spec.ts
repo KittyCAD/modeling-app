@@ -8,7 +8,9 @@ import {
   addAngularityGdt,
   addParallelismGdt,
   addPerpendicularityGdt,
+  addProfileGdt,
 } from '@src/lang/modifyAst/gdt'
+import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import { assertParse, type PathToNode, recast } from '@src/lang/wasm'
 import type { KclCommandValue } from '@src/lib/commandTypes'
 import { err } from '@src/lib/trap'
@@ -56,6 +58,54 @@ describe('GDT datum edit path offsets', () => {
       exprs: [createLocalName('face001')],
     }))
   })
+
+  it.each([
+    ['profileLine', 'edges', 'edgeId(body001, index = 4)'],
+    ['profileSurface', 'faces', 'faceId(body001, index = 4)'],
+  ] as const)(
+    'preserves the %s selection when editing tolerance and style',
+    (profileFunction, targetArgument, target) => {
+      const call = `gdt::${profileFunction}(${targetArgument} = [${target}], tolerance = 0.1, fontSize = 12)`
+      const code = `@settings(kclVersion = 2.0)\nannotation001 = ${call}`
+      const ast = assertParse(code, wasmInstance)
+      const makeValue = (value: number): KclCommandValue => ({
+        valueAst: createLiteral(value, wasmInstance),
+        valueText: String(value),
+        valueCalculated: String(value),
+      })
+      const nodeToEdit = getNodePathFromSourceRange(ast, [
+        code.indexOf(call),
+        code.length,
+        0,
+      ])
+      const result = addProfileGdt({
+        ast,
+        artifactGraph: new Map(),
+        profileFunction,
+        tolerance: makeValue(0.2),
+        fontSize: makeValue(16),
+        nodeToEdit,
+        wasmInstance,
+      })
+      if (err(result)) throw result
+
+      expect(recast(result.modifiedAst, wasmInstance)).toEqual(
+        recast(
+          assertParse(
+            code
+              .replace('tolerance = 0.1', 'tolerance = 0.2')
+              .replace('fontSize = 12', 'fontSize = 16'),
+            wasmInstance
+          ),
+          wasmInstance
+        )
+      )
+      expect(result.pathToNode).toEqual(nodeToEdit)
+      expect(recast(ast, wasmInstance)).toEqual(
+        recast(assertParse(code, wasmInstance), wasmInstance)
+      )
+    }
+  )
 
   it.each([
     ['perpendicularity', addPerpendicularityGdt],

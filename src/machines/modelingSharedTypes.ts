@@ -29,8 +29,17 @@ export type DefaultPlaneSelection = {
 
 export type EnginePrimitiveSelection = {
   type: 'enginePrimitive'
+  /** Order in which this item was added to the current multi-selection. */
+  selectionOrder?: number
   entityId: string
+  /** Immediate engine body which owns the selected primitive. */
   parentEntityId?: string
+  /** Nearest engine ancestor which can be expressed as a KCL body. */
+  kclBodyId?: ArtifactId
+  /** Artifact type of the KCL body, used to expose only compatible commands. */
+  kclBodyArtifactType?: Artifact['type']
+  /** Child-index path from the KCL body to the engine body which owns the primitive. */
+  bodyPath?: number[]
   primitiveIndex: number
   primitiveType: EntityType
 }
@@ -58,6 +67,8 @@ export type NonCodeSelection =
   | EngineRegionSelection
 
 export interface Selection {
+  /** Order in which this item was added to the current multi-selection. */
+  selectionOrder?: number
   artifact?: Artifact
   codeRef: CodeRef
   engineEntityId?: ArtifactId

@@ -17,6 +17,7 @@ import {
 } from '@src/lib/commandBarConfigs/modelingCommandStdLib'
 import type {
   CommandArgumentConfig,
+  CommandSelectionType,
   KclCommandValue,
   StateMachineCommandSetConfig,
 } from '@src/lib/commandTypes'
@@ -125,6 +126,24 @@ const objectsWithImportedGeometryTypesAndFilters: typeof objectsTypesAndFilters 
       'importedGeometry',
     ],
   }
+
+const GDT_FACE_SELECTION_TYPES: CommandSelectionType[] = [
+  'cap',
+  'wall',
+  'edgeCut',
+  'primitiveFace',
+  'enginePrimitiveFace',
+]
+const GDT_EDGE_SELECTION_TYPES: CommandSelectionType[] = [
+  'segment',
+  'sweepEdge',
+  'primitiveEdge',
+  'enginePrimitiveEdge',
+]
+const GDT_FACE_AND_EDGE_SELECTION_TYPES: CommandSelectionType[] = [
+  ...GDT_FACE_SELECTION_TYPES,
+  ...GDT_EDGE_SELECTION_TYPES,
+]
 
 // For all surface modeling commands
 const kclBodyTypeOptions = KCL_PRELUDE_BODY_TYPE_VALUES.map((value) => ({
@@ -1744,6 +1763,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
               'wall',
               'edgeCut',
               'enginePrimitiveFace',
+              'primitiveFace',
               'segment',
               'sweepEdge',
               'edgeCutEdge',
@@ -1844,7 +1864,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         overrides: {
           faces: {
             inputType: 'selection',
-            selectionTypes: ['cap', 'wall', 'edgeCut'],
+            selectionTypes: GDT_FACE_SELECTION_TYPES,
             multiple: true,
             hidden: isEditingNodeSelection,
           },
@@ -1868,7 +1888,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         overrides: {
           objects: {
             inputType: 'selection',
-            selectionTypes: ['cap', 'wall', 'edgeCut', 'segment', 'sweepEdge'],
+            selectionTypes: GDT_FACE_AND_EDGE_SELECTION_TYPES,
             multiple: true,
             required: true,
             hidden: isEditingNodeSelection,
@@ -1893,7 +1913,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         overrides: {
           objects: {
             inputType: 'selection',
-            selectionTypes: ['cap', 'wall', 'edgeCut', 'segment', 'sweepEdge'],
+            selectionTypes: GDT_FACE_AND_EDGE_SELECTION_TYPES,
             multiple: true,
             required: true,
             hidden: isEditingNodeSelection,
@@ -1918,7 +1938,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         overrides: {
           objects: {
             inputType: 'selection',
-            selectionTypes: ['cap', 'wall', 'edgeCut', 'segment', 'sweepEdge'],
+            selectionTypes: GDT_FACE_AND_EDGE_SELECTION_TYPES,
             multiple: true,
             required: true,
             hidden: isEditingNodeSelection,
@@ -1943,7 +1963,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         overrides: {
           faces: {
             inputType: 'selection',
-            selectionTypes: ['cap', 'wall', 'edgeCut'],
+            selectionTypes: GDT_FACE_SELECTION_TYPES,
             multiple: false,
             hidden: isEditingNodeSelection,
           },
@@ -1972,7 +1992,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         overrides: {
           objects: {
             inputType: 'selection',
-            selectionTypes: ['cap', 'wall', 'edgeCut', 'segment', 'sweepEdge'],
+            selectionTypes: GDT_FACE_AND_EDGE_SELECTION_TYPES,
             multiple: true,
             required: true,
             hidden: isEditingNodeSelection,
@@ -1998,7 +2018,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         overrides: {
           objects: {
             inputType: 'selection',
-            selectionTypes: ['cap', 'wall', 'edgeCut', 'segment', 'sweepEdge'],
+            selectionTypes: GDT_FACE_AND_EDGE_SELECTION_TYPES,
             multiple: true,
             required: true,
             hidden: isEditingNodeSelection,
@@ -2024,7 +2044,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         overrides: {
           objects: {
             inputType: 'selection',
-            selectionTypes: ['cap', 'wall', 'edgeCut', 'segment', 'sweepEdge'],
+            selectionTypes: GDT_FACE_AND_EDGE_SELECTION_TYPES,
             multiple: true,
             required: true,
             hidden: isEditingNodeSelection,
@@ -2049,7 +2069,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       overrides: {
         objects: {
           inputType: 'selection',
-          selectionTypes: ['cap', 'wall', 'edgeCut', 'segment', 'sweepEdge'],
+          selectionTypes: GDT_FACE_AND_EDGE_SELECTION_TYPES,
           multiple: true,
           required: true,
           hidden: isEditingNodeSelection,
@@ -2074,7 +2094,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         overrides: {
           objects: {
             inputType: 'selection',
-            selectionTypes: ['cap', 'wall', 'edgeCut', 'segment', 'sweepEdge'],
+            selectionTypes: GDT_FACE_AND_EDGE_SELECTION_TYPES,
             multiple: true,
             required: true,
             hidden: isEditingNodeSelection,
@@ -2100,7 +2120,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         overrides: {
           objects: {
             inputType: 'selection',
-            selectionTypes: ['cap', 'wall', 'edgeCut', 'segment', 'sweepEdge'],
+            selectionTypes: GDT_FACE_AND_EDGE_SELECTION_TYPES,
             multiple: true,
             required: true,
             hidden: isEditingNodeSelection,
@@ -2129,7 +2149,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         overrides: {
           objects: {
             inputType: 'selection',
-            selectionTypes: ['cap', 'wall', 'edgeCut', 'segment', 'sweepEdge'],
+            selectionTypes: GDT_FACE_AND_EDGE_SELECTION_TYPES,
             multiple: true,
             required: true,
             hidden: isEditingNodeSelection,
@@ -2158,7 +2178,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         overrides: {
           objects: {
             inputType: 'selection',
-            selectionTypes: ['cap', 'wall', 'edgeCut', 'segment', 'sweepEdge'],
+            selectionTypes: GDT_FACE_AND_EDGE_SELECTION_TYPES,
             multiple: true,
             required: true,
             hidden: isEditingNodeSelection,
@@ -2187,7 +2207,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         overrides: {
           objects: {
             inputType: 'selection',
-            selectionTypes: ['cap', 'wall', 'edgeCut', 'segment', 'sweepEdge'],
+            selectionTypes: GDT_FACE_AND_EDGE_SELECTION_TYPES,
             multiple: true,
             required: true,
             hidden: isEditingNodeSelection,
@@ -2212,7 +2232,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         overrides: {
           objects: {
             inputType: 'selection',
-            selectionTypes: ['cap', 'wall', 'edgeCut', 'segment', 'sweepEdge'],
+            selectionTypes: GDT_FACE_AND_EDGE_SELECTION_TYPES,
             multiple: true,
             required: true,
             hidden: isEditingNodeSelection,
