@@ -579,7 +579,7 @@ class SessionController implements ZookeeperSessionController {
       this.deps.billing.send({ type: BillingTransition.UsageStarted })
       this.billingRefreshTimer = setInterval(() => {
         // A stalled request must not accumulate queued refreshes.
-        if (this.deps.billing.state.peek().matches(BillingState.Updating)) {
+        if (!this.deps.billing.state.peek().matches(BillingState.Waiting)) {
           return
         }
         this.deps.billing.send({

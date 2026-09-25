@@ -377,6 +377,9 @@ describe('Zookeeper session controller', () => {
     billingState.value = BillingState.Updating
     vi.advanceTimersByTime(120_000)
     expect(billingSend).toHaveBeenCalledTimes(2)
+    billingState.value = BillingState.Throttling
+    vi.advanceTimersByTime(60_000)
+    expect(billingSend).toHaveBeenCalledTimes(2)
     billingState.value = BillingState.Waiting
     vi.advanceTimersByTime(60_000)
     expect(billingSend).toHaveBeenCalledTimes(3)

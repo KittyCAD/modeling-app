@@ -1,5 +1,6 @@
 import {
   BillingError,
+  EBillingError,
   getBillingInfo,
   type IBillingInfo,
 } from '@kittycad/ui-components'
@@ -9,8 +10,10 @@ import type { ActorRefFrom } from 'xstate'
 import { assign, fromPromise, setup } from 'xstate'
 
 const _TIME_1_SECOND = 1000
+const BILLING_REQUEST_TIMEOUT_MS = 30_000
 
 export enum BillingState {
+  Throttling = 'throttling',
   Updating = 'updating',
   Waiting = 'waiting',
 }
@@ -91,24 +94,24 @@ export const billingMachine = setup({
     input: {} as BillingContext,
     events: {} as BillingMachineEvent,
   },
+  delays: {
+    billingThrottle: ({ context }) =>
+      context.lastFetch
+        ? Math.max(
+            0,
+            _TIME_1_SECOND - (Date.now() - context.lastFetch.getTime())
+          )
+        : 0,
+  },
   actors: {
     [BillingTransition.Update]: fromPromise(
       async ({
         input,
+        signal,
       }: {
         input: { context: BillingContext; apiToken: string }
+        signal: AbortSignal
       }) => {
-        // Rate limit on the client side to 1 request per second.
-        if (
-          input.context.lastFetch &&
-          Date.now() - input.context.lastFetch.getTime() < _TIME_1_SECOND
-        ) {
-          console.log(
-            'BillingTransition.Update was skipped as it was recently fetched'
-          )
-          return input.context
-        }
-
         if (!input.apiToken) {
           console.log(
             'BillingTransition.Update was skipped as the token is missing'
@@ -117,6 +120,9 @@ export const billingMachine = setup({
         }
 
         const client = createKCClient(input.apiToken)
+        const fetchWithAuth = client.fetch ?? globalThis.fetch
+        client.fetch = (resource, init) =>
+          fetchWithAuth(resource, { ...init, signal })
         const billing = await getBillingInfo(client)
         if (BillingError.from(billing)) {
           return Promise.reject(billing)
@@ -177,9 +183,29 @@ export const billingMachine = setup({
   },
   states: {
     [BillingState.Waiting]: {
+      always: {
+        guard: ({ context }) => context.pendingUpdateApiToken !== undefined,
+        target: BillingState.Throttling,
+        actions: assign({
+          updateApiToken: ({ context }) => context.pendingUpdateApiToken,
+          pendingUpdateApiToken: undefined,
+        }),
+      },
       on: {
         [BillingTransition.Update]: {
-          target: BillingState.Updating,
+          target: BillingState.Throttling,
+          actions: assign({
+            updateApiToken: ({ event }) => event.apiToken,
+          }),
+        },
+      },
+    },
+    [BillingState.Throttling]: {
+      after: {
+        billingThrottle: BillingState.Updating,
+      },
+      on: {
+        [BillingTransition.Update]: {
           actions: assign({
             updateApiToken: ({ event }) => event.apiToken,
           }),
@@ -187,6 +213,16 @@ export const billingMachine = setup({
       },
     },
     [BillingState.Updating]: {
+      after: {
+        [BILLING_REQUEST_TIMEOUT_MS]: {
+          target: BillingState.Waiting,
+          actions: assign({
+            updateApiToken: undefined,
+            error: () =>
+              new BillingError({ type: EBillingError.CatastrophicRequest }),
+          }),
+        },
+      },
       on: {
         [BillingTransition.Update]: {
           actions: assign({
@@ -200,30 +236,13 @@ export const billingMachine = setup({
           context: args.context,
           apiToken: args.context.updateApiToken ?? '',
         }),
-        onDone: [
-          {
-            guard: ({ context }) => context.pendingUpdateApiToken !== undefined,
-            target: BillingState.Updating,
-            reenter: true,
-            actions: assign(({ context, event }) => {
-              return {
-                ...applyBillingUpdateOutput(context, event.output),
-                updateApiToken: context.pendingUpdateApiToken,
-                pendingUpdateApiToken: undefined,
-              }
-            }),
-          },
-          {
-            target: BillingState.Waiting,
-            actions: assign(({ context, event }) => {
-              return {
-                ...applyBillingUpdateOutput(context, event.output),
-                updateApiToken: undefined,
-                pendingUpdateApiToken: undefined,
-              }
-            }),
-          },
-        ],
+        onDone: {
+          target: BillingState.Waiting,
+          actions: assign(({ context, event }) => ({
+            ...applyBillingUpdateOutput(context, event.output),
+            updateApiToken: undefined,
+          })),
+        },
         // Keep the last successful balance and its expiry when a refresh fails.
         onError: [
           {
@@ -231,7 +250,6 @@ export const billingMachine = setup({
             // Yep, this is hard to follow. XState, why!
             actions: assign({
               updateApiToken: undefined,
-              pendingUpdateApiToken: undefined,
               // TODO: we shouldn't need this cast here
               error: ({ event }) => event.error as BillingError,
             }),
