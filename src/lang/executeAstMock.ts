@@ -96,22 +96,27 @@ export async function executeAstMock({
   path,
   usePrevMemory,
   callbacks,
+  asExpression = false,
 }: {
   ast: Node<Program>
   rustContext: RustContext
   path?: string
   usePrevMemory?: boolean
   callbacks?: ExecCallbacks
+  /** Inherit the current model's settings when evaluating a temporary input program. */
+  asExpression?: boolean
 }): Promise<ExecutionResultMock> {
   try {
     const settings = jsAppSettings(rustContext.settingsActor)
-    const execState = await rustContext.executeMock(
-      ast,
-      settings,
-      path,
-      usePrevMemory,
-      callbacks
-    )
+    const execState = asExpression
+      ? await rustContext.executeExpression(ast)
+      : await rustContext.executeMock(
+          ast,
+          settings,
+          path,
+          usePrevMemory,
+          callbacks
+        )
 
     await rustContext.waitForAllEngineModelingCommands()
     return {

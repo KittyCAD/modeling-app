@@ -54,6 +54,7 @@ export async function getCalculatedKclExpressionValue(
   const { execState } = await executeAstMock({
     ast,
     rustContext,
+    asExpression: true,
   })
 
   // Find the variable declaration for the result

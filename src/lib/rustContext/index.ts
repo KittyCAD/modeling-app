@@ -191,6 +191,20 @@ export default class RustContext {
     }
   }
 
+  /** Evaluate an input expression with the current Rust model's settings. */
+  async executeExpression(node: Node<Program>): Promise<ExecState> {
+    const instance = await this._checkContextInstance()
+    try {
+      const result = await instance.executeExpression(
+        JSON.stringify(node),
+        JSON.stringify(jsAppSettings(this.settingsActor))
+      )
+      return execStateFromRust(result)
+    } catch (e: any) {
+      return Promise.reject(errFromErrWithOutputs(e))
+    }
+  }
+
   /** Export a scene to a file. */
   async export(
     format: DeepPartial<OutputFormat3d>,

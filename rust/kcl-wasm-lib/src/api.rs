@@ -142,6 +142,28 @@ impl Context {
             .map_err(|e: Error| JsValue::from_serde(&e).unwrap())
     }
 
+    /// Evaluate an input expression in the current model's context without contacting the engine.
+    #[wasm_bindgen(js_name = executeExpression)]
+    pub async fn execute_expression(&self, program_ast_json: &str, settings: &str) -> Result<JsValue, JsValue> {
+        console_error_panic_hook::set_once();
+
+        let program: Program =
+            serde_json::from_str(program_ast_json).map_err(|e| format!("Could not deserialize KCL AST: {e}"))?;
+        let ctx = self
+            .create_executor_ctx(settings, None, true)
+            .map_err(|e| format!("Could not create KCL executor context for expression. {TRUE_BUG} Details: {e}"))?;
+
+        // Serialize with execution, sketch edits and checkpoint restores while using their memory.
+        let guard = self.frontend.write().await;
+        let result = guard
+            .execute_expression(&ctx, program.fill_node_paths())
+            .await
+            .map_err(|e| js_value_from_serde(&e))?;
+
+        JsValue::from_serde(&result)
+            .map_err(|e| format!("Could not serialize expression result. {TRUE_BUG} Details: {e}").into())
+    }
+
     /// Set the current program AST and execute it. Temporary hack for
     /// development purposes only.
     #[wasm_bindgen]
