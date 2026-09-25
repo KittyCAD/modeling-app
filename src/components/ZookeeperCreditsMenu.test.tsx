@@ -96,3 +96,95 @@ test('expires a completed estimate when the billing refresh has not arrived', as
   expect(screen.getByTestId('billing-balance')).toHaveTextContent('596 min')
   expect(vi.getTimerCount()).toBe(0)
 })
+
+function billingContextWithCharges(
+  monthly: number,
+  stable: number,
+  due: number
+): BillingContext {
+  return {
+    ...BILLING_CONTEXT_DEFAULTS,
+    balance: (monthly + stable) / 0.5,
+    allowance: 400,
+    payAsYouGoApiCreditPrice: 0.5 / 60,
+    userPaymentBalance: {
+      created_at: '2026-09-25T12:00:00Z',
+      updated_at: '2026-09-25T12:00:00Z',
+      monthly_api_credits_remaining: 0,
+      stable_api_credits_remaining: 0,
+      monthly_api_credits_remaining_monetary_value: monthly,
+      stable_api_credits_remaining_monetary_value: stable,
+      total_due: due,
+    },
+  }
+}
+
+test.each([
+  { monthly: 107.32, stable: 204.82, due: 35.53, minutes: 553, overrun: 0 },
+  { monthly: 10, stable: 30, due: 35.53, minutes: 8, overrun: 0 },
+  { monthly: 0.1, stable: 0.2, due: 0.3, minutes: 0, overrun: 0 },
+  { monthly: 10, stable: 15, due: 35.53, minutes: 0, overrun: 10.53 },
+  { monthly: 0, stable: 0, due: 35.53, minutes: 0, overrun: 35.53 },
+])(
+  'shows $overrun overrun and $minutes minutes after applying $monthly monthly and $stable one-time credits to $due',
+  ({ monthly, stable, due, minutes, overrun }) => {
+    useBillingContext.mockReturnValue(
+      billingContextWithCharges(monthly, stable, due)
+    )
+    const { rerender } = render(<ZookeeperCreditsMenu />)
+
+    expect(screen.getByTestId('billing-balance')).toHaveTextContent(
+      `${minutes} min`
+    )
+    expect(screen.queryByText('Overrun') !== null).toBe(overrun > 0)
+    fireEvent.click(screen.getByTestId('billing-remaining-bar'))
+    if (overrun > 0) {
+      expect(screen.getByText('Overrun')).toBeVisible()
+      expect(
+        screen.getByText(`$${overrun.toFixed(2)}`, { selector: 'span' })
+      ).toBeVisible()
+      expect(screen.getByRole('link', { name: 'Go to billing' })).toBeVisible()
+    } else {
+      expect(
+        screen.getByText(
+          `${minutes} min of Zookeeper reasoning time remaining this month`
+        )
+      ).toBeVisible()
+      expect(screen.queryByText(/must clear an unpaid total/)).toBeNull()
+    }
+
+    // Re-rendering and reopening the popover must not spend the credits again.
+    rerender(<ZookeeperCreditsMenu />)
+    fireEvent.click(screen.getByTestId('billing-remaining-bar'))
+    fireEvent.click(screen.getByTestId('billing-remaining-bar'))
+    expect(screen.getByTestId('billing-balance')).toHaveTextContent(
+      `${minutes} min`
+    )
+  }
+)
+
+test('estimates usage from the adjusted balance and restores it at expiry and after a billing refresh', async () => {
+  vi.useFakeTimers()
+  const startedAt = new Date('2026-09-25T12:00:00Z')
+  vi.setSystemTime(startedAt)
+  const context = {
+    ...billingContextWithCharges(107.32, 204.82, 35.53),
+    usageStartedAt: startedAt,
+    usageEstimateExpiresAt: new Date(startedAt.getTime() + 20 * 60_000),
+  }
+  useBillingContext.mockReturnValue(context)
+  const { rerender } = render(<ZookeeperCreditsMenu />)
+  expect(screen.getByTestId('billing-balance')).toHaveTextContent('553 min')
+
+  await act(() => vi.advanceTimersByTime(2 * 60_000))
+  expect(screen.getByTestId('billing-balance')).toHaveTextContent('551 min')
+  await act(() => vi.advanceTimersByTime(18 * 60_000))
+  expect(screen.getByTestId('billing-balance')).toHaveTextContent('553 min')
+  expect(vi.getTimerCount()).toBe(0)
+
+  // The next API response has already applied the credits; do not deduct again.
+  useBillingContext.mockReturnValue(billingContextWithCharges(71.79, 204.82, 0))
+  rerender(<ZookeeperCreditsMenu />)
+  expect(screen.getByTestId('billing-balance')).toHaveTextContent('553 min')
+  expect(screen.queryByText('Overrun')).toBeNull()
+})

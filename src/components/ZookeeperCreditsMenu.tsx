@@ -11,6 +11,7 @@ import {
   type BillingContext,
   getEstimatedBillingBalance,
 } from '@src/lib/billing'
+import { getCreditAdjustedBillingContext } from '@src/lib/billing/display'
 import { useApp } from '@src/lib/boot'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
@@ -91,5 +92,9 @@ function BillingStatusBarItem(props: { billingContext: BillingContext }) {
 export function ZookeeperCreditsMenu() {
   const { billing } = useApp()
   const billingContext = billing.useContext()
-  return <BillingStatusBarItem billingContext={billingContext} />
+  return (
+    <BillingStatusBarItem
+      billingContext={getCreditAdjustedBillingContext(billingContext)}
+    />
+  )
 }
