@@ -2361,12 +2361,12 @@ surface001 = extrude(
         }
         expect(n).toContain('axis')
         expect(n).not.toContain('axis = getOppositeEdge')
-        // Assert full revolve line after successful refactor: axis = { sideFaces = [seg02, capEnd001] } (order may vary)
+        // Assert the axis keeps both side faces and the two end faces (side-face order may vary).
         const revolveLineWithAxis =
-          /revolve001\s*=\s*revolve\s*\(\s*profile001\s*,\s*angle\s*=\s*360deg\s*,\s*axis\s*=\s*\{\s*sideFaces\s*=\s*\[\s*(?:seg02\s*,\s*capEnd001|capEnd001\s*,\s*seg02)\s*\]\s*\}\s*\)/
+          /revolve001\s*=\s*revolve\s*\(\s*profile001\s*,\s*angle\s*=\s*360deg\s*,\s*axis\s*=\s*\{\s*sideFaces\s*=\s*\[\s*(?:seg02\s*,\s*capEnd001|capEnd001\s*,\s*seg02)\s*\],\s*endFaces\s*=\s*\[\s*\w+\s*,\s*\w+\s*,?\s*\]\s*,?\s*\}\s*,?\s*\)/
         expect(
           n,
-          'Refactored code should contain revolve line with axis and sideFaces = [seg02, capEnd001] (or [capEnd001, seg02])'
+          'Refactored revolve axis should contain sideFaces = [seg02, capEnd001] (either order) and two endFaces'
         ).toMatch(revolveLineWithAxis)
       }
     )
