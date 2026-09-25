@@ -92,14 +92,18 @@ chamferSourceSolid = extrude(
 // Apply chamfers to the auxiliary solid's circular end edges
 chamferedCircularSolid = chamfer(
   chamferSourceSolid,
-  tags = [
-    getCommonEdge(faces = [region002.tags.circle1, chamferEndFace]),
-    getCommonEdge(faces = [
-      region002.tags.circle1,
-      chamferStartFace
-    ])
-  ],
   length = chamferLength,
+  edges = [
+    {
+      sideFaces = [region002.tags.circle1, chamferEndFace]
+    },
+    {
+      sideFaces = [
+        region002.tags.circle1,
+        chamferStartFace
+      ]
+    }
+  ],
 )
 
 // Keep only the shared volume to imprint the chamfers into the hex body

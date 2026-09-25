@@ -96,11 +96,11 @@ flowchart LR
     %% face_code_ref=Missing NodePath
   51["SweepEdge Opposite"]
   52["SweepEdge Adjacent"]
-  53["EdgeCut Chamfer<br>[3161, 3392, 0]"]
+  53["EdgeCut Chamfer<br>[3161, 3405, 0]"]
     %% [ProgramBodyItem { index: 12 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  54["EdgeCut Chamfer<br>[3161, 3392, 0]"]
+  54["EdgeCut Chamfer<br>[3161, 3405, 0]"]
     %% [ProgramBodyItem { index: 12 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  55["CompositeSolid Intersect<br>[3484, 3529, 0]<br>Consumed: false"]
+  55["CompositeSolid Intersect<br>[3497, 3542, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 13 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   56["SketchBlock<br>[720, 2312, 0]"]
     %% [ProgramBodyItem { index: 6 }, VariableDeclarationDeclaration, VariableDeclarationInit]
@@ -270,7 +270,6 @@ flowchart LR
   46 x--> 49
   46 --- 51
   46 --- 52
-  46 --- 54
   47 --- 48
   47 --- 49
   47 --- 50
@@ -279,5 +278,4 @@ flowchart LR
   48 --- 51
   48 --- 52
   51 <--x 50
-  51 <--x 53
 ```

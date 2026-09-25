@@ -92,7 +92,9 @@ blockProfile = sketch(on = XY) {
 }
 
 block = extrude(region(segments = [blockProfile.edge1, blockProfile.edge2]), length = 4mm, tagEnd = $top)
-sideEdge = getCommonEdge(faces = [block.sketch.tags.edge2, top])
+sideEdge = {
+  sideFaces = [block.sketch.tags.edge2, top]
+}
 gdt::position(
   edges = [sideEdge],
   tolerance = 0.05mm,

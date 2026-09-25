@@ -3598,6 +3598,26 @@ description: Result of parsing crash-box.kcl
                   "type": "Name",
                   "type": "Name"
                 }
+              },
+              {
+                "type": "LabeledArg",
+                "label": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "name": "tagEnd",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "arg": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "start": 0,
+                  "type": "TagDeclarator",
+                  "type": "TagDeclarator",
+                  "value": "capEnd002"
+                }
               }
             ],
             "callee": {
@@ -3677,519 +3697,6 @@ description: Result of parsing crash-box.kcl
                   "commentStart": 0,
                   "end": 0,
                   "moduleId": 0,
-                  "name": "tags",
-                  "start": 0,
-                  "type": "Identifier"
-                },
-                "arg": {
-                  "commentStart": 0,
-                  "elements": [
-                    {
-                      "arguments": [
-                        {
-                          "type": "LabeledArg",
-                          "label": {
-                            "commentStart": 0,
-                            "end": 0,
-                            "moduleId": 0,
-                            "name": "closestTo",
-                            "start": 0,
-                            "type": "Identifier"
-                          },
-                          "arg": {
-                            "commentStart": 0,
-                            "elements": [
-                              {
-                                "argument": {
-                                  "commentStart": 0,
-                                  "end": 0,
-                                  "moduleId": 0,
-                                  "raw": "200mm",
-                                  "start": 0,
-                                  "type": "Literal",
-                                  "type": "Literal",
-                                  "value": {
-                                    "value": 200.0,
-                                    "suffix": "Mm"
-                                  }
-                                },
-                                "commentStart": 0,
-                                "end": 0,
-                                "moduleId": 0,
-                                "operator": "-",
-                                "start": 0,
-                                "type": "UnaryExpression",
-                                "type": "UnaryExpression"
-                              },
-                              {
-                                "argument": {
-                                  "commentStart": 0,
-                                  "end": 0,
-                                  "moduleId": 0,
-                                  "raw": "200mm",
-                                  "start": 0,
-                                  "type": "Literal",
-                                  "type": "Literal",
-                                  "value": {
-                                    "value": 200.0,
-                                    "suffix": "Mm"
-                                  }
-                                },
-                                "commentStart": 0,
-                                "end": 0,
-                                "moduleId": 0,
-                                "operator": "-",
-                                "start": 0,
-                                "type": "UnaryExpression",
-                                "type": "UnaryExpression"
-                              },
-                              {
-                                "argument": {
-                                  "commentStart": 0,
-                                  "end": 0,
-                                  "moduleId": 0,
-                                  "raw": "600mm",
-                                  "start": 0,
-                                  "type": "Literal",
-                                  "type": "Literal",
-                                  "value": {
-                                    "value": 600.0,
-                                    "suffix": "Mm"
-                                  }
-                                },
-                                "commentStart": 0,
-                                "end": 0,
-                                "moduleId": 0,
-                                "operator": "-",
-                                "start": 0,
-                                "type": "UnaryExpression",
-                                "type": "UnaryExpression"
-                              }
-                            ],
-                            "end": 0,
-                            "moduleId": 0,
-                            "start": 0,
-                            "type": "ArrayExpression",
-                            "type": "ArrayExpression"
-                          }
-                        }
-                      ],
-                      "callee": {
-                        "abs_path": false,
-                        "commentStart": 0,
-                        "end": 0,
-                        "moduleId": 0,
-                        "name": {
-                          "commentStart": 0,
-                          "end": 0,
-                          "moduleId": 0,
-                          "name": "edgeId",
-                          "start": 0,
-                          "type": "Identifier"
-                        },
-                        "path": [],
-                        "start": 0,
-                        "type": "Name"
-                      },
-                      "commentStart": 0,
-                      "end": 0,
-                      "moduleId": 0,
-                      "start": 0,
-                      "type": "CallExpressionKw",
-                      "type": "CallExpressionKw",
-                      "unlabeled": {
-                        "abs_path": false,
-                        "commentStart": 0,
-                        "end": 0,
-                        "moduleId": 0,
-                        "name": {
-                          "commentStart": 0,
-                          "end": 0,
-                          "moduleId": 0,
-                          "name": "crashBoxSolid",
-                          "start": 0,
-                          "type": "Identifier"
-                        },
-                        "path": [],
-                        "start": 0,
-                        "type": "Name",
-                        "type": "Name"
-                      }
-                    },
-                    {
-                      "arguments": [
-                        {
-                          "type": "LabeledArg",
-                          "label": {
-                            "commentStart": 0,
-                            "end": 0,
-                            "moduleId": 0,
-                            "name": "closestTo",
-                            "start": 0,
-                            "type": "Identifier"
-                          },
-                          "arg": {
-                            "commentStart": 0,
-                            "elements": [
-                              {
-                                "commentStart": 0,
-                                "end": 0,
-                                "moduleId": 0,
-                                "raw": "200mm",
-                                "start": 0,
-                                "type": "Literal",
-                                "type": "Literal",
-                                "value": {
-                                  "value": 200.0,
-                                  "suffix": "Mm"
-                                }
-                              },
-                              {
-                                "argument": {
-                                  "commentStart": 0,
-                                  "end": 0,
-                                  "moduleId": 0,
-                                  "raw": "200mm",
-                                  "start": 0,
-                                  "type": "Literal",
-                                  "type": "Literal",
-                                  "value": {
-                                    "value": 200.0,
-                                    "suffix": "Mm"
-                                  }
-                                },
-                                "commentStart": 0,
-                                "end": 0,
-                                "moduleId": 0,
-                                "operator": "-",
-                                "start": 0,
-                                "type": "UnaryExpression",
-                                "type": "UnaryExpression"
-                              },
-                              {
-                                "argument": {
-                                  "commentStart": 0,
-                                  "end": 0,
-                                  "moduleId": 0,
-                                  "raw": "600mm",
-                                  "start": 0,
-                                  "type": "Literal",
-                                  "type": "Literal",
-                                  "value": {
-                                    "value": 600.0,
-                                    "suffix": "Mm"
-                                  }
-                                },
-                                "commentStart": 0,
-                                "end": 0,
-                                "moduleId": 0,
-                                "operator": "-",
-                                "start": 0,
-                                "type": "UnaryExpression",
-                                "type": "UnaryExpression"
-                              }
-                            ],
-                            "end": 0,
-                            "moduleId": 0,
-                            "start": 0,
-                            "type": "ArrayExpression",
-                            "type": "ArrayExpression"
-                          }
-                        }
-                      ],
-                      "callee": {
-                        "abs_path": false,
-                        "commentStart": 0,
-                        "end": 0,
-                        "moduleId": 0,
-                        "name": {
-                          "commentStart": 0,
-                          "end": 0,
-                          "moduleId": 0,
-                          "name": "edgeId",
-                          "start": 0,
-                          "type": "Identifier"
-                        },
-                        "path": [],
-                        "start": 0,
-                        "type": "Name"
-                      },
-                      "commentStart": 0,
-                      "end": 0,
-                      "moduleId": 0,
-                      "start": 0,
-                      "type": "CallExpressionKw",
-                      "type": "CallExpressionKw",
-                      "unlabeled": {
-                        "abs_path": false,
-                        "commentStart": 0,
-                        "end": 0,
-                        "moduleId": 0,
-                        "name": {
-                          "commentStart": 0,
-                          "end": 0,
-                          "moduleId": 0,
-                          "name": "crashBoxSolid",
-                          "start": 0,
-                          "type": "Identifier"
-                        },
-                        "path": [],
-                        "start": 0,
-                        "type": "Name",
-                        "type": "Name"
-                      }
-                    },
-                    {
-                      "arguments": [
-                        {
-                          "type": "LabeledArg",
-                          "label": {
-                            "commentStart": 0,
-                            "end": 0,
-                            "moduleId": 0,
-                            "name": "closestTo",
-                            "start": 0,
-                            "type": "Identifier"
-                          },
-                          "arg": {
-                            "commentStart": 0,
-                            "elements": [
-                              {
-                                "commentStart": 0,
-                                "end": 0,
-                                "moduleId": 0,
-                                "raw": "200mm",
-                                "start": 0,
-                                "type": "Literal",
-                                "type": "Literal",
-                                "value": {
-                                  "value": 200.0,
-                                  "suffix": "Mm"
-                                }
-                              },
-                              {
-                                "commentStart": 0,
-                                "end": 0,
-                                "moduleId": 0,
-                                "raw": "200mm",
-                                "start": 0,
-                                "type": "Literal",
-                                "type": "Literal",
-                                "value": {
-                                  "value": 200.0,
-                                  "suffix": "Mm"
-                                }
-                              },
-                              {
-                                "argument": {
-                                  "commentStart": 0,
-                                  "end": 0,
-                                  "moduleId": 0,
-                                  "raw": "600mm",
-                                  "start": 0,
-                                  "type": "Literal",
-                                  "type": "Literal",
-                                  "value": {
-                                    "value": 600.0,
-                                    "suffix": "Mm"
-                                  }
-                                },
-                                "commentStart": 0,
-                                "end": 0,
-                                "moduleId": 0,
-                                "operator": "-",
-                                "start": 0,
-                                "type": "UnaryExpression",
-                                "type": "UnaryExpression"
-                              }
-                            ],
-                            "end": 0,
-                            "moduleId": 0,
-                            "start": 0,
-                            "type": "ArrayExpression",
-                            "type": "ArrayExpression"
-                          }
-                        }
-                      ],
-                      "callee": {
-                        "abs_path": false,
-                        "commentStart": 0,
-                        "end": 0,
-                        "moduleId": 0,
-                        "name": {
-                          "commentStart": 0,
-                          "end": 0,
-                          "moduleId": 0,
-                          "name": "edgeId",
-                          "start": 0,
-                          "type": "Identifier"
-                        },
-                        "path": [],
-                        "start": 0,
-                        "type": "Name"
-                      },
-                      "commentStart": 0,
-                      "end": 0,
-                      "moduleId": 0,
-                      "start": 0,
-                      "type": "CallExpressionKw",
-                      "type": "CallExpressionKw",
-                      "unlabeled": {
-                        "abs_path": false,
-                        "commentStart": 0,
-                        "end": 0,
-                        "moduleId": 0,
-                        "name": {
-                          "commentStart": 0,
-                          "end": 0,
-                          "moduleId": 0,
-                          "name": "crashBoxSolid",
-                          "start": 0,
-                          "type": "Identifier"
-                        },
-                        "path": [],
-                        "start": 0,
-                        "type": "Name",
-                        "type": "Name"
-                      }
-                    },
-                    {
-                      "arguments": [
-                        {
-                          "type": "LabeledArg",
-                          "label": {
-                            "commentStart": 0,
-                            "end": 0,
-                            "moduleId": 0,
-                            "name": "closestTo",
-                            "start": 0,
-                            "type": "Identifier"
-                          },
-                          "arg": {
-                            "commentStart": 0,
-                            "elements": [
-                              {
-                                "argument": {
-                                  "commentStart": 0,
-                                  "end": 0,
-                                  "moduleId": 0,
-                                  "raw": "200mm",
-                                  "start": 0,
-                                  "type": "Literal",
-                                  "type": "Literal",
-                                  "value": {
-                                    "value": 200.0,
-                                    "suffix": "Mm"
-                                  }
-                                },
-                                "commentStart": 0,
-                                "end": 0,
-                                "moduleId": 0,
-                                "operator": "-",
-                                "start": 0,
-                                "type": "UnaryExpression",
-                                "type": "UnaryExpression"
-                              },
-                              {
-                                "commentStart": 0,
-                                "end": 0,
-                                "moduleId": 0,
-                                "raw": "200mm",
-                                "start": 0,
-                                "type": "Literal",
-                                "type": "Literal",
-                                "value": {
-                                  "value": 200.0,
-                                  "suffix": "Mm"
-                                }
-                              },
-                              {
-                                "argument": {
-                                  "commentStart": 0,
-                                  "end": 0,
-                                  "moduleId": 0,
-                                  "raw": "600mm",
-                                  "start": 0,
-                                  "type": "Literal",
-                                  "type": "Literal",
-                                  "value": {
-                                    "value": 600.0,
-                                    "suffix": "Mm"
-                                  }
-                                },
-                                "commentStart": 0,
-                                "end": 0,
-                                "moduleId": 0,
-                                "operator": "-",
-                                "start": 0,
-                                "type": "UnaryExpression",
-                                "type": "UnaryExpression"
-                              }
-                            ],
-                            "end": 0,
-                            "moduleId": 0,
-                            "start": 0,
-                            "type": "ArrayExpression",
-                            "type": "ArrayExpression"
-                          }
-                        }
-                      ],
-                      "callee": {
-                        "abs_path": false,
-                        "commentStart": 0,
-                        "end": 0,
-                        "moduleId": 0,
-                        "name": {
-                          "commentStart": 0,
-                          "end": 0,
-                          "moduleId": 0,
-                          "name": "edgeId",
-                          "start": 0,
-                          "type": "Identifier"
-                        },
-                        "path": [],
-                        "start": 0,
-                        "type": "Name"
-                      },
-                      "commentStart": 0,
-                      "end": 0,
-                      "moduleId": 0,
-                      "start": 0,
-                      "type": "CallExpressionKw",
-                      "type": "CallExpressionKw",
-                      "unlabeled": {
-                        "abs_path": false,
-                        "commentStart": 0,
-                        "end": 0,
-                        "moduleId": 0,
-                        "name": {
-                          "commentStart": 0,
-                          "end": 0,
-                          "moduleId": 0,
-                          "name": "crashBoxSolid",
-                          "start": 0,
-                          "type": "Identifier"
-                        },
-                        "path": [],
-                        "start": 0,
-                        "type": "Name",
-                        "type": "Name"
-                      }
-                    }
-                  ],
-                  "end": 0,
-                  "moduleId": 0,
-                  "start": 0,
-                  "type": "ArrayExpression",
-                  "type": "ArrayExpression"
-                }
-              },
-              {
-                "type": "LabeledArg",
-                "label": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
                   "name": "radius",
                   "start": 0,
                   "type": "Identifier"
@@ -4206,6 +3713,743 @@ description: Result of parsing crash-box.kcl
                     "value": 60.0,
                     "suffix": "None"
                   }
+                }
+              },
+              {
+                "type": "LabeledArg",
+                "label": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "name": "edges",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "arg": {
+                  "commentStart": 0,
+                  "elements": [
+                    {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "properties": [
+                        {
+                          "commentStart": 0,
+                          "end": 0,
+                          "key": {
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "name": "sideFaces",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "moduleId": 0,
+                          "start": 0,
+                          "type": "ObjectProperty",
+                          "value": {
+                            "commentStart": 0,
+                            "elements": [
+                              {
+                                "commentStart": 0,
+                                "computed": false,
+                                "end": 0,
+                                "moduleId": 0,
+                                "object": {
+                                  "commentStart": 0,
+                                  "computed": false,
+                                  "end": 0,
+                                  "moduleId": 0,
+                                  "object": {
+                                    "abs_path": false,
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "name": {
+                                      "commentStart": 0,
+                                      "end": 0,
+                                      "moduleId": 0,
+                                      "name": "crashBoxRegion",
+                                      "start": 0,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
+                                    "start": 0,
+                                    "type": "Name",
+                                    "type": "Name"
+                                  },
+                                  "property": {
+                                    "abs_path": false,
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "name": {
+                                      "commentStart": 0,
+                                      "end": 0,
+                                      "moduleId": 0,
+                                      "name": "tags",
+                                      "start": 0,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
+                                    "start": 0,
+                                    "type": "Name",
+                                    "type": "Name"
+                                  },
+                                  "start": 0,
+                                  "type": "MemberExpression",
+                                  "type": "MemberExpression"
+                                },
+                                "property": {
+                                  "abs_path": false,
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "moduleId": 0,
+                                  "name": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "name": "rightEdge",
+                                    "start": 0,
+                                    "type": "Identifier"
+                                  },
+                                  "path": [],
+                                  "start": 0,
+                                  "type": "Name",
+                                  "type": "Name"
+                                },
+                                "start": 0,
+                                "type": "MemberExpression",
+                                "type": "MemberExpression"
+                              },
+                              {
+                                "commentStart": 0,
+                                "computed": false,
+                                "end": 0,
+                                "moduleId": 0,
+                                "object": {
+                                  "commentStart": 0,
+                                  "computed": false,
+                                  "end": 0,
+                                  "moduleId": 0,
+                                  "object": {
+                                    "abs_path": false,
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "name": {
+                                      "commentStart": 0,
+                                      "end": 0,
+                                      "moduleId": 0,
+                                      "name": "crashBoxRegion",
+                                      "start": 0,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
+                                    "start": 0,
+                                    "type": "Name",
+                                    "type": "Name"
+                                  },
+                                  "property": {
+                                    "abs_path": false,
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "name": {
+                                      "commentStart": 0,
+                                      "end": 0,
+                                      "moduleId": 0,
+                                      "name": "tags",
+                                      "start": 0,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
+                                    "start": 0,
+                                    "type": "Name",
+                                    "type": "Name"
+                                  },
+                                  "start": 0,
+                                  "type": "MemberExpression",
+                                  "type": "MemberExpression"
+                                },
+                                "property": {
+                                  "abs_path": false,
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "moduleId": 0,
+                                  "name": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "name": "bottomEdge",
+                                    "start": 0,
+                                    "type": "Identifier"
+                                  },
+                                  "path": [],
+                                  "start": 0,
+                                  "type": "Name",
+                                  "type": "Name"
+                                },
+                                "start": 0,
+                                "type": "MemberExpression",
+                                "type": "MemberExpression"
+                              }
+                            ],
+                            "end": 0,
+                            "moduleId": 0,
+                            "start": 0,
+                            "type": "ArrayExpression",
+                            "type": "ArrayExpression"
+                          }
+                        }
+                      ],
+                      "start": 0,
+                      "type": "ObjectExpression",
+                      "type": "ObjectExpression"
+                    },
+                    {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "properties": [
+                        {
+                          "commentStart": 0,
+                          "end": 0,
+                          "key": {
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "name": "sideFaces",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "moduleId": 0,
+                          "start": 0,
+                          "type": "ObjectProperty",
+                          "value": {
+                            "commentStart": 0,
+                            "elements": [
+                              {
+                                "commentStart": 0,
+                                "computed": false,
+                                "end": 0,
+                                "moduleId": 0,
+                                "object": {
+                                  "commentStart": 0,
+                                  "computed": false,
+                                  "end": 0,
+                                  "moduleId": 0,
+                                  "object": {
+                                    "abs_path": false,
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "name": {
+                                      "commentStart": 0,
+                                      "end": 0,
+                                      "moduleId": 0,
+                                      "name": "crashBoxRegion",
+                                      "start": 0,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
+                                    "start": 0,
+                                    "type": "Name",
+                                    "type": "Name"
+                                  },
+                                  "property": {
+                                    "abs_path": false,
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "name": {
+                                      "commentStart": 0,
+                                      "end": 0,
+                                      "moduleId": 0,
+                                      "name": "tags",
+                                      "start": 0,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
+                                    "start": 0,
+                                    "type": "Name",
+                                    "type": "Name"
+                                  },
+                                  "start": 0,
+                                  "type": "MemberExpression",
+                                  "type": "MemberExpression"
+                                },
+                                "property": {
+                                  "abs_path": false,
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "moduleId": 0,
+                                  "name": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "name": "topEdge",
+                                    "start": 0,
+                                    "type": "Identifier"
+                                  },
+                                  "path": [],
+                                  "start": 0,
+                                  "type": "Name",
+                                  "type": "Name"
+                                },
+                                "start": 0,
+                                "type": "MemberExpression",
+                                "type": "MemberExpression"
+                              },
+                              {
+                                "commentStart": 0,
+                                "computed": false,
+                                "end": 0,
+                                "moduleId": 0,
+                                "object": {
+                                  "commentStart": 0,
+                                  "computed": false,
+                                  "end": 0,
+                                  "moduleId": 0,
+                                  "object": {
+                                    "abs_path": false,
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "name": {
+                                      "commentStart": 0,
+                                      "end": 0,
+                                      "moduleId": 0,
+                                      "name": "crashBoxRegion",
+                                      "start": 0,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
+                                    "start": 0,
+                                    "type": "Name",
+                                    "type": "Name"
+                                  },
+                                  "property": {
+                                    "abs_path": false,
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "name": {
+                                      "commentStart": 0,
+                                      "end": 0,
+                                      "moduleId": 0,
+                                      "name": "tags",
+                                      "start": 0,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
+                                    "start": 0,
+                                    "type": "Name",
+                                    "type": "Name"
+                                  },
+                                  "start": 0,
+                                  "type": "MemberExpression",
+                                  "type": "MemberExpression"
+                                },
+                                "property": {
+                                  "abs_path": false,
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "moduleId": 0,
+                                  "name": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "name": "bottomEdge",
+                                    "start": 0,
+                                    "type": "Identifier"
+                                  },
+                                  "path": [],
+                                  "start": 0,
+                                  "type": "Name",
+                                  "type": "Name"
+                                },
+                                "start": 0,
+                                "type": "MemberExpression",
+                                "type": "MemberExpression"
+                              }
+                            ],
+                            "end": 0,
+                            "moduleId": 0,
+                            "start": 0,
+                            "type": "ArrayExpression",
+                            "type": "ArrayExpression"
+                          }
+                        }
+                      ],
+                      "start": 0,
+                      "type": "ObjectExpression",
+                      "type": "ObjectExpression"
+                    },
+                    {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "properties": [
+                        {
+                          "commentStart": 0,
+                          "end": 0,
+                          "key": {
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "name": "sideFaces",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "moduleId": 0,
+                          "start": 0,
+                          "type": "ObjectProperty",
+                          "value": {
+                            "commentStart": 0,
+                            "elements": [
+                              {
+                                "commentStart": 0,
+                                "computed": false,
+                                "end": 0,
+                                "moduleId": 0,
+                                "object": {
+                                  "commentStart": 0,
+                                  "computed": false,
+                                  "end": 0,
+                                  "moduleId": 0,
+                                  "object": {
+                                    "abs_path": false,
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "name": {
+                                      "commentStart": 0,
+                                      "end": 0,
+                                      "moduleId": 0,
+                                      "name": "crashBoxRegion",
+                                      "start": 0,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
+                                    "start": 0,
+                                    "type": "Name",
+                                    "type": "Name"
+                                  },
+                                  "property": {
+                                    "abs_path": false,
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "name": {
+                                      "commentStart": 0,
+                                      "end": 0,
+                                      "moduleId": 0,
+                                      "name": "tags",
+                                      "start": 0,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
+                                    "start": 0,
+                                    "type": "Name",
+                                    "type": "Name"
+                                  },
+                                  "start": 0,
+                                  "type": "MemberExpression",
+                                  "type": "MemberExpression"
+                                },
+                                "property": {
+                                  "abs_path": false,
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "moduleId": 0,
+                                  "name": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "name": "topEdge",
+                                    "start": 0,
+                                    "type": "Identifier"
+                                  },
+                                  "path": [],
+                                  "start": 0,
+                                  "type": "Name",
+                                  "type": "Name"
+                                },
+                                "start": 0,
+                                "type": "MemberExpression",
+                                "type": "MemberExpression"
+                              },
+                              {
+                                "commentStart": 0,
+                                "computed": false,
+                                "end": 0,
+                                "moduleId": 0,
+                                "object": {
+                                  "commentStart": 0,
+                                  "computed": false,
+                                  "end": 0,
+                                  "moduleId": 0,
+                                  "object": {
+                                    "abs_path": false,
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "name": {
+                                      "commentStart": 0,
+                                      "end": 0,
+                                      "moduleId": 0,
+                                      "name": "crashBoxRegion",
+                                      "start": 0,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
+                                    "start": 0,
+                                    "type": "Name",
+                                    "type": "Name"
+                                  },
+                                  "property": {
+                                    "abs_path": false,
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "name": {
+                                      "commentStart": 0,
+                                      "end": 0,
+                                      "moduleId": 0,
+                                      "name": "tags",
+                                      "start": 0,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
+                                    "start": 0,
+                                    "type": "Name",
+                                    "type": "Name"
+                                  },
+                                  "start": 0,
+                                  "type": "MemberExpression",
+                                  "type": "MemberExpression"
+                                },
+                                "property": {
+                                  "abs_path": false,
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "moduleId": 0,
+                                  "name": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "name": "leftEdge",
+                                    "start": 0,
+                                    "type": "Identifier"
+                                  },
+                                  "path": [],
+                                  "start": 0,
+                                  "type": "Name",
+                                  "type": "Name"
+                                },
+                                "start": 0,
+                                "type": "MemberExpression",
+                                "type": "MemberExpression"
+                              }
+                            ],
+                            "end": 0,
+                            "moduleId": 0,
+                            "start": 0,
+                            "type": "ArrayExpression",
+                            "type": "ArrayExpression"
+                          }
+                        }
+                      ],
+                      "start": 0,
+                      "type": "ObjectExpression",
+                      "type": "ObjectExpression"
+                    },
+                    {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "properties": [
+                        {
+                          "commentStart": 0,
+                          "end": 0,
+                          "key": {
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "name": "sideFaces",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "moduleId": 0,
+                          "start": 0,
+                          "type": "ObjectProperty",
+                          "value": {
+                            "commentStart": 0,
+                            "elements": [
+                              {
+                                "commentStart": 0,
+                                "computed": false,
+                                "end": 0,
+                                "moduleId": 0,
+                                "object": {
+                                  "commentStart": 0,
+                                  "computed": false,
+                                  "end": 0,
+                                  "moduleId": 0,
+                                  "object": {
+                                    "abs_path": false,
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "name": {
+                                      "commentStart": 0,
+                                      "end": 0,
+                                      "moduleId": 0,
+                                      "name": "crashBoxRegion",
+                                      "start": 0,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
+                                    "start": 0,
+                                    "type": "Name",
+                                    "type": "Name"
+                                  },
+                                  "property": {
+                                    "abs_path": false,
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "name": {
+                                      "commentStart": 0,
+                                      "end": 0,
+                                      "moduleId": 0,
+                                      "name": "tags",
+                                      "start": 0,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
+                                    "start": 0,
+                                    "type": "Name",
+                                    "type": "Name"
+                                  },
+                                  "start": 0,
+                                  "type": "MemberExpression",
+                                  "type": "MemberExpression"
+                                },
+                                "property": {
+                                  "abs_path": false,
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "moduleId": 0,
+                                  "name": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "name": "leftEdge",
+                                    "start": 0,
+                                    "type": "Identifier"
+                                  },
+                                  "path": [],
+                                  "start": 0,
+                                  "type": "Name",
+                                  "type": "Name"
+                                },
+                                "start": 0,
+                                "type": "MemberExpression",
+                                "type": "MemberExpression"
+                              },
+                              {
+                                "commentStart": 0,
+                                "computed": false,
+                                "end": 0,
+                                "moduleId": 0,
+                                "object": {
+                                  "commentStart": 0,
+                                  "computed": false,
+                                  "end": 0,
+                                  "moduleId": 0,
+                                  "object": {
+                                    "abs_path": false,
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "name": {
+                                      "commentStart": 0,
+                                      "end": 0,
+                                      "moduleId": 0,
+                                      "name": "crashBoxRegion",
+                                      "start": 0,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
+                                    "start": 0,
+                                    "type": "Name",
+                                    "type": "Name"
+                                  },
+                                  "property": {
+                                    "abs_path": false,
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "name": {
+                                      "commentStart": 0,
+                                      "end": 0,
+                                      "moduleId": 0,
+                                      "name": "tags",
+                                      "start": 0,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
+                                    "start": 0,
+                                    "type": "Name",
+                                    "type": "Name"
+                                  },
+                                  "start": 0,
+                                  "type": "MemberExpression",
+                                  "type": "MemberExpression"
+                                },
+                                "property": {
+                                  "abs_path": false,
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "moduleId": 0,
+                                  "name": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "name": "rightEdge",
+                                    "start": 0,
+                                    "type": "Identifier"
+                                  },
+                                  "path": [],
+                                  "start": 0,
+                                  "type": "Name",
+                                  "type": "Name"
+                                },
+                                "start": 0,
+                                "type": "MemberExpression",
+                                "type": "MemberExpression"
+                              }
+                            ],
+                            "end": 0,
+                            "moduleId": 0,
+                            "start": 0,
+                            "type": "ArrayExpression",
+                            "type": "ArrayExpression"
+                          }
+                        }
+                      ],
+                      "start": 0,
+                      "type": "ObjectExpression",
+                      "type": "ObjectExpression"
+                    }
+                  ],
+                  "end": 0,
+                  "moduleId": 0,
+                  "start": 0,
+                  "type": "ArrayExpression",
+                  "type": "ArrayExpression"
                 }
               }
             ],
@@ -6916,264 +7160,6 @@ description: Result of parsing crash-box.kcl
                   "commentStart": 0,
                   "end": 0,
                   "moduleId": 0,
-                  "name": "tags",
-                  "start": 0,
-                  "type": "Identifier"
-                },
-                "arg": {
-                  "commentStart": 0,
-                  "elements": [
-                    {
-                      "arguments": [
-                        {
-                          "type": "LabeledArg",
-                          "label": {
-                            "commentStart": 0,
-                            "end": 0,
-                            "moduleId": 0,
-                            "name": "closestTo",
-                            "start": 0,
-                            "type": "Identifier"
-                          },
-                          "arg": {
-                            "commentStart": 0,
-                            "elements": [
-                              {
-                                "argument": {
-                                  "commentStart": 0,
-                                  "end": 0,
-                                  "moduleId": 0,
-                                  "raw": "125mm",
-                                  "start": 0,
-                                  "type": "Literal",
-                                  "type": "Literal",
-                                  "value": {
-                                    "value": 125.0,
-                                    "suffix": "Mm"
-                                  }
-                                },
-                                "commentStart": 0,
-                                "end": 0,
-                                "moduleId": 0,
-                                "operator": "-",
-                                "start": 0,
-                                "type": "UnaryExpression",
-                                "type": "UnaryExpression"
-                              },
-                              {
-                                "commentStart": 0,
-                                "end": 0,
-                                "moduleId": 0,
-                                "raw": "0mm",
-                                "start": 0,
-                                "type": "Literal",
-                                "type": "Literal",
-                                "value": {
-                                  "value": 0.0,
-                                  "suffix": "Mm"
-                                }
-                              },
-                              {
-                                "argument": {
-                                  "commentStart": 0,
-                                  "end": 0,
-                                  "moduleId": 0,
-                                  "raw": "300mm",
-                                  "start": 0,
-                                  "type": "Literal",
-                                  "type": "Literal",
-                                  "value": {
-                                    "value": 300.0,
-                                    "suffix": "Mm"
-                                  }
-                                },
-                                "commentStart": 0,
-                                "end": 0,
-                                "moduleId": 0,
-                                "operator": "-",
-                                "start": 0,
-                                "type": "UnaryExpression",
-                                "type": "UnaryExpression"
-                              }
-                            ],
-                            "end": 0,
-                            "moduleId": 0,
-                            "start": 0,
-                            "type": "ArrayExpression",
-                            "type": "ArrayExpression"
-                          }
-                        }
-                      ],
-                      "callee": {
-                        "abs_path": false,
-                        "commentStart": 0,
-                        "end": 0,
-                        "moduleId": 0,
-                        "name": {
-                          "commentStart": 0,
-                          "end": 0,
-                          "moduleId": 0,
-                          "name": "edgeId",
-                          "start": 0,
-                          "type": "Identifier"
-                        },
-                        "path": [],
-                        "start": 0,
-                        "type": "Name"
-                      },
-                      "commentStart": 0,
-                      "end": 0,
-                      "moduleId": 0,
-                      "start": 0,
-                      "type": "CallExpressionKw",
-                      "type": "CallExpressionKw",
-                      "unlabeled": {
-                        "abs_path": false,
-                        "commentStart": 0,
-                        "end": 0,
-                        "moduleId": 0,
-                        "name": {
-                          "commentStart": 0,
-                          "end": 0,
-                          "moduleId": 0,
-                          "name": "beamSolid",
-                          "start": 0,
-                          "type": "Identifier"
-                        },
-                        "path": [],
-                        "start": 0,
-                        "type": "Name",
-                        "type": "Name"
-                      }
-                    },
-                    {
-                      "arguments": [
-                        {
-                          "type": "LabeledArg",
-                          "label": {
-                            "commentStart": 0,
-                            "end": 0,
-                            "moduleId": 0,
-                            "name": "closestTo",
-                            "start": 0,
-                            "type": "Identifier"
-                          },
-                          "arg": {
-                            "commentStart": 0,
-                            "elements": [
-                              {
-                                "commentStart": 0,
-                                "end": 0,
-                                "moduleId": 0,
-                                "raw": "125mm",
-                                "start": 0,
-                                "type": "Literal",
-                                "type": "Literal",
-                                "value": {
-                                  "value": 125.0,
-                                  "suffix": "Mm"
-                                }
-                              },
-                              {
-                                "commentStart": 0,
-                                "end": 0,
-                                "moduleId": 0,
-                                "raw": "0mm",
-                                "start": 0,
-                                "type": "Literal",
-                                "type": "Literal",
-                                "value": {
-                                  "value": 0.0,
-                                  "suffix": "Mm"
-                                }
-                              },
-                              {
-                                "argument": {
-                                  "commentStart": 0,
-                                  "end": 0,
-                                  "moduleId": 0,
-                                  "raw": "300mm",
-                                  "start": 0,
-                                  "type": "Literal",
-                                  "type": "Literal",
-                                  "value": {
-                                    "value": 300.0,
-                                    "suffix": "Mm"
-                                  }
-                                },
-                                "commentStart": 0,
-                                "end": 0,
-                                "moduleId": 0,
-                                "operator": "-",
-                                "start": 0,
-                                "type": "UnaryExpression",
-                                "type": "UnaryExpression"
-                              }
-                            ],
-                            "end": 0,
-                            "moduleId": 0,
-                            "start": 0,
-                            "type": "ArrayExpression",
-                            "type": "ArrayExpression"
-                          }
-                        }
-                      ],
-                      "callee": {
-                        "abs_path": false,
-                        "commentStart": 0,
-                        "end": 0,
-                        "moduleId": 0,
-                        "name": {
-                          "commentStart": 0,
-                          "end": 0,
-                          "moduleId": 0,
-                          "name": "edgeId",
-                          "start": 0,
-                          "type": "Identifier"
-                        },
-                        "path": [],
-                        "start": 0,
-                        "type": "Name"
-                      },
-                      "commentStart": 0,
-                      "end": 0,
-                      "moduleId": 0,
-                      "start": 0,
-                      "type": "CallExpressionKw",
-                      "type": "CallExpressionKw",
-                      "unlabeled": {
-                        "abs_path": false,
-                        "commentStart": 0,
-                        "end": 0,
-                        "moduleId": 0,
-                        "name": {
-                          "commentStart": 0,
-                          "end": 0,
-                          "moduleId": 0,
-                          "name": "beamSolid",
-                          "start": 0,
-                          "type": "Identifier"
-                        },
-                        "path": [],
-                        "start": 0,
-                        "type": "Name",
-                        "type": "Name"
-                      }
-                    }
-                  ],
-                  "end": 0,
-                  "moduleId": 0,
-                  "start": 0,
-                  "type": "ArrayExpression",
-                  "type": "ArrayExpression"
-                }
-              },
-              {
-                "type": "LabeledArg",
-                "label": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
                   "name": "radius",
                   "start": 0,
                   "type": "Identifier"
@@ -7190,6 +7176,277 @@ description: Result of parsing crash-box.kcl
                     "value": 80.0,
                     "suffix": "None"
                   }
+                }
+              },
+              {
+                "type": "LabeledArg",
+                "label": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "name": "edges",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "arg": {
+                  "commentStart": 0,
+                  "elements": [
+                    {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "properties": [
+                        {
+                          "commentStart": 0,
+                          "end": 0,
+                          "key": {
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "name": "sideFaces",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "moduleId": 0,
+                          "start": 0,
+                          "type": "ObjectProperty",
+                          "value": {
+                            "commentStart": 0,
+                            "elements": [
+                              {
+                                "commentStart": 0,
+                                "computed": false,
+                                "end": 0,
+                                "moduleId": 0,
+                                "object": {
+                                  "commentStart": 0,
+                                  "computed": false,
+                                  "end": 0,
+                                  "moduleId": 0,
+                                  "object": {
+                                    "abs_path": false,
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "name": {
+                                      "commentStart": 0,
+                                      "end": 0,
+                                      "moduleId": 0,
+                                      "name": "beamRegion",
+                                      "start": 0,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
+                                    "start": 0,
+                                    "type": "Name",
+                                    "type": "Name"
+                                  },
+                                  "property": {
+                                    "abs_path": false,
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "name": {
+                                      "commentStart": 0,
+                                      "end": 0,
+                                      "moduleId": 0,
+                                      "name": "tags",
+                                      "start": 0,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
+                                    "start": 0,
+                                    "type": "Name",
+                                    "type": "Name"
+                                  },
+                                  "start": 0,
+                                  "type": "MemberExpression",
+                                  "type": "MemberExpression"
+                                },
+                                "property": {
+                                  "abs_path": false,
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "moduleId": 0,
+                                  "name": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "name": "leftEdge",
+                                    "start": 0,
+                                    "type": "Identifier"
+                                  },
+                                  "path": [],
+                                  "start": 0,
+                                  "type": "Name",
+                                  "type": "Name"
+                                },
+                                "start": 0,
+                                "type": "MemberExpression",
+                                "type": "MemberExpression"
+                              },
+                              {
+                                "abs_path": false,
+                                "commentStart": 0,
+                                "end": 0,
+                                "moduleId": 0,
+                                "name": {
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "moduleId": 0,
+                                  "name": "capEnd001",
+                                  "start": 0,
+                                  "type": "Identifier"
+                                },
+                                "path": [],
+                                "start": 0,
+                                "type": "Name",
+                                "type": "Name"
+                              }
+                            ],
+                            "end": 0,
+                            "moduleId": 0,
+                            "start": 0,
+                            "type": "ArrayExpression",
+                            "type": "ArrayExpression"
+                          }
+                        }
+                      ],
+                      "start": 0,
+                      "type": "ObjectExpression",
+                      "type": "ObjectExpression"
+                    },
+                    {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "properties": [
+                        {
+                          "commentStart": 0,
+                          "end": 0,
+                          "key": {
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "name": "sideFaces",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "moduleId": 0,
+                          "start": 0,
+                          "type": "ObjectProperty",
+                          "value": {
+                            "commentStart": 0,
+                            "elements": [
+                              {
+                                "commentStart": 0,
+                                "computed": false,
+                                "end": 0,
+                                "moduleId": 0,
+                                "object": {
+                                  "commentStart": 0,
+                                  "computed": false,
+                                  "end": 0,
+                                  "moduleId": 0,
+                                  "object": {
+                                    "abs_path": false,
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "name": {
+                                      "commentStart": 0,
+                                      "end": 0,
+                                      "moduleId": 0,
+                                      "name": "beamRegion",
+                                      "start": 0,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
+                                    "start": 0,
+                                    "type": "Name",
+                                    "type": "Name"
+                                  },
+                                  "property": {
+                                    "abs_path": false,
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "name": {
+                                      "commentStart": 0,
+                                      "end": 0,
+                                      "moduleId": 0,
+                                      "name": "tags",
+                                      "start": 0,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
+                                    "start": 0,
+                                    "type": "Name",
+                                    "type": "Name"
+                                  },
+                                  "start": 0,
+                                  "type": "MemberExpression",
+                                  "type": "MemberExpression"
+                                },
+                                "property": {
+                                  "abs_path": false,
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "moduleId": 0,
+                                  "name": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "name": "leftEdge",
+                                    "start": 0,
+                                    "type": "Identifier"
+                                  },
+                                  "path": [],
+                                  "start": 0,
+                                  "type": "Name",
+                                  "type": "Name"
+                                },
+                                "start": 0,
+                                "type": "MemberExpression",
+                                "type": "MemberExpression"
+                              },
+                              {
+                                "abs_path": false,
+                                "commentStart": 0,
+                                "end": 0,
+                                "moduleId": 0,
+                                "name": {
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "moduleId": 0,
+                                  "name": "capStart001",
+                                  "start": 0,
+                                  "type": "Identifier"
+                                },
+                                "path": [],
+                                "start": 0,
+                                "type": "Name",
+                                "type": "Name"
+                              }
+                            ],
+                            "end": 0,
+                            "moduleId": 0,
+                            "start": 0,
+                            "type": "ArrayExpression",
+                            "type": "ArrayExpression"
+                          }
+                        }
+                      ],
+                      "start": 0,
+                      "type": "ObjectExpression",
+                      "type": "ObjectExpression"
+                    }
+                  ],
+                  "end": 0,
+                  "moduleId": 0,
+                  "start": 0,
+                  "type": "ArrayExpression",
+                  "type": "ArrayExpression"
                 }
               }
             ],

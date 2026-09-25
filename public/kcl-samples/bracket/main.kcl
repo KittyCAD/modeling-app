@@ -121,45 +121,61 @@ bracketBlank = extrude(
 // Apply the inside bend radius at the elbow of the bracket.
 bracketWithInsideFillet = fillet(
   bracketBlank,
-  tags = getCommonEdge(faces = [
-    bracketProfileRegion.tags.line6,
-    bracketProfileRegion.tags.line5
-  ]),
   radius = insideBendRadius,
+  edges = [
+    {
+      sideFaces = [
+        bracketProfileRegion.tags.line6,
+        bracketProfileRegion.tags.line5
+      ]
+    }
+  ],
 )
 
 // Apply the outside bend radius around the outer corner.
 bracketWithBendFillets = fillet(
   bracketWithInsideFillet,
-  tags = getCommonEdge(faces = [
-    bracketProfileRegion.tags.line3,
-    bracketProfileRegion.tags.line1
-  ]),
   radius = outsideBendRadius,
+  edges = [
+    {
+      sideFaces = [
+        bracketProfileRegion.tags.line3,
+        bracketProfileRegion.tags.line1
+      ]
+    }
+  ],
 )
 
 // Round the four free outside corners of the extruded bracket.
 bracketWithCornerFillets = fillet(
   bracketWithBendFillets,
-  tags = [
-    getCommonEdge(faces = [
-      bracketProfileRegion.tags.line2,
-      bracketEndFace
-    ]),
-    getCommonEdge(faces = [
-      bracketProfileRegion.tags.line4,
-      bracketEndFace
-    ]),
-    getCommonEdge(faces = [
-      bracketProfileRegion.tags.line4,
-      bracketStartFace
-    ]),
-    getCommonEdge(faces = [
-      bracketProfileRegion.tags.line2,
-      bracketStartFace
-    ])
-  ],
   radius = cornerFilletRadius,
+  edges = [
+    {
+      sideFaces = [
+        bracketProfileRegion.tags.line2,
+        bracketEndFace
+      ]
+    },
+    {
+      sideFaces = [
+        bracketProfileRegion.tags.line4,
+        bracketEndFace
+      ]
+    },
+    {
+      sideFaces = [
+        bracketProfileRegion.tags.line4,
+        bracketStartFace
+      ]
+    },
+    {
+      sideFaces = [
+        bracketProfileRegion.tags.line2,
+        bracketStartFace
+      ]
+    }
+  ],
 )
 
 // Drill the shelf-side mounting holes into the horizontal leg.

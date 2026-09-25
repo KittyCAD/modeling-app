@@ -98,7 +98,9 @@ cylinderSketch = sketch(on = XY) {
 }
 
 cylinder = extrude(region(segments = [cylinderSketch.perimeter]), length = 10mm, tagEnd = $top)
-topEdge = getCommonEdge(faces = [cylinder.sketch.tags.perimeter, top])
+topEdge = {
+  sideFaces = [cylinder.sketch.tags.perimeter, top]
+}
 gdt::circularity(
   edges = [topEdge],
   tolerance = 0.05mm,

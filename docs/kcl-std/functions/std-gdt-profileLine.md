@@ -56,7 +56,7 @@ startSketchOn(XY)
   |> close()
   |> extrude(length = 5, tagEnd = $top)
 
-profileEdge = getCommonEdge(faces = [side1, top])
+profileEdge = { sideFaces = [side1, top] }
 
 gdt::profileLine(
   edges = [profileEdge],
@@ -88,7 +88,9 @@ blockProfile = sketch(on = XY) {
 }
 
 block = extrude(region(segments = [blockProfile.edge1, blockProfile.edge2]), length = 4mm, tagEnd = $top)
-profileEdge = getCommonEdge(faces = [block.sketch.tags.edge1, top])
+profileEdge = {
+  sideFaces = [block.sketch.tags.edge1, top]
+}
 gdt::profileLine(
   edges = [profileEdge],
   tolerance = 0.05mm,

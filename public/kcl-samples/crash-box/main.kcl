@@ -70,18 +70,38 @@ crashBoxRegion = region(segments = [
 ])
 
 // Create a solid crash box from the square profile
-crashBoxSolid = extrude(crashBoxRegion, length = crashBoxExtrudeLength)
+crashBoxSolid = extrude(crashBoxRegion, length = crashBoxExtrudeLength, tagEnd = $capEnd002)
 
 // Optional exterior edge softening
 crashBoxOuterCornerFillets = fillet(
   crashBoxSolid,
-  tags = [
-    edgeId(crashBoxSolid, closestTo = [-200mm, -200mm, -600mm]),
-    edgeId(crashBoxSolid, closestTo = [200mm, -200mm, -600mm]),
-    edgeId(crashBoxSolid, closestTo = [200mm, 200mm, -600mm]),
-    edgeId(crashBoxSolid, closestTo = [-200mm, 200mm, -600mm])
-  ],
   radius = 60,
+  edges = [
+    {
+      sideFaces = [
+        crashBoxRegion.tags.rightEdge,
+        crashBoxRegion.tags.bottomEdge
+      ]
+    },
+    {
+      sideFaces = [
+        crashBoxRegion.tags.topEdge,
+        crashBoxRegion.tags.bottomEdge
+      ]
+    },
+    {
+      sideFaces = [
+        crashBoxRegion.tags.topEdge,
+        crashBoxRegion.tags.leftEdge
+      ]
+    },
+    {
+      sideFaces = [
+        crashBoxRegion.tags.leftEdge,
+        crashBoxRegion.tags.rightEdge
+      ]
+    }
+  ],
 )
 
 // Shell the crash box from both ends to create a constant wall thickness
@@ -131,11 +151,15 @@ beamSolid = extrude(
 // Ease the beam pocket edges for a better fit
 beamEndFillets = fillet(
   beamSolid,
-  tags = [
-    edgeId(beamSolid, closestTo = [-125mm, 0mm, -300mm]),
-    edgeId(beamSolid, closestTo = [125mm, 0mm, -300mm])
-  ],
   radius = 80,
+  edges = [
+    {
+      sideFaces = [beamRegion.tags.leftEdge, capEnd001]
+    },
+    {
+      sideFaces = [beamRegion.tags.leftEdge, capStart001]
+    }
+  ],
 )
 hide(beamProfile)
 

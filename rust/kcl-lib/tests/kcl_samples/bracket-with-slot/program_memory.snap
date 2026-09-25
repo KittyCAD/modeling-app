@@ -919,104 +919,6 @@ description: Variables in memory after executing bracket-with-slot.kcl
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "edgeCuts": [
-        {
-          "type": "fillet",
-          "id": "[uuid]",
-          "radius": {
-            "n": 8.0,
-            "ty": {
-              "type": "Default",
-              "value": {
-                "len": "mm",
-                "angle": "degrees"
-              }
-            }
-          },
-          "edgeId": "[uuid]",
-          "tag": null
-        },
-        {
-          "type": "fillet",
-          "id": "[uuid]",
-          "radius": {
-            "n": 12.0,
-            "ty": {
-              "type": "Default",
-              "value": {
-                "len": "mm",
-                "angle": "degrees"
-              }
-            }
-          },
-          "edgeId": "[uuid]",
-          "tag": null
-        },
-        {
-          "type": "fillet",
-          "id": "[uuid]",
-          "radius": {
-            "n": 20.0,
-            "ty": {
-              "type": "Default",
-              "value": {
-                "len": "mm",
-                "angle": "degrees"
-              }
-            }
-          },
-          "edgeId": "[uuid]",
-          "tag": null
-        },
-        {
-          "type": "fillet",
-          "id": "[uuid]",
-          "radius": {
-            "n": 20.0,
-            "ty": {
-              "type": "Default",
-              "value": {
-                "len": "mm",
-                "angle": "degrees"
-              }
-            }
-          },
-          "edgeId": "[uuid]",
-          "tag": null
-        },
-        {
-          "type": "fillet",
-          "id": "[uuid]",
-          "radius": {
-            "n": 20.0,
-            "ty": {
-              "type": "Default",
-              "value": {
-                "len": "mm",
-                "angle": "degrees"
-              }
-            }
-          },
-          "edgeId": "[uuid]",
-          "tag": null
-        },
-        {
-          "type": "fillet",
-          "id": "[uuid]",
-          "radius": {
-            "n": 20.0,
-            "ty": {
-              "type": "Default",
-              "value": {
-                "len": "mm",
-                "angle": "degrees"
-              }
-            }
-          },
-          "edgeId": "[uuid]",
-          "tag": null
-        }
-      ],
       "units": "mm",
       "sectional": false
     }
@@ -1391,104 +1293,6 @@ description: Variables in memory after executing bracket-with-slot.kcl
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "edgeCuts": [
-        {
-          "type": "fillet",
-          "id": "[uuid]",
-          "radius": {
-            "n": 8.0,
-            "ty": {
-              "type": "Default",
-              "value": {
-                "len": "mm",
-                "angle": "degrees"
-              }
-            }
-          },
-          "edgeId": "[uuid]",
-          "tag": null
-        },
-        {
-          "type": "fillet",
-          "id": "[uuid]",
-          "radius": {
-            "n": 12.0,
-            "ty": {
-              "type": "Default",
-              "value": {
-                "len": "mm",
-                "angle": "degrees"
-              }
-            }
-          },
-          "edgeId": "[uuid]",
-          "tag": null
-        },
-        {
-          "type": "fillet",
-          "id": "[uuid]",
-          "radius": {
-            "n": 20.0,
-            "ty": {
-              "type": "Default",
-              "value": {
-                "len": "mm",
-                "angle": "degrees"
-              }
-            }
-          },
-          "edgeId": "[uuid]",
-          "tag": null
-        },
-        {
-          "type": "fillet",
-          "id": "[uuid]",
-          "radius": {
-            "n": 20.0,
-            "ty": {
-              "type": "Default",
-              "value": {
-                "len": "mm",
-                "angle": "degrees"
-              }
-            }
-          },
-          "edgeId": "[uuid]",
-          "tag": null
-        },
-        {
-          "type": "fillet",
-          "id": "[uuid]",
-          "radius": {
-            "n": 20.0,
-            "ty": {
-              "type": "Default",
-              "value": {
-                "len": "mm",
-                "angle": "degrees"
-              }
-            }
-          },
-          "edgeId": "[uuid]",
-          "tag": null
-        },
-        {
-          "type": "fillet",
-          "id": "[uuid]",
-          "radius": {
-            "n": 20.0,
-            "ty": {
-              "type": "Default",
-              "value": {
-                "len": "mm",
-                "angle": "degrees"
-              }
-            }
-          },
-          "edgeId": "[uuid]",
-          "tag": null
-        }
-      ],
       "units": "mm",
       "sectional": false
     }
@@ -1643,10 +1447,10 @@ description: Variables in memory after executing bracket-with-slot.kcl
           ],
           "radius": 6.8000000006,
           "tag": {
-            "commentStart": 5479,
-            "end": 5491,
+            "commentStart": 5548,
+            "end": 5560,
             "moduleId": 0,
-            "start": 5479,
+            "start": 5548,
             "type": "TagDeclarator",
             "value": "bottomCircle"
           },
@@ -2002,10 +1806,10 @@ description: Variables in memory after executing bracket-with-slot.kcl
                   ],
                   "radius": 6.8000000006,
                   "tag": {
-                    "commentStart": 5479,
-                    "end": 5491,
+                    "commentStart": 5548,
+                    "end": 5560,
                     "moduleId": 0,
-                    "start": 5479,
+                    "start": 5548,
                     "type": "TagDeclarator",
                     "value": "bottomCircle"
                   },
@@ -2100,10 +1904,10 @@ description: Variables in memory after executing bracket-with-slot.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4987,
-            "end": 4996,
+            "commentStart": 5056,
+            "end": 5065,
             "moduleId": 0,
-            "start": 4987,
+            "start": 5056,
             "type": "TagDeclarator",
             "value": "topCircle"
           },
@@ -2131,10 +1935,10 @@ description: Variables in memory after executing bracket-with-slot.kcl
             ],
             "radius": 11.2000000004,
             "tag": {
-              "commentStart": 4987,
-              "end": 4996,
+              "commentStart": 5056,
+              "end": 5065,
               "moduleId": 0,
-              "start": 4987,
+              "start": 5056,
               "type": "TagDeclarator",
               "value": "topCircle"
             },
@@ -2396,10 +2200,10 @@ description: Variables in memory after executing bracket-with-slot.kcl
           ],
           "radius": 11.2000000004,
           "tag": {
-            "commentStart": 4987,
-            "end": 4996,
+            "commentStart": 5056,
+            "end": 5065,
             "moduleId": 0,
-            "start": 4987,
+            "start": 5056,
             "type": "TagDeclarator",
             "value": "topCircle"
           },
@@ -2498,10 +2302,10 @@ description: Variables in memory after executing bracket-with-slot.kcl
                   ],
                   "radius": 11.2000000004,
                   "tag": {
-                    "commentStart": 4987,
-                    "end": 4996,
+                    "commentStart": 5056,
+                    "end": 5065,
                     "moduleId": 0,
-                    "start": 4987,
+                    "start": 5056,
                     "type": "TagDeclarator",
                     "value": "topCircle"
                   },
@@ -3231,104 +3035,6 @@ description: Variables in memory after executing bracket-with-slot.kcl
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "edgeCuts": [
-        {
-          "type": "fillet",
-          "id": "[uuid]",
-          "radius": {
-            "n": 8.0,
-            "ty": {
-              "type": "Default",
-              "value": {
-                "len": "mm",
-                "angle": "degrees"
-              }
-            }
-          },
-          "edgeId": "[uuid]",
-          "tag": null
-        },
-        {
-          "type": "fillet",
-          "id": "[uuid]",
-          "radius": {
-            "n": 12.0,
-            "ty": {
-              "type": "Default",
-              "value": {
-                "len": "mm",
-                "angle": "degrees"
-              }
-            }
-          },
-          "edgeId": "[uuid]",
-          "tag": null
-        },
-        {
-          "type": "fillet",
-          "id": "[uuid]",
-          "radius": {
-            "n": 20.0,
-            "ty": {
-              "type": "Default",
-              "value": {
-                "len": "mm",
-                "angle": "degrees"
-              }
-            }
-          },
-          "edgeId": "[uuid]",
-          "tag": null
-        },
-        {
-          "type": "fillet",
-          "id": "[uuid]",
-          "radius": {
-            "n": 20.0,
-            "ty": {
-              "type": "Default",
-              "value": {
-                "len": "mm",
-                "angle": "degrees"
-              }
-            }
-          },
-          "edgeId": "[uuid]",
-          "tag": null
-        },
-        {
-          "type": "fillet",
-          "id": "[uuid]",
-          "radius": {
-            "n": 20.0,
-            "ty": {
-              "type": "Default",
-              "value": {
-                "len": "mm",
-                "angle": "degrees"
-              }
-            }
-          },
-          "edgeId": "[uuid]",
-          "tag": null
-        },
-        {
-          "type": "fillet",
-          "id": "[uuid]",
-          "radius": {
-            "n": 20.0,
-            "ty": {
-              "type": "Default",
-              "value": {
-                "len": "mm",
-                "angle": "degrees"
-              }
-            }
-          },
-          "edgeId": "[uuid]",
-          "tag": null
-        }
-      ],
       "units": "mm",
       "sectional": false
     }
@@ -3366,10 +3072,10 @@ description: Variables in memory after executing bracket-with-slot.kcl
           ],
           "radius": 6.8000000006,
           "tag": {
-            "commentStart": 5479,
-            "end": 5491,
+            "commentStart": 5548,
+            "end": 5560,
             "moduleId": 0,
-            "start": 5479,
+            "start": 5548,
             "type": "TagDeclarator",
             "value": "bottomCircle"
           },
@@ -3462,10 +3168,10 @@ description: Variables in memory after executing bracket-with-slot.kcl
           ],
           "radius": 11.2000000004,
           "tag": {
-            "commentStart": 4987,
-            "end": 4996,
+            "commentStart": 5056,
+            "end": 5065,
             "moduleId": 0,
-            "start": 4987,
+            "start": 5056,
             "type": "TagDeclarator",
             "value": "topCircle"
           },
@@ -3782,10 +3488,10 @@ description: Variables in memory after executing bracket-with-slot.kcl
             -6.0
           ],
           "tag": {
-            "commentStart": 6385,
-            "end": 6390,
+            "commentStart": 6454,
+            "end": 6459,
             "moduleId": 0,
-            "start": 6385,
+            "start": 6454,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -3812,10 +3518,10 @@ description: Variables in memory after executing bracket-with-slot.kcl
           ],
           "radius": 6.0,
           "tag": {
-            "commentStart": 6460,
-            "end": 6464,
+            "commentStart": 6529,
+            "end": 6533,
             "moduleId": 0,
-            "start": 6460,
+            "start": 6529,
             "type": "TagDeclarator",
             "value": "arc2"
           },
@@ -3836,10 +3542,10 @@ description: Variables in memory after executing bracket-with-slot.kcl
             6.0
           ],
           "tag": {
-            "commentStart": 6600,
-            "end": 6605,
+            "commentStart": 6669,
+            "end": 6674,
             "moduleId": 0,
-            "start": 6600,
+            "start": 6669,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -3866,10 +3572,10 @@ description: Variables in memory after executing bracket-with-slot.kcl
           ],
           "radius": 6.0,
           "tag": {
-            "commentStart": 6714,
-            "end": 6718,
+            "commentStart": 6783,
+            "end": 6787,
             "moduleId": 0,
-            "start": 6714,
+            "start": 6783,
             "type": "TagDeclarator",
             "value": "arc4"
           },
@@ -3974,10 +3680,10 @@ description: Variables in memory after executing bracket-with-slot.kcl
           ],
           "radius": 6.0,
           "tag": {
-            "commentStart": 3286,
-            "end": 3300,
+            "commentStart": 3355,
+            "end": 3369,
             "moduleId": 0,
-            "start": 3286,
+            "start": 3355,
             "type": "TagDeclarator",
             "value": "fastenerCircle"
           },
@@ -4021,10 +3727,10 @@ description: Variables in memory after executing bracket-with-slot.kcl
           ],
           "radius": 11.0,
           "tag": {
-            "commentStart": 3372,
-            "end": 3389,
+            "commentStart": 3441,
+            "end": 3458,
             "moduleId": 0,
-            "start": 3372,
+            "start": 3441,
             "type": "TagDeclarator",
             "value": "countersinkCircle"
           },
@@ -4469,24 +4175,6 @@ description: Variables in memory after executing bracket-with-slot.kcl
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "edgeCuts": [
-        {
-          "type": "fillet",
-          "id": "[uuid]",
-          "radius": {
-            "n": 8.0,
-            "ty": {
-              "type": "Default",
-              "value": {
-                "len": "mm",
-                "angle": "degrees"
-              }
-            }
-          },
-          "edgeId": "[uuid]",
-          "tag": null
-        }
-      ],
       "units": "mm",
       "sectional": false
     }
@@ -6144,40 +5832,6 @@ description: Variables in memory after executing bracket-with-slot.kcl
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "edgeCuts": [
-        {
-          "type": "fillet",
-          "id": "[uuid]",
-          "radius": {
-            "n": 8.0,
-            "ty": {
-              "type": "Default",
-              "value": {
-                "len": "mm",
-                "angle": "degrees"
-              }
-            }
-          },
-          "edgeId": "[uuid]",
-          "tag": null
-        },
-        {
-          "type": "fillet",
-          "id": "[uuid]",
-          "radius": {
-            "n": 12.0,
-            "ty": {
-              "type": "Default",
-              "value": {
-                "len": "mm",
-                "angle": "degrees"
-              }
-            }
-          },
-          "edgeId": "[uuid]",
-          "tag": null
-        }
-      ],
       "units": "mm",
       "sectional": false
     }
@@ -6240,10 +5894,10 @@ description: Variables in memory after executing bracket-with-slot.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 6385,
-            "end": 6390,
+            "commentStart": 6454,
+            "end": 6459,
             "moduleId": 0,
-            "start": 6385,
+            "start": 6454,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -6254,10 +5908,10 @@ description: Variables in memory after executing bracket-with-slot.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 6460,
-            "end": 6464,
+            "commentStart": 6529,
+            "end": 6533,
             "moduleId": 0,
-            "start": 6460,
+            "start": 6529,
             "type": "TagDeclarator",
             "value": "arc2"
           },
@@ -6268,10 +5922,10 @@ description: Variables in memory after executing bracket-with-slot.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 6600,
-            "end": 6605,
+            "commentStart": 6669,
+            "end": 6674,
             "moduleId": 0,
-            "start": 6600,
+            "start": 6669,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -6282,10 +5936,10 @@ description: Variables in memory after executing bracket-with-slot.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 6714,
-            "end": 6718,
+            "commentStart": 6783,
+            "end": 6787,
             "moduleId": 0,
-            "start": 6714,
+            "start": 6783,
             "type": "TagDeclarator",
             "value": "arc4"
           },
@@ -6307,10 +5961,10 @@ description: Variables in memory after executing bracket-with-slot.kcl
               -6.0
             ],
             "tag": {
-              "commentStart": 6385,
-              "end": 6390,
+              "commentStart": 6454,
+              "end": 6459,
               "moduleId": 0,
-              "start": 6385,
+              "start": 6454,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -6337,10 +5991,10 @@ description: Variables in memory after executing bracket-with-slot.kcl
             ],
             "radius": 6.0,
             "tag": {
-              "commentStart": 6460,
-              "end": 6464,
+              "commentStart": 6529,
+              "end": 6533,
               "moduleId": 0,
-              "start": 6460,
+              "start": 6529,
               "type": "TagDeclarator",
               "value": "arc2"
             },
@@ -6361,10 +6015,10 @@ description: Variables in memory after executing bracket-with-slot.kcl
               6.0
             ],
             "tag": {
-              "commentStart": 6600,
-              "end": 6605,
+              "commentStart": 6669,
+              "end": 6674,
               "moduleId": 0,
-              "start": 6600,
+              "start": 6669,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -6391,10 +6045,10 @@ description: Variables in memory after executing bracket-with-slot.kcl
             ],
             "radius": 6.0,
             "tag": {
-              "commentStart": 6714,
-              "end": 6718,
+              "commentStart": 6783,
+              "end": 6787,
               "moduleId": 0,
-              "start": 6714,
+              "start": 6783,
               "type": "TagDeclarator",
               "value": "arc4"
             },
@@ -7357,10 +7011,10 @@ description: Variables in memory after executing bracket-with-slot.kcl
                     -6.0
                   ],
                   "tag": {
-                    "commentStart": 6385,
-                    "end": 6390,
+                    "commentStart": 6454,
+                    "end": 6459,
                     "moduleId": 0,
-                    "start": 6385,
+                    "start": 6454,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -7387,10 +7041,10 @@ description: Variables in memory after executing bracket-with-slot.kcl
                   ],
                   "radius": 6.0,
                   "tag": {
-                    "commentStart": 6460,
-                    "end": 6464,
+                    "commentStart": 6529,
+                    "end": 6533,
                     "moduleId": 0,
-                    "start": 6460,
+                    "start": 6529,
                     "type": "TagDeclarator",
                     "value": "arc2"
                   },
@@ -7411,10 +7065,10 @@ description: Variables in memory after executing bracket-with-slot.kcl
                     6.0
                   ],
                   "tag": {
-                    "commentStart": 6600,
-                    "end": 6605,
+                    "commentStart": 6669,
+                    "end": 6674,
                     "moduleId": 0,
-                    "start": 6600,
+                    "start": 6669,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
@@ -7441,10 +7095,10 @@ description: Variables in memory after executing bracket-with-slot.kcl
                   ],
                   "radius": 6.0,
                   "tag": {
-                    "commentStart": 6714,
-                    "end": 6718,
+                    "commentStart": 6783,
+                    "end": 6787,
                     "moduleId": 0,
-                    "start": 6714,
+                    "start": 6783,
                     "type": "TagDeclarator",
                     "value": "arc4"
                   },
@@ -7936,10 +7590,10 @@ description: Variables in memory after executing bracket-with-slot.kcl
             -6.0
           ],
           "tag": {
-            "commentStart": 6385,
-            "end": 6390,
+            "commentStart": 6454,
+            "end": 6459,
             "moduleId": 0,
-            "start": 6385,
+            "start": 6454,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -7966,10 +7620,10 @@ description: Variables in memory after executing bracket-with-slot.kcl
           ],
           "radius": 6.0,
           "tag": {
-            "commentStart": 6460,
-            "end": 6464,
+            "commentStart": 6529,
+            "end": 6533,
             "moduleId": 0,
-            "start": 6460,
+            "start": 6529,
             "type": "TagDeclarator",
             "value": "arc2"
           },
@@ -7990,10 +7644,10 @@ description: Variables in memory after executing bracket-with-slot.kcl
             6.0
           ],
           "tag": {
-            "commentStart": 6600,
-            "end": 6605,
+            "commentStart": 6669,
+            "end": 6674,
             "moduleId": 0,
-            "start": 6600,
+            "start": 6669,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -8020,10 +7674,10 @@ description: Variables in memory after executing bracket-with-slot.kcl
           ],
           "radius": 6.0,
           "tag": {
-            "commentStart": 6714,
-            "end": 6718,
+            "commentStart": 6783,
+            "end": 6787,
             "moduleId": 0,
-            "start": 6714,
+            "start": 6783,
             "type": "TagDeclarator",
             "value": "arc4"
           },
@@ -8779,10 +8433,10 @@ description: Variables in memory after executing bracket-with-slot.kcl
                   ],
                   "radius": 6.0,
                   "tag": {
-                    "commentStart": 3286,
-                    "end": 3300,
+                    "commentStart": 3355,
+                    "end": 3369,
                     "moduleId": 0,
-                    "start": 3286,
+                    "start": 3355,
                     "type": "TagDeclarator",
                     "value": "fastenerCircle"
                   },
@@ -8826,10 +8480,10 @@ description: Variables in memory after executing bracket-with-slot.kcl
                   ],
                   "radius": 11.0,
                   "tag": {
-                    "commentStart": 3372,
-                    "end": 3389,
+                    "commentStart": 3441,
+                    "end": 3458,
                     "moduleId": 0,
-                    "start": 3372,
+                    "start": 3441,
                     "type": "TagDeclarator",
                     "value": "countersinkCircle"
                   },

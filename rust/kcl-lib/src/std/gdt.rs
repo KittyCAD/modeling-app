@@ -1802,10 +1802,12 @@ region001 = region(point = [5mm, 5mm], sketch = sketch001)
 extrude001 = extrude(region001, length = 10mm)
 gdt::distance(
   edges = [
-    getCommonEdge(faces = [
+    {
+      sideFaces = [
       region001.tags.line4,
       region001.tags.line1
-    ])
+    ]
+    }
   ],
   tolerance = __TOLERANCE__,
   framePosition = __FRAME_POSITION__,
@@ -2500,7 +2502,7 @@ blockProfile = sketch(on = XY) {
 }
 
 block = extrude(region(point = [5mm, 3mm], sketch = blockProfile), length = 4mm, tagEnd = $top)
-profileEdge = getCommonEdge(faces = [block.sketch.tags.edge1, top])
+profileEdge = { sideFaces = [block.sketch.tags.edge1, top] }
 gdt::profileLine(edges = [profileEdge], tolerance = 0.05mm, framePosition = [12mm, 8mm], framePlane = XZ)
 "#;
 
@@ -2523,7 +2525,7 @@ blockProfile = sketch(on = XY) {
 }
 
 block = extrude(region(point = [5mm, 3mm], sketch = blockProfile), length = 4mm, tagEnd = $top)
-profileEdge = getCommonEdge(faces = [block.sketch.tags.edge1, top])
+profileEdge = { sideFaces = [block.sketch.tags.edge1, top] }
 gdt::profile(edges = [profileEdge], tolerance = 0.05mm, framePosition = [12mm, 8mm], framePlane = XZ)
 "#;
 
@@ -2568,7 +2570,7 @@ blockProfile = sketch(on = XY) {
 }
 
 block = extrude(region(point = [5mm, 3mm], sketch = blockProfile), length = 4mm, tagEnd = $top)
-profileEdge = getCommonEdge(faces = [block.sketch.tags.edge1, top])
+profileEdge = { sideFaces = [block.sketch.tags.edge1, top] }
 gdt::profile(edges = [profileEdge], faces = [top], tolerance = 0.05mm)
 "#;
 
@@ -2672,7 +2674,7 @@ cylinderSketch = sketch(on = XY) {
 }
 
 cylinder = extrude(region(point = cylinderSketch.perimeter.center, sketch = cylinderSketch), length = 10mm, tagEnd = $top)
-topEdge = getCommonEdge(faces = [cylinder.sketch.tags.perimeter, top])
+topEdge = { sideFaces = [cylinder.sketch.tags.perimeter, top] }
 gdt::circularity(edges = [topEdge], tolerance = 0.05mm, framePosition = [12mm, 8mm], framePlane = XZ)
 "#;
 
@@ -2742,7 +2744,7 @@ cylinderSketch = sketch(on = XY) {
 }
 
 cylinder = extrude(region(point = cylinderSketch.perimeter.center, sketch = cylinderSketch), length = 10mm, tagEnd = $top)
-topEdge = getCommonEdge(faces = [cylinder.sketch.tags.perimeter, top])
+topEdge = { sideFaces = [cylinder.sketch.tags.perimeter, top] }
 gdt::cylindricity(edges = [topEdge], tolerance = 0.05mm, framePosition = [-12mm, 8mm], framePlane = XZ)
 "#;
 
@@ -2814,7 +2816,7 @@ referenceFeatureBSketch = sketch(on = XY) {
 
 referenceFeatureB = extrude(region(point = referenceFeatureBSketch.perimeter.center, sketch = referenceFeatureBSketch), length = 12mm, tagEnd = $endB)
   |> translate(z = -12mm)
-endEdgeB = getCommonEdge(faces = [referenceFeatureB.sketch.tags.perimeter, endB])
+endEdgeB = { sideFaces = [referenceFeatureB.sketch.tags.perimeter, endB] }
 
 gdt::datum(face = datumA.sketch.tags.perimeter, name = "A", framePosition = [10mm, -12mm], framePlane = XZ)
 gdt::concentricity(edges = [endEdgeB], tolerance = 0.2mm, datums = ["A"], framePosition = [-18mm, 12mm], framePlane = XZ)
@@ -2924,7 +2926,7 @@ latchProfile = sketch(on = XZ) {
 
 latchBlockRegion = region(point = [0mm, 0mm], sketch = latchProfile)
 latchBlock = extrude(latchBlockRegion, length = 12mm, tagEnd = $frontFace)
-grooveFloorFrontEdge = getCommonEdge(faces = [latchBlock.sketch.tags.grooveFloor, frontFace])
+grooveFloorFrontEdge = { sideFaces = [latchBlock.sketch.tags.grooveFloor, frontFace] }
 
 gdt::datum(face = latchBlock.sketch.tags.bottom, name = "A", framePosition = [0mm, -16mm], framePlane = XZ)
 gdt::symmetry(edges = [grooveFloorFrontEdge], tolerance = 0.2mm, datums = ["A"], framePosition = [-24mm, 14mm], framePlane = XZ)
@@ -2998,10 +3000,10 @@ controlledShaft = extrude(
   tagEnd = $controlledFreeEnd
 )
 
-controlledUpperShoulderEdge = getCommonEdge(faces = [
+controlledUpperShoulderEdge = { sideFaces = [
   controlledShaft.sketch.tags.upperPerimeter,
   controlledShoulder
-])
+] }
 
 datumSketch = sketch(on = YZ) {
   perimeter = circle(start = [var 18mm, var 0mm], center = [var 0mm, var 0mm])

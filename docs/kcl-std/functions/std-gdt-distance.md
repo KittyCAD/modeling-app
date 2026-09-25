@@ -58,7 +58,7 @@ startSketchOn(XY)
   |> close()
   |> extrude(length = 5, tagEnd = $top)
 
-lengthEdge = getCommonEdge(faces = [side1, top])
+lengthEdge = { sideFaces = [side1, top] }
 gdt::distance(
   edges = [lengthEdge],
   tolerance = 0.05mm,
@@ -90,7 +90,9 @@ blockProfile = sketch(on = XY) {
 }
 
 block = extrude(region(segments = [blockProfile.edge1, blockProfile.edge2]), length = 4mm, tagEnd = $top)
-lengthEdge = getCommonEdge(faces = [block.sketch.tags.edge1, top])
+lengthEdge = {
+  sideFaces = [block.sketch.tags.edge1, top]
+}
 gdt::distance(
   edges = [lengthEdge],
   tolerance = 0.05mm,

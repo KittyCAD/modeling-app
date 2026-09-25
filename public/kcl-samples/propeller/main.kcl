@@ -100,11 +100,15 @@ hubBlank = extrude(
 )
 hubRounded = fillet(
   hubBlank,
-  tags = [
-    getCommonEdge(faces = [hubRegion.tags.outerCircle, hubEnd]),
-    getCommonEdge(faces = [hubRegion.tags.outerCircle, hubStart])
-  ],
   radius = hubThickness / 6,
+  edges = [
+    {
+      sideFaces = [hubRegion.tags.outerCircle, hubEnd]
+    },
+    {
+      sideFaces = [hubRegion.tags.outerCircle, hubStart]
+    }
+  ],
 )
 
 // Match the original one-sided chamfer on the central bore by using a revolved cutter.

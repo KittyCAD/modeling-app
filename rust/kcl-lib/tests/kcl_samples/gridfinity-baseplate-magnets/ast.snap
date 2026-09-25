@@ -15449,7 +15449,7 @@ description: Result of parsing gridfinity-baseplate-magnets.kcl
                   "commentStart": 0,
                   "end": 0,
                   "moduleId": 0,
-                  "name": "tags",
+                  "name": "edges",
                   "start": 0,
                   "type": "Identifier"
                 },
@@ -15457,18 +15457,25 @@ description: Result of parsing gridfinity-baseplate-magnets.kcl
                   "commentStart": 0,
                   "elements": [
                     {
-                      "arguments": [
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "properties": [
                         {
-                          "type": "LabeledArg",
-                          "label": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "key": {
                             "commentStart": 0,
                             "end": 0,
                             "moduleId": 0,
-                            "name": "faces",
+                            "name": "sideFaces",
                             "start": 0,
                             "type": "Identifier"
                           },
-                          "arg": {
+                          "moduleId": 0,
+                          "start": 0,
+                          "type": "ObjectProperty",
+                          "value": {
                             "commentStart": 0,
                             "elements": [
                               {
@@ -15624,44 +15631,30 @@ description: Result of parsing gridfinity-baseplate-magnets.kcl
                           }
                         }
                       ],
-                      "callee": {
-                        "abs_path": false,
-                        "commentStart": 0,
-                        "end": 0,
-                        "moduleId": 0,
-                        "name": {
-                          "commentStart": 0,
-                          "end": 0,
-                          "moduleId": 0,
-                          "name": "getCommonEdge",
-                          "start": 0,
-                          "type": "Identifier"
-                        },
-                        "path": [],
-                        "start": 0,
-                        "type": "Name"
-                      },
+                      "start": 0,
+                      "type": "ObjectExpression",
+                      "type": "ObjectExpression"
+                    },
+                    {
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
-                      "start": 0,
-                      "type": "CallExpressionKw",
-                      "type": "CallExpressionKw",
-                      "unlabeled": null
-                    },
-                    {
-                      "arguments": [
+                      "properties": [
                         {
-                          "type": "LabeledArg",
-                          "label": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "key": {
                             "commentStart": 0,
                             "end": 0,
                             "moduleId": 0,
-                            "name": "faces",
+                            "name": "sideFaces",
                             "start": 0,
                             "type": "Identifier"
                           },
-                          "arg": {
+                          "moduleId": 0,
+                          "start": 0,
+                          "type": "ObjectProperty",
+                          "value": {
                             "commentStart": 0,
                             "elements": [
                               {
@@ -15817,44 +15810,30 @@ description: Result of parsing gridfinity-baseplate-magnets.kcl
                           }
                         }
                       ],
-                      "callee": {
-                        "abs_path": false,
-                        "commentStart": 0,
-                        "end": 0,
-                        "moduleId": 0,
-                        "name": {
-                          "commentStart": 0,
-                          "end": 0,
-                          "moduleId": 0,
-                          "name": "getCommonEdge",
-                          "start": 0,
-                          "type": "Identifier"
-                        },
-                        "path": [],
-                        "start": 0,
-                        "type": "Name"
-                      },
+                      "start": 0,
+                      "type": "ObjectExpression",
+                      "type": "ObjectExpression"
+                    },
+                    {
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
-                      "start": 0,
-                      "type": "CallExpressionKw",
-                      "type": "CallExpressionKw",
-                      "unlabeled": null
-                    },
-                    {
-                      "arguments": [
+                      "properties": [
                         {
-                          "type": "LabeledArg",
-                          "label": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "key": {
                             "commentStart": 0,
                             "end": 0,
                             "moduleId": 0,
-                            "name": "faces",
+                            "name": "sideFaces",
                             "start": 0,
                             "type": "Identifier"
                           },
-                          "arg": {
+                          "moduleId": 0,
+                          "start": 0,
+                          "type": "ObjectProperty",
+                          "value": {
                             "commentStart": 0,
                             "elements": [
                               {
@@ -16010,44 +15989,30 @@ description: Result of parsing gridfinity-baseplate-magnets.kcl
                           }
                         }
                       ],
-                      "callee": {
-                        "abs_path": false,
-                        "commentStart": 0,
-                        "end": 0,
-                        "moduleId": 0,
-                        "name": {
-                          "commentStart": 0,
-                          "end": 0,
-                          "moduleId": 0,
-                          "name": "getCommonEdge",
-                          "start": 0,
-                          "type": "Identifier"
-                        },
-                        "path": [],
-                        "start": 0,
-                        "type": "Name"
-                      },
+                      "start": 0,
+                      "type": "ObjectExpression",
+                      "type": "ObjectExpression"
+                    },
+                    {
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
-                      "start": 0,
-                      "type": "CallExpressionKw",
-                      "type": "CallExpressionKw",
-                      "unlabeled": null
-                    },
-                    {
-                      "arguments": [
+                      "properties": [
                         {
-                          "type": "LabeledArg",
-                          "label": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "key": {
                             "commentStart": 0,
                             "end": 0,
                             "moduleId": 0,
-                            "name": "faces",
+                            "name": "sideFaces",
                             "start": 0,
                             "type": "Identifier"
                           },
-                          "arg": {
+                          "moduleId": 0,
+                          "start": 0,
+                          "type": "ObjectProperty",
+                          "value": {
                             "commentStart": 0,
                             "elements": [
                               {
@@ -16203,30 +16168,9 @@ description: Result of parsing gridfinity-baseplate-magnets.kcl
                           }
                         }
                       ],
-                      "callee": {
-                        "abs_path": false,
-                        "commentStart": 0,
-                        "end": 0,
-                        "moduleId": 0,
-                        "name": {
-                          "commentStart": 0,
-                          "end": 0,
-                          "moduleId": 0,
-                          "name": "getCommonEdge",
-                          "start": 0,
-                          "type": "Identifier"
-                        },
-                        "path": [],
-                        "start": 0,
-                        "type": "Name"
-                      },
-                      "commentStart": 0,
-                      "end": 0,
-                      "moduleId": 0,
                       "start": 0,
-                      "type": "CallExpressionKw",
-                      "type": "CallExpressionKw",
-                      "unlabeled": null
+                      "type": "ObjectExpression",
+                      "type": "ObjectExpression"
                     }
                   ],
                   "end": 0,
@@ -23335,7 +23279,7 @@ description: Result of parsing gridfinity-baseplate-magnets.kcl
                   "commentStart": 0,
                   "end": 0,
                   "moduleId": 0,
-                  "name": "tags",
+                  "name": "edges",
                   "start": 0,
                   "type": "Identifier"
                 },
@@ -23343,18 +23287,25 @@ description: Result of parsing gridfinity-baseplate-magnets.kcl
                   "commentStart": 0,
                   "elements": [
                     {
-                      "arguments": [
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "properties": [
                         {
-                          "type": "LabeledArg",
-                          "label": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "key": {
                             "commentStart": 0,
                             "end": 0,
                             "moduleId": 0,
-                            "name": "faces",
+                            "name": "sideFaces",
                             "start": 0,
                             "type": "Identifier"
                           },
-                          "arg": {
+                          "moduleId": 0,
+                          "start": 0,
+                          "type": "ObjectProperty",
+                          "value": {
                             "commentStart": 0,
                             "elements": [
                               {
@@ -23510,44 +23461,30 @@ description: Result of parsing gridfinity-baseplate-magnets.kcl
                           }
                         }
                       ],
-                      "callee": {
-                        "abs_path": false,
-                        "commentStart": 0,
-                        "end": 0,
-                        "moduleId": 0,
-                        "name": {
-                          "commentStart": 0,
-                          "end": 0,
-                          "moduleId": 0,
-                          "name": "getCommonEdge",
-                          "start": 0,
-                          "type": "Identifier"
-                        },
-                        "path": [],
-                        "start": 0,
-                        "type": "Name"
-                      },
+                      "start": 0,
+                      "type": "ObjectExpression",
+                      "type": "ObjectExpression"
+                    },
+                    {
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
-                      "start": 0,
-                      "type": "CallExpressionKw",
-                      "type": "CallExpressionKw",
-                      "unlabeled": null
-                    },
-                    {
-                      "arguments": [
+                      "properties": [
                         {
-                          "type": "LabeledArg",
-                          "label": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "key": {
                             "commentStart": 0,
                             "end": 0,
                             "moduleId": 0,
-                            "name": "faces",
+                            "name": "sideFaces",
                             "start": 0,
                             "type": "Identifier"
                           },
-                          "arg": {
+                          "moduleId": 0,
+                          "start": 0,
+                          "type": "ObjectProperty",
+                          "value": {
                             "commentStart": 0,
                             "elements": [
                               {
@@ -23703,44 +23640,30 @@ description: Result of parsing gridfinity-baseplate-magnets.kcl
                           }
                         }
                       ],
-                      "callee": {
-                        "abs_path": false,
-                        "commentStart": 0,
-                        "end": 0,
-                        "moduleId": 0,
-                        "name": {
-                          "commentStart": 0,
-                          "end": 0,
-                          "moduleId": 0,
-                          "name": "getCommonEdge",
-                          "start": 0,
-                          "type": "Identifier"
-                        },
-                        "path": [],
-                        "start": 0,
-                        "type": "Name"
-                      },
+                      "start": 0,
+                      "type": "ObjectExpression",
+                      "type": "ObjectExpression"
+                    },
+                    {
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
-                      "start": 0,
-                      "type": "CallExpressionKw",
-                      "type": "CallExpressionKw",
-                      "unlabeled": null
-                    },
-                    {
-                      "arguments": [
+                      "properties": [
                         {
-                          "type": "LabeledArg",
-                          "label": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "key": {
                             "commentStart": 0,
                             "end": 0,
                             "moduleId": 0,
-                            "name": "faces",
+                            "name": "sideFaces",
                             "start": 0,
                             "type": "Identifier"
                           },
-                          "arg": {
+                          "moduleId": 0,
+                          "start": 0,
+                          "type": "ObjectProperty",
+                          "value": {
                             "commentStart": 0,
                             "elements": [
                               {
@@ -23896,44 +23819,30 @@ description: Result of parsing gridfinity-baseplate-magnets.kcl
                           }
                         }
                       ],
-                      "callee": {
-                        "abs_path": false,
-                        "commentStart": 0,
-                        "end": 0,
-                        "moduleId": 0,
-                        "name": {
-                          "commentStart": 0,
-                          "end": 0,
-                          "moduleId": 0,
-                          "name": "getCommonEdge",
-                          "start": 0,
-                          "type": "Identifier"
-                        },
-                        "path": [],
-                        "start": 0,
-                        "type": "Name"
-                      },
+                      "start": 0,
+                      "type": "ObjectExpression",
+                      "type": "ObjectExpression"
+                    },
+                    {
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
-                      "start": 0,
-                      "type": "CallExpressionKw",
-                      "type": "CallExpressionKw",
-                      "unlabeled": null
-                    },
-                    {
-                      "arguments": [
+                      "properties": [
                         {
-                          "type": "LabeledArg",
-                          "label": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "key": {
                             "commentStart": 0,
                             "end": 0,
                             "moduleId": 0,
-                            "name": "faces",
+                            "name": "sideFaces",
                             "start": 0,
                             "type": "Identifier"
                           },
-                          "arg": {
+                          "moduleId": 0,
+                          "start": 0,
+                          "type": "ObjectProperty",
+                          "value": {
                             "commentStart": 0,
                             "elements": [
                               {
@@ -24089,30 +23998,9 @@ description: Result of parsing gridfinity-baseplate-magnets.kcl
                           }
                         }
                       ],
-                      "callee": {
-                        "abs_path": false,
-                        "commentStart": 0,
-                        "end": 0,
-                        "moduleId": 0,
-                        "name": {
-                          "commentStart": 0,
-                          "end": 0,
-                          "moduleId": 0,
-                          "name": "getCommonEdge",
-                          "start": 0,
-                          "type": "Identifier"
-                        },
-                        "path": [],
-                        "start": 0,
-                        "type": "Name"
-                      },
-                      "commentStart": 0,
-                      "end": 0,
-                      "moduleId": 0,
                       "start": 0,
-                      "type": "CallExpressionKw",
-                      "type": "CallExpressionKw",
-                      "unlabeled": null
+                      "type": "ObjectExpression",
+                      "type": "ObjectExpression"
                     }
                   ],
                   "end": 0,
