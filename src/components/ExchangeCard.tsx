@@ -29,7 +29,7 @@ import toast from 'react-hot-toast'
 
 export type ExchangeCardProps = Exchange & {
   userAvatar?: string
-  onClickClearChat: () => void
+  onClickClearChat?: () => void
   isLastResponse: boolean
   attachmentFetches?: Record<string, ZookeeperAttachmentFetchState>
   onFetchAttachment?: (attachmentRef: AttachmentRef) => void
@@ -125,7 +125,7 @@ export const ButtonClearChat = (props: ComponentProps<'button'>) => (
 
 export const ResponseCardToolBar = (props: {
   responses?: MlCopilotServerMessage[]
-  onClickClearChat: () => void
+  onClickClearChat?: () => void
   isLastResponse: boolean
 }) => {
   const isEndOfStream = isExchangeComplete(props.responses)
@@ -145,7 +145,10 @@ export const ResponseCardToolBar = (props: {
         <div></div>
       )}
       {props.isLastResponse && (
-        <ButtonClearChat onClick={props.onClickClearChat} />
+        <ButtonClearChat
+          onClick={props.onClickClearChat}
+          disabled={props.onClickClearChat === undefined}
+        />
       )}
     </div>
   )
@@ -394,7 +397,7 @@ type ResponsesCardProp = {
   items: Exchange['responses']
   deltasAggregated: Exchange['deltasAggregated']
   isLastResponse: boolean
-  onClickClearChat: () => void
+  onClickClearChat?: () => void
   attachmentFetches?: Record<string, ZookeeperAttachmentFetchState>
   onFetchAttachment?: (attachmentRef: AttachmentRef) => void
 }
