@@ -3,28 +3,38 @@ import { useSignals } from '@preact/signals-react/runtime'
 import { ActionButton } from '@src/components/ActionButton'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { useApp } from '@src/lib/boot'
-import { SESSION_EXPIRED_SIGN_IN_ROUTE_STATE_KEY } from '@src/lib/constants'
-import { PATHS } from '@src/lib/paths'
+import { reportRejection } from '@src/lib/trap'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
-import type { AuthRegistryService } from '@src/registry/contracts/auth'
-import { generateSignInUrl } from '@src/routes/utils'
-import { useNavigate } from 'react-router-dom'
+import {
+  type AppNavigationService,
+  appNavigationService,
+} from '@src/registry/contracts/appNavigation'
+import {
+  type AuthRegistryService,
+  startSignInIntent,
+} from '@src/registry/contracts/auth'
 
 type SessionExpiredDialogHostContentProps = {
   auth: AuthRegistryService
+  appNavigation: AppNavigationService
 }
 
 export function SessionExpiredDialogHost() {
-  const { auth } = useApp()
+  const app = useApp()
 
-  return <SessionExpiredDialogHostContent auth={auth} />
+  return (
+    <SessionExpiredDialogHostContent
+      auth={app.auth}
+      appNavigation={app.registry.get(appNavigationService)}
+    />
+  )
 }
 
 export function SessionExpiredDialogHostContent({
   auth,
+  appNavigation,
 }: SessionExpiredDialogHostContentProps) {
   useSignals()
-  const navigate = useNavigate()
   const authState = auth.useAuthState()
   const open =
     Boolean(auth.sessionExpiredNotice.value) &&
@@ -37,17 +47,9 @@ export function SessionExpiredDialogHostContent({
   function signInAgain() {
     auth.clearSessionExpiredNotice()
     auth.send({ type: 'Acknowledge session expired' })
-
-    if (window.electron) {
-      void navigate(PATHS.SIGN_IN, {
-        state: {
-          [SESSION_EXPIRED_SIGN_IN_ROUTE_STATE_KEY]: true,
-        },
-      })
-      return
-    }
-
-    window.location.href = generateSignInUrl()
+    void appNavigation
+      .dispatch(startSignInIntent, { reason: 'session-expired' })
+      .catch(reportRejection)
   }
 
   return (

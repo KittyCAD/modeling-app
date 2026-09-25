@@ -1,37 +1,26 @@
-import type { IElectronAPI } from '@root/interface'
+import { useSignals } from '@preact/signals-react/runtime'
 import { ActionButton } from '@src/components/ActionButton'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { Logo } from '@src/components/Logo'
-import env, { updateEnvironment } from '@src/env'
+import env from '@src/env'
 import { noAutofillInputProps } from '@src/lib/autofill'
 import { useApp } from '@src/lib/boot'
-import {
-  ClientErrorCode,
-  errorToMessage,
-  reportClientError,
-} from '@src/lib/clientErrors'
-import {
-  APP_NAME,
-  SESSION_EXPIRED_SIGN_IN_ROUTE_STATE_KEY,
-} from '@src/lib/constants'
+import { APP_NAME } from '@src/lib/constants'
 import { readEnvironmentFile, writeEnvironmentFile } from '@src/lib/desktop'
 import { isDesktop } from '@src/lib/isDesktop'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
-import { mark } from '@src/lib/performance'
 import { getSystemTheme, Themes } from '@src/lib/theme'
 import { reportRejection } from '@src/lib/trap'
 import { returnSelfOrGetHostNameFromURL, toSync } from '@src/lib/utils'
-import { withAPIBaseURL, withSiteBaseURL } from '@src/lib/withBaseURL'
+import { withSiteBaseURL } from '@src/lib/withBaseURL'
+import { appNavigationService } from '@src/registry/contracts/appNavigation'
+import { startSignInIntent } from '@src/registry/contracts/auth'
 import { AdvancedSignInOptions } from '@src/routes/AdvancedSignInOptions'
 import { APP_VERSION, generateSignInUrl } from '@src/routes/utils'
 import type { CSSProperties } from 'react'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
-import { Link, useLocation } from 'react-router-dom'
-
-type SignInRouteState = {
-  [SESSION_EXPIRED_SIGN_IN_ROUTE_STATE_KEY]?: boolean
-}
+import { Link } from 'react-router-dom'
 
 const subtleBorder =
   'border border-solid border-chalkboard-30 dark:border-chalkboard-80'
@@ -40,12 +29,14 @@ const cardArea = `${subtleBorder} rounded-lg px-6 py-3 text-chalkboard-70 dark:t
 let didReadFromDiskCacheForEnvironment = false
 
 const SignIn = () => {
-  const { auth, fileOperations, settings } = useApp()
-  const routerLocation = useLocation()
-  const [userCode, setUserCode] = useState('')
-  const [verificationUri, setVerificationUri] = useState('')
-  const signInAttemptRef = useRef(0)
-  const autoSignInAttemptedRef = useRef(false)
+  useSignals()
+  const app = useApp()
+  const { auth, fileOperations, settings } = app
+  const desktopSignIn = auth.desktopSignInState.value
+  const userCode =
+    desktopSignIn.status === 'verification' ? desktopSignIn.userCode : ''
+  const verificationUri =
+    desktopSignIn.status === 'verification' ? desktopSignIn.verificationUri : ''
 
   // Last saved environment
   // TODO: Reduce this logic
@@ -59,42 +50,6 @@ const SignIn = () => {
     const requestedEnvironmentFormatted =
       returnSelfOrGetHostNameFromURL(requestedEnvironment)
     setSelectedEnvironment(requestedEnvironmentFormatted)
-  }
-
-  const reportSignInClientError = ({
-    code,
-    error,
-    message,
-    dedupeKeyPrefix,
-    extra,
-    suppressWhenOffline,
-  }: {
-    code: ClientErrorCode
-    error?: unknown
-    message?: string
-    dedupeKeyPrefix: string
-    extra?: Record<string, unknown>
-    suppressWhenOffline?: boolean
-  }) => {
-    const online =
-      typeof navigator === 'undefined' ? undefined : navigator.onLine
-    if (suppressWhenOffline && online === false) return
-
-    const reportMessage = message ?? errorToMessage(error, 'Unknown auth error')
-
-    void reportClientError({
-      code,
-      message: reportMessage,
-      error,
-      dedupeKey: `${dedupeKeyPrefix}:${selectedEnvironment}:${reportMessage}`,
-      extra: {
-        source: 'SignIn',
-        selectedEnvironment,
-        isDesktop: isDesktop(),
-        ...extra,
-        online,
-      },
-    })
   }
 
   const commitEnvironmentChange = (requestedEnvironment: string) => {
@@ -168,127 +123,8 @@ const SignIn = () => {
     [theme.current]
   )
 
-  const signInDesktop = async (electron: IElectronAPI) => {
-    const signInAttempt = signInAttemptRef.current + 1
-    signInAttemptRef.current = signInAttempt
-    const requestedEnvironment = selectedEnvironment.trim()
-    updateEnvironment(requestedEnvironment)
-    mark('config/env', {
-      name: 'config/env',
-      startTime: performance.now(),
-      entryType: 'mark',
-      detail: {
-        env: {
-          NODE_ENV: env().NODE_ENV,
-          VITE_ZOO_BASE_DOMAIN: env().VITE_ZOO_BASE_DOMAIN,
-          VITE_ZOO_API_BASE_URL: env().VITE_ZOO_API_BASE_URL,
-          VITE_KITTYCAD_WEBSOCKET_URL: env().VITE_KITTYCAD_WEBSOCKET_URL,
-          VITE_ZOOKEEPER_WEBSOCKET_URL: env().VITE_ZOOKEEPER_WEBSOCKET_URL,
-        },
-      },
-    })
-    setUserCode('')
-    setVerificationUri('')
-
-    // We want to invoke our command to login via device auth.
-    const deviceFlowAuthorization = await electron
-      .startDeviceFlow(withAPIBaseURL(location.search))
-      .catch((error) => {
-        if (signInAttemptRef.current === signInAttempt) {
-          reportError(error)
-          reportSignInClientError({
-            code: ClientErrorCode.AuthDeviceFlowStartError,
-            error,
-            dedupeKeyPrefix: 'SignIn:device-flow-start',
-            suppressWhenOffline: true,
-            extra: {
-              requestedEnvironment,
-            },
-          })
-        }
-      })
-    if (signInAttemptRef.current !== signInAttempt) return
-    if (!deviceFlowAuthorization) {
-      console.error(
-        'No device flow authorization received while trying to log in'
-      )
-      reportSignInClientError({
-        code: ClientErrorCode.AuthDeviceFlowStartError,
-        message: 'No device flow authorization received while trying to log in',
-        dedupeKeyPrefix: 'SignIn:device-flow-start-empty',
-        suppressWhenOffline: true,
-        extra: {
-          requestedEnvironment,
-        },
-      })
-      toast.error('Error while trying to log in.')
-      return
-    }
-    setUserCode(deviceFlowAuthorization.userCode)
-    setVerificationUri(deviceFlowAuthorization.verificationUri)
-
-    // Now that we have the user code, we can kick off the final login step.
-    const token = await electron.loginWithDeviceFlow().catch((error) => {
-      if (signInAttemptRef.current === signInAttempt) {
-        reportError(error)
-        reportSignInClientError({
-          code: ClientErrorCode.AuthDeviceFlowLoginError,
-          error,
-          dedupeKeyPrefix: 'SignIn:device-flow-login',
-          suppressWhenOffline: true,
-          extra: {
-            requestedEnvironment,
-            hasUserCode: Boolean(deviceFlowAuthorization.userCode),
-            hasVerificationUri: Boolean(
-              deviceFlowAuthorization.verificationUri
-            ),
-          },
-        })
-      }
-    })
-    if (signInAttemptRef.current !== signInAttempt) return
-    if (!token) {
-      console.error('No token received while trying to log in')
-      reportSignInClientError({
-        code: ClientErrorCode.AuthDeviceFlowLoginError,
-        message: 'No token received while trying to log in',
-        dedupeKeyPrefix: 'SignIn:device-flow-login-empty',
-        suppressWhenOffline: true,
-        extra: {
-          requestedEnvironment,
-          hasUserCode: Boolean(deviceFlowAuthorization.userCode),
-          hasVerificationUri: Boolean(deviceFlowAuthorization.verificationUri),
-        },
-      })
-      toast.error('Error while trying to log in.')
-      return
-    }
-
-    auth.send({ type: 'Log in', token })
-  }
-
-  useEffect(() => {
-    const electron = window.electron
-    const routeState = routerLocation.state as SignInRouteState | null
-    if (
-      autoSignInAttemptedRef.current ||
-      !electron ||
-      !routeState?.[SESSION_EXPIRED_SIGN_IN_ROUTE_STATE_KEY]
-    ) {
-      return
-    }
-
-    autoSignInAttemptedRef.current = true
-    void signInDesktop(electron)
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- The router state is a one-shot intent to start desktop sign-in with the current environment.
-  }, [routerLocation.state])
-
   const cancelSignIn = async () => {
-    signInAttemptRef.current += 1
-    await window.electron?.cancelDeviceFlow().catch(reportRejection)
-    auth.send({ type: 'Log out' })
-    setUserCode('')
-    setVerificationUri('')
+    await auth.cancelDesktopSignIn().catch(reportRejection)
   }
 
   const copyDeviceFlowSignInUrl = async () => {
@@ -345,20 +181,24 @@ const SignIn = () => {
                   <>
                     <button
                       onClick={() => {
-                        const electron = window.electron
-                        if (electron) {
-                          ;(async () => {
-                            await signInDesktop(electron)
-                          })().catch(reportRejection)
-                        }
+                        void app.registry
+                          .get(appNavigationService)
+                          .dispatch(startSignInIntent, {
+                            reason: 'user',
+                            environment: selectedEnvironment,
+                          })
+                          .catch(reportRejection)
                       }}
+                      disabled={desktopSignIn.status === 'authorizing'}
                       className={
                         'm-0 mt-8 w-fit flex gap-4 items-center px-3 py-1 ' +
                         '!border-transparent !text-lg !text-chalkboard-10 !bg-primary hover:hue-rotate-15'
                       }
                       data-testid="sign-in-button"
                     >
-                      Sign in to get started
+                      {desktopSignIn.status === 'authorizing'
+                        ? 'Starting sign in…'
+                        : 'Sign in to get started'}
                       <CustomIcon name="arrowShortRight" className="w-6 h-6" />
                     </button>
                     {isDesktop() && (

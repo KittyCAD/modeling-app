@@ -352,8 +352,6 @@ export const CODE_QUERY_PARAM = 'code'
 /** A query parameter to skip the sign-on view if unnecessary. */
 export const IMMEDIATE_SIGN_IN_IF_NECESSARY_QUERY_PARAM =
   'immediate-sign-in-if-necessary'
-/** React Router state flag that starts desktop sign-in after accepting the session-expired dialog. */
-export const SESSION_EXPIRED_SIGN_IN_ROUTE_STATE_KEY = 'sessionExpiredSignIn'
 /**
  * A query parameter to allow the app to be accessed on mobile devices.
  * Used to test mobile experience as we improve it to be release-able.

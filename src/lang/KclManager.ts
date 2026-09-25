@@ -215,7 +215,7 @@ type UpdateCodeEditorAdditionalSpec = {
 
 type FromFileOptions = {
   shouldSyncRustOnOpen: boolean
-  assertCurrent?: () => void
+  throwIfSuperseded?: () => void
 }
 
 const requestSkipRustUpdate = StateEffect.define<boolean>()
@@ -429,7 +429,7 @@ export class ZDSProject {
      */
     providedCode?: string,
     isExecuting = true,
-    assertCurrent: () => void = () => {}
+    throwIfSuperseded: () => void = () => {}
   ) {
     const foundEditor = this.findEditor(path)
     const found = foundEditor?.[1]
@@ -479,10 +479,10 @@ export class ZDSProject {
       // before that snapshot has registered the file.
       {
         shouldSyncRustOnOpen: !providedEditor,
-        assertCurrent,
+        throwIfSuperseded,
       }
     )
-    assertCurrent()
+    throwIfSuperseded()
 
     // Splice our new editor into our files array
     if (foundFileIndex > -1) {
@@ -518,14 +518,14 @@ export class ZDSProject {
     markOnce('project/startCollectFiles')
     const apiFiles = await this.getAllKclFiles()
     markOnce('project/endCollectFiles')
-    assertCurrent()
+    throwIfSuperseded()
 
     markOnce('project/startSendProjectToWasm')
     await newEditor.rustContext
       .sendOpenProject(path, apiFiles)
       .catch(reportRejection)
     markOnce('project/endSendProjectToWasm')
-    assertCurrent()
+    throwIfSuperseded()
 
     if (
       isExecuting &&
@@ -533,7 +533,7 @@ export class ZDSProject {
       newEditor.engineCommandManager.connection?.connected
     ) {
       await newEditor.executeCode(newEditor.code)
-      assertCurrent()
+      throwIfSuperseded()
       await resetCameraPosition({
         sceneInfra: newEditor.sceneInfra,
         engineCommandManager: newEditor.engineCommandManager,
@@ -2199,7 +2199,7 @@ export class KclManager extends File {
     options: FromFileOptions = { shouldSyncRustOnOpen: true }
   ) {
     const diskCode = normalizeLineEndings(providedCode ?? (await file.read()))
-    options.assertCurrent?.()
+    options.throwIfSuperseded?.()
     const recoverySnapshot = readRecoverySnapshot(file.path)
     const initialCode =
       recoverySnapshot && !isCodeTheSame(recoverySnapshot.code, diskCode)

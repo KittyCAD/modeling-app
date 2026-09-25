@@ -1,6 +1,7 @@
 import {
   defineRegistryItem,
   pluginsValueSpec,
+  provide,
   provideService,
   Registry,
   type RegistryItem,
@@ -10,13 +11,18 @@ import { effect, type Signal, signal } from '@preact/signals-core'
 import { buildFSHistoryExtension } from '@src/editor/plugins/fs'
 import { File, KclManager, ZDSProject } from '@src/lang/KclManager'
 import { lspService } from '@src/lang/lsp/registry/contract'
+import {
+  createAppNavigationService,
+  createOpenProjectIntentContribution,
+} from '@src/lib/appNavigation'
+import { createAppNavigationDependencies } from '@src/lib/appNavigationRuntime'
 import { type BillingRegistryService, billingService } from '@src/lib/billing'
 import { createAuthCommands } from '@src/lib/commandBarConfigs/authCommandConfig'
 import { createProjectCommands } from '@src/lib/commandBarConfigs/projectsCommandConfig'
 import type { Debugger } from '@src/lib/debugger'
-import { isPlaywright } from '@src/lib/isPlaywright'
 import { EngineDebugger } from '@src/lib/debugger'
 import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
+import { isPlaywright } from '@src/lib/isPlaywright'
 import { setKclRuntimeFlagsOnWasm } from '@src/lib/kclRuntimeFlags'
 import { layoutService } from '@src/lib/layout/registry/contract'
 import type { LayoutService } from '@src/lib/layout/types'
@@ -49,6 +55,10 @@ import {
   UserFeaturesTransition,
   userFeaturesContextHas,
 } from '@src/machines/userFeaturesMachine'
+import {
+  appNavigationIntentContributionsValueSpec,
+  appNavigationService,
+} from '@src/registry/contracts/appNavigation'
 import {
   type AuthRegistryService,
   authService,
@@ -240,6 +250,11 @@ export class App implements AppSubsystems {
   private lastSettings: SaveSettingsPayload
   private activeWasmInstance: ModuleType | undefined
   private unsubscribeFromActiveWasmInstance: (() => void) | undefined
+  /**
+   * Transitional bridge lifetime while projectSession still delegates project
+   * construction and teardown to the legacy App runtime.
+   */
+  private unbindProjectSessionRuntime: (() => void) | undefined
 
   constructor(subsystems: AppSubsystems) {
     this.wasmPromise = subsystems.wasmPromise
@@ -283,6 +298,14 @@ export class App implements AppSubsystems {
     this.syncUserFeaturesFromAuth(this.auth.actor.getSnapshot())
 
     this.singletons = this.buildSingletons()
+    // Transitional strangler seam: projectSession owns the public lifecycle,
+    // while App still supplies the ZDSProject runtime until that implementation
+    // and KclManager move behind the projectSession capability.
+    this.unbindProjectSessionRuntime = this.projectSession.bindRuntime({
+      openProject: (project, throwIfSuperseded) =>
+        this.openProjectRuntime(project, throwIfSuperseded),
+      closeProject: this.closeProjectRuntime,
+    })
     this.lastSettings = getAllCurrentSettings(
       getOnlySettingsFromContext(this.settings.actor.getSnapshot().context)
     )
@@ -372,32 +395,25 @@ export class App implements AppSubsystems {
     )
   }
 
-  private fileRouteLoadGeneration = 0
-
-  beginFileRouteLoad(signal: AbortSignal) {
-    const generation = ++this.fileRouteLoadGeneration
-    return () => {
-      if (signal.aborted || generation !== this.fileRouteLoadGeneration) {
-        // React Router models cancelled loaders as rejected AbortErrors.
-        // eslint-disable-next-line suggest-no-throw/suggest-no-throw
-        throw new DOMException('Superseded file route load', 'AbortError')
-      }
-    }
-  }
-
-  async openProject(
+  /**
+   * Transitional implementation of projectSession project construction.
+   *
+   * Move this behavior behind projectSession when ZDSProject no longer needs
+   * the legacy App runtime, then remove the ProjectSessionRuntime binding.
+   */
+  private async openProjectRuntime(
     projectIORef: Project,
-    assertCurrent: () => void = () => {}
+    throwIfSuperseded: () => void = () => {}
   ) {
     const ownedProject = await projectWithLibraryOwnership(
       projectIORef,
       this.settings.get().app.libraries.current
     )
-    assertCurrent()
+    throwIfSuperseded()
 
     const projectIORefSignal = signal(ownedProject)
     const nextProject = await ZDSProject.open(projectIORefSignal, this)
-    assertCurrent()
+    throwIfSuperseded()
 
     this.disposeProjectHistoryExtensions?.()
     this.project = nextProject
@@ -491,9 +507,13 @@ export class App implements AppSubsystems {
   private hasStoppedSubsystems = false
 
   private stopSubsystems() {
-    if (this.hasStoppedSubsystems) return
+    if (this.hasStoppedSubsystems) {
+      return
+    }
     this.hasStoppedSubsystems = true
     this.closeProject()
+    this.unbindProjectSessionRuntime?.()
+    this.unbindProjectSessionRuntime = undefined
     this.unsubscribeFromActiveWasmInstance?.()
     this.unsubscribeFromActiveWasmInstance = undefined
     this.systemIOActor.stop()
@@ -516,6 +536,14 @@ export class App implements AppSubsystems {
   }
 
   closeProject() {
+    this.projectSession.closeProject()
+  }
+
+  /**
+   * Transitional implementation of projectSession teardown while project
+   * resources and history extensions are still owned by App.
+   */
+  private closeProjectRuntime = () => {
     this.disposeProjectHistoryExtensions?.()
     this.disposeProjectHistoryExtensions = undefined
     this.unsubscribeFromSettings?.unsubscribe()
@@ -801,9 +829,23 @@ export class App implements AppSubsystems {
     })
     kclManager.fileOperations = this.fileOperations
 
+    const openProjectNavigation = createOpenProjectIntentContribution(
+      createAppNavigationDependencies(this)
+    )
+    const preloadedNavigationIntents = [
+      ...this.registry.get(appNavigationIntentContributionsValueSpec),
+      openProjectNavigation.contribution,
+    ]
+
     this.registry.reconfigure(appRegistryServicesSlot, [
       defineRegistryItem({
         id: 'app.runtime-services',
+        provides: [
+          provide(
+            appNavigationIntentContributionsValueSpec,
+            openProjectNavigation.contribution
+          ),
+        ],
         providesServices: [
           provideService(
             executingEditorService,
@@ -812,6 +854,15 @@ export class App implements AppSubsystems {
           provideService(systemIOService, {
             actor: this.systemIOActor,
           }),
+          // Transitional strangler adapter: appNavigation consumes narrow
+          // operations, but App still assembles them until their implementations
+          // are owned and composed by registry capabilities.
+          provideService(
+            appNavigationService,
+            createAppNavigationService(preloadedNavigationIntents, {
+              supersedeProjectOpen: openProjectNavigation.supersedeProjectOpen,
+            })
+          ),
         ],
       }),
     ])
