@@ -1,7 +1,6 @@
 import { Popover } from '@headlessui/react'
 import type { AttachmentRef, MlCopilotAccessDeniedCode } from '@kittycad/lib'
 import { ActionButton } from '@src/components/ActionButton'
-import { ConnectionRecovery } from '@src/components/ConnectionRecovery'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { ExchangeCard } from '@src/components/ExchangeCard'
 import { isExternalFileDrag } from '@src/components/Explorer/utils'
@@ -31,8 +30,6 @@ import {
 import type { ChangeEvent, ReactNode } from 'react'
 import { useCallback, useEffect, useRef, useState } from 'react'
 
-const noop = () => {}
-
 export const SHOW_ZOOKEEPER_REASONING_MODE_DROPDOWN = true
 export type { QueuedMessage }
 
@@ -59,7 +56,6 @@ export interface ZookeeperConversationProps {
   connectionError?: string
   accessDeniedCode?: MlCopilotAccessDeniedCode
   connectionFailed?: boolean
-  showManualConnect?: boolean
   canClearChat?: boolean
   isClearingChat?: boolean
   loadingMessage?: string
@@ -673,9 +669,11 @@ export const ZookeeperConversation = (props: ZookeeperConversationProps) => {
           {...exchange}
           userAvatar={props.userAvatarSrc}
           isLastResponse={isLastResponse}
-          onClickClearChat={isLastResponse ? props.onClickClearChat : noop}
+          onClickClearChat={props.disabled ? undefined : props.onClickClearChat}
           attachmentFetches={props.attachmentFetches}
-          onFetchAttachment={props.onFetchAttachment}
+          onFetchAttachment={
+            props.disabled ? undefined : props.onFetchAttachment
+          }
         />
       )
     }
@@ -687,23 +685,8 @@ export const ZookeeperConversation = (props: ZookeeperConversationProps) => {
       <div className="absolute inset-0">
         <div className="flex flex-col h-full">
           <div className="h-full flex flex-col justify-end overflow-auto relative">
-            <div
-              className={
-                props.showManualConnect
-                  ? 'h-full min-h-0 overflow-auto'
-                  : 'overflow-auto'
-              }
-              ref={refScroll}
-            >
-              {props.showManualConnect ? (
-                <ConnectionRecovery
-                  className="h-full min-h-[12rem] w-full"
-                  title={props.connectionError ?? 'No internet connection.'}
-                  description="Check your network connection, then click below to try again."
-                  onReconnect={props.onReconnect}
-                  reconnectDisabled={props.isClearingChat}
-                />
-              ) : props.needsReconnect && props.connectionFailed ? (
+            <div className="overflow-auto" ref={refScroll}>
+              {props.needsReconnect && props.connectionFailed ? (
                 <ZookeeperConnectionErrorBanner
                   connectionError={props.connectionError}
                   accessDeniedCode={props.accessDeniedCode}
@@ -804,6 +787,7 @@ export const ZookeeperConversation = (props: ZookeeperConversationProps) => {
                   ) : null}
                   <button
                     type="button"
+                    disabled={props.disabled}
                     onClick={() => props.onSteer(msg.id)}
                     className="shrink-0 flex gap-0.5 items-center pl-0.5 pr-2 py-0.5 m-0 rounded border border-chalkboard-30 dark:border-chalkboard-70 bg-transparent hover:bg-chalkboard-20 dark:hover:bg-chalkboard-80 text-xs"
                     aria-label={`Send queued message ${index + 1} now`}
@@ -816,6 +800,7 @@ export const ZookeeperConversation = (props: ZookeeperConversationProps) => {
                   </button>
                   <button
                     type="button"
+                    disabled={props.disabled}
                     onClick={() => props.onRemoveFromQueue(msg.id)}
                     className="shrink-0 text-3 hover:text-chalkboard-100 dark:hover:text-chalkboard-20 p-1 m-0 border-none bg-transparent"
                     aria-label={`Remove queued message ${index + 1}`}
@@ -831,7 +816,7 @@ export const ZookeeperConversation = (props: ZookeeperConversationProps) => {
               Progressively loading attachments into context...
             </div>
           ) : null}
-          <div className="border-t b-4">
+          <div className="border-t b-4" inert={props.disabled}>
             <ZookeeperConversationInput
               disabled={props.disabled || props.isLoading}
               hasPromptCompleted={props.hasPromptCompleted}

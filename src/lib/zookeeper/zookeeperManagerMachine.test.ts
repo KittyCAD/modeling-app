@@ -37,6 +37,7 @@ import {
 import * as zookeeperPromptRequest from '@src/lib/zookeeper/zookeeperPromptRequest'
 import { S } from '@src/machines/utils'
 import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
+import toast from 'react-hot-toast'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { createActor, fromPromise, waitFor } from 'xstate'
 
@@ -1747,7 +1748,7 @@ describe('zookeeperManagerMachine', () => {
       actor.stop()
     })
 
-    it('keeps recoverable context after an abrupt close', async () => {
+    it('keeps recoverable context only for same-conversation reconnects', async () => {
       const { fetchMock } = stubClientErrorFetch()
       const ws: TestWebSocket = new TestSocket() as TestWebSocket
       let setupContext: ZookeeperManagerContext | undefined
@@ -1810,6 +1811,9 @@ describe('zookeeperManagerMachine', () => {
         conversationId: 'conversation-id',
       })
 
+      const reconnecting = actor.getSnapshot()
+      expect(reconnecting.context.conversation).toBe(completedConversation)
+
       await waitFor(actor, (state) =>
         state.matches(ZookeeperManagerStates.WaitForContinueCheck)
       )
@@ -1818,8 +1822,50 @@ describe('zookeeperManagerMachine', () => {
         completedConversationStartedAt
       )
 
+      actor.send({
+        type: ZookeeperManagerTransitions.AbruptClose,
+      })
+
+      await waitFor(actor, (state) => state.matches(S.Await))
+
+      actor.send({
+        type: ZookeeperManagerTransitions.CacheSetupAndConnect,
+        refParentSend: vi.fn(),
+        conversationId: undefined,
+      })
+
+      const startingFresh = actor.getSnapshot()
+      expect(startingFresh.context.conversation).toBeUndefined()
+      expect(
+        startingFresh.context.cachedSetup?.activeExchangeStartedAt
+      ).toBeUndefined()
+
       actor.stop()
     })
+
+    it.each([
+      ['Zookeeper connection timed out.', 0],
+      [
+        'Your project files are too large to send to Zookeeper. Try removing large STL/STEP files or splitting your project.',
+        1,
+      ],
+    ])(
+      'reports only actionable abrupt closes: %s',
+      (closeReason, expectedToastCalls) => {
+        const toastErrorSpy = vi
+          .spyOn(toast, 'error')
+          .mockReturnValue('toast-id')
+        const actor = createZookeeperManagerActor('token')
+
+        actor.send({
+          type: ZookeeperManagerTransitions.AbruptClose,
+          closeReason,
+        })
+
+        expect(toastErrorSpy).toHaveBeenCalledTimes(expectedToastCalls)
+        stopZookeeperManagerActor(actor)
+      }
+    )
   })
 
   describe('attachment fetching', () => {
