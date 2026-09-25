@@ -7,7 +7,7 @@ layout: manual
 `import` can also be used to import files from other CAD systems. The format of the statement is the
 same as for KCL files. You can only import the whole file, not items from it. E.g.,
 
-```norun
+```noRender
 import "tests/inputs/cube.obj"
 
 // Use `cube` just like a KCL object.
@@ -96,4 +96,3 @@ Place computationally expensive or IO‑heavy work into its own module so it can
 #### Future improvements
 
 Upcoming releases will auto‑analyse dependencies and only block when truly necessary. Until then, explicit deferral will give you the best performance.
-
