@@ -1852,11 +1852,13 @@ impl ExecutorContext {
         Ok(outcome)
     }
 
-    /// Execute a complete program in a fresh scene without reading or retaining
-    /// incremental-execution or sketch-mode caches. The resulting scene remains
+    /// Execute a complete program in a fresh scene, invalidating previous caches
+    /// without retaining incremental-execution or sketch-mode state. The resulting scene remains
     /// available for inspection and export.
     pub async fn run_without_caching(&self, program: crate::Program) -> Result<ExecOutcome, KclErrorWithOutputs> {
         self.with_engine_execution(Box::pin(async {
+            cache::bust_cache().await;
+            cache::clear_mem_cache().await;
             let mut exec_state = ExecState::new(self);
             self.send_clear_scene(&mut exec_state, Default::default())
                 .await
@@ -5114,8 +5116,6 @@ solid7 = extrude(r7, length = width)
         let expected = ctx.run_with_caching(program.clone()).await.unwrap();
         assert!(cache::read_old_ast().await.is_some());
         assert!(cache::read_old_memory().await.is_some());
-        cache::bust_cache().await;
-        clear_mem_cache().await;
 
         let actual = ctx.run_without_caching(program).await.unwrap();
         assert_eq!(actual.variables, expected.variables);
