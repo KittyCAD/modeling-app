@@ -2,6 +2,7 @@ import { join } from 'path'
 import * as fsp from 'fs/promises'
 
 import { expect, test } from '@e2e/playwright/zoo-test'
+import { doAndWaitForImageDiff } from '@e2e/playwright/test-utils'
 import { LEGACY_SKETCH_MODE_FEATURE_FLAG } from '@src/lib/constants'
 import { DefaultLayoutPaneID } from '@src/lib/layout'
 
@@ -87,7 +88,252 @@ extrude001 = extrude(profile001, length = 5)
 hidden001 = hide([cylinder, extrude001])
 `
 
+const FEATURE_TREE_HIGHLIGHT_CODE = `@settings(defaultLengthUnit = mm, kclVersion = 2.0)
+
+leftSketch = sketch(on = XY) {
+  bottom = line(start = [var 0mm, var 0mm], end = [var 20mm, var 0mm])
+  right = line(start = [var 20mm, var 0mm], end = [var 20mm, var 16mm])
+  top = line(start = [var 20mm, var 16mm], end = [var 0mm, var 16mm])
+  left = line(start = [var 0mm, var 16mm], end = [var 0mm, var 0mm])
+}
+leftRegion = region(point = [10mm, 8mm], sketch = leftSketch)
+leftBody = extrude(leftRegion, length = 10mm)
+
+rightSketch = sketch(on = XY) {
+  bottom = line(start = [var 30mm, var 0mm], end = [var 48mm, var 0mm])
+  right = line(start = [var 48mm, var 0mm], end = [var 48mm, var 12mm])
+  top = line(start = [var 48mm, var 12mm], end = [var 30mm, var 12mm])
+  left = line(start = [var 30mm, var 12mm], end = [var 30mm, var 0mm])
+}
+rightRegion = region(point = [39mm, 6mm], sketch = rightSketch)
+rightBody = extrude(rightRegion, length = 7mm)
+
+hide(leftSketch)
+hide(rightSketch)
+`
+
+const CSG_HIGHLIGHT_CODE = `@settings(defaultLengthUnit = mm, kclVersion = 2.0)
+
+sketch001 = sketch(on = XZ) {
+  line1 = line(start = [0.8, 0.57], end = [4.38, 0.43])
+  line2 = line(start = [4.38, 0.43], end = [2.16, 4.94])
+  line3 = line(start = [2.16, 4.94], end = [0.8, 0.57])
+}
+region001 = region(segments = [sketch001.line3, sketch001.line1])
+extrude001 = extrude(region001, length = 5, tagStart = $capStart001)
+
+sketch002 = sketch(on = -YZ) {
+  line1 = line(start = [0.96, 6.38], end = [2.59, 2.41])
+  line2 = line(start = [2.59, 2.41], end = [3.4, 6.25])
+  line3 = line(start = [3.4, 6.25], end = [0.96, 6.38])
+}
+region002 = region(segments = [sketch002.line3, sketch002.line1])
+extrude002 = extrude(region002, length = -20)
+solid001 = subtract(extrude001, tools = extrude002)
+
+hide(sketch001)
+hide(sketch002)
+fillet001 = fillet(
+  solid001,
+  edges = [{
+    sideFaces = [region001.tags.line3, region001.tags.line2],
+    endFaces = [region002.tags.line1, capStart001]
+  }],
+  radius = 0.5,
+)
+`
+
 test.describe('Feature Tree pane', { tag: '@desktop' }, () => {
+  test.describe('selection highlighting regressions', () => {
+    test.beforeEach(async ({ context, homePage, page, scene }) => {
+      await context.addInitScript((initialCode) => {
+        localStorage.setItem('persistCode', initialCode)
+      }, FEATURE_TREE_HIGHLIGHT_CODE)
+      await page.setBodyDimensions({ width: 1000, height: 500 })
+      await homePage.goToModelingScene()
+      await scene.settled()
+    })
+
+    test('Code cursor in extrude highlights its body', async ({
+      scene,
+      editor,
+    }) => {
+      expect(
+        await doAndWaitForImageDiff(
+          scene.streamWrapper,
+          () =>
+            editor.codeContent
+              .getByText('leftBody = extrude(leftRegion, length = 10mm)')
+              .click(),
+          50
+        )
+      ).toBe(true)
+    })
+
+    test('Code cursor in sketch segment highlights its wall', async ({
+      scene,
+      editor,
+    }) => {
+      expect(
+        await doAndWaitForImageDiff(
+          scene.streamWrapper,
+          () =>
+            editor.codeContent
+              .getByText(
+                'right = line(start = [var 20mm, var 0mm], end = [var 20mm, var 16mm])'
+              )
+              .click(),
+          50
+        )
+      ).toBe(true)
+    })
+
+    test('Code cursor in sketch highlights its profile', async ({
+      scene,
+      editor,
+    }) => {
+      expect(
+        await doAndWaitForImageDiff(
+          scene.streamWrapper,
+          () =>
+            editor.codeContent
+              .getByText('leftSketch = sketch(on = XY) {')
+              .click(),
+          50
+        )
+      ).toBe(true)
+    })
+
+    test('Code cursor in region highlights its body', async ({
+      scene,
+      editor,
+    }) => {
+      expect(
+        await doAndWaitForImageDiff(
+          scene.streamWrapper,
+          () =>
+            editor.codeContent
+              .getByText(
+                'leftRegion = region(point = [10mm, 8mm], sketch = leftSketch)'
+              )
+              .click(),
+          50
+        )
+      ).toBe(true)
+    })
+
+    test('Code cursor in subtract highlights its composite solid', async ({
+      scene,
+      editor,
+    }) => {
+      await scene.waitForExecutionDoneAfter(() =>
+        editor.replaceCode(FEATURE_TREE_HIGHLIGHT_CODE, CSG_HIGHLIGHT_CODE)
+      )
+      expect(
+        await doAndWaitForImageDiff(
+          scene.streamWrapper,
+          () =>
+            editor.codeContent
+              .getByText('solid001 = subtract(extrude001, tools = extrude002)')
+              .click(),
+          50
+        )
+      ).toBe(true)
+    })
+
+    test('Feature Tree extrude row highlights its body', async ({
+      scene,
+      toolbar,
+    }) => {
+      await toolbar.openFeatureTreePane()
+      const extrude = await toolbar.getFeatureTreeOperation('leftBody', 0)
+      expect(
+        await doAndWaitForImageDiff(
+          scene.streamWrapper,
+          () => extrude.click(),
+          50
+        )
+      ).toBe(true)
+    })
+
+    test('Feature Tree sketch segment highlights generated geometry', async ({
+      page,
+      scene,
+      toolbar,
+    }) => {
+      await toolbar.openFeatureTreePane()
+      await toolbar.featureTreePane
+        .getByTestId('operation-group-caret')
+        .first()
+        .click()
+      const segment = toolbar.featureTreePane.getByRole('button', {
+        name: 'right',
+        exact: true,
+      })
+      expect(
+        await doAndWaitForImageDiff(
+          scene.streamWrapper,
+          () => segment.click(),
+          50
+        )
+      ).toBe(true)
+      await expect(page.locator('.cm-activeLine')).toContainText(
+        'right = line(start = [var 20mm, var 0mm], end = [var 20mm, var 16mm])'
+      )
+    })
+
+    test('Feature Tree sketch highlights its profile', async ({
+      scene,
+      toolbar,
+    }) => {
+      const sketch = await toolbar.getFeatureTreeOperation('leftSketch', 0)
+      expect(
+        await doAndWaitForImageDiff(
+          scene.streamWrapper,
+          () => sketch.click(),
+          50
+        )
+      ).toBe(true)
+    })
+
+    test('Bodies row highlights its body', async ({ page, scene, toolbar }) => {
+      await toolbar.openFeatureTreePane()
+      const body = page
+        .locator('#bodies-list-pane')
+        .getByRole('button', { name: 'Body 1' })
+      expect(
+        await doAndWaitForImageDiff(scene.streamWrapper, () => body.click(), 50)
+      ).toBe(true)
+    })
+
+    test('Viewport base edge selects its source sketch segment', async ({
+      page,
+      scene,
+    }) => {
+      await scene.moveCameraTo(
+        { x: 58.82, y: 32.46, z: 22.84 },
+        { x: 8.16, y: -4.1, z: -8.43 }
+      )
+      const [clickBaseEdge, hoverBaseEdge] = scene.makeMouseHelpers(
+        0.6032,
+        0.5206,
+        { format: 'ratio' }
+      )
+
+      await hoverBaseEdge()
+      await expect(page.getByTestId('hover-highlight')).toHaveCount(1)
+      await expect(page.getByTestId('hover-highlight')).toContainText(
+        'line(start = [var 20mm, var 0mm], end = [var 20mm, var 16mm])'
+      )
+
+      await clickBaseEdge()
+
+      await expect(page.locator('.cm-activeLine')).toContainText(
+        'right = line(start = [var 20mm, var 0mm], end = [var 20mm, var 16mm])'
+      )
+    })
+  })
+
   test('User can go to definition and go to function definition', async ({
     homePage,
     scene,

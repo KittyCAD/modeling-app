@@ -6,7 +6,11 @@ import {
   deleteSelectionPromise,
   deletionErrorMessage,
 } from '@src/lang/modifyAst/deleteSelection'
-import { artifactToEntityRef, findOperationArtifact } from '@src/lang/queryAst'
+import {
+  artifactToEngineEntityRef,
+  artifactToEngineEntityRefs,
+  findOperationArtifact,
+} from '@src/lang/queryAst'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import {
   codeRefFromRange,
@@ -180,13 +184,7 @@ export function sendSelectionEvent(input: {
     input.kclManager.ast
   )
   let entityRef = artifact
-    ? artifactToEntityRef(
-        artifact.type,
-        artifact.id,
-        artifact.type === 'segment'
-          ? (artifact as { pathId: string }).pathId
-          : undefined
-      )
+    ? artifactToEngineEntityRef(artifact, input.kclManager.artifactGraph)
     : undefined
   if (artifact && !entityRef) {
     if (artifact.type === 'path') {
@@ -195,6 +193,27 @@ export function sendSelectionEvent(input: {
       entityRef = { type: 'solid2d_edge', edge_id: String(artifact.id) }
     }
   }
+
+  const entityRefs = artifact
+    ? artifactToEngineEntityRefs(artifact, input.kclManager.artifactGraph)
+    : []
+  if (entityRefs.length > 1) {
+    input.modelingSend({
+      type: 'Set selection',
+      data: {
+        selectionType: 'completeSelection',
+        selection: {
+          graphSelections: entityRefs.map((reference, index) => ({
+            entityRef: reference,
+            ...(index === 0 ? { codeRef } : {}),
+          })),
+          otherSelections: [],
+        },
+      },
+    })
+    return
+  }
+  entityRef = entityRefs[0] ?? entityRef
 
   const selection = { entityRef, codeRef }
 
