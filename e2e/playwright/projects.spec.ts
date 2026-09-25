@@ -23,6 +23,7 @@ import {
 import { throwTronAppMissing } from '@e2e/playwright/lib/electron-helpers'
 import { expect, test } from '@e2e/playwright/zoo-test'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
+import type { ProjectLibrarySetting } from '@src/lib/projectLibraries'
 
 // Some of these sketches are KCL 1.0, so editing them needs the legacy sketch flag.
 test.use({ userFeatures: [LEGACY_SKETCH_MODE_FEATURE_FLAG] })
@@ -773,72 +774,175 @@ test.describe(`Project management commands`, { tag: ['@desktop'] }, () => {
       await expect(noProjectsMessage).toBeVisible()
     })
   })
-  test(`Rename from home page`, async ({
-    context,
-    page,
-    homePage,
-    scene,
-    cmdBar,
-    fs,
-    folderSetupFn,
-  }, testInfo) => {
-    const projectName = `my_project_to_rename`
-    await folderSetupFn(async (dir) => {
-      await fs.mkdir(`${dir}/${projectName}`, { recursive: true })
-      const testFileData = await nodeFs.readFile(
-        executorInputPath('router-template-slate.kcl')
-      )
-      await fs.writeFile(
-        `${dir}/${projectName}/main.kcl`,
-        new Uint8Array(testFileData)
-      )
-    })
+  test(
+    `Rename from home page`,
+    { tag: '@web' },
+    async ({ page, homePage, cmdBar, fs, folderSetupFn }) => {
+      const projectName = `my_project_to_rename`
+      const existingProjectName = 'existing-project'
+      const existingProjectTitle = 'Existing Project'
+      await folderSetupFn(async (dir) => {
+        await fs.mkdir(`${dir}/${projectName}`, { recursive: true })
+        const testFileData = await nodeFs.readFile(
+          executorInputPath('router-template-slate.kcl')
+        )
+        await fs.writeFile(
+          `${dir}/${projectName}/main.kcl`,
+          new Uint8Array(testFileData)
+        )
+        await fs.mkdir(`${dir}/${existingProjectName}`, { recursive: true })
+        await fs.writeFile(
+          `${dir}/${existingProjectName}/main.kcl`,
+          new Uint8Array(testFileData)
+        )
+        await fs.writeFile(
+          `${dir}/${existingProjectName}/project.toml`,
+          new TextEncoder().encode(`title = "${existingProjectTitle}"\n`)
+        )
+      })
 
-    // Constants and locators
-    const projectHomeLink = page.getByTestId('project-link')
-    const commandButton = page.getByRole('button', { name: 'Commands' })
-    const commandOption = page.getByRole('option', {
-      name: 'rename project',
-    })
-    const projectNameOption = page.getByRole('option', { name: projectName })
-    const projectRenamedName = `my_project_after_rename_from_home`
-    const commandContinueButton = page.getByRole('button', {
-      name: 'Continue',
-    })
-    const toastMessage = page.getByText(`Successfully renamed`)
+      // Constants and locators
+      const projectHomeLink = page.getByRole('link', {
+        name: projectName,
+      })
+      const commandButton = page.getByRole('button', { name: 'Commands' })
+      const commandOption = page.getByRole('option', {
+        name: 'rename project',
+      })
+      const projectNameOption = page.getByRole('option', { name: projectName })
+      const projectRenamedName = `my_project_after_rename_from_home`
+      const commandContinueButton = page.getByRole('button', {
+        name: 'Continue',
+      })
+      const toastMessage = page.getByText(`Successfully renamed`)
 
-    await test.step(`Setup`, async () => {
-      await page.setBodyDimensions({ width: 1200, height: 500 })
-      page.on('console', console.log)
+      await test.step(`Setup`, async () => {
+        await page.setBodyDimensions({ width: 1200, height: 500 })
+        await homePage.projectsLoaded()
+        await expect(projectHomeLink).toBeVisible()
+      })
+
+      await test.step(`Run rename command via command palette`, async () => {
+        await commandButton.click()
+        await commandOption.click()
+        await projectNameOption.click()
+
+        // Fill in the new project name
+        const newNameInput = page.getByTestId('cmd-bar-arg-value')
+        await expect(newNameInput).toBeVisible()
+        await newNameInput.fill(existingProjectTitle)
+        await commandContinueButton.click()
+        await expect(
+          page.getByText(
+            `Project with title "${existingProjectTitle}" already exists`
+          )
+        ).toBeVisible()
+        await expect(newNameInput).toBeVisible()
+        await expect(newNameInput).toHaveValue(existingProjectTitle)
+        await expect(
+          page.getByText('Failed to execute command: Rename project')
+        ).not.toBeVisible()
+
+        await newNameInput.fill(projectRenamedName)
+
+        await expect(commandContinueButton).toBeVisible()
+        await commandContinueButton.click()
+
+        await cmdBar.submit()
+
+        await expect(toastMessage).toBeVisible()
+      })
+
+      await test.step(`Check the project was renamed`, async () => {
+        await expect(
+          page.getByRole('link', { name: projectRenamedName })
+        ).toBeVisible()
+        await expect(projectHomeLink).not.toBeVisible()
+        await page.reload()
+        await homePage.projectsLoaded()
+        await expect(
+          page.getByRole('link', { name: projectRenamedName })
+        ).toBeVisible()
+        await expect(
+          page.getByRole('link', { name: existingProjectTitle })
+        ).toBeVisible()
+      })
+    }
+  )
+  test(
+    'Rename a project from another library',
+    { tag: '@web' },
+    async ({ page, homePage, cmdBar, fs, folderSetupFn }) => {
+      const libraries: ProjectLibrarySetting[] = []
+      await folderSetupFn(async (dir) => {
+        libraries.push(
+          { title: 'Local Projects', path: dir, type: 'directory' },
+          {
+            title: 'Client Projects',
+            path: await fs.resolve(dir, '..', 'client-projects'),
+            type: 'directory',
+          }
+        )
+        for (const library of libraries) {
+          const projectPath = await fs.join(library.path, 'bracket')
+          await fs.mkdir(projectPath, { recursive: true })
+          await fs.writeFile(
+            await fs.join(projectPath, 'main.kcl'),
+            new TextEncoder().encode('@settings(kclVersion = 2.0)\npart = 1\n')
+          )
+          await fs.writeFile(
+            await fs.join(projectPath, 'project.toml'),
+            new TextEncoder().encode('title = "Bracket"\n')
+          )
+        }
+      })
       await homePage.projectsLoaded()
-      await expect(projectHomeLink).toBeVisible()
-    })
+      await page.evaluate((libraries) => {
+        window.app.settings.actor.send({
+          type: 'set.app.libraries',
+          data: { level: 'user', value: libraries },
+        })
+      }, libraries)
+      await expect(
+        homePage.projectCardTitle.filter({ hasText: 'Bracket' })
+      ).toHaveCount(2)
 
-    await test.step(`Run rename command via command palette`, async () => {
-      await commandButton.click()
-      await commandOption.click()
-      await projectNameOption.click()
-
-      // Fill in the new project name
-      const newNameInput = page.getByTestId('cmd-bar-arg-value')
-      await expect(newNameInput).toBeVisible()
-      await newNameInput.fill(projectRenamedName)
-
-      await expect(commandContinueButton).toBeVisible()
-      await commandContinueButton.click()
-
+      await page.getByRole('button', { name: 'Commands' }).click()
+      await page.getByRole('option', { name: 'rename project' }).click()
+      await expect(
+        page.getByRole('option', { name: 'Bracket Local Projects' })
+      ).toBeVisible()
+      const clientOption = page.getByRole('option', {
+        name: 'Bracket Client Projects',
+      })
+      await expect(clientOption).toBeVisible()
+      await cmdBar.currentArgumentInput.fill('Client Projects')
+      await expect(page.getByRole('option')).toHaveCount(1)
+      await clientOption.click()
+      await expect(cmdBar.currentArgumentInput).toHaveValue('Bracket')
+      await cmdBar.currentArgumentInput.fill('Updated Client Bracket')
+      await page.getByRole('button', { name: 'Continue' }).click()
       await cmdBar.submit()
 
-      await expect(toastMessage).toBeVisible()
-    })
-
-    await test.step(`Check the project was renamed`, async () => {
+      await expect(page.getByText('Successfully renamed')).toBeVisible()
       await expect(
-        page.getByRole('link', { name: projectRenamedName })
+        page.getByRole('heading', {
+          name: 'Updated Client Bracket',
+          exact: true,
+        })
       ).toBeVisible()
-      await expect(projectHomeLink).not.toHaveText(projectName)
-    })
-  })
+      await expect(
+        page.getByRole('heading', { name: 'Bracket', exact: true })
+      ).toBeVisible()
+      const originalProjectToml = await fs.readFile(
+        await fs.join(libraries[0].path, 'bracket', 'project.toml')
+      )
+      expect(new TextDecoder().decode(originalProjectToml)).toContain(
+        'title = "Bracket"'
+      )
+    }
+  )
+
   test(`Delete from home page`, async ({
     context,
     page,
