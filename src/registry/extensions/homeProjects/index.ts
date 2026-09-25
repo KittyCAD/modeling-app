@@ -8,7 +8,10 @@ import {
 import { computed } from '@preact/signals-core'
 import { getCloudProjectLibraryMaterializationDirectoryPath } from '@src/lib/cloudSync/paths'
 import { getProjectInfo } from '@src/lib/desktop'
-import { getHomeProjectDisplayName } from '@src/lib/homeProjects'
+import {
+  getHomeProjectDisplayName,
+  homeProjectDisplayNameExists,
+} from '@src/lib/homeProjects'
 import { separateProjectsSharingProjectId } from '@src/lib/projectIdentity'
 import {
   CLOUD_PROJECT_LIBRARY_TYPE,
@@ -47,24 +50,6 @@ import { settingsService } from '@src/registry/contracts/settings'
 import { wasmPromiseValueSpec } from '@src/registry/contracts/wasm'
 import toast from 'react-hot-toast'
 import { NIL as uuidNIL } from 'uuid'
-
-function homeProjectDisplayNameExists({
-  entries,
-  requestedName,
-  projectId,
-}: {
-  entries: readonly HomeProjectEntry[] | undefined
-  requestedName: string
-  projectId: string
-}) {
-  return Boolean(
-    entries?.some(
-      (project) =>
-        project.id !== projectId &&
-        getHomeProjectDisplayName(project) === requestedName
-    )
-  )
-}
 
 function homeProjectStatusFromRealization(
   realization: ProjectLibraryRealization

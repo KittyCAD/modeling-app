@@ -4,6 +4,7 @@ import { MAX_PROJECT_NAME_LENGTH } from '@src/lib/constants'
 import {
   getHomeProjectDeleteWarningMessage,
   getHomeProjectDisplayName,
+  homeProjectDisplayNameExists,
 } from '@src/lib/homeProjects'
 import { isDesktop } from '@src/lib/isDesktop'
 import { PATHS } from '@src/lib/paths'
@@ -575,6 +576,26 @@ export function createProjectCommands({
         displayName: 'New title',
         inputType: 'string',
         required: true,
+        validation: async ({ context, data }) => {
+          const projectName = context.argumentsToSubmit.oldName
+          const requestedName = data.newName
+          const target = selectedHomeProjectTarget(projectName, 'rename')
+          const titleExists = target
+            ? homeProjectDisplayNameExists({
+                entries: homeProjectEntriesSnapshot(),
+                requestedName,
+                projectId: target.project.id,
+              })
+            : folderSnapshot()?.some(
+                (project) =>
+                  project.name !== projectName &&
+                  getProjectDisplayName(project) === requestedName
+              )
+
+          return titleExists
+            ? `Project with title "${requestedName}" already exists`
+            : true
+        },
         defaultValue: (context: ContextFrom<typeof commandBarMachine>) => {
           const projectDirectoryName = context.argumentsToSubmit.oldName as
             | string
