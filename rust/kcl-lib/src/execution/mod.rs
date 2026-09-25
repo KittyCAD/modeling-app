@@ -16,6 +16,7 @@ pub use geometry::*;
 pub use id_generator::IdGenerator;
 pub(crate) use import::PreImportedGeometry;
 use indexmap::IndexMap;
+pub use kcl_api::DefaultPlanes;
 pub use kcl_api::Operation;
 pub use kcl_api::artifact::Artifact;
 pub use kcl_api::artifact::ArtifactGraph;
@@ -728,18 +729,6 @@ impl MockConfig {
         self.freedom_analysis = false;
         self
     }
-}
-
-#[derive(Debug, Default, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
-#[ts(export)]
-#[serde(rename_all = "camelCase")]
-pub struct DefaultPlanes {
-    pub xy: uuid::Uuid,
-    pub xz: uuid::Uuid,
-    pub yz: uuid::Uuid,
-    pub neg_xy: uuid::Uuid,
-    pub neg_xz: uuid::Uuid,
-    pub neg_yz: uuid::Uuid,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, ts_rs::TS)]
