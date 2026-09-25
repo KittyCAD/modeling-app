@@ -1,24 +1,21 @@
 import { defineRegistryItem, Registry } from '@kittycad/registry'
 import { SessionExpiredDialogHostContent } from '@src/components/SessionExpiredDialog'
-import { PATHS } from '@src/lib/paths'
 import {
   clearSessionExpiredNotice,
-  consumeSessionExpiredSignIn,
   fetchWithSessionExpiration,
-  requestSessionExpiredSignIn,
   sessionExpiredNotice,
-  sessionExpiredSignInIntent,
 } from '@src/lib/sessionExpired'
 import { Themes } from '@src/lib/theme'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
+import type { AppNavigationService } from '@src/registry/contracts/appNavigation'
 import {
   type AuthRegistryService,
   authService,
   provideAuthSessionExpiredListener,
+  startSignInIntent,
 } from '@src/registry/contracts/auth'
 import authRegistryItem from '@src/registry/extensions/auth'
-import SignIn from '@src/routes/SignIn'
-import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { act, fireEvent, render, screen } from '@testing-library/react'
 import { useMemo, useState } from 'react'
 import { createMemoryRouter, Outlet, RouterProvider } from 'react-router-dom'
 import { afterEach, describe, expect, test, vi } from 'vitest'
@@ -31,6 +28,7 @@ const sessionExpiredDialogSpecMocks = vi.hoisted<{
     error: ReturnType<typeof vi.fn>
     success: ReturnType<typeof vi.fn>
   }
+  dispatch: ReturnType<typeof vi.fn>
 }>(() => ({
   app: undefined,
   readEnvironmentFile: vi.fn().mockResolvedValue(''),
@@ -39,6 +37,7 @@ const sessionExpiredDialogSpecMocks = vi.hoisted<{
     error: vi.fn(),
     success: vi.fn(),
   },
+  dispatch: vi.fn().mockResolvedValue(undefined),
 }))
 
 vi.mock('@src/lib/boot', () => ({
@@ -113,9 +112,6 @@ function AuthShell() {
         },
         sessionExpiredNotice,
         clearSessionExpiredNotice,
-        sessionExpiredSignInIntent,
-        requestSessionExpiredSignIn,
-        consumeSessionExpiredSignIn,
         useAuthState: () => createAuthSnapshot(authStateName),
       }) as AuthRegistryService,
     [authStateName]
@@ -131,10 +127,16 @@ function AuthShell() {
     auth,
     settings: fakeSettings,
   }
+  const appNavigation = {
+    dispatch: sessionExpiredDialogSpecMocks.dispatch,
+  } as unknown as AppNavigationService
 
   return (
     <>
-      <SessionExpiredDialogHostContent auth={auth} />
+      <SessionExpiredDialogHostContent
+        auth={auth}
+        appNavigation={appNavigation}
+      />
       <Outlet />
     </>
   )
@@ -144,27 +146,16 @@ afterEach(() => {
   registry?.[Symbol.dispose]()
   registry = undefined
   clearSessionExpiredNotice()
-  sessionExpiredSignInIntent.value = false
   expireFakeAuthSession = undefined
   sentAuthEvents.length = 0
   sessionExpiredDialogSpecMocks.app = undefined
+  sessionExpiredDialogSpecMocks.dispatch.mockClear()
   window.electron = originalElectron
   vi.unstubAllGlobals()
 })
 
 describe('SessionExpiredDialog', () => {
-  test('starts desktop sign-in after a monitored 401 expires auth', async () => {
-    const startDeviceFlow = vi.fn().mockResolvedValue({
-      userCode: 'ABCD-EFGH',
-      verificationUri: 'https://zoo.dev/device',
-    })
-    const loginWithDeviceFlow = vi.fn().mockResolvedValue('fresh-token')
-    window.electron = {
-      createFallbackMenu: vi.fn().mockResolvedValue(undefined),
-      disableMenu: vi.fn().mockResolvedValue(undefined),
-      startDeviceFlow,
-      loginWithDeviceFlow,
-    } as unknown as Window['electron']
+  test('dispatches sign-in after a monitored 401 expires auth', async () => {
     vi.stubGlobal(
       'fetch',
       vi.fn<typeof fetch>(async (input) => {
@@ -205,10 +196,6 @@ describe('SessionExpiredDialog', () => {
               path: '*',
               element: <div>Modeling workspace</div>,
             },
-            {
-              path: 'signin',
-              element: <SignIn />,
-            },
           ],
         },
       ],
@@ -237,23 +224,13 @@ describe('SessionExpiredDialog', () => {
 
     fireEvent.click(screen.getByRole('button', { name: /sign in again/i }))
 
-    await waitFor(() => {
-      expect(router.state.location.pathname).toBe(PATHS.SIGN_IN)
-    })
-    // The intent travels on the auth service, so the navigation itself
-    // carries nothing: nothing is smuggled through `history.state`.
-    expect(router.state.location.state).toBeNull()
-    await waitFor(() => expect(startDeviceFlow).toHaveBeenCalledTimes(1))
-    // Reading it cleared it, so a remount cannot start a second flow.
-    expect(sessionExpiredSignInIntent.value).toBe(false)
-    await waitFor(() => expect(loginWithDeviceFlow).toHaveBeenCalledTimes(1))
+    expect(sessionExpiredDialogSpecMocks.dispatch).toHaveBeenCalledWith(
+      startSignInIntent,
+      { reason: 'session-expired' }
+    )
     expect(sentAuthEvents).toContainEqual({ type: 'Session expired' })
     expect(sentAuthEvents).toContainEqual({
       type: 'Acknowledge session expired',
-    })
-    expect(sentAuthEvents).toContainEqual({
-      type: 'Log in',
-      token: 'fresh-token',
     })
   })
 })
