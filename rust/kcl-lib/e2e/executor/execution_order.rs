@@ -91,6 +91,50 @@ async fn kcl_test_cached_lego_batches_are_between_begin_and_end_execution() {
     lego_batches_are_between_begin_and_end_execution(true).await;
 }
 
+#[tokio::test(flavor = "multi_thread")]
+async fn kcl_test_version_changes_are_sent_once_per_session() {
+    let mut ctx = kcl_lib::ExecutorContext::new_geometry_only_with_version(KclVersion::V2)
+        .await
+        .unwrap();
+    let events = Arc::new(Mutex::new(Vec::new()));
+    let engine = Arc::get_mut(&mut ctx.engine).unwrap();
+    engine.transport = Arc::new(Box::new(RecordingTransport {
+        inner: Arc::clone(&engine.transport),
+        events: Arc::clone(&events),
+    }));
+    kcl_lib::bust_cache().await;
+    ctx.bust_cache_and_reset_scene().await.unwrap();
+
+    for version in ["2.0", "\"3.0-preview\"", "2.0"] {
+        let program = kcl_lib::Program::parse_no_errs(&format!("@settings(kclVersion = {version})\nx = 1")).unwrap();
+        ctx.run_with_caching(program.clone()).await.unwrap();
+        ctx.run_with_caching(program.clone()).await.unwrap();
+        // Internal resets must preserve the version.
+        ctx.bust_cache_and_reset_scene().await.unwrap();
+        ctx.run_with_caching(program).await.unwrap();
+    }
+    ctx.close().await;
+
+    let events = events.lock().await;
+    let versions: Vec<_> = events
+        .iter()
+        .filter_map(|event| match event.request() {
+            Some(WebSocketRequest::ModelingCmdReq(ModelingCmdReq {
+                cmd: ModelingCmd::SetKclVersion(cmd),
+                ..
+            })) => Some(cmd.kcl_version),
+            _ => None,
+        })
+        .collect();
+    assert_eq!(
+        versions,
+        [
+            kittycad_modeling_cmds::KclVersion::V3Preview,
+            kittycad_modeling_cmds::KclVersion::V2
+        ]
+    );
+}
+
 async fn lego_batches_are_between_begin_and_end_execution(use_cache: bool) {
     let mut ctx = kcl_lib::ExecutorContext::new_with_version(KclVersion::V2)
         .await
@@ -140,6 +184,17 @@ async fn record_lego_execution(
 }
 
 fn assert_execution_order(events: &[TransportEvent]) -> usize {
+    // A version change must be acknowledged before BeginExecution.
+    let events = if let Some(WebSocketRequest::ModelingCmdReq(ModelingCmdReq {
+        cmd: ModelingCmd::SetKclVersion(_),
+        cmd_id,
+    })) = events.first().and_then(TransportEvent::request)
+    {
+        assert!(matches!(events.get(1), Some(TransportEvent::Response(id)) if *id == Uuid::from(*cmd_id)));
+        &events[2..]
+    } else {
+        events
+    };
     let Some(WebSocketRequest::ModelingCmdReq(ModelingCmdReq {
         cmd: ModelingCmd::BeginExecution(_),
         cmd_id: begin_id,

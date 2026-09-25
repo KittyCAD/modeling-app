@@ -79,6 +79,11 @@ pub struct EngineManager {
     socket_health: Arc<RwLock<SocketHealth>>,
     ids_of_async_commands: Arc<RwLock<IndexMap<Uuid, SourceRange>>>,
 
+    /// Native managers own one socket. Wasm caches the version in the TS connection manager instead.
+    #[cfg(not(target_arch = "wasm32"))]
+    #[builder(default)]
+    kcl_version: RwLock<Option<crate::KclVersion>>,
+
     /// The default planes for the scene.
     #[builder(default)]
     default_planes: Arc<RwLock<Option<DefaultPlanes>>>,
@@ -139,7 +144,7 @@ impl EngineManager {
 
     #[cfg(not(target_arch = "wasm32"))]
     pub async fn new_websocket_transport(ws: reqwest::Upgraded, heartbeats: Option<u64>) -> Self {
-        Self::new_websocket_transport_with_request_id(ws, heartbeats, None).await
+        Self::new_websocket_transport_with_request_id(ws, heartbeats, None, None).await
     }
 
     #[cfg(not(target_arch = "wasm32"))]
@@ -147,6 +152,7 @@ impl EngineManager {
         ws: reqwest::Upgraded,
         heartbeats: Option<u64>,
         request_id: Option<String>,
+        kcl_version: Option<crate::KclVersion>,
     ) -> Self {
         use crate::engine::engine_manager::ws_transport::WebSocketTransport;
 
@@ -178,6 +184,7 @@ impl EngineManager {
             default_planes: Default::default(),
             session_data,
             websocket_upgrade_request_id: request_id,
+            kcl_version: RwLock::new(kcl_version),
             stats: Default::default(),
             async_tasks: Default::default(),
         }
@@ -202,6 +209,8 @@ impl EngineManager {
             default_planes: Default::default(),
             session_data,
             websocket_upgrade_request_id: None,
+            #[cfg(not(target_arch = "wasm32"))]
+            kcl_version: Default::default(),
             stats: Default::default(),
             async_tasks: Default::default(),
         }
@@ -457,7 +466,17 @@ impl EngineManager {
 
     /// Configure the language version before any geometry commands are sent.
     pub async fn set_kcl_version(&self, version: crate::KclVersion, source_range: SourceRange) -> Result<(), KclError> {
-        let version = match version {
+        #[cfg(not(target_arch = "wasm32"))]
+        let mut confirmed_version = {
+            let mut confirmed_version = self.kcl_version.write().await;
+            if *confirmed_version == Some(version) {
+                return Ok(());
+            }
+            // A failed or cancelled request leaves the engine's version unknown.
+            *confirmed_version = None;
+            confirmed_version
+        };
+        let engine_version = match version {
             crate::KclVersion::V1 => kcmc::KclVersion::V1,
             crate::KclVersion::V2 => kcmc::KclVersion::V2,
             crate::KclVersion::V3Preview => kcmc::KclVersion::V3Preview,
@@ -466,10 +485,14 @@ impl EngineManager {
             &EngineBatchContext::new(),
             Uuid::new_v4(),
             source_range,
-            &ModelingCmd::from(mcmd::SetKclVersion::builder().kcl_version(version).build()),
+            &ModelingCmd::from(mcmd::SetKclVersion::builder().kcl_version(engine_version).build()),
         )
-        .await
-        .map(|_| ())
+        .await?;
+        #[cfg(not(target_arch = "wasm32"))]
+        {
+            *confirmed_version = Some(version);
+        }
+        Ok(())
     }
 
     /// Send the modeling cmd and wait for the response.
