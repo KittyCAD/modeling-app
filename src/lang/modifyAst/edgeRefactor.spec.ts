@@ -2168,9 +2168,7 @@ surface001 = extrude(
         expect(n).toContain(
           'sideFaces = [ baseRegion.tags.line2, baseRegion.tags.yoyo ]'
         )
-        expect(n).toContain(
-          'endFaces = [startCap, cutRegion.tags.line3]'
-        )
+        expect(n).toContain('endFaces = [startCap, cutRegion.tags.line3]')
         expect(n).not.toContain(removed)
       })
     }
