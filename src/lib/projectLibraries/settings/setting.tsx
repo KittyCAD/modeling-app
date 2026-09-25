@@ -1,4 +1,3 @@
-import { OPFS_CLOUD_FEATURE_FLAG } from '@src/lib/constants'
 import {
   isProjectLibrarySettings,
   projectLibrarySettingsFromSerialized,
@@ -26,9 +25,6 @@ export const projectLibrariesSettingsContribution: ExtensionSettingsContribution
             defaultValue: [],
             description: 'Project libraries shown on the home page.',
             hideOnLevel: 'project',
-            hideWithoutFeatureOnPlatform: {
-              web: OPFS_CLOUD_FEATURE_FLAG,
-            },
             validate: isProjectLibrarySettings,
             Component: (props) => (
               <Suspense fallback={null}>

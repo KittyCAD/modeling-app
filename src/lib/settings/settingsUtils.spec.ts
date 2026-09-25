@@ -9,7 +9,7 @@ import {
   serializeProjectConfiguration,
 } from '@src/lang/wasm'
 import { loadAndInitialiseWasmInstance } from '@src/lang/wasmUtilsNode'
-import { OPFS_CLOUD_FEATURE_FLAG } from '@src/lib/constants'
+import { EXPERIMENTAL_POINT_AND_CLICK_FLAG } from '@src/lib/constants'
 import { defaultLayoutConfig } from '@src/lib/layout/configs/default'
 import {
   LATEST_LAYOUT_VERSION,
@@ -238,7 +238,7 @@ describe('testing hiddenOnPlatform', () => {
 
   it('hides feature-gated settings unless the feature is enabled', () => {
     const setting = {
-      hideWithoutFeature: OPFS_CLOUD_FEATURE_FLAG,
+      hideWithoutFeature: EXPERIMENTAL_POINT_AND_CLICK_FLAG,
     } as Setting<unknown>
 
     expect(hiddenOnPlatform(setting, true)).toBe(true)
@@ -247,7 +247,7 @@ describe('testing hiddenOnPlatform', () => {
       hiddenOnPlatform(
         setting,
         false,
-        (feature) => feature === OPFS_CLOUD_FEATURE_FLAG
+        (feature) => feature === EXPERIMENTAL_POINT_AND_CLICK_FLAG
       )
     ).toBe(false)
   })
@@ -255,7 +255,7 @@ describe('testing hiddenOnPlatform', () => {
   it('can scope feature-gated settings to web', () => {
     const setting = {
       hideWithoutFeatureOnPlatform: {
-        web: OPFS_CLOUD_FEATURE_FLAG,
+        web: EXPERIMENTAL_POINT_AND_CLICK_FLAG,
       },
     } as Setting<unknown>
 
@@ -265,24 +265,17 @@ describe('testing hiddenOnPlatform', () => {
       hiddenOnPlatform(
         setting,
         false,
-        (feature) => feature === OPFS_CLOUD_FEATURE_FLAG
+        (feature) => feature === EXPERIMENTAL_POINT_AND_CLICK_FLAG
       )
     ).toBe(false)
   })
 
-  it('keeps libraries visible on desktop and feature-gated on web', () => {
+  it('keeps libraries visible on desktop and web', () => {
     const settings = createSettingsWithProjectLibraries()
     const libraries = settings.app.libraries as Setting
 
     expect(hiddenOnPlatform(libraries, true, () => false)).toBe(false)
-    expect(hiddenOnPlatform(libraries, false, () => false)).toBe(true)
-    expect(
-      hiddenOnPlatform(
-        libraries,
-        false,
-        (feature) => feature === OPFS_CLOUD_FEATURE_FLAG
-      )
-    ).toBe(false)
+    expect(hiddenOnPlatform(libraries, false, () => false)).toBe(false)
   })
 })
 
