@@ -155,6 +155,7 @@ impl GlobalState {
             module_infos: self.exec_state.module_infos.clone(),
             path_to_source_id: self.exec_state.path_to_source_id.clone(),
             id_to_source: self.exec_state.id_to_source.clone(),
+            never_type_ranges: self.exec_state.never_type_ranges.clone(),
             constraint_state: self.main.exec_state.constraint_state.clone(),
             scene_objects: self.exec_state.root_module_artifacts.scene_objects.clone(),
             std_not_yet_added: self.exec_state.std_not_yet_added.clone(),
@@ -185,6 +186,8 @@ pub(crate) struct SketchModeState {
     pub path_to_source_id: IndexMap<ModulePath, ModuleId>,
     /// Map from module ID to source file contents.
     pub id_to_source: IndexMap<ModuleId, ModuleSource>,
+    /// Deferred `never` type uses in imported local modules.
+    pub never_type_ranges: IndexMap<ModuleId, Vec<SourceRange>>,
     /// Sticky per-constraint state persisted across sketch-mode mock solves.
     pub constraint_state: IndexMap<ObjectId, IndexMap<ConstraintKey, ConstraintState>>,
     /// The scene objects.
@@ -224,6 +227,7 @@ impl SketchModeState {
             module_infos: ModuleInfoMap::default(),
             path_to_source_id: Default::default(),
             id_to_source: Default::default(),
+            never_type_ranges: Default::default(),
             constraint_state: Default::default(),
             scene_objects: Vec::new(),
             std_not_yet_added: Default::default(),
