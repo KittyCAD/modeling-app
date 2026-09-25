@@ -66,7 +66,14 @@ describe('feature tree React performance tracking', () => {
       nodePath: defaultNodePath(),
       sourceRange: [index * 10, index * 10 + 9, 0],
     }))
-    const operations = signal<OperationsByModule>({ map: { 0: root } })
+    // Seed child rows so the eager tree keeps the same branch components
+    // mounted when more operations arrive. Keep all imported branches closed.
+    const operations = signal<OperationsByModule>({
+      map: Object.fromEntries([
+        [0, root],
+        ...root.map((_, index) => [index + 1, [variable(index + 1, 0)]]),
+      ]),
+    })
     const latestOperation = signal<string | undefined>(undefined)
     const kclManager = {
       get operationsByModule() {
@@ -83,6 +90,7 @@ describe('feature tree React performance tracking', () => {
       astSignal: signal({ body: [] }),
       code: '',
       isExecuting: true,
+      liveActiveModuleId: 0,
       operationExecutionGeneration: 1,
       path: '/synthetic/main.kcl',
       editorState: { selection: { ranges: [] } },
@@ -130,9 +138,8 @@ describe('feature tree React performance tracking', () => {
         </MemoryRouter>
       )
     })
-    expect(
-      screen.getAllByRole('button', { name: /^Expand module/ })
-    ).toHaveLength(100)
+    expect(screen.getAllByTestId('operation-group-caret')).toHaveLength(100)
+    expect(screen.queryByText('parameter0')).toBeNull()
 
     await act(async () => {
       latestOperation.value = 'latest operation'
@@ -159,7 +166,7 @@ describe('feature tree React performance tracking', () => {
       Math.max(...rows.map(({ propertyCount }) => propertyCount))
     ).toBeLessThan(100)
     expect(screen.queryByText('parameter0')).toBeNull()
-    fireEvent.click(screen.getByRole('button', { name: 'Expand module1' }))
+    fireEvent.click(screen.getAllByTestId('operation-group-caret')[0])
     fireEvent.click(screen.getByRole('button', { name: '100 Parameters' }))
     expect(screen.getByText('parameter0')).toBeVisible()
   })
