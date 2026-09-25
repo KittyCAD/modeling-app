@@ -6,18 +6,20 @@ import {
 } from '@kittycad/registry'
 import { signal } from '@preact/signals-core'
 import {
+  type AppNavigationUrlContribution,
+  type AppUrlRuntimeValues,
+  type AppUrlService,
+  appNavigationUrlContributionsValueSpec,
+  appUrlService,
+} from '@src/registry/contracts/appUrl'
+import {
   createPath,
   type Location,
   type NavigateFunction,
   type NavigateOptions,
   type To,
 } from 'react-router-dom'
-
-import {
-  type RouterRegistryService,
-  type RouterRuntimeValues,
-  routerService,
-} from '@src/registry/contracts/router'
+import { parseInitialUrl } from './initialUrl'
 
 const initialLocation: Location = {
   pathname: '/',
@@ -102,13 +104,28 @@ const createUnseededNavigate =
     }
   }
 
-export const createRouterRegistryService = (): RouterRegistryService => {
+export const createAppUrlService = ({
+  getNavigationIntents = () => [],
+}: {
+  getNavigationIntents?: () => readonly AppNavigationUrlContribution[]
+} = {}): AppUrlService => {
   const location = signal<Location>(readBrowserLocation())
   const isReady = signal(false)
   const syncBrowserLocation = () => {
     location.value = readBrowserLocation()
   }
   let activeNavigate = createUnseededNavigate(syncBrowserLocation)
+  let preloadedNavigationIntents:
+    | readonly AppNavigationUrlContribution[]
+    | undefined
+  /**
+   * Freeze startup-time URL codecs on first use. Runtime extension changes take
+   * effect after an application restart instead of racing initial URL parsing.
+   */
+  const getPreloadedNavigationIntents = () => {
+    preloadedNavigationIntents ??= [...getNavigationIntents()]
+    return preloadedNavigationIntents
+  }
 
   const navigate: NavigateFunction = (
     toOrDelta: To | number,
@@ -131,10 +148,18 @@ export const createRouterRegistryService = (): RouterRegistryService => {
     isReady.value = false
   }
 
-  const serviceImpl: RouterRegistryService = {
+  const serviceImpl: AppUrlService = {
     location,
     isReady,
     navigate,
+    readInitialUrl: ({
+      requestUrl = window.location.href,
+      usesHashRouter = Boolean(window.electron),
+    } = {}) =>
+      parseInitialUrl(requestUrl, {
+        navigationIntents: getPreloadedNavigationIntents(),
+        usesHashRouter,
+      }),
     getLocation: () => location.value,
     setLocation: (nextLocation) => {
       location.value = nextLocation
@@ -145,7 +170,7 @@ export const createRouterRegistryService = (): RouterRegistryService => {
 
       return () => resetNavigate(nextNavigate)
     },
-    seed: (values: RouterRuntimeValues) => {
+    seed: (values: AppUrlRuntimeValues) => {
       serviceImpl.setLocation(values.location)
       return serviceImpl.setNavigate(values.navigate)
     },
@@ -159,13 +184,16 @@ export const createRouterRegistryService = (): RouterRegistryService => {
   return serviceImpl
 }
 
-export const routerExtension = defineRegistryItemFactory(() => {
-  const serviceImpl = createRouterRegistryService()
+export const routerExtension = defineRegistryItemFactory((ctx) => {
+  const serviceImpl = createAppUrlService({
+    getNavigationIntents: () =>
+      ctx.valueSpecs.get(appNavigationUrlContributionsValueSpec),
+  })
 
   return {
     item: defineRuntimeRegistryItem({
       id: 'router-extension',
-      providesServices: [provideService(routerService, serviceImpl)],
+      providesServices: [provideService(appUrlService, serviceImpl)],
       dispose: serviceImpl.reset,
     }),
   }

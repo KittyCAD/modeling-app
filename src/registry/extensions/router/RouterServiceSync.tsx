@@ -1,20 +1,16 @@
-import type { RouterRegistryService } from '@src/registry/contracts/router'
+import type { AppUrlService } from '@src/registry/contracts/appUrl'
 import { useLayoutEffect } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 
-export function RouterServiceSync({
-  router,
-}: {
-  router: RouterRegistryService
-}) {
+export function AppUrlServiceSync({ appUrl }: { appUrl: AppUrlService }) {
   const location = useLocation()
   const navigate = useNavigate()
 
-  useLayoutEffect(() => router.setNavigate(navigate), [router, navigate])
+  useLayoutEffect(() => appUrl.setNavigate(navigate), [appUrl, navigate])
 
   useLayoutEffect(() => {
-    router.setLocation(location)
-  }, [router, location])
+    appUrl.setLocation(location)
+  }, [appUrl, location])
 
   return null
 }
