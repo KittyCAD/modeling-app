@@ -1,0 +1,60 @@
+name: interaction-build-app
+description: Instrument and build the application in app using the selected harness in harness.
+inputs:
+  variant:
+    description: Application variant, base or candidate.
+    required: true
+  commit:
+    description: Immutable application commit for build metadata.
+    required: true
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-node@v7.0.0
+      with:
+        node-version-file: app/.nvmrc
+        package-manager-cache: false
+    - run: npm ci
+      shell: bash
+      working-directory: app
+    - uses: actions/download-artifact@v8
+      with:
+        name: interaction-comparison-plan
+        path: provenance
+    - uses: actions/download-artifact@v8
+      with:
+        name: prepared-wasm-interaction-${{ inputs.variant }}
+        path: app/rust/kcl-wasm-lib/pkg
+    - uses: actions/download-artifact@v8
+      with:
+        name: prepared-ts-rs-bindings-interaction-${{ inputs.variant }}
+        path: app/rust/kcl-lib/bindings
+    - name: Apply identical test instrumentation to this application
+      shell: bash
+      run: node harness/e2e/performance/build-comparison.cjs prepare app harness provenance/comparison-plan.json "$VARIANT"
+      env:
+        VARIANT: ${{ inputs.variant }}
+    - name: Build production Electron application
+      working-directory: app
+      shell: bash
+      run: |
+        cp rust/kcl-wasm-lib/pkg/kcl_wasm_lib_bg.wasm public/
+        npm run tronb:vite:prod
+      env:
+        VERCEL_GIT_COMMIT_SHA: ${{ inputs.commit }}
+        VITE_ZOO_BASE_DOMAIN: dev.zoo.dev
+        VITE_INTERACTION_PERFORMANCE: "1"
+    - name: Record source, workload, dependencies, and build hashes
+      shell: bash
+      run: node harness/e2e/performance/build-comparison.cjs manifest app harness provenance/comparison-plan.json "$VARIANT"
+      env:
+        VARIANT: ${{ inputs.variant }}
+    - uses: actions/upload-artifact@v7
+      with:
+        name: interaction-performance-build-${{ inputs.variant }}
+        path: |
+          app/.vite/
+          app/interaction-build-manifest.json
+        include-hidden-files: true
+        if-no-files-found: error
+        retention-days: 7

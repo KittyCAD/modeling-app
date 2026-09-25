@@ -1,0 +1,17 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing tag_chamfer_with_more_than_one_edge_should_fail.kcl
+---
+fn cube(pos, scale) {
+  sg = startSketchOn(XY)
+    |> startProfile(at = pos)
+    |> line(end = [0, scale])
+    |> line(end = [scale, 0])
+    |> line(end = [0, -scale])
+
+  return sg
+}
+part001 = cube(pos = [0, 0], scale = 20)
+  |> close(tag = $line1)
+  |> extrude(length = 20)
+  |> chamfer(length = 10, tags = [line1, getOppositeEdge(line1)], tag = $chamfer1)

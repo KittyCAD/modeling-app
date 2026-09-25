@@ -62,6 +62,7 @@ test.describe('Test network related behaviors', { tag: '@desktop' }, () => {
 
       // Expect the network to be down
       await expect(networkToggle).toContainText('Network health (Offline)')
+      await expect(scene.networkToggleConnected).toHaveCount(0)
 
       // Click the network toggle
       await networkToggle.click()
@@ -90,6 +91,7 @@ test.describe('Test network related behaviors', { tag: '@desktop' }, () => {
       await expect(
         networkToggleConnectedText.or(networkToggleWeakText)
       ).toBeVisible()
+      await expect(scene.networkToggleConnected).toBeVisible()
     }
   )
 

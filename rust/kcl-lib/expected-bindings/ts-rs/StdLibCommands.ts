@@ -10937,10 +10937,10 @@ export default {
     "qualName": "std::view::directed",
     "moduleName": "view",
     "returnType": "CameraView",
-    "addedIn": null,
+    "addedIn": "3.0",
     "deprecated": false,
     "deprecatedSince": null,
-    "experimental": true,
+    "experimental": false,
     "docHidden": false,
     "args": [
       {
@@ -11011,10 +11011,10 @@ export default {
     "qualName": "std::view::named",
     "moduleName": "view",
     "returnType": "NamedView",
-    "addedIn": null,
+    "addedIn": "3.0",
     "deprecated": false,
     "deprecatedSince": null,
-    "experimental": true,
+    "experimental": false,
     "docHidden": false,
     "args": [
       {
@@ -11073,10 +11073,10 @@ export default {
     "qualName": "std::view::oriented",
     "moduleName": "view",
     "returnType": "CameraView",
-    "addedIn": null,
+    "addedIn": "3.0",
     "deprecated": false,
     "deprecatedSince": null,
-    "experimental": true,
+    "experimental": false,
     "docHidden": false,
     "args": [
       {

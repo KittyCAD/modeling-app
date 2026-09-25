@@ -1794,6 +1794,43 @@ description: Result of parsing named_views_hide_imported.kcl
         "end": 0,
         "kind": "const",
         "moduleId": 0,
+        "outerAttrs": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "name": null,
+            "properties": [
+              {
+                "commentStart": 0,
+                "end": 0,
+                "key": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "name": "added_in",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "moduleId": 0,
+                "start": 0,
+                "type": "ObjectProperty",
+                "value": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "raw": "\"3.0\"",
+                  "start": 0,
+                  "type": "Literal",
+                  "type": "Literal",
+                  "value": "3.0"
+                }
+              }
+            ],
+            "start": 0,
+            "type": "Annotation"
+          }
+        ],
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"

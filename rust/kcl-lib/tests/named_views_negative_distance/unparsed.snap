@@ -11,6 +11,6 @@ description: Result of unparsing named_views_negative_distance.kcl
 // one that survives review unnoticed -- it looks like a deliberate number, and
 // a sign error in an expression produces it silently. Zero is covered by the
 // unit tests, which also cover -0.0.
-@settings(experimentalFeatures = allow)
+@settings(kclVersion = "3.0-preview")
 
 bad = view::oriented(view::Orientation::Front, distance = -50)
