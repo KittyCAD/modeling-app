@@ -330,7 +330,7 @@ export fn startSketchOn(
 /// example = extrude(exampleSketch, length = 5)
 /// ```
 ///
-/// ```kcl,no3d,legacySketch
+/// ```kcl,engineRender,legacySketch
 /// // Create a sketch plane.
 /// mySketch = startSketchOn(XY)
 ///
@@ -369,13 +369,13 @@ export fn startProfile(
 ///
 /// A rectangle can be defined by its width, height, and location. Either the center or corner must be provided, but not both, to specify its location.
 ///
-/// ```kcl,no3d,legacySketch
+/// ```kcl,engineRender,legacySketch
 /// exampleSketch = startSketchOn(-XZ)
 ///   |> rectangle(center = [0, 0], width = 10, height = 5)
 //    |> extrude(length = 2)
 /// ```
 ///
-/// ```kcl,no3d,legacySketch
+/// ```kcl,engineRender,legacySketch
 /// exampleSketch = startSketchOn(-XZ)
 ///   |> rectangle(corner = [0, 0], width = 10, height = 5)
 //    |> extrude(length = 2)
@@ -456,7 +456,7 @@ export fn circle(
 /// functions when possible. No constraint-based ellipse is available yet; first
 /// try approximating the shape with one or more constrained arcs.
 ///
-/// ```kcl,no3d,legacySketch
+/// ```kcl,engineRender,legacySketch
 /// @settings(experimentalFeatures = allow)
 ///
 /// exampleSketch = startSketchOn(XY)
@@ -1263,7 +1263,7 @@ export fn revolve(
 
 /// Just like `patternTransform`, but works on 2D sketches not 3D solids.
 ///
-/// ```kcl,no3d,legacySketch
+/// ```kcl,engineRender,legacySketch
 /// // Each instance will be shifted along the X axis.
 /// fn transform(@id) {
 ///   return { translate = [4 * id, 0] }
@@ -2347,7 +2347,7 @@ export fn segStartY(
 
 /// Extract the 'x' axis value of the last line segment in the provided 2-d sketch.
 ///
-/// ```kcl,legacySketch,no3d
+/// ```kcl,legacySketch,engineRender
 /// exampleSketch = startSketchOn(XZ)
 ///   |> startProfile(at = [0, 0])
 ///   |> line(end = [5, 0])
@@ -2478,7 +2478,7 @@ export fn segAng(
 /// rectangleExtrude = extrude(rectangleSketch, length = 10)
 /// ```
 ///
-/// ```kcl,no3d,legacySketch
+/// ```kcl,engineRender,legacySketch
 /// bottom = startSketchOn(XY)
 ///   |> startProfile(at = [0, 0])
 ///   |> arc(
@@ -2490,7 +2490,7 @@ export fn segAng(
 ///   |> close()
 /// ```
 ///
-/// ```kcl,no3d,legacySketch
+/// ```kcl,engineRender,legacySketch
 /// circSketch = startSketchOn(XY)
 ///   |> circle(center = [0, 0], radius= 3, tag = $circ)
 ///
@@ -2525,7 +2525,7 @@ export fn profileStart(
 
 /// Extract the provided 2-dimensional sketch's profile's origin's 'x' value.
 ///
-/// ```kcl,no3d,legacySketch
+/// ```kcl,engineRender,legacySketch
 /// sketch001 = startSketchOn(XY)
 ///  |> startProfile(at = [5, 2])
 ///  |> angledLine(angle = -26.6deg, length = 50)
@@ -2540,7 +2540,7 @@ export fn profileStartX(
 
 /// Extract the provided 2-dimensional sketch's profile's origin's 'y' value.
 ///
-/// ```kcl,no3d,legacySketch
+/// ```kcl,engineRender,legacySketch
 /// sketch001 = startSketchOn(XY)
 ///  |> startProfile(at = [5, 2])
 ///  |> angledLine(angle = -60deg, length = 14 )
@@ -2561,7 +2561,7 @@ export fn profileStartY(
 /// the gear module when it applies. No constraint-based involute is available
 /// yet; first try approximating the shape with one or more constrained arcs.
 ///
-/// ```kcl,no3d,legacySketch
+/// ```kcl,engineRender,legacySketch
 /// a = 10
 /// b = 14
 /// startSketchOn(XZ)
@@ -3178,7 +3178,7 @@ export fn conic(
 /// functions when possible. No constraint-based parabola is available yet;
 /// first try approximating the shape with one or more constrained arcs.
 ///
-/// ```kcl,no3d,legacySketch
+/// ```kcl,engineRender,legacySketch
 /// @settings(experimentalFeatures = allow)
 ///
 /// exampleSketch = startSketchOn(XY)
@@ -3209,7 +3209,7 @@ export fn parabolic(
 
 /// Calculate the point (x, y) on a parabola given x or y and the coefficients [a, b, c] of the parabola.
 ///
-/// ```kcl,no3d,sketchSyntaxAgnostic
+/// ```kcl,engineRender,sketchSyntaxAgnostic
 /// point001 = parabolicPoint(x = 5, coefficients = [0.1, 0, 0])
 /// point002 = parabolicPoint(y = 2.5, coefficients = [0.1, 0, 0])
 /// assert(point001[0], isEqualTo = point002[0])
@@ -3233,7 +3233,7 @@ export fn parabolicPoint(
 /// functions when possible. No constraint-based hyperbola is available yet;
 /// first try approximating the shape with one or more constrained arcs.
 ///
-/// ```kcl,no3d,legacySketch
+/// ```kcl,engineRender,legacySketch
 /// @settings(experimentalFeatures = allow)
 ///
 /// exampleSketch = startSketchOn(XY)
@@ -3268,7 +3268,7 @@ export fn hyperbolic(
 
 /// Calculate the point (x, y) on a hyperbola given x or y and the semi major/minor values of the hyperbolic.
 ///
-/// ```kcl,no3d,sketchSyntaxAgnostic
+/// ```kcl,engineRender,sketchSyntaxAgnostic
 /// point = hyperbolicPoint(x = 5, semiMajor = 2, semiMinor = 1)
 ///```
 @(impl = std_rust, feature_tree = false)
@@ -3331,7 +3331,7 @@ export fn elliptic(
 
 /// Calculate the point (x, y) on an ellipse given x or y and the center and major/minor radii of the ellipse.
 ///
-/// ```kcl,no3d,sketchSyntaxAgnostic
+/// ```kcl,engineRender,sketchSyntaxAgnostic
 /// point001 = ellipticPoint(x = 2, majorRadius = 2, minorRadius = 1)
 /// point002 = ellipticPoint(y = 0, majorRadius = 2, minorRadius = 1)
 /// assert(point001[0], isEqualTo = point002[0])

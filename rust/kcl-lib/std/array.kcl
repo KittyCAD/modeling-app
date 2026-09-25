@@ -8,7 +8,7 @@
 /// Given a list like `[a, b, c]`, and a function like `f`, returns
 /// `[f(a), f(b), f(c)]`
 ///
-/// ```kcl,no3d,legacySketch
+/// ```kcl,engineRender,legacySketch
 /// r = 10 // radius
 /// fn drawCircle(@id) {
 ///   return startSketchOn(XY)
@@ -24,7 +24,7 @@
 /// )
 /// ```
 ///
-/// ```kcl,no3d,legacySketch
+/// ```kcl,engineRender,legacySketch
 /// r = 10 // radius
 /// // Call `map`, using an anonymous function instead of a named one.
 /// circles = map(
@@ -81,7 +81,7 @@ export fn map(
 /// assert(sum, isEqualTo = 6, tolerance = 0.1, error = "1 + 2 + 3 summed is 6")
 /// ```
 ///
-/// ```kcl,no3d,legacySketch
+/// ```kcl,engineRender,legacySketch
 /// // Declare a function that sketches a decagon.
 /// fn decagon(@radius) {
 ///   // Each side of the decagon is turned this many radians from the previous angle.

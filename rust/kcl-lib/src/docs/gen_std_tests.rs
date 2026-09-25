@@ -259,7 +259,7 @@ fn generate_example(index: usize, src: &str, props: &ExampleProperties, file_nam
         crate::unparser::fmt(src).unwrap()
     };
 
-    let gltf_path = if props.norun || props.no3d {
+    let gltf_path = if props.norun || props.engine_render {
         String::new()
     } else {
         // Refers to the specific path of zoo.dev that assets are served under.
