@@ -993,7 +993,7 @@ profile001 = startProfile(sketch001, at = [-47.54, -26.74])
     }
   })
 })
-test.describe('Electron constraint tests', () => {
+test.describe('Electron constraint tests', { tag: '@desktop' }, () => {
   test('Able to double click label to set constraint', async ({
     page,
     homePage,
