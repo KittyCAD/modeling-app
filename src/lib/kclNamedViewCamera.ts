@@ -33,15 +33,21 @@ const ORIENTATION_AXES = {
 const FIT_PADDING = 0.1
 
 /** Read the client camera in the form `view::directed` stores in KCL. */
-export function captureNamedViewCamera(
+export async function captureNamedViewCamera(
   sceneInfra: SceneInfra
-): NamedViewCameraSnapshot | Error {
-  const { camera, target, isPerspective } = sceneInfra.camControls
+): Promise<NamedViewCameraSnapshot | Error> {
+  const { camera, isPerspective } = sceneInfra.camControls
+  const engineView = await sceneInfra.camControls.getCameraView()
+  if (err(engineView)) {
+    return engineView
+  }
+
   camera.updateMatrixWorld()
 
   const direction = camera.getWorldDirection(new Vector3()).normalize()
   const up = new Vector3(0, 1, 0).applyQuaternion(camera.quaternion).normalize()
-  const distance = camera.position.distanceTo(target)
+  const target = engineView.pivot_position
+  const distance = engineView.eye_offset
 
   const numbers = [
     direction.x,

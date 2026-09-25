@@ -9,6 +9,7 @@ import type {
   Artifact,
   ArtifactGraph,
   CallExpressionKw,
+  KclNamedViewArtifact,
   Program,
 } from '@src/lang/wasm'
 import type { ModelingCommandSchema } from '@src/lib/commandBarConfigs/modelingCommandConfig'
@@ -16,10 +17,96 @@ import type { KclCommandValue } from '@src/lib/commandTypes'
 import { stringToKclExpression } from '@src/lib/kclHelpers'
 import type RustContext from '@src/lib/rustContext'
 import { isErr } from '@src/lib/trap'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { CommandBarMachineEvent } from '@src/machines/commandBarMachine'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 
 type NamedViewArtifact = Extract<Artifact, { type: 'namedView' }>
+
+function sourceForNode(
+  node: { start: number; end: number },
+  code: string
+): string {
+  return code
+    .slice(toUtf16(node.start, code), toUtf16(node.end, code))
+    .replace(/\s+/g, ' ')
+    .trim()
+}
+
+function enumMember(source: string): string {
+  return source.split('::').at(-1)?.trim() ?? source
+}
+
+/** Summarize only camera arguments that are actually present in KCL source. */
+export function namedViewCameraSummary({
+  artifact,
+  ast,
+  code,
+  wasmInstance,
+}: {
+  artifact: KclNamedViewArtifact
+  ast: Node<Program>
+  code: string
+  wasmInstance: ModuleType
+}): string | undefined {
+  const callResult = getNodeFromPath<CallExpressionKw>(
+    ast,
+    artifact.codeRef.pathToNode,
+    wasmInstance,
+    'CallExpressionKw'
+  )
+  if (isErr(callResult) || callResult.node.type !== 'CallExpressionKw') {
+    return undefined
+  }
+
+  const camera = callResult.node.arguments.find(
+    (argument) => argument.label?.name === 'camera'
+  )?.arg
+  if (!camera) {
+    return undefined
+  }
+  if (camera.type !== 'CallExpressionKw') {
+    return sourceForNode(camera, code) || undefined
+  }
+
+  const cameraKind = camera.callee.name.name
+  if (cameraKind !== 'oriented' && cameraKind !== 'directed') {
+    return sourceForNode(camera, code) || undefined
+  }
+
+  const parts: string[] = []
+  if (camera.unlabeled) {
+    const source = sourceForNode(camera.unlabeled, code)
+    parts.push(
+      cameraKind === 'oriented' ? enumMember(source) : `Direction ${source}`
+    )
+  }
+
+  for (const argument of camera.arguments) {
+    const label = argument.label?.name
+    if (!label) continue
+
+    const source = sourceForNode(argument.arg, code)
+    switch (label) {
+      case 'distance':
+        parts.push(source)
+        break
+      case 'projection':
+        parts.push(enumMember(source))
+        break
+      case 'target':
+        parts.push(`Target ${source}`)
+        break
+      case 'up':
+        parts.push(`Up ${source}`)
+        break
+      default:
+        parts.push(`${label} ${source}`)
+    }
+  }
+
+  return parts.join(' ') || undefined
+}
 
 export async function prepareNamedViewEditCommand({
   artifact,

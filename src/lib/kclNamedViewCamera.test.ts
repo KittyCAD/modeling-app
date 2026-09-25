@@ -108,18 +108,23 @@ function sentCommandTypes(sendSceneCommand: ReturnType<typeof vi.fn>) {
 }
 
 describe('captureNamedViewCamera', () => {
-  it('captures the current camera as a directed KCL view', () => {
+  it('captures the current camera as a directed KCL view', async () => {
     const camera = new PerspectiveCamera()
     camera.position.set(0, -10, 0)
     camera.up.set(0, 0, 1)
     camera.lookAt(0, 0, 0)
     camera.updateMatrixWorld()
 
-    const result = captureNamedViewCamera({
+    const getCameraView = vi.fn().mockResolvedValue({
+      pivot_position: { x: 1, y: 2, z: 3 },
+      eye_offset: 25,
+    })
+    const result = await captureNamedViewCamera({
       camControls: {
         camera,
         target: new Vector3(0, 0, 0),
         isPerspective: true,
+        getCameraView,
       },
     } as unknown as SceneInfra)
     if (result instanceof Error) throw result
@@ -130,9 +135,32 @@ describe('captureNamedViewCamera', () => {
     expect(result.up[0]).toBeCloseTo(0)
     expect(result.up[1]).toBeCloseTo(0)
     expect(result.up[2]).toBeCloseTo(1)
-    expect(result.target).toEqual([0, 0, 0])
-    expect(result.distance).toBe(10)
+    expect(result.target).toEqual([1, 2, 3])
+    expect(result.distance).toBe(25)
     expect(result.projection).toBe('Perspective')
+  })
+
+  it('uses the effective engine eye offset so orthographic zoom is preserved', async () => {
+    const camera = new PerspectiveCamera()
+    camera.position.set(0, -10, 0)
+    camera.lookAt(0, 0, 0)
+    camera.updateMatrixWorld()
+
+    const result = await captureNamedViewCamera({
+      camControls: {
+        camera,
+        isPerspective: false,
+        getCameraView: vi.fn().mockResolvedValue({
+          pivot_position: { x: 0, y: 0, z: 0 },
+          eye_offset: 80,
+        }),
+      },
+    } as unknown as SceneInfra)
+    if (result instanceof Error) throw result
+
+    expect(camera.position.length()).toBe(10)
+    expect(result.distance).toBe(80)
+    expect(result.projection).toBe('Orthographic')
   })
 })
 

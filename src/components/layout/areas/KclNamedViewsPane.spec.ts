@@ -2,7 +2,6 @@ import type { ModulePath } from '@rust/kcl-lib/bindings/ModulePath'
 
 import {
   canManageNamedView,
-  namedViewDetail,
   nextViewSelection,
   viewRows,
 } from '@src/components/layout/areas/KclNamedViewsPane'
@@ -131,13 +130,12 @@ describe('viewRows', () => {
     expect(rows.map((row) => row.key)).toEqual(['kcl-default', 'view-1'])
   })
 
-  it('summarizes the camera beside each declared view', () => {
+  it('uses the source-derived camera summary beside each declared view', () => {
     const namedView = view({ name: 'Front' })
-    namedView.artifact.camera.distance = 200
-    namedView.artifact.camera.projection = 'perspective'
 
-    expect(namedViewDetail(namedView)).toBe('Front 200mm Perspective')
-    expect(viewRows([namedView])[1].detail).toBe('Front 200mm Perspective')
+    expect(
+      viewRows([namedView], () => 'Front 200mm Perspective')[1].detail
+    ).toBe('Front 200mm Perspective')
   })
 
   it('only lets the root module manage a declared view', () => {

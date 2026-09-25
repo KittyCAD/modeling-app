@@ -30,10 +30,15 @@ import {
   activeViewSignal,
   isSameView,
   isSketchSessionOpen,
+  lockedNamedViewKeysSignal,
   moduleKeyOf,
+  namedViewSessionKey,
 } from '@src/lib/kclNamedViewActivation'
 import { captureNamedViewCamera } from '@src/lib/kclNamedViewCamera'
-import { prepareNamedViewEditCommand } from '@src/lib/kclNamedViewEdit'
+import {
+  namedViewCameraSummary,
+  prepareNamedViewEditCommand,
+} from '@src/lib/kclNamedViewEdit'
 import type { AreaTypeComponentProps } from '@src/lib/layout'
 import { isErr, reportRejection } from '@src/lib/trap'
 import { useEffect, useRef, useState } from 'react'
@@ -96,21 +101,6 @@ export function nextViewSelection({
   return { selected: new Set([rowKey]), anchorIndex: rowIndex }
 }
 
-function titleCase(value: string): string {
-  return value.charAt(0).toUpperCase() + value.slice(1)
-}
-
-export function namedViewDetail(view: KclNamedView): string {
-  const { camera } = view.artifact
-  const look =
-    camera.look.type === 'oriented'
-      ? titleCase(camera.look.orientation)
-      : 'Directed'
-  const distance = camera.distance === null ? '' : ` ${camera.distance}mm`
-
-  return `${look}${distance} ${titleCase(camera.projection)}`
-}
-
 export function canManageNamedView(view: KclNamedView): boolean {
   return view.moduleId === ROOT_MODULE_ID
 }
@@ -130,7 +120,10 @@ function moduleName(path: ModulePath | undefined): string | undefined {
  * A display name two modules both declare is prefixed with the declaring
  * module, as `bracket::Front`. Unique names are left bare.
  */
-export function viewRows(views: KclNamedView[]): ViewRow[] {
+export function viewRows(
+  views: KclNamedView[],
+  detailForView: (view: KclNamedView) => string | undefined = () => undefined
+): ViewRow[] {
   const nameCounts = new Map<string, number>()
   for (const view of views) {
     const name = view.artifact.name
@@ -145,7 +138,7 @@ export function viewRows(views: KclNamedView[]): ViewRow[] {
     return {
       key: view.artifact.id,
       label: collides && module ? `${module}::${name}` : name,
-      detail: namedViewDetail(view),
+      detail: detailForView(view),
       identity: { name, moduleKey: moduleKeyOf(view.modulePath) },
       target: { kind: 'declared', view },
     }
@@ -168,7 +161,6 @@ export function KclNamedViewsPane(props: AreaTypeComponentProps) {
   const { kclManager } = useSingletons()
   const [selectedKeys, setSelectedKeys] = useState<Set<string>>(new Set())
   const [selectionAnchor, setSelectionAnchor] = useState<number | null>(null)
-  const [lockedKeys, setLockedKeys] = useState<Set<string>>(new Set())
   const [editingKey, setEditingKey] = useState<string | null>(null)
   const [draftName, setDraftName] = useState('')
   const [isChangingSource, setIsChangingSource] = useState(false)
@@ -180,24 +172,30 @@ export function KclNamedViewsPane(props: AreaTypeComponentProps) {
   const { state: modelingState } = useModelingContext()
   const inSketchMode = isSketchSessionOpen(modelingState)
 
-  const rows = viewRows(
-    listNamedViews({
-      artifactGraph: execState.artifactGraph,
-      filenames: execState.filenames,
-    })
+  const views = listNamedViews({
+    artifactGraph: execState.artifactGraph,
+    filenames: execState.filenames,
+  })
+  const rows = viewRows(views, (view) =>
+    canManageNamedView(view)
+      ? namedViewCameraSummary({
+          artifact: view.artifact,
+          ast: kclManager.ast,
+          code: kclManager.code,
+          wasmInstance: kclManager.wasmInstance,
+        })
+      : undefined
   )
   const rowKeys = rows.map((row) => row.key)
   const rowKeySignature = rowKeys.join('\0')
   const active = activeViewSignal.value
+  const lockedKeys = lockedNamedViewKeysSignal.value
+  const projectPath = kclManager.systemDeps.projectPath.value
   const actionsDisabled = cannotReachEngine || inSketchMode || isChangingSource
 
   useEffect(() => {
     const liveKeys = new Set(rowKeySignature.split('\0'))
     setSelectedKeys((current) => {
-      const next = new Set([...current].filter((key) => liveKeys.has(key)))
-      return next.size === current.size ? current : next
-    })
-    setLockedKeys((current) => {
       const next = new Set([...current].filter((key) => liveKeys.has(key)))
       return next.size === current.size ? current : next
     })
@@ -324,14 +322,14 @@ export function KclNamedViewsPane(props: AreaTypeComponentProps) {
   }
 
   const updateViewCamera = async (view: KclNamedView) => {
-    const camera = captureNamedViewCamera(kclManager.sceneInfra)
-    if (isErr(camera)) {
-      toast.error(camera.message)
-      return
-    }
-
     setIsChangingSource(true)
     try {
+      const camera = await captureNamedViewCamera(kclManager.sceneInfra)
+      if (isErr(camera)) {
+        toast.error(camera.message)
+        return
+      }
+
       const wasmInstance = await kclManager.wasmInstancePromise
       const modifiedAst = updateNamedViewCamera({
         ast: kclManager.ast,
@@ -359,8 +357,8 @@ export function KclNamedViewsPane(props: AreaTypeComponentProps) {
   const selectedViews = rows.flatMap((row) => {
     if (
       !selectedKeys.has(row.key) ||
-      lockedKeys.has(row.key) ||
       row.target.kind !== 'declared' ||
+      lockedKeys.has(namedViewSessionKey(projectPath, row.target.view)) ||
       !canManageNamedView(row.target.view)
     ) {
       return []
@@ -413,7 +411,10 @@ export function KclNamedViewsPane(props: AreaTypeComponentProps) {
                 : undefined
             const isActive = isSameView(row.identity, active)
             const isSelected = selectedKeys.has(row.key)
-            const isLocked = lockedKeys.has(row.key)
+            const lockKey = manageableView
+              ? namedViewSessionKey(projectPath, manageableView)
+              : undefined
+            const isLocked = lockKey ? lockedKeys.has(lockKey) : false
             const rowActionsDisabled = actionsDisabled || isLocked
             const selectRow = (shiftKey: boolean, toggleKey: boolean) => {
               const selection = nextViewSelection({
@@ -534,12 +535,11 @@ export function KclNamedViewsPane(props: AreaTypeComponentProps) {
                       testId="named-view-lock"
                       disabled={actionsDisabled}
                       onClick={() => {
-                        setLockedKeys((current) => {
-                          const next = new Set(current)
-                          if (next.has(row.key)) next.delete(row.key)
-                          else next.add(row.key)
-                          return next
-                        })
+                        if (!lockKey) return
+                        const next = new Set(lockedKeys)
+                        if (next.has(lockKey)) next.delete(lockKey)
+                        else next.add(lockKey)
+                        lockedNamedViewKeysSignal.value = next
                       }}
                     />
                     <CameraUpdateButton
