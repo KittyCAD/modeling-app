@@ -1,0 +1,116 @@
+@settings(kclVersion = "3.0-preview")
+
+sketch001 = sketch(on = XY) {
+  line1 = line(start = [var -2.94mm, var 1.66mm], end = [var -1.67mm, var 2.38mm])
+  arc1 = arc(
+    start = [var -1.67mm, var 2.38mm],
+    end = [var -0.47mm, var 2.49mm],
+    center = [var -0.95mm, var 1.11mm],
+    direction = CW,
+  )
+  coincident([line1.end, arc1.start])
+  tangent([line1, arc1])
+  line2 = line(start = [var -0.47mm, var 2.49mm], end = [var 2.99mm, var 1.29mm])
+  coincident([line2.start, arc1.end])
+  arc2 = arc(
+    start = [var 2.99mm, var 1.29mm],
+    end = [var 3.47mm, var -2.98mm],
+    center = [var 2.2mm, var -0.96mm],
+    direction = CW,
+  )
+  coincident([line2.end, arc2.start])
+  tangent([line2, arc2])
+  line3 = line(start = [var 3.47mm, var -2.98mm], end = [var 2.04mm, var -3.88mm])
+  coincident([line3.start, arc2.end])
+  arc3 = arc(
+    start = [var 2.04mm, var -3.88mm],
+    end = [var 0.39mm, var -4.32mm],
+    center = [var 0.5mm, var -1.45mm],
+    direction = CW,
+  )
+  coincident([line3.end, arc3.start])
+  tangent([line3, arc3])
+  line4 = line(start = [var 0.39mm, var -4.32mm], end = [var -1.5mm, var -4.25mm])
+  coincident([line4.start, arc3.end])
+  arc4 = arc(
+    start = [var -1.5mm, var -4.25mm],
+    end = [var -2.94mm, var 1.66mm],
+    center = [var -1.37mm, var -1.09mm],
+    direction = CW,
+  )
+  coincident([arc4.end, line1.start])
+  coincident([line4.end, arc4.start])
+  tangent([line4, arc4])
+  tangent([line1, arc4])
+  tangent([line1, arc1])
+  tangent([line2, arc1])
+  tangent([line2, arc2])
+  tangent([line3, arc2])
+  tangent([line3, arc3])
+  tangent([line4, arc3])
+  tangent([line4, arc4])
+  circle1 = circle(start = [var -2.63mm, var -1.04mm], center = [var -2.46mm, var -1.86mm])
+  circle2 = circle(start = [var 1.48mm, var -0.83mm], center = [var 1.82mm, var 0mm])
+  horizontal([circle2.center, ORIGIN])
+  circle3 = circle(start = [var 0.45mm, var -2.64mm], center = [var 0.64mm, var -3.17mm])
+}
+
+hidden001 = hide(sketch001)
+region001 = region(segments = [sketch001.line1, sketch001.line1], direction = CW)
+
+innerRadius = 0.2
+extrude001 = extrude(
+  region001,
+  length = 1,
+  tagEnd = $capEnd001,
+  tagStart = $capStart001,
+)
+fillet001 = fillet(
+  extrude001,
+  tags = getCommonEdge(faces = [
+    region001.tags.line4,
+    extrude001.faces.capEnd001
+  ]),
+  radius = 0.3,
+)
+fillet002 = fillet(
+  extrude001,
+  tags = getCommonEdge(faces = [
+    region001.tags.line4,
+    extrude001.faces.capStart001
+  ]),
+  radius = 0.3,
+)
+fillet003 = fillet(
+  extrude001,
+  tags = getCommonEdge(faces = [
+    region001.tags.circle1,
+    extrude001.faces.capEnd001
+  ]),
+  radius = innerRadius,
+)
+fillet004 = fillet(
+  extrude001,
+  tags = getCommonEdge(faces = [
+    region001.tags.circle3,
+    extrude001.faces.capEnd001
+  ]),
+  radius = innerRadius,
+)
+fillet005 = fillet(
+  extrude001,
+  tags = getCommonEdge(faces = [
+    region001.tags.circle2,
+    extrude001.faces.capEnd001
+  ]),
+  radius = innerRadius,
+)
+
+edge001 = edgeId(extrude001, index = 62)
+fillet006 = fillet(extrude001, tags = edge001, radius = 0.3)
+edge002 = edgeId(extrude001, index = 70)
+fillet007 = fillet(extrude001, tags = edge002, radius = 0.3)
+edge003 = edgeId(extrude001, index = 78)
+fillet008 = fillet(extrude001, tags = edge003, radius = 0.3)
+|> appearance(color = "#ca4333", metalness = 70, roughness = 50)
+

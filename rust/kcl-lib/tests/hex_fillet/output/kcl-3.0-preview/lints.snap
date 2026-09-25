@@ -1,0 +1,142 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Lints hex_fillet.kcl
+---
+[
+  {
+    "finding": {
+      "code": "Z0006",
+      "title": "Prefer edges or edge specifiers over deprecated edge stdlib calls",
+      "description": "Using 'tags' in fillet/chamfer, 'axis' in revolve/helix, 'across' in mirror3d, or edge arguments in extrude with deprecated stdlib (e.g. getOppositeEdge, getCommonEdge) or direct tags is deprecated. Prefer 'edges' (fillet/chamfer) or an edge specifier object such as { sideFaces = [tag1, tag2] }. The auto-fix will convert it.\n",
+      "experimental": false,
+      "family": "simplify"
+    },
+    "description": "fillet uses 'tags'; prefer edges",
+    "pos": [
+      2170,
+      2305,
+      0
+    ],
+    "overridden": false,
+    "suggestion": null
+  },
+  {
+    "finding": {
+      "code": "Z0006",
+      "title": "Prefer edges or edge specifiers over deprecated edge stdlib calls",
+      "description": "Using 'tags' in fillet/chamfer, 'axis' in revolve/helix, 'across' in mirror3d, or edge arguments in extrude with deprecated stdlib (e.g. getOppositeEdge, getCommonEdge) or direct tags is deprecated. Prefer 'edges' (fillet/chamfer) or an edge specifier object such as { sideFaces = [tag1, tag2] }. The auto-fix will convert it.\n",
+      "experimental": false,
+      "family": "simplify"
+    },
+    "description": "fillet uses 'tags'; prefer edges",
+    "pos": [
+      2318,
+      2455,
+      0
+    ],
+    "overridden": false,
+    "suggestion": null
+  },
+  {
+    "finding": {
+      "code": "Z0006",
+      "title": "Prefer edges or edge specifiers over deprecated edge stdlib calls",
+      "description": "Using 'tags' in fillet/chamfer, 'axis' in revolve/helix, 'across' in mirror3d, or edge arguments in extrude with deprecated stdlib (e.g. getOppositeEdge, getCommonEdge) or direct tags is deprecated. Prefer 'edges' (fillet/chamfer) or an edge specifier object such as { sideFaces = [tag1, tag2] }. The auto-fix will convert it.\n",
+      "experimental": false,
+      "family": "simplify"
+    },
+    "description": "fillet uses 'tags'; prefer edges",
+    "pos": [
+      2468,
+      2613,
+      0
+    ],
+    "overridden": false,
+    "suggestion": null
+  },
+  {
+    "finding": {
+      "code": "Z0006",
+      "title": "Prefer edges or edge specifiers over deprecated edge stdlib calls",
+      "description": "Using 'tags' in fillet/chamfer, 'axis' in revolve/helix, 'across' in mirror3d, or edge arguments in extrude with deprecated stdlib (e.g. getOppositeEdge, getCommonEdge) or direct tags is deprecated. Prefer 'edges' (fillet/chamfer) or an edge specifier object such as { sideFaces = [tag1, tag2] }. The auto-fix will convert it.\n",
+      "experimental": false,
+      "family": "simplify"
+    },
+    "description": "fillet uses 'tags'; prefer edges",
+    "pos": [
+      2626,
+      2771,
+      0
+    ],
+    "overridden": false,
+    "suggestion": null
+  },
+  {
+    "finding": {
+      "code": "Z0006",
+      "title": "Prefer edges or edge specifiers over deprecated edge stdlib calls",
+      "description": "Using 'tags' in fillet/chamfer, 'axis' in revolve/helix, 'across' in mirror3d, or edge arguments in extrude with deprecated stdlib (e.g. getOppositeEdge, getCommonEdge) or direct tags is deprecated. Prefer 'edges' (fillet/chamfer) or an edge specifier object such as { sideFaces = [tag1, tag2] }. The auto-fix will convert it.\n",
+      "experimental": false,
+      "family": "simplify"
+    },
+    "description": "fillet uses 'tags'; prefer edges",
+    "pos": [
+      2784,
+      2929,
+      0
+    ],
+    "overridden": false,
+    "suggestion": null
+  },
+  {
+    "finding": {
+      "code": "Z0006",
+      "title": "Prefer edges or edge specifiers over deprecated edge stdlib calls",
+      "description": "Using 'tags' in fillet/chamfer, 'axis' in revolve/helix, 'across' in mirror3d, or edge arguments in extrude with deprecated stdlib (e.g. getOppositeEdge, getCommonEdge) or direct tags is deprecated. Prefer 'edges' (fillet/chamfer) or an edge specifier object such as { sideFaces = [tag1, tag2] }. The auto-fix will convert it.\n",
+      "experimental": false,
+      "family": "simplify"
+    },
+    "description": "fillet uses 'tags'; prefer edges",
+    "pos": [
+      2984,
+      3032,
+      0
+    ],
+    "overridden": false,
+    "suggestion": null
+  },
+  {
+    "finding": {
+      "code": "Z0006",
+      "title": "Prefer edges or edge specifiers over deprecated edge stdlib calls",
+      "description": "Using 'tags' in fillet/chamfer, 'axis' in revolve/helix, 'across' in mirror3d, or edge arguments in extrude with deprecated stdlib (e.g. getOppositeEdge, getCommonEdge) or direct tags is deprecated. Prefer 'edges' (fillet/chamfer) or an edge specifier object such as { sideFaces = [tag1, tag2] }. The auto-fix will convert it.\n",
+      "experimental": false,
+      "family": "simplify"
+    },
+    "description": "fillet uses 'tags'; prefer edges",
+    "pos": [
+      3086,
+      3134,
+      0
+    ],
+    "overridden": false,
+    "suggestion": null
+  },
+  {
+    "finding": {
+      "code": "Z0006",
+      "title": "Prefer edges or edge specifiers over deprecated edge stdlib calls",
+      "description": "Using 'tags' in fillet/chamfer, 'axis' in revolve/helix, 'across' in mirror3d, or edge arguments in extrude with deprecated stdlib (e.g. getOppositeEdge, getCommonEdge) or direct tags is deprecated. Prefer 'edges' (fillet/chamfer) or an edge specifier object such as { sideFaces = [tag1, tag2] }. The auto-fix will convert it.\n",
+      "experimental": false,
+      "family": "simplify"
+    },
+    "description": "fillet uses 'tags'; prefer edges",
+    "pos": [
+      3188,
+      3236,
+      0
+    ],
+    "overridden": false,
+    "suggestion": null
+  }
+]
