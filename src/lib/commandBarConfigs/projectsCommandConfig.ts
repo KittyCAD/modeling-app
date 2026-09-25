@@ -65,14 +65,18 @@ interface HomeProjectCommandTarget {
 export function createProjectCommands({
   systemIOActor,
   getCurrentProjectDirectoryName,
+  getCurrentProjectPath,
   getCurrentProjectLibraryId,
+  getProjectLibraries,
   getCreateProjectLibraryTargets,
   getHomeProjectActions,
   getHomeProjectEntries,
 }: {
   systemIOActor: ActorRefFrom<typeof systemIOMachine>
   getCurrentProjectDirectoryName?: () => string | undefined
+  getCurrentProjectPath?: () => string | undefined
   getCurrentProjectLibraryId?: () => string | undefined
+  getProjectLibraries?: () => readonly ProjectLibrary[]
   getCreateProjectLibraryTargets?: () => readonly CreateProjectLibraryTarget[]
   getHomeProjectActions?: () => HomeProjectActionsService | undefined
   getHomeProjectEntries?: () => readonly HomeProjectEntry[] | undefined
@@ -100,6 +104,11 @@ export function createProjectCommands({
   const homeProjectEntriesSnapshot = () => getHomeProjectEntries?.()
 
   const isCurrentHomeProject = (project: HomeProjectEntry) => {
+    const currentProjectPath = getCurrentProjectPath?.()
+    if (currentProjectPath) {
+      return project.localProjectPath === currentProjectPath
+    }
+
     const currentProjectDirectoryName = currentProjectDirectoryNameSnapshot()
     return Boolean(
       currentProjectDirectoryName &&
@@ -154,12 +163,19 @@ export function createProjectCommands({
 
   const homeProjectOptions = (
     action: HomeProjectCommandAction
-  ): CommandArgumentOption<string>[] | undefined =>
-    homeProjectCommandTargets(action)?.map(({ project }) => ({
+  ): CommandArgumentOption<string>[] | undefined => {
+    const libraries = getProjectLibraries?.() ?? []
+    return homeProjectCommandTargets(action)?.map(({ project }) => ({
       name: getHomeProjectDisplayName(project),
+      description:
+        libraries
+          .filter((library) => project.libraryIds?.includes(library.id))
+          .map((library) => library.title)
+          .join(', ') || undefined,
       value: project.id,
       isCurrent: isCurrentHomeProject(project),
     }))
+  }
 
   const projectOptions = (action: HomeProjectCommandAction) => {
     if (action === 'moveToLibrary') {

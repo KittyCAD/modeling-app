@@ -23,6 +23,7 @@ import {
 import { throwTronAppMissing } from '@e2e/playwright/lib/electron-helpers'
 import { expect, test } from '@e2e/playwright/zoo-test'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
+import type { ProjectLibrarySetting } from '@src/lib/projectLibraries'
 
 // Some of these sketches are KCL 1.0, so editing them needs the legacy sketch flag.
 test.use({ userFeatures: [LEGACY_SKETCH_MODE_FEATURE_FLAG] })
@@ -868,6 +869,80 @@ test.describe(`Project management commands`, { tag: ['@desktop'] }, () => {
       })
     }
   )
+  test(
+    'Rename a project from another library',
+    { tag: '@web' },
+    async ({ page, homePage, cmdBar, fs, folderSetupFn }) => {
+      const libraries: ProjectLibrarySetting[] = []
+      await folderSetupFn(async (dir) => {
+        libraries.push(
+          { title: 'Local Projects', path: dir, type: 'directory' },
+          {
+            title: 'Client Projects',
+            path: await fs.resolve(dir, '..', 'client-projects'),
+            type: 'directory',
+          }
+        )
+        for (const library of libraries) {
+          const projectPath = await fs.join(library.path, 'bracket')
+          await fs.mkdir(projectPath, { recursive: true })
+          await fs.writeFile(
+            await fs.join(projectPath, 'main.kcl'),
+            new TextEncoder().encode('@settings(kclVersion = 2.0)\npart = 1\n')
+          )
+          await fs.writeFile(
+            await fs.join(projectPath, 'project.toml'),
+            new TextEncoder().encode('title = "Bracket"\n')
+          )
+        }
+      })
+      await homePage.projectsLoaded()
+      await page.evaluate((libraries) => {
+        window.app.settings.actor.send({
+          type: 'set.app.libraries',
+          data: { level: 'user', value: libraries },
+        })
+      }, libraries)
+      await expect(
+        homePage.projectCardTitle.filter({ hasText: 'Bracket' })
+      ).toHaveCount(2)
+
+      await page.getByRole('button', { name: 'Commands' }).click()
+      await page.getByRole('option', { name: 'rename project' }).click()
+      await expect(
+        page.getByRole('option', { name: 'Bracket Local Projects' })
+      ).toBeVisible()
+      const clientOption = page.getByRole('option', {
+        name: 'Bracket Client Projects',
+      })
+      await expect(clientOption).toBeVisible()
+      await cmdBar.currentArgumentInput.fill('Client Projects')
+      await expect(page.getByRole('option')).toHaveCount(1)
+      await clientOption.click()
+      await expect(cmdBar.currentArgumentInput).toHaveValue('Bracket')
+      await cmdBar.currentArgumentInput.fill('Updated Client Bracket')
+      await page.getByRole('button', { name: 'Continue' }).click()
+      await cmdBar.submit()
+
+      await expect(page.getByText('Successfully renamed')).toBeVisible()
+      await expect(
+        page.getByRole('heading', {
+          name: 'Updated Client Bracket',
+          exact: true,
+        })
+      ).toBeVisible()
+      await expect(
+        page.getByRole('heading', { name: 'Bracket', exact: true })
+      ).toBeVisible()
+      const originalProjectToml = await fs.readFile(
+        await fs.join(libraries[0].path, 'bracket', 'project.toml')
+      )
+      expect(new TextDecoder().decode(originalProjectToml)).toContain(
+        'title = "Bracket"'
+      )
+    }
+  )
+
   test(`Delete from home page`, async ({
     context,
     page,
