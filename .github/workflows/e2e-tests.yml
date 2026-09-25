@@ -27,6 +27,23 @@ jobs:
         with:
           repository: kittycad/modeling-app # required for 'workflow_call'
 
+      - uses: actions/setup-node@v7.0.0
+        with:
+          node-version-file: .nvmrc
+
+      - name: Prune stale cloud test projects
+        run: node .github/ci-cd-scripts/prune-cloud-test-projects.mjs
+        env:
+          ZOO_API_TOKEN: ${{ secrets.ZOO_API_TOKEN }}
+
+      - name: Upload cloud project cleanup receipt
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: cloud-project-cleanup-${{ github.run_id }}-${{ github.run_attempt }}
+          path: cloud-project-cleanup.json
+          retention-days: 30
+
       - name: Track setup (snapshots)
         run: .github/ci-cd-scripts/track-step.sh
         env:
