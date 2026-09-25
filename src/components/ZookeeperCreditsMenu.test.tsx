@@ -27,7 +27,7 @@ afterEach(() => {
   vi.clearAllMocks()
 })
 
-test('expires the live estimate after twenty minutes and keeps the reported balance through a 19-hour stall', async () => {
+test('expires a stale estimate through a 19-hour stall and resumes on a fresh balance', async () => {
   vi.useFakeTimers()
   const startedAt = new Date('2026-09-25T12:00:00Z')
   vi.setSystemTime(startedAt)
@@ -59,11 +59,22 @@ test('expires the live estimate after twenty minutes and keeps the reported bala
     screen.getByText('596 min of Zookeeper reasoning time remaining this month')
   ).toBeVisible()
 
-  useBillingContext.mockReturnValue({ ...context, balance: 590 })
+  useBillingContext.mockReturnValue({
+    ...context,
+    balance: 590,
+    lastFetch: new Date(),
+    usageStartedAt: new Date(),
+    usageEstimateExpiresAt: new Date(Date.now() + 20 * 60_000),
+  })
   rerender(<ZookeeperCreditsMenu />)
   expect(screen.getByTestId('billing-balance')).toHaveTextContent('590 min')
   expect(
     screen.getByText('590 min of Zookeeper reasoning time remaining this month')
+  ).toBeVisible()
+  await act(() => vi.advanceTimersByTime(60_000))
+  expect(screen.getByTestId('billing-balance')).toHaveTextContent('589 min')
+  expect(
+    screen.getByText('589 min of Zookeeper reasoning time remaining this month')
   ).toBeVisible()
 })
 

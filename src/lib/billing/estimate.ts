@@ -2,7 +2,7 @@ import type { BillingContext } from '@src/lib/billing/machine'
 
 const MILLISECONDS_PER_SECOND = 1000
 const SECONDS_PER_MINUTE = 60
-// Waiting is not confirmed billable usage, so only estimate for a short window.
+// Stop extrapolating usage if the reported balance has not refreshed recently.
 export const BILLING_ESTIMATE_DURATION_MS =
   20 * SECONDS_PER_MINUTE * MILLISECONDS_PER_SECOND
 

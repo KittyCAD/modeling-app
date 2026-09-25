@@ -75,11 +75,11 @@ function applyBillingUpdateOutput(
     ...output,
     usageStartedAt,
     usageAccumulatedMs: 0,
-    // A refresh must not renew the estimate for a prompt that is still running.
+    // Only a successful refresh can renew the estimate for a running prompt.
     usageEstimateExpiresAt:
       context.usageStartedAt === undefined
         ? undefined
-        : context.usageEstimateExpiresAt,
+        : new Date(lastFetch.getTime() + BILLING_ESTIMATE_DURATION_MS),
     updateApiToken: context.updateApiToken,
     pendingUpdateApiToken: context.pendingUpdateApiToken,
   }
@@ -150,7 +150,10 @@ export const billingMachine = setup({
           // Keep the deadline across interruptions until billing is refreshed.
           usageEstimateExpiresAt:
             context.usageEstimateExpiresAt ??
-            new Date(Date.now() + BILLING_ESTIMATE_DURATION_MS),
+            new Date(
+              (context.lastFetch?.getTime() ?? Date.now()) +
+                BILLING_ESTIMATE_DURATION_MS
+            ),
         }
       }),
     },
@@ -201,6 +204,7 @@ export const billingMachine = setup({
           {
             guard: ({ context }) => context.pendingUpdateApiToken !== undefined,
             target: BillingState.Updating,
+            reenter: true,
             actions: assign(({ context, event }) => {
               return {
                 ...applyBillingUpdateOutput(context, event.output),
@@ -220,15 +224,14 @@ export const billingMachine = setup({
             }),
           },
         ],
-        // If request failed for billing, go back into waiting state,
-        // and signal to the user there's an issue regarding the service.
+        // Keep the last successful balance and its expiry when a refresh fails.
         onError: [
           {
             target: BillingState.Waiting,
             // Yep, this is hard to follow. XState, why!
             actions: assign({
-              // Clear out the rest of the fields here
-              ...BILLING_CONTEXT_DEFAULTS,
+              updateApiToken: undefined,
+              pendingUpdateApiToken: undefined,
               // TODO: we shouldn't need this cast here
               error: ({ event }) => event.error as BillingError,
             }),
