@@ -1138,7 +1138,7 @@ impl Program {
 /// A shebang.
 /// This is a special type of comment that is at the top of the file.
 /// It looks like this:
-/// ```python,noRender
+/// ```python,no_run
 /// #!/usr/bin/env python
 /// ```
 #[derive(Debug, Default, Clone, PartialEq, Eq, Hash, Deserialize, Serialize, ts_rs::TS)]
@@ -2283,7 +2283,7 @@ pub enum NonCodeValue {
     },
     /// A block comment.
     /// An example of this is the following:
-    /// ```noRender
+    /// ```no_run
     /// /* This is a
     /// block comment */
     /// 1 + 1
