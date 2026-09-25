@@ -990,6 +990,80 @@ describe('refactorZ0006Unified', () => {
   })
 
   describe('unit (no engine)', () => {
+    describe.each(['fillet', 'chamfer'])(
+      '%s split-edge migration',
+      (operation) => {
+        it.each([
+          ['inline', KCL_SKETCH_BLOCK_EDGE_ID_INLINE],
+          ['variable', KCL_SKETCH_BLOCK_EDGE_ID_VARIABLE],
+        ])('preserves endFaces for %s edgeId selection', (_, sample) => {
+          const code =
+            `@settings(defaultLengthUnit = mm, kclVersion = 2.0)\n${sample}`.replace(
+              'fillet(solid001, radius = 0.1',
+              `${operation}(solid001, ${operation === 'fillet' ? 'radius' : 'length'} = 0.1`
+            )
+          const ast = assertParse(code, wasmInstance)
+          const [start, end] = sourceRangeForCall(ast, 'extrude')
+          const graph = defaultArtifactGraph()
+          for (const [name, snippet] of [
+            ['hi', 'line(start = [7, 12], end = [startX, 0])'],
+            ['yoyo', 'line(start = [startX, 0], end = [7, 6])'],
+          ]) {
+            for (const [id, artifact] of createTaggedWallAndCapGraph(
+              ast,
+              code,
+              {
+                segmentId: `segment-${name}`,
+                wallId: `wall-${name}`,
+                capId: 'cap-end',
+                pathId: `path-${name}`,
+                sweepId: `sweep-${name}`,
+                segmentSnippet: snippet,
+                extrudeSnippet: code.slice(start, end),
+              }
+            )) {
+              if (artifact.type === 'segment') {
+                const originalSegId = `original-${id}`
+                graph.set(originalSegId, { ...artifact, id: originalSegId })
+                artifact.originalSegId = originalSegId
+              }
+              if (artifact.type === 'path' || artifact.type === 'segment') {
+                if (artifact.type === 'path') artifact.subType = 'region'
+                artifact.codeRef = {
+                  ...codeRefFromRange(sourceRangeForCall(ast, 'region'), ast),
+                  nodePath: { steps: [] },
+                }
+              }
+              graph.set(id, artifact)
+            }
+          }
+          // The notch leaves two edges with the same side faces. Preserve the
+          // end face so editing cannot expand one selected edge into both.
+          const metadata: EdgeRefactorMeta[] = [
+            {
+              edgeId: 'split-edge',
+              sourceRange: sourceRangeForCall(ast, 'edgeId'),
+              faceIds: facePair('wall-hi', 'wall-yoyo'),
+              endFaceIds: ['cap-end'],
+              stdlibFn: 'edgeId',
+            },
+          ]
+          const result = refactorZ0006Unified(
+            ast,
+            metadata,
+            [],
+            graph,
+            wasmInstance
+          )
+          if (err(result)) throw result
+          expect(result.replace(/\s/g, '')).toContain(
+            'sideFaces=[baseRegion.tags.hi,baseRegion.tags.yoyo],endFaces=[endCap]'
+          )
+          expect(norm(result)).not.toContain('tags = [')
+        })
+      }
+    )
+
     it('returns Error when edgeRefactorMetadata is empty', () => {
       const code =
         'body = startSketchOn(XY)\n  |> extrude(length = 1)\n  |> fillet(radius = 0.1, tags = [getOppositeEdge(e1)])'

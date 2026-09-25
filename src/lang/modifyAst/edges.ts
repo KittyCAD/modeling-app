@@ -1500,9 +1500,7 @@ function findFilletChamferCallsToFixUnified(
             )
             if (hasFaceIds(meta)) {
               triggerRanges.push([inner.start, inner.end, inner.moduleId])
-              orderedPayloads.push({
-                side_faces: meta.faceIds,
-              })
+              orderedPayloads.push(edgeRefactorMetaToPayload(meta))
             } else {
               hasUnconvertedTagsElement = true
             }
@@ -1556,9 +1554,7 @@ function findFilletChamferCallsToFixUnified(
               deprecatedCall.call.end,
               deprecatedCall.call.moduleId,
             ])
-            orderedPayloads.push({
-              side_faces: meta.faceIds,
-            })
+            orderedPayloads.push(edgeRefactorMetaToPayload(meta))
           } else {
             hasUnconvertedTagsElement = true
           }
