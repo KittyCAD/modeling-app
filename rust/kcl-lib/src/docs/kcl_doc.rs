@@ -1978,7 +1978,7 @@ export FOO = 1
                 TestGraphicsArtifact::Image(img) => assert_images_match(img),
                 TestGraphicsArtifact::ImageAndGlb { image, glb } => {
                     assert_images_match(image);
-                    // Doc generation omits the model viewer for a `engineRender` example. Its
+                    // Doc generation omits the model viewer for an `engineRender` example. Its
                     // glb export was already skipped by `execute_and_snapshot_3d`.
                     // Keep this in step with the `gltf_path` rule in `gen_std_tests`.
                     let path = format!(
