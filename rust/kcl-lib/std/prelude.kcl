@@ -101,7 +101,7 @@ export CW = "cw": string
 
 /// Create a helix.
 ///
-/// ```kcl,no3d,legacySketch
+/// ```kcl,engineRender,legacySketch
 /// // Create a helix around the Z axis.
 /// helixPath = helix(
 ///     angleStart = 0,
@@ -118,7 +118,7 @@ export CW = "cw": string
 ///     |> sweep(path = helixPath)
 /// ```
 ///
-/// ```kcl,no3d,legacySketch
+/// ```kcl,engineRender,legacySketch
 /// // Create a helix around an edge.
 /// helper001 = startSketchOn(XZ)
 ///  |> startProfile(at = [0, 0])
@@ -139,7 +139,7 @@ export CW = "cw": string
 ///     |> sweep(path = helixPath)
 /// ```
 ///
-/// ```kcl,no3d,legacySketch
+/// ```kcl,engineRender,legacySketch
 /// // Create a helix around a custom axis.
 /// helixPath = helix(
 ///     angleStart = 0,
@@ -159,7 +159,7 @@ export CW = "cw": string
 ///     |> sweep(path = helixPath)
 /// ```
 ///
-/// ```kcl,no3d,legacySketch
+/// ```kcl,engineRender,legacySketch
 /// // Create a helix on a cylinder.
 ///
 /// part001 = startSketchOn(XY)
@@ -286,7 +286,7 @@ export fn helix(
 /// loft([squareSketch, circleSketch])
 /// ```
 ///
-/// ```kcl,no3d,legacySketch
+/// ```kcl,engineRender,legacySketch
 /// // A circle on the XY plane
 /// startSketchOn(XY)
 ///   |> startProfile(at = [0, 0])

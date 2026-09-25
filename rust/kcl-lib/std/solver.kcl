@@ -669,7 +669,7 @@ export fn symmetric(
 ///
 /// Calling `fixed()` with one segment, such as `fixed(edge)`, is invalid and produces an argument error. `fixed()` requires an array of at least two points or segments. To anchor a point to a fixed position, pass both values, for example `fixed([edge.start, ORIGIN])`.
 ///
-/// ```kcl,no3d,sketchSolve
+/// ```kcl,engineRender,sketchSolve
 /// profile = sketch(on = XY) {
 ///   edge = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
 ///   fixed([edge.start, ORIGIN])

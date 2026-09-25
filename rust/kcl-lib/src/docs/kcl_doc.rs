@@ -894,7 +894,7 @@ pub struct ExampleProperties {
     #[allow(dead_code)]
     pub norun: bool,
     #[allow(dead_code)]
-    pub no3d: bool,
+    pub engine_render: bool,
     pub inline: bool,
     pub sketch_syntax: ExampleSketchSyntax,
     pub sketch_syntax_explicit: bool,
@@ -1347,14 +1347,14 @@ trait ApplyMeta {
                     let args = l[3..].split(',');
                     let mut inline = false;
                     let mut norun = false;
-                    let mut no3d = false;
+                    let mut engine_render = false;
                     let mut sketch_syntax = ExampleSketchSyntax::SketchSyntaxAgnostic;
                     let mut sketch_syntax_explicit = false;
                     for a in args {
                         match a.trim() {
                             "inline" => inline = true,
                             "norun" | "no_run" => norun = true,
-                            "no3d" | "no_3d" => no3d = true,
+                            "engineRender" => engine_render = true,
                             other => {
                                 if let Some(tag) = ExampleSketchSyntax::from_attr(other) {
                                     sketch_syntax = tag;
@@ -1367,7 +1367,7 @@ trait ApplyMeta {
                         String::new(),
                         ExampleProperties {
                             norun,
-                            no3d,
+                            engine_render,
                             inline,
                             sketch_syntax,
                             sketch_syntax_explicit,
@@ -1940,7 +1940,9 @@ export FOO = 1
             eprintln!("KCL program:\n---\n{}\n---", eg.0.trim_end());
 
             let result =
-                match crate::test_server::kcl_doc_execute_and_snapshot(&eg.0, None, eg.1.no3d, eg.1.norun).await {
+                match crate::test_server::kcl_doc_execute_and_snapshot(&eg.0, None, eg.1.engine_render, eg.1.norun)
+                    .await
+                {
                     Err(crate::errors::ExecError::Kcl(e)) => {
                         panic!(
                             "Error testing example {NAME} for {owner_name} in {}: {}",
@@ -1976,7 +1978,7 @@ export FOO = 1
                 TestGraphicsArtifact::Image(img) => assert_images_match(img),
                 TestGraphicsArtifact::ImageAndGlb { image, glb } => {
                     assert_images_match(image);
-                    // Doc generation omits the model viewer for a `no3d` example. Its
+                    // Doc generation omits the model viewer for a `engineRender` example. Its
                     // glb export was already skipped by `execute_and_snapshot_3d`.
                     // Keep this in step with the `gltf_path` rule in `gen_std_tests`.
                     let path = format!(
