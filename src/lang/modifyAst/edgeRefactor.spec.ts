@@ -560,6 +560,10 @@ filleted = fillet(
       sideFaces = [
         body.faces.capEnd001,
         baseRegion.tags.edge1
+      ],
+      endFaces = [
+        baseRegion.tags.edge4,
+        baseRegion.tags.edge2
       ]
     }
   ],
@@ -990,6 +994,122 @@ describe('refactorZ0006Unified', () => {
   })
 
   describe('unit (no engine)', () => {
+    describe.each([
+      ['fillet', 'fillet(solid001, radius = 0.1, tags = [EDGE])'],
+      ['chamfer', 'chamfer(solid001, length = 0.1, tags = [EDGE])'],
+      [
+        'helix',
+        'helix(axis = EDGE, radius = 1mm, length = 5mm, revolutions = 2)',
+      ],
+      ['revolve', 'revolve(baseRegion, axis = EDGE, angle = 90deg)'],
+      ['mirror3d', 'mirror3d(solid001, across = EDGE)'],
+      ['GD&T edges', 'gdt::straightness(edges = [EDGE], tolerance = 0.1mm)'],
+      [
+        'GD&T from',
+        'gdt::distance(from = EDGE, to = [0, 0, 0], tolerance = 0.1mm)',
+      ],
+      [
+        'GD&T to',
+        'gdt::distance(from = [0, 0, 0], to = EDGE, tolerance = 0.1mm)',
+      ],
+      ['getBoundedEdge', 'getBoundedEdge(solid001, edge = EDGE)'],
+      ['extrude target', 'extrude(EDGE, length = 5mm, bodyType = SURFACE)'],
+      ['extrude to', 'extrude(baseRegion, to = EDGE)'],
+      [
+        'extrude direction',
+        'extrude(baseRegion, direction = EDGE, length = 5mm)',
+      ],
+    ])('%s split-edge migration', (operation, call) => {
+      const selections =
+        operation === 'getBoundedEdge'
+          ? ['inline']
+          : operation === 'mirror3d'
+            ? ['inline', 'variable', 'direct tag']
+            : ['inline', 'variable']
+      it.each(selections)(
+        'preserves endFaces for %s selection',
+        (selection) => {
+          const edge =
+            selection === 'variable'
+              ? 'yo'
+              : selection === 'direct tag'
+                ? 'myExtrude.sketch.tags.yoyo'
+                : 'edgeId(solid001, index = 5)'
+          const sample =
+            selection === 'variable'
+              ? KCL_SKETCH_BLOCK_EDGE_ID_VARIABLE
+              : KCL_SKETCH_BLOCK_EDGE_ID_INLINE
+          const code = `@settings(defaultLengthUnit = mm, kclVersion = 2.0)\n${sample.slice(0, sample.lastIndexOf('\nfillet('))}
+${call.replace('EDGE', edge)}
+`
+          const ast = assertParse(code, wasmInstance)
+          const [start, end] = sourceRangeForCall(ast, 'extrude')
+          const graph = defaultArtifactGraph()
+          for (const [name, snippet] of [
+            ['hi', 'line(start = [7, 12], end = [startX, 0])'],
+            ['yoyo', 'line(start = [startX, 0], end = [7, 6])'],
+          ]) {
+            for (const [id, artifact] of createTaggedWallAndCapGraph(
+              ast,
+              code,
+              {
+                segmentId: `segment-${name}`,
+                wallId: `wall-${name}`,
+                capId: 'cap-end',
+                pathId: `path-${name}`,
+                sweepId: `sweep-${name}`,
+                segmentSnippet: snippet,
+                extrudeSnippet: code.slice(start, end),
+              }
+            )) {
+              if (artifact.type === 'segment') {
+                const originalSegId = `original-${id}`
+                graph.set(originalSegId, { ...artifact, id: originalSegId })
+                artifact.originalSegId = originalSegId
+              }
+              if (artifact.type === 'path' || artifact.type === 'segment') {
+                if (artifact.type === 'path') artifact.subType = 'region'
+                artifact.codeRef = {
+                  ...codeRefFromRange(sourceRangeForCall(ast, 'region'), ast),
+                  nodePath: { steps: [] },
+                }
+              }
+              graph.set(id, artifact)
+            }
+          }
+          // The notch leaves two edges with the same side faces. Preserve the
+          // end face so editing cannot expand one selected edge into both.
+          const metadata: EdgeRefactorMeta[] = [
+            {
+              edgeId: 'split-edge',
+              sourceRange:
+                selection === 'direct tag'
+                  ? sourceRangeForSnippet(code, edge)
+                  : sourceRangeForCall(ast, 'edgeId'),
+              faceIds: facePair('wall-hi', 'wall-yoyo'),
+              endFaceIds: ['cap-end'],
+              stdlibFn: selection === 'direct tag' ? 'directEdgeTag' : 'edgeId',
+            },
+          ]
+          const result = refactorZ0006Unified(
+            ast,
+            metadata,
+            [],
+            graph,
+            wasmInstance
+          )
+          if (err(result)) throw result
+          expect(result.replace(/\s/g, '')).toContain(
+            'sideFaces=[baseRegion.tags.hi,baseRegion.tags.yoyo],endFaces=[endCap]'
+          )
+          expect(norm(result)).not.toContain('tags = [')
+          expect(
+            sourceRangesForCalls(assertParse(result, wasmInstance), 'edgeId')
+          ).toHaveLength(selection === 'variable' ? 1 : 0)
+        }
+      )
+    })
+
     it('returns Error when edgeRefactorMetadata is empty', () => {
       const code =
         'body = startSketchOn(XY)\n  |> extrude(length = 1)\n  |> fillet(radius = 0.1, tags = [getOppositeEdge(e1)])'
@@ -1200,7 +1320,7 @@ describe('refactorZ0006Unified', () => {
       ]
       const toFix = findRevolveHelixCallsToFix(ast, metadata)
       expect(toFix.length).toBeGreaterThanOrEqual(1)
-      expect(toFix[0]?.faceIds).toHaveLength(2)
+      expect(toFix[0]?.payload.side_faces).toHaveLength(2)
       expect(toFix[0]?.pathToCall?.length ?? 0).toBeGreaterThan(0)
     })
 
@@ -1679,8 +1799,11 @@ part = bracket()
         kcl: SAMPLE_KCL,
         expected: [
           'extrude(length = 5, tagEnd = $capEnd001)',
-          'fillet(radius = 1, edges = [',
+          'fillet(',
+          'radius = 1',
+          'edges = [',
           'sideFaces = [capEnd001, e1]',
+          'endFaces = [seg01, seg02]',
         ],
       },
       {
@@ -2087,7 +2210,7 @@ surface001 = extrude(
         expect(n).toContain(
           'sideFaces = [ baseRegion.tags.line2, baseRegion.tags.yoyo ]'
         )
-        expect(n).not.toContain('endFaces')
+        expect(n).toContain('endFaces = [startCap, cutRegion.tags.line3]')
         expect(n).not.toContain(removed)
       })
     }
@@ -2238,12 +2361,12 @@ surface001 = extrude(
         }
         expect(n).toContain('axis')
         expect(n).not.toContain('axis = getOppositeEdge')
-        // Assert full revolve line after successful refactor: axis = { sideFaces = [seg02, capEnd001] } (order may vary)
+        // Assert the axis keeps both side faces and the two end faces (side-face order may vary).
         const revolveLineWithAxis =
-          /revolve001\s*=\s*revolve\s*\(\s*profile001\s*,\s*angle\s*=\s*360deg\s*,\s*axis\s*=\s*\{\s*sideFaces\s*=\s*\[\s*(?:seg02\s*,\s*capEnd001|capEnd001\s*,\s*seg02)\s*\]\s*\}\s*\)/
+          /revolve001\s*=\s*revolve\s*\(\s*profile001\s*,\s*angle\s*=\s*360deg\s*,\s*axis\s*=\s*\{\s*sideFaces\s*=\s*\[\s*(?:seg02\s*,\s*capEnd001|capEnd001\s*,\s*seg02)\s*\],\s*endFaces\s*=\s*\[\s*\w+\s*,\s*\w+\s*,?\s*\]\s*,?\s*\}\s*,?\s*\)/
         expect(
           n,
-          'Refactored code should contain revolve line with axis and sideFaces = [seg02, capEnd001] (or [capEnd001, seg02])'
+          'Refactored revolve axis should contain sideFaces = [seg02, capEnd001] (either order) and two endFaces'
         ).toMatch(revolveLineWithAxis)
       }
     )
@@ -2405,16 +2528,20 @@ surface001 = extrude(
        radius = radius,
        edges = [
          {
-           sideFaces = [bs.tags.edge7, bs.tags.edge6]
+           sideFaces = [bs.tags.edge7, bs.tags.edge6],
+           endFaces = [capEnd001, capStart001]
          },
          {
-           sideFaces = [bs.tags.edge1, bs.tags.edge2]
+           sideFaces = [bs.tags.edge1, bs.tags.edge2],
+           endFaces = [capEnd001, capStart001]
          },
          {
-           sideFaces = [bs.tags.edge2, bs.tags.edge3]
+           sideFaces = [bs.tags.edge2, bs.tags.edge3],
+           endFaces = [capEnd001, capStart001]
          },
          {
-           sideFaces = [bs.tags.edge5, bs.tags.edge6]
+           sideFaces = [bs.tags.edge5, bs.tags.edge6],
+           endFaces = [capEnd001, capStart001]
          }
        ],
      )`
