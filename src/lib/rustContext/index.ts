@@ -192,10 +192,10 @@ export default class RustContext {
   }
 
   /** Evaluate an input expression with the current Rust model's settings. */
-  async executeExpression(node: Node<Program>): Promise<ExecState> {
+  async evaluateExpression(node: Node<Program>): Promise<ExecState> {
     const instance = await this._checkContextInstance()
     try {
-      const result = await instance.executeExpression(
+      const result = await instance.evaluateExpression(
         JSON.stringify(node),
         JSON.stringify(jsAppSettings(this.settingsActor))
       )

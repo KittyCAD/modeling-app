@@ -1,6 +1,6 @@
 import type { Expr } from '@rust/kcl-lib/bindings/FrontendApi'
 import { toUtf16 } from '@src/lang/errors'
-import { executeAstMock } from '@src/lang/executeAstMock'
+import { evaluateExpression } from '@src/lang/executeAstMock'
 import { forceSuffix } from '@src/lang/util'
 import {
   type KclValueView,
@@ -50,11 +50,10 @@ export async function getCalculatedKclExpressionValue(
   if (err(pResult) || !resultIsOk(pResult)) return pResult
   const ast = pResult.program
 
-  // Execute the program without hitting the engine
-  const { execState } = await executeAstMock({
+  // Evaluate the input using the current model's settings and variables.
+  const { execState } = await evaluateExpression({
     ast,
     rustContext,
-    asExpression: true,
   })
 
   // Find the variable declaration for the result

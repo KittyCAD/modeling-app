@@ -143,8 +143,8 @@ impl Context {
     }
 
     /// Evaluate an input expression in the current model's context without contacting the engine.
-    #[wasm_bindgen(js_name = executeExpression)]
-    pub async fn execute_expression(&self, program_ast_json: &str, settings: &str) -> Result<JsValue, JsValue> {
+    #[wasm_bindgen(js_name = evaluateExpression)]
+    pub async fn evaluate_expression(&self, program_ast_json: &str, settings: &str) -> Result<JsValue, JsValue> {
         console_error_panic_hook::set_once();
 
         let program: Program =
@@ -156,7 +156,7 @@ impl Context {
         // Serialize with execution, sketch edits and checkpoint restores while using their memory.
         let guard = self.frontend.write().await;
         let result = guard
-            .execute_expression(&ctx, program.fill_node_paths())
+            .evaluate_expression(&ctx, program.fill_node_paths())
             .await
             .map_err(|e| js_value_from_serde(&e))?;
 

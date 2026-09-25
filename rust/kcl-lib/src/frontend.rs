@@ -1962,7 +1962,7 @@ impl SketchApi for FrontendState {
 
 impl FrontendState {
     /// Evaluate an input expression using the current model's settings and cached variables.
-    pub async fn execute_expression(&self, ctx: &ExecutorContext, mut program: Program) -> ExecResult<ExecOutcome> {
+    pub async fn evaluate_expression(&self, ctx: &ExecutorContext, mut program: Program) -> ExecResult<ExecOutcome> {
         program.ast.inner_attrs.clone_from(&self.program.ast.inner_attrs);
         ctx.run_mock(&program, &MockConfig::default()).await
     }
