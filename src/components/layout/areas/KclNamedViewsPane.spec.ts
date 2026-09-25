@@ -3,6 +3,7 @@ import type { ModulePath } from '@rust/kcl-lib/bindings/ModulePath'
 import {
   canManageNamedView,
   namedViewDetail,
+  nextViewSelection,
   viewRows,
 } from '@src/components/layout/areas/KclNamedViewsPane'
 import type { KclNamedView } from '@src/lang/std/kclNamedViews'
@@ -144,5 +145,77 @@ describe('viewRows', () => {
     expect(canManageNamedView(view({ name: 'Import', moduleId: 1 }))).toBe(
       false
     )
+  })
+})
+
+describe('nextViewSelection', () => {
+  const rowKeys = ['default', 'front', 'top', 'detail']
+
+  it('makes a plain click the only selection', () => {
+    const result = nextViewSelection({
+      selected: new Set(['front', 'top']),
+      rowKey: 'detail',
+      rowIndex: 3,
+      anchorIndex: 1,
+      rowKeys,
+      shiftKey: false,
+      toggleKey: false,
+    })
+
+    expect([...result.selected]).toEqual(['detail'])
+    expect(result.anchorIndex).toBe(3)
+  })
+
+  it('toggles a row with Command or Control click', () => {
+    const added = nextViewSelection({
+      selected: new Set(['front']),
+      rowKey: 'top',
+      rowIndex: 2,
+      anchorIndex: 1,
+      rowKeys,
+      shiftKey: false,
+      toggleKey: true,
+    })
+    expect([...added.selected]).toEqual(['front', 'top'])
+
+    const removed = nextViewSelection({
+      selected: added.selected,
+      rowKey: 'front',
+      rowIndex: 1,
+      anchorIndex: added.anchorIndex,
+      rowKeys,
+      shiftKey: false,
+      toggleKey: true,
+    })
+    expect([...removed.selected]).toEqual(['top'])
+  })
+
+  it('selects a contiguous range with Shift click', () => {
+    const result = nextViewSelection({
+      selected: new Set(['front']),
+      rowKey: 'detail',
+      rowIndex: 3,
+      anchorIndex: 1,
+      rowKeys,
+      shiftKey: true,
+      toggleKey: false,
+    })
+
+    expect([...result.selected]).toEqual(['front', 'top', 'detail'])
+    expect(result.anchorIndex).toBe(1)
+  })
+
+  it('adds a Shift range when Command or Control is also held', () => {
+    const result = nextViewSelection({
+      selected: new Set(['default']),
+      rowKey: 'detail',
+      rowIndex: 3,
+      anchorIndex: 2,
+      rowKeys,
+      shiftKey: true,
+      toggleKey: true,
+    })
+
+    expect([...result.selected]).toEqual(['default', 'top', 'detail'])
   })
 })

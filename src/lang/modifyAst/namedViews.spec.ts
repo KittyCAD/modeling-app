@@ -1,4 +1,8 @@
-import { addNamedView } from '@src/lang/modifyAst/namedViews'
+import {
+  addNamedView,
+  renameNamedView,
+  updateNamedViewCamera,
+} from '@src/lang/modifyAst/namedViews'
 import { assertParse, getAllOperations, recast } from '@src/lang/wasm'
 import type { ModelingCommandSchema } from '@src/lib/commandBarConfigs/modelingCommandConfig'
 import type { KclCommandValue } from '@src/lib/commandTypes'
@@ -18,7 +22,6 @@ let rustContext: RustContext = null!
 
 beforeEach(async () => {
   if (instance) return
-
   ;({ instance, engineCommandManager, rustContext } =
     await buildTheWorldAndNoEngineConnection())
 })
@@ -194,5 +197,80 @@ view001 = view::named(
     expect(updatedCode).toContain('view::Projection::Orthographic')
     expect(updatedCode).toContain('view::Visibility::Hide')
     expect(updatedCode).toContain('except = [extrude001]')
+  })
+})
+
+describe('small named-view edits', () => {
+  const code = `@settings(kclVersion = "3.0-preview")
+
+view001 = view::named(
+  "Inspection view",
+  camera = view::oriented(
+    view::Orientation::Front,
+    distance = 200mm,
+    projection = view::Projection::Perspective,
+  ),
+  baseline = view::Visibility::Show,
+)`
+
+  async function subject() {
+    const ast = assertParse(code, instance)
+    const execState = await enginelessExecutor(ast, rustContext)
+    const artifact = [...execState.artifactGraph.values()].find(
+      (candidate) => candidate.type === 'namedView'
+    )
+    if (!artifact || artifact.type !== 'namedView') {
+      throw new Error('Expected a named view artifact')
+    }
+    return { ast, artifact }
+  }
+
+  it('renames without rebuilding the camera or visibility', async () => {
+    const { ast, artifact } = await subject()
+    const modifiedAst = renameNamedView({
+      ast,
+      pathToNode: artifact.codeRef.pathToNode,
+      name: 'Close-up',
+      wasmInstance: instance,
+    })
+    if (err(modifiedAst)) throw modifiedAst
+
+    await enginelessExecutor(modifiedAst, rustContext)
+    const updatedCode = recast(modifiedAst, instance)
+    if (err(updatedCode)) throw updatedCode
+    expect(updatedCode).toContain('"Close-up"')
+    expect(updatedCode).toContain('view::Orientation::Front')
+    expect(updatedCode).toContain('distance = 200mm')
+    expect(updatedCode).toContain('baseline = view::Visibility::Show')
+  })
+
+  it('replaces only the camera with the current directed camera', async () => {
+    const { ast, artifact } = await subject()
+    const modifiedAst = updateNamedViewCamera({
+      ast,
+      pathToNode: artifact.codeRef.pathToNode,
+      camera: {
+        direction: [0.25, -0.5, -0.75],
+        up: [0, 0, 1],
+        target: [10, 20, 30],
+        distance: 125.5,
+        projection: 'Orthographic',
+      },
+      wasmInstance: instance,
+    })
+    if (err(modifiedAst)) throw modifiedAst
+
+    await enginelessExecutor(modifiedAst, rustContext)
+    const updatedCode = recast(modifiedAst, instance)
+    if (err(updatedCode)) throw updatedCode
+    expect(updatedCode).toContain(`camera = view::directed(
+    [0.25, -0.5, -0.75],
+    up = [0, 0, 1],
+    target = [10mm, 20mm, 30mm],
+    distance = 125.5mm,
+    projection = view::Projection::Orthographic,
+  )`)
+    expect(updatedCode).toContain('"Inspection view"')
+    expect(updatedCode).toContain('baseline = view::Visibility::Show')
   })
 })
