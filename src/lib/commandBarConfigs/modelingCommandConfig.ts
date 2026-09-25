@@ -61,6 +61,7 @@ import type {
 import { getNextAvailableDatumName } from '@src/lang/modifyAst/gdt'
 import type { StdLibModelingCommandSchema } from '@src/lib/commandBarConfigs/modelingCommandStdLibTypes'
 import { capitaliseFC, isArray } from '@src/lib/utils'
+import { MODE_SKETCHING_COMMAND_SCOPE } from '@src/registry/contracts/commands'
 
 export type { HelixModes } from '@src/lib/commandBarConfigs/modelingCommandStdLibTypes'
 
@@ -342,6 +343,7 @@ const datumsProps = {
   kclValueToInput: kclDatumArrayToInput,
   valueSummary: summarizeDatumKclValue,
   required: false,
+  description: 'Comma separated list of 1-3 characters',
 } satisfies CommandArgumentConfig<KclCommandValue, ModelingMachineContext>
 
 const gdtFrameDisplayArgOverrides = {
@@ -378,6 +380,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
   },
   'change tool': [
     {
+      scopes: [MODE_SKETCHING_COMMAND_SCOPE],
       description: 'Start drawing straight lines.',
       icon: 'line',
       displayName: 'Line',
@@ -391,6 +394,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       },
     },
     {
+      scopes: [MODE_SKETCHING_COMMAND_SCOPE],
       description: 'Start drawing an arc tangent to the current segment.',
       icon: 'arc',
       displayName: 'Tangential Arc',
@@ -404,6 +408,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       },
     },
     {
+      scopes: [MODE_SKETCHING_COMMAND_SCOPE],
       description: 'Start drawing a rectangle.',
       icon: 'rectangle',
       displayName: 'Rectangle',
@@ -439,7 +444,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         defaultValue: (c) => {
           switch (c.argumentsToSubmit.type) {
             case 'gltf':
-              return 'embedded'
+              return 'binary'
             case 'stl':
               return 'ascii'
             case 'ply':
@@ -465,8 +470,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           switch (type) {
             case 'gltf':
               return [
-                { name: 'embedded', isCurrent: true, value: 'embedded' },
-                { name: 'binary', isCurrent: false, value: 'binary' },
+                { name: 'binary', isCurrent: true, value: 'binary' },
+                { name: 'embedded', isCurrent: false, value: 'embedded' },
                 { name: 'standard', isCurrent: false, value: 'standard' },
               ]
             case 'stl':
@@ -655,6 +660,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
             clearSelectionFirst: true,
             multiple: false,
             description: 'Only parallel faces are supported for now.',
+            hidden: isEditingNodeSelection,
           },
           tagStart: {
             // TODO: add validation like for Clone command
@@ -672,6 +678,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
             ],
             multiple: false,
             clearSelectionFirst: true,
+            hidden: isEditingNodeSelection,
           },
           method: {
             inputType: 'options',
@@ -1399,6 +1406,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     ),
   },
   'Constrain length': {
+    scopes: [MODE_SKETCHING_COMMAND_SCOPE],
     description: 'Constrain the length of one or more segments.',
     icon: 'dimension',
     args: {
@@ -1442,6 +1450,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     },
   },
   'Constrain with named value': {
+    scopes: [MODE_SKETCHING_COMMAND_SCOPE],
     description: 'Constrain a value by making it a named constant.',
     icon: 'make-variable',
     args: {
@@ -1655,7 +1664,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         },
         variableName: {
           inputType: 'string',
-          required: true,
+          required: (context) => !isEditingNodeSelection(context),
+          hidden: isEditingNodeSelection,
           defaultValue: (
             _: unknown,
             modelingContext?: ModelingMachineContext

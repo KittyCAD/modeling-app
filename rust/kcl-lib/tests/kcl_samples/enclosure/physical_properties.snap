@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties enclosure.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": 137.50000000000006,
+      "y": 87.5,
+      "z": 36.5
+    },
+    "dimensions": {
+      "x": 275.0000000000001,
+      "y": 181.2,
+      "z": 73.0
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 227163.8013306685
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 330.47592629820156
+  }
+}

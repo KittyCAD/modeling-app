@@ -1,0 +1,13 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing tests/import_error_in_other_module_with_overflow/derived.kcl
+---
+// Repeat this padding comment until the function starts after byte 100.
+// imported-module padding
+// imported-module padding
+// imported-module padding
+// imported-module padding
+// imported-module padding
+export fn derived() {
+  return PI * 2
+}

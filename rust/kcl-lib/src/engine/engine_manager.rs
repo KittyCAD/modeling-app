@@ -14,6 +14,7 @@ use kcmc::websocket::ModelingSessionData;
 use kcmc::websocket::OkWebSocketResponseData;
 use kcmc::websocket::WebSocketRequest;
 use kcmc::websocket::WebSocketResponse;
+use kittycad_modeling_cmds::ModelingCmdEndpoint;
 use kittycad_modeling_cmds::length_unit::LengthUnit;
 use kittycad_modeling_cmds::ok_response::OkModelingCmdResponse;
 use kittycad_modeling_cmds::websocket::ModelingBatch;
@@ -84,6 +85,9 @@ pub struct EngineManager {
     /// If the server sends session data, it'll be copied to here.
     session_data: Arc<RwLock<Option<ModelingSessionData>>>,
 
+    /// Request ID returned by the HTTP request that upgraded to this WebSocket.
+    websocket_upgrade_request_id: Option<String>,
+
     #[builder(default)]
     stats: EngineStats,
 
@@ -100,6 +104,7 @@ impl std::fmt::Debug for EngineManager {
             .field("ids_of_async_commands", &self.ids_of_async_commands)
             .field("default_planes", &self.default_planes)
             .field("session_data", &self.session_data)
+            .field("websocket_upgrade_request_id", &self.websocket_upgrade_request_id)
             .field("stats", &self.stats)
             .field("async_tasks", &self.async_tasks)
             .finish()
@@ -126,6 +131,7 @@ impl EngineManager {
             ids_of_async_commands,
             default_planes: Default::default(),
             session_data,
+            websocket_upgrade_request_id: None,
             stats: Default::default(),
             async_tasks: Default::default(),
         }
@@ -133,6 +139,15 @@ impl EngineManager {
 
     #[cfg(not(target_arch = "wasm32"))]
     pub async fn new_websocket_transport(ws: reqwest::Upgraded, heartbeats: Option<u64>) -> Self {
+        Self::new_websocket_transport_with_request_id(ws, heartbeats, None).await
+    }
+
+    #[cfg(not(target_arch = "wasm32"))]
+    pub(crate) async fn new_websocket_transport_with_request_id(
+        ws: reqwest::Upgraded,
+        heartbeats: Option<u64>,
+        request_id: Option<String>,
+    ) -> Self {
         use crate::engine::engine_manager::ws_transport::WebSocketTransport;
 
         let session_data: Arc<RwLock<Option<ModelingSessionData>>> = Arc::new(RwLock::new(None));
@@ -150,6 +165,7 @@ impl EngineManager {
             Arc::clone(&session_data),
             Arc::clone(&pending_errors),
             Arc::clone(&socket_health),
+            request_id.clone(),
         )
         .await;
 
@@ -161,6 +177,7 @@ impl EngineManager {
             ids_of_async_commands,
             default_planes: Default::default(),
             session_data,
+            websocket_upgrade_request_id: request_id,
             stats: Default::default(),
             async_tasks: Default::default(),
         }
@@ -184,6 +201,7 @@ impl EngineManager {
             ids_of_async_commands,
             default_planes: Default::default(),
             session_data,
+            websocket_upgrade_request_id: None,
             stats: Default::default(),
             async_tasks: Default::default(),
         }
@@ -204,6 +222,7 @@ impl EngineManager {
         batch_context: &EngineBatchContext,
         id_generator: &mut IdGenerator,
         source_range: SourceRange,
+        geometry_only: bool,
     ) -> Result<(), crate::errors::KclError> {
         // Clear any batched commands leftover from previous scenes.
         self.clear_queues(batch_context).await;
@@ -221,7 +240,7 @@ impl EngineManager {
         self.flush_batch(batch_context, false, source_range).await?;
 
         // Do the after clear scene hook.
-        self.clear_scene_post_hook(batch_context, id_generator, source_range)
+        self.clear_scene_post_hook(batch_context, id_generator, source_range, geometry_only)
             .await?;
 
         Ok(())
@@ -344,6 +363,9 @@ impl EngineManager {
         id_generator: &mut IdGenerator,
         grid_scale_unit: GridScaleBehavior,
     ) -> Result<(), crate::errors::KclError> {
+        if settings.geometry_only {
+            return Ok(());
+        }
         // Set the edge visibility.
         self.set_edge_visibility(batch_context, settings.highlight_edges, source_range, id_generator)
             .await?;
@@ -524,10 +546,14 @@ impl EngineManager {
         // Create the map of original command IDs to source range.
         // This is for the wasm side, kurt needs it for selections.
         let mut id_to_source_range = HashMap::new();
+
+        let mut id_to_command = HashMap::new();
         for (req, range) in orig_requests.iter() {
             match req {
-                WebSocketRequest::ModelingCmdReq(ModelingCmdReq { cmd: _, cmd_id }) => {
-                    id_to_source_range.insert(Uuid::from(*cmd_id), *range);
+                WebSocketRequest::ModelingCmdReq(ModelingCmdReq { cmd, cmd_id }) => {
+                    let id = Uuid::from(*cmd_id);
+                    id_to_source_range.insert(id, *range);
+                    id_to_command.insert(id, ModelingCmdEndpoint::from(cmd));
                 }
                 _ => {
                     return Err(KclError::new_engine(KclErrorDetails::new(
@@ -556,8 +582,7 @@ impl EngineManager {
 
                 // If we have a batch response, we want to return the specific id we care about.
                 if let OkWebSocketResponseData::ModelingBatch { responses } = response {
-                    let responses = responses.into_iter().map(|(k, v)| (Uuid::from(k), v)).collect();
-                    self.parse_batch_responses(last_id.into(), id_to_source_range, responses)
+                    self.parse_batch_responses(last_id.into(), id_to_source_range, id_to_command, responses)
                 } else {
                     // We should never get here.
                     Err(KclError::new_engine(KclErrorDetails::new(
@@ -660,24 +685,15 @@ impl EngineManager {
         batch_context: &EngineBatchContext,
         id_generator: &mut IdGenerator,
         source_range: SourceRange,
+        geometry_only: bool,
     ) -> Result<DefaultPlanes, KclError> {
         let plane_opacity = 0.1;
+        let plane_color =
+            |red, green, blue| (!geometry_only).then(|| Color::from_rgba(red, green, blue, plane_opacity));
         let plane_settings: Vec<(PlaneName, Uuid, Option<Color>)> = vec![
-            (
-                PlaneName::Xy,
-                id_generator.next_uuid(),
-                Some(Color::from_rgba(0.7, 0.28, 0.28, plane_opacity)),
-            ),
-            (
-                PlaneName::Yz,
-                id_generator.next_uuid(),
-                Some(Color::from_rgba(0.28, 0.7, 0.28, plane_opacity)),
-            ),
-            (
-                PlaneName::Xz,
-                id_generator.next_uuid(),
-                Some(Color::from_rgba(0.28, 0.28, 0.7, plane_opacity)),
-            ),
+            (PlaneName::Xy, id_generator.next_uuid(), plane_color(0.7, 0.28, 0.28)),
+            (PlaneName::Yz, id_generator.next_uuid(), plane_color(0.28, 0.7, 0.28)),
+            (PlaneName::Xz, id_generator.next_uuid(), plane_color(0.28, 0.28, 0.7)),
             (PlaneName::NegXy, id_generator.next_uuid(), None),
             (PlaneName::NegYz, id_generator.next_uuid(), None),
             (PlaneName::NegXz, id_generator.next_uuid(), None),
@@ -745,55 +761,71 @@ impl EngineManager {
         id: uuid::Uuid,
         // The mapping of source ranges to command IDs.
         id_to_source_range: HashMap<uuid::Uuid, SourceRange>,
+        // Allows us to print which command failed
+        id_to_command: HashMap<uuid::Uuid, ModelingCmdEndpoint>,
         // The response from the engine.
-        responses: HashMap<uuid::Uuid, BatchResponse>,
+        responses: HashMap<kcmc::id::ModelingCmdId, BatchResponse>,
     ) -> Result<OkWebSocketResponseData, crate::errors::KclError> {
+        let mut any_err: Option<crate::errors::KclError> = None;
+        let mut target_ok: Option<OkWebSocketResponseData> = None;
         // Iterate over the responses and check for errors.
+        // Any error takes precedent over any Ok.
         #[expect(
             clippy::iter_over_hash_type,
             reason = "modeling command uses a HashMap and keys are random, so we don't really have a choice"
         )]
         for (cmd_id, resp) in responses.iter() {
+            let cmd_id = Uuid::from(*cmd_id);
             match resp {
-                BatchResponse::Success { response } => {
-                    if cmd_id == &id {
-                        // This is the response we care about.
-                        return Ok(OkWebSocketResponseData::Modeling {
-                            modeling_response: response.clone(),
-                        });
-                    } else {
-                        // Continue the loop if this is not the response we care about.
-                        continue;
-                    }
+                BatchResponse::Success { response } if cmd_id == id => {
+                    // This is the response we care about.
+                    // Keep looking for errors after locating it.
+                    target_ok = Some(OkWebSocketResponseData::Modeling {
+                        modeling_response: response.clone(),
+                    });
                 }
+                BatchResponse::Success { .. } => continue,
                 BatchResponse::Failure { errors } => {
+                    let command = id_to_command
+                        .get(&cmd_id)
+                        .map(ModelingCmdEndpoint::to_string)
+                        .unwrap_or("[missing entry]".to_string());
                     // Get the source range for the command.
-                    let source_range = id_to_source_range.get(cmd_id).cloned().ok_or_else(|| {
+                    let source_range = id_to_source_range.get(&cmd_id).cloned().ok_or_else(|| {
                         KclError::new_engine(KclErrorDetails::new(
-                            format!("Failed to get source range for command ID: {cmd_id:?}"),
+                            format!("Failed to get source range for command {command} with ID: {cmd_id:?}"),
                             vec![],
                         ))
                     })?;
                     if errors.is_empty() {
-                        return Err(KclError::new_engine(KclErrorDetails::new(
-                            "Failure response for batch with no error details".to_owned(),
+                        any_err = Some(KclError::new_engine(KclErrorDetails::new(
+                            format!("Failure response for batch with no error details at command {command}"),
                             vec![source_range],
                         )));
+                        break;
                     }
-                    return Err(KclError::new_engine(KclErrorDetails::new(
-                        errors.iter().map(|e| e.message.clone()).collect::<Vec<_>>().join("\n"),
+                    let errors = errors.iter().map(|e| e.message.clone()).collect::<Vec<_>>().join("\n");
+                    any_err = Some(KclError::new_engine(KclErrorDetails::new(
+                        format!("command {command} resulted in errors: \n {errors}"),
                         vec![source_range],
                     )));
+                    break;
                 }
             }
         }
 
-        // Return an error that we did not get an error or the response we wanted.
-        // This should never happen but who knows.
-        Err(KclError::new_engine(KclErrorDetails::new(
-            format!("Failed to find response for command ID: {id:?}"),
-            vec![],
-        )))
+        match (any_err, target_ok) {
+            (Some(err), _) => Err(err),
+            (None, Some(ok)) => Ok(ok),
+            (None, None) => {
+                // Return an error that we did not get an error or the response we wanted.
+                // This should never happen but who knows.
+                Err(KclError::new_engine(KclErrorDetails::new(
+                    format!("Failed to find response for command ID: {id:?}"),
+                    vec![],
+                )))
+            }
+        }
     }
 
     async fn set_user_colors(
@@ -902,10 +934,11 @@ impl EngineManager {
         batch_context: &EngineBatchContext,
         id_generator: &mut IdGenerator,
         source_range: SourceRange,
+        geometry_only: bool,
     ) -> Result<(), KclError> {
         // Remake the default planes, since they would have been removed after the scene was cleared.
         let new_planes = self
-            .new_default_planes(batch_context, id_generator, source_range)
+            .new_default_planes(batch_context, id_generator, source_range, geometry_only)
             .await?;
         *self.default_planes.write().await = Some(new_planes);
 
@@ -932,6 +965,11 @@ impl EngineManager {
 
     pub async fn get_session_data(&self) -> Option<ModelingSessionData> {
         self.session_data.read().await.clone()
+    }
+
+    /// Request ID returned by the HTTP request that upgraded to this WebSocket.
+    pub fn websocket_upgrade_request_id(&self) -> Option<&str> {
+        self.websocket_upgrade_request_id.as_deref()
     }
 
     pub async fn close(&self) {

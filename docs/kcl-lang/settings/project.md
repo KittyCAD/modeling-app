@@ -27,25 +27,13 @@ base_unit = "in"
 
 ## Available Settings
 
+### cloud
+
+
+
+
 ### settings
 
-
-
-#### meta
-
-Information about the project itself. Choices about how settings are merged have prevent me (lee) from easily moving this out of the settings structure.
-
-
-**Default:** None
-
-This setting has the following nested options:
-
-##### id
-
-
-
-
-**Default:** None
 
 
 #### app
@@ -56,6 +44,13 @@ The settings for the Design Studio.
 **Default:** None
 
 This setting has the following nested options:
+
+##### named_views
+
+Settings that affect the behavior of the command bar.
+
+
+**Default:** None
 
 ##### stream_idle_mode
 
@@ -71,9 +66,19 @@ Zookeeper reasoning mode. Uses the app default if not set.
 
 **Default:** None
 
-##### named_views
 
-Settings that affect the behavior of the command bar.
+#### meta
+
+Information about the project itself. Choices about how settings are merged have prevent me (lee) from easily moving this out of the settings structure.
+
+
+**Default:** None
+
+This setting has the following nested options:
+
+##### id
+
+
 
 
 **Default:** None
@@ -95,13 +100,6 @@ The default unit to use in modeling dimensions.
 
 **Default:** None
 
-##### highlight_edges
-
-Highlight edges of 3D objects?
-
-
-**Default:** None
-
 ##### enable_ssao
 
 Whether or not Screen Space Ambient Occlusion (SSAO) is enabled.
@@ -116,10 +114,12 @@ When enabled, the grid will use a fixed size based on your selected units rather
 
 **Default:** None
 
+##### highlight_edges
+
+Highlight edges of 3D objects?
 
 
-### cloud
-
+**Default:** None
 
 
 

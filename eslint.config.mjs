@@ -11,6 +11,9 @@ import reactPerf from 'eslint-plugin-react-perf'
 import suggestNoThrow from 'eslint-plugin-suggest-no-throw'
 import { defineConfig, globalIgnores } from 'eslint/config'
 import noCodemirrorPrintableKeymapKeystrokes from './src/eslint/rules/no-codemirror-printable-keymap-keystrokes.mjs'
+import noDirectFsZdsIo from './src/eslint/rules/no-direct-fszds-io.mjs'
+import noInternalFileSystemImports from './src/eslint/rules/no-internal-file-system-imports.mjs'
+import interactionExpectations from './src/eslint/rules/interaction-expectations.mjs'
 
 const compat = new FlatCompat({
   baseDirectory: import.meta.dirname,
@@ -49,8 +52,11 @@ export default defineConfig([
       '@typescript-eslint': typescriptEslint,
       zds: {
         rules: {
+          'interaction-expectations': interactionExpectations,
           'no-codemirror-printable-keymap-keystrokes':
             noCodemirrorPrintableKeymapKeystrokes,
+          'no-direct-fszds-io': noDirectFsZdsIo,
+          'no-internal-file-system-imports': noInternalFileSystemImports,
         },
       },
     },
@@ -191,6 +197,29 @@ export default defineConfig([
       'react-hooks/exhaustive-deps': 'error',
       'suggest-no-throw/suggest-no-throw': 'error',
       'zds/no-codemirror-printable-keymap-keystrokes': 'error',
+      'zds/interaction-expectations': 'error',
+    },
+  },
+  {
+    files: ['src/**/*.{ts,tsx}'],
+    ignores: [
+      'src/lib/fileSystem/**/*.{ts,tsx}',
+      'src/lib/fs-zds/**/*.{ts,tsx}',
+      // These infrastructure boundaries intentionally receive the raw adapter.
+      'src/lib/cloudSync/conflictInspection.ts',
+      'src/lib/cloudSync/index.ts',
+      'src/registry/extensions/fileOperations/index.ts',
+      'src/**/*.{test,spec}.{ts,tsx}',
+    ],
+    rules: {
+      'zds/no-direct-fszds-io': 'error',
+    },
+  },
+  {
+    files: ['src/**/*.{ts,tsx}'],
+    ignores: ['src/lib/fileSystem/**/*.{ts,tsx}'],
+    rules: {
+      'zds/no-internal-file-system-imports': 'error',
     },
   },
   {

@@ -69,7 +69,6 @@ description: Variables in memory after executing gas-impeller.kcl
   },
   "baseFloor": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "baseFloor"
   },
   "bladeCutter": {
@@ -77,6 +76,8 @@ description: Variables in memory after executing gas-impeller.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -239,17 +240,17 @@ description: Variables in memory after executing gas-impeller.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 102,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -305,8 +306,8 @@ description: Variables in memory after executing gas-impeller.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "mm"
+        "units": "mm",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -316,16 +317,13 @@ description: Variables in memory after executing gas-impeller.kcl
   },
   "bladeCutterBottomEdge": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "bladeCutterBottomEdge"
   },
   "bladeCutterInnerEdge": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "bladeCutterInnerEdge"
   },
   "bladeCutterOuterEdge": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "bladeCutterOuterEdge"
   },
@@ -433,17 +431,17 @@ description: Variables in memory after executing gas-impeller.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 102,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -499,8 +497,8 @@ description: Variables in memory after executing gas-impeller.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "mm"
+      "units": "mm",
+      "isClosed": "explicitly"
     }
   },
   "bladeCutterSketch": {
@@ -520,17 +518,21 @@ description: Variables in memory after executing gas-impeller.kcl
                       {
                         "n": 4.4,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -538,17 +540,21 @@ description: Variables in memory after executing gas-impeller.kcl
                       {
                         "n": 84.4,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -640,17 +646,21 @@ description: Variables in memory after executing gas-impeller.kcl
                       {
                         "n": 4.4,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 2.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -658,17 +668,21 @@ description: Variables in memory after executing gas-impeller.kcl
                       {
                         "n": 4.4,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -760,17 +774,21 @@ description: Variables in memory after executing gas-impeller.kcl
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -778,17 +796,21 @@ description: Variables in memory after executing gas-impeller.kcl
                       {
                         "n": 4.4,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -881,17 +903,21 @@ description: Variables in memory after executing gas-impeller.kcl
                       {
                         "n": 84.4,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -899,17 +925,21 @@ description: Variables in memory after executing gas-impeller.kcl
                       {
                         "n": 84.4,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 2.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -1001,17 +1031,21 @@ description: Variables in memory after executing gas-impeller.kcl
                       {
                         "n": 84.4,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 2.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -1019,17 +1053,21 @@ description: Variables in memory after executing gas-impeller.kcl
                       {
                         "n": 4.4,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 2.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -1214,17 +1252,17 @@ description: Variables in memory after executing gas-impeller.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 102,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -1292,7 +1330,6 @@ description: Variables in memory after executing gas-impeller.kcl
   },
   "bladeCutterTopEdge": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "bladeCutterTopEdge"
   },
   "bladeEnvelope": {
@@ -1300,6 +1337,8 @@ description: Variables in memory after executing gas-impeller.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -1518,17 +1557,17 @@ description: Variables in memory after executing gas-impeller.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 0,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 0.0,
             "y": 1.0,
@@ -1608,8 +1647,8 @@ description: Variables in memory after executing gas-impeller.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "mm"
+        "units": "mm",
+        "isClosed": "explicitly"
       },
       "startCapId": null,
       "endCapId": null,
@@ -1618,7 +1657,6 @@ description: Variables in memory after executing gas-impeller.kcl
     }
   },
   "bladeEnvelopeOuterWall": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "bladeEnvelopeOuterWall"
   },
@@ -1768,17 +1806,17 @@ description: Variables in memory after executing gas-impeller.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 0,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 0.0,
           "y": 1.0,
@@ -1858,17 +1896,15 @@ description: Variables in memory after executing gas-impeller.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "mm"
+      "units": "mm",
+      "isClosed": "explicitly"
     }
   },
   "bladeEnvelopeTipArc": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "bladeEnvelopeTipArc"
   },
   "bladeEnvelopeTopEdge": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "bladeEnvelopeTopEdge"
   },
@@ -1877,8 +1913,10 @@ description: Variables in memory after executing gas-impeller.kcl
     "value": 9.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "bladeSectionThickness": {
@@ -1886,17 +1924,21 @@ description: Variables in memory after executing gas-impeller.kcl
     "value": 2.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "bladeTwistAngle": {
     "type": "Number",
     "value": 65.0,
     "ty": {
-      "degrees": null,
       "type": "Known",
-      "type": "Angle"
+      "value": {
+        "type": "Angle",
+        "value": "degrees"
+      }
     }
   },
   "blades": {
@@ -1907,6 +1949,8 @@ description: Variables in memory after executing gas-impeller.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -2125,17 +2169,17 @@ description: Variables in memory after executing gas-impeller.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 0,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -2215,8 +2259,8 @@ description: Variables in memory after executing gas-impeller.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": null,
           "endCapId": null,
@@ -2229,6 +2273,8 @@ description: Variables in memory after executing gas-impeller.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -2447,17 +2493,17 @@ description: Variables in memory after executing gas-impeller.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 0,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -2537,8 +2583,8 @@ description: Variables in memory after executing gas-impeller.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": null,
           "endCapId": null,
@@ -2551,6 +2597,8 @@ description: Variables in memory after executing gas-impeller.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -2769,17 +2817,17 @@ description: Variables in memory after executing gas-impeller.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 0,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -2859,8 +2907,8 @@ description: Variables in memory after executing gas-impeller.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": null,
           "endCapId": null,
@@ -2873,6 +2921,8 @@ description: Variables in memory after executing gas-impeller.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -3091,17 +3141,17 @@ description: Variables in memory after executing gas-impeller.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 0,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -3181,8 +3231,8 @@ description: Variables in memory after executing gas-impeller.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": null,
           "endCapId": null,
@@ -3195,6 +3245,8 @@ description: Variables in memory after executing gas-impeller.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -3413,17 +3465,17 @@ description: Variables in memory after executing gas-impeller.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 0,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -3503,8 +3555,8 @@ description: Variables in memory after executing gas-impeller.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": null,
           "endCapId": null,
@@ -3517,6 +3569,8 @@ description: Variables in memory after executing gas-impeller.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -3735,17 +3789,17 @@ description: Variables in memory after executing gas-impeller.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 0,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -3825,8 +3879,8 @@ description: Variables in memory after executing gas-impeller.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": null,
           "endCapId": null,
@@ -3839,6 +3893,8 @@ description: Variables in memory after executing gas-impeller.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -4057,17 +4113,17 @@ description: Variables in memory after executing gas-impeller.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 0,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -4147,8 +4203,8 @@ description: Variables in memory after executing gas-impeller.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": null,
           "endCapId": null,
@@ -4161,6 +4217,8 @@ description: Variables in memory after executing gas-impeller.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -4379,17 +4437,17 @@ description: Variables in memory after executing gas-impeller.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 0,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -4469,8 +4527,8 @@ description: Variables in memory after executing gas-impeller.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": null,
           "endCapId": null,
@@ -4483,6 +4541,8 @@ description: Variables in memory after executing gas-impeller.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -4701,17 +4761,17 @@ description: Variables in memory after executing gas-impeller.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 0,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -4791,8 +4851,8 @@ description: Variables in memory after executing gas-impeller.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": null,
           "endCapId": null,
@@ -4819,17 +4879,21 @@ description: Variables in memory after executing gas-impeller.kcl
                       {
                         "n": 80.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": -0.00000000000000014976429341093822,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -4837,17 +4901,21 @@ description: Variables in memory after executing gas-impeller.kcl
                       {
                         "n": 4.4,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": -0.00000000000000013593532780969027,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -4939,17 +5007,21 @@ description: Variables in memory after executing gas-impeller.kcl
                       {
                         "n": 80.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 1.9999999999999998,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -4957,17 +5029,21 @@ description: Variables in memory after executing gas-impeller.kcl
                       {
                         "n": 80.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 48.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -5059,17 +5135,21 @@ description: Variables in memory after executing gas-impeller.kcl
                       {
                         "n": 80.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 48.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -5077,17 +5157,21 @@ description: Variables in memory after executing gas-impeller.kcl
                       {
                         "n": 68.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 60.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -5095,17 +5179,21 @@ description: Variables in memory after executing gas-impeller.kcl
                       {
                         "n": 68.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 48.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -5211,17 +5299,21 @@ description: Variables in memory after executing gas-impeller.kcl
                       {
                         "n": 68.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 60.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -5229,17 +5321,21 @@ description: Variables in memory after executing gas-impeller.kcl
                       {
                         "n": 68.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 48.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -5332,17 +5428,21 @@ description: Variables in memory after executing gas-impeller.kcl
                       {
                         "n": 80.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 48.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -5350,17 +5450,21 @@ description: Variables in memory after executing gas-impeller.kcl
                       {
                         "n": 68.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 48.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -5453,17 +5557,21 @@ description: Variables in memory after executing gas-impeller.kcl
                       {
                         "n": 7.333333333333334,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 60.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -5471,17 +5579,21 @@ description: Variables in memory after executing gas-impeller.kcl
                       {
                         "n": 68.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 60.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -5573,17 +5685,21 @@ description: Variables in memory after executing gas-impeller.kcl
                       {
                         "n": 8.308484376942259,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 59.22161398656003,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -5591,17 +5707,21 @@ description: Variables in memory after executing gas-impeller.kcl
                       {
                         "n": 7.333333333333334,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 59.99999999999905,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -5609,17 +5729,21 @@ description: Variables in memory after executing gas-impeller.kcl
                       {
                         "n": 7.333349899984599,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 58.99999999999905,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -5725,17 +5849,21 @@ description: Variables in memory after executing gas-impeller.kcl
                       {
                         "n": 7.333349899984599,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 58.99999999999905,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -5743,17 +5871,21 @@ description: Variables in memory after executing gas-impeller.kcl
                       {
                         "n": 7.333333333333334,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 59.99999999999905,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -5845,17 +5977,21 @@ description: Variables in memory after executing gas-impeller.kcl
                       {
                         "n": 4.4,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 60.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -5863,17 +5999,21 @@ description: Variables in memory after executing gas-impeller.kcl
                       {
                         "n": 7.333333333333334,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 60.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -6305,17 +6445,17 @@ description: Variables in memory after executing gas-impeller.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 0,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 0.0,
                   "y": 1.0,
@@ -6416,17 +6556,21 @@ description: Variables in memory after executing gas-impeller.kcl
                       {
                         "n": 8.308484376942472,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 59.22161398656007,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -6434,17 +6578,21 @@ description: Variables in memory after executing gas-impeller.kcl
                       {
                         "n": 80.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 1.9999999999999998,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -6452,17 +6600,21 @@ description: Variables in memory after executing gas-impeller.kcl
                       {
                         "n": 80.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 75.52105204101323,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -6568,17 +6720,21 @@ description: Variables in memory after executing gas-impeller.kcl
                       {
                         "n": 80.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 75.52105204101323,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -6586,17 +6742,21 @@ description: Variables in memory after executing gas-impeller.kcl
                       {
                         "n": 80.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 1.9999999999999998,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -6689,17 +6849,21 @@ description: Variables in memory after executing gas-impeller.kcl
                       {
                         "n": 8.308484376942259,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 59.22161398656003,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -6707,17 +6871,21 @@ description: Variables in memory after executing gas-impeller.kcl
                       {
                         "n": 80.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 1.9999999999999998,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -6810,17 +6978,21 @@ description: Variables in memory after executing gas-impeller.kcl
                       {
                         "n": 80.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 75.52105204101323,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -6828,17 +7000,21 @@ description: Variables in memory after executing gas-impeller.kcl
                       {
                         "n": 44.154242188471294,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 30.61080699327987,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -6931,17 +7107,21 @@ description: Variables in memory after executing gas-impeller.kcl
                       {
                         "n": 8.308484376942259,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 59.22161398656003,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -6949,17 +7129,21 @@ description: Variables in memory after executing gas-impeller.kcl
                       {
                         "n": 80.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 75.52105204101323,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -7052,17 +7236,21 @@ description: Variables in memory after executing gas-impeller.kcl
                       {
                         "n": 80.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 1.9999999999999998,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -7070,17 +7258,21 @@ description: Variables in memory after executing gas-impeller.kcl
                       {
                         "n": 80.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": -0.00000000000000016359325901190258,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -7172,17 +7364,21 @@ description: Variables in memory after executing gas-impeller.kcl
                       {
                         "n": 0.00000000000000001907933210484619,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": -0.000000000000000045311775936677974,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -7190,17 +7386,21 @@ description: Variables in memory after executing gas-impeller.kcl
                       {
                         "n": 4.4,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": -0.00000000000000009062355187326976,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -7293,17 +7493,21 @@ description: Variables in memory after executing gas-impeller.kcl
                       {
                         "n": 4.4,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": -0.00000000000000016741813814460606,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -7311,17 +7515,21 @@ description: Variables in memory after executing gas-impeller.kcl
                       {
                         "n": 4.4,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 60.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -7614,17 +7822,17 @@ description: Variables in memory after executing gas-impeller.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 0,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 0.0,
           "y": 1.0,
@@ -7704,22 +7912,19 @@ description: Variables in memory after executing gas-impeller.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "mm"
+      "units": "mm",
+      "isClosed": "explicitly"
     }
   },
   "hubShoulderBlendArc": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "hubShoulderBlendArc"
   },
   "hubShoulderRadiusGuide": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "hubShoulderRadiusGuide"
   },
   "hubTopLand": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "hubTopLand"
   },
@@ -7728,8 +7933,10 @@ description: Variables in memory after executing gas-impeller.kcl
     "value": 160.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "impellerHeight": {
@@ -7737,8 +7944,10 @@ description: Variables in memory after executing gas-impeller.kcl
     "value": 60.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "impellerHub": {
@@ -7746,6 +7955,8 @@ description: Variables in memory after executing gas-impeller.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -8072,17 +8283,17 @@ description: Variables in memory after executing gas-impeller.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 0,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 0.0,
             "y": 1.0,
@@ -8162,8 +8373,8 @@ description: Variables in memory after executing gas-impeller.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "mm"
+        "units": "mm",
+        "isClosed": "explicitly"
       },
       "startCapId": null,
       "endCapId": null,
@@ -8173,11 +8384,9 @@ description: Variables in memory after executing gas-impeller.kcl
   },
   "outerEnvelopeArc": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "outerEnvelopeArc"
   },
   "outerLipDrop": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "outerLipDrop"
   },
@@ -8186,12 +8395,13 @@ description: Variables in memory after executing gas-impeller.kcl
     "value": 8.8,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "shaftWall": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "shaftWall"
   }

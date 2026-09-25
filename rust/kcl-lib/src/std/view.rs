@@ -2,6 +2,7 @@
 
 use kcl_api::UnitLength;
 
+use crate::SourceRange;
 use crate::errors::KclError;
 use crate::errors::KclErrorDetails;
 use crate::execution::Artifact;
@@ -83,7 +84,7 @@ pub async fn named(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 
     let except_ids = except
         .as_ref()
-        .map(|objects| except_artifact_ids(objects, &args))
+        .map(|objects| except_artifact_ids(objects, args.source_range))
         .transpose()?;
 
     // The id is taken before the existing views are read, because taking one
@@ -112,25 +113,36 @@ pub async fn named(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 
 /// Reads the artifact id of each object in an `except` list.
 ///
-/// The three accepted kinds carry their artifact id differently: a solid and a
-/// sketch each have an `artifact_id` field distinct from their engine id, while
-/// a GD&T annotation has one id used for both, which `gdt::datum` registers as
-/// `ArtifactId::new(annotation.id)`. Any other kind of value means coercion
-/// against the declared signature did not do its job, which is an internal
-/// error rather than something the author can act on.
-fn except_artifact_ids(objects: &[KclValue], args: &Args) -> Result<Vec<ArtifactId>, KclError> {
+/// The accepted kinds do not share a representation, so each arm reads the
+/// artifact id from the field that owns it. Any other kind of value means
+/// coercion against the declared signature did not do its job, which is an
+/// internal error rather than something the author can act on.
+fn except_artifact_ids(objects: &[KclValue], source_range: SourceRange) -> Result<Vec<ArtifactId>, KclError> {
     objects
         .iter()
         .map(|object| match object {
             KclValue::Solid { value } => Ok(value.artifact_id),
             KclValue::Sketch { value } => Ok(value.artifact_id),
             KclValue::GdtAnnotation { value } => Ok(ArtifactId::new(value.id)),
+            KclValue::Helix { value } => Ok(value.artifact_id),
+            KclValue::Plane { value } => {
+                if value.is_standard() || value.is_uninitialized() {
+                    Err(KclError::new_semantic(KclErrorDetails::new(
+                        "Named views cannot control default planes or other uninitialized planes because their ids do not identify independent engine objects. Use a standalone plane returned by `offsetPlane()`."
+                            .to_owned(),
+                        vec![source_range],
+                    )))
+                } else {
+                    Ok(value.artifact_id)
+                }
+            }
+            KclValue::ImportedGeometry(value) => Ok(ArtifactId::new(value.id)),
             other => Err(KclError::new_internal(KclErrorDetails::new(
                 format!(
                     "`except` cannot hold {}; the declared signature should have rejected it",
                     other.human_friendly_type()
                 ),
-                vec![args.source_range],
+                vec![source_range],
             ))),
         })
         .collect()
@@ -204,7 +216,7 @@ mod tests {
     /// for a view to except. Mock execution is enough: a view sends no engine
     /// command, and the artifact ids these solids carry are assigned during
     /// execution rather than by the engine.
-    const TWO_SOLIDS: &str = r#"@settings(experimentalFeatures = allow)
+    const TWO_SOLIDS: &str = r#"@settings(kclVersion = "3.0-preview", experimentalFeatures = allow)
 
 plateSketch = sketch(on = XY) {
   edge1 = line(start = [var 0mm, var 0mm], end = [var 40mm, var 0mm])
@@ -308,8 +320,62 @@ boss = extrude(bossRegion, length = 8mm)
         );
     }
 
-    /// Runs `code` with the experimental opt-in these functions require, and
-    /// returns the message it fails with. Panics if the program succeeds.
+    /// An initialized custom plane and a helix each contribute their artifact
+    /// id. Mock execution is sufficient because both ids are assigned before
+    /// the engine processes their creation commands.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn named_excepts_a_custom_plane_and_helix_by_their_artifact_ids() {
+        let program = r#"@settings(kclVersion = "3.0-preview", experimentalFeatures = allow)
+inspectionPlane = offsetPlane(XY, offset = 20mm)
+spring = helix(
+  axis = Z,
+  radius = 5mm,
+  length = 20mm,
+  revolutions = 4,
+  angleStart = 0deg,
+)
+v = view::named(
+  "Construction geometry",
+  camera = view::oriented(view::Orientation::Isometric),
+  baseline = view::Visibility::Hide,
+  except = [inspectionPlane, spring],
+)
+"#;
+        let result = parse_execute(program).await.expect("the program executes");
+
+        let KclValue::Plane { value: plane } = result.variable("inspectionPlane") else {
+            panic!("`inspectionPlane` is not a plane");
+        };
+        let KclValue::Helix { value: helix } = result.variable("spring") else {
+            panic!("`spring` is not a helix");
+        };
+        let KclValue::NamedView { value } = result.variable("v") else {
+            panic!("`v` is not a named view");
+        };
+
+        assert!(plane.is_initialized());
+        assert_eq!(value.except_ids().to_vec(), vec![plane.artifact_id, helix.artifact_id]);
+    }
+
+    /// Imported geometry has one UUID for its runtime value, artifact and
+    /// engine object. The named view stores that UUID in the artifact-id domain.
+    #[test]
+    fn named_excepts_imported_geometry_by_its_artifact_id() {
+        let id = uuid::Uuid::from_u128(1);
+        let imported = KclValue::ImportedGeometry(crate::execution::ImportedGeometry::new(
+            id,
+            vec!["part.step".to_owned()],
+            Vec::new(),
+        ));
+
+        assert_eq!(
+            super::except_artifact_ids(&[imported], crate::SourceRange::default()).expect("the value is accepted"),
+            vec![ArtifactId::new(id)]
+        );
+    }
+
+    /// Runs `code` under KCL V3 and returns its error message. Panics if the
+    /// program succeeds.
     ///
     /// These cases run against the mock engine rather than as simulation
     /// tests: rejected arguments never reach the engine
@@ -318,20 +384,11 @@ boss = extrude(bossRegion, length = 8mm)
     /// `named_views_negative_distance`), which pin the rendered diagnostic
     /// with its source range.
     async fn execution_error(code: &str) -> String {
-        let program = format!("@settings(experimentalFeatures = allow)\n{code}");
+        let program = format!("@settings(kclVersion = \"3.0-preview\")\n{code}");
         match parse_execute(&program).await {
             Ok(_) => panic!("expected `{code}` to be rejected, but it executed"),
             Err(err) => err.message().to_owned(),
         }
-    }
-
-    /// Runs `code` WITHOUT the experimental opt-in and returns the diagnostics
-    /// it reports. Experimental use is recorded as a non-fatal issue rather
-    /// than a returned error, so the program still executes and the issue list
-    /// is the only place the gate is visible.
-    async fn issues_without_opt_in(code: &str) -> Vec<String> {
-        let result = parse_execute(code).await.expect("experimental use is not fatal");
-        result.issues().iter().map(|issue| issue.message.clone()).collect()
     }
 
     /// Every rejected argument reports which argument to change. Each case
@@ -426,7 +483,7 @@ boss = extrude(bossRegion, length = 8mm)
     async fn named_accepts_names_that_differ_only_in_case() {
         let showing = "camera = view::oriented(view::Orientation::Front), baseline = view::Visibility::Show";
         let program = format!(
-            "@settings(experimentalFeatures = allow)\na = view::named(\"Front\", {showing})\nb = view::named(\"front\", {showing})\n"
+            "@settings(kclVersion = \"3.0-preview\")\na = view::named(\"Front\", {showing})\nb = view::named(\"front\", {showing})\n"
         );
         let result = parse_execute(&program).await.expect("the program executes");
 
@@ -489,19 +546,49 @@ boss = extrude(bossRegion, length = 8mm)
         );
     }
 
-    /// Declaring a view without the experimental opt-in is reported, as calling
-    /// either camera constructor is. `named` needs its own case: the gate is a
-    /// per-function annotation, so covering the constructors says nothing about
-    /// this function.
     #[tokio::test(flavor = "multi_thread")]
-    async fn declaring_a_view_requires_the_experimental_opt_in() {
-        assert!(
-            issues_without_opt_in(
-                r#"v = view::named("Front", camera = view::oriented(view::Orientation::Front), baseline = view::Visibility::Show)"#
-            )
-            .await
-            .contains(&"Use of `view::named` is experimental and may change or be removed.".to_owned())
-        );
+    async fn named_view_api_requires_v3_even_with_experimental_opt_in() {
+        for version in ["1.0", "2.0"] {
+            for opt_in in ["", ", experimentalFeatures = allow"] {
+                for (case, body) in [
+                    ("module", "x = view"),
+                    ("enum variant", "x = view::Orientation::Front"),
+                    ("constructor", "x = view::directed([0, 1, -2])"),
+                    ("type position", "fn pass(@x: view::Orientation) { return x }"),
+                ] {
+                    let code = format!("@settings(kclVersion = \"{version}\"{opt_in})\n{body}\n");
+                    let err = parse_execute(&code).await.unwrap_err();
+                    assert!(
+                        err.message()
+                            .contains(&format!("added in KCL 3.0, but this program uses KCL {version}")),
+                        "case: {case}; code: {code}; error: {}",
+                        err.message()
+                    );
+                }
+            }
+
+            let code =
+                format!("@settings(kclVersion = \"{version}\", experimentalFeatures = allow)\nimport \"std::view\"\n");
+            assert_eq!(
+                parse_execute(&code).await.unwrap_err().message(),
+                format!("The `std::view` module requires KCL 3.0-preview, but this program uses KCL {version}.")
+            );
+        }
+    }
+
+    /// The prelude exposes each named-view type and constructor in V3 without
+    /// an experimental setting or diagnostic.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn named_views_are_stable_in_v3_without_opt_in() {
+        let code = r#"@settings(kclVersion = "3.0-preview")
+fn passCamera(@camera: view::CameraView): view::CameraView { return camera }
+fn passView(@named: view::NamedView): view::NamedView { return named }
+front = passCamera(view::oriented(view::Orientation::Front, projection = view::Projection::Perspective))
+custom = view::directed([0, 1, -2])
+named = passView(view::named("Front", camera = front, baseline = view::Visibility::Show))
+"#;
+        let result = parse_execute(code).await.unwrap();
+        assert!(result.issues().is_empty(), "issues: {:?}", result.issues());
     }
 
     /// A sketch-block variable is accepted in `except`, and this pins which id it
@@ -542,7 +629,45 @@ boss = extrude(bossRegion, length = 8mm)
                 r#"v = view::named("Front", camera = view::oriented(view::Orientation::Front), baseline = view::Visibility::Hide, except = [])"#
             )
             .await,
-            "except requires one or more `Solid`s or `Sketch`s or `GdtAnnotation`s (`[Solid | Sketch | GdtAnnotation; 1+]`), but found an empty array (with type `[any; 0]`)."
+            "except requires one or more `Solid`s or `Sketch`s or `GdtAnnotation`s or `Helix`s or `Plane`s or imported geometries (`[Solid | Sketch | GdtAnnotation | Helix | Plane | ImportedGeometry; 1+]`), but found an empty array (with type `[any; 0]`)."
+        );
+    }
+
+    /// The six KCL default-plane values do not identify the six engine-owned
+    /// default-plane objects, so every spelling is rejected explicitly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn named_rejects_every_default_plane() {
+        for plane in ["XY", "XZ", "YZ", "-XY", "-XZ", "-YZ"] {
+            assert_eq!(
+                execution_error(&format!(
+                    "v = view::named(\"Front\", camera = view::oriented(view::Orientation::Front), baseline = view::Visibility::Hide, except = [{plane}])"
+                ))
+                .await,
+                "Named views cannot control default planes or other uninitialized planes because their ids do not identify independent engine objects. Use a standalone plane returned by `offsetPlane()`."
+            );
+        }
+    }
+
+    /// Structural plane coercion describes a plane but does not send one to the
+    /// engine, so its generated artifact id cannot be used for visibility.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn named_rejects_an_uninitialized_custom_plane() {
+        assert_eq!(
+            execution_error(
+                r#"customPlane = {
+  origin = { x = 0, y = 0, z = 0 },
+  xAxis = { x = 1, y = 0, z = 0 },
+  yAxis = { x = 0, y = 1, z = 0 },
+}
+v = view::named(
+  "Front",
+  camera = view::oriented(view::Orientation::Front),
+  baseline = view::Visibility::Hide,
+  except = [customPlane],
+)"#
+            )
+            .await,
+            "Named views cannot control default planes or other uninitialized planes because their ids do not identify independent engine objects. Use a standalone plane returned by `offsetPlane()`."
         );
     }
 
@@ -573,7 +698,12 @@ boss = extrude(bossRegion, length = 8mm)
         // A user-defined enum declaring a variant of the same name. Coercion
         // compares the declaring type, not the variant spelling.
         assert_eq!(
-            execution_error("type MyOrientation { | Front }\nv = view::oriented(MyOrientation::Front)").await,
+            parse_execute(
+                "@settings(kclVersion = \"3.0-preview\")\ntype MyOrientation { | Front }\nv = view::oriented(MyOrientation::Front)"
+            )
+            .await
+            .unwrap_err()
+            .message(),
             "The input argument of `view::oriented` requires a value with type `Orientation`, but found a value of enum `MyOrientation` (with type `MyOrientation`)."
         );
         // A labeled argument, which reports in its own wording.
@@ -588,42 +718,12 @@ boss = extrude(bossRegion, length = 8mm)
         );
     }
 
-    /// Calling either constructor without the experimental opt-in is
-    /// reported, whether or not the call mentions an enum.
-    ///
-    /// The sim test `named_views_module_requires_opt_in` covers the other
-    /// half of the gate, a bare enum variant. This covers the functions
-    /// themselves: `view::directed` with a plain vector names no enum, so the
-    /// only thing gating it is its own `@(experimental = true)`. Named views
-    /// stay unreleasable until enums stabilise precisely because a consumer
-    /// must opt in, so the gate silently lapsing is the failure to catch.
-    #[tokio::test(flavor = "multi_thread")]
-    async fn calling_a_constructor_requires_the_experimental_opt_in() {
-        assert!(
-            issues_without_opt_in("v = view::directed([0, 1, -2])")
-                .await
-                .contains(&"Use of `view::directed` is experimental and may change or be removed.".to_owned())
-        );
-
-        // This call also uses an enum variant, so it reports both halves of
-        // the gate; the function's own diagnostic is the one asserted here.
-        assert!(
-            issues_without_opt_in("v = view::oriented(view::Orientation::Front)")
-                .await
-                .contains(&"Use of `view::oriented` is experimental and may change or be removed.".to_owned())
-        );
-    }
-
-    /// The opaque `std::view` types resolve where a signature names them.
-    /// Resolution happens when the declaration executes, so executing these
-    /// declarations is the whole assertion; neither function is called.
-    ///
-    /// Type annotations parse only as bare identifiers, so the namespaced
-    /// spelling `view::CameraView` cannot appear in a signature and an
-    /// explicit import is the only route to these types from user code.
+    /// Imported opaque `std::view` types resolve by their bare names in signatures.
+    /// Resolution happens when each declaration executes, so neither function
+    /// needs to be called for this test to exercise signature resolution.
     #[tokio::test(flavor = "multi_thread")]
     async fn opaque_types_resolve_in_signatures() {
-        let code = r#"@settings(experimentalFeatures = allow)
+        let code = r#"@settings(kclVersion = "3.0-preview", experimentalFeatures = allow)
 import CameraView, NamedView from "std::view"
 
 fn acceptsCamera(@camera: CameraView) {
@@ -631,6 +731,21 @@ fn acceptsCamera(@camera: CameraView) {
 }
 
 fn passesNamed(@input: NamedView): NamedView {
+  return input
+}
+"#;
+        if let Err(err) = parse_execute(code).await {
+            panic!("expected the declarations to resolve, but got: {}", err.message());
+        }
+    }
+
+    /// A qualified `std::view` type resolves where a signature names it.
+    /// The signature is the first reference to the module, so this also verifies
+    /// that type resolution executes a registered standard-library module.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn qualified_type_path_resolves_in_signature() {
+        let code = r#"@settings(kclVersion = "3.0-preview")
+fn passesOrientation(@input: view::Orientation): view::Orientation {
   return input
 }
 "#;

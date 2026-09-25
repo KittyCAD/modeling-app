@@ -2648,6 +2648,7 @@ description: Result of parsing split-washer-spring-version.kcl
         }
       ]
     },
-    "start": 0
+    "start": 0,
+    "type": "Program"
   }
 }

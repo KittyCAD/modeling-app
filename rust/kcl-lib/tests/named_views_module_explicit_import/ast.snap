@@ -109,11 +109,35 @@ description: Result of parsing named_views_module_explicit_import.kcl
           "type": "Identifier"
         },
         "preComments": [
-          "// Pins spike S1's third finding permanently: a named item can be imported",
-          "// from std::view explicitly. The consumer opt-in silences both experimental",
-          "// gates (enum use, std import)."
+          "// A named item can be imported from std::view explicitly. The opt-in is",
+          "// required by explicit standard-library import syntax, not by the view enum."
         ],
         "properties": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "key": {
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": "kclVersion",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "moduleId": 0,
+            "start": 0,
+            "type": "ObjectProperty",
+            "value": {
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "raw": "\"3.0-preview\"",
+              "start": 0,
+              "type": "Literal",
+              "type": "Literal",
+              "value": "3.0-preview"
+            }
+          },
           {
             "commentStart": 0,
             "end": 0,
@@ -170,6 +194,7 @@ description: Result of parsing named_views_module_explicit_import.kcl
       },
       "startNodes": []
     },
-    "start": 0
+    "start": 0,
+    "type": "Program"
   }
 }

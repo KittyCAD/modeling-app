@@ -38,6 +38,54 @@ import { isArray, roundOff } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { Selection } from '@src/machines/modelingSharedTypes'
 
+function hasLocalNameReference(ast: Node<Program>, name: string) {
+  let hasReference = false
+  traverse(ast, {
+    enter(node) {
+      if (
+        node.type === 'Name' &&
+        node.path.length === 0 &&
+        node.name.name === name
+      ) {
+        hasReference = true
+      }
+    },
+  })
+  return hasReference
+}
+
+function deleteUnusedPlaneOfInput(
+  ast: Node<Program>,
+  deletedCall: CallExpressionKw | null,
+  deletedExpressionIndex: number
+) {
+  if (
+    deletedCall?.callee.name.name !== 'offsetPlane' ||
+    deletedCall.unlabeled?.type !== 'Name' ||
+    deletedCall.unlabeled.path.length !== 0
+  ) {
+    return
+  }
+
+  const planeName = deletedCall.unlabeled.name.name
+  if (hasLocalNameReference(ast, planeName)) {
+    return
+  }
+
+  const candidateIndex = deletedExpressionIndex - 1
+  const candidate = ast.body[candidateIndex]
+  if (
+    candidate?.type !== 'VariableDeclaration' ||
+    candidate.declaration.id.name !== planeName ||
+    candidate.declaration.init.type !== 'CallExpressionKw' ||
+    candidate.declaration.init.callee.name.name !== 'planeOf'
+  ) {
+    return
+  }
+
+  ast.body.splice(candidateIndex, 1)
+}
+
 export async function deleteFromSelection(
   ast: Node<Program>,
   selection: Selection,
@@ -176,15 +224,38 @@ export async function deleteFromSelection(
     selectedCallName !== null &&
     ['extrude', 'revolve', 'sweep', 'loft', 'blend'].includes(selectedCallName)
 
-  if (
-    selection.artifact?.type === 'pattern' &&
-    varDecNodeInit?.type === 'PipeExpression'
-  ) {
+  if (varDecNodeInit?.type === 'PipeExpression') {
     const pipeBodyIndex = selection.codeRef.pathToNode.findIndex(
       ([key, kind]) => key === 'body' && kind === 'PipeExpression'
     )
     const pipeItemIndex = selection.codeRef.pathToNode[pipeBodyIndex + 1]?.[0]
-    if (typeof pipeItemIndex === 'number' && varDecNodeInit.body.length > 1) {
+    const pipeItem =
+      typeof pipeItemIndex === 'number' && pipeItemIndex > 0
+        ? varDecNodeInit.body[pipeItemIndex]
+        : undefined
+    // Legacy Sketch 1 segment, wall, and cap selections can point to a sketch
+    // pipe stage. Removing that stage would delete sketch code instead of the
+    // selected sketch or extrusion, so let the geometry handlers below handle it.
+    // TODO: Handle geometry selections before generic pipe deletion so this
+    // exclusion is unnecessary. Retire the Sketch 1 paths with its support/tests.
+    const isGeometrySelection =
+      selection.artifact?.type === 'segment' ||
+      selection.artifact?.type === 'wall' ||
+      selection.artifact?.type === 'cap'
+    if (
+      !isGeometrySelection &&
+      pipeItem?.type === 'CallExpressionKw' &&
+      typeof pipeItemIndex === 'number' &&
+      varDecNodeInit.body.length > 1
+    ) {
+      // Match the whole pipe stage so selecting a nested call (e.g. translate
+      // inside union) cannot delete the enclosing operation instead.
+      if (
+        pipeItem.start !== selection.codeRef.range[0] ||
+        pipeItem.end !== selection.codeRef.range[1]
+      ) {
+        return new Error('Cannot delete a nested call as a pipe stage')
+      }
       const varDecClone = getNodeFromPath<VariableDeclarator>(
         astClone,
         selection.codeRef.pathToNode,
@@ -211,6 +282,7 @@ export async function deleteFromSelection(
     selection.artifact?.type === 'pattern' ||
     selection.artifact?.type === 'helix' ||
     selection.artifact?.type === 'planeOfFace' ||
+    selection.artifact?.type === 'namedView' ||
     !selection.artifact // aka expected to be a shell at this point
   ) {
     let extrudeNameToDelete = ''
@@ -223,7 +295,8 @@ export async function deleteFromSelection(
       selection.artifact.type !== 'pattern' &&
       selection.artifact.type !== 'helix' &&
       selection.artifact.type !== 'path' &&
-      selection.artifact.type !== 'planeOfFace'
+      selection.artifact.type !== 'planeOfFace' &&
+      selection.artifact.type !== 'namedView'
     ) {
       if (!varDecNode) return new Error('Could not find sketch variable')
       const varDecName = varDecNode.id.name
@@ -277,6 +350,7 @@ export async function deleteFromSelection(
 
     const expressionIndex = pathToNode[1][0] as number
     astClone.body.splice(expressionIndex, 1)
+    deleteUnusedPlaneOfInput(astClone, selectedCallExpression, expressionIndex)
     if (extrudeNameToDelete) {
       await new Promise((resolve) => {
         ;(async () => {

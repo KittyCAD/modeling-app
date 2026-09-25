@@ -1,20 +1,22 @@
 /// Named views: cameras and visibility sets defined in KCL.
 ///
+/// This module requires KCL 3.0-preview or later.
+///
 /// A named view pairs a camera with a set of visible objects, so consumers
 /// such as the modeling app and STEP export can reproduce it. Build a camera by
 /// calling `view::oriented()` or `view::directed()`, then name a view by calling
 /// `view::named()`.
 
 @no_std
-@settings(defaultLengthUnit = mm, kclVersion = 2.0, experimentalFeatures = allow)
+@settings(kclVersion = "3.0-preview", defaultLengthUnit = mm, experimentalFeatures = allow)
 
-import GdtAnnotation, Point3d, Sketch, Solid from "std::types"
+import GdtAnnotation, Helix, Plane, Point3d, Sketch, Solid from "std::types"
 
 /// A standard camera orientation for a named view.
 ///
 /// The six axis-aligned orientations name the side of the model the camera
 /// looks at; `Isometric` is the standard three-quarter view.
-@(experimental = true)
+@(added_in = "3.0")
 export type Orientation {
   /// The camera looks at the front of the model.
   | Front
@@ -37,7 +39,7 @@ export type Orientation {
 ///
 /// This is the view's baseline: it applies to every object, and the view's
 /// `except` list names the objects it does not apply to.
-@(experimental = true)
+@(added_in = "3.0")
 export type Visibility {
   /// Every object is visible, except the ones the view excepts, which are
   /// hidden.
@@ -48,7 +50,7 @@ export type Visibility {
 }
 
 /// The camera projection of a named view.
-@(experimental = true)
+@(added_in = "3.0")
 export type Projection {
   /// An object's projected size is independent of its distance from the
   /// camera, and parallel edges remain parallel; the convention of
@@ -66,14 +68,14 @@ export type Projection {
 /// [`view::oriented()`](/docs/kcl-std/functions/std-view-oriented) or
 /// [`view::directed()`](/docs/kcl-std/functions/std-view-directed) to produce
 /// one.
-@(impl = std_rust, experimental = true)
+@(impl = std_rust, added_in = "3.0")
 export type CameraView
 
 /// A named view: a camera paired with the set of objects it shows or hides.
 ///
 /// Values of this type are opaque. Call
 /// [`view::named()`](/docs/kcl-std/functions/std-view-named) to produce one.
-@(impl = std_rust, experimental = true)
+@(impl = std_rust, added_in = "3.0")
 export type NamedView
 
 /// Create a camera view that looks at the model from a standard orientation.
@@ -96,7 +98,7 @@ export type NamedView
 /// resolve. A `target` is a point, so its coordinates may be negative.
 ///
 /// ```kcl,norun
-/// @settings(experimentalFeatures = allow)
+/// @settings(kclVersion = "3.0-preview")
 ///
 /// isoView = view::oriented(view::Orientation::Isometric)
 ///
@@ -107,7 +109,7 @@ export type NamedView
 ///   projection = view::Projection::Perspective,
 /// )
 /// ```
-@(impl = std_rust, experimental = true, feature_tree = false)
+@(impl = std_rust, added_in = "3.0", feature_tree = false)
 export fn oriented(
   /// The standard orientation the camera looks from.
   @orientation: Orientation,
@@ -152,7 +154,7 @@ export fn oriented(
 /// resolve. A `target` is a point, so its coordinates may be negative.
 ///
 /// ```kcl,norun
-/// @settings(experimentalFeatures = allow)
+/// @settings(kclVersion = "3.0-preview")
 ///
 /// overheadView = view::directed([0, 1, -2])
 ///
@@ -164,7 +166,7 @@ export fn oriented(
 ///   projection = view::Projection::Perspective,
 /// )
 /// ```
-@(impl = std_rust, experimental = true, feature_tree = false)
+@(impl = std_rust, added_in = "3.0", feature_tree = false)
 export fn directed(
   /// The direction the camera looks, from the camera toward the target.
   @direction: Point3d,
@@ -218,8 +220,46 @@ export fn directed(
 /// Duplicates in `except` are dropped, so listing an object twice does the same
 /// as listing it once.
 ///
+/// ## Plane support
+///
+/// A named view can control only an independently visible plane.
+///
+/// Supported planes:
+///
+/// - A plane returned by `offsetPlane()` that has not been used as the support
+///   plane for a sketch.
+///
+/// Unsupported planes:
+///
+/// - The default planes:
+///   - `XY`.
+///   - `-XY`.
+///   - `XZ`.
+///   - `-XZ`.
+///   - `YZ`.
+///   - `-YZ`.
+/// - A plane returned by `offsetPlane()` after it has been used as the support
+///   plane for a sketch. The executor hides that plane as sketch support.
+/// - A plane returned by `planeOf()`, whether it remains unused or is used as
+///   sketch support. The engine creates it as hidden construction geometry.
+/// - An object coerced to `Plane`. It describes a plane but does not have the
+///   internal properties of a plane object that can be used by a named view.
+///
+/// Unsupported planes are handled in two ways:
+///
+/// - Passing a default plane or an object coerced to `Plane` causes
+///   `view::named()` to return an error.
+/// - Passing a `planeOf()` result or an offset plane used as sketch support
+///   still creates the named view. That plane is omitted when the view is
+///   activated, so listing it in `except` has no effect and does not reveal the
+///   construction geometry that the executor hid.
+///
+/// Passing a `planeOf()` result to `offsetPlane()` creates a new plane. That new
+/// result is supported if it is not subsequently used as sketch support; the
+/// original `planeOf()` result remains unsupported.
+///
 /// ```kcl,norun
-/// @settings(kclVersion = 2.0, experimentalFeatures = allow)
+/// @settings(kclVersion = "3.0-preview")
 ///
 /// // Two bodies to look at: a plate, and a boss standing on it. Declaring a
 /// // view never changes what a program builds, so this part is ordinary KCL.
@@ -283,7 +323,7 @@ export fn directed(
 ///   except = [boss],
 /// )
 /// ```
-@(impl = std_rust, experimental = true)
+@(impl = std_rust, added_in = "3.0")
 export fn named(
   /// The name of the view, as a reader should see it. Required, unique within
   /// the file, and compared exactly.
@@ -297,5 +337,5 @@ export fn named(
   baseline: Visibility,
   /// The objects the baseline does not apply to: the hidden ones under a
   /// `Show` baseline, and the only visible ones under `Hide`.
-  except?: [Solid | Sketch | GdtAnnotation; 1+],
+  except?: [Solid | Sketch | GdtAnnotation | Helix | Plane | ImportedGeometry; 1+],
 ): NamedView {}

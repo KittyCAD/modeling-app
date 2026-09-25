@@ -5,16 +5,16 @@ excerpt: "Create a named view: a camera paired with the objects the view shows o
 layout: manual
 ---
 
-**WARNING:** This function is experimental and may change or be removed.
-
 Create a named view: a camera paired with the objects the view shows or hides.
+
+**Added in KCL 3.0.**
 
 ```kcl
 view::named(
   @name: string,
   camera: CameraView,
   baseline: Visibility,
-  except?: [Solid | Sketch | GdtAnnotation; 1+],
+  except?: [Solid | Sketch | GdtAnnotation | Helix | Plane | ImportedGeometry; 1+],
 ): NamedView
 ```
 
@@ -51,6 +51,44 @@ what a view shows can be read from the call alone:
 Duplicates in `except` are dropped, so listing an object twice does the same
 as listing it once.
 
+## Plane support
+
+A named view can control only an independently visible plane.
+
+Supported planes:
+
+- A plane returned by `offsetPlane()` that has not been used as the support
+  plane for a sketch.
+
+Unsupported planes:
+
+- The default planes:
+  - `XY`.
+  - `-XY`.
+  - `XZ`.
+  - `-XZ`.
+  - `YZ`.
+  - `-YZ`.
+- A plane returned by `offsetPlane()` after it has been used as the support
+  plane for a sketch. The executor hides that plane as sketch support.
+- A plane returned by `planeOf()`, whether it remains unused or is used as
+  sketch support. The engine creates it as hidden construction geometry.
+- An object coerced to [`Plane`](/docs/kcl-std/types/std-types-Plane). It describes a plane but does not have the
+  internal properties of a plane object that can be used by a named view.
+
+Unsupported planes are handled in two ways:
+
+- Passing a default plane or an object coerced to [`Plane`](/docs/kcl-std/types/std-types-Plane) causes
+  `view::named()` to return an error.
+- Passing a `planeOf()` result or an offset plane used as sketch support
+  still creates the named view. That plane is omitted when the view is
+  activated, so listing it in `except` has no effect and does not reveal the
+  construction geometry that the executor hid.
+
+Passing a `planeOf()` result to `offsetPlane()` creates a new plane. That new
+result is supported if it is not subsequently used as sketch support; the
+original `planeOf()` result remains unsupported.
+
 ### Arguments
 
 | Name | Type | Description | Required |
@@ -58,7 +96,7 @@ as listing it once.
 | `name` | [`string`](/docs/kcl-std/types/std-types-string) | The name of the view, as a reader should see it. Required, unique within the file, and compared exactly. | Yes |
 | `camera` | [`CameraView`](/docs/kcl-std/types/std-view-CameraView) | The camera the view activates. Call `view::oriented()` or `view::directed()` to build one. | Yes |
 | `baseline` | [`Visibility`](/docs/kcl-std/types/std-view-Visibility) | The default visibility of every object the program creates: visible under `Visibility::Show`, hidden under `Visibility::Hide`. Use `except` below to override that default for individual objects. | Yes |
-| `except` | [[`Solid`](/docs/kcl-std/types/std-types-Solid) or [`Sketch`](/docs/kcl-std/types/std-types-Sketch) or [`GdtAnnotation`](/docs/kcl-std/types/std-types-GdtAnnotation); 1+] | The objects the baseline does not apply to: the hidden ones under a `Show` baseline, and the only visible ones under `Hide`. | No |
+| `except` | [[`Solid`](/docs/kcl-std/types/std-types-Solid) or [`Sketch`](/docs/kcl-std/types/std-types-Sketch) or [`GdtAnnotation`](/docs/kcl-std/types/std-types-GdtAnnotation) or [`Helix`](/docs/kcl-std/types/std-types-Helix) or [`Plane`](/docs/kcl-std/types/std-types-Plane) or [`ImportedGeometry`](/docs/kcl-std/types/std-types-ImportedGeometry); 1+] | The objects the baseline does not apply to: the hidden ones under a `Show` baseline, and the only visible ones under `Hide`. | No |
 
 ### Returns
 
@@ -68,7 +106,7 @@ as listing it once.
 ### Examples
 
 ```kcl
-@settings(kclVersion = 2.0, experimentalFeatures = allow)
+@settings(kclVersion = "3.0-preview")
 
 // Two bodies to look at: a plate, and a boss standing on it. Declaring a
 // view never changes what a program builds, so this part is ordinary KCL.

@@ -1,6 +1,7 @@
 use std::fmt;
 
 use anyhow::Result;
+use indexmap::IndexMap;
 pub use kcl_error::ModuleId;
 use serde::Deserialize;
 use serde::Serialize;
@@ -11,6 +12,7 @@ use crate::errors::KclErrorDetails;
 use crate::exec::KclValue;
 use crate::execution::EnvironmentRef;
 use crate::execution::ModuleArtifactState;
+use crate::execution::NotYetAdded;
 use crate::execution::PreImportedGeometry;
 use crate::execution::typed_path::TypedPath;
 use crate::fs::FileSystemHandle;
@@ -102,6 +104,7 @@ pub(crate) fn read_std(mod_name: &str) -> Option<&'static str> {
         "hole" => Some(include_str!("../std/hole.kcl")),
         "gear" => Some(include_str!("../std/gear.kcl")),
         "view" => Some(include_str!("../std/view.kcl")),
+        "operation" => Some(include_str!("../std/operation.kcl")),
         _ => None,
     }
 }
@@ -149,6 +152,28 @@ pub struct ModuleExecutionOutcome {
     pub environment: EnvironmentRef,
     pub exports: Vec<String>,
     pub artifacts: ModuleArtifactState,
+    /// Exported declarations skipped as not yet added; see [`crate::execution::NotYetAdded`].
+    pub not_yet_added: IndexMap<String, NotYetAdded>,
+}
+
+impl ModuleExecutionOutcome {
+    /// What importers and qualified paths see of the module.
+    pub(crate) fn items(&self) -> ModuleItems {
+        ModuleItems {
+            environment: self.environment,
+            exports: self.exports.clone(),
+            not_yet_added: self.not_yet_added.clone(),
+        }
+    }
+}
+
+/// A module's environment, exports, and exported not-yet-added records.
+#[derive(Debug, Clone)]
+pub(crate) struct ModuleItems {
+    pub environment: EnvironmentRef,
+    pub exports: Vec<String>,
+    /// See [`ModuleExecutionOutcome::not_yet_added`].
+    pub not_yet_added: IndexMap<String, NotYetAdded>,
 }
 
 #[allow(clippy::large_enum_variant)]
@@ -177,6 +202,14 @@ impl ModulePath {
         match self {
             ModulePath::Local { value: p, .. } => p,
             _ => unreachable!(),
+        }
+    }
+
+    pub(crate) fn is_local(&self) -> bool {
+        match self {
+            ModulePath::Main => false,
+            ModulePath::Local { .. } => true,
+            ModulePath::Std { .. } => false,
         }
     }
 

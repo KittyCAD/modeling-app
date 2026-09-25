@@ -199,9 +199,8 @@ description: Result of parsing named_views_module_prelude.kcl
           "type": "Identifier"
         },
         "preComments": [
-          "// Pins the prelude wiring for std::view: the namespaced spelling works with",
-          "// no import line, for every enum the module declares. This is the route the",
-          "// named-views constructors will rely on (M01 decision 17)."
+          "// KCL V3 exposes every view enum through the prelude without an explicit",
+          "// import or experimental opt-in."
         ],
         "properties": [
           {
@@ -211,7 +210,7 @@ description: Result of parsing named_views_module_prelude.kcl
               "commentStart": 0,
               "end": 0,
               "moduleId": 0,
-              "name": "experimentalFeatures",
+              "name": "kclVersion",
               "start": 0,
               "type": "Identifier"
             },
@@ -219,22 +218,14 @@ description: Result of parsing named_views_module_prelude.kcl
             "start": 0,
             "type": "ObjectProperty",
             "value": {
-              "abs_path": false,
               "commentStart": 0,
               "end": 0,
               "moduleId": 0,
-              "name": {
-                "commentStart": 0,
-                "end": 0,
-                "moduleId": 0,
-                "name": "allow",
-                "start": 0,
-                "type": "Identifier"
-              },
-              "path": [],
+              "raw": "\"3.0-preview\"",
               "start": 0,
-              "type": "Name",
-              "type": "Name"
+              "type": "Literal",
+              "type": "Literal",
+              "value": "3.0-preview"
             }
           }
         ],
@@ -243,6 +234,7 @@ description: Result of parsing named_views_module_prelude.kcl
       }
     ],
     "moduleId": 0,
-    "start": 0
+    "start": 0,
+    "type": "Program"
   }
 }

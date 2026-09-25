@@ -1,0 +1,73 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Variables in memory after executing tan_arc_x_line.kcl
+---
+{
+  "angleOffset": {
+    "type": "Number",
+    "value": 135.0,
+    "ty": {
+      "type": "Known",
+      "value": {
+        "type": "Angle",
+        "value": "degrees"
+      }
+    }
+  },
+  "angleStart": {
+    "type": "Number",
+    "value": 110.0,
+    "ty": {
+      "type": "Known",
+      "value": {
+        "type": "Angle",
+        "value": "degrees"
+      }
+    }
+  },
+  "arc1": {
+    "type": "TagIdentifier",
+    "value": "arc1"
+  },
+  "arc2": {
+    "type": "TagIdentifier",
+    "value": "arc2"
+  },
+  "arc3": {
+    "type": "TagIdentifier",
+    "value": "arc3"
+  },
+  "r": {
+    "type": "Number",
+    "value": 1.0,
+    "ty": {
+      "type": "Default",
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
+    }
+  },
+  "startX": {
+    "type": "Number",
+    "value": 0.0,
+    "ty": {
+      "type": "Default",
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
+    }
+  },
+  "startY": {
+    "type": "Number",
+    "value": 0.0,
+    "ty": {
+      "type": "Default",
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
+    }
+  }
+}

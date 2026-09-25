@@ -10,7 +10,11 @@ import {
 } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 import type { Page } from '@playwright/test'
+import { LEGACY_SKETCH_MODE_FEATURE_FLAG } from '@src/lib/constants'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
+
+// Some of these sketches are KCL 1.0, so editing them needs the legacy sketch flag.
+test.use({ userFeatures: [LEGACY_SKETCH_MODE_FEATURE_FLAG] })
 
 type MainAxisTestFixtures = Pick<Fixtures, 'homePage' | 'toolbar' | 'scene'> & {
   page: Page
@@ -99,7 +103,7 @@ test.describe('Editor tests', { tag: '@desktop' }, () => {
     await page.keyboard.up('ControlOrMeta')
 
     await expect(page.locator('.cm-content')).toHaveText(
-      `@settings(defaultLengthUnit = in, kclVersion = 2.0)
+      `@settings(defaultLengthUnit = in, kclVersion = "3.0-preview")
 sketch001 = startSketchOn(XY)
   |> startProfile(at = [-10, -10])
   |> line(end = [20, 0])
@@ -114,7 +118,7 @@ sketch001 = startSketchOn(XY)
     await page.keyboard.up('ControlOrMeta')
 
     await expect(page.locator('.cm-content')).toHaveText(
-      `@settings(defaultLengthUnit = in, kclVersion = 2.0)
+      `@settings(defaultLengthUnit = in, kclVersion = "3.0-preview")
 sketch001 = startSketchOn(XY)
   |> startProfile(at = [-10, -10])
   |> line(end = [20, 0])
@@ -184,6 +188,7 @@ sketch001 = startSketchOn(XY)
     const u = await getUtils(page)
     await page.setBodyDimensions({ width: 1000, height: 500 })
 
+    await homePage.waitForAuthentication()
     await homePage.goToModelingScene()
     await scene.settled()
 
@@ -253,7 +258,7 @@ sketch001 = startSketchOn(XY)
     await page.locator('button:has-text("Format code")').click()
 
     await expect(page.locator('.cm-content')).toHaveText(
-      `@settings(defaultLengthUnit = in, kclVersion = 2.0)
+      `@settings(defaultLengthUnit = in, kclVersion = "3.0-preview")
 sketch001 = startSketchOn(XY)
   |> startProfile(at = [-10, -10])
   |> line(end = [20, 0])
@@ -361,7 +366,7 @@ a1 = startSketchOn(offsetPlane(XY, offset = 10))
     await u.closeDebugPanel()
 
     await expect(page.locator('.cm-content')).toHaveText(
-      `@settings(defaultLengthUnit = in, kclVersion = 2.0)
+      `@settings(defaultLengthUnit = in, kclVersion = "3.0-preview")
 my_var = 1 + 2`.replaceAll('\n', '')
     )
 
@@ -987,7 +992,7 @@ a1 = startSketchOn(offsetPlane(XY, offset = 10))
       await expect(page.locator('.cm-completionLabel')).not.toBeVisible()
 
       await expect(page.locator('.cm-content')).toHaveText(
-        `@settings(defaultLengthUnit = in, kclVersion = 2.0)
+        `@settings(defaultLengthUnit = in, kclVersion = "3.0-preview")
 sketch001 = startSketchOn(XZ)
     |> startProfile(at = [0, 12])
     |> xLine(length = 5) // lin`.replaceAll('\n', '')
@@ -1056,7 +1061,7 @@ sketch001 = startSketchOn(XZ)
       await expect(page.locator('.cm-completionLabel')).not.toBeVisible()
 
       await expect(page.locator('.cm-content')).toHaveText(
-        `@settings(defaultLengthUnit = in, kclVersion = 2.0)
+        `@settings(defaultLengthUnit = in, kclVersion = "3.0-preview")
 sketch001 = startSketchOn(XZ)
     |> startProfile(at = [0, 12])
     |> xLine(length = 5) // lin`.replaceAll('\n', '')

@@ -8,6 +8,7 @@ export default {
     "qualName": "std::math::abs",
     "moduleName": "math",
     "returnType": "number",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -20,8 +21,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -31,6 +34,7 @@ export default {
     "qualName": "std::math::acos",
     "moduleName": "math",
     "returnType": "number(rad)",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -43,8 +47,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -54,6 +60,7 @@ export default {
     "qualName": "std::sketch::angledLine",
     "moduleName": "sketch",
     "returnType": "Sketch",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": "2.0",
     "experimental": false,
@@ -66,8 +73,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "angle",
@@ -76,8 +85,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "length",
@@ -86,8 +97,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "lengthX",
@@ -96,8 +109,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "lengthY",
@@ -106,8 +121,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "endAbsoluteX",
@@ -116,8 +133,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "endAbsoluteY",
@@ -126,8 +145,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "tag",
@@ -136,8 +157,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -147,6 +170,7 @@ export default {
     "qualName": "std::sketch::angledLineThatIntersects",
     "moduleName": "sketch",
     "returnType": "Sketch",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": "2.0",
     "experimental": false,
@@ -159,8 +183,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "angle",
@@ -169,8 +195,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "intersectTag",
@@ -179,8 +207,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "offset",
@@ -189,8 +219,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "tag",
@@ -199,8 +231,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -210,6 +244,7 @@ export default {
     "qualName": "std::solid::appearance",
     "moduleName": "solid",
     "returnType": "[Solid; 1+] | ImportedGeometry | Plane",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -222,8 +257,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "color",
@@ -232,8 +269,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "metalness",
@@ -242,8 +281,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "roughness",
@@ -252,8 +293,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "opacity",
@@ -262,8 +305,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -273,6 +318,7 @@ export default {
     "qualName": "std::appearance::hexString",
     "moduleName": "appearance",
     "returnType": "string",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -285,8 +331,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -296,6 +344,7 @@ export default {
     "qualName": "std::sketch::arc",
     "moduleName": "sketch",
     "returnType": "Sketch",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": "2.0",
     "experimental": false,
@@ -308,8 +357,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "angleStart",
@@ -318,8 +369,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "angleEnd",
@@ -328,8 +381,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "radius",
@@ -338,8 +393,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "diameter",
@@ -348,8 +405,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "interiorAbsolute",
@@ -358,8 +417,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "endAbsolute",
@@ -368,8 +429,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "tag",
@@ -378,8 +441,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -389,6 +454,7 @@ export default {
     "qualName": "std::math::asin",
     "moduleName": "math",
     "returnType": "number(rad)",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -401,8 +467,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -412,6 +480,7 @@ export default {
     "qualName": "std::assert",
     "moduleName": "std",
     "returnType": null,
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -424,8 +493,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "isGreaterThan",
@@ -434,8 +505,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "isLessThan",
@@ -444,8 +517,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "isGreaterThanOrEqual",
@@ -454,8 +529,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "isLessThanOrEqual",
@@ -464,8 +541,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "isEqualTo",
@@ -474,8 +553,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "isNotEqualTo",
@@ -484,8 +565,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "tolerance",
@@ -494,8 +577,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "error",
@@ -504,8 +589,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -515,6 +602,7 @@ export default {
     "qualName": "std::assertIs",
     "moduleName": "std",
     "returnType": null,
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -527,8 +615,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "error",
@@ -537,8 +627,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -548,6 +640,7 @@ export default {
     "qualName": "std::math::atan",
     "moduleName": "math",
     "returnType": "number(rad)",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -560,8 +653,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -571,6 +666,7 @@ export default {
     "qualName": "std::math::atan2",
     "moduleName": "math",
     "returnType": "number(rad)",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -583,8 +679,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "x",
@@ -593,8 +691,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -604,6 +704,7 @@ export default {
     "qualName": "std::sketch::bezierCurve",
     "moduleName": "sketch",
     "returnType": "Sketch",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": "2.0",
     "experimental": false,
@@ -616,8 +717,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "control1",
@@ -626,8 +729,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "control2",
@@ -636,8 +741,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "end",
@@ -646,8 +753,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "control1Absolute",
@@ -656,8 +765,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "control2Absolute",
@@ -666,8 +777,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "endAbsolute",
@@ -676,8 +789,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "tag",
@@ -686,8 +801,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -697,6 +814,7 @@ export default {
     "qualName": "std::solid::blend",
     "moduleName": "solid",
     "returnType": "Solid",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -709,8 +827,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -720,6 +840,7 @@ export default {
     "qualName": "std::math::ceil",
     "moduleName": "math",
     "returnType": "number",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -732,8 +853,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -743,6 +866,7 @@ export default {
     "qualName": "std::solid::chamfer",
     "moduleName": "solid",
     "returnType": "Solid",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -755,8 +879,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "length",
@@ -765,8 +891,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "tags",
@@ -775,8 +903,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "edges",
@@ -785,8 +915,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": true,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "secondLength",
@@ -795,8 +927,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "angle",
@@ -805,8 +939,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "tag",
@@ -815,8 +951,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "legacyMethod",
@@ -825,18 +963,34 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": "2.0"
+        "deprecatedSince": "2.0",
+        "removedIn": "3.0"
       },
       {
         "name": "version",
         "ty": "number(_)",
-        "docs": "What version of the fillet algorithm to use. Defaults to 1. 0 means \"let the Zoo engine choose whichever version is best\", 1 is the original Zoo fillet algorithm, 2 is the newer algorithm (supports rolling ball fillets).",
+        "docs": "What version of the fillet algorithm to use. 0 means \"let the Zoo engine choose whichever version is best\", 1 is the original Zoo fillet algorithm, 2 is the newer algorithm (supports rolling ball fillets). On KCL 2.0 and before, the default is 1. KCL 3.0 and later always use the newest algorithm.",
         "required": false,
         "special": false,
         "experimental": true,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": "3.0"
+      },
+      {
+        "name": "tangentChain",
+        "ty": "bool",
+        "docs": "If true, also chamfer edges that are tangent to the selected edges. Defaults to true.",
+        "required": false,
+        "special": false,
+        "experimental": false,
+        "addedIn": "3.0",
+        "deprecated": false,
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -846,6 +1000,7 @@ export default {
     "qualName": "std::sketch::circle",
     "moduleName": "sketch",
     "returnType": "Sketch",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": "2.0",
     "experimental": false,
@@ -858,8 +1013,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "center",
@@ -868,8 +1025,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "radius",
@@ -878,8 +1037,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "diameter",
@@ -888,8 +1049,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "tag",
@@ -898,8 +1061,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -909,6 +1074,7 @@ export default {
     "qualName": "std::sketch::circleThreePoint",
     "moduleName": "sketch",
     "returnType": "Sketch",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": "2.0",
     "experimental": false,
@@ -921,8 +1087,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "p1",
@@ -931,8 +1099,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "p2",
@@ -941,8 +1111,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "p3",
@@ -951,8 +1123,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "tag",
@@ -961,8 +1135,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -972,6 +1148,7 @@ export default {
     "qualName": "std::clone",
     "moduleName": "std",
     "returnType": "[Sketch | Solid | ImportedGeometry; 1+]",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -984,8 +1161,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -995,6 +1174,7 @@ export default {
     "qualName": "std::sketch::close",
     "moduleName": "sketch",
     "returnType": "Sketch",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": "2.0",
     "experimental": false,
@@ -1007,8 +1187,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "tag",
@@ -1017,8 +1199,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -1028,6 +1212,7 @@ export default {
     "qualName": "std::array::concat",
     "moduleName": "array",
     "returnType": "[any]",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -1040,8 +1225,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "items",
@@ -1050,8 +1237,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -1061,6 +1250,7 @@ export default {
     "qualName": "std::sketch::conic",
     "moduleName": "sketch",
     "returnType": "Sketch",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": true,
@@ -1073,8 +1263,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "interiorAbsolute",
@@ -1083,8 +1275,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "endAbsolute",
@@ -1093,8 +1287,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "interior",
@@ -1103,8 +1299,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "end",
@@ -1113,8 +1311,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "coefficients",
@@ -1123,8 +1323,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "startTangent",
@@ -1133,8 +1335,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "endTangent",
@@ -1143,8 +1347,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "tag",
@@ -1153,8 +1359,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -1164,6 +1372,7 @@ export default {
     "qualName": "std::math::cos",
     "moduleName": "math",
     "returnType": "number",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -1176,8 +1385,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -1187,6 +1398,7 @@ export default {
     "qualName": "std::array::count",
     "moduleName": "array",
     "returnType": "number",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -1199,8 +1411,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -1210,9 +1424,10 @@ export default {
     "qualName": "std::transform::delete",
     "moduleName": "transform",
     "returnType": null,
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
-    "experimental": true,
+    "experimental": false,
     "docHidden": false,
     "args": [
       {
@@ -1222,8 +1437,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -1233,6 +1450,7 @@ export default {
     "qualName": "std::solid::deleteFace",
     "moduleName": "solid",
     "returnType": "Solid",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -1245,8 +1463,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "faces",
@@ -1255,8 +1475,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "faceIndices",
@@ -1265,8 +1487,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -1276,6 +1500,7 @@ export default {
     "qualName": "std::edgeId",
     "moduleName": "std",
     "returnType": "Edge",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -1288,8 +1513,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "index",
@@ -1298,8 +1525,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "closestTo",
@@ -1308,8 +1537,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -1319,6 +1550,7 @@ export default {
     "qualName": "std::sketch::ellipse",
     "moduleName": "sketch",
     "returnType": "Sketch",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": true,
@@ -1331,8 +1563,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "minorRadius",
@@ -1341,8 +1575,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "center",
@@ -1351,8 +1587,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "majorRadius",
@@ -1361,8 +1599,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "majorAxis",
@@ -1371,8 +1611,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "tag",
@@ -1381,8 +1623,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -1392,6 +1636,7 @@ export default {
     "qualName": "std::sketch::elliptic",
     "moduleName": "sketch",
     "returnType": "Sketch",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": true,
@@ -1404,8 +1649,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "center",
@@ -1414,8 +1661,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "angleStart",
@@ -1424,8 +1673,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "angleEnd",
@@ -1434,8 +1685,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "minorRadius",
@@ -1444,8 +1697,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "majorRadius",
@@ -1454,8 +1709,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "majorAxis",
@@ -1464,8 +1721,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "tag",
@@ -1474,8 +1733,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -1485,6 +1746,7 @@ export default {
     "qualName": "std::sketch::ellipticPoint",
     "moduleName": "sketch",
     "returnType": "Point2d",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -1497,8 +1759,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "minorRadius",
@@ -1507,8 +1771,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "x",
@@ -1517,8 +1783,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "y",
@@ -1527,8 +1795,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -1538,6 +1808,7 @@ export default {
     "qualName": "std::runtime::exit",
     "moduleName": "runtime",
     "returnType": null,
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": true,
@@ -1550,6 +1821,7 @@ export default {
     "qualName": "std::sketch::extrude",
     "moduleName": "sketch",
     "returnType": "[Solid; 1+]",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -1562,8 +1834,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "length",
@@ -1572,8 +1846,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "to",
@@ -1582,8 +1858,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "symmetric",
@@ -1592,8 +1870,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "direction",
@@ -1602,18 +1882,22 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "bidirectionalLength",
         "ty": "number(Length)",
-        "docs": "If specified, will also extrude in the opposite direction to 'distance' to the specified distance. If 'symmetric' is true, this value is ignored.",
+        "docs": "How far to extrude opposite the primary extrusion direction. Only used with `length`; incompatible with `symmetric`.",
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "tagStart",
@@ -1622,8 +1906,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "tagEnd",
@@ -1632,8 +1918,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "draftAngle",
@@ -1642,8 +1930,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": true,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "twistAngle",
@@ -1652,8 +1942,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "twistAngleStep",
@@ -1662,8 +1954,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "twistCenter",
@@ -1672,18 +1966,22 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "method",
         "ty": "string",
-        "docs": "The method used during extrusion, either `NEW` or `MERGE`. `NEW` creates a new object. `MERGE` merges the extruded objects together. The default is `MERGE`.",
+        "docs": "The method used during extrusion, either `NEW` or `MERGE`. `NEW` creates a new body. `MERGE` updates the parent body when extruding a face or a sketch on a face; it does not combine separate plane-based sketches. The default is `MERGE`.",
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "hideSeams",
@@ -1692,8 +1990,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "bodyType",
@@ -1702,8 +2002,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -1713,6 +2015,7 @@ export default {
     "qualName": "std::faceId",
     "moduleName": "std",
     "returnType": "TaggedFace",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -1725,8 +2028,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "index",
@@ -1735,8 +2040,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -1746,6 +2053,7 @@ export default {
     "qualName": "std::sketch::faceOf",
     "moduleName": "sketch",
     "returnType": "Face",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -1758,8 +2066,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "face",
@@ -1768,8 +2078,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -1779,9 +2091,10 @@ export default {
     "qualName": "std::fail",
     "moduleName": "std",
     "returnType": "never",
+    "addedIn": "3.0",
     "deprecated": false,
     "deprecatedSince": null,
-    "experimental": true,
+    "experimental": false,
     "docHidden": false,
     "args": [
       {
@@ -1791,8 +2104,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -1802,6 +2117,7 @@ export default {
     "qualName": "std::solid::fillet",
     "moduleName": "solid",
     "returnType": "Solid",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -1814,8 +2130,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "radius",
@@ -1824,8 +2142,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "tags",
@@ -1834,8 +2154,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "edges",
@@ -1844,8 +2166,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": true,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "tolerance",
@@ -1854,8 +2178,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "tag",
@@ -1864,8 +2190,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "legacyMethod",
@@ -1874,18 +2202,34 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": "2.0"
+        "deprecatedSince": "2.0",
+        "removedIn": "3.0"
       },
       {
         "name": "version",
         "ty": "number(_)",
-        "docs": "What version of the fillet algorithm to use. 0 means \"let the Zoo engine choose whichever version is best\", 1 is the original Zoo fillet algorithm, 2 is the newer algorithm (supports rolling ball fillets). On KCL 2.0 and before, the default is 1. On KCL 3.0 and later, the default is 2.",
+        "docs": "What version of the fillet algorithm to use. 0 means \"let the Zoo engine choose whichever version is best\", 1 is the original Zoo fillet algorithm, 2 is the newer algorithm (supports rolling ball fillets). On KCL 2.0 and before, the default is 1. KCL 3.0 and later always use the newest algorithm.",
         "required": false,
         "special": false,
         "experimental": true,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": "3.0"
+      },
+      {
+        "name": "tangentChain",
+        "ty": "bool",
+        "docs": "If true, also fillet edges that are tangent to the selected edges. Defaults to true.",
+        "required": false,
+        "special": false,
+        "experimental": false,
+        "addedIn": "3.0",
+        "deprecated": false,
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -1895,6 +2239,7 @@ export default {
     "qualName": "std::array::flatten",
     "moduleName": "array",
     "returnType": "[any]",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -1907,8 +2252,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -1918,6 +2265,7 @@ export default {
     "qualName": "std::solid::flipSurface",
     "moduleName": "solid",
     "returnType": "[Solid; 1+]",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -1930,8 +2278,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -1941,6 +2291,7 @@ export default {
     "qualName": "std::math::floor",
     "moduleName": "math",
     "returnType": "number",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -1953,8 +2304,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -1964,6 +2317,7 @@ export default {
     "qualName": "std::gdt::angularity",
     "moduleName": "gdt",
     "returnType": "[GdtAnnotation; 1+]",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -1976,8 +2330,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "faces",
@@ -1986,8 +2342,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "edges",
@@ -1996,8 +2354,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "datums",
@@ -2006,8 +2366,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "precision",
@@ -2016,8 +2378,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "framePosition",
@@ -2026,8 +2390,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "framePlane",
@@ -2036,8 +2402,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "leaderScale",
@@ -2046,8 +2414,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "fontSize",
@@ -2056,8 +2426,22 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
+      },
+      {
+        "name": "annotationName",
+        "ty": "string",
+        "docs": "Human-friendly name for this annotation in exports and model metadata. This is not displayed visually.",
+        "required": false,
+        "special": false,
+        "experimental": false,
+        "addedIn": null,
+        "deprecated": false,
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -2067,6 +2451,7 @@ export default {
     "qualName": "std::gdt::annotation",
     "moduleName": "gdt",
     "returnType": "[GdtAnnotation; 1+]",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -2079,8 +2464,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "faces",
@@ -2089,8 +2476,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "edges",
@@ -2099,8 +2488,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "framePosition",
@@ -2109,8 +2500,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "framePlane",
@@ -2119,8 +2512,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "leaderScale",
@@ -2129,8 +2524,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "fontSize",
@@ -2139,8 +2536,22 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
+      },
+      {
+        "name": "annotationName",
+        "ty": "string",
+        "docs": "Human-friendly name for this annotation in exports and model metadata. This is not displayed visually.",
+        "required": false,
+        "special": false,
+        "experimental": false,
+        "addedIn": null,
+        "deprecated": false,
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -2150,6 +2561,7 @@ export default {
     "qualName": "std::gdt::circularity",
     "moduleName": "gdt",
     "returnType": "[GdtAnnotation; 1+]",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -2162,8 +2574,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "faces",
@@ -2172,8 +2586,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "edges",
@@ -2182,8 +2598,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "precision",
@@ -2192,8 +2610,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "framePosition",
@@ -2202,8 +2622,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "framePlane",
@@ -2212,8 +2634,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "leaderScale",
@@ -2222,8 +2646,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "fontSize",
@@ -2232,8 +2658,22 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
+      },
+      {
+        "name": "annotationName",
+        "ty": "string",
+        "docs": "Human-friendly name for this annotation in exports and model metadata. This is not displayed visually.",
+        "required": false,
+        "special": false,
+        "experimental": false,
+        "addedIn": null,
+        "deprecated": false,
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -2243,6 +2683,7 @@ export default {
     "qualName": "std::gdt::concentricity",
     "moduleName": "gdt",
     "returnType": "[GdtAnnotation; 1+]",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -2255,8 +2696,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "datums",
@@ -2265,8 +2708,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "faces",
@@ -2275,8 +2720,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "edges",
@@ -2285,8 +2732,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "precision",
@@ -2295,8 +2744,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "framePosition",
@@ -2305,8 +2756,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "framePlane",
@@ -2315,8 +2768,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "leaderScale",
@@ -2325,8 +2780,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "fontSize",
@@ -2335,8 +2792,22 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
+      },
+      {
+        "name": "annotationName",
+        "ty": "string",
+        "docs": "Human-friendly name for this annotation in exports and model metadata. This is not displayed visually.",
+        "required": false,
+        "special": false,
+        "experimental": false,
+        "addedIn": null,
+        "deprecated": false,
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -2346,6 +2817,7 @@ export default {
     "qualName": "std::gdt::cylindricity",
     "moduleName": "gdt",
     "returnType": "[GdtAnnotation; 1+]",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -2358,8 +2830,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "faces",
@@ -2368,8 +2842,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "edges",
@@ -2378,8 +2854,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "precision",
@@ -2388,8 +2866,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "framePosition",
@@ -2398,8 +2878,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "framePlane",
@@ -2408,8 +2890,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "leaderScale",
@@ -2418,8 +2902,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "fontSize",
@@ -2428,8 +2914,22 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
+      },
+      {
+        "name": "annotationName",
+        "ty": "string",
+        "docs": "Human-friendly name for this annotation in exports and model metadata. This is not displayed visually.",
+        "required": false,
+        "special": false,
+        "experimental": false,
+        "addedIn": null,
+        "deprecated": false,
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -2439,6 +2939,7 @@ export default {
     "qualName": "std::gdt::datum",
     "moduleName": "gdt",
     "returnType": "GdtAnnotation",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -2451,8 +2952,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "name",
@@ -2461,8 +2964,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "framePosition",
@@ -2471,8 +2976,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "framePlane",
@@ -2481,8 +2988,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "leaderScale",
@@ -2491,8 +3000,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "fontSize",
@@ -2501,8 +3012,22 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
+      },
+      {
+        "name": "annotationName",
+        "ty": "string",
+        "docs": "Human-friendly name for this annotation in exports and model metadata. This is not displayed visually.",
+        "required": false,
+        "special": false,
+        "experimental": false,
+        "addedIn": null,
+        "deprecated": false,
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -2512,6 +3037,7 @@ export default {
     "qualName": "std::gdt::distance",
     "moduleName": "gdt",
     "returnType": "[GdtAnnotation; 1+]",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -2520,12 +3046,14 @@ export default {
       {
         "name": "tolerance",
         "ty": "number(Length)",
-        "docs": "The acceptable distance tolerance.",
-        "required": true,
+        "docs": "The acceptable distance tolerance. If not given, or 0, tolerance will not be shown.",
+        "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "from",
@@ -2534,8 +3062,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "to",
@@ -2544,8 +3074,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "edges",
@@ -2554,8 +3086,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "precision",
@@ -2564,8 +3098,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "framePosition",
@@ -2574,8 +3110,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "framePlane",
@@ -2584,8 +3122,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "leaderScale",
@@ -2594,8 +3134,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "fontSize",
@@ -2604,8 +3146,22 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
+      },
+      {
+        "name": "annotationName",
+        "ty": "string",
+        "docs": "Human-friendly name for this annotation in exports and model metadata. This is not displayed visually.",
+        "required": false,
+        "special": false,
+        "experimental": false,
+        "addedIn": null,
+        "deprecated": false,
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -2615,6 +3171,7 @@ export default {
     "qualName": "std::gdt::flatness",
     "moduleName": "gdt",
     "returnType": "[GdtAnnotation; 1+]",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -2627,8 +3184,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "tolerance",
@@ -2637,8 +3196,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "precision",
@@ -2647,8 +3208,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "framePosition",
@@ -2657,8 +3220,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "framePlane",
@@ -2667,8 +3232,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "leaderScale",
@@ -2677,8 +3244,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "fontSize",
@@ -2687,8 +3256,22 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
+      },
+      {
+        "name": "annotationName",
+        "ty": "string",
+        "docs": "Human-friendly name for this annotation in exports and model metadata. This is not displayed visually.",
+        "required": false,
+        "special": false,
+        "experimental": false,
+        "addedIn": null,
+        "deprecated": false,
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -2698,6 +3281,7 @@ export default {
     "qualName": "std::gdt::note",
     "moduleName": "gdt",
     "returnType": "GdtAnnotation",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -2710,8 +3294,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "framePlane",
@@ -2720,8 +3306,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "framePosition",
@@ -2730,8 +3318,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "fontSize",
@@ -2740,8 +3330,22 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
+      },
+      {
+        "name": "annotationName",
+        "ty": "string",
+        "docs": "Human-friendly name for this annotation in exports and model metadata. This is not displayed visually.",
+        "required": false,
+        "special": false,
+        "experimental": false,
+        "addedIn": null,
+        "deprecated": false,
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -2751,6 +3355,7 @@ export default {
     "qualName": "std::gdt::parallelism",
     "moduleName": "gdt",
     "returnType": "[GdtAnnotation; 1+]",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -2763,8 +3368,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "faces",
@@ -2773,8 +3380,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "edges",
@@ -2783,8 +3392,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "datums",
@@ -2793,8 +3404,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "precision",
@@ -2803,8 +3416,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "framePosition",
@@ -2813,8 +3428,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "framePlane",
@@ -2823,8 +3440,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "leaderScale",
@@ -2833,8 +3452,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "fontSize",
@@ -2843,8 +3464,22 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
+      },
+      {
+        "name": "annotationName",
+        "ty": "string",
+        "docs": "Human-friendly name for this annotation in exports and model metadata. This is not displayed visually.",
+        "required": false,
+        "special": false,
+        "experimental": false,
+        "addedIn": null,
+        "deprecated": false,
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -2854,6 +3489,7 @@ export default {
     "qualName": "std::gdt::perpendicularity",
     "moduleName": "gdt",
     "returnType": "[GdtAnnotation; 1+]",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -2866,8 +3502,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "faces",
@@ -2876,8 +3514,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "edges",
@@ -2886,8 +3526,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "datums",
@@ -2896,8 +3538,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "precision",
@@ -2906,8 +3550,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "framePosition",
@@ -2916,8 +3562,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "framePlane",
@@ -2926,8 +3574,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "leaderScale",
@@ -2936,8 +3586,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "fontSize",
@@ -2946,8 +3598,22 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
+      },
+      {
+        "name": "annotationName",
+        "ty": "string",
+        "docs": "Human-friendly name for this annotation in exports and model metadata. This is not displayed visually.",
+        "required": false,
+        "special": false,
+        "experimental": false,
+        "addedIn": null,
+        "deprecated": false,
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -2957,6 +3623,7 @@ export default {
     "qualName": "std::gdt::position",
     "moduleName": "gdt",
     "returnType": "[GdtAnnotation; 1+]",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -2969,8 +3636,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "faces",
@@ -2979,8 +3648,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "edges",
@@ -2989,8 +3660,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "datums",
@@ -2999,8 +3672,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "precision",
@@ -3009,8 +3684,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "framePosition",
@@ -3019,8 +3696,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "framePlane",
@@ -3029,8 +3708,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "leaderScale",
@@ -3039,8 +3720,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "fontSize",
@@ -3049,8 +3732,22 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
+      },
+      {
+        "name": "annotationName",
+        "ty": "string",
+        "docs": "Human-friendly name for this annotation in exports and model metadata. This is not displayed visually.",
+        "required": false,
+        "special": false,
+        "experimental": false,
+        "addedIn": null,
+        "deprecated": false,
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -3060,6 +3757,7 @@ export default {
     "qualName": "std::gdt::profile",
     "moduleName": "gdt",
     "returnType": "[GdtAnnotation; 1+]",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -3072,8 +3770,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "edges",
@@ -3082,8 +3782,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "faces",
@@ -3092,8 +3794,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "datums",
@@ -3102,8 +3806,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "precision",
@@ -3112,8 +3818,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "framePosition",
@@ -3122,8 +3830,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "framePlane",
@@ -3132,8 +3842,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "leaderScale",
@@ -3142,8 +3854,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "fontSize",
@@ -3152,8 +3866,22 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
+      },
+      {
+        "name": "annotationName",
+        "ty": "string",
+        "docs": "Human-friendly name for this annotation in exports and model metadata. This is not displayed visually.",
+        "required": false,
+        "special": false,
+        "experimental": false,
+        "addedIn": null,
+        "deprecated": false,
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -3163,6 +3891,7 @@ export default {
     "qualName": "std::gdt::profileLine",
     "moduleName": "gdt",
     "returnType": "[GdtAnnotation; 1+]",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -3175,8 +3904,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "tolerance",
@@ -3185,8 +3916,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "datums",
@@ -3195,8 +3928,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "precision",
@@ -3205,8 +3940,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "framePosition",
@@ -3215,8 +3952,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "framePlane",
@@ -3225,8 +3964,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "leaderScale",
@@ -3235,8 +3976,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "fontSize",
@@ -3245,8 +3988,22 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
+      },
+      {
+        "name": "annotationName",
+        "ty": "string",
+        "docs": "Human-friendly name for this annotation in exports and model metadata. This is not displayed visually.",
+        "required": false,
+        "special": false,
+        "experimental": false,
+        "addedIn": null,
+        "deprecated": false,
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -3256,6 +4013,7 @@ export default {
     "qualName": "std::gdt::profileSurface",
     "moduleName": "gdt",
     "returnType": "[GdtAnnotation; 1+]",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -3268,8 +4026,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "tolerance",
@@ -3278,8 +4038,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "datums",
@@ -3288,8 +4050,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "precision",
@@ -3298,8 +4062,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "framePosition",
@@ -3308,8 +4074,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "framePlane",
@@ -3318,8 +4086,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "leaderScale",
@@ -3328,8 +4098,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "fontSize",
@@ -3338,8 +4110,22 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
+      },
+      {
+        "name": "annotationName",
+        "ty": "string",
+        "docs": "Human-friendly name for this annotation in exports and model metadata. This is not displayed visually.",
+        "required": false,
+        "special": false,
+        "experimental": false,
+        "addedIn": null,
+        "deprecated": false,
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -3349,6 +4135,7 @@ export default {
     "qualName": "std::gdt::runout",
     "moduleName": "gdt",
     "returnType": "[GdtAnnotation; 1+]",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -3361,8 +4148,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "datums",
@@ -3371,8 +4160,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "faces",
@@ -3381,8 +4172,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "edges",
@@ -3391,8 +4184,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "precision",
@@ -3401,8 +4196,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "framePosition",
@@ -3411,8 +4208,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "framePlane",
@@ -3421,8 +4220,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "leaderScale",
@@ -3431,8 +4232,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "fontSize",
@@ -3441,8 +4244,22 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
+      },
+      {
+        "name": "annotationName",
+        "ty": "string",
+        "docs": "Human-friendly name for this annotation in exports and model metadata. This is not displayed visually.",
+        "required": false,
+        "special": false,
+        "experimental": false,
+        "addedIn": null,
+        "deprecated": false,
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -3452,6 +4269,7 @@ export default {
     "qualName": "std::gdt::straightness",
     "moduleName": "gdt",
     "returnType": "[GdtAnnotation; 1+]",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -3464,8 +4282,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "faces",
@@ -3474,8 +4294,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "edges",
@@ -3484,8 +4306,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "precision",
@@ -3494,8 +4318,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "framePosition",
@@ -3504,8 +4330,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "framePlane",
@@ -3514,8 +4342,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "leaderScale",
@@ -3524,8 +4354,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "fontSize",
@@ -3534,8 +4366,22 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
+      },
+      {
+        "name": "annotationName",
+        "ty": "string",
+        "docs": "Human-friendly name for this annotation in exports and model metadata. This is not displayed visually.",
+        "required": false,
+        "special": false,
+        "experimental": false,
+        "addedIn": null,
+        "deprecated": false,
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -3545,6 +4391,7 @@ export default {
     "qualName": "std::gdt::symmetry",
     "moduleName": "gdt",
     "returnType": "[GdtAnnotation; 1+]",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -3557,8 +4404,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "datums",
@@ -3567,8 +4416,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "faces",
@@ -3577,8 +4428,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "edges",
@@ -3587,8 +4440,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "precision",
@@ -3597,8 +4452,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "framePosition",
@@ -3607,8 +4464,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "framePlane",
@@ -3617,8 +4476,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "leaderScale",
@@ -3627,8 +4488,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "fontSize",
@@ -3637,8 +4500,22 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
+      },
+      {
+        "name": "annotationName",
+        "ty": "string",
+        "docs": "Human-friendly name for this annotation in exports and model metadata. This is not displayed visually.",
+        "required": false,
+        "special": false,
+        "experimental": false,
+        "addedIn": null,
+        "deprecated": false,
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -3648,6 +4525,7 @@ export default {
     "qualName": "std::gear::helical",
     "moduleName": "gear",
     "returnType": "Solid",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": true,
@@ -3660,8 +4538,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "module",
@@ -3670,8 +4550,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "pressureAngle",
@@ -3680,8 +4562,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "helixAngle",
@@ -3690,8 +4574,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "gearHeight",
@@ -3700,8 +4586,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -3711,6 +4599,7 @@ export default {
     "qualName": "std::gear::herringbone",
     "moduleName": "gear",
     "returnType": "Solid",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": true,
@@ -3723,8 +4612,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "module",
@@ -3733,8 +4624,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "pressureAngle",
@@ -3743,8 +4636,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "gearHeight",
@@ -3753,8 +4648,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "helixAngle",
@@ -3763,8 +4660,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -3774,6 +4673,7 @@ export default {
     "qualName": "std::gear::ring",
     "moduleName": "gear",
     "returnType": "Solid",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": true,
@@ -3786,8 +4686,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "module",
@@ -3796,8 +4698,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "pressureAngle",
@@ -3806,8 +4710,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "helixAngle",
@@ -3816,8 +4722,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "gearHeight",
@@ -3826,8 +4734,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -3837,6 +4747,7 @@ export default {
     "qualName": "std::gear::spur",
     "moduleName": "gear",
     "returnType": "Solid",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": true,
@@ -3849,8 +4760,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "module",
@@ -3859,8 +4772,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "pressureAngle",
@@ -3869,8 +4784,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "gearHeight",
@@ -3879,8 +4796,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -3890,6 +4809,7 @@ export default {
     "qualName": "std::sketch::getBoundedEdge",
     "moduleName": "sketch",
     "returnType": "BoundedEdge",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -3902,8 +4822,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "edge",
@@ -3912,8 +4834,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "lowerBound",
@@ -3922,8 +4846,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "upperBound",
@@ -3932,8 +4858,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -3943,6 +4871,7 @@ export default {
     "qualName": "std::sketch::getCommonEdge",
     "moduleName": "sketch",
     "returnType": "Edge",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -3955,8 +4884,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -3966,6 +4897,7 @@ export default {
     "qualName": "std::sketch::getNextAdjacentEdge",
     "moduleName": "sketch",
     "returnType": "Edge",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -3978,8 +4910,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -3989,6 +4923,7 @@ export default {
     "qualName": "std::sketch::getOppositeEdge",
     "moduleName": "sketch",
     "returnType": "Edge",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -4001,8 +4936,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -4012,6 +4949,7 @@ export default {
     "qualName": "std::sketch::getPreviousAdjacentEdge",
     "moduleName": "sketch",
     "returnType": "Edge",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -4024,8 +4962,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -4035,6 +4975,7 @@ export default {
     "qualName": "std::helix",
     "moduleName": "std",
     "returnType": "Helix",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -4047,8 +4988,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "angleStart",
@@ -4057,8 +5000,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "ccw",
@@ -4067,8 +5012,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "radius",
@@ -4077,8 +5024,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "axis",
@@ -4087,8 +5036,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "length",
@@ -4097,8 +5048,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "cylinder",
@@ -4107,8 +5060,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -4118,6 +5073,7 @@ export default {
     "qualName": "std::transform::hide",
     "moduleName": "transform",
     "returnType": "[Solid; 1+] | [Plane; 1+] | [Sketch; 1+] | [Helix; 1+] | ImportedGeometry | [GdtAnnotation; 1+]",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -4130,8 +5086,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -4141,6 +5099,7 @@ export default {
     "qualName": "std::hole::blind",
     "moduleName": "hole",
     "returnType": null,
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -4153,8 +5112,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "diameter",
@@ -4163,8 +5124,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -4174,6 +5137,7 @@ export default {
     "qualName": "std::hole::counterbore",
     "moduleName": "hole",
     "returnType": null,
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -4186,8 +5150,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "depth",
@@ -4196,8 +5162,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -4207,6 +5175,7 @@ export default {
     "qualName": "std::hole::countersink",
     "moduleName": "hole",
     "returnType": null,
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -4219,8 +5188,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "angle",
@@ -4229,8 +5200,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "headClearance",
@@ -4239,8 +5212,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -4250,6 +5225,7 @@ export default {
     "qualName": "std::hole::drill",
     "moduleName": "hole",
     "returnType": null,
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -4262,8 +5238,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -4273,6 +5251,7 @@ export default {
     "qualName": "std::hole::flat",
     "moduleName": "hole",
     "returnType": null,
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -4285,6 +5264,7 @@ export default {
     "qualName": "std::hole::hole",
     "moduleName": "hole",
     "returnType": null,
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -4297,8 +5277,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "face",
@@ -4307,8 +5289,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "holeBottom",
@@ -4317,8 +5301,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "holeBody",
@@ -4327,8 +5313,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "holeType",
@@ -4337,8 +5325,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "cutAt",
@@ -4347,8 +5337,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -4358,6 +5350,7 @@ export default {
     "qualName": "std::hole::holeAt",
     "moduleName": "hole",
     "returnType": null,
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -4370,8 +5363,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "plane",
@@ -4380,8 +5375,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "holeBottom",
@@ -4390,8 +5387,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "holeBody",
@@ -4400,8 +5399,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "holeType",
@@ -4410,8 +5411,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -4421,6 +5424,7 @@ export default {
     "qualName": "std::hole::holes",
     "moduleName": "hole",
     "returnType": null,
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -4433,8 +5437,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "face",
@@ -4443,8 +5449,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "holeBottom",
@@ -4453,8 +5461,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "holeBody",
@@ -4463,8 +5473,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "holeType",
@@ -4473,8 +5485,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "cutsAt",
@@ -4483,8 +5497,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -4494,6 +5510,7 @@ export default {
     "qualName": "std::hole::holesLinear",
     "moduleName": "hole",
     "returnType": null,
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -4506,8 +5523,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "face",
@@ -4516,8 +5535,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "holeBottom",
@@ -4526,8 +5547,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "holeBody",
@@ -4536,8 +5559,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "holeType",
@@ -4546,8 +5571,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "cutAt",
@@ -4556,8 +5583,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "instances",
@@ -4566,8 +5595,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "distance",
@@ -4576,8 +5607,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "axis",
@@ -4586,8 +5619,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -4597,6 +5632,7 @@ export default {
     "qualName": "std::hole::simple",
     "moduleName": "hole",
     "returnType": null,
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -4609,6 +5645,7 @@ export default {
     "qualName": "std::solid::hollow",
     "moduleName": "solid",
     "returnType": "Solid",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -4621,8 +5658,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "thickness",
@@ -4631,8 +5670,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -4642,6 +5683,7 @@ export default {
     "qualName": "std::sketch::hyperbolic",
     "moduleName": "sketch",
     "returnType": "Sketch",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": true,
@@ -4654,8 +5696,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "semiMajor",
@@ -4664,8 +5708,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "semiMinor",
@@ -4674,8 +5720,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "interiorAbsolute",
@@ -4684,8 +5732,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "endAbsolute",
@@ -4694,8 +5744,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "interior",
@@ -4704,8 +5756,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "end",
@@ -4714,8 +5768,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "tag",
@@ -4724,8 +5780,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -4735,6 +5793,7 @@ export default {
     "qualName": "std::sketch::hyperbolicPoint",
     "moduleName": "sketch",
     "returnType": "Point2d",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -4747,8 +5806,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "semiMinor",
@@ -4757,8 +5818,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "x",
@@ -4767,8 +5830,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "y",
@@ -4777,8 +5842,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -4788,6 +5855,7 @@ export default {
     "qualName": "std::solid::intersect",
     "moduleName": "solid",
     "returnType": "[Solid; 1+]",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -4800,8 +5868,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "tolerance",
@@ -4810,8 +5880,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "legacyMethod",
@@ -4820,8 +5892,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": "2.0"
+        "deprecatedSince": "2.0",
+        "removedIn": "3.0"
       }
     ]
   },
@@ -4831,6 +5905,7 @@ export default {
     "qualName": "std::sketch::involuteCircular",
     "moduleName": "sketch",
     "returnType": "Sketch",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": "2.0",
     "experimental": false,
@@ -4843,8 +5918,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "angle",
@@ -4853,8 +5930,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "startRadius",
@@ -4863,8 +5942,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "endRadius",
@@ -4873,8 +5954,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "startDiameter",
@@ -4883,8 +5966,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "endDiameter",
@@ -4893,8 +5978,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "reverse",
@@ -4903,8 +5990,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "tag",
@@ -4913,8 +6002,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -4924,6 +6015,7 @@ export default {
     "qualName": "std::solid::isSolid",
     "moduleName": "solid",
     "returnType": "bool",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -4936,8 +6028,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -4947,6 +6041,7 @@ export default {
     "qualName": "std::solid::isSurface",
     "moduleName": "solid",
     "returnType": "bool",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -4959,8 +6054,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -4970,6 +6067,7 @@ export default {
     "qualName": "std::solid::joinSurfaces",
     "moduleName": "solid",
     "returnType": "Solid",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -4982,8 +6080,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "tolerance",
@@ -4992,8 +6092,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -5003,6 +6105,7 @@ export default {
     "qualName": "std::sketch::lastSegX",
     "moduleName": "sketch",
     "returnType": "number(Length)",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -5015,8 +6118,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -5026,6 +6131,7 @@ export default {
     "qualName": "std::sketch::lastSegY",
     "moduleName": "sketch",
     "returnType": "number(Length)",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -5038,8 +6144,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -5049,6 +6157,7 @@ export default {
     "qualName": "std::math::legAngX",
     "moduleName": "math",
     "returnType": "number(deg)",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -5061,8 +6170,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "leg",
@@ -5071,8 +6182,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -5082,6 +6195,7 @@ export default {
     "qualName": "std::math::legAngY",
     "moduleName": "math",
     "returnType": "number(deg)",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -5094,8 +6208,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "leg",
@@ -5104,8 +6220,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -5115,6 +6233,7 @@ export default {
     "qualName": "std::math::legLen",
     "moduleName": "math",
     "returnType": "number(Length)",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -5127,8 +6246,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "leg",
@@ -5137,8 +6258,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -5148,6 +6271,7 @@ export default {
     "qualName": "std::sketch::line",
     "moduleName": "sketch",
     "returnType": "Sketch",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": "2.0",
     "experimental": false,
@@ -5160,8 +6284,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "endAbsolute",
@@ -5170,8 +6296,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "end",
@@ -5180,8 +6308,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "tag",
@@ -5190,8 +6320,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -5201,6 +6333,7 @@ export default {
     "qualName": "std::math::ln",
     "moduleName": "math",
     "returnType": "number",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -5213,8 +6346,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -5224,6 +6359,7 @@ export default {
     "qualName": "std::sketch::loft",
     "moduleName": "sketch",
     "returnType": "Solid",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -5236,8 +6372,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "vDegree",
@@ -5246,8 +6384,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "bezApproximateRational",
@@ -5256,8 +6396,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "baseCurveIndex",
@@ -5266,8 +6408,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "tolerance",
@@ -5276,8 +6420,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "tagStart",
@@ -5286,8 +6432,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "tagEnd",
@@ -5296,8 +6444,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "bodyType",
@@ -5306,8 +6456,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -5317,6 +6469,7 @@ export default {
     "qualName": "std::math::log",
     "moduleName": "math",
     "returnType": "number",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -5329,8 +6482,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "base",
@@ -5339,8 +6494,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -5350,6 +6507,7 @@ export default {
     "qualName": "std::math::log10",
     "moduleName": "math",
     "returnType": "number",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -5362,8 +6520,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -5373,6 +6533,7 @@ export default {
     "qualName": "std::math::log2",
     "moduleName": "math",
     "returnType": "number",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -5385,8 +6546,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -5396,6 +6559,7 @@ export default {
     "qualName": "std::array::map",
     "moduleName": "array",
     "returnType": "[any]",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -5408,8 +6572,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "f",
@@ -5418,8 +6584,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -5429,6 +6597,7 @@ export default {
     "qualName": "std::math::max",
     "moduleName": "math",
     "returnType": "number",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -5441,8 +6610,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -5452,6 +6623,7 @@ export default {
     "qualName": "std::math::min",
     "moduleName": "math",
     "returnType": "number",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -5464,8 +6636,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -5475,6 +6649,7 @@ export default {
     "qualName": "std::transform::mirror2d",
     "moduleName": "transform",
     "returnType": "Sketch",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -5487,8 +6662,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "axis",
@@ -5497,8 +6674,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -5508,6 +6687,7 @@ export default {
     "qualName": "std::transform::mirror3d",
     "moduleName": "transform",
     "returnType": "[Solid; 1+]",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -5520,8 +6700,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "across",
@@ -5530,8 +6712,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -5541,6 +6725,7 @@ export default {
     "qualName": "std::offsetPlane",
     "moduleName": "std",
     "returnType": "Plane",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -5553,8 +6738,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "offset",
@@ -5563,8 +6750,60 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
+      }
+    ]
+  },
+  "operation::facing": {
+    "name": "facing",
+    "preferredName": "operation::facing",
+    "qualName": "std::operation::facing",
+    "moduleName": "operation",
+    "returnType": "number(_)",
+    "addedIn": null,
+    "deprecated": false,
+    "deprecatedSince": null,
+    "experimental": true,
+    "docHidden": false,
+    "args": [
+      {
+        "name": "solid",
+        "ty": "Solid",
+        "docs": null,
+        "required": true,
+        "special": true,
+        "experimental": false,
+        "addedIn": null,
+        "deprecated": false,
+        "deprecatedSince": null,
+        "removedIn": null
+      },
+      {
+        "name": "toolDiameter",
+        "ty": "number(Length)",
+        "docs": null,
+        "required": true,
+        "special": false,
+        "experimental": false,
+        "addedIn": null,
+        "deprecated": false,
+        "deprecatedSince": null,
+        "removedIn": null
+      },
+      {
+        "name": "stepOver",
+        "ty": "number",
+        "docs": null,
+        "required": true,
+        "special": false,
+        "experimental": false,
+        "addedIn": null,
+        "deprecated": false,
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -5574,6 +6813,7 @@ export default {
     "qualName": "std::sketch::parabolic",
     "moduleName": "sketch",
     "returnType": "Sketch",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": true,
@@ -5586,8 +6826,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "end",
@@ -5596,8 +6838,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "endAbsolute",
@@ -5606,8 +6850,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "coefficients",
@@ -5616,8 +6862,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "interior",
@@ -5626,8 +6874,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "interiorAbsolute",
@@ -5636,8 +6886,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "tag",
@@ -5646,8 +6898,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -5657,6 +6911,7 @@ export default {
     "qualName": "std::sketch::parabolicPoint",
     "moduleName": "sketch",
     "returnType": "Point2d",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -5669,8 +6924,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "x",
@@ -5679,8 +6936,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "y",
@@ -5689,8 +6948,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -5700,6 +6961,7 @@ export default {
     "qualName": "std::sketch::patternCircular2d",
     "moduleName": "sketch",
     "returnType": "[Sketch; 1+]",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -5712,8 +6974,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "instances",
@@ -5722,8 +6986,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "center",
@@ -5732,8 +6998,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "arcDegrees",
@@ -5742,8 +7010,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "rotateDuplicates",
@@ -5752,8 +7022,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "useOriginal",
@@ -5762,8 +7034,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -5773,6 +7047,7 @@ export default {
     "qualName": "std::solid::patternCircular3d",
     "moduleName": "solid",
     "returnType": "[Solid | ImportedGeometry; 1+]",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -5785,8 +7060,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "instances",
@@ -5795,8 +7072,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "axis",
@@ -5805,8 +7084,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "center",
@@ -5815,8 +7096,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "arcDegrees",
@@ -5825,8 +7108,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "rotateDuplicates",
@@ -5835,8 +7120,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "useOriginal",
@@ -5845,8 +7132,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -5856,6 +7145,7 @@ export default {
     "qualName": "std::sketch::patternLinear2d",
     "moduleName": "sketch",
     "returnType": "[Sketch; 1+]",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -5868,8 +7158,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "instances",
@@ -5878,8 +7170,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "distance",
@@ -5888,8 +7182,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "axis",
@@ -5898,8 +7194,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "useOriginal",
@@ -5908,8 +7206,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -5919,6 +7219,7 @@ export default {
     "qualName": "std::solid::patternLinear3d",
     "moduleName": "solid",
     "returnType": "[Solid | ImportedGeometry; 1+]",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -5931,8 +7232,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "instances",
@@ -5941,8 +7244,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "distance",
@@ -5951,8 +7256,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "axis",
@@ -5961,8 +7268,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "useOriginal",
@@ -5971,8 +7280,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -5982,6 +7293,7 @@ export default {
     "qualName": "std::solid::patternTransform",
     "moduleName": "solid",
     "returnType": "[Solid | ImportedGeometry; 1+]",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -5994,8 +7306,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "instances",
@@ -6004,8 +7318,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "transform",
@@ -6014,8 +7330,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "useOriginal",
@@ -6024,8 +7342,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -6035,6 +7355,7 @@ export default {
     "qualName": "std::sketch::patternTransform2d",
     "moduleName": "sketch",
     "returnType": "[Sketch; 1+]",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -6047,8 +7368,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "instances",
@@ -6057,8 +7380,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "transform",
@@ -6067,8 +7392,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "useOriginal",
@@ -6077,8 +7404,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -6088,6 +7417,7 @@ export default {
     "qualName": "std::sketch::planeOf",
     "moduleName": "sketch",
     "returnType": "Plane",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -6100,8 +7430,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "face",
@@ -6110,8 +7442,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -6121,6 +7455,7 @@ export default {
     "qualName": "std::math::polar",
     "moduleName": "math",
     "returnType": "Point2d",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -6133,8 +7468,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "length",
@@ -6143,8 +7480,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -6154,6 +7493,7 @@ export default {
     "qualName": "std::sketch::polygon",
     "moduleName": "sketch",
     "returnType": "Sketch",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": "2.0",
     "experimental": false,
@@ -6166,8 +7506,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "radius",
@@ -6176,8 +7518,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "numSides",
@@ -6186,8 +7530,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "center",
@@ -6196,8 +7542,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "inscribed",
@@ -6206,8 +7554,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -6217,6 +7567,7 @@ export default {
     "qualName": "std::array::pop",
     "moduleName": "array",
     "returnType": "[any]",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -6229,8 +7580,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -6240,6 +7593,7 @@ export default {
     "qualName": "std::math::pow",
     "moduleName": "math",
     "returnType": "number",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -6252,8 +7606,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "exp",
@@ -6262,8 +7618,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -6273,6 +7631,7 @@ export default {
     "qualName": "std::sketch::profileStart",
     "moduleName": "sketch",
     "returnType": "Point2d",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -6285,8 +7644,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -6296,6 +7657,7 @@ export default {
     "qualName": "std::sketch::profileStartX",
     "moduleName": "sketch",
     "returnType": "number(Length)",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -6308,8 +7670,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -6319,6 +7683,7 @@ export default {
     "qualName": "std::sketch::profileStartY",
     "moduleName": "sketch",
     "returnType": "number(Length)",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -6331,8 +7696,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -6342,6 +7709,7 @@ export default {
     "qualName": "std::array::push",
     "moduleName": "array",
     "returnType": "[any; 1+]",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -6354,8 +7722,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "item",
@@ -6364,8 +7734,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -6375,6 +7747,7 @@ export default {
     "qualName": "std::sketch::rectangle",
     "moduleName": "sketch",
     "returnType": "Sketch",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": "2.0",
     "experimental": false,
@@ -6387,8 +7760,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "width",
@@ -6397,8 +7772,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "height",
@@ -6407,8 +7784,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "center",
@@ -6417,8 +7796,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "corner",
@@ -6427,8 +7808,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -6438,6 +7821,7 @@ export default {
     "qualName": "std::array::reduce",
     "moduleName": "array",
     "returnType": "any",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -6450,8 +7834,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "initial",
@@ -6460,8 +7846,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "f",
@@ -6470,8 +7858,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -6481,6 +7871,7 @@ export default {
     "qualName": "std::sketch::region",
     "moduleName": "sketch",
     "returnType": "Sketch",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -6493,8 +7884,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "segments",
@@ -6503,8 +7896,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "intersectionIndex",
@@ -6513,8 +7908,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "direction",
@@ -6523,8 +7920,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "sketch",
@@ -6533,8 +7932,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -6544,6 +7945,7 @@ export default {
     "qualName": "std::math::rem",
     "moduleName": "math",
     "returnType": "number",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -6556,8 +7958,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "divisor",
@@ -6566,8 +7970,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -6577,6 +7983,7 @@ export default {
     "qualName": "std::sketch::revolve",
     "moduleName": "sketch",
     "returnType": "[Solid; 1+]",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -6589,8 +7996,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "axis",
@@ -6599,8 +8008,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "angle",
@@ -6609,8 +8020,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "tolerance",
@@ -6619,8 +8032,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "symmetric",
@@ -6629,8 +8044,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "bidirectionalAngle",
@@ -6639,8 +8056,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "tagStart",
@@ -6649,8 +8068,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "tagEnd",
@@ -6659,8 +8080,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "bodyType",
@@ -6669,8 +8092,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -6680,6 +8105,7 @@ export default {
     "qualName": "std::transform::rotate",
     "moduleName": "transform",
     "returnType": "[Solid; 1+] | [Sketch; 1+] | [Helix; 1+] | ImportedGeometry",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -6692,8 +8118,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "roll",
@@ -6702,8 +8130,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "pitch",
@@ -6712,8 +8142,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "yaw",
@@ -6722,8 +8154,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "axis",
@@ -6732,8 +8166,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "angle",
@@ -6742,8 +8178,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "global",
@@ -6752,8 +8190,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -6763,6 +8203,7 @@ export default {
     "qualName": "std::math::round",
     "moduleName": "math",
     "returnType": "number",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -6775,8 +8216,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -6786,6 +8229,7 @@ export default {
     "qualName": "std::transform::scale",
     "moduleName": "transform",
     "returnType": "[Solid; 1+] | [Sketch; 1+] | [Helix; 1+] | ImportedGeometry",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -6798,8 +8242,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "x",
@@ -6808,8 +8254,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "y",
@@ -6818,8 +8266,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "z",
@@ -6828,8 +8278,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "global",
@@ -6838,8 +8290,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "factor",
@@ -6848,8 +8302,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -6859,6 +8315,7 @@ export default {
     "qualName": "std::sketch::segAng",
     "moduleName": "sketch",
     "returnType": "number(Angle)",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -6871,8 +8328,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -6882,6 +8341,7 @@ export default {
     "qualName": "std::sketch::segEnd",
     "moduleName": "sketch",
     "returnType": "Point2d",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -6894,8 +8354,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -6905,6 +8367,7 @@ export default {
     "qualName": "std::sketch::segEndX",
     "moduleName": "sketch",
     "returnType": "number(Length)",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -6917,8 +8380,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -6928,6 +8393,7 @@ export default {
     "qualName": "std::sketch::segEndY",
     "moduleName": "sketch",
     "returnType": "number(Length)",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -6940,8 +8406,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -6951,6 +8419,7 @@ export default {
     "qualName": "std::sketch::segLen",
     "moduleName": "sketch",
     "returnType": "number(Length)",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -6963,8 +8432,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -6974,6 +8445,7 @@ export default {
     "qualName": "std::sketch::segStart",
     "moduleName": "sketch",
     "returnType": "Point2d",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -6986,8 +8458,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -6997,6 +8471,7 @@ export default {
     "qualName": "std::sketch::segStartX",
     "moduleName": "sketch",
     "returnType": "number(Length)",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -7009,8 +8484,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -7020,6 +8497,7 @@ export default {
     "qualName": "std::sketch::segStartY",
     "moduleName": "sketch",
     "returnType": "number(Length)",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -7032,8 +8510,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -7043,6 +8523,7 @@ export default {
     "qualName": "std::solid::shell",
     "moduleName": "solid",
     "returnType": "[Solid]",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -7055,8 +8536,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "thickness",
@@ -7065,8 +8548,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "faces",
@@ -7075,8 +8560,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -7086,6 +8573,7 @@ export default {
     "qualName": "std::math::sin",
     "moduleName": "math",
     "returnType": "number",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -7098,8 +8586,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -7109,6 +8599,7 @@ export default {
     "qualName": "std::array::slice",
     "moduleName": "array",
     "returnType": "[any]",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -7121,8 +8612,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "start",
@@ -7131,8 +8624,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "end",
@@ -7141,8 +8636,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -7152,6 +8649,7 @@ export default {
     "qualName": "std::solver::angle",
     "moduleName": "solver",
     "returnType": null,
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": "2.0",
     "experimental": false,
@@ -7164,8 +8662,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "labelPosition",
@@ -7174,8 +8674,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -7185,6 +8687,7 @@ export default {
     "qualName": "std::solver::angleDimension",
     "moduleName": "solver",
     "returnType": null,
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -7197,8 +8700,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "sector",
@@ -7207,8 +8712,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "inverse",
@@ -7217,8 +8724,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "labelPosition",
@@ -7227,8 +8736,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -7238,6 +8749,7 @@ export default {
     "qualName": "std::solver::arc",
     "moduleName": "solver",
     "returnType": "Segment",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -7250,8 +8762,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "end",
@@ -7260,8 +8774,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "center",
@@ -7270,8 +8786,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "direction",
@@ -7280,8 +8798,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "construction",
@@ -7290,8 +8810,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -7301,6 +8823,7 @@ export default {
     "qualName": "std::solver::circle",
     "moduleName": "solver",
     "returnType": "Segment",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -7313,8 +8836,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "center",
@@ -7323,8 +8848,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "construction",
@@ -7333,8 +8860,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -7344,6 +8873,7 @@ export default {
     "qualName": "std::solver::coincident",
     "moduleName": "solver",
     "returnType": null,
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -7356,8 +8886,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -7367,6 +8899,7 @@ export default {
     "qualName": "std::solver::controlPointSpline",
     "moduleName": "solver",
     "returnType": "Segment",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": true,
@@ -7379,8 +8912,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "construction",
@@ -7389,8 +8924,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -7400,6 +8937,7 @@ export default {
     "qualName": "std::solver::diameter",
     "moduleName": "solver",
     "returnType": null,
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -7412,8 +8950,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "labelPosition",
@@ -7422,8 +8962,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -7433,6 +8975,7 @@ export default {
     "qualName": "std::solver::distance",
     "moduleName": "solver",
     "returnType": null,
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -7445,8 +8988,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "labelPosition",
@@ -7455,8 +9000,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -7466,6 +9013,7 @@ export default {
     "qualName": "std::solver::equalLength",
     "moduleName": "solver",
     "returnType": null,
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -7478,8 +9026,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -7489,6 +9039,7 @@ export default {
     "qualName": "std::solver::equalRadius",
     "moduleName": "solver",
     "returnType": null,
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -7501,8 +9052,36 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
+      }
+    ]
+  },
+  "solver::fixed": {
+    "name": "fixed",
+    "preferredName": "solver::fixed",
+    "qualName": "std::solver::fixed",
+    "moduleName": "solver",
+    "returnType": null,
+    "addedIn": null,
+    "deprecated": false,
+    "deprecatedSince": null,
+    "experimental": false,
+    "docHidden": false,
+    "args": [
+      {
+        "name": "points",
+        "ty": "[Segment | Point2d; 2+]",
+        "docs": "Two or more sketch entities that should be coincident. When more than two inputs are provided, each item must be a point or `ORIGIN`.",
+        "required": true,
+        "special": true,
+        "experimental": false,
+        "addedIn": null,
+        "deprecated": false,
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -7512,6 +9091,7 @@ export default {
     "qualName": "std::solver::horizontal",
     "moduleName": "solver",
     "returnType": null,
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -7524,8 +9104,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -7535,6 +9117,7 @@ export default {
     "qualName": "std::solver::horizontalDistance",
     "moduleName": "solver",
     "returnType": null,
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -7547,8 +9130,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "labelPosition",
@@ -7557,8 +9142,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -7568,6 +9155,7 @@ export default {
     "qualName": "std::solver::line",
     "moduleName": "solver",
     "returnType": "Segment",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -7580,8 +9168,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "end",
@@ -7590,8 +9180,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "construction",
@@ -7600,8 +9192,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -7611,6 +9205,7 @@ export default {
     "qualName": "std::solver::midpoint",
     "moduleName": "solver",
     "returnType": null,
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -7623,8 +9218,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "point",
@@ -7633,8 +9230,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -7644,6 +9243,7 @@ export default {
     "qualName": "std::solver::parallel",
     "moduleName": "solver",
     "returnType": null,
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -7656,8 +9256,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -7667,6 +9269,7 @@ export default {
     "qualName": "std::solver::perpendicular",
     "moduleName": "solver",
     "returnType": null,
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -7679,8 +9282,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -7690,6 +9295,7 @@ export default {
     "qualName": "std::solver::point",
     "moduleName": "solver",
     "returnType": "Segment",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -7702,8 +9308,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -7713,6 +9321,7 @@ export default {
     "qualName": "std::solver::radius",
     "moduleName": "solver",
     "returnType": null,
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -7725,8 +9334,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "labelPosition",
@@ -7735,8 +9346,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -7746,6 +9359,7 @@ export default {
     "qualName": "std::solver::symmetric",
     "moduleName": "solver",
     "returnType": null,
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -7758,8 +9372,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "axis",
@@ -7768,8 +9384,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -7779,6 +9397,7 @@ export default {
     "qualName": "std::solver::tangent",
     "moduleName": "solver",
     "returnType": null,
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -7791,8 +9410,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -7802,6 +9423,7 @@ export default {
     "qualName": "std::solver::vertical",
     "moduleName": "solver",
     "returnType": null,
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -7814,8 +9436,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -7825,6 +9449,7 @@ export default {
     "qualName": "std::solver::verticalDistance",
     "moduleName": "solver",
     "returnType": null,
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -7837,8 +9462,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "labelPosition",
@@ -7847,8 +9474,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -7858,6 +9487,7 @@ export default {
     "qualName": "std::solid::split",
     "moduleName": "solid",
     "returnType": "[Solid; 1+]",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -7870,8 +9500,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "merge",
@@ -7880,8 +9512,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "keepTools",
@@ -7890,8 +9524,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "tools",
@@ -7900,8 +9536,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "legacyMethod",
@@ -7910,8 +9548,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": "2.0"
+        "deprecatedSince": "2.0",
+        "removedIn": "3.0"
       }
     ]
   },
@@ -7921,6 +9561,7 @@ export default {
     "qualName": "std::math::sqrt",
     "moduleName": "math",
     "returnType": "number",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -7933,8 +9574,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -7944,6 +9587,7 @@ export default {
     "qualName": "std::sketch::startProfile",
     "moduleName": "sketch",
     "returnType": "Sketch",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": "2.0",
     "experimental": false,
@@ -7956,8 +9600,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "at",
@@ -7966,8 +9612,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "tag",
@@ -7976,8 +9624,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -7987,6 +9637,7 @@ export default {
     "qualName": "std::sketch::startSketchOn",
     "moduleName": "sketch",
     "returnType": "Plane | Face",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": "2.0",
     "experimental": false,
@@ -7999,8 +9650,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "face",
@@ -8009,8 +9662,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "normalToFace",
@@ -8019,8 +9674,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "alignAxis",
@@ -8029,8 +9686,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "normalOffset",
@@ -8039,8 +9698,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -8050,6 +9711,7 @@ export default {
     "qualName": "std::string::isEqual",
     "moduleName": "string",
     "returnType": "bool",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -8062,8 +9724,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "to",
@@ -8072,8 +9736,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "caseInsensitive",
@@ -8082,8 +9748,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -8093,6 +9761,7 @@ export default {
     "qualName": "std::string::lowercase",
     "moduleName": "string",
     "returnType": "string",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -8105,8 +9774,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -8116,6 +9787,7 @@ export default {
     "qualName": "std::string::toString",
     "moduleName": "string",
     "returnType": "string",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -8128,8 +9800,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -8139,6 +9813,7 @@ export default {
     "qualName": "std::string::trim",
     "moduleName": "string",
     "returnType": "string",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -8151,8 +9826,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -8162,6 +9839,7 @@ export default {
     "qualName": "std::string::trimEnd",
     "moduleName": "string",
     "returnType": "string",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -8174,8 +9852,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -8185,6 +9865,7 @@ export default {
     "qualName": "std::string::trimStart",
     "moduleName": "string",
     "returnType": "string",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -8197,8 +9878,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -8208,6 +9891,7 @@ export default {
     "qualName": "std::string::uppercase",
     "moduleName": "string",
     "returnType": "string",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -8220,8 +9904,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -8231,6 +9917,7 @@ export default {
     "qualName": "std::solid::subtract",
     "moduleName": "solid",
     "returnType": "[Solid]",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -8243,8 +9930,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "tools",
@@ -8253,8 +9942,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "tolerance",
@@ -8263,8 +9954,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "legacyMethod",
@@ -8273,8 +9966,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": "2.0"
+        "deprecatedSince": "2.0",
+        "removedIn": "3.0"
       }
     ]
   },
@@ -8284,6 +9979,7 @@ export default {
     "qualName": "std::sketch::subtract2d",
     "moduleName": "sketch",
     "returnType": "Sketch",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": "2.0",
     "experimental": false,
@@ -8296,8 +9992,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "tool",
@@ -8306,8 +10004,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -8317,6 +10017,7 @@ export default {
     "qualName": "std::sketch::sweep",
     "moduleName": "sketch",
     "returnType": "[Solid; 1+]",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -8329,8 +10030,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "path",
@@ -8339,8 +10042,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "sectional",
@@ -8349,8 +10054,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "tolerance",
@@ -8359,8 +10066,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "relativeTo",
@@ -8369,28 +10078,34 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": true,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": "3.0"
       },
       {
         "name": "translateProfileToPath",
         "ty": "bool",
-        "docs": "If true, the profile being swept will be moved to the path being swept along, before the sweep starts. If false, the profile stays where it is, and the sweep starts from there. Defaults to false.",
+        "docs": "If true, the profile being swept will be moved to the path being swept along, before the sweep starts. If false, the profile stays where it is, and the sweep starts from there. Defaults to false. On KCL 2.0 and earlier, explicitly setting this option, even to false, requires `version = 2`.",
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "orientProfilePerpendicular",
         "ty": "bool",
-        "docs": "If true, before the sweep starts, the profile will be re-oriented so that it is perpendicular to the path being swept along. If false, the profile is left in its current orientation. Defaults to false.",
+        "docs": "If true, before the sweep starts, the profile will be re-oriented so that it is perpendicular to the path being swept along. If false, the profile is left in its current orientation. On KCL 2.0 and earlier, defaults to false. On KCL 3.0 and later, defaults to the value of `translateProfileToPath`, so a profile that is moved to the path is also oriented perpendicular to it unless you say otherwise. On KCL 2.0 and earlier, explicitly setting this option, even to false, requires `version = 2`.",
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "tagStart",
@@ -8399,8 +10114,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "tagEnd",
@@ -8409,8 +10126,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "bodyType",
@@ -8419,18 +10138,22 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "version",
         "ty": "number(_)",
-        "docs": "What version of the sweeping algorithm to use (leave unspecified or use 0 to use the default algorithm).",
+        "docs": "What version of the sweeping algorithm to use. 0 means \"let the Zoo engine choose whichever version is best\", 1 is the original Zoo sweep algorithm, 2 is the newer algorithm. On KCL 2.0 and earlier, the default is 0. KCL 3.0 and later always use the newest algorithm.",
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": "3.0"
       }
     ]
   },
@@ -8440,6 +10163,7 @@ export default {
     "qualName": "std::math::tan",
     "moduleName": "math",
     "returnType": "number",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -8452,8 +10176,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -8463,6 +10189,7 @@ export default {
     "qualName": "std::sketch::tangentToEnd",
     "moduleName": "sketch",
     "returnType": "number(Angle)",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -8475,8 +10202,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -8486,6 +10215,7 @@ export default {
     "qualName": "std::sketch::tangentialArc",
     "moduleName": "sketch",
     "returnType": "Sketch",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": "2.0",
     "experimental": false,
@@ -8498,8 +10228,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "endAbsolute",
@@ -8508,8 +10240,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "end",
@@ -8518,8 +10252,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "radius",
@@ -8528,8 +10264,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "diameter",
@@ -8538,8 +10276,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "angle",
@@ -8548,8 +10288,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "tag",
@@ -8558,8 +10300,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -8569,6 +10313,7 @@ export default {
     "qualName": "std::transform::translate",
     "moduleName": "transform",
     "returnType": "[Solid; 1+] | [Sketch; 1+] | [Helix; 1+] | ImportedGeometry",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -8581,8 +10326,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "x",
@@ -8591,8 +10338,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "y",
@@ -8601,8 +10350,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "z",
@@ -8611,8 +10362,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "global",
@@ -8621,8 +10374,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "xyz",
@@ -8631,8 +10386,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -8642,6 +10399,7 @@ export default {
     "qualName": "std::solid::union",
     "moduleName": "solid",
     "returnType": "[Solid; 1+]",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -8654,8 +10412,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "tolerance",
@@ -8664,8 +10424,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "legacyMethod",
@@ -8674,8 +10436,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": "2.0"
+        "deprecatedSince": "2.0",
+        "removedIn": "3.0"
       }
     ]
   },
@@ -8685,6 +10449,7 @@ export default {
     "qualName": "std::units::toCentimeters",
     "moduleName": "units",
     "returnType": "number(cm)",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -8697,8 +10462,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -8708,6 +10475,7 @@ export default {
     "qualName": "std::units::toDegrees",
     "moduleName": "units",
     "returnType": "number(deg)",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -8720,8 +10488,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -8731,6 +10501,7 @@ export default {
     "qualName": "std::units::toFeet",
     "moduleName": "units",
     "returnType": "number(ft)",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -8743,8 +10514,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -8754,6 +10527,7 @@ export default {
     "qualName": "std::units::toInches",
     "moduleName": "units",
     "returnType": "number(in)",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -8766,8 +10540,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -8777,6 +10553,7 @@ export default {
     "qualName": "std::units::toMeters",
     "moduleName": "units",
     "returnType": "number(m)",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -8789,8 +10566,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -8800,6 +10579,7 @@ export default {
     "qualName": "std::units::toMillimeters",
     "moduleName": "units",
     "returnType": "number(mm)",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -8812,8 +10592,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -8823,6 +10605,7 @@ export default {
     "qualName": "std::units::toRadians",
     "moduleName": "units",
     "returnType": "number(rad)",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -8835,8 +10618,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -8846,6 +10631,7 @@ export default {
     "qualName": "std::units::toYards",
     "moduleName": "units",
     "returnType": "number(yd)",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -8858,8 +10644,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -8869,6 +10657,7 @@ export default {
     "qualName": "std::vector::add",
     "moduleName": "vector",
     "returnType": "[number]",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -8881,8 +10670,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "v",
@@ -8891,8 +10682,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -8902,6 +10695,7 @@ export default {
     "qualName": "std::vector::cross",
     "moduleName": "vector",
     "returnType": null,
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -8914,8 +10708,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "v",
@@ -8924,8 +10720,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -8935,6 +10733,7 @@ export default {
     "qualName": "std::vector::div",
     "moduleName": "vector",
     "returnType": "[number]",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -8947,8 +10746,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "v",
@@ -8957,8 +10758,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -8968,6 +10771,7 @@ export default {
     "qualName": "std::vector::dot",
     "moduleName": "vector",
     "returnType": "number",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -8980,8 +10784,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "v",
@@ -8990,8 +10796,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -9001,6 +10809,7 @@ export default {
     "qualName": "std::vector::magnitude",
     "moduleName": "vector",
     "returnType": "number",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -9013,8 +10822,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -9024,6 +10835,7 @@ export default {
     "qualName": "std::vector::mul",
     "moduleName": "vector",
     "returnType": "[number]",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -9036,8 +10848,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "v",
@@ -9046,8 +10860,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -9057,6 +10873,7 @@ export default {
     "qualName": "std::vector::normalize",
     "moduleName": "vector",
     "returnType": "[number]",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -9069,8 +10886,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -9080,6 +10899,7 @@ export default {
     "qualName": "std::vector::sub",
     "moduleName": "vector",
     "returnType": "[number]",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -9092,8 +10912,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "v",
@@ -9102,8 +10924,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -9113,9 +10937,10 @@ export default {
     "qualName": "std::view::directed",
     "moduleName": "view",
     "returnType": "CameraView",
+    "addedIn": "3.0",
     "deprecated": false,
     "deprecatedSince": null,
-    "experimental": true,
+    "experimental": false,
     "docHidden": false,
     "args": [
       {
@@ -9125,8 +10950,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "up",
@@ -9135,8 +10962,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "target",
@@ -9145,8 +10974,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "distance",
@@ -9155,8 +10986,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "projection",
@@ -9165,8 +10998,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -9176,9 +11011,10 @@ export default {
     "qualName": "std::view::named",
     "moduleName": "view",
     "returnType": "NamedView",
+    "addedIn": "3.0",
     "deprecated": false,
     "deprecatedSince": null,
-    "experimental": true,
+    "experimental": false,
     "docHidden": false,
     "args": [
       {
@@ -9188,8 +11024,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "camera",
@@ -9198,8 +11036,10 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "baseline",
@@ -9208,18 +11048,22 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "except",
-        "ty": "[Solid | Sketch | GdtAnnotation; 1+]",
+        "ty": "[Solid | Sketch | GdtAnnotation | Helix | Plane | ImportedGeometry; 1+]",
         "docs": "The objects the baseline does not apply to: the hidden ones under a `Show` baseline, and the only visible ones under `Hide`.",
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -9229,9 +11073,10 @@ export default {
     "qualName": "std::view::oriented",
     "moduleName": "view",
     "returnType": "CameraView",
+    "addedIn": "3.0",
     "deprecated": false,
     "deprecatedSince": null,
-    "experimental": true,
+    "experimental": false,
     "docHidden": false,
     "args": [
       {
@@ -9241,8 +11086,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "target",
@@ -9251,8 +11098,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "distance",
@@ -9261,8 +11110,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "projection",
@@ -9271,8 +11122,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -9282,6 +11135,7 @@ export default {
     "qualName": "std::sketch::xLine",
     "moduleName": "sketch",
     "returnType": "Sketch",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": "2.0",
     "experimental": false,
@@ -9294,8 +11148,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "length",
@@ -9304,8 +11160,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "endAbsolute",
@@ -9314,8 +11172,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "tag",
@@ -9324,8 +11184,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -9335,6 +11197,7 @@ export default {
     "qualName": "std::sketch::yLine",
     "moduleName": "sketch",
     "returnType": "Sketch",
+    "addedIn": null,
     "deprecated": false,
     "deprecatedSince": "2.0",
     "experimental": false,
@@ -9347,8 +11210,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "length",
@@ -9357,8 +11222,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "endAbsolute",
@@ -9367,8 +11234,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       },
       {
         "name": "tag",
@@ -9377,8 +11246,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   }

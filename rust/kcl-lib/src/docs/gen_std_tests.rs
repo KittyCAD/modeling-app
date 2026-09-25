@@ -5,7 +5,6 @@ use std::path::PathBuf;
 
 use anyhow::Result;
 use serde_json::json;
-use tokio::task::JoinSet;
 
 use super::kcl_doc::ConstData;
 use super::kcl_doc::DocCategory;
@@ -265,9 +264,9 @@ fn generate_example(index: usize, src: &str, props: &ExampleProperties, file_nam
     } else {
         // Refers to the specific path of zoo.dev that assets are served under.
         // Look in website repo's ContentLayer configuration to find how this is set.
-        // Right now, we assume the GLTF export is called 'output' but in the future, we should
+        // Right now, we assume the GLB export is called 'output' but in the future, we should
         // pass its name in from the process which ran the export.
-        format!("/kcl-test-outputs/models/serial_test_example_{file_name}{index}_output.gltf")
+        format!("/kcl-test-outputs/models/serial_test_example_{file_name}{index}_output.glb")
     };
 
     let image_path = if props.norun {
@@ -321,6 +320,7 @@ fn render_type_page(ty: &TyData, example_name: &str) -> Result<String> {
         "definition": definition,
         "summary": ty.summary.clone(),
         "description": ty.description.clone(),
+        "added_in": ty.properties.added_in.as_ref().map(ToString::to_string),
         "deprecated": ty.properties.deprecated,
         "deprecated_since": ty.properties.deprecated_since.as_ref().map(ToString::to_string),
         "experimental": ty.properties.experimental,
@@ -403,16 +403,10 @@ fn mod_name_std(name: &str) -> String {
     }
 }
 
-fn generate_function_from_kcl(
-    function: &FnData,
-    file_name: String,
-    example_name: String,
-    kcl_std: &ModData,
-) -> Result<()> {
-    if function.properties.doc_hidden {
-        return Ok(());
-    }
-
+/// Render the markdown page for a function. Split out of
+/// `generate_function_from_kcl` so the rendering can be unit tested with a
+/// synthetic `FnData`.
+fn render_function_page(function: &FnData, example_name: &str, kcl_std: &ModData) -> Result<String> {
     check_deprecation_attrs(&function.qual_name, &function.properties)?;
 
     let hbs = init_handlebars()?;
@@ -421,7 +415,7 @@ fn generate_function_from_kcl(
         .examples
         .iter()
         .enumerate()
-        .filter_map(|(index, example)| generate_example(index, &example.0, &example.1, &example_name))
+        .filter_map(|(index, example)| generate_example(index, &example.0, &example.1, example_name))
         .collect();
     let args = function
         .args
@@ -442,8 +436,10 @@ fn generate_function_from_kcl(
                         .unwrap_or_default(),
                 "required": arg.kind.required(),
                 "experimental": arg.experimental,
+                "added_in": arg.added_in.as_ref().map(ToString::to_string),
                 "deprecated": arg.deprecated,
                 "deprecated_since": arg.deprecated_since.as_ref().map(ToString::to_string),
+                "removed_in": arg.removed_in.as_ref().map(ToString::to_string),
             })
         })
         .collect::<Vec<_>>();
@@ -453,6 +449,7 @@ fn generate_function_from_kcl(
         "module": mod_name_std(&function.module_name),
         "summary": function.summary.clone(),
         "description": function.description.clone(),
+        "added_in": function.properties.added_in.as_ref().map(ToString::to_string),
         "deprecated": function.properties.deprecated,
         "deprecated_since": function.properties.deprecated_since.as_ref().map(ToString::to_string),
         "experimental": function.properties.experimental,
@@ -467,9 +464,22 @@ fn generate_function_from_kcl(
         }),
     });
 
-    let output = hbs.render("function", &data)?;
-    let output = &cleanup_types(&output, kcl_std);
-    write_doc_output(&file_name, output)?;
+    Ok(hbs.render("function", &data)?)
+}
+
+fn generate_function_from_kcl(
+    function: &FnData,
+    file_name: String,
+    example_name: String,
+    kcl_std: &ModData,
+) -> Result<()> {
+    if function.properties.doc_hidden {
+        return Ok(());
+    }
+
+    let output = render_function_page(function, &example_name, kcl_std)?;
+    let output = cleanup_types(&output, kcl_std);
+    write_doc_output(&file_name, &output)?;
 
     Ok(())
 }
@@ -487,11 +497,8 @@ fn docs_for_type(ty: &str, kcl_std: &ModData) -> Option<String> {
     None
 }
 
-fn generate_const_from_kcl(cnst: &ConstData, file_name: String, example_name: String, kcl_std: &ModData) -> Result<()> {
-    if cnst.properties.doc_hidden {
-        return Ok(());
-    }
-
+/// Render the markdown page for a constant; split out so it can be unit tested.
+fn render_const_page(cnst: &ConstData, example_name: &str, kcl_std: &ModData) -> Result<String> {
     check_deprecation_attrs(&cnst.qual_name, &cnst.properties)?;
 
     let hbs = init_handlebars()?;
@@ -500,7 +507,7 @@ fn generate_const_from_kcl(cnst: &ConstData, file_name: String, example_name: St
         .examples
         .iter()
         .enumerate()
-        .filter_map(|(index, example)| generate_example(index, &example.0, &example.1, &example_name))
+        .filter_map(|(index, example)| generate_example(index, &example.0, &example.1, example_name))
         .collect();
 
     let data = json!({
@@ -508,6 +515,7 @@ fn generate_const_from_kcl(cnst: &ConstData, file_name: String, example_name: St
         "module": mod_name_std(&cnst.module_name),
         "summary": cnst.summary.clone(),
         "description": cnst.description.clone(),
+        "added_in": cnst.properties.added_in.as_ref().map(ToString::to_string),
         "deprecated": cnst.properties.deprecated,
         "deprecated_since": cnst.properties.deprecated_since.as_ref().map(ToString::to_string),
         "experimental": cnst.properties.experimental,
@@ -519,7 +527,15 @@ fn generate_const_from_kcl(cnst: &ConstData, file_name: String, example_name: St
         "value": cnst.value.as_deref().unwrap_or(""),
     });
 
-    let output = hbs.render("const", &data)?;
+    Ok(hbs.render("const", &data)?)
+}
+
+fn generate_const_from_kcl(cnst: &ConstData, file_name: String, example_name: String, kcl_std: &ModData) -> Result<()> {
+    if cnst.properties.doc_hidden {
+        return Ok(());
+    }
+
+    let output = render_const_page(cnst, &example_name, kcl_std)?;
     let output = cleanup_types(&output, kcl_std);
     write_doc_output(&file_name, &output)?;
 
@@ -657,6 +673,7 @@ fn test_render_type_page_enum_variants() {
         preferred_name: "turns::Direction".to_owned(),
         qual_name: "std::turns::Direction".to_owned(),
         properties: Properties {
+            added_in: None,
             deprecated: false,
             deprecated_since: None,
             experimental: true,
@@ -706,6 +723,153 @@ fn test_render_type_page_enum_variants() {
     assert!(!page.contains("Clockwise"));
 }
 
+/// Renders a synthetic function page so the argument table's lifecycle
+/// markers are covered even while std declares no `added_in` parameter. The
+/// exact whitespace of real pages is pinned by
+/// test_generate_stdlib_markdown_docs.
+#[test]
+fn test_render_function_page_marks_arg_lifecycle() {
+    fn arg(name: &str, docs: &str) -> super::kcl_doc::ArgData {
+        super::kcl_doc::ArgData {
+            name: name.to_owned(),
+            experimental: false,
+            ty: Some("number".to_owned()),
+            kind: super::kcl_doc::ArgKind::Labelled(true),
+            override_in_snippet: None,
+            docs: Some(docs.to_owned()),
+            snippet_array: None,
+            added_in: None,
+            deprecated: false,
+            deprecated_since: None,
+            removed_in: None,
+        }
+    }
+    let version = crate::execution::annotations::VersionConstraint::parse;
+
+    let mut new_arg = arg("newArg", "A new argument.");
+    new_arg.added_in = version("3.0");
+    let mut old_arg = arg("oldArg", "An old argument.");
+    old_arg.added_in = version("2.0");
+    old_arg.deprecated_since = version("2.0");
+    old_arg.removed_in = version("3.0");
+
+    let function = FnData {
+        name: "foo".to_owned(),
+        preferred_name: "foo".to_owned(),
+        qual_name: "std::foo".to_owned(),
+        args: vec![new_arg, old_arg],
+        return_type: None,
+        properties: Properties {
+            added_in: None,
+            deprecated: false,
+            deprecated_since: None,
+            experimental: false,
+            doc_hidden: false,
+            exported: true,
+            impl_kind: crate::execution::annotations::Impl::Kcl,
+            doc_category: None,
+        },
+        summary: Some("Does a thing.".to_owned()),
+        description: None,
+        examples: Vec::new(),
+        module_name: "std".to_owned(),
+    };
+
+    let page = render_function_page(&function, "std-foo", &crate::docs::kcl_doc::walk_stdlib()).unwrap();
+
+    assert!(
+        page.contains("| `newArg` | `number` | **Added in KCL 3.0.** A new argument. | No |"),
+        "expected the added-in marker, got:\n{page}"
+    );
+    // Markers follow the parameter's lifecycle: added, deprecated, removed.
+    assert!(
+        page.contains(
+            "| `oldArg` | `number` | **Added in KCL 2.0.** **Deprecated as of KCL 2.0.** **Removed in KCL 3.0.** An old argument. | No |"
+        ),
+        "expected the lifecycle markers in order, got:\n{page}"
+    );
+}
+
+/// Synthetic pages cover the added-in line while std declares no `added_in`
+/// item; real-page whitespace is pinned by test_generate_stdlib_markdown_docs.
+#[test]
+fn test_render_pages_mark_added_in() {
+    let kcl_std = crate::docs::kcl_doc::walk_stdlib();
+    let properties = |added_in: Option<&str>| Properties {
+        added_in: added_in.and_then(crate::execution::annotations::VersionConstraint::parse),
+        deprecated: false,
+        deprecated_since: None,
+        experimental: false,
+        doc_hidden: false,
+        exported: true,
+        impl_kind: crate::execution::annotations::Impl::Kcl,
+        doc_category: None,
+    };
+    const ADDED_IN_LINE: &str = "**Added in KCL 3.0.**";
+
+    let mut function = FnData {
+        name: "foo".to_owned(),
+        preferred_name: "foo".to_owned(),
+        qual_name: "std::foo".to_owned(),
+        args: Vec::new(),
+        return_type: None,
+        properties: properties(Some("3.0")),
+        summary: Some("Does a thing.".to_owned()),
+        description: None,
+        examples: Vec::new(),
+        module_name: "std".to_owned(),
+    };
+    let page = render_function_page(&function, "std-foo", &kcl_std).unwrap();
+    assert!(
+        page.contains("Does a thing.\n\n**Added in KCL 3.0.**\n\n```kcl\nfoo()"),
+        "expected the added-in line between the summary and the signature, got:\n{page}"
+    );
+    assert_eq!(page.matches(ADDED_IN_LINE).count(), 1, "{page}");
+    // Without the attribute the page is unchanged.
+    function.properties = properties(None);
+    let page = render_function_page(&function, "std-foo", &kcl_std).unwrap();
+    assert!(page.contains("Does a thing.\n\n```kcl\nfoo()"), "{page}");
+    assert!(!page.contains("Added in"), "{page}");
+
+    let ty = TyData {
+        name: "Pair".to_owned(),
+        preferred_name: "Pair".to_owned(),
+        qual_name: "std::types::Pair".to_owned(),
+        properties: properties(Some("3.0")),
+        alias: Some("[number; 2]".to_owned()),
+        variants: Vec::new(),
+        summary: Some("Two numbers.".to_owned()),
+        description: None,
+        examples: Vec::new(),
+        module_name: "types".to_owned(),
+    };
+    let page = render_type_page(&ty, "std-types-Pair").unwrap();
+    assert!(
+        page.contains("Two numbers.\n\n**Added in KCL 3.0.**\n\n```kcl\ntype Pair = [number; 2]"),
+        "expected the added-in line between the summary and the definition, got:\n{page}"
+    );
+    assert_eq!(page.matches(ADDED_IN_LINE).count(), 1, "{page}");
+
+    let cnst = ConstData {
+        name: "FOO".to_owned(),
+        preferred_name: "FOO".to_owned(),
+        qual_name: "std::FOO".to_owned(),
+        value: Some("1".to_owned()),
+        ty: Some("number".to_owned()),
+        properties: properties(Some("3.0")),
+        summary: Some("A constant.".to_owned()),
+        description: None,
+        examples: Vec::new(),
+        module_name: "std".to_owned(),
+    };
+    let page = render_const_page(&cnst, "std-FOO", &kcl_std).unwrap();
+    assert!(
+        page.contains("A constant.\n\n**Added in KCL 3.0.**\n\n```kcl\n"),
+        "expected the added-in line between the summary and the value, got:\n{page}"
+    );
+    assert_eq!(page.matches(ADDED_IN_LINE).count(), 1, "{page}");
+}
+
 #[test]
 fn test_generate_stdlib_markdown_docs() {
     let kcl_std = crate::docs::kcl_doc::walk_stdlib();
@@ -725,7 +889,7 @@ fn test_generate_stdlib_markdown_docs() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn test_code_in_topics() {
-    let mut join_set = JoinSet::new();
+    let mut failures = Vec::new();
     for entry in fs::read_dir("../../docs/kcl-lang").unwrap() {
         let entry = entry.unwrap();
         if entry.file_type().unwrap().is_dir() {
@@ -739,17 +903,15 @@ async fn test_code_in_topics() {
                 continue;
             }
 
-            let f = path.display().to_string();
-            join_set.spawn(async move { (format!("{f}, example {i}"), run_example_with_retries(&eg).await) });
+            // This is one scheduled test, so keep at most one engine connection
+            // active instead of opening a connection for every example at once.
+            // run_example closes each connection before the next example starts.
+            if let Err(error) = run_example_with_retries(&eg).await {
+                failures.push(format!("{}, example {i}: {error}", path.display()));
+            }
         }
     }
-    let results: Vec<_> = join_set
-        .join_all()
-        .await
-        .into_iter()
-        .filter_map(|a| a.1.err().map(|e| format!("{}: {}", a.0, e)))
-        .collect();
-    assert!(results.is_empty(), "Failures: {}", results.join(", "))
+    assert!(failures.is_empty(), "Failures: {}", failures.join(", "))
 }
 
 fn find_examples(text: &str, filename: &Path) -> Vec<(String, String)> {
@@ -790,7 +952,11 @@ async fn run_example_with_retries(text: &str) -> Result<()> {
 }
 
 async fn run_example(program: &crate::Program) -> Result<(), ExecErrorWithState> {
-    let ctx = ExecutorContext::new_with_default_client()
+    let version = program
+        .language_version()
+        .map_err(crate::KclErrorWithOutputs::no_outputs)
+        .map_err(crate::ExecError::from)?;
+    let ctx = ExecutorContext::new_geometry_only_with_version(version)
         .await
         .map_err(ConnectionError::CouldNotMakeClient)?;
     let mut exec_state = crate::execution::ExecState::new(&ctx);

@@ -1,3 +1,4 @@
+import { withCloudSyncFailureContext } from '@src/lib/cloudSync/failureContext'
 import { normalizeRelativePath } from '@src/lib/cloudSync/paths'
 import type {
   ProjectArchiveFile,
@@ -15,7 +16,6 @@ import { webSafePathSplit } from '@src/lib/pathUtils'
 import {
   getProjectDefaultFileFromProjectTomlContents,
   getProjectTitleFromProjectTomlContents,
-  setCloudProjectIdInProjectTomlContents,
   setProjectTitleInProjectTomlContents,
 } from '@src/lib/projectTomlMetadata'
 import { isArray } from '@src/lib/utils'
@@ -71,11 +71,10 @@ export function prepareProjectFilesForCloudUpload(
     normalizedFiles,
     preferredEntrypointPath
   )
-  const projectTomlPath = ensureProjectTomlUploadFile(normalizedFiles)
+  const projectTomlPath = getUploadProjectTomlPath(normalizedFiles)
   const projectTitle =
     getProjectTomlTitle(normalizedFiles) ||
     localFs.basename(projectPath.replaceAll('\\', '/').replace(/\/+$/g, ''))
-  ensureProjectTomlUploadTitle(normalizedFiles, projectTitle || 'project')
   const publicationMetadata =
     typeof optionsOrExpectedRevision === 'string'
       ? undefined
@@ -92,7 +91,7 @@ export function prepareProjectFilesForCloudUpload(
   }
   if (
     typeof optionsOrExpectedRevision !== 'string' &&
-    optionsOrExpectedRevision?.deletedPaths
+    optionsOrExpectedRevision?.deletedPaths?.length
   ) {
     body.deleted_paths = Array.from(
       new Set(optionsOrExpectedRevision.deletedPaths.map(normalizeRelativePath))
@@ -118,7 +117,7 @@ export function normalizeProjectArchiveFilesForCloudSync(
   })
 }
 
-function ensureProjectTomlUploadFile(files: ProjectArchiveFile[]) {
+function getUploadProjectTomlPath(files: ProjectArchiveFile[]) {
   const projectTomlFile = files.find(
     (file) => file.relativePath === PROJECT_SETTINGS_FILE_NAME
   )
@@ -126,32 +125,8 @@ function ensureProjectTomlUploadFile(files: ProjectArchiveFile[]) {
     return projectTomlFile.relativePath
   }
 
-  files.push({
-    relativePath: PROJECT_SETTINGS_FILE_NAME,
-    data: new Uint8Array(),
-  })
-  return PROJECT_SETTINGS_FILE_NAME
-}
-
-function ensureProjectTomlUploadTitle(
-  files: ProjectArchiveFile[],
-  title: string
-) {
-  const projectTomlFile = files.find(
-    (file) => file.relativePath === PROJECT_SETTINGS_FILE_NAME
-  )
-  if (!projectTomlFile) {
-    return
-  }
-
-  const existingProjectToml = new TextDecoder().decode(projectTomlFile.data)
-  if (getProjectTitleFromProjectTomlContents(existingProjectToml)) {
-    return
-  }
-
-  projectTomlFile.data = new TextEncoder().encode(
-    setProjectTitleInProjectTomlContents(existingProjectToml, title)
-  )
+  // eslint-disable-next-line suggest-no-throw/suggest-no-throw
+  throw new Error('Cloud project uploads require an existing project.toml.')
 }
 
 function getProjectTomlTitle(files: ProjectArchiveFile[]) {
@@ -262,20 +237,6 @@ export function withProjectTitleInArchiveFiles(
   )
 }
 
-export function withProjectCloudProjectIdInArchiveFiles(
-  files: ProjectArchiveFile[],
-  projectId: string,
-  environmentName?: string
-) {
-  if (!environmentName) {
-    return files
-  }
-
-  return withUpdatedProjectTomlInArchiveFiles(files, (contents) =>
-    setCloudProjectIdInProjectTomlContents(contents, environmentName, projectId)
-  )
-}
-
 export function withUpdatedProjectTomlInArchiveFiles(
   files: ProjectArchiveFile[],
   update: (contents: string) => string
@@ -314,22 +275,6 @@ export function withUpdatedProjectTomlInArchiveFiles(
   return nextFiles
 }
 
-export function withRemoteProjectMetadataInArchiveFiles(
-  files: ProjectArchiveFile[],
-  title: string | undefined,
-  projectId: string,
-  environmentName?: string
-) {
-  return withProjectCloudProjectIdInArchiveFiles(
-    withProjectTitleInArchiveFiles(
-      files,
-      getRemoteProjectTitleForProjectToml(title)
-    ),
-    projectId,
-    environmentName
-  )
-}
-
 export function projectManifestsEqual(
   a: ProjectManifest | undefined,
   b: ProjectManifest | undefined
@@ -358,14 +303,19 @@ export function projectManifestsEqual(
 }
 
 export async function projectManifestFromFiles(files: ProjectArchiveFile[]) {
-  const manifest: ProjectManifest = { files: {} }
-  for (const file of files) {
-    manifest.files[normalizeRelativePath(file.relativePath)] = {
-      byteSize: file.data.byteLength,
-      sha256: await sha256Hex(file.data),
+  return withCloudSyncFailureContext(
+    { stage: 'manifest', point: 'hash-project-manifest' },
+    async () => {
+      const manifest: ProjectManifest = { files: {} }
+      for (const file of files) {
+        manifest.files[normalizeRelativePath(file.relativePath)] = {
+          byteSize: file.data.byteLength,
+          sha256: await sha256Hex(file.data),
+        }
+      }
+      return manifest
     }
-  }
-  return manifest
+  )
 }
 
 async function sha256Hex(data: Uint8Array) {
@@ -394,16 +344,21 @@ export function toArrayBuffer(data: Uint8Array): ArrayBuffer {
 }
 
 export async function parseProjectArchive(archive: ArrayBuffer) {
-  try {
-    return await parseZipProjectArchive(archive)
-  } catch (zipError) {
-    const jsonProject = parseJsonProjectArchive(archive)
-    if (jsonProject) {
-      return jsonProject
+  return withCloudSyncFailureContext(
+    { stage: 'archive', point: 'parse-project-archive' },
+    async () => {
+      try {
+        return await parseZipProjectArchive(archive)
+      } catch (zipError) {
+        const jsonProject = parseJsonProjectArchive(archive)
+        if (jsonProject) {
+          return jsonProject
+        }
+        // eslint-disable-next-line suggest-no-throw/suggest-no-throw
+        throw zipError
+      }
     }
-    // eslint-disable-next-line suggest-no-throw/suggest-no-throw
-    throw zipError
-  }
+  )
 }
 
 async function parseZipProjectArchive(archive: ArrayBuffer) {

@@ -1,11 +1,11 @@
 ---
 title: "profileStart"
 subtitle: "Function in std::sketch"
-excerpt: "Extract the provided 2-dimensional sketch's profile's origin value."
+excerpt: "Extract the provided 2-dimensional sketch's profile origin as an array containing its X and Y values."
 layout: manual
 ---
 
-Extract the provided 2-dimensional sketch's profile's origin value.
+Extract the provided 2-dimensional sketch's profile origin as an array containing its X and Y values.
 
 ```kcl
 profileStart(@profile: Sketch): Point2d
@@ -41,7 +41,7 @@ sketch001 = startSketchOn(XY)
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the profileStart function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-profileStart0_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-profileStart0_output.glb"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-profileStart0.png"

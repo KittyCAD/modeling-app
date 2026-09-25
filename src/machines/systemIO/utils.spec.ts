@@ -1,13 +1,27 @@
 import type { MlToolResult } from '@kittycad/lib'
-import { StorageName, moduleFsViaModuleImport } from '@src/lib/fs-zds'
-import fsZds from '@src/lib/fs-zds'
+import { FileNotFound } from '@src/lib/fileSystem/fileOperations'
+import { testFileOperations } from '@src/lib/fileSystem/testRuntime'
+import fsZds, { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
 import type { ZookeeperEditPatch } from '@src/lib/zookeeper/zookeeperEditPatch'
 import {
-  collectProjectFiles,
+  collectProjectFiles as collectProjectFilesWithFileOperations,
   normalizeKCLFileDeletePath,
   prepareZookeeperNewFileRequest,
+  type SystemIOActor,
+  waitForIdleState,
 } from '@src/machines/systemIO/utils'
-import { beforeAll, describe, expect, it } from 'vitest'
+import { beforeAll, describe, expect, it, vi } from 'vitest'
+
+const collectProjectFiles = (
+  args: Omit<
+    Parameters<typeof collectProjectFilesWithFileOperations>[0],
+    'fileOperations'
+  >
+) =>
+  collectProjectFilesWithFileOperations({
+    ...args,
+    fileOperations: testFileOperations,
+  })
 
 type EditKclCodeToolResultWithPatch = Extract<
   MlToolResult,
@@ -33,6 +47,24 @@ beforeAll(async () => {
 })
 
 describe('System IO Utils', () => {
+  it('cancels an idle-state subscription', async () => {
+    const unsubscribe = vi.fn()
+    const systemIOActor = {
+      getSnapshot: () => ({ matches: () => false }),
+      subscribe: () => ({ unsubscribe }),
+    } as unknown as SystemIOActor
+    const abortController = new AbortController()
+
+    const waiting = waitForIdleState({
+      abortSignal: abortController.signal,
+      systemIOActor,
+    })
+    abortController.abort()
+    await waiting
+
+    expect(unsubscribe).toHaveBeenCalledOnce()
+  })
+
   it('Properly reconstructs paths from Zookeeper new file requests', () => {
     const preparedPayload = prepareZookeeperNewFileRequest({
       projectNameCurrentlyOpened: 'some-project',
@@ -229,6 +261,77 @@ describe('System IO Utils', () => {
       await fsZds.rm(projectPath, { recursive: true, force: true })
     }
   })
+
+  it.each([undefined, false])(
+    'handles a file removed after directory listing with skipUnreadableFiles=%s',
+    async (skipUnreadableFiles) => {
+      const projectPath = `/tmp/opencode/zookeeper-project-${crypto.randomUUID()}`
+      const mainPath = fsZds.join(projectPath, 'main.kcl')
+      const removedPath = fsZds.join(projectPath, 'project.toml.crswap')
+      await fsZds.mkdir(projectPath, { recursive: true })
+
+      try {
+        await fsZds.writeFile(mainPath, new TextEncoder().encode('height = 10'))
+        await fsZds.writeFile(
+          fsZds.join(projectPath, 'notes.txt'),
+          new TextEncoder().encode('project notes')
+        )
+        await fsZds.writeFile(
+          removedPath,
+          new TextEncoder().encode('temporary')
+        )
+        const projectFiles = collectProjectFilesWithFileOperations({
+          fileOperations: {
+            ...testFileOperations,
+            readDirectory: async (path) => {
+              const entries = await testFileOperations.readDirectory(path)
+              if (path === projectPath) {
+                await testFileOperations.remove(removedPath)
+              }
+              return entries
+            },
+          },
+          selectedFileContents: 'height = 10',
+          selectedFilePath: mainPath,
+          fileNames: {},
+          skipUnreadableFiles,
+          projectContext: {
+            name: 'zookeeper-project',
+            path: projectPath,
+            children: [],
+            metadata: null,
+            kcl_file_count: 1,
+            directory_count: 0,
+            default_file: mainPath,
+            readWriteAccess: true,
+          },
+        })
+
+        if (skipUnreadableFiles === false) {
+          await expect(projectFiles).rejects.toBeInstanceOf(FileNotFound)
+        } else {
+          const files = await projectFiles
+          expect(files.map((file) => file.relPath).sort()).toEqual([
+            'main.kcl',
+            'notes.txt',
+          ])
+          expect(
+            files.find((file) => file.relPath === 'main.kcl')
+          ).toMatchObject({
+            type: 'kcl',
+            fileContents: 'height = 10',
+          })
+          expect(
+            files.find((file) => file.relPath === 'notes.txt')
+          ).toMatchObject({
+            type: 'other',
+          })
+        }
+      } finally {
+        await fsZds.rm(projectPath, { recursive: true, force: true })
+      }
+    }
+  )
 
   it('returns forward-slash relPaths for nested files', async () => {
     // relPath becomes the `current_files` keys and `source_ranges` file paths

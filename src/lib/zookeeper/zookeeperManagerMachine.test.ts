@@ -1,13 +1,25 @@
-import type { ClientErrorReport } from '@kittycad/lib'
-import { resetReportedClientErrorsForTests } from '@src/lib/clientErrors'
+import type {
+  AttachmentRef,
+  ClientErrorReport,
+  MlCopilotFile,
+  MlCopilotServerMessage,
+} from '@kittycad/lib'
+import { signal } from '@preact/signals-core'
+import {
+  initializeClientErrorReporting,
+  resetReportedClientErrorsForTests,
+} from '@src/lib/clientErrors'
 import type { FileMeta } from '@src/lib/types'
 import {
   type Conversation,
+  createZookeeperManagerActor,
   createZookeeperCorrelation,
+  getZookeeperAttachmentKey,
   hasBeenInterruptedOnLast,
   type MlCopilotModeOption,
   NUMBER_OF_ZOOKEEPER_SETUP_ATTEMPTS,
   parseMlCopilotModesResult,
+  toMlCopilotFile,
   ZOOKEEPER_HEARTBEAT_INTERVAL_MS,
   ZOOKEEPER_HEARTBEAT_TIMEOUT_MS,
   ZOOKEEPER_SETUP_ATTEMPT_TIMEOUT_MS,
@@ -19,14 +31,29 @@ import {
   ZookeeperManagerTransitions,
   ZookeeperSetupErrors,
   zookeeperManagerMachine,
+  stopZookeeperManagerActor,
   ZOOKEEPER_RESUME_SUPERSEDED_CLOSE_CODE,
 } from '@src/lib/zookeeper/zookeeperManagerMachine'
+import * as zookeeperPromptRequest from '@src/lib/zookeeper/zookeeperPromptRequest'
 import { S } from '@src/machines/utils'
+import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { createActor, fromPromise, waitFor } from 'xstate'
 
+// Prompt construction is stubbed in the race test, so these dependencies are
+// only forwarded by the manager. Avoid loading the editor or Wasm for them.
+vi.mock('@src/unitTestUtils', () => ({
+  buildTheWorldAndNoEngineConnection: vi.fn(async () => ({
+    kclManager: {},
+    engineCommandManager: { apiCallId: 'engine-api-call-id' },
+    instance: {},
+  })),
+}))
+
+let stopClientErrorReporting: (() => void) | undefined
 function stubClientErrorFetch() {
   resetReportedClientErrorsForTests()
+  stopClientErrorReporting = initializeClientErrorReporting(signal(true))
   const reports: ClientErrorReport[] = []
   const fetchMock = vi
     .spyOn(globalThis, 'fetch')
@@ -117,6 +144,373 @@ type SetupActorInput = {
 
 const completedConversationStartedAt = new Date('2026-07-15T12:00:00.000Z')
 
+describe('completed live edit retention', () => {
+  const actors: ReturnType<typeof createZookeeperManagerActor>[] = []
+  afterEach(() => {
+    for (const actor of actors.splice(0)) actor.stop()
+    vi.restoreAllMocks()
+  })
+
+  const edit = (code = 'width = 25'): MlCopilotServerMessage => ({
+    tool_output: {
+      result: {
+        type: 'edit_kcl_code',
+        status_code: 200,
+        outputs: { 'main.kcl': code },
+        zookeeper_edit_patch: {
+          run_id: 'run-1',
+          changed_files: [
+            { status: 'created', path: 'main.kcl', contents: code },
+          ],
+        },
+      },
+    },
+  })
+  const answer = (text = 'Done'): MlCopilotServerMessage => ({
+    end_of_stream: { whole_response: text },
+  })
+
+  async function ready() {
+    const ws: TestWebSocket = new TestSocket() as TestWebSocket
+    ws.readyState = WebSocket.OPEN
+    const machine = zookeeperManagerMachine.provide({
+      actors: {
+        [ZookeeperManagerStates.Setup]: fromPromise<
+          Partial<ZookeeperManagerContext>,
+          SetupActorInput
+        >(async () => ({
+          ws,
+          conversationId: 'conversation-id',
+          conversation: {
+            exchanges: [{ responses: [], deltasAggregated: '' }],
+          },
+        })),
+      },
+    })
+    const actor = createActor(machine, { input: { apiToken: 'token' } }).start()
+    actors.push(actor)
+    actor.send({
+      type: ZookeeperManagerTransitions.CacheSetupAndConnect,
+      refParentSend: (event) => actor.send(event),
+    })
+    await waitFor(actor, (state) =>
+      state.matches(ZookeeperManagerStates.WaitForContinueCheck)
+    )
+    actor.send({
+      type: ZookeeperManagerStates.ContinueCheck,
+      projectName: 'demo',
+      projectFiles: [],
+    })
+    await waitFor(actor, (state) => state.matches(ZookeeperManagerStates.Ready))
+    return {
+      actor,
+      receive: (response: MlCopilotServerMessage) =>
+        actor.send({
+          type: ZookeeperManagerTransitions.ResponseReceive,
+          response,
+        }),
+      applied: (response: MlCopilotServerMessage) =>
+        actor.send({ type: ZookeeperManagerTransitions.EditApplied, response }),
+      exchange: () => actor.getSnapshot().context.conversation?.exchanges[0],
+    }
+  }
+
+  it('releases applied snapshots at the final answer without changing visible messages or the worker payload', async () => {
+    const { receive, applied, exchange } = await ready()
+    const result = edit()
+    const original = JSON.stringify(result)
+    const reasoning: MlCopilotServerMessage = {
+      reasoning: { type: 'markdown', content: 'Keep this reasoning' },
+    }
+    const files: MlCopilotServerMessage = {
+      files: {
+        files: [{ name: 'part.step', mimetype: 'application/step', data: [] }],
+      },
+    }
+    const final = answer()
+    receive(reasoning)
+    receive(result)
+    applied(result)
+    receive(files)
+    expect(exchange()?.responses).toContain(result)
+    receive(final)
+    expect(exchange()?.responses).toEqual([reasoning, files, final])
+    expect(exchange()?.appliedEditResponses).toBeUndefined()
+    expect(JSON.stringify(result)).toBe(original)
+  })
+
+  it('waits for an acknowledgement after EOS without advancing live message state', async () => {
+    const { actor, receive, applied, exchange } = await ready()
+    const result = edit()
+    const final = answer()
+    receive(result)
+    receive(final)
+    const before = actor.getSnapshot().context
+    expect(exchange()?.responses).toEqual([result, final])
+    applied(result)
+    expect(exchange()?.responses).toEqual([final])
+    expect(actor.getSnapshot().context).toMatchObject({
+      lastMessageId: before.lastMessageId,
+      lastMessageType: before.lastMessageType,
+      awaitingResponse: before.awaitingResponse,
+    })
+    expect(before.conversation?.exchanges[0].responses).toEqual([result, final])
+  })
+
+  it('preserves cleanup acknowledged while the next prompt is preparing', async () => {
+    const { actor, receive, applied, exchange } = await ready()
+    const result = edit()
+    const final = answer('First turn complete')
+    receive(result)
+    receive(final)
+    expect(exchange()?.responses).toEqual([result, final])
+
+    let finishPreparation!: (
+      request: zookeeperPromptRequest.ZookeeperUserPromptRequest
+    ) => void
+    const preparation =
+      new Promise<zookeeperPromptRequest.ZookeeperUserPromptRequest>(
+        (resolve) => {
+          finishPreparation = resolve
+        }
+      )
+    const prepare = vi
+      .spyOn(zookeeperPromptRequest, 'constructZookeeperUserPromptRequest')
+      .mockReturnValueOnce(preparation)
+    const { kclManager, engineCommandManager, instance } =
+      await buildTheWorldAndNoEngineConnection(true)
+    const currentFile = {
+      entry: { name: 'main.kcl', path: '/demo/main.kcl', children: null },
+      content: 'width = 25',
+    }
+    actor.send({
+      type: ZookeeperManagerTransitions.MessageSend,
+      prompt: 'Next turn',
+      projectForPromptOutput: {
+        name: 'demo',
+        path: '/demo',
+        children: [currentFile.entry],
+        default_file: currentFile.entry.path,
+        directory_count: 0,
+        kcl_file_count: 1,
+        metadata: null,
+        readWriteAccess: true,
+      },
+      applicationProjectDirectory: '/',
+      fileSelectedDuringPrompting: currentFile,
+      projectFiles: [],
+      selections: null,
+      artifactGraph: new Map(),
+      kclManager,
+      engineCommandManager,
+      wasmInstance: instance,
+    })
+    await vi.waitFor(() => expect(prepare).toHaveBeenCalledOnce())
+    applied(result)
+    expect(exchange()?.responses).toEqual([final])
+
+    finishPreparation({
+      body: { prompt: 'Next turn', project_name: 'demo' },
+      files: [],
+    })
+    await waitFor(actor, (state) =>
+      state.matches({
+        [ZookeeperManagerStates.Ready]: {
+          [ZookeeperManagerStates.Request]: S.Await,
+        },
+      })
+    )
+    expect.soft(exchange()?.responses).toEqual([final])
+    expect(actor.getSnapshot().context.conversation?.exchanges).toHaveLength(2)
+    expect(
+      actor.getSnapshot().context.conversation?.exchanges[1]
+    ).toMatchObject({
+      request: { type: 'user', content: 'Next turn', project_name: 'demo' },
+      responses: [],
+    })
+
+    const nextFinal = answer('Second turn complete')
+    receive(nextFinal)
+    expect.soft(exchange()?.responses).toEqual([final])
+    expect(exchange()?.appliedEditResponses).toBeUndefined()
+    expect(
+      actor.getSnapshot().context.conversation?.exchanges[1].responses
+    ).toEqual([nextFinal])
+  })
+
+  it.each([undefined, '', ' \n '])(
+    'keeps applied edits when the final answer is %j',
+    async (text) => {
+      const { receive, applied, exchange } = await ready()
+      const result = edit()
+      receive(result)
+      applied(result)
+      receive({ end_of_stream: { whole_response: text } })
+      expect(exchange()?.responses).toContain(result)
+    }
+  )
+
+  it('keeps failed tools, even if mistakenly acknowledged', async () => {
+    const { receive, applied, exchange } = await ready()
+    const failures: MlCopilotServerMessage[] = [
+      {
+        tool_output: {
+          result: {
+            type: 'edit_kcl_code',
+            status_code: 500,
+            outputs: { 'main.kcl': 'keep' },
+          },
+        },
+      },
+      {
+        tool_output: {
+          result: {
+            type: 'edit_kcl_code',
+            status_code: 200,
+            error: 'failed locally',
+            outputs: { 'main.kcl': 'keep' },
+          },
+        },
+      },
+    ]
+    for (const result of failures) {
+      receive(result)
+      applied(result)
+    }
+    receive(answer())
+    expect(exchange()?.responses.slice(0, 2)).toEqual(failures)
+    expect(exchange()?.appliedEditResponses).toBeUndefined()
+  })
+
+  it('does not use an earlier final answer to discard an interrupted tail', async () => {
+    const { receive, applied, exchange } = await ready()
+    const completed = edit('completed')
+    const unfinished = edit('unfinished')
+    receive(completed)
+    receive(answer())
+    receive(unfinished)
+    applied(unfinished)
+    applied(completed)
+    receive({ error: { detail: 'Interrupted' } })
+    expect(exchange()?.responses).toEqual([answer(), unfinished])
+    expect(exchange()?.appliedEditResponses).toEqual([unfinished])
+  })
+
+  it.each<
+    | ZookeeperManagerTransitions.AbruptClose
+    | ZookeeperManagerTransitions.ConversationClose
+  >([
+    ZookeeperManagerTransitions.AbruptClose,
+    ZookeeperManagerTransitions.ConversationClose,
+  ])(
+    'ignores stale acknowledgements after %s replaces the transcript',
+    async (type) => {
+      const { actor, receive, applied, exchange } = await ready()
+      const previous = edit()
+      receive(previous)
+      receive(answer())
+      actor.send({ type })
+      await waitFor(actor, (state) => state.matches(S.Await))
+      actor.send({
+        type: ZookeeperManagerTransitions.CacheSetupAndConnect,
+        refParentSend: (event) => actor.send(event),
+      })
+      await waitFor(actor, (state) =>
+        state.matches(ZookeeperManagerStates.WaitForContinueCheck)
+      )
+      actor.send({
+        type: ZookeeperManagerStates.ContinueCheck,
+        projectName: 'demo',
+        projectFiles: [],
+      })
+      await waitFor(actor, (state) =>
+        state.matches(ZookeeperManagerStates.Ready)
+      )
+      const current = edit()
+      receive(current)
+      receive(answer())
+      applied(previous)
+      expect(exchange()?.responses).toEqual([current, answer()])
+      expect(exchange()?.appliedEditResponses).toBeUndefined()
+      applied(current)
+      expect(exchange()?.responses).toEqual([answer()])
+    }
+  )
+
+  it.each<
+    ZookeeperManagerTransitions.Cancel | ZookeeperManagerTransitions.Interrupt
+  >([
+    ZookeeperManagerTransitions.Cancel,
+    ZookeeperManagerTransitions.Interrupt,
+  ])('keeps applied edits after %s without a final answer', async (type) => {
+    const { actor, receive, applied, exchange } = await ready()
+    const result = edit()
+    receive(result)
+    applied(result)
+    actor.send({ type })
+    await waitFor(actor, (state) =>
+      state.matches({
+        [ZookeeperManagerStates.Ready]: {
+          [ZookeeperManagerStates.Request]: S.Await,
+        },
+      })
+    )
+    expect(exchange()?.responses).toEqual([result])
+  })
+
+  it('does not retain large applied outputs or acknowledgement references across completed runs', async () => {
+    const { receive, applied, exchange } = await ready()
+    for (let run = 0; run < 20; run++) {
+      const result = edit('x'.repeat(1_000_000))
+      receive(result)
+      applied(result)
+      expect(JSON.stringify(exchange()).length).toBeGreaterThan(2_000_000)
+      receive(answer(`Completed ${run}`))
+      expect(JSON.stringify(exchange()).length).toBeLessThan(5_000)
+      expect(exchange()?.appliedEditResponses).toBeUndefined()
+    }
+    expect(exchange()?.responses).toHaveLength(20)
+  })
+})
+
+describe('toMlCopilotFile', () => {
+  it('turns missing attachment reads into an actionable privacy-safe error', async () => {
+    const file = {
+      name: 'private-customer-file.step',
+      type: 'application/step',
+      arrayBuffer: vi
+        .fn()
+        .mockRejectedValue(
+          new DOMException(
+            'A requested file could not be found',
+            'NotFoundError'
+          )
+        ),
+    } as unknown as File
+
+    const result = await toMlCopilotFile(file)
+
+    expect(result).toMatchObject({
+      name: 'ZookeeperAttachmentReadError',
+      message:
+        "We couldn't read the attachment. It may have been moved, deleted, or become unavailable. Reattach it and try again.",
+    })
+    expect(result).toBeInstanceOf(Error)
+    expect((result as Error).message).not.toContain(file.name)
+  })
+
+  it('preserves unexpected attachment read errors', async () => {
+    const readError = new Error('Unexpected read failure')
+    const file = {
+      name: 'attachment.step',
+      type: 'application/step',
+      arrayBuffer: vi.fn().mockRejectedValue(readError),
+    } as unknown as File
+
+    await expect(toMlCopilotFile(file)).resolves.toBe(readError)
+  })
+})
+
 describe('createZookeeperCorrelation', () => {
   it('creates a unique correlation ID and includes the Engine API call ID', () => {
     const first = createZookeeperCorrelation('engine-api-call-id')
@@ -199,7 +593,19 @@ describe('zookeeperManagerMachine', () => {
     ControllableSetupWebSocket.instances = []
   })
 
+  it('creates a started manager actor', () => {
+    const actor = createZookeeperManagerActor('api-token')
+
+    expect(actor.getSnapshot().status).toBe('active')
+    expect(actor.getSnapshot().context.apiToken).toBe('api-token')
+
+    stopZookeeperManagerActor(actor)
+  })
+
   afterEach(() => {
+    stopClientErrorReporting?.()
+    stopClientErrorReporting = undefined
+    vi.useRealTimers()
     vi.restoreAllMocks()
     vi.unstubAllGlobals()
   })
@@ -604,6 +1010,61 @@ describe('zookeeperManagerMachine', () => {
       expect(socket.close).toHaveBeenCalledOnce()
 
       actor.stop()
+    })
+
+    it('closes the socket and stops its heartbeat when stopped', async () => {
+      vi.useFakeTimers()
+      vi.stubGlobal('WebSocket', ControllableSetupWebSocket)
+      const actor = createActor(zookeeperManagerMachine, {
+        input: {
+          apiToken: 'token',
+        },
+      }).start()
+
+      actor.send({
+        type: ZookeeperManagerTransitions.CacheSetupAndConnect,
+        refParentSend: vi.fn(),
+      })
+
+      const socket = ControllableSetupWebSocket.instances[0]
+      socket.open()
+      await vi.waitFor(() => {
+        expect(socket.sentPayloads).toContain(
+          JSON.stringify({ type: 'list_modes' })
+        )
+      })
+      socket.receive({
+        conversation_id: { conversation_id: 'conversation-id' },
+      })
+
+      await waitFor(actor, (state) =>
+        state.matches(ZookeeperManagerStates.WaitForContinueCheck)
+      )
+      actor.send({
+        type: ZookeeperManagerStates.ContinueCheck,
+        projectName: 'zoo-project',
+        projectFiles: [],
+      })
+      await waitFor(actor, (state) =>
+        state.matches(ZookeeperManagerStates.Ready)
+      )
+
+      expect(socket.readyState).toBe(ControllableSetupWebSocket.OPEN)
+      expect(socket.close).not.toHaveBeenCalled()
+
+      await vi.advanceTimersByTimeAsync(ZOOKEEPER_HEARTBEAT_INTERVAL_MS)
+      expect(socket.sentPayloads).toContain(JSON.stringify({ type: 'ping' }))
+      const sentBeforeStop = [...socket.sentPayloads]
+
+      stopZookeeperManagerActor(actor)
+
+      expect(socket.close).toHaveBeenCalledOnce()
+      expect(socket.readyState).toBe(ControllableSetupWebSocket.CLOSED)
+      expect(vi.getTimerCount()).toBe(0)
+
+      await vi.advanceTimersByTimeAsync(2 * ZOOKEEPER_HEARTBEAT_INTERVAL_MS)
+      expect(socket.sentPayloads).toEqual(sentBeforeStop)
+      expect(ControllableSetupWebSocket.instances).toHaveLength(1)
     })
 
     it('times out setup attempts instead of waiting forever', async () => {
@@ -1356,6 +1817,272 @@ describe('zookeeperManagerMachine', () => {
       expect(setupContext?.cachedSetup?.activeExchangeStartedAt).toBe(
         completedConversationStartedAt
       )
+
+      actor.stop()
+    })
+  })
+
+  describe('attachment fetching', () => {
+    const attachmentRef: AttachmentRef = {
+      prompt_id: '00000000-0000-4000-8000-000000000001',
+      seq: 3,
+      index: 1,
+      content_hash:
+        'sha256:0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef',
+    }
+
+    const loadedFile: MlCopilotFile = {
+      name: 'reference.png',
+      mimetype: 'image/png',
+      data: [1, 2, 3],
+      attachment_ref: attachmentRef,
+    }
+
+    const createReadyActor = async (
+      setupContext: Partial<ZookeeperManagerContext> = {}
+    ) => {
+      const ws: TestWebSocket = new TestSocket() as TestWebSocket
+      ws.readyState = WebSocket.OPEN
+      const machine = zookeeperManagerMachine.provide({
+        actors: {
+          [ZookeeperManagerStates.Setup]: fromPromise<
+            Partial<ZookeeperManagerContext>,
+            SetupActorInput
+          >(async () => ({
+            ws,
+            conversation: structuredClone(completedConversation),
+            conversationId: 'conversation-id',
+            ...setupContext,
+          })),
+        },
+      })
+      const actor = createActor(machine, {
+        input: { apiToken: 'token' },
+      }).start()
+
+      actor.send({
+        type: ZookeeperManagerTransitions.CacheSetupAndConnect,
+        refParentSend: vi.fn(),
+      })
+      await waitFor(actor, (state) =>
+        state.matches(ZookeeperManagerStates.WaitForContinueCheck)
+      )
+
+      actor.send({
+        type: ZookeeperManagerStates.ContinueCheck,
+        projectName: 'zoo-project',
+        projectFiles: [],
+      })
+      await waitFor(actor, (state) =>
+        state.matches(ZookeeperManagerStates.Ready)
+      )
+
+      // Only count attachment requests, not setup traffic.
+      ws.sentPayloads.length = 0
+      return { actor, ws }
+    }
+
+    it('requests an attachment once and records its loading state', async () => {
+      const { actor, ws } = await createReadyActor()
+
+      actor.send({
+        type: ZookeeperManagerTransitions.AttachmentFetch,
+        attachmentRef,
+      })
+      actor.send({
+        type: ZookeeperManagerTransitions.AttachmentFetch,
+        attachmentRef,
+      })
+
+      expect(ws.sentPayloads).toHaveLength(1)
+      expect(JSON.parse(ws.sentPayloads[0])).toEqual({
+        type: 'fetch_attachments',
+        prompt_id: attachmentRef.prompt_id,
+        seq: attachmentRef.seq,
+        indices: [attachmentRef.index],
+        supports_attachments_error: true,
+      })
+      expect(
+        actor.getSnapshot().context.attachmentFetches[
+          getZookeeperAttachmentKey(attachmentRef)
+        ]
+      ).toEqual({ status: 'loading' })
+
+      actor.stop()
+    })
+
+    it('fails only matching loading attachments without affecting generation', async () => {
+      const { actor } = await createReadyActor({
+        conversation: {
+          exchanges: [{ responses: [], deltasAggregated: '' }],
+        },
+      })
+      try {
+        const secondRef = { ...attachmentRef, index: 2 }
+        const unrelatedRefs = [
+          { ...attachmentRef, index: 3 },
+          { ...attachmentRef, seq: attachmentRef.seq + 1 },
+          {
+            ...attachmentRef,
+            prompt_id: '00000000-0000-4000-8000-000000000002',
+          },
+        ]
+        for (const ref of [attachmentRef, secondRef, ...unrelatedRefs]) {
+          actor.send({
+            type: ZookeeperManagerTransitions.AttachmentFetch,
+            attachmentRef: ref,
+          })
+        }
+        const before = actor.getSnapshot().context
+        expect(before.awaitingResponse).toBe(true)
+
+        actor.send({
+          type: ZookeeperManagerTransitions.ResponseReceive,
+          response: {
+            attachments_error: {
+              prompt_id: attachmentRef.prompt_id,
+              seq: attachmentRef.seq,
+              indices: [attachmentRef.index, secondRef.index, 99],
+              detail: 'Unable to load attachments. Please try again.',
+            },
+          },
+        })
+
+        const after = actor.getSnapshot().context
+        for (const ref of [attachmentRef, secondRef]) {
+          expect(
+            after.attachmentFetches[getZookeeperAttachmentKey(ref)]
+          ).toEqual({
+            status: 'error',
+            message: 'Unable to load attachments. Please try again.',
+          })
+        }
+        for (const ref of unrelatedRefs) {
+          const key = getZookeeperAttachmentKey(ref)
+          expect(after.attachmentFetches[key]).toBe(
+            before.attachmentFetches[key]
+          )
+        }
+        expect(
+          after.attachmentFetches[
+            getZookeeperAttachmentKey({ ...attachmentRef, index: 99 })
+          ]
+        ).toBeUndefined()
+        expect(after.conversation).toBe(before.conversation)
+        expect(after.lastMessageId).toBe(before.lastMessageId)
+        expect(after.awaitingResponse).toBe(true)
+        expect(after.attachmentsLoadedForCurrentPrompt).toBe(
+          before.attachmentsLoadedForCurrentPrompt
+        )
+        expect(after.pendingBackendShutdown).toBe(before.pendingBackendShutdown)
+      } finally {
+        actor.stop()
+      }
+    })
+
+    it('retries a failed attachment and does not overwrite loaded bytes with an error', async () => {
+      const { actor, ws } = await createReadyActor()
+      try {
+        const key = getZookeeperAttachmentKey(attachmentRef)
+        const fetch = () =>
+          actor.send({
+            type: ZookeeperManagerTransitions.AttachmentFetch,
+            attachmentRef,
+          })
+        const fail = () =>
+          actor.send({
+            type: ZookeeperManagerTransitions.ResponseReceive,
+            response: {
+              attachments_error: {
+                prompt_id: attachmentRef.prompt_id,
+                seq: attachmentRef.seq,
+                indices: [attachmentRef.index],
+                detail: 'Unable to load attachments. Please try again.',
+              },
+            },
+          })
+
+        fetch()
+        fail()
+        expect(actor.getSnapshot().context.attachmentFetches[key]?.status).toBe(
+          'error'
+        )
+        fetch()
+        fetch()
+        expect(ws.sentPayloads).toHaveLength(2)
+        expect(JSON.parse(ws.sentPayloads[1])).toEqual({
+          type: 'fetch_attachments',
+          prompt_id: attachmentRef.prompt_id,
+          seq: attachmentRef.seq,
+          indices: [attachmentRef.index],
+          supports_attachments_error: true,
+        })
+        expect(actor.getSnapshot().context.attachmentFetches[key]).toEqual({
+          status: 'loading',
+        })
+
+        actor.send({
+          type: ZookeeperManagerTransitions.ResponseReceive,
+          response: {
+            attachments: {
+              prompt_id: attachmentRef.prompt_id,
+              seq: attachmentRef.seq,
+              role: 'client',
+              files: [loadedFile],
+            },
+          },
+        })
+        const before = actor.getSnapshot().context
+        expect(before.attachmentFetches[key]).toEqual({
+          status: 'loaded',
+          file: loadedFile,
+        })
+        fail()
+        const after = actor.getSnapshot().context
+        expect(after.attachmentFetches[key]).toBe(before.attachmentFetches[key])
+        expect(after.conversation).toBe(before.conversation)
+        fetch()
+        expect(ws.sentPayloads).toHaveLength(2)
+      } finally {
+        actor.stop()
+      }
+    })
+
+    it('stores fetched bytes without changing conversation state', async () => {
+      const { actor } = await createReadyActor()
+      const before = actor.getSnapshot().context
+
+      actor.send({
+        type: ZookeeperManagerTransitions.AttachmentFetch,
+        attachmentRef,
+      })
+      actor.send({
+        type: ZookeeperManagerTransitions.ResponseReceive,
+        response: {
+          attachments: {
+            prompt_id: attachmentRef.prompt_id,
+            seq: attachmentRef.seq,
+            role: 'client',
+            files: [loadedFile],
+          },
+        },
+      })
+
+      await waitFor(
+        actor,
+        (state) =>
+          state.context.attachmentFetches[
+            getZookeeperAttachmentKey(attachmentRef)
+          ]?.status === 'loaded'
+      )
+
+      const after = actor.getSnapshot().context
+      expect(
+        after.attachmentFetches[getZookeeperAttachmentKey(attachmentRef)]
+      ).toEqual({ status: 'loaded', file: loadedFile })
+      expect(after.conversation).toBe(before.conversation)
+      expect(after.lastMessageId).toBe(before.lastMessageId)
+      expect(after.awaitingResponse).toBe(before.awaitingResponse)
 
       actor.stop()
     })

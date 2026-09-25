@@ -1,4 +1,5 @@
 import type {
+  AttachmentRef,
   MlCopilotAccessDeniedCode,
   MlCopilotClientMessage,
   MlCopilotFile,
@@ -12,14 +13,13 @@ import {
 import { ClientErrorCode, reportClientError } from '@src/lib/clientErrors'
 import { getKclVersion } from '@src/lib/kclVersion'
 import { Socket, SocketConnectionError } from '@src/lib/socket'
-import { isErr } from '@src/lib/trap'
+import { cleanErrs, isErr } from '@src/lib/trap'
 import { isArray, isRecord, uuidv4 } from '@src/lib/utils'
 import { withZookeeperWebSocketURL } from '@src/lib/withBaseURL'
 import { S, transitions, xstateEventError } from '@src/machines/utils'
-import { createActorContext } from '@xstate/react'
 import ms from 'ms'
 import type { ActorRefFrom } from 'xstate'
-import { assertEvent, assign, fromPromise, setup } from 'xstate'
+import { assertEvent, assign, createActor, fromPromise, setup } from 'xstate'
 
 // Uncomment and switch WebSocket below with this MockSocket for development.
 // import { MockSocket } from '@src/mocks/copilot'
@@ -228,6 +228,7 @@ export enum ZookeeperManagerTransitions {
   AuthTokenChanged = 'auth-token-changed',
   MessageSend = 'message-send',
   ResponseReceive = 'response-receive',
+  EditApplied = 'edit-applied',
   ModesReceive = 'modes-receive',
   ConversationClose = 'conversation-close',
   Cancel = 'cancel',
@@ -238,6 +239,7 @@ export enum ZookeeperManagerTransitions {
   CacheSetupAndConnect = 'cache-setup-and-connect',
   BackendShutdown = 'backend-shutdown',
   SetupProgress = 'setup-progress',
+  AttachmentFetch = 'attachment-fetch',
 }
 
 export const NUMBER_OF_ZOOKEEPER_SETUP_ATTEMPTS = 3
@@ -376,6 +378,10 @@ export type ZookeeperManagerEvents =
       response: MlCopilotServerMessage
     }
   | {
+      type: ZookeeperManagerTransitions.EditApplied
+      response: MlCopilotServerMessage
+    }
+  | {
       type: ZookeeperManagerTransitions.ModesReceive
       defaultMode?: MlCopilotModeId
       modeOptions: MlCopilotModeOption[]
@@ -407,6 +413,10 @@ export type ZookeeperManagerEvents =
   | {
       type: ZookeeperManagerTransitions.SetupProgress
     }
+  | {
+      type: ZookeeperManagerTransitions.AttachmentFetch
+      attachmentRef: AttachmentRef
+    }
 
 export interface Exchange {
   // Technically the WebSocket could send us a response at any time, without
@@ -420,6 +430,10 @@ export interface Exchange {
   // NOTE: THIS WILL *NOT* INCLUDE `delta` RESPONSES! SEE BELOW.
   responses: MlCopilotServerMessage[]
 
+  // Local acknowledgements only; replayed edits must never be applied again.
+  // Keep these references only until a later final answer allows cleanup.
+  appliedEditResponses?: MlCopilotServerMessage[]
+
   // BELOW:
   // An optimization. `delta` messages will be appended here.
   deltasAggregated: string
@@ -431,6 +445,53 @@ export interface Exchange {
 export type Conversation = {
   exchanges: Exchange[]
 }
+
+function isSuccessfulEdit(response: MlCopilotServerMessage) {
+  return (
+    'tool_output' in response &&
+    response.tool_output.result.type === 'edit_kcl_code' &&
+    response.tool_output.result.error == null &&
+    response.tool_output.result.status_code >= 200 &&
+    response.tool_output.result.status_code < 300
+  )
+}
+
+function compactAppliedEdits(exchange: Exchange): Exchange {
+  if (!exchange.appliedEditResponses?.length) {
+    return exchange
+  }
+
+  const applied = new Set(exchange.appliedEditResponses)
+  const finalAnswerIndex = exchange.responses.findLastIndex(
+    (response) =>
+      'end_of_stream' in response &&
+      Boolean(response.end_of_stream.whole_response?.trim())
+  )
+  const responses = exchange.responses.filter((response, index) => {
+    if (index < finalAnswerIndex && applied.delete(response)) {
+      return false
+    }
+    return true
+  })
+  if (responses.length === exchange.responses.length) {
+    return exchange
+  }
+  return {
+    ...exchange,
+    responses,
+    appliedEditResponses: applied.size ? Array.from(applied) : undefined,
+  }
+}
+
+export type ZookeeperAttachmentFetchState =
+  | { status: 'loading' }
+  | { status: 'loaded'; file: MlCopilotFile }
+  | { status: 'error'; message: string }
+
+export const getZookeeperAttachmentKey = (
+  attachmentRef: Pick<AttachmentRef, 'prompt_id' | 'seq' | 'index'>
+): string =>
+  `${attachmentRef.prompt_id}:${attachmentRef.seq}:${attachmentRef.index}`
 
 export interface ZookeeperManagerContext {
   apiToken: string
@@ -449,6 +510,7 @@ export interface ZookeeperManagerContext {
   projectNameCurrentlyOpened?: string
   awaitingResponse: boolean
   attachmentsLoadedForCurrentPrompt: boolean
+  attachmentFetches: Record<string, ZookeeperAttachmentFetchState>
   pendingBackendShutdown: boolean
   defaultMode?: MlCopilotModeId
   modeOptions?: MlCopilotModeOption[]
@@ -480,6 +542,7 @@ export const zookeeperDefaultContext = (args: {
   projectNameCurrentlyOpened: undefined,
   awaitingResponse: false,
   attachmentsLoadedForCurrentPrompt: true,
+  attachmentFetches: {},
   pendingBackendShutdown: false,
   defaultMode: undefined,
   modeOptions: undefined,
@@ -611,11 +674,35 @@ function isAttachmentsLoadedMessage(
   )
 }
 
-async function toMlCopilotFile(file: File): Promise<MlCopilotFile> {
+const ZOOKEEPER_ATTACHMENT_READ_ERROR_MESSAGE =
+  "We couldn't read the attachment. It may have been moved, deleted, or become unavailable. Reattach it and try again."
+
+class ZookeeperAttachmentReadError extends Error {
+  constructor(cause: unknown) {
+    super(ZOOKEEPER_ATTACHMENT_READ_ERROR_MESSAGE, { cause })
+    this.name = 'ZookeeperAttachmentReadError'
+  }
+}
+
+export async function toMlCopilotFile(
+  file: File
+): Promise<MlCopilotFile | Error> {
+  let data: ArrayBuffer
+  try {
+    data = await file.arrayBuffer()
+  } catch (error) {
+    if (isErr(error) && error.name === 'NotFoundError') {
+      return new ZookeeperAttachmentReadError(error)
+    }
+    return isErr(error)
+      ? error
+      : new Error('Unknown attachment read error', { cause: error })
+  }
+
   return {
     name: file.name,
     mimetype: file.type || 'application/octet-stream',
-    data: Array.from(new Uint8Array(await file.arrayBuffer())),
+    data: Array.from(new Uint8Array(data)),
   }
 }
 
@@ -780,6 +867,19 @@ export const zookeeperManagerMachine = setup({
     isCurrentZookeeperWebSocket: ({ context, event }) => {
       assertEvent(event, ZookeeperManagerTransitions.ResumeSuperseded)
       return context.ws === event.webSocket
+    },
+    canFetchAttachment: ({ context, event }) => {
+      assertEvent(event, ZookeeperManagerTransitions.AttachmentFetch)
+
+      const key = getZookeeperAttachmentKey(event.attachmentRef)
+      const found = context.attachmentFetches[key]
+
+      // prevent duplicate requests
+      return (
+        context.ws?.readyState === WebSocket.OPEN &&
+        found?.status !== 'loading' &&
+        found?.status !== 'loaded'
+      )
     },
   },
   actions: {
@@ -977,6 +1077,7 @@ export const zookeeperManagerMachine = setup({
         modeOptions: undefined,
         awaitingResponse: false,
         attachmentsLoadedForCurrentPrompt: true,
+        attachmentFetches: {},
         pendingBackendShutdown: false,
         cachedSetup: {
           refParentSend: event.refParentSend,
@@ -988,6 +1089,41 @@ export const zookeeperManagerMachine = setup({
         },
       }
     }),
+    markAttachmentLoading: assign(({ context, event }) => {
+      assertEvent(event, ZookeeperManagerTransitions.AttachmentFetch)
+
+      const key = getZookeeperAttachmentKey(event.attachmentRef)
+
+      return {
+        attachmentFetches: {
+          ...context.attachmentFetches,
+          [key]: { status: 'loading' as const },
+        },
+      }
+    }),
+
+    sendAttachmentFetch: ({ context, event }) => {
+      assertEvent(event, ZookeeperManagerTransitions.AttachmentFetch)
+
+      if (context.ws?.readyState !== WebSocket.OPEN) {
+        return
+      }
+
+      const { prompt_id, seq, index } = event.attachmentRef
+
+      const request: Extract<
+        MlCopilotClientMessage,
+        { type: 'fetch_attachments' }
+      > = {
+        type: 'fetch_attachments',
+        prompt_id,
+        seq,
+        indices: [index],
+        supports_attachments_error: true,
+      }
+
+      context.ws.send(JSON.stringify(request))
+    },
     clearCacheSetup: assign({
       cachedSetup: undefined,
     }),
@@ -1014,6 +1150,7 @@ export const zookeeperManagerMachine = setup({
       if (maybeConversationId) {
         queryParams.set('conversation_id', maybeConversationId)
         queryParams.set('replay', 'true')
+        queryParams.set('replay_attachment_mode', 'metadata_only')
       }
       const querystring = queryParams.toString()
         ? `?${queryParams.toString()}`
@@ -1422,7 +1559,7 @@ export const zookeeperManagerMachine = setup({
     }),
     [ZookeeperManagerTransitions.MessageSend]: fromPromise(async function (
       args: XSInput<ZookeeperManagerTransitions.MessageSend>
-    ): Promise<Partial<ZookeeperManagerContext>> {
+    ) {
       const { context, event } = args.input
       if (!isPresent<WebSocket>(context.ws))
         return Promise.reject(new Error('WebSocket not present'))
@@ -1453,10 +1590,15 @@ export const zookeeperManagerMachine = setup({
         )
       }
 
-      const additionalFiles =
-        event.additionalFiles && event.additionalFiles.length > 0
-          ? await Promise.all(event.additionalFiles.map(toMlCopilotFile))
-          : undefined
+      let additionalFiles: MlCopilotFile[] | undefined
+      if (event.additionalFiles && event.additionalFiles.length > 0) {
+        const [, convertedFiles, conversionErrors] = cleanErrs(
+          await Promise.all(event.additionalFiles.map(toMlCopilotFile))
+        )
+        const conversionError = conversionErrors[0]
+        if (conversionError) return Promise.reject(conversionError)
+        additionalFiles = convertedFiles
+      }
 
       const request: MlCopilotUserRequest = {
         type: 'user',
@@ -1476,19 +1618,15 @@ export const zookeeperManagerMachine = setup({
 
       context.ws.send(JSON.stringify(request))
 
-      const conversation: Conversation = {
-        exchanges: Array.from(context.conversation.exchanges),
-      }
-
-      conversation.exchanges.push({
+      const exchange: Exchange = {
         request,
         responses: [],
         deltasAggregated: '',
         startedAt: new Date(),
-      })
+      }
 
       return {
-        conversation,
+        exchange,
         fileFocusedOnInEditor: event.fileSelectedDuringPrompting.entry,
         projectNameCurrentlyOpened: requestData.body.project_name,
         attachmentsLoadedForCurrentPrompt:
@@ -1601,6 +1739,35 @@ export const zookeeperManagerMachine = setup({
     closeZookeeperWebSocket(args.context?.ws)
   },
   on: {
+    [ZookeeperManagerTransitions.EditApplied]: {
+      actions: assign(({ context, event }) => {
+        // Identity fences late acknowledgements after clear/reconnect. An
+        // exchange index or message counter can be reused by a new transcript.
+        if (!isSuccessfulEdit(event.response) || !context.conversation) {
+          return {}
+        }
+        const exchangeIndex = context.conversation.exchanges.findIndex(
+          (exchange) => exchange.responses.includes(event.response)
+        )
+        const exchange = context.conversation.exchanges[exchangeIndex]
+        if (
+          !exchange ||
+          exchange.appliedEditResponses?.includes(event.response)
+        ) {
+          return {}
+        }
+        const exchanges = Array.from(context.conversation.exchanges)
+        exchanges[exchangeIndex] = compactAppliedEdits({
+          ...exchange,
+          appliedEditResponses: [
+            ...(exchange.appliedEditResponses ?? []),
+            event.response,
+          ],
+        })
+        // This is bookkeeping, not a new server message or a completed turn.
+        return { conversation: { ...context.conversation, exchanges } }
+      }),
+    },
     [ZookeeperManagerTransitions.AuthTokenChanged]: {
       actions: ['assignApiToken'],
     },
@@ -1808,6 +1975,10 @@ export const zookeeperManagerMachine = setup({
         [ZookeeperManagerTransitions.BackendShutdown]: {
           actions: ['handleBackendShutdown', 'disconnectIfIdle'],
         },
+        [ZookeeperManagerTransitions.AttachmentFetch]: {
+          guard: 'canFetchAttachment',
+          actions: ['markAttachmentLoading', 'sendAttachmentFetch'],
+        },
       },
       states: {
         [ZookeeperManagerStates.Response]: {
@@ -1841,6 +2012,62 @@ export const zookeeperManagerMachine = setup({
                     assertEvent(event, [
                       ZookeeperManagerTransitions.ResponseReceive,
                     ])
+
+                    if ('attachments_error' in event.response) {
+                      const { prompt_id, seq, indices, detail } =
+                        event.response.attachments_error
+
+                      const attachmentFetches = { ...context.attachmentFetches }
+
+                      for (const index of indices) {
+                        const key = getZookeeperAttachmentKey({
+                          prompt_id,
+                          seq,
+                          index,
+                        })
+
+                        if (attachmentFetches[key]?.status !== 'loading') {
+                          continue
+                        }
+
+                        attachmentFetches[key] = {
+                          status: 'error',
+                          message: detail,
+                        }
+                      }
+
+                      // Attachment failures must not change conversation or generation state.
+                      return { attachmentFetches }
+                    }
+
+                    if ('attachments' in event.response) {
+                      const attachmentFetches: Record<
+                        string,
+                        ZookeeperAttachmentFetchState
+                      > = {
+                        ...context.attachmentFetches,
+                      }
+
+                      for (const file of event.response.attachments.files) {
+                        if (file.attachment_ref === undefined) {
+                          continue
+                        }
+
+                        const key = getZookeeperAttachmentKey(
+                          file.attachment_ref
+                        )
+
+                        attachmentFetches[key] = {
+                          status: 'loaded',
+                          file,
+                        }
+                      }
+                      // This early return is needed because attachment response
+                      // is just a bookkeeping, not a message.
+                      // It should not create a conversation exchange, increment lastMessageId,
+                      // change awaitingResponse, or affect active Zookeeper generation.
+                      return { attachmentFetches }
+                    }
 
                     const lastMessageId = (context.lastMessageId ?? -1) + 1
                     const responseComplete = isResponseComplete(event.response)
@@ -1899,6 +2126,12 @@ export const zookeeperManagerMachine = setup({
                         event.response.delta.delta
                     } else {
                       lastExchange.responses.push(event.response)
+                    }
+
+                    if ('end_of_stream' in event.response) {
+                      conversation.exchanges[
+                        conversation.exchanges.length - 1
+                      ] = compactAppliedEdits(lastExchange)
                     }
 
                     // This sucks but must be done because we can't
@@ -1976,14 +2209,22 @@ export const zookeeperManagerMachine = setup({
                 onDone: {
                   target: S.Await,
                   actions: [
-                    assign(({ event, context }) => ({
-                      ...event.output,
-                      awaitingResponse: true,
-                      attachmentsLoadedForCurrentPrompt:
-                        event.output.attachmentsLoadedForCurrentPrompt ??
-                        context.attachmentsLoadedForCurrentPrompt,
-                      pendingBackendShutdown: context.pendingBackendShutdown,
-                    })),
+                    assign(({ event, context }) => {
+                      const { exchange, ...updates } = event.output
+                      return {
+                        ...updates,
+                        // Edit acknowledgements can compact earlier exchanges
+                        // while this prompt is being prepared.
+                        conversation: {
+                          ...context.conversation,
+                          exchanges: [
+                            ...(context.conversation?.exchanges ?? []),
+                            exchange,
+                          ],
+                        },
+                        awaitingResponse: true,
+                      }
+                    }),
                   ],
                 },
                 onError: { target: S.Await, actions: ['toastError'] },
@@ -2063,6 +2304,7 @@ export const zookeeperManagerMachine = setup({
               lastMessageType: undefined,
               awaitingResponse: false,
               attachmentsLoadedForCurrentPrompt: true,
+              attachmentFetches: {},
               pendingBackendShutdown: false,
               closeReason: undefined,
               ws: undefined,
@@ -2075,6 +2317,23 @@ export const zookeeperManagerMachine = setup({
 })
 
 export type ZookeeperManagerActor = ActorRefFrom<typeof zookeeperManagerMachine>
-export const ZookeeperManagerReactContext = createActorContext(
-  zookeeperManagerMachine
-)
+
+export function createZookeeperManagerActor(
+  apiToken: string
+): ZookeeperManagerActor {
+  return createActor(zookeeperManagerMachine, {
+    input: { apiToken },
+  }).start()
+}
+
+/**
+ * Stop a project-owned Zookeeper session and close its live transport.
+ *
+ * XState does not run root exit actions when an actor is stopped directly, so
+ * runtime owners must close the resolved socket before stopping the actor.
+ * Connecting sockets are still closed by the setup actor's abort handler.
+ */
+export function stopZookeeperManagerActor(actor: ZookeeperManagerActor) {
+  closeZookeeperWebSocket(actor.getSnapshot().context.ws)
+  actor.stop()
+}

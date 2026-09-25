@@ -136,8 +136,8 @@ description: Variables in memory after executing stylized-dump-truck.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "kind": "Custom",
       "objectId": 210,
+      "kind": "Custom",
       "origin": {
         "x": -2100.0,
         "y": 0.0,
@@ -169,8 +169,8 @@ description: Variables in memory after executing stylized-dump-truck.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "kind": "Custom",
       "objectId": 219,
+      "kind": "Custom",
       "origin": {
         "x": 2100.0,
         "y": 0.0,
@@ -298,6 +298,8 @@ description: Variables in memory after executing stylized-dump-truck.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -460,17 +462,17 @@ description: Variables in memory after executing stylized-dump-truck.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 97,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -526,8 +528,8 @@ description: Variables in memory after executing stylized-dump-truck.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "m"
+        "units": "m",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -540,8 +542,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
     "value": 1.15,
     "ty": {
       "type": "Default",
-      "len": "m",
-      "angle": "degrees"
+      "value": {
+        "len": "m",
+        "angle": "degrees"
+      }
     }
   },
   "cabinHeight": {
@@ -549,8 +553,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
     "value": 1.0,
     "ty": {
       "type": "Default",
-      "len": "m",
-      "angle": "degrees"
+      "value": {
+        "len": "m",
+        "angle": "degrees"
+      }
     }
   },
   "cabinLength": {
@@ -558,8 +564,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
     "value": 0.8400000000000001,
     "ty": {
       "type": "Default",
-      "len": "m",
-      "angle": "degrees"
+      "value": {
+        "len": "m",
+        "angle": "degrees"
+      }
     }
   },
   "cabinSideProfile": {
@@ -579,17 +587,21 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                       {
                         "n": -2.1,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 1.15,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -597,17 +609,21 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                       {
                         "n": -1.6,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 2.15,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -699,17 +715,21 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                       {
                         "n": -1.6,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 2.15,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -717,17 +737,21 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                       {
                         "n": -0.76,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 2.15,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -819,17 +843,21 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                       {
                         "n": -0.76,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 2.15,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -837,17 +865,21 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                       {
                         "n": -0.76,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 1.15,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -939,17 +971,21 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                       {
                         "n": -0.76,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 1.15,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -957,17 +993,21 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                       {
                         "n": -2.1,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 1.15,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -1152,17 +1192,17 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 97,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -1332,17 +1372,17 @@ description: Variables in memory after executing stylized-dump-truck.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 97,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -1398,8 +1438,8 @@ description: Variables in memory after executing stylized-dump-truck.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "m"
+      "units": "m",
+      "isClosed": "explicitly"
     }
   },
   "chassis": {
@@ -1407,6 +1447,8 @@ description: Variables in memory after executing stylized-dump-truck.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -1569,17 +1611,17 @@ description: Variables in memory after executing stylized-dump-truck.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 71,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -1635,8 +1677,8 @@ description: Variables in memory after executing stylized-dump-truck.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "m"
+        "units": "m",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -1649,8 +1691,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
     "value": 0.75,
     "ty": {
       "type": "Default",
-      "len": "m",
-      "angle": "degrees"
+      "value": {
+        "len": "m",
+        "angle": "degrees"
+      }
     }
   },
   "chassisHeight": {
@@ -1658,8 +1702,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
     "value": 0.4,
     "ty": {
       "type": "Default",
-      "len": "m",
-      "angle": "degrees"
+      "value": {
+        "len": "m",
+        "angle": "degrees"
+      }
     }
   },
   "chassisLength": {
@@ -1667,8 +1713,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
     "value": 4.2,
     "ty": {
       "type": "Default",
-      "len": "m",
-      "angle": "degrees"
+      "value": {
+        "len": "m",
+        "angle": "degrees"
+      }
     }
   },
   "chassisProfile": {
@@ -1688,17 +1736,21 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                       {
                         "n": -2.0999999959999993,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 0.7499999963999996,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -1706,17 +1758,21 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                       {
                         "n": 2.0999999996000005,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 0.7499999948999996,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -1808,17 +1864,21 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                       {
                         "n": 2.0999999963,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 0.7499999941499995,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -1826,17 +1886,21 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                       {
                         "n": 2.0999999940999996,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 1.1499999948999995,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -1928,17 +1992,21 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                       {
                         "n": 2.0999999929999995,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 1.1499999950499995,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -1946,17 +2014,21 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                       {
                         "n": -2.0999999833999983,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 1.1499999953499995,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -2048,17 +2120,21 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                       {
                         "n": -2.0999999854999984,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 1.1499999957999996,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -2066,17 +2142,21 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                       {
                         "n": -2.099999989699999,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 0.7499999956499995,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -2312,17 +2392,17 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 71,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -2492,17 +2572,17 @@ description: Variables in memory after executing stylized-dump-truck.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 71,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -2558,8 +2638,8 @@ description: Variables in memory after executing stylized-dump-truck.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "m"
+      "units": "m",
+      "isClosed": "explicitly"
     }
   },
   "chassisWidth": {
@@ -2567,17 +2647,17 @@ description: Variables in memory after executing stylized-dump-truck.kcl
     "value": 1.8,
     "ty": {
       "type": "Default",
-      "len": "m",
-      "angle": "degrees"
+      "value": {
+        "len": "m",
+        "angle": "degrees"
+      }
     }
   },
   "circle1": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "circle1"
   },
   "circle2": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "circle2"
   },
@@ -2733,17 +2813,17 @@ description: Variables in memory after executing stylized-dump-truck.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 26,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -2807,8 +2887,8 @@ description: Variables in memory after executing stylized-dump-truck.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "m"
+      "units": "m",
+      "isClosed": "explicitly"
     }
   },
   "cutOutVoid": {
@@ -2816,6 +2896,8 @@ description: Variables in memory after executing stylized-dump-truck.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -3054,17 +3136,17 @@ description: Variables in memory after executing stylized-dump-truck.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 26,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -3128,8 +3210,8 @@ description: Variables in memory after executing stylized-dump-truck.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "m"
+        "units": "m",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -3142,6 +3224,8 @@ description: Variables in memory after executing stylized-dump-truck.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -3196,17 +3280,17 @@ description: Variables in memory after executing stylized-dump-truck.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 189,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -3254,8 +3338,8 @@ description: Variables in memory after executing stylized-dump-truck.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "m"
+        "units": "m",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -3301,17 +3385,17 @@ description: Variables in memory after executing stylized-dump-truck.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 189,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -3359,8 +3443,8 @@ description: Variables in memory after executing stylized-dump-truck.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "m"
+      "units": "m",
+      "isClosed": "explicitly"
     }
   },
   "dumpBed": {
@@ -3368,6 +3452,8 @@ description: Variables in memory after executing stylized-dump-truck.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -3606,17 +3692,17 @@ description: Variables in memory after executing stylized-dump-truck.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 124,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -3680,8 +3766,8 @@ description: Variables in memory after executing stylized-dump-truck.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "m"
+        "units": "m",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -3694,8 +3780,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
     "value": 2.8600000000000003,
     "ty": {
       "type": "Default",
-      "len": "m",
-      "angle": "degrees"
+      "value": {
+        "len": "m",
+        "angle": "degrees"
+      }
     }
   },
   "dumpBedProfile": {
@@ -3715,17 +3803,21 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                       {
                         "n": -0.59,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 1.38,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -3733,17 +3825,21 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                       {
                         "n": -0.59,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 2.38,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -3835,17 +3931,21 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                       {
                         "n": -0.59,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 2.38,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -3853,17 +3953,21 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                       {
                         "n": -1.43,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 2.38,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -3955,17 +4059,21 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                       {
                         "n": -1.43,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 2.38,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -3973,17 +4081,21 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                       {
                         "n": -1.43,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 2.48,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -4075,17 +4187,21 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                       {
                         "n": -1.43,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 2.48,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -4093,17 +4209,21 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                       {
                         "n": 2.27,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 2.48,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -4195,17 +4315,21 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                       {
                         "n": 2.27,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 2.48,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -4213,17 +4337,21 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                       {
                         "n": 2.27,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 1.38,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -4315,17 +4443,21 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                       {
                         "n": 2.27,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 1.38,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -4333,17 +4465,21 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                       {
                         "n": -0.59,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 1.38,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -4576,17 +4712,17 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 124,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -4812,17 +4948,17 @@ description: Variables in memory after executing stylized-dump-truck.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 124,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -4886,8 +5022,8 @@ description: Variables in memory after executing stylized-dump-truck.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "m"
+      "units": "m",
+      "isClosed": "explicitly"
     }
   },
   "fenderBody": {
@@ -4895,6 +5031,8 @@ description: Variables in memory after executing stylized-dump-truck.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -5057,17 +5195,17 @@ description: Variables in memory after executing stylized-dump-truck.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 0,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -5123,8 +5261,8 @@ description: Variables in memory after executing stylized-dump-truck.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "m"
+        "units": "m",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -5137,8 +5275,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
     "value": 0.35,
     "ty": {
       "type": "Default",
-      "len": "m",
-      "angle": "degrees"
+      "value": {
+        "len": "m",
+        "angle": "degrees"
+      }
     }
   },
   "fenderInset": {
@@ -5146,8 +5286,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
     "value": 0.1,
     "ty": {
       "type": "Default",
-      "len": "m",
-      "angle": "degrees"
+      "value": {
+        "len": "m",
+        "angle": "degrees"
+      }
     }
   },
   "fenderLength": {
@@ -5155,8 +5297,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
     "value": 4.4,
     "ty": {
       "type": "Default",
-      "len": "m",
-      "angle": "degrees"
+      "value": {
+        "len": "m",
+        "angle": "degrees"
+      }
     }
   },
   "fenderProfile": {
@@ -5176,17 +5320,21 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                       {
                         "n": -2.1999999959999994,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 0.3999999993999999,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -5194,17 +5342,21 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                       {
                         "n": 2.199999999200001,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 0.3999999985999999,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -5296,17 +5448,21 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                       {
                         "n": 2.1999999956,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 0.3999999981999999,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -5314,17 +5470,21 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                       {
                         "n": 2.1999999931999996,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 0.7500000019000002,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -5416,17 +5576,21 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                       {
                         "n": 2.1999999919999995,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 0.7500000016500001,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -5434,17 +5598,21 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                       {
                         "n": -2.1999999827999983,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 0.7500000011500001,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -5536,17 +5704,21 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                       {
                         "n": -2.1999999849999985,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 0.7500000004,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -5554,17 +5726,21 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                       {
                         "n": -2.199999989399999,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 0.3999999989999999,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -5800,17 +5976,17 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 0,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -5980,17 +6156,17 @@ description: Variables in memory after executing stylized-dump-truck.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 0,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -6046,8 +6222,8 @@ description: Variables in memory after executing stylized-dump-truck.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "m"
+      "units": "m",
+      "isClosed": "explicitly"
     }
   },
   "fenderWidth": {
@@ -6055,8 +6231,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
     "value": 2.0,
     "ty": {
       "type": "Default",
-      "len": "m",
-      "angle": "degrees"
+      "value": {
+        "len": "m",
+        "angle": "degrees"
+      }
     }
   },
   "fenderWithCutouts": {
@@ -6064,6 +6242,8 @@ description: Variables in memory after executing stylized-dump-truck.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -6226,17 +6406,17 @@ description: Variables in memory after executing stylized-dump-truck.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 0,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -6292,8 +6472,8 @@ description: Variables in memory after executing stylized-dump-truck.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "m"
+        "units": "m",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -6306,6 +6486,8 @@ description: Variables in memory after executing stylized-dump-truck.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -6544,17 +6726,17 @@ description: Variables in memory after executing stylized-dump-truck.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 26,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -6618,8 +6800,8 @@ description: Variables in memory after executing stylized-dump-truck.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "m"
+        "units": "m",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -6632,6 +6814,8 @@ description: Variables in memory after executing stylized-dump-truck.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -6870,17 +7054,17 @@ description: Variables in memory after executing stylized-dump-truck.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 26,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -6944,8 +7128,8 @@ description: Variables in memory after executing stylized-dump-truck.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "m"
+        "units": "m",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -6958,8 +7142,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
     "value": 0.4,
     "ty": {
       "type": "Default",
-      "len": "m",
-      "angle": "degrees"
+      "value": {
+        "len": "m",
+        "angle": "degrees"
+      }
     }
   },
   "headlightsBody": {
@@ -6970,6 +7156,8 @@ description: Variables in memory after executing stylized-dump-truck.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -7024,17 +7212,17 @@ description: Variables in memory after executing stylized-dump-truck.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 210,
+              "kind": "Custom",
               "origin": {
                 "x": -2100.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -7078,8 +7266,8 @@ description: Variables in memory after executing stylized-dump-truck.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "m"
+            "units": "m",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -7092,6 +7280,8 @@ description: Variables in memory after executing stylized-dump-truck.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [],
           "sketch": {
@@ -7131,17 +7321,17 @@ description: Variables in memory after executing stylized-dump-truck.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 210,
+              "kind": "Custom",
               "origin": {
                 "x": -2100.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -7185,8 +7375,8 @@ description: Variables in memory after executing stylized-dump-truck.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "m"
+            "units": "m",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -7201,8 +7391,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
     "value": 1.35,
     "ty": {
       "type": "Default",
-      "len": "m",
-      "angle": "degrees"
+      "value": {
+        "len": "m",
+        "angle": "degrees"
+      }
     }
   },
   "headlightsElevation": {
@@ -7210,8 +7402,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
     "value": 0.95,
     "ty": {
       "type": "Default",
-      "len": "m",
-      "angle": "degrees"
+      "value": {
+        "len": "m",
+        "angle": "degrees"
+      }
     }
   },
   "headlightsPlane": {
@@ -7219,8 +7413,8 @@ description: Variables in memory after executing stylized-dump-truck.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "kind": "Custom",
       "objectId": 210,
+      "kind": "Custom",
       "origin": {
         "x": -2100.0,
         "y": 0.0,
@@ -7288,17 +7482,17 @@ description: Variables in memory after executing stylized-dump-truck.kcl
             }
           ],
           "on": {
+            "type": "plane",
             "artifactId": "[uuid]",
             "id": "[uuid]",
-            "kind": "Custom",
             "objectId": 210,
+            "kind": "Custom",
             "origin": {
               "x": -2100.0,
               "y": 0.0,
               "z": 0.0,
               "units": "mm"
             },
-            "type": "plane",
             "xAxis": {
               "x": 0.0,
               "y": 1.0,
@@ -7342,8 +7536,8 @@ description: Variables in memory after executing stylized-dump-truck.kcl
           },
           "artifactId": "[uuid]",
           "originalId": "[uuid]",
-          "originSketchId": "[uuid]",
-          "units": "m"
+          "units": "m",
+          "isClosed": "explicitly"
         }
       },
       {
@@ -7384,17 +7578,17 @@ description: Variables in memory after executing stylized-dump-truck.kcl
             }
           ],
           "on": {
+            "type": "plane",
             "artifactId": "[uuid]",
             "id": "[uuid]",
-            "kind": "Custom",
             "objectId": 210,
+            "kind": "Custom",
             "origin": {
               "x": -2100.0,
               "y": 0.0,
               "z": 0.0,
               "units": "mm"
             },
-            "type": "plane",
             "xAxis": {
               "x": 0.0,
               "y": 1.0,
@@ -7438,8 +7632,8 @@ description: Variables in memory after executing stylized-dump-truck.kcl
           },
           "artifactId": "[uuid]",
           "originalId": "[uuid]",
-          "originSketchId": "[uuid]",
-          "units": "m"
+          "units": "m",
+          "isClosed": "explicitly"
         }
       }
     ]
@@ -7449,8 +7643,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
     "value": 0.32000000000000006,
     "ty": {
       "type": "Default",
-      "len": "m",
-      "angle": "degrees"
+      "value": {
+        "len": "m",
+        "angle": "degrees"
+      }
     }
   },
   "headlightsSketch": {
@@ -7470,17 +7666,21 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                       {
                         "n": 0.834999998155,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 0.95,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -7488,17 +7688,21 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                       {
                         "n": 0.6749999987899999,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 0.95,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -7617,17 +7821,17 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 210,
+                "kind": "Custom",
                 "origin": {
                   "x": -2100.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 0.0,
                   "y": 1.0,
@@ -7686,37 +7890,33 @@ description: Variables in memory after executing stylized-dump-truck.kcl
     "value": 0.05,
     "ty": {
       "type": "Default",
-      "len": "m",
-      "angle": "degrees"
+      "value": {
+        "len": "m",
+        "angle": "degrees"
+      }
     }
   },
   "line1": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "line1"
   },
   "line2": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "line2"
   },
   "line3": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "line3"
   },
   "line4": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "line4"
   },
   "line5": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "line5"
   },
   "line6": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "line6"
   },
@@ -7725,6 +7925,8 @@ description: Variables in memory after executing stylized-dump-truck.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -7963,17 +8165,17 @@ description: Variables in memory after executing stylized-dump-truck.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 26,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -8037,8 +8239,8 @@ description: Variables in memory after executing stylized-dump-truck.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "m"
+        "units": "m",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -8051,6 +8253,8 @@ description: Variables in memory after executing stylized-dump-truck.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -8289,17 +8493,17 @@ description: Variables in memory after executing stylized-dump-truck.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 26,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -8363,8 +8567,8 @@ description: Variables in memory after executing stylized-dump-truck.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "m"
+        "units": "m",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -8377,6 +8581,8 @@ description: Variables in memory after executing stylized-dump-truck.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -8539,17 +8745,17 @@ description: Variables in memory after executing stylized-dump-truck.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 163,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -8605,8 +8811,8 @@ description: Variables in memory after executing stylized-dump-truck.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "m"
+        "units": "m",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -8619,8 +8825,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
     "value": 2.15,
     "ty": {
       "type": "Default",
-      "len": "m",
-      "angle": "degrees"
+      "value": {
+        "len": "m",
+        "angle": "degrees"
+      }
     }
   },
   "roofHeight": {
@@ -8628,8 +8836,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
     "value": 0.1,
     "ty": {
       "type": "Default",
-      "len": "m",
-      "angle": "degrees"
+      "value": {
+        "len": "m",
+        "angle": "degrees"
+      }
     }
   },
   "roofProfile": {
@@ -8649,17 +8859,21 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                       {
                         "n": -1.6,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 2.15,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -8667,17 +8881,21 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                       {
                         "n": -1.6,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 2.25,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -8769,17 +8987,21 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                       {
                         "n": -1.6,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 2.25,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -8787,17 +9009,21 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                       {
                         "n": -0.76,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 2.25,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -8889,17 +9115,21 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                       {
                         "n": -0.76,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 2.25,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -8907,17 +9137,21 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                       {
                         "n": -0.76,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 2.15,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -9009,17 +9243,21 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                       {
                         "n": -0.76,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 2.15,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -9027,17 +9265,21 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                       {
                         "n": -1.6,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 2.15,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -9222,17 +9464,17 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 163,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -9402,17 +9644,17 @@ description: Variables in memory after executing stylized-dump-truck.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 163,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -9468,8 +9710,8 @@ description: Variables in memory after executing stylized-dump-truck.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "m"
+      "units": "m",
+      "isClosed": "explicitly"
     }
   },
   "taillightsBody": {
@@ -9480,6 +9722,8 @@ description: Variables in memory after executing stylized-dump-truck.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -9642,17 +9886,17 @@ description: Variables in memory after executing stylized-dump-truck.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 219,
+              "kind": "Custom",
               "origin": {
                 "x": 2100.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -9708,8 +9952,8 @@ description: Variables in memory after executing stylized-dump-truck.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "m"
+            "units": "m",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -9722,6 +9966,8 @@ description: Variables in memory after executing stylized-dump-truck.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [],
           "sketch": {
@@ -9827,17 +10073,17 @@ description: Variables in memory after executing stylized-dump-truck.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 219,
+              "kind": "Custom",
               "origin": {
                 "x": 2100.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -9893,8 +10139,8 @@ description: Variables in memory after executing stylized-dump-truck.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "m"
+            "units": "m",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -9909,8 +10155,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
     "value": 1.2800000000000002,
     "ty": {
       "type": "Default",
-      "len": "m",
-      "angle": "degrees"
+      "value": {
+        "len": "m",
+        "angle": "degrees"
+      }
     }
   },
   "taillightsElevation": {
@@ -9918,8 +10166,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
     "value": 0.8300000000000001,
     "ty": {
       "type": "Default",
-      "len": "m",
-      "angle": "degrees"
+      "value": {
+        "len": "m",
+        "angle": "degrees"
+      }
     }
   },
   "taillightsHeight": {
@@ -9927,8 +10177,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
     "value": 0.24,
     "ty": {
       "type": "Default",
-      "len": "m",
-      "angle": "degrees"
+      "value": {
+        "len": "m",
+        "angle": "degrees"
+      }
     }
   },
   "taillightsOffset": {
@@ -9936,8 +10188,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
     "value": 0.08000000000000002,
     "ty": {
       "type": "Default",
-      "len": "m",
-      "angle": "degrees"
+      "value": {
+        "len": "m",
+        "angle": "degrees"
+      }
     }
   },
   "taillightsPlane": {
@@ -9945,8 +10199,8 @@ description: Variables in memory after executing stylized-dump-truck.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "kind": "Custom",
       "objectId": 219,
+      "kind": "Custom",
       "origin": {
         "x": 2100.0,
         "y": 0.0,
@@ -10080,17 +10334,17 @@ description: Variables in memory after executing stylized-dump-truck.kcl
             }
           ],
           "on": {
+            "type": "plane",
             "artifactId": "[uuid]",
             "id": "[uuid]",
-            "kind": "Custom",
             "objectId": 219,
+            "kind": "Custom",
             "origin": {
               "x": 2100.0,
               "y": 0.0,
               "z": 0.0,
               "units": "mm"
             },
-            "type": "plane",
             "xAxis": {
               "x": 0.0,
               "y": 1.0,
@@ -10146,8 +10400,8 @@ description: Variables in memory after executing stylized-dump-truck.kcl
           },
           "artifactId": "[uuid]",
           "originalId": "[uuid]",
-          "originSketchId": "[uuid]",
-          "units": "m"
+          "units": "m",
+          "isClosed": "explicitly"
         }
       },
       {
@@ -10254,17 +10508,17 @@ description: Variables in memory after executing stylized-dump-truck.kcl
             }
           ],
           "on": {
+            "type": "plane",
             "artifactId": "[uuid]",
             "id": "[uuid]",
-            "kind": "Custom",
             "objectId": 219,
+            "kind": "Custom",
             "origin": {
               "x": 2100.0,
               "y": 0.0,
               "z": 0.0,
               "units": "mm"
             },
-            "type": "plane",
             "xAxis": {
               "x": 0.0,
               "y": 1.0,
@@ -10320,8 +10574,8 @@ description: Variables in memory after executing stylized-dump-truck.kcl
           },
           "artifactId": "[uuid]",
           "originalId": "[uuid]",
-          "originSketchId": "[uuid]",
-          "units": "m"
+          "units": "m",
+          "isClosed": "explicitly"
         }
       }
     ]
@@ -10331,8 +10585,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
     "value": 0.32000000000000006,
     "ty": {
       "type": "Default",
-      "len": "m",
-      "angle": "degrees"
+      "value": {
+        "len": "m",
+        "angle": "degrees"
+      }
     }
   },
   "taillightsSketch": {
@@ -10352,17 +10608,21 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                       {
                         "n": -0.8199999908799993,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 0.8299999963999997,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -10370,17 +10630,21 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                       {
                         "n": -0.45999998503999895,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 0.8299999947399995,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -10472,17 +10736,21 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                       {
                         "n": -0.45999998065999814,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 0.8299999939099995,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -10490,17 +10758,21 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                       {
                         "n": -0.4599999777399979,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 1.0699999956999997,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -10592,17 +10864,21 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                       {
                         "n": -0.4599999762799978,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 1.0699999957699997,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -10610,17 +10886,21 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                       {
                         "n": -0.8199999859599989,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 1.0699999959099997,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -10712,17 +10992,21 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                       {
                         "n": -0.819999986779999,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 1.0699999961199997,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -10730,17 +11014,21 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                       {
                         "n": -0.8199999884199991,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 0.8299999955699996,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -10976,17 +11264,17 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 219,
+                "kind": "Custom",
                 "origin": {
                   "x": 2100.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 0.0,
                   "y": 1.0,
@@ -11057,8 +11345,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
     "value": 0.36,
     "ty": {
       "type": "Default",
-      "len": "m",
-      "angle": "degrees"
+      "value": {
+        "len": "m",
+        "angle": "degrees"
+      }
     }
   },
   "wheelBase": {
@@ -11066,8 +11356,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
     "value": 2.94,
     "ty": {
       "type": "Default",
-      "len": "m",
-      "angle": "degrees"
+      "value": {
+        "len": "m",
+        "angle": "degrees"
+      }
     }
   },
   "wheelCutoutSketch": {
@@ -11087,17 +11379,21 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                       {
                         "n": 0.5250000000002312,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 0.3500000000000027,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -11105,17 +11401,21 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                       {
                         "n": -0.00000000000005663826710823476,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 0.35,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -11208,17 +11508,21 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                       {
                         "n": -0.5250000000003396,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 0.3500000000000106,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -11226,17 +11530,21 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                       {
                         "n": -0.2625000000002049,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 0.8046633388240976,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -11328,17 +11636,21 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                       {
                         "n": -0.26250000000020335,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 0.8046633388240921,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -11346,17 +11658,21 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                       {
                         "n": 0.2625000000000789,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 0.8046633388241028,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -11448,17 +11764,21 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                       {
                         "n": 0.26250000000007256,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 0.8046633388240947,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -11466,17 +11786,21 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                       {
                         "n": 0.5250000000001713,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 0.3500000000000027,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -11568,17 +11892,21 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                       {
                         "n": 0.5250000000001132,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 0.35,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -11586,17 +11914,21 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                       {
                         "n": 0.26250000000005214,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": -0.10466333882410354,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -11688,17 +12020,21 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                       {
                         "n": 0.2625000000000506,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": -0.10466333882409809,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -11706,17 +12042,21 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                       {
                         "n": -0.2625000000002379,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": -0.10466333882409189,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -11808,17 +12148,21 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                       {
                         "n": -0.26250000000023155,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": -0.10466333882408371,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -11826,17 +12170,21 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                       {
                         "n": -0.5250000000003412,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 0.35000000000000786,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -11928,17 +12276,21 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                       {
                         "n": 0.00000000000000000019479435218785224,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 0.35,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -11946,17 +12298,21 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                       {
                         "n": 0.5250000000000565,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 0.35,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -12190,17 +12546,17 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 26,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -12279,8 +12635,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
     "value": 0.7,
     "ty": {
       "type": "Default",
-      "len": "m",
-      "angle": "degrees"
+      "value": {
+        "len": "m",
+        "angle": "degrees"
+      }
     }
   },
   "wheelFrontLeft": {
@@ -12291,6 +12649,8 @@ description: Variables in memory after executing stylized-dump-truck.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -12389,17 +12749,17 @@ description: Variables in memory after executing stylized-dump-truck.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 189,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -12447,8 +12807,8 @@ description: Variables in memory after executing stylized-dump-truck.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "m"
+            "units": "m",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -12461,6 +12821,8 @@ description: Variables in memory after executing stylized-dump-truck.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -12515,17 +12877,17 @@ description: Variables in memory after executing stylized-dump-truck.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 189,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -12573,8 +12935,8 @@ description: Variables in memory after executing stylized-dump-truck.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "m"
+            "units": "m",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -12592,6 +12954,8 @@ description: Variables in memory after executing stylized-dump-truck.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -12690,17 +13054,17 @@ description: Variables in memory after executing stylized-dump-truck.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 189,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -12748,8 +13112,8 @@ description: Variables in memory after executing stylized-dump-truck.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "m"
+            "units": "m",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -12762,6 +13126,8 @@ description: Variables in memory after executing stylized-dump-truck.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -12816,17 +13182,17 @@ description: Variables in memory after executing stylized-dump-truck.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 189,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -12874,8 +13240,8 @@ description: Variables in memory after executing stylized-dump-truck.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "m"
+            "units": "m",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -12953,17 +13319,17 @@ description: Variables in memory after executing stylized-dump-truck.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 189,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -13011,8 +13377,8 @@ description: Variables in memory after executing stylized-dump-truck.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "m"
+      "units": "m",
+      "isClosed": "explicitly"
     }
   },
   "wheelRearLeft": {
@@ -13023,6 +13389,8 @@ description: Variables in memory after executing stylized-dump-truck.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -13121,17 +13489,17 @@ description: Variables in memory after executing stylized-dump-truck.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 189,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -13179,8 +13547,8 @@ description: Variables in memory after executing stylized-dump-truck.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "m"
+            "units": "m",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -13193,6 +13561,8 @@ description: Variables in memory after executing stylized-dump-truck.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -13247,17 +13617,17 @@ description: Variables in memory after executing stylized-dump-truck.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 189,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -13305,8 +13675,8 @@ description: Variables in memory after executing stylized-dump-truck.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "m"
+            "units": "m",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -13324,6 +13694,8 @@ description: Variables in memory after executing stylized-dump-truck.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -13422,17 +13794,17 @@ description: Variables in memory after executing stylized-dump-truck.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 189,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -13480,8 +13852,8 @@ description: Variables in memory after executing stylized-dump-truck.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "m"
+            "units": "m",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -13494,6 +13866,8 @@ description: Variables in memory after executing stylized-dump-truck.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -13548,17 +13922,17 @@ description: Variables in memory after executing stylized-dump-truck.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 189,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -13606,8 +13980,8 @@ description: Variables in memory after executing stylized-dump-truck.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "m"
+            "units": "m",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -13634,17 +14008,21 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                       {
                         "n": 0.34999999977499996,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 0.34999999959999994,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -13652,17 +14030,21 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                       {
                         "n": -0.0000000001950000057260315,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 0.34999999973999996,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -13754,17 +14136,21 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                       {
                         "n": 0.17499999984999998,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 0.34999999998,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -13772,17 +14158,21 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                       {
                         "n": -0.00000000015500000415114012,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 0.34999999987999997,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -13874,17 +14264,21 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                       {
                         "n": -0.00000000005500000026275623,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": -0.00000000004000000228586468,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -13892,17 +14286,21 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                       {
                         "n": -0.00000000011000000042782343,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 0.34999999991999997,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -14069,17 +14467,17 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 189,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -14142,6 +14540,8 @@ description: Variables in memory after executing stylized-dump-truck.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -14240,17 +14640,17 @@ description: Variables in memory after executing stylized-dump-truck.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 189,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -14298,8 +14698,8 @@ description: Variables in memory after executing stylized-dump-truck.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "m"
+        "units": "m",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -14312,8 +14712,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
     "value": 0.27,
     "ty": {
       "type": "Default",
-      "len": "m",
-      "angle": "degrees"
+      "value": {
+        "len": "m",
+        "angle": "degrees"
+      }
     }
   },
   "windPanelShift": {
@@ -14321,8 +14723,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
     "value": 0.5,
     "ty": {
       "type": "Default",
-      "len": "m",
-      "angle": "degrees"
+      "value": {
+        "len": "m",
+        "angle": "degrees"
+      }
     }
   }
 }

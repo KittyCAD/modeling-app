@@ -1,18 +1,29 @@
+import { expect } from '@e2e/playwright/base-test'
+import { test } from '@e2e/playwright/fixtures/cloudSyncProjectFixture'
+import { EditorFixture } from '@e2e/playwright/fixtures/editorFixture'
 import {
   type CloudProject,
+  cloudProjectResponse,
   createRemoteListGate,
   opfsPathExists,
   PROJECT_DIR,
   projectTitles,
   projectToml,
+  readCloudSyncProjectMetadata,
   readOpfsTextFiles,
   routeCloudProjects,
   seedCloudSyncState,
   zipProject,
 } from '@e2e/playwright/lib/cloudSyncTestUtils'
-import { mockClientErrorReports, setup } from '@e2e/playwright/test-utils'
-import { expect, type Page, test } from '@playwright/test'
-import { OPFS_CLOUD_FEATURE_FLAG } from '@src/lib/constants'
+import {
+  createProject,
+  mockClientErrorReports,
+  setup,
+  token,
+} from '@e2e/playwright/test-utils'
+import type { Page } from '@playwright/test'
+import type { CreatedRemoteProject } from '@src/lib/cloudSync/types'
+import JSZip from 'jszip'
 
 const CLOUD_SYNC_E2E_TIMEOUT = 20_000
 
@@ -38,80 +49,167 @@ async function expectCloudSyncHomeReady(page: Page) {
 }
 
 test(
-  'creates a fresh blank Personal Cloud project for every Zookeeper deep link',
+  'syncs an edit queued during first upload with the real development API',
+  { tag: ['@web'] },
+  async ({ context, page, request, firstUploadProject }, testInfo) => {
+    const apiUrl = 'https://api.dev.zoo.dev'
+    const headers = { Authorization: `Bearer ${token}` }
+    const projectName = firstUploadProject.name
+    const projectPath = `${PROJECT_DIR}/${projectName}`
+
+    await setup(context, page, testInfo, [], {
+      cloudSyncEnabled: true,
+    })
+    await page.goto('/home')
+    await expectCloudSyncHomeReady(page)
+    // The shared CI account has thousands of projects. Filter their cards
+    // through the UI without replacing the real project-list response.
+    await page.getByPlaceholder(/^Search projects/).fill(projectName)
+    // Fuzzy search can return other UUID-named projects; check exact collisions.
+    await expect(
+      page.getByTestId('project-link').filter({
+        has: page.getByText(projectName, { exact: true }),
+      })
+    ).toHaveCount(0)
+    await createProject({ name: projectName, page })
+    await expectProjectFileRoute(page)
+
+    const response = await firstUploadProject.firstUpload
+    expect(response.ok()).toBe(true)
+    const created: CreatedRemoteProject = await response.json()
+    expect(created.id).toBeTruthy()
+    expect(created.title).toBe(projectName)
+    expect(created.revision).toBeTruthy()
+    expect(created.files.map((file) => file.relative_path)).toEqual(
+      expect.arrayContaining(['main.kcl', 'project.toml'])
+    )
+    for (const file of created.files) {
+      expect(file.sha256).toMatch(/^[a-f0-9]{64}$/)
+      expect(file.byte_size).toBeGreaterThanOrEqual(0)
+    }
+
+    const editor = new EditorFixture(page)
+    await editor.openPane()
+    const initialCode = '@settings(kclVersion = "3.0-preview")\n'
+    const queuedCode = `${initialCode}queuedCloudEdit = 42\n`
+    await editor.expectEditor.toContain(initialCode.trimEnd())
+    await editor.replaceCodeByTyping(initialCode, queuedCode)
+    await expect
+      .poll(
+        () => readOpfsTextFiles(page, { main: `${projectPath}/main.kcl` }),
+        { timeout: CLOUD_SYNC_E2E_TIMEOUT }
+      )
+      .toMatchObject({ main: queuedCode })
+
+    const updatedResponse = page.waitForResponse(
+      (result) =>
+        new URL(result.url()).pathname === `/user/projects/${created.id}` &&
+        result.request().method() === 'PUT',
+      { timeout: CLOUD_SYNC_E2E_TIMEOUT }
+    )
+    firstUploadProject.releaseUpload()
+    const uploaded = await updatedResponse
+    expect(uploaded.ok()).toBe(true)
+    expect(new URL(uploaded.url()).searchParams.get('expected_revision')).toBe(
+      created.revision
+    )
+    const updated = await uploaded.json()
+    await expect
+      .poll(() => readCloudSyncProjectMetadata(page, projectPath), {
+        timeout: CLOUD_SYNC_E2E_TIMEOUT,
+      })
+      .toMatchObject({
+        remoteProjectId: created.id,
+        remoteRevision: updated.revision,
+        lastSyncedAt: expect.any(String),
+        pendingCount: 0,
+        conflict: undefined,
+        lastFailure: undefined,
+      })
+    const files = await readOpfsTextFiles(page, {
+      projectToml: `${projectPath}/project.toml`,
+    })
+    expect(files.projectToml).toContain(`project_id = "${created.id}"`)
+
+    const download = await request.get(
+      `${apiUrl}/user/projects/${created.id}/download?format=zip`,
+      { headers }
+    )
+    await expect(download).toBeOK()
+    const archive = await JSZip.loadAsync(await download.body())
+    expect(await archive.file(/(^|\/)main\.kcl$/)[0]?.async('string')).toBe(
+      queuedCode
+    )
+    expect(
+      await archive.file(/(^|\/)project\.toml$/)[0]?.async('string')
+    ).toContain(`project_id = "${created.id}"`)
+    expect(firstUploadProject.createCount).toBe(1)
+    await expect(
+      page.getByTestId('project-sidebar-cloud-conflict-badge')
+    ).toHaveCount(0)
+    await expect(page.getByTestId('cloud-conflict-dialog')).toHaveCount(0)
+  }
+)
+
+test(
+  'creates a multi-file sample in Personal Cloud from Home',
   { tag: ['@web'] },
   async ({ context, page }, testInfo) => {
-    const createdProjects: CloudProject[] = [
-      {
-        id: '12945000-0000-4000-8000-000000000001',
-        title: 'demo-project',
-        revision: 'demo-project-rev-1',
-        files: {},
-      },
-      {
-        id: '12945000-0000-4000-8000-000000000002',
-        title: 'demo-project-1',
-        revision: 'demo-project-1-rev-1',
-        files: {},
-      },
-    ]
-    let createIndex = 0
+    const createdProject: CloudProject = {
+      id: 'created-sample-project',
+      title: 'Artificial Heart',
+      revision: 'created-sample-rev-1',
+      files: {},
+    }
     const remoteProjects: CloudProject[] = []
     const { calls: apiCalls } = await routeCloudProjects(context, {
       remoteProjects,
       createProject: () => {
-        const project = createdProjects[createIndex++]
-        if (!project) {
-          throw new Error('Unexpected extra demo project creation.')
+        remoteProjects.push(createdProject)
+        return createdProject
+      },
+      updateProject: ({ projectId }) => {
+        if (projectId !== createdProject.id) {
+          return undefined
         }
-        remoteProjects.push(project)
-        return project
+
+        createdProject.revision = 'created-sample-rev-2'
+        return { status: 200, body: cloudProjectResponse(createdProject) }
       },
     })
-    const prompt = 'Design a spur gear'
-    const deepLink =
-      `/?cmd=set-layout&groupId=application&layoutId=zookeeper` +
-      `&ttc-prompt=${encodeURIComponent(prompt)}`
 
-    await setup(context, page, testInfo, [OPFS_CLOUD_FEATURE_FLAG])
+    await setup(context, page, testInfo, [], {
+      cloudSyncEnabled: true,
+    })
+    await page.goto('/home')
+    await expectCloudSyncHomeReady(page)
 
-    for (const [index, projectName] of [
-      'demo-project',
-      'demo-project-1',
-    ].entries()) {
-      await page.goto(deepLink)
+    await page.getByTestId('home-create-from-sample').click()
+    await expect(page.getByTestId('cmd-bar-arg-name')).toHaveText('sample')
+    await page
+      .getByRole('option', { name: 'Artificial Heart', exact: true })
+      .click()
 
-      await expectProjectFileRoute(page)
-      await expect(page).toHaveURL(new RegExp(`${projectName}%2Fmain\\.kcl`))
-      await expect
-        .poll(() =>
-          page.evaluate(() => {
-            const layout = window.app.layout.get()
-            return 'sizes' in layout ? layout.sizes : []
-          })
-        )
-        .toEqual([0, 50, 50])
-      await expect(page.getByTestId('command-bar-wrapper')).not.toBeVisible()
-      await expect(
-        page.getByTestId('ml-ephant-conversation-input')
-      ).toHaveValue(prompt)
-      await expect
-        .poll(() => new URL(page.url()).searchParams.has('cmd'))
-        .toBe(false)
-      await expect
-        .poll(() => new URL(page.url()).searchParams.has('ttc-prompt'))
-        .toBe(false)
-      await expect.poll(() => apiCalls.creates.length).toBe(index + 1)
-      await expect
-        .poll(() =>
-          opfsPathExists(page, `${PROJECT_DIR}/${projectName}/main.kcl`)
-        )
-        .toBe(true)
-      const files = await readOpfsTextFiles(page, {
-        main: `${PROJECT_DIR}/${projectName}/main.kcl`,
+    await expect(page).toHaveURL(/artificial-heart%2Fmain\.kcl$/, {
+      timeout: CLOUD_SYNC_E2E_TIMEOUT,
+    })
+    await expect
+      .poll(() => apiCalls.creates.length, {
+        timeout: CLOUD_SYNC_E2E_TIMEOUT,
       })
-      expect(files.main.trim()).toBe('@settings(kclVersion = 2.0)')
-    }
+      .toBe(1)
+    await expect
+      .poll(() =>
+        opfsPathExists(page, `${PROJECT_DIR}/artificial-heart/housing.kcl`)
+      )
+      .toBe(true)
+    const files = await readOpfsTextFiles(page, {
+      main: `${PROJECT_DIR}/artificial-heart/main.kcl`,
+    })
+    expect(files.main).toContain('import "housing.kcl" as housing')
+    await expect(
+      page.getByText('Unable to determine the project directory.')
+    ).toHaveCount(0)
   }
 )
 
@@ -127,7 +225,7 @@ test(
         updatedAt: '2026-06-02T20:00:00.000Z',
         files: {
           'main.kcl': 'remoteEmptyOne = 1\n',
-          'project.toml': projectToml('Remote empty one'),
+          'project.toml': projectToml('Remote empty one', 'remote-empty-one'),
         },
       },
       {
@@ -137,7 +235,10 @@ test(
         updatedAt: '2026-06-02T19:00:00.000Z',
         files: {
           'main.kcl': 'broken = 1\n',
-          'project.toml': projectToml('Remote empty broken'),
+          'project.toml': projectToml(
+            'Remote empty broken',
+            'remote-empty-broken'
+          ),
         },
       },
       {
@@ -147,7 +248,7 @@ test(
         updatedAt: '2026-06-02T18:00:00.000Z',
         files: {
           'main.kcl': 'remoteEmptyTwo = 1\n',
-          'project.toml': projectToml('Remote empty two'),
+          'project.toml': projectToml('Remote empty two', 'remote-empty-two'),
         },
       },
       {
@@ -157,7 +258,10 @@ test(
         updatedAt: '2026-06-02T17:00:00.000Z',
         files: {
           'main.kcl': 'remoteEmptyThree = 1\n',
-          'project.toml': projectToml('Remote empty three'),
+          'project.toml': projectToml(
+            'Remote empty three',
+            'remote-empty-three'
+          ),
         },
       },
     ]
@@ -168,8 +272,10 @@ test(
       brokenArchiveProjectIds: ['remote-empty-broken'],
     })
 
-    await setup(context, page, testInfo, [OPFS_CLOUD_FEATURE_FLAG])
-    await page.goto('/')
+    await setup(context, page, testInfo, [], {
+      cloudSyncEnabled: true,
+    })
+    await page.goto('/home')
     await expectCloudSyncHomeReady(page)
     await expect(
       page.getByTestId('project-library-empty').first()
@@ -256,7 +362,9 @@ test(
       id: 'personal-cloud-copy',
       title: publicProjectTitle,
       revision: 'personal-cloud-copy-rev-1',
-      files: publicProjectFiles,
+      files: {
+        'main.kcl': publicProjectFiles['main.kcl'],
+      },
     }
     const publicProjectArchive = await zipProject(publicProjectFiles)
     let publicProjectDownloads = 0
@@ -295,20 +403,43 @@ test(
     const { calls: apiCalls } = await routeCloudProjects(context, {
       remoteProjects: [personalCloudProject],
       listedProjects: [],
-      createProject: () => personalCloudProject,
+      createProject: async () => {
+        const files = await readOpfsTextFiles(page, {
+          projectToml: `${PROJECT_DIR}/${publicProjectDirectoryName}/project.toml`,
+        })
+        personalCloudProject.files['project.toml'] = [
+          files.projectToml,
+          '[cloud."dev.zoo.dev"]',
+          'project_id = "personal-cloud-copy"',
+          '',
+        ].join('\n')
+        return personalCloudProject
+      },
+      updateProject: ({ projectId, url }) => {
+        expect(projectId).toBe(personalCloudProject.id)
+        expect(new URL(url).searchParams.get('expected_revision')).toBe(
+          personalCloudProject.revision
+        )
+        personalCloudProject.revision = 'personal-cloud-copy-rev-2'
+        return { status: 200, body: cloudProjectResponse(personalCloudProject) }
+      },
     })
 
-    await setup(context, page, testInfo, [OPFS_CLOUD_FEATURE_FLAG])
+    await setup(context, page, testInfo, [], {
+      cloudSyncEnabled: true,
+    })
+    // Open the shared link directly. Visiting Home first interrupts its pending
+    // cloud requests and lazy imports when WebKit navigates to the shared link.
     await page.goto(`/?project-id=${publicProjectId}&ask-open-desktop=true`)
     await page.getByTestId('continue-to-web-app-button').click()
 
-    await expectProjectFileRoute(page)
-    expect(publicProjectDownloads).toBe(1)
     await expect
       .poll(() => apiCalls.creates.length, {
         timeout: CLOUD_SYNC_E2E_TIMEOUT,
       })
       .toBe(1)
+    expect(publicProjectDownloads).toBe(1)
+    await expectProjectFileRoute(page)
     await expect
       .poll(() =>
         opfsPathExists(
@@ -318,19 +449,33 @@ test(
       )
       .toBe(true)
     await expect
-      .poll(async () => {
-        const files = await readOpfsTextFiles(page, {
-          projectToml: `${PROJECT_DIR}/${publicProjectDirectoryName}/project.toml`,
-        })
-        return files.projectToml
+      .poll(
+        () =>
+          readCloudSyncProjectMetadata(
+            page,
+            `${PROJECT_DIR}/${publicProjectDirectoryName}`
+          ),
+        { timeout: CLOUD_SYNC_E2E_TIMEOUT }
+      )
+      .toMatchObject({
+        remoteProjectId: personalCloudProject.id,
+        lastSyncedAt: expect.any(String),
+        pendingCount: 0,
+        conflict: undefined,
+        lastFailure: undefined,
       })
-      .toContain('project_id = "personal-cloud-copy"')
-
+    await expect(
+      page.getByTestId('project-sidebar-cloud-conflict-badge')
+    ).toHaveCount(0)
+    await expect(page.getByTestId('cloud-conflict-dialog')).toHaveCount(0)
     const files = await readOpfsTextFiles(page, {
       main: `${PROJECT_DIR}/${publicProjectDirectoryName}/main.kcl`,
       projectToml: `${PROJECT_DIR}/${publicProjectDirectoryName}/project.toml`,
     })
     expect(files.main).toContain('aquariumShared = 1')
+    expect(files.projectToml).toContain('project_id = "personal-cloud-copy"')
+    expect(apiCalls.creates).toHaveLength(1)
+    expect(apiCalls.downloads).toHaveLength(0)
     const clonedProjectSettingsId = files.projectToml.match(
       /\[settings\.meta\]\s*\nid = "([^"]+)"/
     )?.[1]
@@ -353,7 +498,10 @@ test(
       revision: 'remote-only-rev-1',
       files: {
         'main.kcl': 'remoteOnly = 1\n',
-        'project.toml': projectToml('Remote only project'),
+        'project.toml': projectToml(
+          'Remote only project',
+          'remote-only-project'
+        ),
       },
     }
     const cleanSyncedProject: CloudProject = {
@@ -380,25 +528,49 @@ test(
         ),
       },
     }
+    const localOnlyFiles = {
+      'main.kcl': 'localOnly = 1\n',
+      'project.toml': projectToml('Local only project'),
+    }
+    const createdLocalOnlyProject: CloudProject = {
+      id: 'created-local-only-project',
+      title: 'Local only project',
+      revision: 'created-local-only-rev-1',
+      files: {
+        ...localOnlyFiles,
+        'project.toml': projectToml(
+          'Local only project',
+          'created-local-only-project'
+        ),
+      },
+    }
+    const remoteProjects = [
+      remoteOnlyProject,
+      cleanSyncedProject,
+      staleDirtyProject,
+    ]
+    const remoteArchives = new Map<string, Buffer>(
+      await Promise.all(
+        remoteProjects.map(
+          async (project) =>
+            [project.id, await zipProject(project.files)] as const
+        )
+      )
+    )
     const remoteListGate = createRemoteListGate()
     const { calls: apiCalls } = await routeCloudProjects(context, {
-      remoteProjects: [
-        remoteOnlyProject,
-        cleanSyncedProject,
-        staleDirtyProject,
-      ],
-      listedProjects: [
-        remoteOnlyProject,
-        cleanSyncedProject,
-        staleDirtyProject,
-      ],
+      remoteProjects,
+      listedProjects: remoteProjects,
+      remoteArchives,
       remoteListGate,
-      createProject: () => ({
-        id: 'created-local-only-project',
-        title: 'Local only project',
-        revision: 'created-local-only-rev-1',
-        files: {},
-      }),
+      createProject: async () => {
+        remoteProjects.push(createdLocalOnlyProject)
+        remoteArchives.set(
+          createdLocalOnlyProject.id,
+          await zipProject(createdLocalOnlyProject.files)
+        )
+        return createdLocalOnlyProject
+      },
       updateProject: ({ projectId }) =>
         projectId === staleDirtyProject.id
           ? {
@@ -415,14 +587,12 @@ test(
       )
 
     await mockClientErrorReports(context)
-    await setup(context, page, testInfo, [OPFS_CLOUD_FEATURE_FLAG])
-    await page.goto('/')
+    await setup(context, page, testInfo, [], {
+      cloudSyncEnabled: true,
+    })
+    await page.goto('/home')
     await expectCloudSyncHomeReady(page)
 
-    const localOnlyFiles = {
-      'main.kcl': 'localOnly = 1\n',
-      'project.toml': projectToml('Local only project'),
-    }
     const cleanSyncedFiles = {
       'main.kcl': 'cleanLocal = 1\n',
       'project.toml': projectToml(
@@ -541,6 +711,16 @@ test(
       )
     await expect.poll(() => apiCalls.creates.length).toBeGreaterThanOrEqual(1)
     await expect.poll(() => staleUpdateCalls().length).toBeGreaterThanOrEqual(1)
+    await expect
+      .poll(
+        () =>
+          readCloudSyncProjectMetadata(
+            page,
+            `${PROJECT_DIR}/local-only-project`
+          ),
+        { timeout: CLOUD_SYNC_E2E_TIMEOUT }
+      )
+      .toMatchObject({ remoteProjectId: 'created-local-only-project' })
 
     // The mutation observer recorded every project-title DOM change after the
     // local list appeared. Once all local-first projects are present, every
@@ -583,7 +763,6 @@ test(
       cleanSynced: `${PROJECT_DIR}/clean-synced-project/main.kcl`,
       cleanSyncedToml: `${PROJECT_DIR}/clean-synced-project/project.toml`,
       localOnly: `${PROJECT_DIR}/local-only-project/main.kcl`,
-      localOnlyToml: `${PROJECT_DIR}/local-only-project/project.toml`,
       staleDirty: `${PROJECT_DIR}/stale-dirty-project/main.kcl`,
     })
 
@@ -592,9 +771,6 @@ test(
       'project_id = "clean-synced-project"'
     )
     expect(localFiles.localOnly).toContain('localOnly = 1')
-    expect(localFiles.localOnlyToml).toContain(
-      'project_id = "created-local-only-project"'
-    )
     expect(localFiles.staleDirty).toContain('staleLocalDirty = 2')
     expect(staleUpdateCalls()[0]?.url).toContain('expected_revision')
 

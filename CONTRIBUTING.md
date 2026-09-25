@@ -57,16 +57,6 @@ npm run build:wasm
 npm run build:wasm:windows
 ```
 
-Or if you have the `gh` cli installed and want to download the latest main wasm bundle. Note that on Windows, you need to associate .ps1 files with PowerShell, which can be done via the right click menu, selecting `C:\Program Files\PowerShell\7\pwsh.exe`, and you can install tools like `gh` via `npm run install:tools:windows`.
-
-```
-# macOS/Linux
-npm run fetch:wasm
-
-# Windows
-npm run fetch:wasm:windows
-```
-
 That will build the Wasm binary and put in the `public` dir (though gitignored).
 
 Finally, to build the desktop app locally, pointing to our production zoo.dev infrastructure, accessible to everyone, run:
@@ -76,6 +66,13 @@ npm run tronb:package:prod
 ```
 
 This will use electron-builder to generate runnable artifacts in the `out` directory (eg. `Zoo Design Studio.app` on macOS and `Zoo Design Studio.exe` on Windows). The regular sign-in flow should work as expected.
+
+## Shipping releases
+
+Create a new issue using the **Release** issue template: https://github.com/KittyCAD/modeling-app/issues/new?template=release.md
+
+Follow the embedded instructions to facilitate changelog discussions and release testing.
+
 
 ## Developing locally
 
@@ -152,6 +149,17 @@ You may use `-- -g "my test"` to match specific test titles, or `-- path/to/file
 
 ```
 npm run test:e2e:web
+```
+
+#### Web tests (WebKit on macOS)
+
+[Playwright WebKit](https://playwright.dev/docs/browsers#webkit) provides the
+closest automated coverage to Safari; Playwright does not automate the branded
+Safari browser itself.
+
+```
+npm run playwright -- install webkit
+npm run test:e2e:web:webkit
 ```
 
 #### Snapshot tests (Google Chrome on Ubuntu only)
@@ -318,6 +326,14 @@ diff --ignore-blank-lines -w /tmp/urls.txt ./scripts/known/urls.txt
 
 - `npm run circular-deps:diff`
 
+## Making issues
+
+We receive a lot of issues while we're building this app. Please follow these principles when creating issues, in order to help our team work as efficiently as possible:
+
+1. Look for duplicate issues. If you have edit access, feel free to edit an existing issue as needed. If not, please add a comment with your additional context instead of creating a new issue.
+2. If a new issue is needed, please start with a succinct one-sentence description of the request, specifying whether the request is a missing feature, bug, maintenance task, or a fun new idea along the way.
+3. For bugs, please provide reproduction steps whenever possible, as well as context around device, platform and your state. Sharing KCL is often very helpful for bugs.
+
 ## Proposing changes
 
 Before you submit a contribution PR to this repo, please ensure that:
@@ -329,9 +345,3 @@ Before you submit a contribution PR to this repo, please ensure that:
   - `npm run tsc`
   - `npm run test`
   - Here they are all together: `npm run fmt && npm run tsc && npm run test`
-
-## Shipping releases
-
-Create a new issue using the **Release** issue template: https://github.com/KittyCAD/modeling-app/issues/new?template=release.md
-
-Follow the embedded instructions to facilitate changelog discussions and release testing.

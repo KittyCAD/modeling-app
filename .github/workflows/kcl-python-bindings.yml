@@ -72,17 +72,18 @@ jobs:
           else
             echo 'found=false' >> "$GITHUB_OUTPUT"
           fi
-  linux-x86_64:
-    name: kcl-python-bindings (linux-x86_64)
-    runs-on: namespace-profile-ubuntu-8-cores
+  linux:
+    name: kcl-python-bindings (linux-${{ matrix.target }})
+    runs-on: namespace-profile-ubuntu-8-cores;overrides.cache-tag=modeling-app-general-v2
     # The hourly schedule exists to observe flaky tests. It runs the test job
     # and nothing else.
     if: github.event_name != 'schedule'
+    strategy:
+      fail-fast: false
+      matrix:
+        target: [x86_64, aarch64]
     steps:
       - uses: actions/checkout@v7.0.1
-      - uses: actions/setup-python@v7.0.0
-        with:
-          python-version-file: .tool-versions
       - name: sccache cache on the Namespace volume
         # See the macos job.
         uses: namespacelabs/nscloud-cache-action@v1
@@ -105,14 +106,16 @@ jobs:
           SCCACHE_CACHE_SIZE: 20G
         with:
           working-directory: rust/kcl-python-bindings
-          target: x86_64
+          target: ${{ matrix.target }}
           # --strip is a backstop. Without it a debug .so exceeds PyPI's 100MB
           # limit.
-          args: --release --out dist --find-interpreter --strip
+          args: --release --out dist --strip -i python3.11 python3.12 python3.13 python3.14
           # Off so the volume above is used instead of the GitHub cache. That
           # also means the container has no sccache, so before-script installs
           # one.
           sccache: 'false'
+          # Maturin selects a cross-compilation container for aarch64. Both
+          # containers run on x86_64, so they use the same sccache binary.
           manylinux: auto
           before-script-linux: |
             curl -fsSL https://github.com/mozilla/sccache/releases/download/v0.10.0/sccache-v0.10.0-x86_64-unknown-linux-musl.tar.gz \
@@ -131,7 +134,7 @@ jobs:
       - name: Upload wheels
         uses: actions/upload-artifact@v7
         with:
-          name: wheels-linux-x86_64
+          name: wheels-linux-${{ matrix.target }}
           path: rust/kcl-python-bindings/dist
   windows:
     name: kcl-python-bindings (windows)
@@ -197,17 +200,6 @@ jobs:
       fail-fast: false
     steps:
       - uses: actions/checkout@v7.0.1
-      - uses: actions/setup-python@v7.0.0
-        with:
-          # `--find-interpreter` builds a wheel for every interpreter it finds,
-          # so the runner image would otherwise decide what gets published.
-          # This image carries 3.13 and 3.14; GitHub's carried 3.11 to 3.14.
-          # Installing the set makes it the same on any image.
-          python-version: |
-            3.11
-            3.12
-            3.13
-            3.14
       - name: Install sccache
         uses: taiki-e/install-action@sccache
       - name: sccache cache on the Namespace volume
@@ -217,11 +209,20 @@ jobs:
         uses: namespacelabs/nscloud-cache-action@v1
         with:
           path: .sccache
+      - name: Install uv
+        uses: astral-sh/setup-uv@v10.1.0
       - name: Build wheels
-        uses: PyO3/maturin-action@v1
+        # Namespace persists /Users/runner/hostedtoolcache across macOS VMs, but
+        # not its Python symlink targets under /Library/Frameworks. setup-python
+        # then selects a cached Python whose executable is missing.
+        run: |
+          uv tool run --from cibuildwheel==4.2.1 cibuildwheel \
+            rust/kcl-python-bindings \
+            --output-dir rust/kcl-python-bindings/dist
         env:
-          # maturin-action sets these itself when its own `sccache` input is
-          # on. They are set here because that input is off.
+          CIBW_ARCHS_MACOS: arm64
+          CIBW_BUILD: cp{311,312,313,314}-macosx_arm64
+          CIBW_TEST_COMMAND: python -c 'import kcl'
           RUSTC_WRAPPER: sccache
           SCCACHE_DIR: ${{ github.workspace }}/.sccache
           # sccache evicts its own contents at this size. The volume is shared
@@ -229,17 +230,9 @@ jobs:
           SCCACHE_CACHE_SIZE: 20G
           # See the linux job.
           CARGO_PROFILE_RELEASE_DEBUG: '0'
-        with:
-          working-directory: rust/kcl-python-bindings
-          target: ${{ matrix.target }}
-          args: --release --out dist --find-interpreter --strip
-          # Off because maturin-action installs sccache with
-          # `python3 -m pip install`, which this image's Homebrew Python
-          # refuses under PEP 668. The step above installs it instead.
-          sccache: 'false'
+          MATURIN_STRIP: 'true'
       - name: sccache stats
-        # maturin-action prints these itself only when its own `sccache` input
-        # is on.
+        # cibuildwheel does not report compiler-cache statistics.
         if: always()
         run: sccache --show-stats
       - name: Upload wheels
@@ -249,7 +242,7 @@ jobs:
           path: rust/kcl-python-bindings/dist
   test:
     name: kcl-python-bindings (test)
-    runs-on: namespace-profile-ubuntu-8-cores
+    runs-on: namespace-profile-ubuntu-8-cores;overrides.cache-tag=modeling-app-general-v2
     steps:
       - uses: actions/checkout@v7.0.1
       - name: Track setup
@@ -262,9 +255,10 @@ jobs:
           CI_SUITE: integration:kcl
           CI_STEP: setup
       - name: Install uv
-        uses: astral-sh/setup-uv@v10.0.1
+        uses: astral-sh/setup-uv@v10.1.0
       - uses: actions-rust-lang/setup-rust-toolchain@v1.17.0
         with:
+          rust-src-dir: rust
           rustflags: '' # Use .cargo/config.toml
       - uses: taiki-e/install-action@just
       - name: Track start
@@ -292,12 +286,12 @@ jobs:
           CI_SUITE: integration:kcl
   sdist:
     name: kcl-python-bindings (sdist)
-    runs-on: namespace-profile-ubuntu-8-cores
+    runs-on: namespace-profile-ubuntu-8-cores;overrides.cache-tag=modeling-app-general-v2
     if: github.event_name != 'schedule'
     steps:
       - uses: actions/checkout@v7.0.1
       - name: Install the latest version of uv
-        uses: astral-sh/setup-uv@v10.0.1
+        uses: astral-sh/setup-uv@v10.1.0
       - name: Create venv
         run: |
           uv venv .venv
@@ -317,18 +311,18 @@ jobs:
           path: rust/kcl-python-bindings/dist
   release:
     name: Release
-    runs-on: namespace-profile-ubuntu-8-cores
+    runs-on: namespace-profile-ubuntu-8-cores;overrides.cache-tag=modeling-app-general-v2
     permissions:
       contents: write
     if: startsWith(github.ref, 'refs/tags/')
-    needs: [linux-x86_64, windows, macos, sdist]
+    needs: [linux, windows, macos, sdist]
     steps:
       - uses: actions/checkout@v7.0.1
       - uses: actions/download-artifact@v8
         with:
           path: rust/kcl-python-bindings
       - name: Install the latest version of uv
-        uses: astral-sh/setup-uv@v10.0.1
+        uses: astral-sh/setup-uv@v10.1.0
       - name: do uv things
         run: |
           cd rust/kcl-python-bindings
@@ -336,6 +330,51 @@ jobs:
           echo "VIRTUAL_ENV=.venv" >> $GITHUB_ENV
           echo "$PWD/.venv/bin" >> $GITHUB_PATH
           uv pip install pip --upgrade
+      - name: Verify release artifacts
+        working-directory: rust/kcl-python-bindings
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import tomllib
+
+          with Path("Cargo.toml").open("rb") as manifest:
+              version = tomllib.load(manifest)["package"]["version"]
+
+          distribution = f"zoo_kcl-{version}"
+          expected = (
+              ("CPython 3.11 Linux x86_64", f"wheels-linux-x86_64/{distribution}-cp311-cp311-manylinux*_x86_64.whl"),
+              ("CPython 3.12 Linux x86_64", f"wheels-linux-x86_64/{distribution}-cp312-cp312-manylinux*_x86_64.whl"),
+              ("CPython 3.13 Linux x86_64", f"wheels-linux-x86_64/{distribution}-cp313-cp313-manylinux*_x86_64.whl"),
+              ("CPython 3.14 Linux x86_64", f"wheels-linux-x86_64/{distribution}-cp314-cp314-manylinux*_x86_64.whl"),
+              ("CPython 3.11 Linux aarch64", f"wheels-linux-aarch64/{distribution}-cp311-cp311-manylinux*_aarch64.whl"),
+              ("CPython 3.12 Linux aarch64", f"wheels-linux-aarch64/{distribution}-cp312-cp312-manylinux*_aarch64.whl"),
+              ("CPython 3.13 Linux aarch64", f"wheels-linux-aarch64/{distribution}-cp313-cp313-manylinux*_aarch64.whl"),
+              ("CPython 3.14 Linux aarch64", f"wheels-linux-aarch64/{distribution}-cp314-cp314-manylinux*_aarch64.whl"),
+              ("CPython 3.11 Windows x86_64", f"wheels-windows-x64/{distribution}-cp311-cp311-win_amd64.whl"),
+              ("CPython 3.12 Windows x86_64", f"wheels-windows-x64/{distribution}-cp312-cp312-win_amd64.whl"),
+              ("CPython 3.13 Windows x86_64", f"wheels-windows-x64/{distribution}-cp313-cp313-win_amd64.whl"),
+              ("CPython 3.14 Windows x86_64", f"wheels-windows-x64/{distribution}-cp314-cp314-win_amd64.whl"),
+              ("CPython 3.11 macOS arm64", f"wheels-macos-aarch64/{distribution}-cp311-cp311-macosx_*_arm64.whl"),
+              ("CPython 3.12 macOS arm64", f"wheels-macos-aarch64/{distribution}-cp312-cp312-macosx_*_arm64.whl"),
+              ("CPython 3.13 macOS arm64", f"wheels-macos-aarch64/{distribution}-cp313-cp313-macosx_*_arm64.whl"),
+              ("CPython 3.14 macOS arm64", f"wheels-macos-aarch64/{distribution}-cp314-cp314-macosx_*_arm64.whl"),
+              ("source distribution", f"wheels-sdist/{distribution}.tar.gz"),
+          )
+
+          failures = []
+          for label, pattern in expected:
+              matches = sorted(Path(".").glob(pattern))
+              if len(matches) != 1:
+                  failures.append(f"{label}: expected one match for {pattern}, found {matches}")
+                  continue
+              print(f"{label}: {matches[0]}")
+
+          if failures:
+              raise SystemExit(
+                  "Required release artifact verification failed:\n"
+                  + "\n".join(f"- {failure}" for failure in failures)
+              )
+          PY
       - name: Publish to PyPI
         uses: PyO3/maturin-action@v1
         env:

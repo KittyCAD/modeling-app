@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties union_self.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": 7.0710678118654755,
+      "y": 0.0,
+      "z": 7.0710678118654755
+    },
+    "dimensions": {
+      "x": 28.284271247461906,
+      "y": 20.0,
+      "z": 28.284271247461906
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 2399.9996919883415
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 7.99999922188969
+  }
+}

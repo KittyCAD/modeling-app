@@ -104,8 +104,10 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
     "value": 112.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "boltHoleBodies": {
@@ -116,6 +118,8 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -170,17 +174,17 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 36,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -224,8 +228,8 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -238,6 +242,8 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -292,17 +298,17 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 36,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -346,8 +352,8 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -360,6 +366,8 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -414,17 +422,17 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 36,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -468,8 +476,8 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -482,6 +490,8 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -536,17 +546,17 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 36,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -590,8 +600,8 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -604,6 +614,8 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -658,17 +670,17 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 36,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -712,8 +724,8 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -726,6 +738,8 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -780,17 +794,17 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 36,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -834,8 +848,8 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -848,6 +862,8 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -902,17 +918,17 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 36,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -956,8 +972,8 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -970,6 +986,8 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -1024,17 +1042,17 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 36,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -1078,8 +1096,8 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -1092,6 +1110,8 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -1146,17 +1166,17 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 36,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -1200,8 +1220,8 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -1214,6 +1234,8 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -1268,17 +1290,17 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 36,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -1322,8 +1344,8 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -1336,6 +1358,8 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -1390,17 +1414,17 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 36,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -1444,8 +1468,8 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -1458,6 +1482,8 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -1512,17 +1538,17 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 36,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -1566,8 +1592,8 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -1580,6 +1606,8 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -1634,17 +1662,17 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 36,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -1688,8 +1716,8 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -1702,6 +1730,8 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -1756,17 +1786,17 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 36,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -1810,8 +1840,8 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -1824,6 +1854,8 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -1878,17 +1910,17 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 36,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -1932,8 +1964,8 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -1946,6 +1978,8 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -2000,17 +2034,17 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 36,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -2054,8 +2088,8 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -2070,6 +2104,8 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -2124,17 +2160,17 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 36,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 0.0,
             "y": 1.0,
@@ -2178,8 +2214,8 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "mm"
+        "units": "mm",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -2192,8 +2228,10 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
     "value": 16.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "boltHoleDiameter": {
@@ -2201,8 +2239,10 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
     "value": 12.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "boltHoleRegion": {
@@ -2243,17 +2283,17 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 36,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 0.0,
           "y": 1.0,
@@ -2297,8 +2337,8 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "mm"
+      "units": "mm",
+      "isClosed": "explicitly"
     }
   },
   "boltHoleSketch": {
@@ -2318,17 +2358,21 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                       {
                         "n": 0.000000001200924891952988,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 79.99999999659738,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -2336,17 +2380,21 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                       {
                         "n": 56.00000000160124,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 79.99999999546318,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -2439,17 +2487,21 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                       {
                         "n": 57.99691896872725,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 74.34205737627413,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -2457,17 +2509,21 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                       {
                         "n": 56.00000000200154,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 79.99999999432897,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -2559,17 +2615,21 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                       {
                         "n": 0.0000000004003082961309546,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": -0.000000001134206604994998,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -2577,17 +2637,21 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                       {
                         "n": 0.000000000800616593151939,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 79.99999999773159,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -2707,17 +2771,17 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 36,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 0.0,
                   "y": 1.0,
@@ -2776,8 +2840,10 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
     "value": 90.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "elbowBody": {
@@ -2785,6 +2851,8 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -2883,17 +2951,17 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 0,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -2941,8 +3009,8 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "mm"
+        "units": "mm",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -2955,17 +3023,17 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
     "value": 80.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "elbowInnerCircle": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "elbowInnerCircle"
   },
   "elbowOuterCircle": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "elbowOuterCircle"
   },
@@ -3037,17 +3105,17 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 0,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -3095,8 +3163,8 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "mm"
+      "units": "mm",
+      "isClosed": "explicitly"
     }
   },
   "elbowSectionSketch": {
@@ -3116,17 +3184,21 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                       {
                         "n": 0.00000000010833940987714105,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.00000000005772291432230389,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -3134,17 +3206,21 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                       {
                         "n": 80.00000000021669,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.00000000011544582882880933,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -3237,17 +3313,21 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                       {
                         "n": 105.65717154707032,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 24.534863933840352,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -3255,17 +3335,21 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                       {
                         "n": 80.00000000040197,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.00000000024674722101870335,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -3357,17 +3441,21 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                       {
                         "n": 121.95327133894554,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": -21.187803661242402,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -3375,17 +3463,21 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                       {
                         "n": 80.00000000032503,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.00000000017316874370371722,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -3551,17 +3643,17 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 0,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -3624,6 +3716,8 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -3722,17 +3816,17 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 18,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 0.0,
             "y": 1.0,
@@ -3780,8 +3874,8 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "mm"
+        "units": "mm",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -3791,7 +3885,6 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
   },
   "flangeInnerCircle": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "flangeInnerCircle"
   },
   "flangeInsideDiameter": {
@@ -3799,12 +3892,13 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
     "value": 71.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "flangeOuterCircle": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "flangeOuterCircle"
   },
@@ -3813,8 +3907,10 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
     "value": 130.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "flangeRegion": {
@@ -3885,17 +3981,17 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 18,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 0.0,
           "y": 1.0,
@@ -3943,8 +4039,8 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "mm"
+      "units": "mm",
+      "isClosed": "explicitly"
     }
   },
   "flangeSketch": {
@@ -3964,17 +4060,21 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                       {
                         "n": 0.0000000005318861697304429,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": -0.00000000010790477445128217,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -3982,17 +4082,21 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                       {
                         "n": 0.0000000010637723390956807,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 79.99999999978418,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -4085,17 +4189,21 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                       {
                         "n": 35.439335548127474,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 77.9255130528234,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -4103,17 +4211,21 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                       {
                         "n": 0.000000001934687767885464,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 79.99999999965644,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -4205,17 +4317,21 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                       {
                         "n": 59.127884757715854,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 53.00197702905686,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -4223,17 +4339,21 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                       {
                         "n": 0.000000001595658507730511,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 79.99999999967628,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -4399,17 +4519,17 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 18,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 0.0,
                   "y": 1.0,
@@ -4472,8 +4592,10 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
     "value": 20.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "horizontalFlange": {
@@ -4481,6 +4603,8 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [],
       "sketch": {
@@ -4550,17 +4674,17 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 18,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 0.0,
             "y": 1.0,
@@ -4608,8 +4732,8 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "mm"
+        "units": "mm",
+        "isClosed": "explicitly"
       },
       "startCapId": null,
       "endCapId": null,
@@ -4622,8 +4746,10 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
     "value": 71.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "pipeOutsideDiameter": {
@@ -4631,8 +4757,10 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
     "value": 94.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "pipeWallThickness": {
@@ -4640,8 +4768,10 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
     "value": 11.5,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "verticalFlange": {
@@ -4649,6 +4779,8 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -4747,17 +4879,17 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 18,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 0.0,
             "y": 1.0,
@@ -4805,8 +4937,8 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "mm"
+        "units": "mm",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",

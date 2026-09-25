@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties thermal-block-insert.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": 0.0,
+      "y": -0.00000000000006394884621840903,
+      "z": 100.0
+    },
+    "dimensions": {
+      "x": 480.0,
+      "y": 106.7647058823527,
+      "z": 200.0
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 560520.8365013823
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 5882.352893725813
+  }
+}

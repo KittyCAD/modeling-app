@@ -2,7 +2,7 @@
 
 ## Scope
 
-This file applies to TypeScript and React development under `src/`. It complements the repo root `CONTRIBUTING.md` and `eslint.config.mjs`.
+This file applies to TypeScript and React development under `src/`. It supplements the repo root `AGENTS.md`, `CONTRIBUTING.md`, and `eslint.config.mjs`. A series of guiding development principles are available in `PRINCIPLES.md`.
 
 ## Project overview
 
@@ -16,7 +16,7 @@ This file applies to TypeScript and React development under `src/`. It complemen
 ## Dev environment tips
 
 - Use `@src/*` imports for app code. Relative imports are mostly reserved for CSS modules and intentionally local plugin/extension code where lint rules allow it.
-- The app expects the Rust/Wasm bundle to exist for many integration paths. Use `npm run build:wasm` or `npm run fetch:wasm` before tests that execute KCL.
+- The app expects the Rust/Wasm bundle to exist for many integration paths. Use `npm run build:wasm` before tests that execute KCL.
 - If TypeScript starts failing on missing or stale generated Rust/Wasm bindings, especially after merging main or Rust-side stdlib changes, rerun `npm run build:wasm:dev`. That rebuilds the local Wasm package and refreshes generated bindings used by the TypeScript app.
 - Some integration and e2e flows require `VITE_ZOO_API_TOKEN` in `.env.development.local`. If a test needs the token and it is not available, ask before running it.
 - For web Playwright runs, set `TARGET=web`. The `Google Chrome` Playwright project name alone does not select the web fixture path; without `TARGET=web`, the shared fixture still tries to launch Electron.
@@ -31,6 +31,11 @@ This file applies to TypeScript and React development under `src/`. It complemen
 - Do not run `npm run organize-imports` unless the task is specifically about organizing imports.
 - Preserve deliberate test import ordering. Some tests call `vi.mock(...)` before importing the component under test because the mocked modules have import-time side effects.
 - Prefer local, boring fixes over new abstractions. Add helpers only when they remove real duplication or match an existing local pattern.
+
+## Documentation
+
+- For every application change, check [KittyCAD/documentation](https://github.com/KittyCAD/documentation) for affected user-facing documentation and update it as needed, including workflows, settings, examples, screenshots, and links. Use a local checkout when available.
+- Read that repository's `AGENTS.md` before editing. Some documentation is generated or mirrored; update its authoritative upstream source rather than the downstream copy.
 
 ## Reviewing code
 
@@ -77,6 +82,7 @@ After reviewing, tell the human what should be smoke tested and whether the PR's
 - Vitest picks the suite from the filename: `*.test.ts(x)` is unit (`npm run test:unit`); `*.spec.ts(x)` is integration (`npm run test:integration`).
 - Unit tests must not import or need `wasm-lib`. To verify, remove `rust/kcl-wasm-lib/pkg/kcl_wasm_lib_bg.wasm` before `npm run test:unit`.
 - Prefer targeted Vitest runs while iterating, for example `npm run test:unit -- src/path/to/file.test.ts`.
+- Use property-based testing with `fast-check` for unit-testable logic with many possible permutations.
 - Component tests should prefer user-visible queries (`screen.getByRole`, `screen.getByText`) when practical. `data-testid` is fine for controls or generated content without a stable accessible label.
 - Keep mocks narrow and reset state in `beforeEach` or `afterEach` when tests touch localStorage, timers, singleton modules, or machine actors.
 

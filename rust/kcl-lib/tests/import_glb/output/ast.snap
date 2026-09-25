@@ -1,0 +1,73 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of parsing import_glb.kcl
+---
+{
+  "Ok": {
+    "body": [
+      {
+        "commentStart": 0,
+        "end": 0,
+        "moduleId": 0,
+        "path": {
+          "type": "Foreign",
+          "path": "../../e2e/executor/inputs/cube.glb"
+        },
+        "selector": {
+          "type": "None",
+          "alias": null
+        },
+        "start": 0,
+        "type": "ImportStatement",
+        "type": "ImportStatement"
+      },
+      {
+        "commentStart": 0,
+        "declaration": {
+          "commentStart": 0,
+          "end": 0,
+          "id": {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "name": "model",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "init": {
+            "abs_path": false,
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "name": {
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": "cube",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "path": [],
+            "start": 0,
+            "type": "Name",
+            "type": "Name"
+          },
+          "moduleId": 0,
+          "start": 0,
+          "type": "VariableDeclarator"
+        },
+        "end": 0,
+        "kind": "const",
+        "moduleId": 0,
+        "start": 0,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      }
+    ],
+    "commentStart": 0,
+    "end": 0,
+    "moduleId": 0,
+    "start": 0,
+    "type": "Program"
+  }
+}

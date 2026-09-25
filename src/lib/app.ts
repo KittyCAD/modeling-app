@@ -8,13 +8,13 @@ import {
 } from '@kittycad/registry'
 import { effect, type Signal, signal } from '@preact/signals-core'
 import { buildFSHistoryExtension } from '@src/editor/plugins/fs'
-import { KclManager, ZDSProject } from '@src/lang/KclManager'
+import { File, KclManager, ZDSProject } from '@src/lang/KclManager'
 import { lspService } from '@src/lang/lsp/registry/contract'
 import { type BillingRegistryService, billingService } from '@src/lib/billing'
 import { createAuthCommands } from '@src/lib/commandBarConfigs/authCommandConfig'
 import { createProjectCommands } from '@src/lib/commandBarConfigs/projectsCommandConfig'
-import { OPFS_CLOUD_FEATURE_FLAG } from '@src/lib/constants'
 import type { Debugger } from '@src/lib/debugger'
+import { isPlaywright } from '@src/lib/isPlaywright'
 import { EngineDebugger } from '@src/lib/debugger'
 import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 import { setKclRuntimeFlagsOnWasm } from '@src/lib/kclRuntimeFlags'
@@ -22,8 +22,8 @@ import { layoutService } from '@src/lib/layout/registry/contract'
 import type { LayoutService } from '@src/lib/layout/types'
 import type { MachineManager } from '@src/lib/MachineManager'
 import type { Project } from '@src/lib/project'
-import { projectWithLibraryOwnership } from '@src/lib/projectLibraryOwnership'
 import { projectLibrariesFromSettings } from '@src/lib/projectLibraries'
+import { projectWithLibraryOwnership } from '@src/lib/projectLibraryOwnership'
 import type RustContext from '@src/lib/rustContext'
 import { rustContextService } from '@src/lib/rustContext/registry/contract'
 import type { SaveSettingsPayload } from '@src/lib/settings/settingsTypes'
@@ -39,7 +39,6 @@ import {
   buildZookeeperHistoryExtension,
   type PreparedZookeeperPatchFileReplay,
 } from '@src/lib/zookeeper/editorPlugin'
-import type { ZookeeperManagerActor } from '@src/lib/zookeeper/zookeeperManagerMachine'
 import { getOnlySettingsFromContext } from '@src/machines/settingsMachine'
 import { systemIOMachineImpl } from '@src/machines/systemIO/systemIOMachineImpl'
 import {
@@ -64,15 +63,27 @@ import { engineConnectionService } from '@src/registry/contracts/engineConnectio
 import { engineSceneRuntimeExtensionsSlot } from '@src/registry/contracts/engineScene'
 import { executingEditorService } from '@src/registry/contracts/executingEditor'
 import {
+  type FileOperationsRegistryService,
+  fileOperationsService,
+} from '@src/registry/contracts/fileOperations'
+import {
   homeProjectActionsService,
   homeProjectEntriesValueSpec,
 } from '@src/registry/contracts/homeProjects'
+import {
+  type InteractionPerformanceService,
+  interactionPerformanceService,
+} from '@src/registry/contracts/interactionPerformance'
 import { keymapService } from '@src/registry/contracts/keymap'
 import { machineManagerService } from '@src/registry/contracts/machineManager'
 import {
   getProjectLibraryCreateProjectOperation,
   projectLibraryTypesValueSpec,
 } from '@src/registry/contracts/projectLibraries'
+import {
+  type ProjectSessionService,
+  projectSession,
+} from '@src/registry/contracts/projectSession'
 import {
   type SettingsRegistryService,
   settingsService,
@@ -153,10 +164,6 @@ export type AppLayoutSystem = LayoutService
 
 export type AppRegistrySystem = Registry
 
-export type AppDebug = {
-  zookeeperManagerActor?: ZookeeperManagerActor
-}
-
 /** All of the subsystems needed to run the ZDS app */
 export interface AppSubsystems {
   wasmPromise: Promise<ModuleType>
@@ -173,15 +180,26 @@ export interface AppSubsystems {
 }
 
 export class App implements AppSubsystems {
-  public projectSignal: Signal<ZDSProject | undefined> = signal(undefined)
-  public currentProjectLibraryIdSignal: Signal<string | undefined> =
-    signal(undefined)
-  public debug: AppDebug = {}
+  public get fileOperations(): FileOperationsRegistryService {
+    return this.registry.get(fileOperationsService)
+  }
+
+  declare readonly interactionPerformance?: InteractionPerformanceService
+
+  private get projectSession(): ProjectSessionService {
+    return this.registry.get(projectSession)
+  }
+  public get projectSignal(): Signal<ZDSProject | undefined> {
+    return this.projectSession.project
+  }
+  public get currentProjectLibraryIdSignal(): Signal<string | undefined> {
+    return this.projectSession.currentProjectLibraryId
+  }
   get project() {
-    return this.projectSignal.value
+    return this.projectSession.getProject()
   }
   set project(newProject: ZDSProject | undefined) {
-    this.projectSignal.value = newProject
+    this.projectSession.setProject(newProject)
   }
   singletons: ReturnType<typeof this.buildSingletons>
   /**
@@ -234,6 +252,11 @@ export class App implements AppSubsystems {
     this.settings = subsystems.settings
     this.layout = subsystems.layout
     this.registry = subsystems.registry
+    if (import.meta.env.VITE_INTERACTION_PERFORMANCE === '1') {
+      this.interactionPerformance = this.registry.get(
+        interactionPerformanceService
+      )
+    }
     this.userFeatures = subsystems.userFeatures
     this.systemIOActor = createActor(systemIOMachineImpl, {
       input: {
@@ -349,14 +372,35 @@ export class App implements AppSubsystems {
     )
   }
 
-  async openProject(projectIORef: Project) {
-    this.disposeProjectHistoryExtensions?.()
+  private fileRouteLoadGeneration = 0
+
+  beginFileRouteLoad(signal: AbortSignal) {
+    const generation = ++this.fileRouteLoadGeneration
+    return () => {
+      if (signal.aborted || generation !== this.fileRouteLoadGeneration) {
+        // React Router models cancelled loaders as rejected AbortErrors.
+        // eslint-disable-next-line suggest-no-throw/suggest-no-throw
+        throw new DOMException('Superseded file route load', 'AbortError')
+      }
+    }
+  }
+
+  async openProject(
+    projectIORef: Project,
+    assertCurrent: () => void = () => {}
+  ) {
     const ownedProject = await projectWithLibraryOwnership(
       projectIORef,
       this.settings.get().app.libraries.current
     )
+    assertCurrent()
+
     const projectIORefSignal = signal(ownedProject)
-    this.project = await ZDSProject.open(projectIORefSignal, this)
+    const nextProject = await ZDSProject.open(projectIORefSignal, this)
+    assertCurrent()
+
+    this.disposeProjectHistoryExtensions?.()
+    this.project = nextProject
     this.setCloudSyncOpenedProject(ownedProject)
 
     // These extensions make global project operations un/redoable.
@@ -372,6 +416,7 @@ export class App implements AppSubsystems {
         executingEditor
       )
       const disposeZookeeperHistory = buildZookeeperHistoryExtension({
+        fileOperations: this.fileOperations,
         kclManager: executingEditor,
         onCurrentFileDelete: async (deletedPaths) => {
           const fallbackPath = getZookeeperReplayFallbackFilePath(
@@ -432,6 +477,9 @@ export class App implements AppSubsystems {
       }
     })
 
+    this.lastSettings = getAllCurrentSettings(
+      getOnlySettingsFromContext(this.settings.actor.getSnapshot().context)
+    )
     this.unsubscribeFromSettings = this.settings.actor.subscribe(
       this.onSettingsUpdate
     )
@@ -440,7 +488,11 @@ export class App implements AppSubsystems {
   }
   private unsubscribeFromSettings: Subscription | undefined = undefined
   private disposeProjectHistoryExtensions: (() => void) | undefined = undefined
-  dispose() {
+  private hasStoppedSubsystems = false
+
+  private stopSubsystems() {
+    if (this.hasStoppedSubsystems) return
+    this.hasStoppedSubsystems = true
     this.closeProject()
     this.unsubscribeFromActiveWasmInstance?.()
     this.unsubscribeFromActiveWasmInstance = undefined
@@ -450,7 +502,17 @@ export class App implements AppSubsystems {
     this.auth.actor.stop()
     this.billing.actor.stop()
     this.userFeatures.actor.stop()
+  }
+
+  dispose() {
+    this.stopSubsystems()
     this.registry[Symbol.dispose]()
+  }
+
+  /** Stop the app and await registry-owned runtime resources. */
+  async disposeAsync() {
+    this.stopSubsystems()
+    await this.registry.disposeAsync()
   }
 
   closeProject() {
@@ -522,15 +584,6 @@ export class App implements AppSubsystems {
   }
 
   syncAppCommands = () => {
-    const enableProjectDirectoryCommands =
-      typeof window !== 'undefined' &&
-      (Boolean(window.electron) ||
-        userFeaturesContextHas(
-          this.userFeatures.actor.getSnapshot().context,
-          OPFS_CLOUD_FEATURE_FLAG,
-          false
-        ))
-
     this.registry.reconfigure(appCommandsSlot, [
       defineRegistryItem({
         id: 'app.global-commands',
@@ -540,11 +593,16 @@ export class App implements AppSubsystems {
           ),
           ...createProjectCommands({
             systemIOActor: this.systemIOActor,
-            enableProjectDirectoryCommands,
             getCurrentProjectDirectoryName: () =>
               this.settings.actor.getSnapshot().context.currentProject?.name,
+            getCurrentProjectPath: () =>
+              this.settings.actor.getSnapshot().context.currentProject?.path,
             getCurrentProjectLibraryId: () =>
               this.currentProjectLibraryIdSignal.value,
+            getProjectLibraries: () =>
+              projectLibrariesFromSettings(
+                this.settings.actor.getSnapshot().context.app.libraries.current
+              ),
             getCreateProjectLibraryTargets: this.getCreateProjectLibraryTargets,
             getHomeProjectActions: () =>
               this.registry.get(homeProjectActionsService),
@@ -636,7 +694,11 @@ export class App implements AppSubsystems {
 
       const forceEnabled =
         platform !== undefined &&
-        featurePolicy.forceEnabledOnPlatform === platform
+        featurePolicy.forceEnabledOnPlatform === platform &&
+        !isPlaywright()
+      if (isPlaywright() && !forceEnabled) {
+        continue
+      }
       if (!forceEnabled && settingValue.user !== undefined) {
         continue
       }
@@ -708,11 +770,11 @@ export class App implements AppSubsystems {
       }
 
       if (desiredActive) {
-        toggle.enable()
+        void toggle.enable().catch(reportRejection)
         continue
       }
 
-      toggle.disable()
+      void toggle.disable().catch(reportRejection)
     }
 
     const syncActivePlugins =
@@ -728,6 +790,11 @@ export class App implements AppSubsystems {
    * Build the world!
    */
   buildSingletons() {
+    File.ioImplementations.read = async (path) =>
+      new TextDecoder().decode(await this.fileOperations.readFile(path))
+    File.ioImplementations.write = (path, content) =>
+      this.fileOperations.writeFile(path, content)
+
     // TODO: Remove this and make the app handle no executing editor,
     // so we don't need to stub with empty strings
     const kclManager = new KclManager('', '', {
@@ -740,6 +807,7 @@ export class App implements AppSubsystems {
       userFeatures: this.userFeatures,
       keymap: this.registry.get(keymapService),
     })
+    kclManager.fileOperations = this.fileOperations
 
     this.registry.reconfigure(appRegistryServicesSlot, [
       defineRegistryItem({
@@ -828,6 +896,19 @@ export class App implements AppSubsystems {
       return // Everything in here only matters inside a project.
     }
     const { context } = snapshot
+    const sketchGridSettingsChanged =
+      this.lastSettings.modeling.showSketchGrid !==
+        context.modeling.showSketchGrid.current ||
+      this.lastSettings.modeling.fixedSizeGrid !==
+        context.modeling.fixedSizeGrid.current ||
+      this.lastSettings.modeling.majorGridSpacing !==
+        context.modeling.majorGridSpacing.current ||
+      this.lastSettings.modeling.minorGridsPerMajor !==
+        context.modeling.minorGridsPerMajor.current
+
+    if (sketchGridSettingsChanged) {
+      this.singletons.kclManager.sceneEntitiesManager.updateSketchGrid()
+    }
 
     // Update line wrapping
     this.singletons.kclManager.setEditorLineWrapping(
@@ -855,39 +936,40 @@ export class App implements AppSubsystems {
 
     // Update theme
     const newTheme = context.app.theme.current
+    const themeChanged = this.lastSettings.app.theme !== newTheme
     const newBackfaceColor = context.modeling.backfaceColor.current
-    Promise.all([
-      this.singletons.kclManager.updateTheme(newTheme),
-      ...(this.singletons.kclManager.engineCommandManager.connection?.connected
-        ? [
-            this.singletons.kclManager.engineCommandManager.setDefaultSystemProperties(
-              newBackfaceColor
-            ),
-          ]
-        : []),
-    ]).catch(reportRejection)
+    const backfaceColorChanged =
+      this.lastSettings.modeling.backfaceColor !== newBackfaceColor
+    if (themeChanged) {
+      this.singletons.kclManager
+        .updateTheme(newTheme)
+        .then(() =>
+          this.singletons.kclManager.sceneEntitiesManager.updateSketchGrid()
+        )
+        .catch(reportRejection)
+    }
+    if (
+      backfaceColorChanged &&
+      this.singletons.kclManager.engineCommandManager.connection?.connected
+    ) {
+      this.singletons.kclManager.engineCommandManager
+        .setDefaultSystemProperties(newBackfaceColor)
+        .catch(reportRejection)
+    }
 
-    // Execute AST
+    // Reapply settings to the engine
     try {
-      const relevantSetting = (s: SaveSettingsPayload) => {
-        const hasScaleGrid =
-          s.modeling.showScaleGrid !== context.modeling.showScaleGrid.current
-        const hasHighlightEdges =
-          s.modeling.highlightEdges !== context.modeling.highlightEdges.current
-        const hasBackfaceColor =
-          s.modeling.backfaceColor !== context.modeling.backfaceColor.current
-        return hasScaleGrid || hasHighlightEdges || hasBackfaceColor
-      }
-
-      const settingsIncludeNewRelevantValues = relevantSetting(
-        this.lastSettings
-      )
-
-      // Relevant settings requiring a cleared scene and re-exec
-      if (
-        settingsIncludeNewRelevantValues &&
+      const engineSettingsChanged =
+        this.lastSettings.modeling.showScaleGrid !==
+          context.modeling.showScaleGrid.current ||
+        this.lastSettings.modeling.fixedSizeGrid !==
+          context.modeling.fixedSizeGrid.current ||
+        this.lastSettings.modeling.highlightEdges !==
+          context.modeling.highlightEdges.current
+      const engineConnection =
         this.singletons.kclManager.engineCommandManager.connection
-      ) {
+
+      if (backfaceColorChanged && engineConnection) {
         this.singletons.kclManager.rustContext
           .clearSceneAndBustCache(
             jsAppSettings(this.settings.actor),
@@ -895,6 +977,8 @@ export class App implements AppSubsystems {
           )
           .then(() => this.singletons.kclManager.executeCode())
           .catch(reportRejection)
+      } else if (engineSettingsChanged && engineConnection) {
+        this.singletons.kclManager.executeCode().catch(reportRejection)
       }
     } catch (e) {
       console.error('Error executing AST after settings change', e)
@@ -906,6 +990,8 @@ export class App implements AppSubsystems {
     const newCurrentProjection = context.modeling.cameraProjection.current
     if (
       this.singletons.kclManager.sceneInfra.camControls &&
+      this.singletons.kclManager.sceneInfra.camControls
+        .engineCameraProjection !== newCurrentProjection &&
       !this.singletons.kclManager.modelingState?.matches('Sketch') &&
       !this.singletons.kclManager.modelingState?.matches('sketchSolveMode')
     ) {

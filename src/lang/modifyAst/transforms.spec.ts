@@ -53,14 +53,17 @@ beforeEach(async () => {
   }
 
   const { instance, kclManager, engineCommandManager, rustContext } =
-    await buildTheWorldAndConnectToEngine()
+    await buildTheWorldAndConnectToEngine({ webrtc: false, pool: 'cpu' })
   instanceInThisFile = instance
   kclManagerInThisFile = kclManager
   engineCommandManagerInThisFile = engineCommandManager
   rustContextInThisFile = rustContext
 })
 afterAll(() => {
-  engineCommandManagerInThisFile?.tearDown()
+  engineCommandManagerInThisFile?.tearDown({
+    route: 'user-requested',
+    initiatedBy: 'client',
+  })
 })
 
 describe('transforms.test.ts', () => {
@@ -161,7 +164,7 @@ pattern001 = patternLinear3d(extrude001, instances = 3, distance = 10, axis = [0
     })
 
     it('adds an indexed delete call for one body from a multi-output extrude', async () => {
-      const code = `@settings(kclVersion = 2.0, experimentalFeatures = allow)
+      const code = `@settings(kclVersion = 2.0)
 
 sketch001 = sketch(on = XY) {
   line1 = line(start = [var -0.34mm, var 0.84mm], end = [var 0.26mm, var 0.84mm])

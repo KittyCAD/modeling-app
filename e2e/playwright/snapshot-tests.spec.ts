@@ -46,12 +46,19 @@ test(
 
 type SnapshotTestContext = Pick<
   Fixtures,
-  'cmdBar' | 'editor' | 'toolbar' | 'scene' | 'fs' | 'folderSetupFn'
+  | 'cmdBar'
+  | 'editor'
+  | 'toolbar'
+  | 'scene'
+  | 'fs'
+  | 'folderSetupFn'
+  | 'homePage'
 > & { page: Page }
 
 function runTestForTheme(mode: Themes) {
   return async ({
     page,
+    homePage,
     scene,
     toolbar,
     editor,
@@ -91,6 +98,7 @@ function runTestForTheme(mode: Themes) {
     })
 
     await page.setViewportSize(SCREENSHOT_SIZE)
+    await homePage.openProject('demo-project')
     await scene.settled()
     await waitForThemeApplied(page, mode)
     let step = 1
@@ -129,6 +137,11 @@ function runTestForTheme(mode: Themes) {
       await toolbar.exitSketchBtn.click()
       await expect(toolbar.startSketchBtn).not.toBeDisabled()
       await scene.settled()
+      await expect(
+        page.getByRole('tooltip').filter({
+          hasText: 'Pull a sketch into 3D along its normal or perpendicular.',
+        })
+      ).toBeVisible()
 
       await expect(page).toHaveScreenshot(
         screenshotName(step++, 'sketch-exited', mode),

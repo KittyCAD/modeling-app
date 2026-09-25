@@ -1,11 +1,10 @@
-import type { Feature } from '@kittycad/lib'
 import {
   defineRegistryItem,
   provideService,
   Registry,
 } from '@kittycad/registry'
 import { signal } from '@preact/signals-core'
-import { OPFS_CLOUD_FEATURE_FLAG } from '@src/lib/constants'
+
 import type { SettingsType } from '@src/lib/settings/initialSettings'
 import type { AuthRegistryService } from '@src/registry/contracts/auth'
 import { authService } from '@src/registry/contracts/auth'
@@ -13,8 +12,7 @@ import type { RuntimeInfo } from '@src/registry/contracts/runtime'
 import { runtimeService } from '@src/registry/contracts/runtime'
 import type { SettingsRegistryService } from '@src/registry/contracts/settings'
 import { settingsService } from '@src/registry/contracts/settings'
-import type { UserFeaturesRegistryService } from '@src/registry/contracts/userFeatures'
-import { userFeaturesService } from '@src/registry/contracts/userFeatures'
+
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
 const cloudSyncMocks = vi.hoisted(() => ({
@@ -42,6 +40,7 @@ vi.mock('@src/lib/cloudSync', () => ({
   deleteRemoteCloudProject: vi.fn(),
   ensureCloudProjectLocallySynced: vi.fn(),
   startCloudSyncProject: vi.fn(),
+  syncCloudSyncProjectNow: vi.fn(),
   disconnectCloudSyncProject: vi.fn(),
   getCloudSyncProjectMetadata: vi.fn(),
   getCloudSyncProjectMetadataIndex: vi.fn(),
@@ -196,7 +195,7 @@ describe('cloud sync extension', () => {
     })
   })
 
-  it('derives runtime enablement from registry auth and user feature services', async () => {
+  it('derives runtime enablement from registry auth', async () => {
     const settings = signal(
       createSettingsSnapshot({
         cloudSyncEnabled: true,
@@ -210,7 +209,6 @@ describe('cloud sync extension', () => {
       })
     )
     const token = signal('test-token')
-    const featureEnabled = signal(false)
     const settingsRegistryItem = defineRegistryItem({
       id: 'test.settings',
       providesServices: [
@@ -238,17 +236,6 @@ describe('cloud sync extension', () => {
         } as AuthRegistryService),
       ],
     })
-    const userFeaturesRegistryItem = defineRegistryItem({
-      id: 'test.user-features',
-      providesServices: [
-        provideService(userFeaturesService, {
-          has: (featureFlagId: Feature, defaultValue: boolean) =>
-            featureFlagId === OPFS_CLOUD_FEATURE_FLAG
-              ? featureEnabled.value
-              : defaultValue,
-        } as UserFeaturesRegistryService),
-      ],
-    })
     const { cloudSyncExtension } = await import(
       '@src/lib/cloudSync/registry/extension'
     )
@@ -261,22 +248,9 @@ describe('cloud sync extension', () => {
       settingsRegistryItem,
       runtimeRegistryItem,
       authRegistryItem,
-      userFeaturesRegistryItem,
       cloudSyncExtension,
     ])
     registry.get(cloudSyncService)
-
-    await vi.waitFor(() => {
-      expect(cloudSyncMocks.configureCloudSync).toHaveBeenLastCalledWith({
-        enabled: false,
-        autoEnrollCloudLibraryProjects: true,
-        token: 'test-token',
-        baseUrl: 'https://api.dev.zoo.dev',
-        environmentName: 'dev.zoo.dev',
-      })
-    })
-
-    featureEnabled.value = true
 
     await vi.waitFor(() => {
       expect(cloudSyncMocks.configureCloudSync).toHaveBeenLastCalledWith({

@@ -2,7 +2,6 @@ import { useSignals } from '@preact/signals-react/runtime'
 import ProjectSidebarMenu from '@src/components/ProjectSidebarMenu'
 import UserSidebarMenu from '@src/components/UserSidebarMenu'
 import { useApp, useSingletons } from '@src/lib/boot'
-import { OPFS_CLOUD_FEATURE_FLAG } from '@src/lib/constants'
 import { isDesktop } from '@src/lib/isDesktop'
 import { lspService } from '@src/lang/lsp/registry/contract'
 import { PATHS } from '@src/lib/paths'
@@ -43,10 +42,6 @@ export const AppHeader = ({
   const absoluteFilePath = executingPath
     ? PATHS.FILE + '/' + encodeURIComponent(executingPath)
     : undefined
-  const hasCloudSyncFeature = app.userFeatures.useHas(
-    OPFS_CLOUD_FEATURE_FLAG,
-    false
-  )
   const appHeaderItems = app.registry.signal(appHeaderItemsValueSpec).value
   const appHeaderItemClassName =
     'relative inline-flex h-7 min-w-7 items-center justify-center gap-1 rounded-md border border-chalkboard-30 bg-chalkboard-10/80 px-1 text-chalkboard-100 transition-colors hover:border-chalkboard-40 hover:bg-chalkboard-10 dark:border-chalkboard-70 dark:bg-chalkboard-100/50 dark:text-chalkboard-10 dark:hover:border-chalkboard-60 dark:hover:bg-chalkboard-100 focus-visible:outline-appForeground active:border-primary disabled:cursor-default disabled:opacity-70'
@@ -67,7 +62,6 @@ export const AppHeader = ({
         project={project}
         file={file}
         absoluteFilePath={absoluteFilePath}
-        hasCloudSyncFeature={hasCloudSyncFeature}
         onProjectClose={(closedFile, projectPath, redirect) => {
           lsp.onProjectClose(closedFile, projectPath, redirect)
           if (redirect) {

@@ -1,4 +1,5 @@
 use std::collections::HashMap;
+use std::collections::HashSet;
 use std::sync::Arc;
 
 use async_recursion::async_recursion;
@@ -33,6 +34,7 @@ use crate::execution::ExecState;
 use crate::execution::ExecutorContext;
 use crate::execution::KclValue;
 use crate::execution::KclValueControlFlow;
+use crate::execution::KclVersion;
 use crate::execution::LegacyAngleRefactorMeta;
 use crate::execution::Metadata;
 use crate::execution::ModelingCmdMeta;
@@ -87,6 +89,8 @@ use crate::execution::types::CoercionMode;
 use crate::execution::types::NumericTypeExt;
 use crate::execution::types::PrimitiveType;
 use crate::execution::types::RuntimeType;
+use crate::execution::types::resolve_named_type_def;
+use crate::execution::types::type_value_named_by_segment;
 use crate::front::ArcDirection;
 use crate::front::LineCtor;
 use crate::front::Object;
@@ -95,8 +99,10 @@ use crate::front::ObjectKind;
 use crate::front::PointCtor;
 use crate::modules::ModuleExecutionOutcome;
 use crate::modules::ModuleId;
+use crate::modules::ModuleItems;
 use crate::modules::ModulePath;
 use crate::modules::ModuleRepr;
+use crate::parsing::ast::types::ABSOLUTE_PATHS_NOT_SUPPORTED;
 use crate::parsing::ast::types::Annotation;
 use crate::parsing::ast::types::ArrayExpression;
 use crate::parsing::ast::types::ArrayRangeExpression;
@@ -931,6 +937,11 @@ impl ExecutorContext {
     ) -> Result<bool, KclError> {
         let mut no_prelude = false;
         for annotation in annotations {
+            // The attribute that customizes diagnostics is `@warnings` before
+            // KCL 3.0 and `@diagnostics` in KCL 3.0 and later. Look it up per
+            // annotation since a preceding `@settings` may have changed the
+            // version.
+            let diagnostics_attr = annotations::diagnostics_attr_name(exec_state.kcl_version());
             if annotation.name() == Some(annotations::SETTINGS) {
                 if matches!(body_type, BodyType::Root) {
                     let (updated_len, updated_angle) =
@@ -939,10 +950,17 @@ impl ExecutorContext {
                         exec_state.mod_local.explicit_length_units = true;
                     }
                     if updated_angle {
+                        if exec_state.kcl_version() >= KclVersion::V3Preview {
+                            return Err(KclError::new_semantic(KclErrorDetails::new(
+                                "The `defaultAngleUnit` setting was removed in KCL 3.0; use explicit units for angles"
+                                    .to_owned(),
+                                annotation.as_source_ranges(),
+                            )));
+                        }
                         exec_state.warn(
                             CompilationIssue::err(
                                 annotation.as_source_range(),
-                                "Prefer to use explicit units for angles",
+                                "The `defaultAngleUnit` setting is deprecated; use explicit units for angles",
                             ),
                             annotations::WARN_ANGLE_UNITS,
                         );
@@ -962,16 +980,17 @@ impl ExecutorContext {
                         "The standard library can only be skipped at the top level scope of a file",
                     ));
                 }
-            } else if annotation.name() == Some(annotations::WARNINGS) {
+            } else if annotation.name() == Some(diagnostics_attr) {
                 // TODO we should support setting warnings for the whole project, not just one file
                 if matches!(body_type, BodyType::Root) {
-                    let props = annotations::expect_properties(annotations::WARNINGS, annotation)?;
+                    let props = annotations::expect_properties(diagnostics_attr, annotation)?;
                     for p in props {
                         match &*p.inner.key.name {
                             annotations::WARN_ALLOW => {
                                 let allowed = annotations::many_of(
                                     &p.inner.value,
                                     &annotations::WARN_VALUES,
+                                    diagnostics_attr,
                                     annotation.as_source_range(),
                                 )?;
                                 exec_state.mod_local.allowed_warnings = allowed;
@@ -980,6 +999,7 @@ impl ExecutorContext {
                                 let denied = annotations::many_of(
                                     &p.inner.value,
                                     &annotations::WARN_VALUES,
+                                    diagnostics_attr,
                                     annotation.as_source_range(),
                                 )?;
                                 exec_state.mod_local.denied_warnings = denied;
@@ -987,7 +1007,7 @@ impl ExecutorContext {
                             name => {
                                 return Err(KclError::new_semantic(KclErrorDetails::new(
                                     format!(
-                                        "Unexpected warnings key: `{name}`; expected one of `{}`, `{}`",
+                                        "Unexpected {diagnostics_attr} key: `{name}`; expected one of `{}`, `{}`",
                                         annotations::WARN_ALLOW,
                                         annotations::WARN_DENY,
                                     ),
@@ -997,11 +1017,36 @@ impl ExecutorContext {
                         }
                     }
                 } else {
-                    exec_state.err(CompilationIssue::err(
-                        annotation.as_source_range(),
-                        "Warnings can only be customized at the top level scope of a file",
-                    ));
+                    let message = match diagnostics_attr {
+                        annotations::WARNINGS => "Warnings can only be customized at the top level scope of a file",
+                        _ => "Diagnostics can only be customized at the top level scope of a file",
+                    };
+                    exec_state.err(CompilationIssue::err(annotation.as_source_range(), message));
                 }
+            } else if annotation.name() == Some(annotations::WARNINGS) {
+                // KCL 3.0 renamed `@warnings` to `@diagnostics`. This is only
+                // reached in KCL 3.0-preview or later, since before that the
+                // attribute is handled above. Report a non-fatal error with
+                // the fix, and ignore the attribute.
+                let mut issue = CompilationIssue::err(
+                    annotation.as_source_range(),
+                    format!(
+                        "The `@{old}` attribute was renamed to `@{new}` in KCL 3.0, so this attribute is ignored. Replace `@{old}` with `@{new}`; its `{allow}` and `{deny}` properties are unchanged.",
+                        old = annotations::WARNINGS,
+                        new = annotations::DIAGNOSTICS,
+                        allow = annotations::WARN_ALLOW,
+                        deny = annotations::WARN_DENY,
+                    ),
+                );
+                if let Some(name) = &annotation.name {
+                    issue = issue.with_suggestion(
+                        format!("Rename to `@{}`", annotations::DIAGNOSTICS),
+                        annotations::DIAGNOSTICS,
+                        Some(name.as_source_range()),
+                        crate::errors::Tag::None,
+                    );
+                }
+                exec_state.err(issue);
             } else {
                 exec_state.warn(
                     CompilationIssue::err(annotation.as_source_range(), "Unknown annotation"),
@@ -1021,6 +1066,12 @@ impl ExecutorContext {
         path: &ModulePath,
     ) -> Result<ModuleExecutionOutcome, (KclError, Option<EnvironmentRef>, Option<ModuleArtifactState>)> {
         crate::log::log(format!("enter module {path} {}", exec_state.stack()));
+
+        // Check the imported file's declared version and effective keyword
+        // restrictions before executing its body.
+        exec_state
+            .validate_imported_module(path, module_id, program, None)
+            .map_err(|err| (err, None, None))?;
 
         // When executing only the new statements in incremental execution or
         // mock executing for sketch mode, we need the scene objects that were
@@ -1090,6 +1141,12 @@ impl ExecutorContext {
                 environment: env_ref,
                 exports: local_state.module_exports,
                 artifacts: module_artifacts,
+                not_yet_added: local_state
+                    .not_yet_added
+                    .into_iter()
+                    .filter(|(_, record)| record.exported)
+                    .map(|(key, record)| (key, record.item))
+                    .collect(),
             })
     }
 
@@ -1146,6 +1203,15 @@ impl ExecutorContext {
                     if exec_state.sketch_mode() && sketch_mode_should_skip(&variable_declaration.declaration.init) {
                         continue;
                     }
+                    if skip_if_not_yet_added(
+                        &variable_declaration.outer_attrs,
+                        || variable_declaration.declaration.id.name.clone(),
+                        matches!(variable_declaration.visibility, ItemVisibility::Export),
+                        variable_declaration.as_source_range(),
+                        exec_state,
+                    )? {
+                        continue;
+                    }
 
                     let var_name = variable_declaration.declaration.id.name.to_string();
                     let source_range = SourceRange::from(&variable_declaration.declaration.init);
@@ -1184,7 +1250,16 @@ impl ExecutorContext {
                     if exec_state.sketch_mode() {
                         continue;
                     }
-                    self.exec_type_declaration(ty, body_type, exec_state)?;
+                    if skip_if_not_yet_added(
+                        &ty.outer_attrs,
+                        || format!("{}{}", memory::TYPE_PREFIX, ty.name.name),
+                        matches!(ty.visibility, ItemVisibility::Export),
+                        ty.as_source_range(),
+                        exec_state,
+                    )? {
+                        continue;
+                    }
+                    self.exec_type_declaration(ty, body_type, exec_state).await?;
                     last_expr = None;
                 }
                 BodyItem::ReturnStatement(return_statement) => {
@@ -1215,10 +1290,30 @@ impl ExecutorContext {
                         break;
                     }
                     let value = value_cf.into_value();
+                    if exec_state.entry_point_version_is_v3_or_higher() {
+                        // KCL 3.0: early return. The value unwinds as control
+                        // flow to the nearest function-call boundary, which
+                        // absorbs it; see call_finish.
+                        last_expr = Some(value.return_());
+                        break;
+                    }
                     Self::bind_return_value(return_statement, value, exec_state)?;
                     last_expr = None;
                 }
             }
+        }
+
+        // A Return can reach a root block only by escaping an expression
+        // evaluated at the top level (e.g. an if-arm); a `return` statement
+        // here is rejected above before it evaluates.
+        if matches!(body_type, BodyType::Root)
+            && let Some(cf) = &last_expr
+            && cf.is_return()
+        {
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                "Cannot return from outside a function.".to_owned(),
+                cf.source_ranges(),
+            )));
         }
 
         if matches!(body_type, BodyType::Root) {
@@ -1259,9 +1354,38 @@ impl ExecutorContext {
             &self.settings.project_directory,
             &exec_state.mod_local.path,
         )?;
+        if matches!(&module_path, ModulePath::Std { value } if value == "view")
+            && !exec_state.entry_point_version_is_v3_or_higher()
+        {
+            if matches!(&exec_state.mod_local.path, ModulePath::Std { value } if value == "prelude") {
+                // The prelude must remain usable before V3, but its view module
+                // must be absent from those programs.
+                let added_in = annotations::VersionConstraint::new(3, 0);
+                exec_state.record_not_yet_added(format!("{}view", memory::MODULE_PREFIX), added_in, true);
+                return Ok(());
+            }
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                format!(
+                    "The `std::view` module requires KCL 3.0-preview, but this program uses KCL {}.",
+                    exec_state.entry_point_kcl_version().as_str()
+                ),
+                vec![source_range],
+            )));
+        }
         let module_id = self
             .open_module(&import_stmt.path, attrs, &module_path, exec_state, source_range)
             .await?;
+
+        // Validate the imported file at the import site as well. Mock execution
+        // runs a whole-module import's body only when referenced, so this is
+        // the only check for an unreferenced module. Engine execution already
+        // validated every imported module before executing the root body.
+        if let ImportPath::Kcl { .. } = &import_stmt.path
+            && let Some(ModuleRepr::Kcl(program, _)) =
+                exec_state.global.module_infos.get(&module_id).map(|info| &info.repr)
+        {
+            exec_state.validate_imported_module(&module_path, module_id, program, Some(source_range))?;
+        }
 
         if let ModulePath::Local { value, .. } = &module_path {
             let name = import_stmt
@@ -1278,7 +1402,11 @@ impl ExecutorContext {
 
         match &import_stmt.selector {
             ImportSelector::List { items } => {
-                let (env_ref, module_exports) = self.exec_module_for_items(module_id, exec_state, source_range).await?;
+                let ModuleItems {
+                    environment: env_ref,
+                    exports: module_exports,
+                    not_yet_added,
+                } = self.exec_module_for_items(module_id, exec_state, source_range).await?;
                 for import_item in items {
                     // Extract the item from the module.
                     let mem = &exec_state.stack().memory;
@@ -1289,12 +1417,17 @@ impl ExecutorContext {
                     let mut mod_value = mem.get_from_owned(&mod_name, env_ref, import_item.into(), 0);
 
                     if value.is_err() && ty.is_err() && mod_value.is_err() {
-                        return Err(KclError::new_undefined_value(
+                        let err = KclError::new_undefined_value(
                             KclErrorDetails::new(
                                 format!("{} is not defined in module", import_item.name.name),
                                 vec![SourceRange::from(&import_item.name)],
                             ),
                             None,
+                        );
+                        return Err(exec_state.with_not_yet_added_hint_from(
+                            &not_yet_added,
+                            &[&import_item.name.name, &ty_name],
+                            err,
                         ));
                     }
 
@@ -1393,7 +1526,11 @@ impl ExecutorContext {
                 }
             }
             ImportSelector::Glob(_) => {
-                let (env_ref, module_exports) = self.exec_module_for_items(module_id, exec_state, source_range).await?;
+                let ModuleItems {
+                    environment: env_ref,
+                    exports: module_exports,
+                    not_yet_added,
+                } = self.exec_module_for_items(module_id, exec_state, source_range).await?;
                 for name in module_exports.iter() {
                     let item = exec_state
                         .stack()
@@ -1412,6 +1549,9 @@ impl ExecutorContext {
                         exec_state.mod_local.module_exports.push(name.clone());
                     }
                 }
+                // The skipped declarations come along with the names.
+                exec_state
+                    .import_not_yet_added(&not_yet_added, matches!(import_stmt.visibility, ItemVisibility::Export));
             }
             ImportSelector::None { .. } => {
                 let name = import_stmt.module_name().unwrap();
@@ -1430,7 +1570,7 @@ impl ExecutorContext {
     }
 
     /// Execute a type declaration. Flat; shared by both executors.
-    pub(super) fn exec_type_declaration(
+    pub(super) async fn exec_type_declaration(
         &self,
         ty: &Node<TypeDeclaration>,
         body_type: BodyType,
@@ -1438,6 +1578,27 @@ impl ExecutorContext {
     ) -> Result<(), KclError> {
         let metadata = Metadata::from(ty);
         let attrs = annotations::get_fn_attrs(&ty.outer_attrs, metadata.source_range)?.unwrap_or_default();
+        let v3_only_feature = match (attrs.impl_, &ty.definition) {
+            (annotations::Impl::Kcl | annotations::Impl::KclConstrainable, TypeDeclarationDefinition::Alias { .. }) => {
+                Some("Type aliases")
+            }
+            (annotations::Impl::Kcl | annotations::Impl::KclConstrainable, TypeDeclarationDefinition::Enum(_)) => {
+                Some("Enum declarations")
+            }
+            _ => None,
+        };
+        if let Some(feature) = v3_only_feature
+            && !matches!(exec_state.mod_local.path, ModulePath::Std { .. })
+            && !exec_state.entry_point_version_is_v3_or_higher()
+        {
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                format!(
+                    "{feature} require KCL 3.0-preview, but this program uses KCL {}.",
+                    exec_state.entry_point_kcl_version().as_str()
+                ),
+                vec![metadata.source_range],
+            )));
+        }
         match attrs.impl_ {
             annotations::Impl::Rust | annotations::Impl::RustConstrainable | annotations::Impl::RustConstraint => {
                 let std_path = match &exec_state.mod_local.path {
@@ -1474,17 +1635,30 @@ impl ExecutorContext {
             annotations::Impl::Primitive => {}
             annotations::Impl::Kcl | annotations::Impl::KclConstrainable => match &ty.definition {
                 TypeDeclarationDefinition::Alias { ty: alias } => {
-                    let value = KclValue::Type {
-                        value: TypeDef::Alias(
+                    let type_def = match alias.inner.clone() {
+                        Type::Named { name } => {
+                            match resolve_named_type_def(&name, exec_state, self, metadata.source_range, false).await? {
+                                def @ TypeDef::Enum(_) => def,
+                                def => TypeDef::Alias(def.into_runtime_type()),
+                            }
+                        }
+                        alias => TypeDef::Alias(
                             RuntimeType::from_parsed(
-                                alias.inner.clone(),
+                                alias,
                                 exec_state,
+                                self,
                                 metadata.source_range,
                                 attrs.impl_ == annotations::Impl::KclConstrainable,
                                 false,
                             )
-                            .map_err(|e| KclError::new_semantic(e.into()))?,
+                            .await?,
                         ),
+                    };
+                    if matches!(&type_def, TypeDef::Enum(_)) {
+                        reject_enum_clashing_with_module(exec_state, &ty.name.name, metadata.source_range)?;
+                    }
+                    let value = KclValue::Type {
+                        value: type_def,
                         meta: vec![metadata],
                         experimental: attrs.experimental,
                     };
@@ -1531,7 +1705,7 @@ impl ExecutorContext {
                     // Constructing the definition is the validation step: nothing
                     // below runs, so nothing reaches memory, unless every variant
                     // name is distinct.
-                    let def = EnumTypeDef::new(id, variants).map_err(|duplicate| {
+                    let def = EnumTypeDef::new(id, variants, attrs.experimental).map_err(|duplicate| {
                         KclError::new_semantic(KclErrorDetails::new(
                             format!("Duplicate variant `{}` in enum `{}`.", duplicate.name, ty.name.name),
                             vec![
@@ -1669,11 +1843,12 @@ impl ExecutorContext {
     }
 
     /// Record a return statement's evaluated value as the function result
-    /// (`__return`). NOTE: deliberately does NOT stop the enclosing block --
-    /// statements after a `return` still execute, exactly like the historical
-    /// behavior (see the ReturnStatement arm of exec_block); a second
-    /// executed `return` is the "Multiple returns" error. Shared by both
-    /// executors.
+    /// (`__return`). This is the pre-KCL-3.0 `return` semantics: it
+    /// deliberately does NOT stop the enclosing block -- statements after a
+    /// `return` still execute, exactly like the historical behavior (see the
+    /// ReturnStatement arm of exec_block); a second executed `return` is the
+    /// "Multiple returns" error. Under KCL 3.0, this is never called; `return`
+    /// unwinds as `Return` control flow instead. Shared by both executors.
     pub(super) fn bind_return_value(
         return_statement: &Node<ReturnStatement>,
         value: KclValue,
@@ -1713,8 +1888,9 @@ impl ExecutorContext {
                 exec_state.add_path_to_source_id(resolved_path.clone(), id);
                 let source = resolved_path.source(&self.fs, source_range).await?;
                 exec_state.add_id_to_source(id, source.clone());
-                // TODO handle parsing errors properly
-                let parsed = crate::parsing::parse_str(&source.source, id).parse_errs_as_err()?;
+                let (parsed, never_type_ranges) = crate::parsing::parse_str_syntax(&source.source, id)?;
+                // Defer validation until module execution or the mock import site.
+                exec_state.global.never_type_ranges.insert(id, never_type_ranges);
                 exec_state.add_module(id, resolved_path.clone(), ModuleRepr::Kcl(parsed, None));
 
                 Ok(id)
@@ -1750,9 +1926,12 @@ impl ExecutorContext {
                 exec_state.add_path_to_source_id(resolved_path.clone(), id);
                 let source = resolved_path.source(&self.fs, source_range).await?;
                 exec_state.add_id_to_source(id, source.clone());
-                let parsed = crate::parsing::parse_str(&source.source, id)
-                    .parse_errs_as_err()
-                    .unwrap();
+                let (parsed, never_type_ranges) = crate::parsing::parse_str_syntax(&source.source, id).unwrap();
+                crate::parsing::validate_never_type_ranges(
+                    &never_type_ranges,
+                    crate::parsing::SyntaxSource::BundledStdlib,
+                )
+                .unwrap();
                 exec_state.add_module(id, resolved_path.clone(), ModuleRepr::Kcl(parsed, None));
                 Ok(id)
             }
@@ -1764,20 +1943,21 @@ impl ExecutorContext {
         module_id: ModuleId,
         exec_state: &mut ExecState,
         source_range: SourceRange,
-    ) -> Result<(EnvironmentRef, Vec<String>), KclError> {
+    ) -> Result<ModuleItems, KclError> {
         let path = exec_state.global.module_infos[&module_id].path.clone();
         let mut repr = exec_state.global.module_infos[&module_id].take_repr();
         // DON'T EARLY RETURN! We need to restore the module repr
 
         let result = match &mut repr {
             ModuleRepr::Root => Err(exec_state.circular_import_error(&path, source_range)),
-            ModuleRepr::Kcl(_, Some(outcome)) => Ok((outcome.environment, outcome.exports.clone())),
+            ModuleRepr::Kcl(_, Some(outcome)) => Ok(outcome.items()),
             ModuleRepr::Kcl(program, cache) => self
                 .exec_module_from_ast(program, module_id, &path, exec_state, source_range, PreserveMem::Normal)
                 .await
                 .map(|outcome| {
-                    *cache = Some(outcome.clone());
-                    (outcome.environment, outcome.exports)
+                    let items = outcome.items();
+                    *cache = Some(outcome);
+                    items
                 }),
             ModuleRepr::Foreign(geom, _) => Err(KclError::new_semantic(KclErrorDetails::new(
                 "Cannot import items from foreign modules".to_owned(),
@@ -1932,7 +2112,8 @@ impl ExecutorContext {
                 .continue_(),
             Expr::BinaryExpression(binary_expression) => binary_expression.get_result(exec_state, self).await?,
             Expr::FunctionExpression(function_expression) => self
-                .create_function_closure(function_expression, annotations, metadata, statement_kind, exec_state)?
+                .create_function_closure(function_expression, annotations, metadata, statement_kind, exec_state)
+                .await?
                 .continue_(),
             Expr::CallExpressionKw(call_expression) => call_expression.execute(exec_state, self).await?,
             Expr::PipeExpression(pipe_expression) => pipe_expression.get_result(exec_state, self).await?,
@@ -2000,7 +2181,7 @@ impl ExecutorContext {
     /// Create the closure value for a function expression, including the
     /// recursive-closure placeholder fixup and binding a named `fn name() {}`
     /// in the current scope. Flat; shared by both executors.
-    pub(super) fn create_function_closure(
+    pub(super) async fn create_function_closure(
         &self,
         function_expression: &crate::parsing::ast::types::BoxNode<FunctionExpression>,
         annotations: &[Node<Annotation>],
@@ -2078,7 +2259,7 @@ impl ExecutorContext {
         // the declaration is written. Call sites consume the stored
         // resolutions and never look type names up themselves.
         if let KclValue::Function { value, .. } = &mut closure {
-            value.resolve_signature_types(exec_state)?;
+            value.resolve_signature_types(exec_state, self).await?;
         }
 
         // If the function expression has a name, i.e. `fn name() {}`,
@@ -2106,13 +2287,34 @@ impl ExecutorContext {
     }
 }
 
+/// Skip a declaration whose `added_in` the program predates, recording it under
+/// `key` so a failed lookup can explain why. Shared by both executors. `key` is
+/// only computed on a skip, so declarations without attributes cost nothing.
+pub(super) fn skip_if_not_yet_added(
+    annotations: &[Node<Annotation>],
+    key: impl FnOnce() -> String,
+    exported: bool,
+    source_range: SourceRange,
+    exec_state: &mut ExecState,
+) -> Result<bool, KclError> {
+    let Some(added_in) = annotations::added_in_version(annotations, source_range)? else {
+        return Ok(false);
+    };
+    if annotations::version_ge(exec_state.entry_point_kcl_version().as_str(), &added_in) {
+        return Ok(false);
+    }
+    exec_state.record_not_yet_added(key(), added_in, exported);
+    Ok(true)
+}
+
 /// The head of a `Color::Red` path is looked up both as a module and as an enum,
 /// so one scope must not bind a module and an enum under the same name. Reporting
 /// the clash where the second name is introduced keeps every `X::y` use site
 /// unambiguous, so no check is needed at the use site.
 ///
-/// Type aliases and bare types are exempt, since neither can head a `::` path.
-/// They may continue to share a name with a module.
+/// Type aliases that resolve to enums participate in this rule because they can
+/// head a `::` path. Other aliases and bare types may continue to share a name
+/// with a module.
 fn module_enum_clash(name: &str, source_range: SourceRange) -> KclError {
     KclError::new_semantic(KclErrorDetails::new(
         format!(
@@ -2128,11 +2330,8 @@ fn reject_enum_clashing_with_module(
     name: &str,
     source_range: SourceRange,
 ) -> Result<(), KclError> {
-    if exec_state
-        .stack()
-        .get(&format!("{}{}", memory::MODULE_PREFIX, name), source_range)
-        .is_err()
-    {
+    let key = format!("{}{}", memory::MODULE_PREFIX, name);
+    if !exec_state.stack().cur_frame_contains(&key)? {
         return Ok(());
     }
 
@@ -2146,12 +2345,15 @@ fn reject_module_clashing_with_enum(
     name: &str,
     source_range: SourceRange,
 ) -> Result<(), KclError> {
+    let key = format!("{}{}", memory::TYPE_PREFIX, name);
+    if !exec_state.stack().cur_frame_contains(&key)? {
+        return Ok(());
+    }
+
     let Ok(KclValue::Type {
         value: TypeDef::Enum(_),
         ..
-    }) = exec_state
-        .stack()
-        .get(&format!("{}{}", memory::TYPE_PREFIX, name), source_range)
+    }) = exec_state.stack().get(&key, source_range)
     else {
         return Ok(());
     };
@@ -2205,50 +2407,53 @@ fn type_used_as_value(exec_state: &ExecState, name: &Node<Identifier>) -> Option
     )))
 }
 
-/// Looks up the enum named by a `::` path segment: `Color` in both `Color::Red`
-/// and `colors::Color::Red`.
+enum EnumPathHead {
+    Enum {
+        def: Arc<EnumTypeDef>,
+        binding_experimental: bool,
+    },
+    NonEnumType,
+}
+
+/// Classifies the type named by a `::` path segment: `Color` in both
+/// `Color::Red` and `colors::Color::Red`.
 ///
-/// Returns `None` when the segment does not name an enum, including when it
-/// names a type alias, since only an enum can head a `::` path. The caller then
-/// resolves the segment as a module instead.
-///
-/// This is the only place that builds a `__ty_` memory key, so the deferred
-/// typed-key refactor has one site to change.
+/// A non-enum type is retained until module lookup has also failed because a
+/// type alias and a module may share a name. The module remains the valid path
+/// head in that case.
 fn enum_named_by_segment(
     exec_state: &ExecState,
     segment: &Node<Identifier>,
-    within: Option<&(EnvironmentRef, Vec<String>)>,
-) -> Option<Arc<EnumTypeDef>> {
-    let key = format!("{}{}", memory::TYPE_PREFIX, segment.name);
-    let value = match within {
-        // Inside another module the enum must be exported to be reachable, and
-        // exports record the prefixed key rather than the bare name.
-        Some((env, exports)) => {
-            if !exports.contains(&key) {
-                return None;
-            }
-
-            exec_state
-                .stack()
-                .memory
-                .get_from_owned(&key, *env, segment.as_source_range(), 0)
-                .ok()?
-        }
-        None => exec_state.stack().get(&key, segment.as_source_range()).ok()?,
-    };
-
-    match value {
+    within: Option<&ModuleItems>,
+) -> Option<EnumPathHead> {
+    match type_value_named_by_segment(exec_state, segment, within)? {
         KclValue::Type {
             value: TypeDef::Enum(def),
+            experimental,
             ..
-        } => Some(def),
+        } => Some(EnumPathHead::Enum {
+            def,
+            binding_experimental: experimental,
+        }),
+        KclValue::Type { .. } => Some(EnumPathHead::NonEnumType),
         _ => None,
     }
+}
+
+fn non_enum_type_in_path(segment: &Node<Identifier>) -> KclError {
+    KclError::new_semantic(KclErrorDetails::new(
+        format!(
+            "`{}` is a type that does not resolve to an enum, so it cannot be used as the head of a `::` path.",
+            segment.name
+        ),
+        segment.as_source_ranges(),
+    ))
 }
 
 /// `Red` in `Color::Red`.
 fn enum_variant_value(
     def: Arc<EnumTypeDef>,
+    binding_experimental: bool,
     variant: &Node<Identifier>,
     exec_state: &mut ExecState,
 ) -> Result<KclValue, KclError> {
@@ -2267,13 +2472,11 @@ fn enum_variant_value(
         )));
     }
 
-    // Every V1 enum is experimental, not only those with an annotation, so this
-    // call is unconditional. `warn_experimental` reads the setting of the module
-    // being executed and does nothing when that setting is `allow`, so an enum
-    // imported from a permissive module is still reported in a consumer that has
-    // not opted in. Declarations are gated during parsing; type positions by
-    // `RuntimeType::from_alias`.
-    exec_state.warn_experimental(&format!("the enum `{enum_name}`"), variant.as_source_range());
+    // Older KCL versions report every enum use. In V3, an explicit experimental
+    // annotation on either the declaration or the binding still applies.
+    if !exec_state.entry_point_version_is_v3_or_higher() || def.is_experimental() || binding_experimental {
+        exec_state.warn_experimental(&format!("the enum `{enum_name}`"), variant.as_source_range());
+    }
 
     // The value holds the declaration itself, so its identity is read off that
     // declaration and can never be rebuilt from a name. A later enum v2 adding a
@@ -2362,7 +2565,9 @@ impl Node<AscribedExpression> {
             .execute_expr(&self.expr, exec_state, &metadata, &[], StatementKind::Expression)
             .await?;
         let result = control_continue!(result);
-        apply_ascription(&result, &self.ty, exec_state, self.into()).map(KclValue::continue_)
+        apply_ascription(&result, &self.ty, exec_state, ctx, self.into())
+            .await
+            .map(KclValue::continue_)
     }
 }
 
@@ -3095,7 +3300,11 @@ impl Node<SketchBlock> {
         let module_id = ctx
             .open_module(&ImportPath::Std { path }, &[], &resolved_path, exec_state, source_range)
             .await?;
-        let (env_ref, exports) = ctx.exec_module_for_items(module_id, exec_state, source_range).await?;
+        let ModuleItems {
+            environment: env_ref,
+            exports,
+            ..
+        } = ctx.exec_module_for_items(module_id, exec_state, source_range).await?;
 
         for name in exports {
             let value = exec_state
@@ -3188,14 +3397,14 @@ impl Node<SketchVar> {
     }
 }
 
-pub(super) fn apply_ascription(
+pub(super) async fn apply_ascription(
     value: &KclValue,
     ty: &Node<Type>,
     exec_state: &mut ExecState,
+    ctx: &ExecutorContext,
     source_range: SourceRange,
 ) -> Result<KclValue, KclError> {
-    let ty = RuntimeType::from_parsed(ty.inner.clone(), exec_state, value.into(), false, false)
-        .map_err(|e| KclError::new_semantic(e.into()))?;
+    let ty = RuntimeType::from_parsed(ty.inner.clone(), exec_state, ctx, value.into(), false, false).await?;
 
     if matches!(&ty, &RuntimeType::Primitive(PrimitiveType::Number(..))) {
         exec_state.clear_units_warnings(&source_range);
@@ -3276,7 +3485,7 @@ impl Node<Name> {
     async fn get_result_inner(&self, exec_state: &mut ExecState, ctx: &ExecutorContext) -> Result<KclValue, KclError> {
         if self.abs_path {
             return Err(KclError::new_semantic(KclErrorDetails::new(
-                "Absolute paths (names beginning with `::` are not yet supported)".to_owned(),
+                ABSOLUTE_PATHS_NOT_SUPPORTED.to_owned(),
                 self.as_source_ranges(),
             )));
         }
@@ -3294,30 +3503,42 @@ impl Node<Name> {
 
             // No value and no module of this name exists. If a type does, report
             // that instead: "is not defined" would point away from the mistake.
-            return Err(type_used_as_value(exec_state, &self.name).unwrap_or(not_defined));
+            // Failing that, the name may be a declaration skipped as not yet added.
+            return Err(type_used_as_value(exec_state, &self.name)
+                .unwrap_or_else(|| exec_state.with_not_yet_added_hint(&[&self.name.name, &mod_name], not_defined)));
         }
 
-        let mut mem_spec: Option<(EnvironmentRef, Vec<String>)> = None;
+        let mut mem_spec: Option<ModuleItems> = None;
         for (index, p) in self.path.iter().enumerate() {
             // Only the last segment can name an enum, because what follows an
             // enum is a variant rather than something to traverse into.
-            if let Some(def) = enum_named_by_segment(exec_state, p, mem_spec.as_ref()) {
-                if let Some(next) = self.path.get(index + 1) {
-                    return Err(KclError::new_semantic(KclErrorDetails::new(
-                        format!(
-                            "`{}` is an enum, so only a variant name can follow it. There is nothing to reach through `{}::{}`.",
-                            p.name, p.name, next.name
-                        ),
-                        p.as_source_ranges(),
-                    )));
+            let non_enum_type = match enum_named_by_segment(exec_state, p, mem_spec.as_ref()) {
+                Some(EnumPathHead::Enum {
+                    def,
+                    binding_experimental,
+                }) => {
+                    if let Some(next) = self.path.get(index + 1) {
+                        return Err(KclError::new_semantic(KclErrorDetails::new(
+                            format!(
+                                "`{}` is an enum, so only a variant name can follow it. There is nothing to reach through `{}::{}`.",
+                                p.name, p.name, next.name
+                            ),
+                            p.as_source_ranges(),
+                        )));
+                    }
+
+                    return enum_variant_value(def, binding_experimental, &self.name, exec_state);
                 }
+                Some(EnumPathHead::NonEnumType) => true,
+                None => false,
+            };
 
-                return enum_variant_value(def, &self.name, exec_state);
-            }
-
-            let value = match mem_spec {
-                Some((env, exports)) => {
-                    if !exports.contains(&p.name) {
+            let value = match &mem_spec {
+                Some(items) => {
+                    if !items.exports.contains(&p.name) {
+                        if non_enum_type {
+                            return Err(non_enum_type_in_path(p));
+                        }
                         return Err(KclError::new_semantic(KclErrorDetails::new(
                             format!("Item {} not found in module's exported items", p.name),
                             p.as_source_ranges(),
@@ -3327,11 +3548,16 @@ impl Node<Name> {
                     exec_state
                         .stack()
                         .memory
-                        .get_from_owned(&p.name, env, p.as_source_range(), 0)?
+                        .get_from_owned(&p.name, items.environment, p.as_source_range(), 0)?
                 }
-                None => exec_state
-                    .stack()
-                    .get(&format!("{}{}", memory::MODULE_PREFIX, p.name), self.into())?,
+                None => {
+                    let module_key = format!("{}{}", memory::MODULE_PREFIX, p.name);
+                    match exec_state.stack().get(&module_key, self.into()) {
+                        Ok(value) => value,
+                        Err(_) if non_enum_type => return Err(non_enum_type_in_path(p)),
+                        Err(err) => return Err(exec_state.with_not_yet_added_hint(&[&module_key], err)),
+                    }
+                }
             };
 
             let module_id = match value {
@@ -3353,7 +3579,11 @@ impl Node<Name> {
             );
         }
 
-        let (env, exports) = mem_spec.unwrap();
+        let ModuleItems {
+            environment: env,
+            exports,
+            not_yet_added,
+        } = mem_spec.unwrap();
 
         let item_exported = exports.contains(&self.name.name);
         let item_value = exec_state
@@ -3378,9 +3608,11 @@ impl Node<Name> {
             return mod_value;
         }
 
-        // Neither item or module is defined.
+        // Neither item or module is defined. The module may have skipped a
+        // declaration of this name as not yet added.
         if item_value.is_err() && mod_value.is_err() {
-            return item_value;
+            return item_value
+                .map_err(|err| exec_state.with_not_yet_added_hint_from(&not_yet_added, &[&self.name.name], err));
         }
 
         // Either item or module is defined, but not exported.
@@ -3413,17 +3645,58 @@ impl Node<MemberExpression> {
         exec_state: &mut ExecState,
         ctx: &ExecutorContext,
     ) -> Result<KclValueControlFlow, KclError> {
-        // Evaluate each child with its own source range so that diagnostics
-        // raised while evaluating a child (module errors, missing-return
-        // warnings) point at that child instead of the whole member
-        // expression.
-        //
-        // TODO: The order of execution is wrong. We should execute the object
-        // *before* the property.
+        if exec_state.entry_point_version_is_v3_or_higher() {
+            // KCL 3.0: evaluate in source order, the object before the
+            // property.
+            let object = control_continue!(self.eval_object(exec_state, ctx).await?);
+            let property = match self.eval_property(exec_state, ctx).await {
+                Ok(property) => property,
+                // The property expression exited, e.g. by calling exit().
+                // Propagate the exit so that it terminates the enclosing module.
+                Err(EarlyReturn::Value(cf)) => return Ok(cf),
+                Err(EarlyReturn::Error(err)) => return Err(err),
+            };
+            return self.apply_member(object, property, exec_state, ctx).await;
+        }
+
+        // Pre-KCL-3.0: the property is evaluated before the object. This is
+        // backwards with respect to the source text, but it is preserved
+        // because ids and engine commands are order-dependent.
+        let property = match self.eval_property(exec_state, ctx).await {
+            Ok(property) => property,
+            // The property expression exited, e.g. by calling exit().
+            // Propagate the exit so that it terminates the enclosing module.
+            Err(EarlyReturn::Value(cf)) => return Ok(cf),
+            Err(EarlyReturn::Error(err)) => return Err(err),
+        };
+        let object = control_continue!(self.eval_object(exec_state, ctx).await?);
+        self.apply_member(object, property, exec_state, ctx).await
+    }
+
+    /// Evaluate the object half of the member expression. It gets its own
+    /// source range so that diagnostics raised while evaluating it (module
+    /// errors, missing-return warnings) point at the object instead of the
+    /// whole member expression.
+    async fn eval_object(
+        &self,
+        exec_state: &mut ExecState,
+        ctx: &ExecutorContext,
+    ) -> Result<KclValueControlFlow, KclError> {
+        let object_meta = Metadata {
+            source_range: SourceRange::from(&self.object),
+        };
+        ctx.execute_expr(&self.object, exec_state, &object_meta, &[], StatementKind::Expression)
+            .await
+    }
+
+    /// Evaluate the property half of the member expression: a computed index
+    /// is executed, while `obj.name` just reads the identifier. Likewise
+    /// gets its own source range.
+    async fn eval_property(&self, exec_state: &mut ExecState, ctx: &ExecutorContext) -> Result<Property, EarlyReturn> {
         let property_meta = Metadata {
             source_range: SourceRange::from(&self.property),
         };
-        let property_result = Property::try_from(
+        Property::try_from(
             self.computed,
             self.property.clone(),
             exec_state,
@@ -3433,22 +3706,7 @@ impl Node<MemberExpression> {
             &[],
             StatementKind::Expression,
         )
-        .await;
-        let property = match property_result {
-            Ok(property) => property,
-            // The property expression exited, e.g. by calling exit().
-            // Propagate the exit so that it terminates the enclosing module.
-            Err(EarlyReturn::Value(cf)) => return Ok(cf),
-            Err(EarlyReturn::Error(err)) => return Err(err),
-        };
-        let object_meta = Metadata {
-            source_range: SourceRange::from(&self.object),
-        };
-        let object_cf = ctx
-            .execute_expr(&self.object, exec_state, &object_meta, &[], StatementKind::Expression)
-            .await?;
-        let object = control_continue!(object_cf);
-        self.apply_member(object, property, exec_state, ctx).await
+        .await
     }
 
     /// Apply property access or indexing to an already-evaluated object: the
@@ -4524,6 +4782,9 @@ impl Node<BinaryExpression> {
     ) -> Result<KclValue, KclError> {
         let mut meta = left_value.metadata();
         meta.extend(right_value.metadata());
+        // Repeated arithmetic must not multiply copies of the same source range.
+        let mut seen = HashSet::new();
+        meta.retain(|metadata| seen.insert(metadata.source_range));
 
         // First check if we are doing string concatenation.
         if self.operator == BinaryOperator::Add
@@ -6790,7 +7051,8 @@ impl Node<IfExpression> {
         exec_state: &mut ExecState,
         ctx: &ExecutorContext,
     ) -> Result<KclValueControlFlow, KclError> {
-        // Check the `if` branch.
+        // Check the `if` branch. Conditions are evaluated in the enclosing
+        // scope; only arm bodies get their own scope (under KCL 3.0).
         let cond_value = ctx
             .execute_expr(
                 &self.cond,
@@ -6802,11 +7064,7 @@ impl Node<IfExpression> {
             .await?;
         let cond_value = control_continue!(cond_value);
         if cond_value.get_bool()? {
-            let block_result = ctx.exec_block(&*self.then_val, exec_state, BodyType::Block).await?;
-            // Block must end in an expression, so this has to be Some.
-            // Enforced by the parser.
-            // See https://github.com/KittyCAD/modeling-app/issues/4015
-            return Ok(block_result.unwrap());
+            return exec_if_arm(ctx, &self.then_val, exec_state).await;
         }
 
         // Check any `else if` branches.
@@ -6822,19 +7080,60 @@ impl Node<IfExpression> {
                 .await?;
             let cond_value = control_continue!(cond_value);
             if cond_value.get_bool()? {
-                let block_result = ctx.exec_block(&*else_if.then_val, exec_state, BodyType::Block).await?;
-                // Block must end in an expression, so this has to be Some.
-                // Enforced by the parser.
-                // See https://github.com/KittyCAD/modeling-app/issues/4015
-                return Ok(block_result.unwrap());
+                return exec_if_arm(ctx, &else_if.then_val, exec_state).await;
             }
         }
 
         // Run the final `else` branch.
-        ctx.exec_block(&*self.final_else, exec_state, BodyType::Block)
-            .await
-            .map(|expr| expr.unwrap())
+        exec_if_arm(ctx, &self.final_else, exec_state).await
     }
+}
+
+/// Begin an if-arm scope. Under a KCL 3.0 entry point, each
+/// if/else-if/else arm body gets its own scope: bindings made inside the arm
+/// are visible from their declaration to the arm's closing brace, never
+/// outside it, and may shadow bindings from enclosing scopes. Under older
+/// entry points the arm shares the enclosing environment (bindings leak out
+/// and shadowing is a redefinition error). Returns whether a scope
+/// environment was pushed; the caller must pop it on every path. Shared by
+/// both executors.
+pub(super) fn if_arm_scope_begin(exec_state: &mut ExecState) -> Result<bool, KclError> {
+    if !exec_state.entry_point_version_is_v3_or_higher() {
+        return Ok(false);
+    }
+    exec_state.mut_stack().push_new_env_for_block()?;
+    Ok(true)
+}
+
+/// Execute one if/else-if/else arm body in its own scope (under a
+/// KCL 3.0 entry point). Values escaping the arm -- including closures
+/// declared in it -- stay valid after the pop because environments that may
+/// still be referenced are preserved, exactly as for function returns.
+async fn exec_if_arm(
+    ctx: &ExecutorContext,
+    block: &Node<Program>,
+    exec_state: &mut ExecState,
+) -> Result<KclValueControlFlow, KclError> {
+    let scoped = if_arm_scope_begin(exec_state)?;
+    let result = ctx.exec_block(block, exec_state, BodyType::Block).await;
+    if scoped {
+        // Pop on success (including Return/Exit control flow escaping the
+        // arm) and error alike. A pop failure wins over the block's error,
+        // matching call_abort_on_arg_binding_failure.
+        exec_state.mut_stack().pop_env()?;
+    }
+    // Block must end in an expression, so this is always Some.
+    // Enforced by the parser.
+    // See https://github.com/KittyCAD/modeling-app/issues/4015
+    let Some(cf) = result? else {
+        let message = "if-expression arm produced no value";
+        debug_assert!(false, "{message}");
+        return Err(KclError::new_internal(KclErrorDetails::new(
+            message.to_owned(),
+            vec![block.to_source_range()],
+        )));
+    };
+    Ok(cf)
 }
 
 #[derive(Debug)]
@@ -6855,18 +7154,8 @@ impl Property {
         annotations: &[Node<Annotation>],
         statement_kind: StatementKind<'a>,
     ) -> Result<Self, EarlyReturn> {
-        let property_sr = vec![sr];
         if !computed {
-            let Expr::Name(identifier) = value else {
-                // Should actually be impossible because the parser would reject it.
-                return Err(KclError::new_semantic(KclErrorDetails::new(
-                    "Object expressions like `obj.property` must use simple identifier names, not complex expressions"
-                        .to_owned(),
-                    property_sr,
-                ))
-                .into());
-            };
-            return Ok(Property::String(identifier.to_string()));
+            return Ok(Self::from_static_name(&value, sr)?);
         }
 
         let prop_value = ctx
@@ -6876,6 +7165,20 @@ impl Property {
         // the exit so that it terminates the enclosing module.
         let prop_value = early_return!(prop_value);
         Ok(Self::from_value(prop_value, sr)?)
+    }
+
+    /// Convert a non-computed property (the identifier in `obj.property`)
+    /// into a Property. Nothing is evaluated. Shared by both executors.
+    pub(super) fn from_static_name(property: &Expr, sr: SourceRange) -> Result<Self, KclError> {
+        let Expr::Name(identifier) = property else {
+            // Should actually be impossible because the parser would reject it.
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                "Object expressions like `obj.property` must use simple identifier names, not complex expressions"
+                    .to_owned(),
+                vec![sr],
+            )));
+        };
+        Ok(Property::String(identifier.to_string()))
     }
 
     /// Convert an already-evaluated computed-property value (the expression
@@ -7881,6 +8184,147 @@ a = PI * 2
         let result = parse_execute(deny).await.unwrap();
         assert_eq!(result.exec_state.issues().len(), 1);
         assert_eq!(result.exec_state.issues()[0].severity, Severity::Error);
+    }
+
+    /// KCL 3.0 renamed `@warnings` to `@diagnostics`. Under KCL 3.0-preview
+    /// or later, `@diagnostics` customizes diagnostics the way `@warnings`
+    /// does in earlier versions.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn diagnostics_attribute_in_v3() {
+        let warn = "@settings(kclVersion = \"3.0-preview\")\na = PI * 2\n";
+        let result = parse_execute(warn).await.unwrap();
+        let issues = result.exec_state.issues();
+        assert_eq!(issues.len(), 1, "{issues:#?}");
+        assert_eq!(issues[0].severity, Severity::Warning);
+        assert_eq!(issues[0].tag, crate::errors::Tag::UnknownNumericUnits);
+
+        let allow = "@settings(kclVersion = \"3.0-preview\")\n@diagnostics(allow = unknownUnits)\na = PI * 2\n";
+        let result = parse_execute(allow).await.unwrap();
+        assert!(
+            result.exec_state.issues().is_empty(),
+            "{:#?}",
+            result.exec_state.issues()
+        );
+
+        let deny = "@settings(kclVersion = \"3.0-preview\")\n@diagnostics(deny = [unknownUnits])\na = PI * 2\n";
+        let result = parse_execute(deny).await.unwrap();
+        let issues = result.exec_state.issues();
+        assert_eq!(issues.len(), 1, "{issues:#?}");
+        assert_eq!(issues[0].severity, Severity::Error);
+        assert_eq!(issues[0].tag, crate::errors::Tag::UnknownNumericUnits);
+    }
+
+    /// Before KCL 3.0, `@diagnostics` is not an attribute: it gets the usual
+    /// unknown-annotation warning and has no effect, while `@warnings` keeps
+    /// working.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn diagnostics_attribute_is_unknown_before_v3() {
+        for version in ["1.0", "2.0"] {
+            let code = format!("@settings(kclVersion = {version})\n@diagnostics(allow = unknownUnits)\na = PI * 2\n");
+            let result = parse_execute(&code).await.unwrap();
+            let issues = result.exec_state.issues();
+            assert_eq!(issues.len(), 2, "code={code}, issues={issues:#?}");
+            assert_eq!(issues[0].severity, Severity::Warning);
+            assert_eq!(issues[0].message, "Unknown annotation");
+            assert_eq!(
+                &code[issues[0].source_range.start()..issues[0].source_range.end()],
+                "@diagnostics(allow = unknownUnits)"
+            );
+            assert_eq!(issues[1].severity, Severity::Warning);
+            assert_eq!(issues[1].tag, crate::errors::Tag::UnknownNumericUnits);
+
+            let code = format!("@settings(kclVersion = {version})\n@warnings(allow = unknownUnits)\na = PI * 2\n");
+            let result = parse_execute(&code).await.unwrap();
+            assert!(
+                result.exec_state.issues().is_empty(),
+                "code={code}, issues={:#?}",
+                result.exec_state.issues()
+            );
+        }
+    }
+
+    /// Errors for a malformed attribute name the attribute that was written:
+    /// `warnings` before KCL 3.0 and `diagnostics` in KCL 3.0-preview or
+    /// later.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn diagnostics_attribute_errors_use_the_attribute_name() {
+        for (version, attr, noun) in [
+            ("1.0", "warnings", "warning"),
+            ("2.0", "warnings", "warning"),
+            ("\"3.0-preview\"", "diagnostics", "diagnostic"),
+        ] {
+            let settings = format!("@settings(kclVersion = {version})\n");
+
+            let code = format!("{settings}@{attr}\n");
+            let error = parse_execute(&code).await.unwrap_err();
+            assert_eq!(error.message(), format!("Empty `{attr}` annotation"), "code={code}");
+
+            let code = format!("{settings}@{attr}(warn = unknownUnits)\n");
+            let error = parse_execute(&code).await.unwrap_err();
+            assert_eq!(
+                error.message(),
+                format!("Unexpected {attr} key: `warn`; expected one of `allow`, `deny`"),
+                "code={code}"
+            );
+
+            let code = format!("{settings}@{attr}(allow = 1)\n");
+            let error = parse_execute(&code).await.unwrap_err();
+            assert_eq!(
+                error.message(),
+                format!(
+                    "Unexpected {attr} value, expected a name or array of names, e.g., `unknownUnits` or `[unknownUnits, deprecated]`"
+                ),
+                "code={code}"
+            );
+
+            let code = format!("{settings}@{attr}(allow = bogus)\n");
+            let error = parse_execute(&code).await.unwrap_err();
+            let expected_prefix = format!("Unexpected {noun} value: `bogus`; accepted values: unknownUnits, ");
+            assert!(
+                error.message().starts_with(&expected_prefix),
+                "code={code}, message={}",
+                error.message()
+            );
+        }
+    }
+
+    /// KCL 3.0: using the old `@warnings` name is a non-fatal error that
+    /// explains the rename and offers the fix. The attribute is ignored, so
+    /// the warning it tried to allow is still reported.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn warnings_attribute_is_renamed_in_v3() {
+        let code = "@settings(kclVersion = \"3.0-preview\")\n@warnings(allow = unknownUnits)\na = PI * 2\n";
+        let result = parse_execute(code).await.unwrap();
+        let issues = result.exec_state.issues();
+        assert_eq!(issues.len(), 2, "{issues:#?}");
+
+        let renamed = &issues[0];
+        assert_eq!(renamed.severity, Severity::Error);
+        assert_eq!(
+            renamed.message,
+            "The `@warnings` attribute was renamed to `@diagnostics` in KCL 3.0, so this attribute is ignored. Replace `@warnings` with `@diagnostics`; its `allow` and `deny` properties are unchanged."
+        );
+        assert_eq!(
+            &code[renamed.source_range.start()..renamed.source_range.end()],
+            "@warnings(allow = unknownUnits)"
+        );
+        let suggestion = renamed.suggestion.as_ref().unwrap();
+        assert_eq!(suggestion.title, "Rename to `@diagnostics`");
+        assert_eq!(
+            suggestion.apply(code),
+            "@settings(kclVersion = \"3.0-preview\")\n@diagnostics(allow = unknownUnits)\na = PI * 2\n"
+        );
+
+        assert_eq!(issues[1].severity, Severity::Warning);
+        assert_eq!(issues[1].tag, crate::errors::Tag::UnknownNumericUnits);
+
+        // Since the attribute is ignored, its properties aren't checked.
+        let code = "@settings(kclVersion = \"3.0-preview\")\n@warnings(allow = bogus)\n";
+        let result = parse_execute(code).await.unwrap();
+        let issues = result.exec_state.issues();
+        assert_eq!(issues.len(), 1, "{issues:#?}");
+        assert_eq!(issues[0].severity, Severity::Error);
+        assert!(issues[0].message.starts_with("The `@warnings` attribute was renamed"));
     }
 
     #[tokio::test(flavor = "multi_thread")]

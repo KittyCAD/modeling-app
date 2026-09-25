@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties axial-fan.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": -0.27487875471160805,
+      "y": -1.9201458561965268,
+      "z": 12.500000000000002
+    },
+    "dimensions": {
+      "x": 171.48694119926074,
+      "y": 174.7774754022314,
+      "z": 25.000000000000004
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 79488.84092079825
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 82.58606560656324
+  }
+}

@@ -54,7 +54,8 @@ export default class RustContext {
     public readonly wasmInstancePromise: Promise<ModuleType>,
     private readonly engineCommandManager: ConnectionManager,
     public readonly settingsActor: SettingsActorType,
-    private projectId = 0
+    private projectId = 0,
+    private readonly geometryOnly = false
   ) {
     wasmInstancePromise
       .then((instance) => this.createFromInstance(instance))
@@ -68,20 +69,11 @@ export default class RustContext {
     const ctxInstance = new this.rustInstance.Context(
       this.engineCommandManager,
       projectFsManager,
-      undefined
+      undefined,
+      this.geometryOnly
     )
 
     return ctxInstance
-  }
-
-  /** Create a new Context instance for operations that need a separate context (e.g., transpilation) */
-  async createNewContext(): Promise<Context> {
-    const instance = await this.wasmInstancePromise
-    return new instance.Context(
-      this.engineCommandManager,
-      projectFsManager,
-      undefined
-    )
   }
 
   private createFromInstance(instance: ModuleType) {
@@ -90,7 +82,8 @@ export default class RustContext {
     const ctxInstance = new this.rustInstance.Context(
       this.engineCommandManager,
       projectFsManager,
-      undefined
+      undefined,
+      this.geometryOnly
     )
 
     this.ctxInstance = ctxInstance

@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties translate_after_fillet.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": 10.0,
+      "y": -0.9375000000000002,
+      "z": 0.0
+    },
+    "dimensions": {
+      "x": 1.0776000000000003,
+      "y": 3.1250000000000004,
+      "z": 1.0776
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 8.727044207412076
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 0.0010476170424500904
+  }
+}

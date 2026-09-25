@@ -1,16 +1,16 @@
+use std::fmt::Write;
 use std::hint::black_box;
 
+use criterion::BenchmarkId;
 use criterion::Criterion;
 use criterion::criterion_group;
 use criterion::criterion_main;
 
 pub fn bench_parse(c: &mut Criterion) {
     for (name, file) in [
-        ("pipes_on_pipes", PIPES_PROGRAM),
         ("big_kitt", KITT_PROGRAM),
         ("cube", CUBE_PROGRAM),
         ("math", MATH_PROGRAM),
-        ("mike_stress_test", MIKE_STRESS_TEST_PROGRAM),
         ("koch snowflake", LSYSTEM_KOCH_SNOWFLAKE_PROGRAM),
         ("nested function calls", NESTED_FN_CALLS),
         ("big_sketch_block", BIG_SKETCH_BLOCK),
@@ -23,14 +23,81 @@ pub fn bench_parse(c: &mut Criterion) {
     }
 }
 
+/// Measure how mock execution scales with the number of legacy line() calls.
+/// Generate and parse each program outside the timed loop to isolate execution.
+pub fn bench_mock(c: &mut Criterion) {
+    let mut group = c.benchmark_group("no_engine_mock_execute_mike_stress_test");
+    for n in [1000, 2000, 3000, 4000, 5000, 6000] {
+        let program = kcl_lib::Program::parse_no_errs(&mike_stress_test_program(n)).unwrap();
+        group.bench_with_input(BenchmarkId::from_parameter(n), &program, |b, program| {
+            let rt = tokio::runtime::Runtime::new().unwrap();
+            let ctx = rt.block_on(async { kcl_lib::ExecutorContext::new_mock(None).await });
+            b.iter(|| {
+                if let Err(err) = rt.block_on(async {
+                    // Subsequent runs set use_previous_memory to true, because that's what the app
+                    // uses in production.
+                    ctx.run_mock(black_box(program), &Default::default()).await?;
+                    ctx.close().await;
+                    Ok::<(), anyhow::Error>(())
+                }) {
+                    panic!("Failed to execute program: {err}");
+                }
+            })
+        });
+    }
+    group.finish();
+}
+
+fn mike_stress_test_program(n: usize) -> String {
+    // Intentionally exercise legacy sketch cloning, as in the original stress test.
+    let mut program =
+        String::from("@settings(kclVersion = \"1.0\")\npart001 = startSketchOn(XY)\n  |> startProfile(at = [1, 0])\n");
+    // Trace n edges of a regular polygon; close() supplies the final edge.
+    for i in 1..=n {
+        let angle = std::f64::consts::TAU * i as f64 / (n + 1) as f64;
+        writeln!(
+            program,
+            "  |> line(endAbsolute = [{}, {}])",
+            libm::cos(angle),
+            libm::sin(angle)
+        )
+        .unwrap();
+    }
+    program.push_str("  |> close(%)\n  |> extrude(length = 5)\n");
+    program
+}
+
+/// Measure how mock execution scales with the Koch snowflake's iteration count.
+/// Parameterize and parse the existing L-system program outside the timed loop.
+pub fn bench_mock_koch_snowflake(c: &mut Criterion) {
+    let mut group = c.benchmark_group("no_engine_mock_execute_koch_snowflake");
+    assert!(LSYSTEM_KOCH_SNOWFLAKE_PROGRAM.contains("iterations = 1,"));
+    for iterations in [1, 2, 3, 4] {
+        let source = LSYSTEM_KOCH_SNOWFLAKE_PROGRAM.replace("iterations = 1,", &format!("iterations = {iterations},"));
+        let program = kcl_lib::Program::parse_no_errs(&source).unwrap();
+        group.bench_with_input(BenchmarkId::from_parameter(iterations), &program, |b, program| {
+            let rt = tokio::runtime::Runtime::new().unwrap();
+            let ctx = rt.block_on(async { kcl_lib::ExecutorContext::new_mock(None).await });
+            b.iter(|| {
+                if let Err(err) = rt.block_on(async {
+                    ctx.run_mock(black_box(program), &Default::default()).await?;
+                    ctx.close().await;
+                    Ok::<(), anyhow::Error>(())
+                }) {
+                    panic!("Failed to execute program: {err}");
+                }
+            })
+        });
+    }
+    group.finish();
+}
+
 /// This benchmarks the same sort of code that the ZDS app uses when users
 /// drag a point/line around in sketch mode. This benchmark should correlate with
 /// user-perceived latency in sketch mode.
 pub fn bench_mock_warmed_up(c: &mut Criterion) {
-    for (name, file) in [
-        ("medium_sketch", MEDIUM_SKETCH),
-        ("mike_stress_test_program", MIKE_STRESS_TEST_PROGRAM),
-    ] {
+    {
+        let (name, file) = ("medium_sketch", MEDIUM_SKETCH);
         let program = kcl_lib::Program::parse_no_errs(black_box(file)).unwrap();
         c.bench_function(&format!("mock_execute_{name}"), move |b| {
             let rt = tokio::runtime::Runtime::new().unwrap();
@@ -72,16 +139,22 @@ pub fn recast(c: &mut Criterion) {
     }
 }
 
-criterion_group!(benches, bench_parse, bench_mock_warmed_up, recast);
+criterion_group!(
+    benches,
+    bench_parse,
+    bench_mock,
+    bench_mock_koch_snowflake,
+    bench_mock_warmed_up,
+    recast
+);
 criterion_main!(benches);
 
 const KITT_PROGRAM: &str = include_str!("../e2e/executor/inputs/kittycad_svg.kcl");
-const PIPES_PROGRAM: &str = include_str!("../e2e/executor/inputs/pipes_on_pipes.kcl");
 const CUBE_PROGRAM: &str = include_str!("../e2e/executor/inputs/cube.kcl");
 const MATH_PROGRAM: &str = include_str!("../e2e/executor/inputs/math.kcl");
 const MEDIUM_SKETCH: &str = include_str!("../e2e/executor/inputs/medium_sketch.kcl");
 const MIKE_STRESS_TEST_PROGRAM: &str = include_str!("../tests/mike_stress_test/input.kcl");
-const LSYSTEM_KOCH_SNOWFLAKE_PROGRAM: &str = include_str!("../e2e/executor/inputs/lsystem.kcl");
+const LSYSTEM_KOCH_SNOWFLAKE_PROGRAM: &str = include_str!("../tests/lsystem/input.kcl");
 // Previously had O(c^n) behaviour due to excessive backtracking in the parser, https://github.com/KittyCAD/modeling-app/issues/7866
 const NESTED_FN_CALLS: &str = "extrude(
  close(

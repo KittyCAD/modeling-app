@@ -1,13 +1,16 @@
 import { KEYMAP_FILE_NAME } from '@src/lib/constants'
 import { getAppSettingsFilePath } from '@src/lib/desktop'
+import { FileNotFound } from '@src/lib/fileSystem/fileOperations'
 import fsZds from '@src/lib/fs-zds'
 import { isArray } from '@src/lib/utils'
+import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
 import {
+  createEmptyPersistedKeymap,
   KEYMAP_SCHEMA_VERSION,
   type KeymapArguments,
   type KeymapBinding,
+  normalizePersistedKeymap,
   type PersistedKeymap,
-  createEmptyPersistedKeymap,
 } from '@src/registry/contracts/keymap'
 import { parse, stringify } from 'smol-toml'
 
@@ -16,31 +19,49 @@ export async function getUserKeymapFilePath() {
   return fsZds.join(fsZds.dirname(settingsFilePath), KEYMAP_FILE_NAME)
 }
 
-export async function readUserKeymapFile(): Promise<PersistedKeymap> {
+export async function readUserKeymapFile(
+  fileOperations: FileOperationsRegistryService
+): Promise<PersistedKeymap> {
   const keymapFilePath = await getUserKeymapFilePath()
 
   try {
-    await fsZds.stat(keymapFilePath)
+    await fileOperations.stat(keymapFilePath)
   } catch (error) {
-    if (error === 'ENOENT') {
+    if (error instanceof FileNotFound) {
       return createEmptyPersistedKeymap()
     }
 
     return Promise.reject(error)
   }
 
-  const content = await fsZds.readFile(keymapFilePath, {
-    encoding: 'utf-8',
-  })
+  const content = new TextDecoder().decode(
+    await fileOperations.readFile(keymapFilePath)
+  )
   return parsePersistedKeymap(parse(content))
 }
 
-export async function writeUserKeymapFile(keymap: PersistedKeymap) {
+export async function writeUserKeymapFile(
+  fileOperations: FileOperationsRegistryService,
+  keymap: PersistedKeymap
+) {
   const keymapFilePath = await getUserKeymapFilePath()
-  await fsZds.writeFile(
+  await fileOperations.writeFile(
     keymapFilePath,
-    new TextEncoder().encode(stringify(keymap))
+    new TextEncoder().encode(stringify(serializePersistedKeymap(keymap)))
   )
+}
+
+export function serializePersistedKeymap(keymap: PersistedKeymap) {
+  const normalizedKeymap = normalizePersistedKeymap(keymap)
+  return {
+    version: KEYMAP_SCHEMA_VERSION,
+    bindings: normalizedKeymap.bindings.map(({ when, ...binding }) => {
+      return {
+        ...binding,
+        ...(when && when.length > 0 ? { when, scopes: when } : {}),
+      }
+    }),
+  }
 }
 
 export function parsePersistedKeymap(value: unknown): PersistedKeymap {
@@ -79,18 +100,28 @@ function parsePersistedKeymapBinding(value: unknown): KeymapBinding[] {
       arguments: isKeymapArguments(value.arguments)
         ? value.arguments
         : undefined,
-      scopes: parseKeymapScopes(value),
+      when: parseKeymapWhen(value),
       title: typeof value.title === 'string' ? value.title : undefined,
     },
   ]
 }
 
-function parseKeymapScopes(value: Record<string, unknown>) {
-  if (isArray(value.scopes)) {
-    const scopes = value.scopes.filter(
-      (scope): scope is string => typeof scope === 'string' && scope.length > 0
-    )
-    return scopes.length > 0 ? scopes : undefined
+function parseKeymapWhen(value: Record<string, unknown>) {
+  const condition = isArray(value.when)
+    ? value.when
+    : isArray(value.scopes)
+      ? value.scopes
+      : undefined
+
+  if (condition) {
+    const when = [
+      ...new Set(
+        condition.flatMap((context) =>
+          typeof context === 'string' && context.trim() ? [context.trim()] : []
+        )
+      ),
+    ]
+    return when.length > 0 ? when : undefined
   }
 
   return undefined

@@ -138,7 +138,8 @@ description: Result of parsing runtime_exit_in_reduce.kcl
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
-                        "start": 0
+                        "start": 0,
+                        "type": "Program"
                       },
                       "moduleId": 0,
                       "start": 0,
@@ -186,7 +187,8 @@ description: Result of parsing runtime_exit_in_reduce.kcl
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
-                        "start": 0
+                        "start": 0,
+                        "type": "Program"
                       },
                       "type": "IfExpression",
                       "type": "IfExpression"
@@ -232,7 +234,8 @@ description: Result of parsing runtime_exit_in_reduce.kcl
               "commentStart": 0,
               "end": 0,
               "moduleId": 0,
-              "start": 0
+              "start": 0,
+              "type": "Program"
             },
             "commentStart": 0,
             "end": 0,
@@ -598,6 +601,7 @@ description: Result of parsing runtime_exit_in_reduce.kcl
       },
       "startNodes": []
     },
-    "start": 0
+    "start": 0,
+    "type": "Program"
   }
 }

@@ -35,9 +35,15 @@ async fn cache_test(
         .ok_or_else(|| anyhow::anyhow!("No variations provided for test '{}'", test_name))
         .unwrap();
 
-    let mut ctx = kcl_lib::ExecutorContext::new_with_client(first.settings.clone(), None, None)
-        .await
-        .unwrap();
+    let first_program = kcl_lib::Program::parse_no_errs(first.code).unwrap();
+    let mut ctx = kcl_lib::ExecutorContext::new_with_client(
+        first.settings.clone(),
+        None,
+        None,
+        first_program.language_version().unwrap(),
+    )
+    .await
+    .unwrap();
 
     bust_cache().await;
     let mut img_results = Vec::new();
@@ -133,7 +139,7 @@ async fn kcl_test_cache_change_grid_visualizes_grid_off_to_on() {
     let first = result.first().unwrap();
     let second = result.last().unwrap();
 
-    assert!(first.1 != second.1);
+    assert_ne!(first.1, second.1);
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -174,7 +180,7 @@ async fn kcl_test_cache_change_grid_visualizes_grid_on_to_off() {
     let first = result.first().unwrap();
     let second = result.last().unwrap();
 
-    assert!(first.1 != second.1);
+    assert_ne!(first.1, second.1);
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -215,7 +221,7 @@ async fn kcl_test_cache_change_highlight_edges_changes_visual() {
     let first = result.first().unwrap();
     let second = result.last().unwrap();
 
-    assert!(first.1 != second.1);
+    assert_ne!(first.1, second.1);
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -490,7 +496,9 @@ async fn kcl_test_cache_empty_file_pop_cache_empty_file_planes_work() {
     // Get the current working directory.
     let code = "";
 
-    let ctx = kcl_lib::ExecutorContext::new_with_default_client().await.unwrap();
+    let ctx = kcl_lib::ExecutorContext::new_geometry_only_with_version(kcl_api::KclVersion::V2)
+        .await
+        .unwrap();
     let program = kcl_lib::Program::parse_no_errs(code).unwrap();
     let outcome = ctx.run_with_caching(program).await.unwrap();
 
@@ -705,7 +713,8 @@ profile001 = startProfile(sketch001, at = [281.54, 305.81])
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 extrude(profile001, length = 100)
-    |> translate(z = 100)
+  |> clone()
+  |> translate(z = 100)
 "#
         .to_string(),
     );
@@ -730,10 +739,10 @@ extrude(profile001, length = 100)
     let r1 = result.first().unwrap();
     let r2 = result.last().unwrap();
 
-    assert!(r1.1 != r2.1, "The images should be different");
+    assert_ne!(r1.1, r2.1, "The images should be different");
     // Make sure the outcomes are different.
-    assert!(
-        r1.2.artifact_graph != r2.2.artifact_graph,
+    assert_ne!(
+        r1.2.artifact_graph, r2.2.artifact_graph,
         "The outcomes artifact graphs should be different"
     );
 }
@@ -795,7 +804,7 @@ extrude(profile001, length = 100)"#
     let first = result.first().unwrap();
     let last = result.last().unwrap();
 
-    assert!(first.1 != last.1, "The images should be different for the grid");
+    assert_ne!(first.1, last.1, "The images should be different for the grid");
     assert_eq!(first.2, last.2, "The outcomes should be the same");
 }
 
@@ -915,7 +924,7 @@ import \"rectangle2.kcl\"
 async fn kcl_test_cache_rename_named_view_reports_the_new_name() {
     let code = |view_name: &str| {
         format!(
-            r#"@settings(experimentalFeatures = allow)
+            r#"@settings(kclVersion = "3.0-preview")
 
 plateSketch = sketch(on = XY) {{
   edge1 = line(start = [var 0mm, var 0mm], end = [var 40mm, var 0mm])
@@ -989,7 +998,7 @@ view001 = view::named(
 /// this drives the caching context directly.
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_cache_appended_duplicate_view_name_is_rejected() {
-    let first = r#"@settings(experimentalFeatures = allow)
+    let first = r#"@settings(kclVersion = "3.0-preview", experimentalFeatures = allow)
 
 plateSketch = sketch(on = XY) {
   edge1 = line(start = [var 0mm, var 0mm], end = [var 40mm, var 0mm])
@@ -1021,7 +1030,9 @@ view002 = view::named(
 "#
     );
 
-    let ctx = kcl_lib::ExecutorContext::new_with_default_client().await.unwrap();
+    let ctx = kcl_lib::ExecutorContext::new_geometry_only_with_version(kcl_api::KclVersion::V2)
+        .await
+        .unwrap();
     bust_cache().await;
 
     ctx.run_with_caching(kcl_lib::Program::parse_no_errs(first).unwrap())

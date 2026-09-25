@@ -104,7 +104,61 @@ export class HomePageFixture {
     ).toBeVisible()
   }
 
+  waitForAuthentication = async () => {
+    // A document reload can finish while Auth still hides the Home route.
+    try {
+      await this.page.waitForFunction(() => {
+        const snapshot = window.app?.auth.actor.getSnapshot()
+        return snapshot !== undefined && !snapshot.matches('checkIfLoggedIn')
+      })
+    } catch (error) {
+      let diagnosticTimeout: ReturnType<typeof setTimeout> | undefined
+      try {
+        // Bound this failure-only read so a renderer hang cannot block cleanup.
+        const diagnostic = await Promise.race([
+          this.page
+            .evaluate(() => {
+              const snapshot = window.app?.auth.actor.getSnapshot()
+              return {
+                readyState: document.readyState,
+                visibility: document.visibilityState,
+                focused: document.hasFocus(),
+                appPresent: window.app !== undefined,
+                authStatus: snapshot?.status ?? null,
+                authState: snapshot?.value ?? null,
+                didAuth:
+                  performance.getEntriesByName('code/didAuth', 'mark').length >
+                  0,
+                online: navigator.onLine,
+              }
+            })
+            .catch(() => ({ diagnosticUnavailable: true })),
+          new Promise<{ diagnosticUnavailable: true }>((resolve) => {
+            diagnosticTimeout = setTimeout(
+              () => resolve({ diagnosticUnavailable: true }),
+              2000
+            )
+          }),
+        ])
+        throw new Error(
+          `Home authentication readiness failed: ${JSON.stringify(diagnostic)}`,
+          { cause: error }
+        )
+      } finally {
+        if (diagnosticTimeout) clearTimeout(diagnosticTimeout)
+      }
+    }
+    expect(
+      await this.page.evaluate(() => window.app.auth.actor.getSnapshot().value),
+      'Home startup requires loggedIn authentication'
+    ).toBe('loggedIn')
+  }
+
   projectsLoaded = async () => {
+    // Library defaults are applied during settings initialization after a reload.
+    await this.page.waitForFunction(() =>
+      window.app?.settings.actor.getSnapshot().matches('idle')
+    )
     const projectLink = this.page.getByTestId('project-link').first()
     const noProjects = this.page.getByTestId('projects-none')
     await expect(projectLink.or(noProjects)).toBeVisible()
@@ -127,15 +181,9 @@ export class HomePageFixture {
     await projectCard.click()
   }
 
-  /** Returns the project name in case caller has used the default and needs it */
-  goToModelingScene = async (name = 'testDefault') => {
-    // On web this is a no-op. There is no project view.
-    if (process.env.TARGET === 'web') return ''
-
+  goToModelingScene = async (name = 'test-project') => {
     await this.createAndGoToProject(name)
     await closeOnboardingModalIfPresent(this.page)
-
-    return name
   }
 
   isNativeFileMenuCreated = async () => {

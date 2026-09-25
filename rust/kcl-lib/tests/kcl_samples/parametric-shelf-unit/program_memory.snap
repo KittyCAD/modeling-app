@@ -72,8 +72,8 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "kind": "Custom",
       "objectId": 51,
+      "kind": "Custom",
       "origin": {
         "x": 0.0,
         "y": 0.0,
@@ -105,8 +105,10 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
     "value": 1.93,
     "ty": {
       "type": "Default",
-      "len": "m",
-      "angle": "degrees"
+      "value": {
+        "len": "m",
+        "angle": "degrees"
+      }
     }
   },
   "baseBlock": {
@@ -114,6 +116,8 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -276,17 +280,17 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 31,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -342,8 +346,8 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "m"
+        "units": "m",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -356,8 +360,10 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
     "value": 0.37,
     "ty": {
       "type": "Default",
-      "len": "m",
-      "angle": "degrees"
+      "value": {
+        "len": "m",
+        "angle": "degrees"
+      }
     }
   },
   "baseHeight": {
@@ -365,8 +371,10 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
     "value": 0.05,
     "ty": {
       "type": "Default",
-      "len": "m",
-      "angle": "degrees"
+      "value": {
+        "len": "m",
+        "angle": "degrees"
+      }
     }
   },
   "baseInset": {
@@ -374,8 +382,10 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
     "value": 0.03,
     "ty": {
       "type": "Default",
-      "len": "m",
-      "angle": "degrees"
+      "value": {
+        "len": "m",
+        "angle": "degrees"
+      }
     }
   },
   "baseProfile": {
@@ -395,17 +405,21 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
                       {
                         "n": -0.48,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -413,17 +427,21 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
                       {
                         "n": -0.48,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": -0.37,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -515,17 +533,21 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
                       {
                         "n": -0.48,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": -0.37,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -533,17 +555,21 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
                       {
                         "n": 0.48,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": -0.37,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -635,17 +661,21 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
                       {
                         "n": 0.48,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": -0.37,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -653,17 +683,21 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
                       {
                         "n": 0.48,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -755,17 +789,21 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
                       {
                         "n": 0.48,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -773,17 +811,21 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
                       {
                         "n": -0.48,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -968,17 +1010,17 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 31,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -1049,8 +1091,10 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
     "value": 0.96,
     "ty": {
       "type": "Default",
-      "len": "m",
-      "angle": "degrees"
+      "value": {
+        "len": "m",
+        "angle": "degrees"
+      }
     }
   },
   "firstShelf": {
@@ -1058,6 +1102,8 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -1220,17 +1266,17 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 51,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 50.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -1286,8 +1332,8 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "m"
+        "units": "m",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -1300,8 +1346,8 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "kind": "Custom",
       "objectId": 51,
+      "kind": "Custom",
       "origin": {
         "x": 0.0,
         "y": 0.0,
@@ -1345,17 +1391,21 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
                       {
                         "n": -0.48,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -1363,17 +1413,21 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
                       {
                         "n": -0.48,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": -0.4,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -1465,17 +1519,21 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
                       {
                         "n": -0.48,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": -0.4,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -1483,17 +1541,21 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
                       {
                         "n": 0.48,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": -0.4,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -1585,17 +1647,21 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
                       {
                         "n": 0.48,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": -0.4,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -1603,17 +1669,21 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
                       {
                         "n": 0.48,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -1705,17 +1775,21 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
                       {
                         "n": 0.48,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -1723,17 +1797,21 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
                       {
                         "n": -0.48,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -1918,17 +1996,17 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 51,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 50.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -2098,17 +2176,17 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 31,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -2272,17 +2350,17 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 51,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 50.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -2446,17 +2524,17 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 0,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -2518,21 +2596,17 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
   },
   "line1": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "line1"
   },
   "line2": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "line2"
   },
   "line3": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "line3"
   },
   "line4": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "line4"
   },
@@ -2541,8 +2615,10 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
     "value": 0.02,
     "ty": {
       "type": "Default",
-      "len": "m",
-      "angle": "degrees"
+      "value": {
+        "len": "m",
+        "angle": "degrees"
+      }
     }
   },
   "region001": {
@@ -2649,17 +2725,17 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 31,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -2715,8 +2791,8 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "m"
+      "units": "m",
+      "isClosed": "explicitly"
     }
   },
   "region002": {
@@ -2823,17 +2899,17 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 51,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 50.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -2889,8 +2965,8 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "m"
+      "units": "m",
+      "isClosed": "explicitly"
     }
   },
   "shelfBoardCount": {
@@ -2898,8 +2974,10 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
     "value": 5.0,
     "ty": {
       "type": "Default",
-      "len": "m",
-      "angle": "degrees"
+      "value": {
+        "len": "m",
+        "angle": "degrees"
+      }
     }
   },
   "shelfDepth": {
@@ -2907,8 +2985,10 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
     "value": 0.4,
     "ty": {
       "type": "Default",
-      "len": "m",
-      "angle": "degrees"
+      "value": {
+        "len": "m",
+        "angle": "degrees"
+      }
     }
   },
   "shelfSpacing": {
@@ -2916,8 +2996,10 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
     "value": 0.386,
     "ty": {
       "type": "Default",
-      "len": "m",
-      "angle": "degrees"
+      "value": {
+        "len": "m",
+        "angle": "degrees"
+      }
     }
   },
   "shelfStartZ": {
@@ -2925,8 +3007,10 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
     "value": 0.05,
     "ty": {
       "type": "Default",
-      "len": "m",
-      "angle": "degrees"
+      "value": {
+        "len": "m",
+        "angle": "degrees"
+      }
     }
   },
   "shelfThickness": {
@@ -2934,8 +3018,10 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
     "value": 0.02,
     "ty": {
       "type": "Default",
-      "len": "m",
-      "angle": "degrees"
+      "value": {
+        "len": "m",
+        "angle": "degrees"
+      }
     }
   },
   "shelfWidth": {
@@ -2943,8 +3029,10 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
     "value": 0.96,
     "ty": {
       "type": "Default",
-      "len": "m",
-      "angle": "degrees"
+      "value": {
+        "len": "m",
+        "angle": "degrees"
+      }
     }
   },
   "shelves": {
@@ -2955,6 +3043,8 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -3117,17 +3207,17 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 51,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 50.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -3183,8 +3273,8 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "m"
+            "units": "m",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -3197,6 +3287,8 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -3359,17 +3451,17 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 51,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 50.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -3425,8 +3517,8 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "m"
+            "units": "m",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -3439,6 +3531,8 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -3601,17 +3695,17 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 51,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 50.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -3667,8 +3761,8 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "m"
+            "units": "m",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -3681,6 +3775,8 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -3843,17 +3939,17 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 51,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 50.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -3909,8 +4005,8 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "m"
+            "units": "m",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -3923,6 +4019,8 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -4085,17 +4183,17 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 51,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 50.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -4151,8 +4249,8 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "m"
+            "units": "m",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -4165,6 +4263,8 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -4327,17 +4427,17 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 51,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 50.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -4393,8 +4493,8 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "m"
+            "units": "m",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -4409,6 +4509,8 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -4571,17 +4673,17 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 0,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -4637,8 +4739,8 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "m"
+        "units": "m",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -4651,8 +4753,10 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
     "value": 0.98,
     "ty": {
       "type": "Default",
-      "len": "m",
-      "angle": "degrees"
+      "value": {
+        "len": "m",
+        "angle": "degrees"
+      }
     }
   },
   "sidePanelProfile": {
@@ -4672,17 +4776,21 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
                       {
                         "n": -0.5,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": -0.4,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -4690,17 +4798,21 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
                       {
                         "n": -0.48,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": -0.4,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -4792,17 +4904,21 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
                       {
                         "n": -0.48,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": -0.4,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -4810,17 +4926,21 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
                       {
                         "n": -0.48,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -4912,17 +5032,21 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
                       {
                         "n": -0.48,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -4930,17 +5054,21 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
                       {
                         "n": -0.5,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -5032,17 +5160,21 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
                       {
                         "n": -0.5,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -5050,17 +5182,21 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
                       {
                         "n": -0.5,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": -0.4,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -5152,17 +5288,21 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
                       {
                         "n": -0.48,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -5170,17 +5310,21 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
                       {
                         "n": 0.0,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -5366,17 +5510,17 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 0,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -5546,17 +5690,17 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 0,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -5612,8 +5756,8 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "m"
+      "units": "m",
+      "isClosed": "explicitly"
     }
   },
   "sidePanels": {
@@ -5624,6 +5768,8 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -5786,17 +5932,17 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 0,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -5852,8 +5998,8 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "m"
+            "units": "m",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -5866,6 +6012,8 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -6028,17 +6176,17 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 0,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -6094,8 +6242,8 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "m"
+            "units": "m",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -6110,8 +6258,10 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
     "value": 6.0,
     "ty": {
       "type": "Default",
-      "len": "m",
-      "angle": "degrees"
+      "value": {
+        "len": "m",
+        "angle": "degrees"
+      }
     }
   },
   "unitDepth": {
@@ -6119,8 +6269,10 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
     "value": 0.4,
     "ty": {
       "type": "Default",
-      "len": "m",
-      "angle": "degrees"
+      "value": {
+        "len": "m",
+        "angle": "degrees"
+      }
     }
   },
   "unitHeight": {
@@ -6128,8 +6280,10 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
     "value": 2.0,
     "ty": {
       "type": "Default",
-      "len": "m",
-      "angle": "degrees"
+      "value": {
+        "len": "m",
+        "angle": "degrees"
+      }
     }
   },
   "unitWidth": {
@@ -6137,8 +6291,10 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
     "value": 1.0,
     "ty": {
       "type": "Default",
-      "len": "m",
-      "angle": "degrees"
+      "value": {
+        "len": "m",
+        "angle": "degrees"
+      }
     }
   }
 }

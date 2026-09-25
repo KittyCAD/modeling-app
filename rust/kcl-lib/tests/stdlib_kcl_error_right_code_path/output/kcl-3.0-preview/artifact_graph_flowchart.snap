@@ -1,0 +1,6 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Artifact graph flowchart stdlib_kcl_error_right_code_path.kcl
+extension: md
+snapshot_kind: binary
+---

@@ -1,0 +1,16 @@
+fn cube(pos, scale) {
+  sg = startSketchOn(XY)
+    |> startProfile(at = pos)
+    |> line(end = [0, scale])
+    |> line(end = [scale, 0])
+    |> line(end = [0, -scale])
+
+  return sg
+}
+part001 = cube(pos = [0, 0], scale = 20)
+  |> close()
+  |> extrude(length = 20)
+
+part002 = startSketchOn(part001, face = END)
+  |> circle(center = [0, 0], radius = 5)
+  |> extrude(length = 5)

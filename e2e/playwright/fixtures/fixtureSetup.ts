@@ -16,6 +16,10 @@ import fsp from 'fs/promises'
 
 import type { Settings } from '@rust/kcl-lib/bindings/Settings'
 
+import {
+  attachRendererCrashDiagnostics,
+  startRendererCrashDiagnostics,
+} from '@e2e/playwright/fixtures/electronCrashDiagnostics'
 import { CmdBarFixture } from '@e2e/playwright/fixtures/cmdBarFixture'
 import { CopilotFixture } from '@e2e/playwright/fixtures/copilotFixture'
 import { EditorFixture } from '@e2e/playwright/fixtures/editorFixture'
@@ -33,6 +37,7 @@ import {
 } from '@e2e/playwright/storageStates'
 import {
   PLAYWRIGHT_LAYOUT_SETTINGS,
+  PLAYWRIGHT_TEST_SCOPE_KEY,
   getUtils,
   settingsToToml,
   setup,
@@ -46,6 +51,42 @@ const TEST_PROJECT_SETTINGS =
   !isArray(TEST_SETTINGS.project)
     ? TEST_SETTINGS.project
     : undefined
+
+function scopedInitScript(script: unknown, arg: unknown, testScope: string) {
+  const serializedArg = arg === undefined ? 'undefined' : JSON.stringify(arg)
+  if (serializedArg === undefined) {
+    throw new Error('Unable to serialize Playwright init-script argument')
+  }
+
+  let invocation: string
+  if (typeof script === 'function') {
+    invocation = `(${script.toString()})(${serializedArg})`
+  } else if (typeof script === 'string') {
+    invocation = script
+  } else if (
+    typeof script === 'object' &&
+    script !== null &&
+    'content' in script &&
+    typeof script.content === 'string'
+  ) {
+    invocation = script.content
+  } else if (
+    typeof script === 'object' &&
+    script !== null &&
+    'path' in script &&
+    typeof script.path === 'string'
+  ) {
+    invocation = fs.readFileSync(script.path, 'utf8')
+  } else {
+    throw new Error('Unsupported Playwright init script')
+  }
+
+  return {
+    content: `if (sessionStorage.getItem(${JSON.stringify(
+      PLAYWRIGHT_TEST_SCOPE_KEY
+    )}) === ${JSON.stringify(testScope)}) { ${invocation} }`,
+  }
+}
 
 export class AuthenticatedApp {
   public readonly page: Page
@@ -66,6 +107,10 @@ export class AuthenticatedApp {
     const u = await getUtils(this.page)
 
     await this.page.addInitScript(async (code) => {
+      // Persistent WebKit starts on about:blank, where localStorage is unavailable.
+      if (window.location.protocol === 'about:') {
+        return
+      }
       localStorage.setItem('persistCode', code)
       ;(window as any).playwrightSkipFilePicker = true
     }, code)
@@ -97,7 +142,16 @@ export interface Fixtures {
   ) => Promise<{ dir: string }>
 }
 
+export interface ElectronZooLaunchOptions {
+  appDirectory?: string
+  executablePath?: string
+}
+
 export class ElectronZoo {
+  private disposed = false
+  private disposal: Promise<void> | undefined
+  private launching: Promise<ElectronApplication> | undefined
+  public rendererCrashed = false
   public available: boolean = true
   public electron!: ElectronApplication
   public firstUrl = ''
@@ -106,8 +160,33 @@ export class ElectronZoo {
 
   public page!: Page
   public context!: BrowserContext
+  private tracingEnabled = false
 
-  constructor() {}
+  constructor(private readonly launchOptions: ElectronZooLaunchOptions = {}) {}
+
+  async dispose(testInfo: TestInfo) {
+    this.disposed = true
+    this.available = false
+    if (!this.electron && this.launching) {
+      try {
+        this.electron = await this.launching
+      } catch {
+        return
+      }
+    }
+    if (!this.electron) return
+    this.disposal ??= (async () => {
+      await attachRendererCrashDiagnostics(this.electron, testInfo)
+      // Bypass unload handlers in an unresponsive renderer before quitting.
+      await Promise.all(
+        this.electron
+          .windows()
+          .map((page) => page.close({ runBeforeUnload: false }))
+      )
+      await this.electron.close()
+    })()
+    await this.disposal
+  }
 
   // Help remote end by signaling we're done with the connection.
   // If it takes longer than 10s to stop, just resolve.
@@ -115,15 +194,18 @@ export class ElectronZoo {
     await this.page.evaluate(async () => {
       return new Promise((resolve) => {
         if (
-          window.engineCommandManager.connection &&
-          window.engineCommandManager.started &&
-          window.engineCommandManager.connection.websocket?.readyState ===
+          !window.engineCommandManager.connection ||
+          !window.engineCommandManager.started ||
+          window.engineCommandManager.connection.websocket?.readyState !==
             WebSocket.OPEN
         ) {
           return resolve(undefined)
         }
 
-        window.engineCommandManager.tearDown()
+        window.engineCommandManager.tearDown({
+          route: 'user-requested',
+          initiatedBy: 'client',
+        })
 
         // Keep polling (per js event tick) until state is Disconnected.
         const timeA = Date.now()
@@ -149,7 +231,9 @@ export class ElectronZoo {
       })
     })
 
-    await this.context.tracing.stopChunk({ path: 'trace.zip' })
+    if (this.tracingEnabled) {
+      await this.context.tracing.stopChunk({ path: 'trace.zip' })
+    }
 
     // Only after cleanup we're ready.
     this.available = true
@@ -157,8 +241,12 @@ export class ElectronZoo {
 
   async createInstanceIfMissing(
     testInfo: TestInfo,
-    userFeatures: readonly Feature[] = []
+    userFeatures: readonly Feature[] = [],
+    setupTimeout = 120_000
   ) {
+    if (this.disposed) {
+      throw new Error('Electron fixture has been disposed')
+    }
     // Create or otherwise clear the folder.
     this.projectDirName = testInfo.outputPath('electron-test-projects-dir')
 
@@ -167,18 +255,23 @@ export class ElectronZoo {
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     const that = this
 
+    const appDirectory = this.launchOptions.appDirectory
+      ? path.resolve(this.launchOptions.appDirectory)
+      : undefined
+    const executablePath =
+      this.launchOptions.executablePath ??
+      (process.env.ELECTRON_OVERRIDE_DIST_PATH
+        ? process.env.ELECTRON_OVERRIDE_DIST_PATH + 'electron'
+        : undefined)
     const options = {
-      args: ['.', '--no-sandbox'],
+      args: [appDirectory ?? '.', '--no-sandbox'],
+      ...(appDirectory ? { cwd: appDirectory } : {}),
+      timeout: setupTimeout,
       env: {
         ...process.env,
         NODE_ENV: 'test',
       },
-      ...(process.env.ELECTRON_OVERRIDE_DIST_PATH
-        ? {
-            executablePath:
-              process.env.ELECTRON_OVERRIDE_DIST_PATH + 'electron',
-          }
-        : {}),
+      ...(executablePath !== undefined ? { executablePath } : {}),
       ...(process.env.PLAYWRIGHT_RECORD_VIDEO
         ? {
             recordVideo: {
@@ -191,16 +284,25 @@ export class ElectronZoo {
 
     // Do this once and then reuse window on subsequent calls.
     if (!this.electron) {
-      this.electron = await electron.launch(options)
+      this.launching = electron.launch(options)
+      this.electron = await this.launching
+      if (this.disposed) {
+        await this.dispose(testInfo)
+        throw new Error('Electron fixture setup was cancelled')
+      }
 
       // Mac takes quite a long time to create the first window in CI.
       // Turns out we can't trust firstWindow() either. So loop.
       let timeoutId: ReturnType<typeof setTimeout>
       const tryToGetWindowPage = () =>
-        new Promise((resolve) => {
+        new Promise((resolve, reject) => {
           const fn = () => {
             this.page = this.electron.windows()[0]
             timeoutId = setTimeout(() => {
+              if (this.disposed) {
+                reject(new Error('Electron fixture setup was cancelled'))
+                return
+              }
               if (this.page) {
                 clearTimeout(timeoutId)
                 return resolve(undefined)
@@ -214,7 +316,12 @@ export class ElectronZoo {
       await tryToGetWindowPage()
 
       this.context = this.electron.context()
-      await this.context.tracing.start({ screenshots: true, snapshots: true })
+      const trace = testInfo.project.use.trace
+      this.tracingEnabled =
+        trace !== 'off' && !(typeof trace === 'object' && trace.mode === 'off')
+      if (this.tracingEnabled) {
+        await this.context.tracing.start({ screenshots: true, snapshots: true })
+      }
 
       // We need to patch this because addInitScript will bind too late in our
       // electron tests, never running. We need to call reload() after each call
@@ -223,9 +330,10 @@ export class ElectronZoo {
       // eslint-disable-next-line @typescript-eslint/unbound-method
       const oldContextAddInitScript = this.context.addInitScript
       this.context.addInitScript = async function (a, b) {
-        // @ts-ignore pretty sure way out of tsc's type checking capabilities.
-        // This code works perfectly fine.
-        const disposable = await oldContextAddInitScript.apply(this, [a, b])
+        const disposable = await oldContextAddInitScript.call(
+          this,
+          scopedInitScript(a, b, that.projectDirName)
+        )
         await that.page.reload()
         return disposable
       }
@@ -234,18 +342,31 @@ export class ElectronZoo {
       // eslint-disable-next-line @typescript-eslint/unbound-method
       const oldPageAddInitScript = this.page.addInitScript
       this.page.addInitScript = async function (a: any, b: any) {
-        // @ts-ignore pretty sure way out of tsc's type checking capabilities.
-        // This code works perfectly fine.
-        const disposable = await oldPageAddInitScript.apply(this, [a, b])
+        const disposable = await oldPageAddInitScript.call(
+          this,
+          scopedInitScript(a, b, that.projectDirName)
+        )
         await that.page.reload()
         return disposable
       }
     }
 
-    await this.context.tracing.startChunk()
+    await startRendererCrashDiagnostics(this.electron)
+    if (this.tracingEnabled) {
+      await this.context.tracing.startChunk()
+    }
+
+    await this.page.evaluate(
+      ({ key, testScope }) => sessionStorage.setItem(key, testScope),
+      {
+        key: PLAYWRIGHT_TEST_SCOPE_KEY,
+        testScope: this.projectDirName,
+      }
+    )
 
     // THIS IS ABSOLUTELY NECESSARY TO CHANGE THE PROJECT DIRECTORY BETWEEN
     // TESTS BECAUSE OF THE ELECTRON INSTANCE REUSE.
+    await this.stopSettingsWrites()
     await this.electron?.evaluate(({ app }, projectDirName) => {
       // @ts-ignore can't declaration merge see main.ts
       app.testProperty['TEST_SETTINGS_FILE_KEY'] = projectDirName
@@ -253,7 +374,11 @@ export class ElectronZoo {
 
     await setup(this.context, this.page, testInfo, userFeatures)
 
-    await this.cleanProjectDir()
+    await this.cleanProjectDir({
+      plugins: playwrightPluginSettings({
+        zookeeperEnabled: testInfo.tags.includes('@zookeeper'),
+      }),
+    })
 
     // Create a consistent way to resize the page across electron and web.
     // (lee) I had to do everything in the book to make electron change its
@@ -304,6 +429,8 @@ export class ElectronZoo {
   }
 
   async cleanProjectDir(appSettings?: DeepPartial<Settings>) {
+    await this.stopSettingsWrites()
+
     try {
       if (fs.existsSync(this.projectDirName)) {
         await fsp.rm(this.projectDirName, { recursive: true })
@@ -356,6 +483,18 @@ export class ElectronZoo {
       },
     })
     await fsp.writeFile(tempSettingsFilePath, settingsOverridesToml)
+    await this.page.reload()
+  }
+
+  private async stopSettingsWrites() {
+    // Drain the current save and stop future layout saves before replacing
+    // the settings file or changing its destination. Reload restarts the actor.
+    await this.page.waitForFunction(() => {
+      const actor = window.app?.settings.actor
+      if (!actor?.getSnapshot().matches('idle')) return false
+      actor.stop()
+      return true
+    })
   }
 }
 
@@ -368,7 +507,16 @@ const fixturesForElectron = {
     use: FnUse,
     testInfo: TestInfo
   ) => {
-    await use(tronApp.page)
+    tronApp.rendererCrashed = false
+    const onCrash = () => {
+      tronApp.rendererCrashed = true
+    }
+    tronApp.page.on('crash', onCrash)
+    try {
+      await use(tronApp.page)
+    } finally {
+      tronApp.page.off('crash', onCrash)
+    }
   },
   context: async (
     { tronApp }: { tronApp: ElectronZoo },
@@ -475,8 +623,8 @@ const fixturesBasedOnProcessEnvPlatform = {
     // This forces the page to reload after fs operations.
     let ret
     if (!tronApp) {
-      // OPFS is isolated per instance in Playwright!
-      // In the past, it wasn't: https://github.com/microsoft/playwright/issues/29901
+      // The persistent WebKit fixture clears its origin storage before each
+      // serial test; regular browser contexts isolate OPFS themselves.
       const projects = await fs.getPath('documents')
       const projectDirPath = await fs.resolve(projects, PROJECT_FOLDER)
       ret = async function (fn: (dir: string) => Promise<void>) {
@@ -500,12 +648,26 @@ const fixturesBasedOnProcessEnvPlatform = {
     await use(ret)
   },
   _globalAfterEach: [
-    async ({ page }: { page: Page }, use: FnUse, testInfo: TestInfo) => {
+    async (
+      { page, tronApp }: { page: Page; tronApp?: ElectronZoo },
+      use: FnUse,
+      testInfo: TestInfo
+    ) => {
       await use() // <-- runs the actual test
 
-      const engineLogs: ILog[] = await page.evaluate(
-        () => window.engineDebugger.logs || []
-      )
+      if (
+        tronApp &&
+        (testInfo.status === 'timedOut' || tronApp.rendererCrashed)
+      ) {
+        await tronApp.dispose(testInfo)
+        return
+      }
+
+      await attachRendererCrashDiagnostics(tronApp?.electron, testInfo)
+
+      const engineLogs: ILog[] = await page
+        .evaluate(() => window.engineDebugger?.logs || [])
+        .catch(() => [])
       const formattedLogs: IFormattedLog[] = engineLogs.map((log: ILog) => {
         const newLog: IFormattedLog = {
           ...log,

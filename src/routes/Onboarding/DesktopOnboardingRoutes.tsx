@@ -1,4 +1,5 @@
 import { Spinner } from '@src/components/Spinner'
+import { useAbsoluteFilePath } from '@src/hooks/useAbsoluteFilePath'
 import { useApp } from '@src/lib/boot'
 import { SEARCH_PARAM_ZOOKEEPER_PROMPT_KEY } from '@src/lib/constants'
 import { modifiedColdPlate } from '@src/lib/exampleKcl'
@@ -106,15 +107,29 @@ function Welcome() {
 function Scene() {
   const { projectName, systemIOActor } = useOnboardingProjectIO()
   const thisOnboardingStatus: DesktopOnboardingPath = '/desktop/scene'
+  const currentFilePath = useAbsoluteFilePath()
+  const isBlankFileOpen = Boolean(currentFilePath?.endsWith('blank.kcl'))
+  const [isBlankSceneReady, setIsBlankSceneReady] = useState(isBlankFileOpen)
 
   // Ensure panes are closed
   useOnboardingPanes()
+
+  useEffect(() => {
+    if (isBlankFileOpen) {
+      setIsBlankSceneReady(true)
+    }
+  }, [isBlankFileOpen])
 
   // Things that happen when we load this route
   useEffect(() => {
     if (!projectName) {
       return
     }
+    if (isBlankFileOpen) {
+      return
+    }
+    let cancelled = false
+    setIsBlankSceneReady(false)
     // Create if necessary and navigate to the `blank.kcl` file
     systemIOActor.send({
       type: SystemIOMachineEvents.bulkCreateKCLFilesAndNavigateToFile,
@@ -133,9 +148,17 @@ function Scene() {
           String(PATHS.ONBOARDING),
           thisOnboardingStatus
         ),
+        onSuccess: () => {
+          if (!cancelled) {
+            setIsBlankSceneReady(true)
+          }
+        },
       },
     })
-  }, [systemIOActor, projectName])
+    return () => {
+      cancelled = true
+    }
+  }, [systemIOActor, projectName, isBlankFileOpen])
 
   return (
     <div className="pointer-events-none fixed inset-0 z-50 grid items-end justify-center p-2">
@@ -146,7 +169,17 @@ function Scene() {
           scene is empty. Try right-clicking and dragging to orbit around, and
           scroll to zoom in and out.
         </p>
-        <OnboardingButtons currentSlug="/desktop/scene" platform="desktop" />
+        {!isBlankSceneReady && (
+          <p className="my-4 flex items-center gap-2">
+            <Spinner className="w-5 h-5" />
+            Preparing blank scene...
+          </p>
+        )}
+        <OnboardingButtons
+          currentSlug="/desktop/scene"
+          hideNext={!isBlankSceneReady}
+          platform="desktop"
+        />
       </OnboardingCard>
     </div>
   )
@@ -580,10 +613,10 @@ function Imports() {
           bring files into your project, whether from the sample library or from
           your local drive.
         </p>
-        <h1 className="text-xl font-bold">Insert parts</h1>
+        <h1 className="text-xl font-bold">Import parts</h1>
         <p className="my-4">
           Once a file has been added to your project, you can add it to the
-          scene using insert. Insert is available in the toolbar. This is the
+          scene using Import. Import is available in the toolbar. This is the
           first step to making assemblies!
         </p>
         <OnboardingButtons
@@ -607,9 +640,8 @@ function Exports() {
       <OnboardingCard>
         <h1 className="text-xl font-bold">Exporting</h1>
         <p className="my-4">
-          You can export the currently-opened part by clicking the Export button
-          in the left sidebar. We support exporting to STEP, gLTF, STL, OBJ, and
-          more.
+          You can export the current model by clicking the Export button in the
+          left sidebar. We support exporting to STEP, gLTF, STL, OBJ, and more.
         </p>
         <OnboardingButtons
           currentSlug={thisOnboardingStatus}

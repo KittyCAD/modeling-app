@@ -11,7 +11,9 @@ description: Variables in memory after executing array_range_units_default_count
         "value": 0.0,
         "ty": {
           "type": "Known",
-          "type": "Count"
+          "value": {
+            "type": "Count"
+          }
         }
       },
       {
@@ -19,7 +21,9 @@ description: Variables in memory after executing array_range_units_default_count
         "value": 1.0,
         "ty": {
           "type": "Known",
-          "type": "Count"
+          "value": {
+            "type": "Count"
+          }
         }
       },
       {
@@ -27,7 +31,9 @@ description: Variables in memory after executing array_range_units_default_count
         "value": 2.0,
         "ty": {
           "type": "Known",
-          "type": "Count"
+          "value": {
+            "type": "Count"
+          }
         }
       }
     ]

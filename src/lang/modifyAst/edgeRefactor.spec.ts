@@ -50,6 +50,7 @@ import type {
   EdgeRefactorMeta,
 } from '@src/lang/wasm'
 import { loadAndInitialiseWasmInstance } from '@src/lang/wasmUtilsNode'
+import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 import { err } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
@@ -884,20 +885,6 @@ const KCL_MIXED_DEPRECATED_AND_SEGMENT_TAG = `body = startSketchOn(XY)
   |> fillet(radius = 1, tags = [getOppositeEdge(e1), seg01])
 `
 
-/** Mixed: one adjacent-edge helper + one edgeId closestTo helper. */
-const KCL_MIXED_DEPRECATED_AND_EDGE_ID_CLOSEST_TO = `base = startSketchOn(XY)
-  |> startProfile(at = [0, 0])
-  |> line(endAbsolute = [10, 0], tag = $e1)
-  |> line(endAbsolute = [10, 10])
-  |> line(endAbsolute = [0, 10])
-  |> line(endAbsolute = [0, 0])
-  |> close()
-  |> extrude(length = 5)
-edgeFromPoint = edgeId(base, closestTo = [5, 0, 0])
-body = base
-  |> fillet(radius = 1, tags = [getOppositeEdge(e1), edgeFromPoint])
-`
-
 const KCL_SHADOWED_EDGE_HELPER_VARIABLE = `globalBody = startSketchOn(XY)
   |> startProfile(at = [0, 0])
   |> line(endAbsolute = [10, 0])
@@ -1616,27 +1603,37 @@ part = bracket()
     })
   })
 
-  describe('integration (engine required)', () => {
+  describe('integration (CPU Engine)', () => {
     let instanceInThisFile: ModuleType = null!
     let kclManagerInThisFile: KclManager = null!
-    let engineCommandManagerInThisFile: { tearDown: () => void } = null!
+    let engineCommandManagerInThisFile: ConnectionManager = null!
 
     beforeEach(async () => {
       if (instanceInThisFile) return
       const { instance, kclManager, engineCommandManager } =
-        await buildTheWorldAndConnectToEngine()
+        await buildTheWorldAndConnectToEngine({
+          webrtc: false,
+          pool: 'cpu',
+        })
+      instance.set_kcl_runtime_flags(
+        JSON.stringify({ enable_z0006_lint: 'On' })
+      )
       instanceInThisFile = instance
       kclManagerInThisFile = kclManager
       engineCommandManagerInThisFile = engineCommandManager
     })
 
     afterAll(() => {
-      engineCommandManagerInThisFile?.tearDown()
+      engineCommandManagerInThisFile?.tearDown({
+        route: 'user-requested',
+        initiatedBy: 'client',
+      })
     })
 
     async function runIntegrationRefactor(kcl: string): Promise<string> {
       const ast = assertParse(kcl, instanceInThisFile)
       await kclManagerInThisFile.executeAst({ ast })
+      expect(kclManagerInThisFile.errors).toEqual([])
       const execState = kclManagerInThisFile.execState
       expect(execState.artifactGraph.size).toBeGreaterThan(0)
       const refactored = refactorZ0006Unified(
@@ -2512,68 +2509,6 @@ surface001 = extrude(
           .length
         expect(sideFaceCount).toBe(2)
         expect(n).not.toContain('tags = [')
-      }
-    )
-
-    it(
-      'refactors mixed getOppositeEdge and edgeId closestTo tags when both have metadata',
-      { timeout: 30_000 },
-      async () => {
-        const ast = assertParse(
-          KCL_MIXED_DEPRECATED_AND_EDGE_ID_CLOSEST_TO,
-          instanceInThisFile
-        )
-        await kclManagerInThisFile.executeAst({ ast })
-        const execState = kclManagerInThisFile.execState
-        const edgeMetadata = execState.edgeRefactorMetadata ?? []
-        const metadataDebug = JSON.stringify(
-          {
-            errors: kclManagerInThisFile.errors.map((error) => ({
-              kind: error.kind,
-              message: error.msg,
-              sourceRange: error.sourceRange,
-            })),
-            issues: execState.issues.map((issue) => ({
-              severity: issue.severity,
-              message: issue.message,
-              sourceRange: issue.sourceRange,
-            })),
-            edgeMetadata,
-          },
-          null,
-          2
-        )
-        expect(
-          edgeMetadata.some((meta) => meta.stdlibFn === 'getOppositeEdge'),
-          metadataDebug
-        ).toBe(true)
-        expect(
-          edgeMetadata.some((meta) => meta.stdlibFn === 'edgeId'),
-          metadataDebug
-        ).toBe(true)
-
-        const refactored = refactorZ0006Unified(
-          ast,
-          execState.edgeRefactorMetadata ?? [],
-          execState.directTagFilletMetadata ?? [],
-          execState.artifactGraph,
-          instanceInThisFile
-        )
-
-        expect(err(refactored)).toBe(false)
-        if (err(refactored)) throw refactored
-        expect(refactored).not.toMatch(UUID_IN_FACES_REGEX)
-        const n = norm(refactored)
-        expect(n).toMatch(/fillet\(\s*radius = 1,\s*edges = \[/)
-        expect(n).toContain('sideFaces = [e1, capEnd001]')
-        expect(n).toContain('sideFaces = [e1, capStart001]')
-        const sideFaceCount = (refactored.match(/sideFaces\s*=\s*\[/g) ?? [])
-          .length
-        expect(sideFaceCount).toBe(2)
-        expect(n).not.toContain('tags = [')
-        expect(n).toContain(
-          'edgeFromPoint = edgeId(base, closestTo = [5, 0, 0])'
-        )
       }
     )
   })

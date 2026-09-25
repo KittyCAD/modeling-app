@@ -9,7 +9,7 @@ import {
   serializeProjectConfiguration,
 } from '@src/lang/wasm'
 import { loadAndInitialiseWasmInstance } from '@src/lang/wasmUtilsNode'
-import { OPFS_CLOUD_FEATURE_FLAG } from '@src/lib/constants'
+import { EXPERIMENTAL_POINT_AND_CLICK_FLAG } from '@src/lib/constants'
 import { defaultLayoutConfig } from '@src/lib/layout/configs/default'
 import {
   LATEST_LAYOUT_VERSION,
@@ -238,7 +238,7 @@ describe('testing hiddenOnPlatform', () => {
 
   it('hides feature-gated settings unless the feature is enabled', () => {
     const setting = {
-      hideWithoutFeature: OPFS_CLOUD_FEATURE_FLAG,
+      hideWithoutFeature: EXPERIMENTAL_POINT_AND_CLICK_FLAG,
     } as Setting<unknown>
 
     expect(hiddenOnPlatform(setting, true)).toBe(true)
@@ -247,7 +247,7 @@ describe('testing hiddenOnPlatform', () => {
       hiddenOnPlatform(
         setting,
         false,
-        (feature) => feature === OPFS_CLOUD_FEATURE_FLAG
+        (feature) => feature === EXPERIMENTAL_POINT_AND_CLICK_FLAG
       )
     ).toBe(false)
   })
@@ -255,7 +255,7 @@ describe('testing hiddenOnPlatform', () => {
   it('can scope feature-gated settings to web', () => {
     const setting = {
       hideWithoutFeatureOnPlatform: {
-        web: OPFS_CLOUD_FEATURE_FLAG,
+        web: EXPERIMENTAL_POINT_AND_CLICK_FLAG,
       },
     } as Setting<unknown>
 
@@ -265,24 +265,17 @@ describe('testing hiddenOnPlatform', () => {
       hiddenOnPlatform(
         setting,
         false,
-        (feature) => feature === OPFS_CLOUD_FEATURE_FLAG
+        (feature) => feature === EXPERIMENTAL_POINT_AND_CLICK_FLAG
       )
     ).toBe(false)
   })
 
-  it('keeps libraries visible on desktop and feature-gated on web', () => {
+  it('keeps libraries visible on desktop and web', () => {
     const settings = createSettingsWithProjectLibraries()
     const libraries = settings.app.libraries as Setting
 
     expect(hiddenOnPlatform(libraries, true, () => false)).toBe(false)
-    expect(hiddenOnPlatform(libraries, false, () => false)).toBe(true)
-    expect(
-      hiddenOnPlatform(
-        libraries,
-        false,
-        (feature) => feature === OPFS_CLOUD_FEATURE_FLAG
-      )
-    ).toBe(false)
+    expect(hiddenOnPlatform(libraries, false, () => false)).toBe(false)
   })
 })
 
@@ -328,6 +321,7 @@ describe('project settings serialization regression', () => {
             gizmoType: 'axis',
             enableTouchControls: false,
             useSketchSolveMode: false,
+            showSketchGrid: true,
             snapToGrid: true,
             majorGridSpacing: 2.5,
             minorGridsPerMajor: 5,
@@ -366,6 +360,7 @@ describe('project settings serialization regression', () => {
     expect(serializedToml).toContain('gizmo_type = "axis"')
     expect(serializedToml).toContain('enable_touch_controls = false')
     expect(serializedToml).toContain('use_sketch_solve_mode = false')
+    expect(serializedToml).toContain('show_sketch_grid = true')
     expect(serializedToml).toContain('snap_to_grid = true')
     expect(serializedToml).toContain('major_grid_spacing = 2.5')
     expect(serializedToml).toContain('minor_grids_per_major = 5')
@@ -410,6 +405,7 @@ describe('project settings serialization regression', () => {
     expect(parsedPayload.modeling?.gizmoType).toBe('axis')
     expect(parsedPayload.modeling?.enableTouchControls).toBe(false)
     expect(parsedPayload.modeling?.useSketchSolveMode).toBe(false)
+    expect(parsedPayload.modeling?.showSketchGrid).toBe(true)
     expect(parsedPayload.modeling?.snapToGrid).toBe(true)
     expect(parsedPayload.modeling?.majorGridSpacing).toBe(2.5)
     expect(parsedPayload.modeling?.minorGridsPerMajor).toBe(5)
@@ -685,6 +681,7 @@ describe('project settings serialization regression', () => {
           showModelingMachineState: true,
         },
         modeling: {
+          showSketchGrid: true,
           snapToGrid: true,
           majorGridSpacing: 2.5,
           minorGridsPerMajor: 5,
@@ -709,6 +706,7 @@ describe('project settings serialization regression', () => {
     expect(serializedToml).toContain('[settings.debug]')
     expect(serializedToml).toContain('show_panel = false')
     expect(serializedToml).toContain('show_modeling_machine_state = true')
+    expect(serializedToml).toContain('show_sketch_grid = true')
     expect(serializedToml).toContain('snap_to_grid = true')
     expect(serializedToml).toContain('major_grid_spacing = 2.5')
     expect(serializedToml).toContain('minor_grids_per_major = 5')
@@ -734,6 +732,7 @@ describe('project settings serialization regression', () => {
     expect(parsedProjectPayload.app?.allowOrbitInSketchMode).toBe(true)
     expect(parsedProjectPayload.debug?.showPanel).toBe(false)
     expect(parsedProjectPayload.debug?.showModelingMachineState).toBe(true)
+    expect(parsedProjectPayload.modeling?.showSketchGrid).toBe(true)
     expect(parsedProjectPayload.modeling?.snapToGrid).toBe(true)
     expect(parsedProjectPayload.modeling?.majorGridSpacing).toBe(2.5)
     expect(parsedProjectPayload.modeling?.minorGridsPerMajor).toBe(5)

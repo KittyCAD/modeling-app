@@ -72,6 +72,8 @@ description: Variables in memory after executing named_views_baseline_hide.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -79,10 +81,10 @@ description: Variables in memory after executing named_views_baseline_hide.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1060,
-            "end": 1065,
+            "commentStart": 1058,
+            "end": 1063,
             "moduleId": 0,
-            "start": 1060,
+            "start": 1058,
             "type": "TagDeclarator",
             "value": "edge1"
           },
@@ -93,10 +95,10 @@ description: Variables in memory after executing named_views_baseline_hide.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1131,
-            "end": 1136,
+            "commentStart": 1129,
+            "end": 1134,
             "moduleId": 0,
-            "start": 1131,
+            "start": 1129,
             "type": "TagDeclarator",
             "value": "edge2"
           },
@@ -107,10 +109,10 @@ description: Variables in memory after executing named_views_baseline_hide.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1203,
-            "end": 1208,
+            "commentStart": 1201,
+            "end": 1206,
             "moduleId": 0,
-            "start": 1203,
+            "start": 1201,
             "type": "TagDeclarator",
             "value": "edge3"
           },
@@ -121,10 +123,10 @@ description: Variables in memory after executing named_views_baseline_hide.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1276,
-            "end": 1281,
+            "commentStart": 1274,
+            "end": 1279,
             "moduleId": 0,
-            "start": 1276,
+            "start": 1274,
             "type": "TagDeclarator",
             "value": "edge4"
           },
@@ -146,10 +148,10 @@ description: Variables in memory after executing named_views_baseline_hide.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 1060,
-              "end": 1065,
+              "commentStart": 1058,
+              "end": 1063,
               "moduleId": 0,
-              "start": 1060,
+              "start": 1058,
               "type": "TagDeclarator",
               "value": "edge1"
             },
@@ -170,10 +172,10 @@ description: Variables in memory after executing named_views_baseline_hide.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 1131,
-              "end": 1136,
+              "commentStart": 1129,
+              "end": 1134,
               "moduleId": 0,
-              "start": 1131,
+              "start": 1129,
               "type": "TagDeclarator",
               "value": "edge2"
             },
@@ -194,10 +196,10 @@ description: Variables in memory after executing named_views_baseline_hide.kcl
               10.0
             ],
             "tag": {
-              "commentStart": 1203,
-              "end": 1208,
+              "commentStart": 1201,
+              "end": 1206,
               "moduleId": 0,
-              "start": 1203,
+              "start": 1201,
               "type": "TagDeclarator",
               "value": "edge3"
             },
@@ -218,10 +220,10 @@ description: Variables in memory after executing named_views_baseline_hide.kcl
               10.0
             ],
             "tag": {
-              "commentStart": 1276,
-              "end": 1281,
+              "commentStart": 1274,
+              "end": 1279,
               "moduleId": 0,
-              "start": 1276,
+              "start": 1274,
               "type": "TagDeclarator",
               "value": "edge4"
             },
@@ -234,17 +236,17 @@ description: Variables in memory after executing named_views_baseline_hide.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 18,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -300,8 +302,8 @@ description: Variables in memory after executing named_views_baseline_hide.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "mm"
+        "units": "mm",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -325,10 +327,10 @@ description: Variables in memory after executing named_views_baseline_hide.kcl
             0.0
           ],
           "tag": {
-            "commentStart": 1060,
-            "end": 1065,
+            "commentStart": 1058,
+            "end": 1063,
             "moduleId": 0,
-            "start": 1060,
+            "start": 1058,
             "type": "TagDeclarator",
             "value": "edge1"
           },
@@ -349,10 +351,10 @@ description: Variables in memory after executing named_views_baseline_hide.kcl
             0.0
           ],
           "tag": {
-            "commentStart": 1131,
-            "end": 1136,
+            "commentStart": 1129,
+            "end": 1134,
             "moduleId": 0,
-            "start": 1131,
+            "start": 1129,
             "type": "TagDeclarator",
             "value": "edge2"
           },
@@ -373,10 +375,10 @@ description: Variables in memory after executing named_views_baseline_hide.kcl
             10.0
           ],
           "tag": {
-            "commentStart": 1203,
-            "end": 1208,
+            "commentStart": 1201,
+            "end": 1206,
             "moduleId": 0,
-            "start": 1203,
+            "start": 1201,
             "type": "TagDeclarator",
             "value": "edge3"
           },
@@ -397,10 +399,10 @@ description: Variables in memory after executing named_views_baseline_hide.kcl
             10.0
           ],
           "tag": {
-            "commentStart": 1276,
-            "end": 1281,
+            "commentStart": 1274,
+            "end": 1279,
             "moduleId": 0,
-            "start": 1276,
+            "start": 1274,
             "type": "TagDeclarator",
             "value": "edge4"
           },
@@ -413,17 +415,17 @@ description: Variables in memory after executing named_views_baseline_hide.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 18,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -479,8 +481,8 @@ description: Variables in memory after executing named_views_baseline_hide.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "mm"
+      "units": "mm",
+      "isClosed": "explicitly"
     }
   },
   "bossSketch": {
@@ -500,17 +502,21 @@ description: Variables in memory after executing named_views_baseline_hide.kcl
                       {
                         "n": 50.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -518,17 +524,21 @@ description: Variables in memory after executing named_views_baseline_hide.kcl
                       {
                         "n": 60.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -620,17 +630,21 @@ description: Variables in memory after executing named_views_baseline_hide.kcl
                       {
                         "n": 60.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -638,17 +652,21 @@ description: Variables in memory after executing named_views_baseline_hide.kcl
                       {
                         "n": 60.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 10.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -740,17 +758,21 @@ description: Variables in memory after executing named_views_baseline_hide.kcl
                       {
                         "n": 60.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 10.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -758,17 +780,21 @@ description: Variables in memory after executing named_views_baseline_hide.kcl
                       {
                         "n": 50.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 10.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -860,17 +886,21 @@ description: Variables in memory after executing named_views_baseline_hide.kcl
                       {
                         "n": 50.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 10.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -878,17 +908,21 @@ description: Variables in memory after executing named_views_baseline_hide.kcl
                       {
                         "n": 50.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -985,10 +1019,10 @@ description: Variables in memory after executing named_views_baseline_hide.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 1060,
-                    "end": 1065,
+                    "commentStart": 1058,
+                    "end": 1063,
                     "moduleId": 0,
-                    "start": 1060,
+                    "start": 1058,
                     "type": "TagDeclarator",
                     "value": "edge1"
                   },
@@ -1009,10 +1043,10 @@ description: Variables in memory after executing named_views_baseline_hide.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 1131,
-                    "end": 1136,
+                    "commentStart": 1129,
+                    "end": 1134,
                     "moduleId": 0,
-                    "start": 1131,
+                    "start": 1129,
                     "type": "TagDeclarator",
                     "value": "edge2"
                   },
@@ -1033,10 +1067,10 @@ description: Variables in memory after executing named_views_baseline_hide.kcl
                     10.0
                   ],
                   "tag": {
-                    "commentStart": 1203,
-                    "end": 1208,
+                    "commentStart": 1201,
+                    "end": 1206,
                     "moduleId": 0,
-                    "start": 1203,
+                    "start": 1201,
                     "type": "TagDeclarator",
                     "value": "edge3"
                   },
@@ -1057,10 +1091,10 @@ description: Variables in memory after executing named_views_baseline_hide.kcl
                     10.0
                   ],
                   "tag": {
-                    "commentStart": 1276,
-                    "end": 1281,
+                    "commentStart": 1274,
+                    "end": 1279,
                     "moduleId": 0,
-                    "start": 1276,
+                    "start": 1274,
                     "type": "TagDeclarator",
                     "value": "edge4"
                   },
@@ -1073,17 +1107,17 @@ description: Variables in memory after executing named_views_baseline_hide.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 18,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -1154,6 +1188,8 @@ description: Variables in memory after executing named_views_baseline_hide.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -1161,10 +1197,10 @@ description: Variables in memory after executing named_views_baseline_hide.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 478,
-            "end": 483,
+            "commentStart": 476,
+            "end": 481,
             "moduleId": 0,
-            "start": 478,
+            "start": 476,
             "type": "TagDeclarator",
             "value": "edge1"
           },
@@ -1175,10 +1211,10 @@ description: Variables in memory after executing named_views_baseline_hide.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 548,
-            "end": 553,
+            "commentStart": 546,
+            "end": 551,
             "moduleId": 0,
-            "start": 548,
+            "start": 546,
             "type": "TagDeclarator",
             "value": "edge2"
           },
@@ -1189,10 +1225,10 @@ description: Variables in memory after executing named_views_baseline_hide.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 620,
-            "end": 625,
+            "commentStart": 618,
+            "end": 623,
             "moduleId": 0,
-            "start": 620,
+            "start": 618,
             "type": "TagDeclarator",
             "value": "edge3"
           },
@@ -1203,10 +1239,10 @@ description: Variables in memory after executing named_views_baseline_hide.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 692,
-            "end": 697,
+            "commentStart": 690,
+            "end": 695,
             "moduleId": 0,
-            "start": 692,
+            "start": 690,
             "type": "TagDeclarator",
             "value": "edge4"
           },
@@ -1228,10 +1264,10 @@ description: Variables in memory after executing named_views_baseline_hide.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 478,
-              "end": 483,
+              "commentStart": 476,
+              "end": 481,
               "moduleId": 0,
-              "start": 478,
+              "start": 476,
               "type": "TagDeclarator",
               "value": "edge1"
             },
@@ -1252,10 +1288,10 @@ description: Variables in memory after executing named_views_baseline_hide.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 548,
-              "end": 553,
+              "commentStart": 546,
+              "end": 551,
               "moduleId": 0,
-              "start": 548,
+              "start": 546,
               "type": "TagDeclarator",
               "value": "edge2"
             },
@@ -1276,10 +1312,10 @@ description: Variables in memory after executing named_views_baseline_hide.kcl
               20.0
             ],
             "tag": {
-              "commentStart": 620,
-              "end": 625,
+              "commentStart": 618,
+              "end": 623,
               "moduleId": 0,
-              "start": 620,
+              "start": 618,
               "type": "TagDeclarator",
               "value": "edge3"
             },
@@ -1300,10 +1336,10 @@ description: Variables in memory after executing named_views_baseline_hide.kcl
               20.0
             ],
             "tag": {
-              "commentStart": 692,
-              "end": 697,
+              "commentStart": 690,
+              "end": 695,
               "moduleId": 0,
-              "start": 692,
+              "start": 690,
               "type": "TagDeclarator",
               "value": "edge4"
             },
@@ -1316,17 +1352,17 @@ description: Variables in memory after executing named_views_baseline_hide.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 0,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -1382,8 +1418,8 @@ description: Variables in memory after executing named_views_baseline_hide.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "mm"
+        "units": "mm",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -1416,9 +1452,11 @@ description: Variables in memory after executing named_views_baseline_hide.kcl
         "distance": {
           "n": 150.0,
           "ty": {
-            "mm": null,
             "type": "Known",
-            "type": "Length"
+            "value": {
+              "type": "Length",
+              "value": "mm"
+            }
           }
         },
         "projection": "Orthographic"
@@ -1446,10 +1484,10 @@ description: Variables in memory after executing named_views_baseline_hide.kcl
             0.0
           ],
           "tag": {
-            "commentStart": 478,
-            "end": 483,
+            "commentStart": 476,
+            "end": 481,
             "moduleId": 0,
-            "start": 478,
+            "start": 476,
             "type": "TagDeclarator",
             "value": "edge1"
           },
@@ -1470,10 +1508,10 @@ description: Variables in memory after executing named_views_baseline_hide.kcl
             0.0
           ],
           "tag": {
-            "commentStart": 548,
-            "end": 553,
+            "commentStart": 546,
+            "end": 551,
             "moduleId": 0,
-            "start": 548,
+            "start": 546,
             "type": "TagDeclarator",
             "value": "edge2"
           },
@@ -1494,10 +1532,10 @@ description: Variables in memory after executing named_views_baseline_hide.kcl
             20.0
           ],
           "tag": {
-            "commentStart": 620,
-            "end": 625,
+            "commentStart": 618,
+            "end": 623,
             "moduleId": 0,
-            "start": 620,
+            "start": 618,
             "type": "TagDeclarator",
             "value": "edge3"
           },
@@ -1518,10 +1556,10 @@ description: Variables in memory after executing named_views_baseline_hide.kcl
             20.0
           ],
           "tag": {
-            "commentStart": 692,
-            "end": 697,
+            "commentStart": 690,
+            "end": 695,
             "moduleId": 0,
-            "start": 692,
+            "start": 690,
             "type": "TagDeclarator",
             "value": "edge4"
           },
@@ -1534,17 +1572,17 @@ description: Variables in memory after executing named_views_baseline_hide.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 0,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -1600,8 +1638,8 @@ description: Variables in memory after executing named_views_baseline_hide.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "mm"
+      "units": "mm",
+      "isClosed": "explicitly"
     }
   },
   "plateSketch": {
@@ -1621,17 +1659,21 @@ description: Variables in memory after executing named_views_baseline_hide.kcl
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -1639,17 +1681,21 @@ description: Variables in memory after executing named_views_baseline_hide.kcl
                       {
                         "n": 40.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -1741,17 +1787,21 @@ description: Variables in memory after executing named_views_baseline_hide.kcl
                       {
                         "n": 40.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -1759,17 +1809,21 @@ description: Variables in memory after executing named_views_baseline_hide.kcl
                       {
                         "n": 40.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 20.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -1861,17 +1915,21 @@ description: Variables in memory after executing named_views_baseline_hide.kcl
                       {
                         "n": 40.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 20.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -1879,17 +1937,21 @@ description: Variables in memory after executing named_views_baseline_hide.kcl
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 20.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -1981,17 +2043,21 @@ description: Variables in memory after executing named_views_baseline_hide.kcl
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 20.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -1999,17 +2065,21 @@ description: Variables in memory after executing named_views_baseline_hide.kcl
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -2106,10 +2176,10 @@ description: Variables in memory after executing named_views_baseline_hide.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 478,
-                    "end": 483,
+                    "commentStart": 476,
+                    "end": 481,
                     "moduleId": 0,
-                    "start": 478,
+                    "start": 476,
                     "type": "TagDeclarator",
                     "value": "edge1"
                   },
@@ -2130,10 +2200,10 @@ description: Variables in memory after executing named_views_baseline_hide.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 548,
-                    "end": 553,
+                    "commentStart": 546,
+                    "end": 551,
                     "moduleId": 0,
-                    "start": 548,
+                    "start": 546,
                     "type": "TagDeclarator",
                     "value": "edge2"
                   },
@@ -2154,10 +2224,10 @@ description: Variables in memory after executing named_views_baseline_hide.kcl
                     20.0
                   ],
                   "tag": {
-                    "commentStart": 620,
-                    "end": 625,
+                    "commentStart": 618,
+                    "end": 623,
                     "moduleId": 0,
-                    "start": 620,
+                    "start": 618,
                     "type": "TagDeclarator",
                     "value": "edge3"
                   },
@@ -2178,10 +2248,10 @@ description: Variables in memory after executing named_views_baseline_hide.kcl
                     20.0
                   ],
                   "tag": {
-                    "commentStart": 692,
-                    "end": 697,
+                    "commentStart": 690,
+                    "end": 695,
                     "moduleId": 0,
-                    "start": 692,
+                    "start": 690,
                     "type": "TagDeclarator",
                     "value": "edge4"
                   },
@@ -2194,17 +2264,17 @@ description: Variables in memory after executing named_views_baseline_hide.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 0,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,

@@ -20,6 +20,7 @@ pub mod ids;
 pub mod loft;
 pub mod math;
 pub mod mirror;
+pub mod operation;
 pub mod patterns;
 pub mod planes;
 pub(crate) mod region_consumption;
@@ -220,7 +221,8 @@ impl StdFnProps {
 ///     consumed when it is also passed in the named argument.
 /// - Keep the default consumed-solid behavior for new functions. Use
 ///   [`StdFnProps::warn_deprecated_on_consumed_solid_args`] only as a temporary
-///   compatibility exception that warns instead of rejecting the call.
+///   compatibility exception that warns before KCL 3.0 and rejects the call
+///   in KCL 3.0 or later.
 ///
 /// Region and solid policies are independent, so their modifiers may be chained.
 pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProps) {
@@ -914,6 +916,10 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
         ("view", "named") => (
             |e, a| Box::pin(crate::std::view::named(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::view::named"),
+        ),
+        ("operation", "facing") => (
+            |e, a| Box::pin(crate::std::operation::facing(e, a).map(|r| r.map(KclValue::continue_))),
+            StdFnProps::default("std::operation::facing"),
         ),
         (module, fn_name) => {
             panic!("No implementation found for {module}::{fn_name}, please add it to this big match statement")

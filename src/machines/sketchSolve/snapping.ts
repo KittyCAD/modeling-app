@@ -2,6 +2,10 @@ import type {
   ApiConstraint,
   ApiObject,
 } from '@rust/kcl-lib/bindings/FrontendApi'
+import {
+  type GridSnapOptions,
+  snapPointToGrid,
+} from '@src/clientSideScene/gridUtils'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import { SKETCH_SOLVE_GROUP } from '@src/clientSideScene/sceneUtils'
 import type { Coords2d } from '@src/lang/util'
@@ -29,6 +33,7 @@ import { Group } from 'three'
 
 export const X_AXIS_TARGET = 'x-axis'
 export const Y_AXIS_TARGET = 'y-axis'
+export const GRID_TARGET = 'grid'
 
 type CoincidentSnapTarget = {
   type: 'point' | 'line' | 'midpoint' | 'arc' | 'circle'
@@ -40,11 +45,15 @@ type OriginSnapTarget = {
 type AxisSnapTarget = {
   type: typeof X_AXIS_TARGET | typeof Y_AXIS_TARGET
 }
+type GridSnapTarget = {
+  type: typeof GRID_TARGET
+}
 
 export type SnapTarget =
   | CoincidentSnapTarget
   | OriginSnapTarget
   | AxisSnapTarget
+  | GridSnapTarget
 
 export type SnappingCandidate = {
   target: SnapTarget
@@ -89,7 +98,8 @@ export function getCoincidentSegmentsForSnapTarget(
   if (
     target === undefined ||
     target.type === X_AXIS_TARGET ||
-    target.type === Y_AXIS_TARGET
+    target.type === Y_AXIS_TARGET ||
+    target.type === GRID_TARGET
   ) {
     return null
   }
@@ -154,6 +164,8 @@ export function getConstraintsForSnapTarget(
           points: [segmentId, 'ORIGIN'],
         },
       ]
+    case GRID_TARGET:
+      return []
     default:
       return []
   }
@@ -209,6 +221,8 @@ function getSnapTargetPriority(target: SnapTarget) {
     case 'arc':
     case 'circle':
       return 4
+    case GRID_TARGET:
+      return 5
   }
 }
 
@@ -311,7 +325,8 @@ function getSnappingCandidateForApiObject(
 export function getSnappingCandidates(
   mousePosition: Coords2d,
   objects: ApiObject[],
-  sceneInfra: SceneInfra
+  sceneInfra: SceneInfra,
+  gridSnapOptions?: GridSnapOptions
 ): SnappingCandidate[] {
   const sketchSceneObject = sceneInfra.scene.getObjectByName(SKETCH_SOLVE_GROUP)
   const sketchSceneGroup =
@@ -368,11 +383,25 @@ export function getSnappingCandidates(
         ]
       : []
 
+  const gridSnapResult = gridSnapOptions
+    ? snapPointToGrid(mousePosition, gridSnapOptions)
+    : null
+  const gridCandidates: SnappingCandidate[] = gridSnapResult?.snapped
+    ? [
+        {
+          target: { type: GRID_TARGET } satisfies GridSnapTarget,
+          distance: distance2d(mousePosition, gridSnapResult.point),
+          position: gridSnapResult.point,
+        },
+      ]
+    : []
+
   return [
     ...geometricCandidates,
     ...originCandidates,
     ...xAxisCandidates,
     ...yAxisCandidates,
+    ...gridCandidates,
   ].sort((a, b) => {
     const priorityDelta =
       getSnapTargetPriority(a.target) - getSnapTargetPriority(b.target)

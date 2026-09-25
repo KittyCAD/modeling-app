@@ -493,7 +493,7 @@ async fn hide_inner(
     Ok(objects)
 }
 
-/// Delete solids, sketches, helices, or imported objects.
+/// Delete solids, sketches, helices, imported objects, or GD&T annotations.
 pub async fn delete(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let objects = args.get_unlabeled_kw_arg(
         "objects",
@@ -528,6 +528,8 @@ mod tests {
 
     use crate::errors::Severity;
     use crate::errors::Tag;
+    use crate::execution::Artifact;
+    use crate::execution::ExecutorSettings;
     use crate::execution::MockConfig;
     use crate::execution::parse_execute;
 
@@ -760,6 +762,66 @@ sweepSketch = startSketchOn(XY)
     }
 
     #[tokio::test(flavor = "multi_thread")]
+    async fn delete_marks_gdt_annotation_artifact_consumed() {
+        let program = crate::Program::parse_no_errs(
+            r#"@settings(kclVersion = 2.0)
+
+annotation = gdt::note(note = "Inspect this surface")
+delete(annotation)
+"#,
+        )
+        .unwrap();
+        let ctx = crate::ExecutorContext::new_mock(None).await;
+        let outcome = ctx.run_mock(&program, &MockConfig::default()).await.unwrap();
+        ctx.close().await;
+
+        let annotations = outcome
+            .artifact_graph
+            .values()
+            .filter_map(|artifact| match artifact {
+                Artifact::GdtAnnotation(annotation) => Some(annotation),
+                _ => None,
+            })
+            .collect::<Vec<_>>();
+        assert_eq!(annotations.len(), 1);
+        assert!(annotations[0].consumed);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn delete_marks_imported_geometry_artifact_consumed() {
+        let tmpdir = tempfile::TempDir::with_prefix("delete_imported_geometry").unwrap();
+        tokio::fs::write(tmpdir.path().join("model.obj"), "o model\n")
+            .await
+            .unwrap();
+        let program = crate::Program::parse_no_errs(
+            r#"@settings(kclVersion = 2.0)
+
+import "model.obj" as model
+delete(model)
+"#,
+        )
+        .unwrap();
+        let ctx = crate::ExecutorContext::new_mock(Some(ExecutorSettings {
+            project_directory: Some(crate::TypedPath(tmpdir.path().into())),
+            ..Default::default()
+        }))
+        .await;
+        let outcome = ctx.run_mock(&program, &MockConfig::default()).await.unwrap();
+        ctx.close().await;
+
+        let imported_geometry = outcome
+            .artifact_graph
+            .values()
+            .filter_map(|artifact| match artifact {
+                Artifact::ImportedGeometry(imported_geometry) => Some(imported_geometry),
+                _ => None,
+            })
+            .collect::<Vec<_>>();
+        assert_eq!(imported_geometry.len(), 1);
+        assert!(imported_geometry[0].consumed);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
     async fn test_hide_pipe_solid_ok() {
         let ast = PIPE.to_string()
             + r#"
@@ -769,8 +831,8 @@ sweepSketch = startSketchOn(XY)
     }
 
     #[tokio::test(flavor = "multi_thread")]
-    async fn hide_consumed_solid_reports_deprecation_warning() {
-        let code = r#"
+    async fn hide_consumed_solid_warns_before_v3_and_errors_in_v3() {
+        let body = r#"
 targetSketch = sketch(on = XY) {
   line1 = line(start = [var -10, var -10], end = [var 10, var -10])
   line2 = line(start = [var 10, var -10], end = [var 10, var 10])
@@ -803,26 +865,40 @@ result = subtract(target, tools = [tool])
 hidden = hide(target)
 "#;
 
-        let program = crate::Program::parse_no_errs(code).unwrap();
-        let ctx = crate::ExecutorContext::new_mock(None).await;
-        let outcome = ctx.run_mock(&program, &MockConfig::default()).await;
-        ctx.close().await;
-        let outcome = outcome.unwrap();
+        for (version, should_error) in [("2.0", false), ("\"3.0-preview\"", true)] {
+            let code = format!("@settings(kclVersion = {version})\n{body}");
+            let program = crate::Program::parse_no_errs(&code).unwrap();
+            let ctx = crate::ExecutorContext::new_mock(None).await;
+            let outcome = ctx.run_mock(&program, &MockConfig::default()).await;
+            ctx.close().await;
 
-        assert!(
-            outcome.issues.iter().any(|issue| {
-                issue.severity == Severity::Warning
-                    && issue.tag == Tag::Deprecated
-                    && issue
-                        .message
-                        .contains("Calling `hide` with a consumed solid is deprecated")
-                    && issue
-                        .message
-                        .contains("`target` was already consumed by a `subtract` operation")
-            }),
-            "expected hide consumed-solid deprecation warning, got: {:#?}",
-            outcome.issues
-        );
+            if should_error {
+                let err = outcome.unwrap_err();
+                assert!(matches!(&err.error, crate::errors::KclError::Semantic { .. }));
+                assert!(
+                    err.error
+                        .message()
+                        .contains("`target` was already consumed by a `subtract` operation"),
+                    "{err:?}"
+                );
+            } else {
+                let outcome = outcome.unwrap();
+                assert!(
+                    outcome.issues.iter().any(|issue| {
+                        issue.severity == Severity::Warning
+                            && issue.tag == Tag::Deprecated
+                            && issue
+                                .message
+                                .contains("Calling `hide` with a consumed solid is deprecated")
+                            && issue
+                                .message
+                                .contains("`target` was already consumed by a `subtract` operation")
+                    }),
+                    "expected hide consumed-solid deprecation warning, got: {:#?}",
+                    outcome.issues
+                );
+            }
+        }
     }
 
     #[tokio::test(flavor = "multi_thread")]
