@@ -155,9 +155,9 @@
 //! the unwind rules must run cleanup on them.
 
 use std::env;
+use std::future::Future;
 use std::sync::Arc;
 
-use futures::future::BoxFuture;
 use indexmap::IndexMap;
 
 use crate::SourceRange;
@@ -208,6 +208,21 @@ use crate::parsing::ast::types::SketchBlock;
 use crate::parsing::ast::types::UnaryExpression;
 use crate::runtime_flags::RuntimeFlagResolve;
 use crate::runtime_flags::resolve_from_sources;
+
+/// Keep large executor futures pointer-sized in debug builds without paying
+/// for heap allocation in optimized builds.
+macro_rules! debug_boxed_future {
+    ($future:expr) => {{
+        #[cfg(debug_assertions)]
+        {
+            Box::pin($future)
+        }
+        #[cfg(not(debug_assertions))]
+        {
+            $future
+        }
+    }};
+}
 
 /// Environment variable selecting which executor implementation to use.
 const KCL_EXECUTOR_ENV_VAR: &str = "KCL_EXECUTOR";
@@ -858,15 +873,17 @@ enum RootResult {
 ///
 /// Construct the boxed future behind a non-inlined call boundary so its large
 /// debug-build temporaries do not inflate run_block/run_expr and their callers.
-/// This allocates once per machine invocation, not once per loop iteration.
-#[inline(never)]
+/// In debug builds this allocates once per machine invocation, not once per
+/// loop iteration.
+#[cfg_attr(debug_assertions, inline(never))]
+#[cfg_attr(not(debug_assertions), inline(always))]
 fn run_loop<'a>(
     ctx: &'a ExecutorContext,
     mut control: Control,
     mut konts: Vec<Kont>,
     exec_state: &'a mut ExecState,
-) -> BoxFuture<'a, Result<RootResult, KclError>> {
-    Box::pin(async move {
+) -> impl Future<Output = Result<RootResult, KclError>> + 'a {
+    debug_boxed_future!(async move {
         loop {
             control = match control {
                 Control::Eval(req) => match step_eval(*req, &mut konts, exec_state, ctx).await {
@@ -1387,8 +1404,8 @@ async fn step_eval(
 /// One apply step: hand a finished value to the innermost continuation. The
 /// recursive executor's post-await code for each recursion site.
 // Keep each arm's temporaries out of this dispatcher's debug stack frame.
-// Async helpers construct their boxes behind non-inlined call boundaries;
-// synchronous helpers avoid adding a heap allocation to those machine steps.
+// In debug builds, async helpers construct their boxes behind non-inlined call
+// boundaries; optimized builds inline the unboxed futures instead.
 async fn step_apply(
     kont: Kont,
     applied: Applied,
@@ -1432,18 +1449,20 @@ async fn step_apply(
     }
 }
 
-#[inline(never)]
+#[cfg_attr(debug_assertions, inline(never))]
+#[cfg_attr(not(debug_assertions), inline(always))]
 fn apply_block_seq<'a>(
     kont: Kont,
     applied: Applied,
     konts: &'a mut Vec<Kont>,
     exec_state: &'a mut ExecState,
     ctx: &'a ExecutorContext,
-) -> BoxFuture<'a, Result<Control, KclError>> {
-    Box::pin(async move { step_block(kont, Some(applied), konts, exec_state, ctx).await })
+) -> impl Future<Output = Result<Control, KclError>> + 'a {
+    debug_boxed_future!(async move { step_block(kont, Some(applied), konts, exec_state, ctx).await })
 }
 
-#[inline(never)]
+#[cfg_attr(debug_assertions, inline(never))]
+#[cfg_attr(not(debug_assertions), inline(always))]
 fn apply_binary_lhs_done(
     node: Arc<Node<BinaryExpression>>,
     applied: Applied,
@@ -1455,22 +1474,24 @@ fn apply_binary_lhs_done(
     Ok(Control::Eval(Box::new(right)))
 }
 
-#[inline(never)]
+#[cfg_attr(debug_assertions, inline(never))]
+#[cfg_attr(not(debug_assertions), inline(always))]
 fn apply_binary_rhs_done<'a>(
     node: Arc<Node<BinaryExpression>>,
     left: KclValue,
     applied: Applied,
     exec_state: &'a mut ExecState,
     ctx: &'a ExecutorContext,
-) -> BoxFuture<'a, Result<Control, KclError>> {
-    Box::pin(async move {
+) -> impl Future<Output = Result<Control, KclError>> + 'a {
+    debug_boxed_future!(async move {
         let right = applied.expect_value()?;
         let value = node.apply_operator(exec_state, ctx, left, right).await?;
         Ok(Control::Apply(Applied::Value(value)))
     })
 }
 
-#[inline(never)]
+#[cfg_attr(debug_assertions, inline(never))]
+#[cfg_attr(not(debug_assertions), inline(always))]
 fn apply_unary_done(
     node: Arc<Node<UnaryExpression>>,
     applied: Applied,
@@ -1481,7 +1502,8 @@ fn apply_unary_done(
     Ok(Control::Apply(Applied::Value(value)))
 }
 
-#[inline(never)]
+#[cfg_attr(debug_assertions, inline(never))]
+#[cfg_attr(not(debug_assertions), inline(always))]
 fn apply_array_elems(
     node: Arc<Node<ArrayExpression>>,
     index: usize,
@@ -1507,7 +1529,8 @@ fn apply_array_elems(
     }
 }
 
-#[inline(never)]
+#[cfg_attr(debug_assertions, inline(never))]
+#[cfg_attr(not(debug_assertions), inline(always))]
 fn apply_object_props(
     node: Arc<Node<ObjectExpression>>,
     index: usize,
@@ -1538,7 +1561,8 @@ fn apply_object_props(
     }
 }
 
-#[inline(never)]
+#[cfg_attr(debug_assertions, inline(never))]
+#[cfg_attr(not(debug_assertions), inline(always))]
 fn apply_range_start_done(
     node: Arc<Node<ArrayRangeExpression>>,
     applied: Applied,
@@ -1553,7 +1577,8 @@ fn apply_range_start_done(
     Ok(Control::Eval(Box::new(end)))
 }
 
-#[inline(never)]
+#[cfg_attr(debug_assertions, inline(never))]
+#[cfg_attr(not(debug_assertions), inline(always))]
 fn apply_range_end_done(
     node: Arc<Node<ArrayRangeExpression>>,
     start: KclValue,
@@ -1565,7 +1590,8 @@ fn apply_range_end_done(
     Ok(Control::Apply(Applied::Value(value)))
 }
 
-#[inline(never)]
+#[cfg_attr(debug_assertions, inline(never))]
+#[cfg_attr(not(debug_assertions), inline(always))]
 fn apply_legacy_member_prop_done(
     node: Arc<Node<MemberExpression>>,
     applied: Applied,
@@ -1578,15 +1604,16 @@ fn apply_legacy_member_prop_done(
     Ok(Control::Eval(Box::new(object)))
 }
 
-#[inline(never)]
+#[cfg_attr(debug_assertions, inline(never))]
+#[cfg_attr(not(debug_assertions), inline(always))]
 fn apply_legacy_member_obj_done<'a>(
     node: Arc<Node<MemberExpression>>,
     property: Property,
     applied: Applied,
     exec_state: &'a mut ExecState,
     ctx: &'a ExecutorContext,
-) -> BoxFuture<'a, Result<Control, KclError>> {
-    Box::pin(async move {
+) -> impl Future<Output = Result<Control, KclError>> + 'a {
+    debug_boxed_future!(async move {
         let object = applied.expect_value()?;
         let cf = node.apply_member(object, property, exec_state, ctx).await?;
         // apply_member only ever produces Continue values.
@@ -1594,15 +1621,16 @@ fn apply_legacy_member_obj_done<'a>(
     })
 }
 
-#[inline(never)]
+#[cfg_attr(debug_assertions, inline(never))]
+#[cfg_attr(not(debug_assertions), inline(always))]
 fn apply_member_obj_done<'a>(
     node: Arc<Node<MemberExpression>>,
     applied: Applied,
     konts: &'a mut Vec<Kont>,
     exec_state: &'a mut ExecState,
     ctx: &'a ExecutorContext,
-) -> BoxFuture<'a, Result<Control, KclError>> {
-    Box::pin(async move {
+) -> impl Future<Output = Result<Control, KclError>> + 'a {
+    debug_boxed_future!(async move {
         let object = applied.expect_value()?;
         if node.computed {
             let prop = EvalRequest::expr(&node.property);
@@ -1617,15 +1645,16 @@ fn apply_member_obj_done<'a>(
     })
 }
 
-#[inline(never)]
+#[cfg_attr(debug_assertions, inline(never))]
+#[cfg_attr(not(debug_assertions), inline(always))]
 fn apply_member_prop_done<'a>(
     node: Arc<Node<MemberExpression>>,
     object: KclValue,
     applied: Applied,
     exec_state: &'a mut ExecState,
     ctx: &'a ExecutorContext,
-) -> BoxFuture<'a, Result<Control, KclError>> {
-    Box::pin(async move {
+) -> impl Future<Output = Result<Control, KclError>> + 'a {
+    debug_boxed_future!(async move {
         let prop_value = applied.expect_value()?;
         let property = Property::from_value(prop_value, SourceRange::from(node.as_ref()))?;
         let cf = node.apply_member(object, property, exec_state, ctx).await?;
@@ -1634,7 +1663,8 @@ fn apply_member_prop_done<'a>(
     })
 }
 
-#[inline(never)]
+#[cfg_attr(debug_assertions, inline(never))]
+#[cfg_attr(not(debug_assertions), inline(always))]
 fn apply_if_cond_done<'a>(
     node: Arc<Node<IfExpression>>,
     arm: usize,
@@ -1642,8 +1672,8 @@ fn apply_if_cond_done<'a>(
     konts: &'a mut Vec<Kont>,
     exec_state: &'a mut ExecState,
     ctx: &'a ExecutorContext,
-) -> BoxFuture<'a, Result<Control, KclError>> {
-    Box::pin(async move {
+) -> impl Future<Output = Result<Control, KclError>> + 'a {
+    debug_boxed_future!(async move {
         let cond_value = applied.expect_value()?;
         if cond_value.get_bool()? {
             let block = if arm == 0 {
@@ -1676,7 +1706,8 @@ fn apply_if_cond_done<'a>(
     })
 }
 
-#[inline(never)]
+#[cfg_attr(debug_assertions, inline(never))]
+#[cfg_attr(not(debug_assertions), inline(always))]
 fn apply_if_arm_done(
     node: Arc<Node<IfExpression>>,
     env_pushed: bool,
@@ -1701,14 +1732,15 @@ fn apply_if_arm_done(
     Ok(Control::Apply(Applied::Value(cf.into_value())))
 }
 
-#[inline(never)]
+#[cfg_attr(debug_assertions, inline(never))]
+#[cfg_attr(not(debug_assertions), inline(always))]
 fn apply_ascribe_done<'a>(
     node: Arc<Node<AscribedExpression>>,
     applied: Applied,
     exec_state: &'a mut ExecState,
     ctx: &'a ExecutorContext,
-) -> BoxFuture<'a, Result<Control, KclError>> {
-    Box::pin(async move {
+) -> impl Future<Output = Result<Control, KclError>> + 'a {
+    debug_boxed_future!(async move {
         let value = applied.expect_value()?;
         let value = crate::execution::exec_ast::apply_ascription(
             &value,
@@ -1722,7 +1754,8 @@ fn apply_ascribe_done<'a>(
     })
 }
 
-#[inline(never)]
+#[cfg_attr(debug_assertions, inline(never))]
+#[cfg_attr(not(debug_assertions), inline(always))]
 fn apply_label_done(
     node: Arc<Node<LabelledExpression>>,
     applied: Applied,
@@ -1736,7 +1769,8 @@ fn apply_label_done(
     Ok(Control::Apply(Applied::Value(value)))
 }
 
-#[inline(never)]
+#[cfg_attr(debug_assertions, inline(never))]
+#[cfg_attr(not(debug_assertions), inline(always))]
 fn apply_pipe_first_done(
     node: Arc<Node<PipeExpression>>,
     applied: Applied,
@@ -1751,7 +1785,8 @@ fn apply_pipe_first_done(
     pipe_advance(node, 1, saved_pipe_value, konts, exec_state)
 }
 
-#[inline(never)]
+#[cfg_attr(debug_assertions, inline(never))]
+#[cfg_attr(not(debug_assertions), inline(always))]
 fn apply_pipe_seq(
     node: Arc<Node<PipeExpression>>,
     index: usize,
@@ -1765,7 +1800,8 @@ fn apply_pipe_seq(
     pipe_advance(node, index + 1, saved_pipe_value, konts, exec_state)
 }
 
-#[inline(never)]
+#[cfg_attr(debug_assertions, inline(never))]
+#[cfg_attr(not(debug_assertions), inline(always))]
 #[allow(clippy::boxed_local)] // Unbox in the helper to keep dispatcher temporaries small.
 fn apply_call_args<'a>(
     state: Box<CallArgsState>,
@@ -1773,11 +1809,12 @@ fn apply_call_args<'a>(
     konts: &'a mut Vec<Kont>,
     exec_state: &'a mut ExecState,
     ctx: &'a ExecutorContext,
-) -> BoxFuture<'a, Result<Control, KclError>> {
-    Box::pin(async move { call_args_step(*state, applied, konts, exec_state, ctx).await })
+) -> impl Future<Output = Result<Control, KclError>> + 'a {
+    debug_boxed_future!(async move { call_args_step(*state, applied, konts, exec_state, ctx).await })
 }
 
-#[inline(never)]
+#[cfg_attr(debug_assertions, inline(never))]
+#[cfg_attr(not(debug_assertions), inline(always))]
 #[allow(clippy::boxed_local)] // Unbox in the helper to keep dispatcher temporaries small.
 fn apply_call_boundary<'a>(
     boundary: Box<BoundaryState>,
@@ -1785,8 +1822,8 @@ fn apply_call_boundary<'a>(
     konts: &'a mut Vec<Kont>,
     exec_state: &'a mut ExecState,
     ctx: &'a ExecutorContext,
-) -> BoxFuture<'a, Result<Control, KclError>> {
-    Box::pin(async move {
+) -> impl Future<Output = Result<Control, KclError>> + 'a {
+    debug_boxed_future!(async move {
         exec_state.mod_local.machine_call_depth = exec_state.mod_local.machine_call_depth.saturating_sub(1);
         let BoundaryState {
             state,
@@ -1826,7 +1863,8 @@ fn apply_call_boundary<'a>(
     })
 }
 
-#[inline(never)]
+#[cfg_attr(debug_assertions, inline(never))]
+#[cfg_attr(not(debug_assertions), inline(always))]
 #[allow(clippy::boxed_local)] // Unbox in the helper to keep dispatcher temporaries small.
 fn apply_sketch_args<'a>(
     state: Box<SketchArgsState>,
@@ -1834,19 +1872,20 @@ fn apply_sketch_args<'a>(
     konts: &'a mut Vec<Kont>,
     exec_state: &'a mut ExecState,
     ctx: &'a ExecutorContext,
-) -> BoxFuture<'a, Result<Control, KclError>> {
-    Box::pin(async move { sketch_args_step(*state, applied, konts, exec_state, ctx).await })
+) -> impl Future<Output = Result<Control, KclError>> + 'a {
+    debug_boxed_future!(async move { sketch_args_step(*state, applied, konts, exec_state, ctx).await })
 }
 
-#[inline(never)]
+#[cfg_attr(debug_assertions, inline(never))]
+#[cfg_attr(not(debug_assertions), inline(always))]
 #[allow(clippy::boxed_local)] // Unbox in the helper to keep dispatcher temporaries small.
 fn apply_sketch_body<'a>(
     state: Box<SketchBodyState>,
     applied: Applied,
     exec_state: &'a mut ExecState,
     ctx: &'a ExecutorContext,
-) -> BoxFuture<'a, Result<Control, KclError>> {
-    Box::pin(async move { sketch_body_finish(*state, applied, exec_state, ctx).await })
+) -> impl Future<Output = Result<Control, KclError>> + 'a {
+    debug_boxed_future!(async move { sketch_body_finish(*state, applied, exec_state, ctx).await })
 }
 
 /// Route a control-flow value produced by shared (recursive-style) helper code
