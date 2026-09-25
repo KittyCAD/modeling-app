@@ -14,11 +14,11 @@ import {
   startSignInIntent,
   type StartSignInRequest,
 } from '@src/registry/contracts/auth'
-import type { RouterRegistryService } from '@src/registry/contracts/router'
+import type { AppUrlService } from '@src/registry/contracts/appUrl'
 import { generateSignInUrl } from '@src/routes/utils'
 
 export interface StartSignInDependencies {
-  getRouter: () => RouterRegistryService
+  getAppUrl: () => AppUrlService
   startDesktopSignIn: (environment?: string) => Promise<void>
   isDesktop: () => boolean
   isMobile: () => boolean
@@ -50,15 +50,15 @@ export function createStartSignInIntentContribution(
   return defineAppNavigationIntentContribution(
     startSignInIntent,
     async (request) => {
-      const router = dependencies.getRouter()
-      const { search } = router.getLocation()
+      const appUrl = dependencies.getAppUrl()
+      const { search } = appUrl.getLocation()
 
       if (shouldUseHostedSignIn(request, search, dependencies)) {
         dependencies.redirectToHostedSignIn()
         return
       }
 
-      void router.navigate(`${PATHS.SIGN_IN}${search}`)
+      void appUrl.navigate(`${PATHS.SIGN_IN}${search}`)
 
       if (
         dependencies.isDesktop() &&
@@ -75,10 +75,10 @@ export function createStartSignInIntentContribution(
 }
 
 export const defaultStartSignInDependencies = (
-  getRouter: () => RouterRegistryService,
+  getAppUrl: () => AppUrlService,
   startDesktopSignIn: (environment?: string) => Promise<void>
 ): StartSignInDependencies => ({
-  getRouter,
+  getAppUrl,
   startDesktopSignIn,
   isDesktop,
   isMobile,
