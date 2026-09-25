@@ -20,7 +20,6 @@ use crate::execution::ExecState;
 use crate::execution::Extrudable;
 use crate::execution::ExtrudeSurface;
 use crate::execution::Face;
-use crate::execution::Geometry;
 use crate::execution::HasAppearance;
 use crate::execution::Helix;
 use crate::execution::KclObjectFields;
@@ -422,13 +421,15 @@ impl Args {
         let what = if let Some(info) = info {
             if info.path.is_some() {
                 match &info.geometry {
-                    Geometry::Sketch(_) => "a sketch edge",
-                    Geometry::Solid(_) => "a solid edge",
+                    crate::execution::GeometryWithImportedGeometry::Sketch(_) => "a sketch edge",
+                    crate::execution::GeometryWithImportedGeometry::Solid(_) => "a solid edge",
+                    crate::execution::GeometryWithImportedGeometry::ImportedGeometry(_) => "an imported geometry edge",
                 }
             } else {
                 match &info.geometry {
-                    Geometry::Sketch(_) => "sketch geometry",
-                    Geometry::Solid(_) => "solid geometry",
+                    crate::execution::GeometryWithImportedGeometry::Sketch(_) => "sketch geometry",
+                    crate::execution::GeometryWithImportedGeometry::Solid(_) => "solid geometry",
+                    crate::execution::GeometryWithImportedGeometry::ImportedGeometry(_) => "imported geometry",
                 }
             }
         } else {

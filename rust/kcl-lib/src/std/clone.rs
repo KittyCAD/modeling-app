@@ -335,7 +335,8 @@ fn restore_face_tags(solid: &mut Solid, face_tag_names: &[String], exec_state: &
                     id: surface.get_id(),
                     surface: Some(surface.clone()),
                     path: None,
-                    geometry: Geometry::Solid(solid_copy),
+                    body_id: solid_copy.id,
+                    geometry: Geometry::Solid(solid_copy).into(),
                 },
             )],
             meta: vec![Metadata {
