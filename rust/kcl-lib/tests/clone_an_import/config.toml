@@ -1,1 +1,5 @@
+kcl_versions = ["2.0"]
 redact_uuids = true
+
+[test_graphics.EngineRender]
+reason = "Bounding box differs in geometry-only mode"

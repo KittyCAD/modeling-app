@@ -1,0 +1,42 @@
+name: Clean up CI cloud projects
+
+on:
+  schedule:
+    - cron: "23 */4 * * *"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: Report eligible projects without deleting them
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cleanup-ci-projects
+  cancel-in-progress: false
+
+jobs:
+  cleanup:
+    if: github.repository == 'KittyCAD/modeling-app'
+    runs-on: namespace-profile-ubuntu-2-cores
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: actions/setup-node@v7.0.0
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Clean up development projects for the E2E account
+        env:
+          # Keep this tied to the credential in e2e-tests.yml.
+          ZOO_API_TOKEN: ${{ secrets.ZOO_API_TOKEN }}
+          APPLY: ${{ github.event_name == 'schedule' || !inputs.dry_run }}
+        run: |
+          if [ "$APPLY" = "true" ]; then
+            node scripts/cleanup-ci-projects.mts --apply
+          else
+            node scripts/cleanup-ci-projects.mts
+          fi

@@ -1291,6 +1291,12 @@ fn type_check_params_kw(
         .std_props
         .as_ref()
         .map_or(ConsumedSolidArgCheck::Error, |props| props.consumed_solid_arg_check);
+    let consumed_solid_arg_check = match consumed_solid_arg_check {
+        ConsumedSolidArgCheck::WarnDeprecated if exec_state.entry_point_version_is_v3_or_higher() => {
+            ConsumedSolidArgCheck::Error
+        }
+        check => check,
+    };
     if matches!(fn_def.body, FunctionBody::Rust(_))
         && let Some(props) = fn_def.std_props.as_ref()
     {
@@ -1798,7 +1804,7 @@ fn failOrReturn(@shouldFail: bool): never {
 
     #[tokio::test(flavor = "multi_thread")]
     async fn never_type_alias_contract_is_path_dependent() {
-        let function = r#"@settings(experimentalFeatures = allow)
+        let function = r#"@settings(kclVersion = "3.0-preview", experimentalFeatures = allow)
 type impossible = never
 fn failOrReturn(@shouldFail: bool): impossible {
   return if shouldFail {

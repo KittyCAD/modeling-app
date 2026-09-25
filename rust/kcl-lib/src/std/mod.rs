@@ -221,7 +221,8 @@ impl StdFnProps {
 ///     consumed when it is also passed in the named argument.
 /// - Keep the default consumed-solid behavior for new functions. Use
 ///   [`StdFnProps::warn_deprecated_on_consumed_solid_args`] only as a temporary
-///   compatibility exception that warns instead of rejecting the call.
+///   compatibility exception that warns before KCL 3.0 and rejects the call
+///   in KCL 3.0 or later.
 ///
 /// Region and solid policies are independent, so their modifiers may be chained.
 pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProps) {

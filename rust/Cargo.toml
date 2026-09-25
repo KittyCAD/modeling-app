@@ -14,6 +14,7 @@ members = [
   "kcl-syntax",
   "kcl-test-server",
   "kcl-wasm-lib",
+  "kittycad-point",
 ]
 
 [workspace.dependencies]
@@ -30,7 +31,7 @@ kittycad = { version = "0.5.2", default-features = false, features = [
   "js",
   "requests",
 ] }
-kittycad-modeling-cmds = { version = "0.2.232", features = [
+kittycad-modeling-cmds = { version = "0.2.239", features = [
   "ts-rs",
   "websocket",
 ] }
@@ -109,4 +110,4 @@ debug = "line-tables-only"
 # kittycad-modeling-cmds = { path = "../../modeling-api/modeling-cmds" }
 
 [patch.crates-io]
-kittycad-modeling-cmds = { git = "https://github.com/KittyCAD/modeling-api", rev = "9f54c6c3d01b727dbc2c0f135d4cf8d6078810c9" }
+kittycad-modeling-cmds = { git = "https://github.com/KittyCAD/modeling-api", rev = "9017773fb1d8f99ba5a3bd8e2b644afc27658e61" }

@@ -334,6 +334,14 @@ pub fn kcl_settings(program_json: &str) -> Result<JsValue, String> {
     JsValue::from_serde(&settings).map_err(|e| e.to_string())
 }
 
+/// Resolve the entrypoint language version before connecting to the engine.
+#[wasm_bindgen]
+pub fn kcl_language_version(program_json: &str) -> Result<JsValue, String> {
+    let program: Program = serde_json::from_str(program_json).map_err(|e| e.to_string())?;
+    let version = program.language_version().map_err(|e| e.to_string())?;
+    JsValue::from_serde(&version).map_err(|e| e.to_string())
+}
+
 /// Takes a kcl string and Meta settings and changes the meta settings in the kcl string.
 #[wasm_bindgen]
 pub fn change_default_units(code: &str, len_str: &str) -> Result<String, String> {

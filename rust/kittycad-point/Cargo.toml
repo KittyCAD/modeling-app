@@ -1,0 +1,23 @@
+[package]
+name = "kittycad-point"
+description = "Point implementations for use at Zoo in its API"
+version = "0.1.0"
+edition = "2024"
+license = "MIT"
+repository = "https://github.com/KittyCAD/modeling-app"
+authors = ["Adam Chalmers", "KittyCAD, Inc"]
+keywords = ["kcl", "KittyCAD", "CAD", "geometry"]
+
+[features]
+arbitrary = ["dep:arbitrary"]
+ts-rs = ["dep:ts-rs"]
+
+[dependencies]
+arbitrary = { version = "1", features = ["derive"], optional = true }
+euler = "0.5"
+schemars = { version = "0.8.17", features = ["impl_json_schema", "indexmap2", "url", "uuid1", "preserve_order"] }
+serde = { workspace = true }
+ts-rs = { workspace = true, optional = true }
+
+[lints]
+workspace = true

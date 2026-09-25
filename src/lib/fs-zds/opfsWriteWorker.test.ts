@@ -1,13 +1,23 @@
 import { createContext, runInContext } from 'node:vm'
 import { build } from 'vite'
 import { nodePolyfills } from 'vite-plugin-node-polyfills'
+import tsconfigPaths from 'vite-tsconfig-paths'
 import { expect, test, vi } from 'vitest'
 
 class DirectoryHandle {
   constructor(private children: [string, DirectoryHandle][] = []) {}
 
-  async *entries() {
-    yield* this.children
+  async getDirectoryHandle(name: string) {
+    const child = this.children.find(([childName]) => childName === name)
+    if (!child) throw new DOMException('Directory not found', 'NotFoundError')
+    return child[1]
+  }
+
+  async getFileHandle(name: string) {
+    if (this.children.some(([childName]) => childName === name)) {
+      throw new DOMException('Not a file', 'TypeMismatchError')
+    }
+    throw new DOMException('File not found', 'NotFoundError')
   }
 }
 
@@ -17,6 +27,7 @@ test('writes a project file in a browser worker without Node globals', async () 
     logLevel: 'silent',
     // A normal Node import would hide the browser path shim's process dependency.
     plugins: [
+      tsconfigPaths(),
       nodePolyfills({
         include: ['path'],
         globals: { Buffer: false, global: false, process: false },
@@ -61,6 +72,7 @@ test('writes a project file in a browser worker without Node globals', async () 
     navigator: { storage: { getDirectory: async () => root } },
     FileSystemDirectoryHandle: DirectoryHandle,
     FileSystemFileHandle: class {},
+    DOMException,
     request: {
       id: 1,
       type: 'write-file',

@@ -163,8 +163,6 @@ process.env.VITE_ZOOKEEPER_WEBSOCKET_URL ??=
   viteEnv.VITE_MLEPHANT_WEBSOCKET_URL
 process.env.VITE_ZOO_BASE_DOMAIN ??= viteEnv.VITE_ZOO_BASE_DOMAIN
 
-// Likely convenient to keep for debugging
-console.log('Environment vars', process.env)
 console.log('Parsed CLI args', args)
 
 // Set Electron's profile paths before app.ready. Chromium session/cache state is
@@ -877,7 +875,6 @@ ipcMain.handle('loginWithDeviceFlow', async (event) => {
     console.log('Polling for token')
     const tokenSet = await deviceFlowSession.handle.poll()
     console.log('Received token set')
-    console.log(tokenSet)
     return tokenSet.access_token
   } catch (e) {
     console.log(e)
