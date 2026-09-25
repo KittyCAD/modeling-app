@@ -44,6 +44,7 @@ import {
 } from '@src/lang/std/artifactGraph'
 import {
   addTagForSketchOnFace,
+  addTagToEdgeCutSelector,
   addTagToSingletonEdgeCut,
   isTaggableSketchSegment,
 } from '@src/lang/std/sketchTaggingHelpers'
@@ -987,7 +988,7 @@ export function mutateAstWithTagForSketchSegment(
 
 /**
  * Handler for edgeCut face selection.
- * Tags a singleton chamfer or fillet operation directly.
+ * Tags a singleton directly, or splits and tags the selected edge treatment.
  *
  * @param ast - The AST to modify
  * @param edgeCutFace - The edgeCut artifact representing the face
@@ -1002,13 +1003,16 @@ function modifyAstWithTagForEdgeCutFace(
     return new Error('Selection artifact is not a valid edgeCut type')
   }
 
-  const astClone = structuredClone(ast)
-  return addTagToSingletonEdgeCut(
-    {
-      node: astClone,
-      pathToNode: edgeCutFace.codeRef.pathToNode,
-      wasmInstance,
-    },
-    wasmInstance
-  )
+  const tagInfo = {
+    node: structuredClone(ast),
+    pathToNode: edgeCutFace.codeRef.pathToNode,
+    wasmInstance,
+  }
+  return edgeCutFace.sourceSelectorIndex != null
+    ? addTagToEdgeCutSelector(
+        tagInfo,
+        edgeCutFace.sourceSelectorIndex,
+        wasmInstance
+      )
+    : addTagToSingletonEdgeCut(tagInfo, wasmInstance)
 }

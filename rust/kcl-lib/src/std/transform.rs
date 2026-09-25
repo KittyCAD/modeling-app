@@ -831,8 +831,8 @@ delete(model)
     }
 
     #[tokio::test(flavor = "multi_thread")]
-    async fn hide_consumed_solid_reports_deprecation_warning() {
-        let code = r#"
+    async fn hide_consumed_solid_warns_before_v3_and_errors_in_v3() {
+        let body = r#"
 targetSketch = sketch(on = XY) {
   line1 = line(start = [var -10, var -10], end = [var 10, var -10])
   line2 = line(start = [var 10, var -10], end = [var 10, var 10])
@@ -865,26 +865,40 @@ result = subtract(target, tools = [tool])
 hidden = hide(target)
 "#;
 
-        let program = crate::Program::parse_no_errs(code).unwrap();
-        let ctx = crate::ExecutorContext::new_mock(None).await;
-        let outcome = ctx.run_mock(&program, &MockConfig::default()).await;
-        ctx.close().await;
-        let outcome = outcome.unwrap();
+        for (version, should_error) in [("2.0", false), ("\"3.0-preview\"", true)] {
+            let code = format!("@settings(kclVersion = {version})\n{body}");
+            let program = crate::Program::parse_no_errs(&code).unwrap();
+            let ctx = crate::ExecutorContext::new_mock(None).await;
+            let outcome = ctx.run_mock(&program, &MockConfig::default()).await;
+            ctx.close().await;
 
-        assert!(
-            outcome.issues.iter().any(|issue| {
-                issue.severity == Severity::Warning
-                    && issue.tag == Tag::Deprecated
-                    && issue
-                        .message
-                        .contains("Calling `hide` with a consumed solid is deprecated")
-                    && issue
-                        .message
-                        .contains("`target` was already consumed by a `subtract` operation")
-            }),
-            "expected hide consumed-solid deprecation warning, got: {:#?}",
-            outcome.issues
-        );
+            if should_error {
+                let err = outcome.unwrap_err();
+                assert!(matches!(&err.error, crate::errors::KclError::Semantic { .. }));
+                assert!(
+                    err.error
+                        .message()
+                        .contains("`target` was already consumed by a `subtract` operation"),
+                    "{err:?}"
+                );
+            } else {
+                let outcome = outcome.unwrap();
+                assert!(
+                    outcome.issues.iter().any(|issue| {
+                        issue.severity == Severity::Warning
+                            && issue.tag == Tag::Deprecated
+                            && issue
+                                .message
+                                .contains("Calling `hide` with a consumed solid is deprecated")
+                            && issue
+                                .message
+                                .contains("`target` was already consumed by a `subtract` operation")
+                    }),
+                    "expected hide consumed-solid deprecation warning, got: {:#?}",
+                    outcome.issues
+                );
+            }
+        }
     }
 
     #[tokio::test(flavor = "multi_thread")]

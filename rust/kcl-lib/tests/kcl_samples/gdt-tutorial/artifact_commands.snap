@@ -342,9 +342,8 @@ description: Artifact commands gdt-tutorial.kcl
                 "[uuid]"
               ]
             },
-            "from_entity_pos": {
-              "x": 0.0,
-              "y": 0.0
+            "from_entity_leader_pos": {
+              "centroid": {}
             },
             "to_edge_reference": {
               "side_faces": [
@@ -352,9 +351,8 @@ description: Artifact commands gdt-tutorial.kcl
                 "[uuid]"
               ]
             },
-            "to_entity_pos": {
-              "x": 1.0,
-              "y": 0.0
+            "to_entity_leader_pos": {
+              "centroid": {}
             },
             "dimension": {
               "symbol": null,

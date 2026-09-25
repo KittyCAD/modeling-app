@@ -980,25 +980,5 @@ description: Variables in memory after executing named_views_hide_imported.kcl
       "units": "mm",
       "sectional": false
     }
-  },
-  "importedView": {
-    "type": "NamedView",
-    "value": {
-      "artifactId": "[uuid]",
-      "name": "Anchor only",
-      "camera": {
-        "look": {
-          "type": "oriented",
-          "orientation": "Isometric"
-        },
-        "target": null,
-        "distance": null,
-        "projection": "Orthographic"
-      },
-      "baseline": "Show",
-      "exceptIds": [
-        "[uuid]"
-      ]
-    }
   }
 }

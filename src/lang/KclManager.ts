@@ -47,9 +47,9 @@ import { buildArtifactIndex } from '@src/lib/artifactIndex'
 import {
   DEFAULT_DEFAULT_LENGTH_UNIT,
   DEFAULT_EXPERIMENTAL_FEATURES,
-  DEFAULT_KCL_VERSION,
   EXECUTE_AST_INTERRUPT_ERROR_MESSAGE,
 } from '@src/lib/constants'
+import { DEFAULT_KCL_VERSION } from '@src/lib/kclVersion'
 import { getOperationKey } from '@src/lib/featureTreeOperationTree'
 import { markOnce } from '@src/lib/performance'
 import type RustContext from '@src/lib/rustContext'

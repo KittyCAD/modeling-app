@@ -1011,7 +1011,7 @@ plane003 = offsetPlane(plane001, offset = 10)`
   })
 
   it('deletes a KCL named view selected from the feature tree operation range', async () => {
-    const codeBefore = `@settings(kclVersion = 2.0, experimentalFeatures = allow)
+    const codeBefore = `@settings(kclVersion = "3.0-preview")
 
 sketch001 = sketch(on = XY) {
   line1 = line(start = [var 0mm, var 0mm], end = [var 4mm, var 0mm])

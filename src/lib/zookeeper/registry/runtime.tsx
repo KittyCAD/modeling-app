@@ -21,7 +21,7 @@ import type {
   ZookeeperSessionController,
   ZookeeperSessionControllerDependencies,
 } from '@src/lib/zookeeper/registry/controller'
-import { makeZookeeperConversationStore } from '@src/lib/zookeeper/zookeeperConversationStore'
+import { makeProjectZookeeperConversationStore } from '@src/lib/zookeeper/zookeeperConversationStore'
 import { zookeeperPromptRunningSignal } from '@src/lib/zookeeper/zookeeperPromptState'
 import {
   type AuthRegistryService,
@@ -49,6 +49,7 @@ import {
   systemIOService,
 } from '@src/registry/contracts/systemIO'
 import { lazy, Suspense } from 'react'
+import env, { getEnvironmentNameFromEnv } from '@src/env'
 
 const ZookeeperConversationPaneWrapper = lazy(async () => {
   const { ZookeeperConversationPaneWrapper } = await import(
@@ -303,7 +304,11 @@ export function createZookeeperRuntime(
         const controller = createZookeeperSessionController({
           apiToken: next.apiToken,
           billing,
-          conversationStore: makeZookeeperConversationStore(fileOperations),
+          conversationStore: makeProjectZookeeperConversationStore(
+            fileOperations,
+            next.projectPath,
+            getEnvironmentNameFromEnv(env())
+          ),
           fileOperations,
           kclManager: next.kclManager,
           project: next.project,
