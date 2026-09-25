@@ -7,6 +7,8 @@ vi.mock('@src/lib/clientErrors', async (importOriginal) => {
 
 import type * as ClientErrorsModule from '@src/lib/clientErrors'
 import type { WebSocketResponse } from '@kittycad/lib'
+import type { KclVersion } from '@rust/kcl-lib/bindings/KclVersion'
+import { uuidv4 } from '@src/lib/utils'
 import { EXECUTE_AST_INTERRUPT_ERROR_MESSAGE } from '@src/lib/constants'
 import { EngineDebugger } from '@src/lib/debugger'
 import { Connection } from '@src/lib/engineConnection/connection'
@@ -89,6 +91,20 @@ describe('ConnectionManager', () => {
   })
 
   describe('KCL language version', () => {
+    function setVersion(manager: ConnectionManager, version: KclVersion) {
+      const id = uuidv4()
+      return manager.sendModelingCommandFromWasm(
+        id,
+        JSON.stringify([0, 0, 0]),
+        JSON.stringify({
+          type: 'modeling_cmd_req',
+          cmd_id: id,
+          cmd: { type: 'set_kcl_version', kcl_version: version },
+        }),
+        '{}'
+      )
+    }
+
     const acknowledgement: [WebSocketResponse] = [
       {
         success: true,
@@ -106,7 +122,7 @@ describe('ConnectionManager', () => {
         .spyOn(manager, 'sendCommand')
         .mockResolvedValue(acknowledgement)
       for (const version of ['2.0', '2.0', '3.0-preview'] as const) {
-        await manager.setKclVersion(version)
+        await setVersion(manager, version)
       }
       expect(send.mock.calls.map(([, { command }]) => command)).toEqual([
         expect.objectContaining({
@@ -119,7 +135,7 @@ describe('ConnectionManager', () => {
 
       manager.tearDown({ route: 'service-disposed', initiatedBy: 'client' })
       addConnectedState(manager)
-      await manager.setKclVersion('3.0-preview')
+      await setVersion(manager, '3.0-preview')
       expect(send).toHaveBeenCalledTimes(3)
     })
 
@@ -129,12 +145,12 @@ describe('ConnectionManager', () => {
       const send = vi
         .spyOn(manager, 'sendCommand')
         .mockResolvedValue(acknowledgement)
-      await manager.setKclVersion('2.0')
-      send.mockRejectedValueOnce(new Error('interrupted'))
-      await expect(manager.setKclVersion('3.0-preview')).rejects.toThrow(
+      await setVersion(manager, '2.0')
+      send.mockRejectedValueOnce('interrupted')
+      await expect(setVersion(manager, '3.0-preview')).rejects.toContain(
         'interrupted'
       )
-      await manager.setKclVersion('2.0')
+      await setVersion(manager, '2.0')
       expect(send).toHaveBeenCalledTimes(3)
     })
 
@@ -146,11 +162,11 @@ describe('ConnectionManager', () => {
         .spyOn(manager, 'sendCommand')
         .mockReturnValueOnce(deferred.promise)
         .mockResolvedValue(acknowledgement)
-      const pending = manager.setKclVersion('2.0')
+      const pending = setVersion(manager, '2.0')
       addConnectedState(manager)
       deferred.resolve(acknowledgement)
-      await expect(pending).rejects.toThrow()
-      await manager.setKclVersion('2.0')
+      await expect(pending).rejects.toBeDefined()
+      await setVersion(manager, '2.0')
       expect(send).toHaveBeenCalledTimes(2)
     })
   })

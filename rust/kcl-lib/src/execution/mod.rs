@@ -1588,6 +1588,13 @@ impl ExecutorContext {
 
     pub async fn run_with_caching(&self, program: crate::Program) -> Result<ExecOutcome, KclErrorWithOutputs> {
         assert!(!self.is_mock());
+        self.engine
+            .set_kcl_version(
+                program.language_version().map_err(KclErrorWithOutputs::no_outputs)?,
+                program.ast.as_source_range(),
+            )
+            .await
+            .map_err(KclErrorWithOutputs::no_outputs)?;
         let result = self
             .with_engine_execution(Box::pin(self.run_with_caching_inner(program)))
             .await;

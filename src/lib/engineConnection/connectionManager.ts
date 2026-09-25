@@ -420,36 +420,6 @@ export class ConnectionManager extends EventTarget {
     return url
   }
 
-  /** Do not execute geometry until the engine has acknowledged its version. */
-  async setKclVersion(version: KclVersion): Promise<void> {
-    const connection = this.connection
-    if (!connection || !this.isReady) {
-      return Promise.reject(new Error(REJECTED_TOO_EARLY_WEBSOCKET_MESSAGE))
-    }
-    if (this.kclVersion === version) return
-    // A rejected/interrupted request may still have reached the engine.
-    this.kclVersion = undefined
-
-    const id = uuidv4()
-    const command: EngineCommand = {
-      type: 'modeling_cmd_req',
-      cmd_id: id,
-      cmd: { type: 'set_kcl_version', kcl_version: version },
-    }
-    this.addCommandLog({ type: CommandLogType.SendScene, data: command })
-    await this.sendCommand(id, {
-      command,
-      range: defaultSourceRange(),
-      idToRangeMap: {},
-    })
-
-    // An acknowledgement from an old session cannot configure its replacement.
-    if (this.connection !== connection || !this.isReady) {
-      return Promise.reject(new Error(REJECTED_TOO_EARLY_WEBSOCKET_MESSAGE))
-    }
-    this.kclVersion = version
-  }
-
   // Set the engine's theme
   async setTheme(theme: Themes) {
     if (!this.isReady) {
@@ -1484,12 +1454,46 @@ export class ConnectionManager extends EventTarget {
     if (this.executionIsStale) {
       return Promise.reject(EXECUTE_AST_INTERRUPT_ERROR_MESSAGE)
     }
+    const connection = this.connection
+    const version =
+      command.type === 'modeling_cmd_req' &&
+      command.cmd.type === 'set_kcl_version'
+        ? command.cmd.kcl_version
+        : undefined
     try {
+      // Rust owns version changes; this transport owns the confirmed session state.
+      if (version !== undefined) {
+        if (!this.isReady) {
+          return Promise.reject(REJECTED_TOO_EARLY_WEBSOCKET_MESSAGE)
+        }
+        if (this.kclVersion === version) {
+          const response: WebSocketResponse = {
+            success: true,
+            request_id: id,
+            resp: {
+              type: 'modeling',
+              data: {
+                modeling_response: { type: 'set_kcl_version', data: {} },
+              },
+            },
+          }
+          return msgpackEncode(response)
+        }
+        // A rejected/interrupted command may still have reached the engine.
+        this.kclVersion = undefined
+        this.addCommandLog({ type: CommandLogType.SendScene, data: command })
+      }
       const resp = await this.sendCommand(id, {
         command,
         range,
         idToRangeMap,
       })
+      if (version !== undefined) {
+        if (this.connection !== connection || !this.isReady) {
+          return Promise.reject(EXECUTE_AST_INTERRUPT_ERROR_MESSAGE)
+        }
+        this.kclVersion = version
+      }
       return msgpackEncode(resp[0])
     } catch (e) {
       const isExecutionInterrupt =
