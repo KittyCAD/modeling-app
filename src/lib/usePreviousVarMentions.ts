@@ -15,7 +15,6 @@ export function usePreviousVarMentions(
   const { kclManager } = useSingletons()
   const wasmInstance = use(kclManager.wasmInstancePromise)
   const previousVariables = usePreviousVariables({
-    code: context.view?.state.doc.toString() || '',
     ast,
     variables,
     wasmInstance,
