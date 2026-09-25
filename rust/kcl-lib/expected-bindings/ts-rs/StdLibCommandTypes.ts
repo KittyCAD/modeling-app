@@ -2,4 +2,4 @@
 
 export type StdLibCommandArgShape = { name: string, ty: string | null, docs: string | null, required: boolean, special: boolean, experimental: boolean, addedIn: string | null, deprecated: boolean, deprecatedSince: string | null, removedIn: string | null, };
 
-export type StdLibCommandShape = { name: string, preferredName: string, qualName: string, moduleName: string, returnType: string | null, deprecated: boolean, deprecatedSince: string | null, experimental: boolean, docHidden: boolean, args: Array<StdLibCommandArgShape>, };
+export type StdLibCommandShape = { name: string, preferredName: string, qualName: string, moduleName: string, returnType: string | null, addedIn: string | null, deprecated: boolean, deprecatedSince: string | null, experimental: boolean, docHidden: boolean, args: Array<StdLibCommandArgShape>, };

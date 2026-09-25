@@ -14,7 +14,6 @@ import { getAppFolderName as getAppFolderNameFromMetadata } from '@src/lib/appFo
 import type { EnvironmentConfiguration } from '@src/lib/constants'
 import {
   DEFAULT_DEFAULT_LENGTH_UNIT,
-  DEFAULT_KCL_VERSION,
   ENVIRONMENT_CONFIGURATION_FOLDER,
   ENVIRONMENT_FILE_NAME,
   PROJECT_ENTRYPOINT,
@@ -25,6 +24,7 @@ import {
   TELEMETRY_FILE_NAME,
   TELEMETRY_RAW_FILE_NAME,
 } from '@src/lib/constants'
+import { DEFAULT_KCL_VERSION } from '@src/lib/kclVersion'
 import {
   FileAlreadyExists,
   FileNotFound,
@@ -1391,15 +1391,10 @@ export const getUser = async (token: string): Promise<UserResponse> => {
 
 export const writeProjectThumbnailFile = async (
   fileOperations: FileOperationsRegistryService,
-  dataUrl: string,
+  pngBytes: Uint8Array,
   projectDirectoryPath: string
 ) => {
   const filePath = fsZds.join(projectDirectoryPath, PROJECT_IMAGE_NAME)
-  const data = atob(dataUrl.substring('data:image/png;base64,'.length))
-  const asArray = new Uint8Array(data.length)
-  for (let i = 0, len = data.length; i < len; ++i) {
-    asArray[i] = data.charCodeAt(i)
-  }
 
   // Configure Git to ignore the generated thumbnail
   const gitignorePath = fsZds.join(projectDirectoryPath, '.gitignore')
@@ -1409,7 +1404,7 @@ export const writeProjectThumbnailFile = async (
     await fileOperations.writeFile(gitignorePath, `${PROJECT_IMAGE_NAME}\n`)
   }
 
-  return fileOperations.writeFile(filePath, asArray)
+  return fileOperations.writeFile(filePath, pngBytes)
 }
 
 export function getPathFilenameInVariableCase(targetPath: string) {

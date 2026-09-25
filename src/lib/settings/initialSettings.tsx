@@ -12,11 +12,11 @@ import { cameraMouseDragGuards, cameraSystems } from '@src/lib/cameraControls'
 import {
   DEFAULT_BACKFACE_COLOR,
   DEFAULT_DEFAULT_LENGTH_UNIT,
-  DEFAULT_KCL_VERSION,
   DEFAULT_PROJECT_NAME,
   LEGACY_KCL_VERSION,
   REGEXP_UUIDV4,
 } from '@src/lib/constants'
+import { DEFAULT_KCL_VERSION } from '@src/lib/kclVersion'
 import { isDesktop } from '@src/lib/isDesktop'
 import type { ProjectLibrarySetting } from '@src/lib/projectLibraries'
 import type {

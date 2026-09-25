@@ -138,6 +138,15 @@ checksum = "08abcc3b4e9339e33a3d0a5ed15d84a687350c05689d825e0f6655eef9e76a94"
 
 [[package]]
 name = "approx"
+version = "0.4.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "3f2a05fd1bd10b2527e20a2cd32d8873d115b8b39fe219ee25f42a8aca6ba278"
+dependencies = [
+ "num-traits 0.2.19",
+]
+
+[[package]]
+name = "approx"
 version = "0.5.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "cab112f0a86d568ea0e627cc1d6be74a1e9cd55214684db5561995f6dad897c6"
@@ -153,6 +162,12 @@ checksum = "c3d036a3c4ab069c7b410a2ce876bd74808d2d0888a82667669f8e783a898bf1"
 dependencies = [
  "derive_arbitrary",
 ]
+
+[[package]]
+name = "archery"
+version = "1.2.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "33ca55ee147b1926dbea904f50fe4902494e97bc742205abbbf10c709e43815f"
 
 [[package]]
 name = "arrayvec"
@@ -609,6 +624,17 @@ dependencies = [
  "mint",
  "num-traits 0.1.43",
  "rand 0.4.6",
+]
+
+[[package]]
+name = "cgmath"
+version = "0.18.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "1a98d30140e3296250832bbaaff83b27dcd6fa3cc70fb6f1f3e5c9c0023b5317"
+dependencies = [
+ "approx 0.4.0",
+ "mint",
+ "num-traits 0.2.19",
 ]
 
 [[package]]
@@ -1441,7 +1467,17 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "3f19d11568a4a46aee488bdab3a2963e5e2c3cfd6091aa0abceaddcea82c0bc1"
 dependencies = [
  "approx 0.1.1",
- "cgmath",
+ "cgmath 0.16.1",
+]
+
+[[package]]
+name = "euler"
+version = "0.5.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b12915a9b399434cddb6c36145895e71d2ba1511ed390fe6b2f7a0383140f21c"
+dependencies = [
+ "approx 0.4.0",
+ "cgmath 0.18.0",
 ]
 
 [[package]]
@@ -1931,11 +1967,11 @@ dependencies = [
 [[package]]
 name = "gltf"
 version = "1.3.0"
-source = "git+https://github.com/KittyCAD/gltf-rs?rev=176933c96e36f9dc56566a7e986f6a4edbf43b09#176933c96e36f9dc56566a7e986f6a4edbf43b09"
+source = "git+https://github.com/KittyCAD/gltf-rs?rev=7e90eff77f296530e9573bd3680a742d740cde52#7e90eff77f296530e9573bd3680a742d740cde52"
 dependencies = [
- "approx 0.1.1",
+ "approx 0.4.0",
  "byteorder",
- "euler",
+ "euler 0.5.0",
  "gltf-json 1.3.0",
  "lazy_static",
  "serde_json",
@@ -1944,7 +1980,7 @@ dependencies = [
 [[package]]
 name = "gltf-derive"
 version = "1.3.0"
-source = "git+https://github.com/KittyCAD/gltf-rs?rev=176933c96e36f9dc56566a7e986f6a4edbf43b09#176933c96e36f9dc56566a7e986f6a4edbf43b09"
+source = "git+https://github.com/KittyCAD/gltf-rs?rev=7e90eff77f296530e9573bd3680a742d740cde52#7e90eff77f296530e9573bd3680a742d740cde52"
 dependencies = [
  "inflections",
  "proc-macro2",
@@ -1967,7 +2003,7 @@ dependencies = [
 [[package]]
 name = "gltf-json"
 version = "1.3.0"
-source = "git+https://github.com/KittyCAD/gltf-rs?rev=176933c96e36f9dc56566a7e986f6a4edbf43b09#176933c96e36f9dc56566a7e986f6a4edbf43b09"
+source = "git+https://github.com/KittyCAD/gltf-rs?rev=7e90eff77f296530e9573bd3680a742d740cde52#7e90eff77f296530e9573bd3680a742d740cde52"
 dependencies = [
  "gltf-derive 1.3.0",
  "schemars 0.8.22",
@@ -2427,6 +2463,28 @@ dependencies = [
 ]
 
 [[package]]
+name = "imbl"
+version = "7.0.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "46bad832b9b463ed9398b8506488cc2e3b897a9d44f13af115f382aac71f4fec"
+dependencies = [
+ "archery",
+ "equivalent",
+ "imbl-sized-chunks",
+ "rand_core 0.9.5",
+ "rand_xoshiro",
+ "serde_core",
+ "version_check",
+ "wide 0.7.33",
+]
+
+[[package]]
+name = "imbl-sized-chunks"
+version = "0.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "2a0813be332553f857953298749fa19549e8b61b80589757c29b4e2a804fa9c6"
+
+[[package]]
 name = "indexmap"
 version = "1.9.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2672,15 +2730,36 @@ name = "kcl-api"
 version = "0.2.186"
 dependencies = [
  "arbitrary",
- "euler",
+ "euler 0.5.0",
  "indexmap 2.14.2",
- "kcl-error",
+ "kcl-error 0.2.186",
  "kittycad-measurements",
+ "kittycad-point 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "kittycad-unit-conversion-derive",
  "parse-display",
  "parse-display-derive",
  "pyo3",
  "pyo3-stub-gen",
+ "schemars 0.8.22",
+ "serde",
+ "serde_json",
+ "ts-rs",
+ "uuid",
+]
+
+[[package]]
+name = "kcl-api"
+version = "0.2.186"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d47dce1cbf279d3042155b5ff6b63d568bc0e5174085a808d356694481d40599"
+dependencies = [
+ "euler 0.4.1",
+ "indexmap 2.14.2",
+ "kcl-error 0.2.186 (registry+https://github.com/rust-lang/crates.io-index)",
+ "kittycad-measurements",
+ "kittycad-unit-conversion-derive",
+ "parse-display",
+ "parse-display-derive",
  "schemars 0.8.22",
  "serde",
  "serde_json",
@@ -2733,6 +2812,20 @@ version = "0.2.186"
 dependencies = [
  "miette",
  "pyo3",
+ "schemars 0.8.22",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.20",
+ "ts-rs",
+]
+
+[[package]]
+name = "kcl-error"
+version = "0.2.186"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "5e20632461bdb87df80c68f540b653b12ea324a5e5b199bbb0ef1900f23356a9"
+dependencies = [
+ "miette",
  "schemars 0.8.22",
  "serde",
  "serde_json",
@@ -2821,15 +2914,16 @@ dependencies = [
  "http 1.5.0",
  "image",
  "image-compare 0.5.0",
+ "imbl",
  "indexmap 2.14.2",
  "insta",
  "itertools 0.15.0",
  "js-sys",
- "kcl-api",
+ "kcl-api 0.2.186",
  "kcl-derive-docs",
  "kcl-directory-test-macro",
  "kcl-engine-codec",
- "kcl-error",
+ "kcl-error 0.2.186",
  "kcl-syntax",
  "kittycad",
  "kittycad-modeling-cmds",
@@ -2879,7 +2973,7 @@ name = "kcl-python-bindings"
 version = "0.3.186"
 dependencies = [
  "anyhow",
- "kcl-api",
+ "kcl-api 0.2.186",
  "kcl-lib",
  "kittycad-modeling-cmds",
  "miette",
@@ -2991,9 +3085,9 @@ dependencies = [
 
 [[package]]
 name = "kittycad-modeling-cmds"
-version = "0.2.232"
+version = "0.2.240"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "34dbb766dcf2e5363a405f8b5abe43dd20e6e2741e6e5029926e3c822c9097d8"
+checksum = "e9a853cdacb058fa8e8c0ae825bee6b2eb94e7ecea982086430ce3e51b21f715"
 dependencies = [
  "anyhow",
  "bon",
@@ -3001,10 +3095,13 @@ dependencies = [
  "data-encoding",
  "enum-iterator",
  "enum-iterator-derive",
- "euler",
+ "euler 0.5.0",
  "http 1.5.0",
+ "indexmap 2.14.2",
+ "kcl-api 0.2.186 (registry+https://github.com/rust-lang/crates.io-index)",
  "kittycad-measurements",
  "kittycad-modeling-cmds-macros",
+ "kittycad-point 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "kittycad-unit-conversion-derive",
  "parse-display",
  "parse-display-derive",
@@ -3041,6 +3138,29 @@ dependencies = [
  "proc-macro2",
  "quote",
  "syn 3.0.5",
+]
+
+[[package]]
+name = "kittycad-point"
+version = "0.1.0"
+dependencies = [
+ "arbitrary",
+ "euler 0.5.0",
+ "schemars 0.8.22",
+ "serde",
+ "ts-rs",
+]
+
+[[package]]
+name = "kittycad-point"
+version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "07209a04eca5a827e67241465759c16c1d61f4a92936dbe4dd848ba497959581"
+dependencies = [
+ "euler 0.5.0",
+ "schemars 0.8.22",
+ "serde",
+ "ts-rs",
 ]
 
 [[package]]
@@ -4333,7 +4453,7 @@ checksum = "552840b97013b1a26992c11eac34bdd778e464601a4c2054b5f0bff7c6761293"
 dependencies = [
  "fuchsia-cprng",
  "libc",
- "rand_core 0.3.1",
+ "rand_core 0.3.2",
  "rdrand",
  "winapi",
 ]
@@ -4392,18 +4512,18 @@ dependencies = [
 
 [[package]]
 name = "rand_core"
-version = "0.3.1"
+version = "0.3.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7a6fdeb83b075e8266dcc8762c22776f6877a63111121f5f8c7411e5be7eed4b"
+checksum = "96f815e01bbd9678b50d927f79aa1cf3ffdfdb1b9787317c1284dadb894ad0e8"
 dependencies = [
- "rand_core 0.4.2",
+ "rand_core 0.4.3",
 ]
 
 [[package]]
 name = "rand_core"
-version = "0.4.2"
+version = "0.4.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9c33a3c44ca05fa6f1807d8e6743f3824e8509beca625669633be0acbdf509dc"
+checksum = "0e5937858e6fd18cd595d558f90bb5de3b72ae23f9e3763af0e805949b04ef60"
 
 [[package]]
 name = "rand_core"
@@ -4458,6 +4578,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "rand_xoshiro"
+version = "0.7.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f703f4665700daf5512dcca5f43afa6af89f09db47fb56be587f80636bda2d41"
+dependencies = [
+ "rand_core 0.9.5",
+]
+
+[[package]]
 name = "raw-cpuid"
 version = "11.6.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -4504,7 +4633,7 @@ version = "0.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "678054eb77286b51581ba43620cc911abf02758c91f93f479767aed0f90458b2"
 dependencies = [
- "rand_core 0.3.1",
+ "rand_core 0.3.2",
 ]
 
 [[package]]
@@ -4891,6 +5020,15 @@ checksum = "a50f4cf475b65d88e057964e0e9bb1f0aa9bbb2036dc65c64596b42932536984"
 
 [[package]]
 name = "safe_arch"
+version = "0.7.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "96b02de82ddbe1b636e6170c21be622223aea188ef2e139be0a5b219ec215323"
+dependencies = [
+ "bytemuck",
+]
+
+[[package]]
+name = "safe_arch"
 version = "1.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1f7caad094bd561859bcd467734a720c3c1f5d1f338995351fefe2190c45efed"
@@ -5235,7 +5373,7 @@ dependencies = [
  "approx 0.5.1",
  "num-complex",
  "num-traits 0.2.19",
- "wide",
+ "wide 1.4.0",
 ]
 
 [[package]]
@@ -6501,12 +6639,22 @@ dependencies = [
 
 [[package]]
 name = "wide"
+version = "0.7.33"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "0ce5da8ecb62bcd8ec8b7ea19f69a51275e91299be594ea5cc6ef7819e16cd03"
+dependencies = [
+ "bytemuck",
+ "safe_arch 0.7.4",
+]
+
+[[package]]
+name = "wide"
 version = "1.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "9a7714cd0430a663154667c74da5d09325c2387695bee18b3f7f72825aa3693a"
 dependencies = [
  "bytemuck",
- "safe_arch",
+ "safe_arch 1.0.0",
 ]
 
 [[package]]

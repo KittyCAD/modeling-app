@@ -1,0 +1,47 @@
+sigmaAllow = 15000 // psi
+width = 11 // inch
+p = 150 // Force on shelf - lbs
+distance = 12 // inches
+FOS = 2
+thickness = sqrt(distance * p * FOS * 6 / (sigmaAllow * width))
+filletR = thickness * 2
+shelfMountL = 9
+wallMountL = 8
+
+bracket = startSketchOn(XY)
+  |> startProfile(at = [0, 0])
+  |> line(end = [0, wallMountL])
+  |> tangentialArc(radius = filletR, angle = 90deg)
+  |> line(end = [-shelfMountL, 0])
+  |> line(end = [0, -thickness])
+  |> line(end = [shelfMountL, 0])
+  |> tangentialArc(radius = filletR - thickness, angle = -90deg)
+  |> line(end = [0, -wallMountL])
+  |> close()
+  |> extrude(length = width)
+
+part001 = startSketchOn(XY)
+  |> startProfile(at = [-15.53, -10.28])
+  |> line(end = [10.49, -2.08])
+  |> line(end = [10.42, 8.47])
+  |> line(end = [-19.16, 5.1])
+  |> close()
+  |> extrude(length = 4)
+
+part002 = startSketchOn(-XZ)
+  |> startProfile(at = [-9.35, 19.18])
+  |> line(end = [32.14, -2.47])
+  |> line(end = [8.39, -3.73])
+  |> close()
+
+part003 = startSketchOn(-XZ)
+  |> startProfile(at = [13.82, 16.51])
+  |> line(end = [-6.24, -30.82])
+  |> line(end = [8.39, -3.73])
+  |> close()
+
+part004 = startSketchOn(YZ)
+  |> startProfile(at = [19.04, 20.22])
+  |> line(end = [9.44, -30.16])
+  |> line(end = [8.39, -3.73])
+  |> close()

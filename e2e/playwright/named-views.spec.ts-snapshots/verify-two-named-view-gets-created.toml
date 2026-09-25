@@ -26,4 +26,4 @@ version = 1
 world_coord_system = "right_handed_up_z"
 
 [settings.modeling]
-kcl_version = "2.0"
+kcl_version = "3.0-preview"

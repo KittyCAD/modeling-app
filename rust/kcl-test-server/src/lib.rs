@@ -1,5 +1,5 @@
 //! Executes KCL programs.
-//! The server reuses the same engine session for each KCL program it receives.
+//! The server reuses an engine session while requests use the same KCL version.
 use std::net::SocketAddr;
 use std::sync::Arc;
 use std::sync::atomic::AtomicUsize;
@@ -70,11 +70,11 @@ fn start_worker(i: u8, engine_addr: Option<String>) -> mpsc::Sender<WorkerReq> {
     // Make a work queue for this worker.
     let (tx, mut rx) = mpsc::channel(1);
     tokio::task::spawn(async move {
-        let state = ExecutorContext::new_for_unit_test(engine_addr).await.unwrap();
+        let mut state: Option<(kcl_lib::KclVersion, ExecutorContext)> = None;
         println!("Worker {i} ready");
         while let Some(req) = rx.recv().await {
             let req: WorkerReq = req;
-            let resp = snapshot_endpoint(req.body, state.clone()).await;
+            let resp = snapshot_endpoint(req.body, &mut state, engine_addr.clone()).await;
             if req.resp.send(resp).is_err() {
                 println!("\tWorker {i} exiting");
             }
@@ -150,7 +150,11 @@ async fn handle_request(req: hyper::Request<Body>, state3: Arc<ServerState>) -> 
 /// KCL errors (from engine or the executor) respond with HTTP Bad Gateway.
 /// Malformed requests are HTTP Bad Request.
 /// Successful requests contain a PNG as the body.
-async fn snapshot_endpoint(body: Bytes, ctxt: ExecutorContext) -> Response<Body> {
+async fn snapshot_endpoint(
+    body: Bytes,
+    state: &mut Option<(kcl_lib::KclVersion, ExecutorContext)>,
+    engine_addr: Option<String>,
+) -> Response<Body> {
     let body = match serde_json::from_slice::<RequestBody>(body.as_ref()) {
         Ok(bd) => bd,
         Err(e) => return bad_request(format!("Invalid request JSON: {e}")),
@@ -162,8 +166,29 @@ async fn snapshot_endpoint(body: Bytes, ctxt: ExecutorContext) -> Response<Body>
         Err(e) => return bad_request(format!("Parse error: {e}")),
     };
 
+    let version = match program.language_version() {
+        Ok(version) => version,
+        Err(error) => return bad_request(format!("Invalid KCL settings: {error}")),
+    };
+    if state
+        .as_ref()
+        .is_none_or(|(connected_version, _)| *connected_version != version)
+    {
+        if let Some((_, old)) = state.take() {
+            old.close().await;
+        }
+        let ctx = match ExecutorContext::new_for_unit_test(engine_addr, version).await {
+            Ok(ctx) => ctx,
+            Err(error) => return kcl_err(error),
+        };
+        *state = Some((version, ctx));
+    }
+    let Some((_, ctxt)) = state.as_ref() else {
+        return bad_request("Engine connection was not initialized".to_owned());
+    };
+
     eprintln!("Executing {test_name}");
-    let mut exec_state = ExecState::new(&ctxt);
+    let mut exec_state = ExecState::new(ctxt);
     // This is a shitty source range, I don't know what else to use for it though.
     // There's no actual KCL associated with this reset_scene call.
     if let Err(e) = ctxt

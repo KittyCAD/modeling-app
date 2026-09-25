@@ -1,0 +1,21 @@
+plane001 = startSketchOn(XZ)
+
+profile001 = plane001
+  |> startProfile(at = [40.82, 240.82])
+  |> line(end = [235.72, -8.16])
+  |> line(end = [13.27, -253.07])
+  |> line(end = [-247.97, -19.39])
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+
+profile002 = plane001
+  |> startProfile(at = [47.17, -71.91])
+  |> line(end = [247.96, -4.03])
+  |> line(end = [-17.26, -116.79])
+  |> line(end = [-235.87, 12.66])
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+
+sketch001 = [profile001, profile002]
+
+extrude(sketch001, length = 10)

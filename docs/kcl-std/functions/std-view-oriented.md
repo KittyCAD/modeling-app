@@ -5,9 +5,9 @@ excerpt: "Create a camera view that looks at the model from a standard orientati
 layout: manual
 ---
 
-**WARNING:** This function is experimental and may change or be removed.
-
 Create a camera view that looks at the model from a standard orientation.
+
+**Added in KCL 3.0.**
 
 ```kcl
 view::oriented(
@@ -52,7 +52,7 @@ resolve. A `target` is a point, so its coordinates may be negative.
 ### Examples
 
 ```kcl
-@settings(experimentalFeatures = allow)
+@settings(kclVersion = "3.0-preview")
 
 isoView = view::oriented(view::Orientation::Isometric)
 

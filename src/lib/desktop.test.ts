@@ -6,6 +6,7 @@ import {
 } from '@src/lib/desktop'
 import { testFileOperations } from '@src/lib/fileSystem/testRuntime'
 import fsZds, { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
+import { DEFAULT_KCL_VERSION } from '@src/lib/kclVersion'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest'
 
@@ -67,12 +68,12 @@ describe('createNewProjectDirectory', () => {
     expect(project.title).toBe('Human Project')
     expect(projectToml).toContain('default_file = "main.kcl"')
     expect(projectToml).toContain('title = "Human Project"')
-    expect(projectToml).toContain('kcl_version = "2.0"')
+    expect(projectToml).toContain(`kcl_version = "${DEFAULT_KCL_VERSION}"`)
 
     const mainKcl = await fsZds.readFile(fsZds.join(project.path, 'main.kcl'), {
       encoding: 'utf-8',
     })
-    expect(mainKcl).toContain('kclVersion = 2.0')
+    expect(mainKcl).toContain(`kclVersion = ${DEFAULT_KCL_VERSION}`)
   })
 
   it('can create project directories with separate project titles', async () => {

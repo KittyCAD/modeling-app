@@ -5,4 +5,4 @@ default_file = "main.kcl"
 app = { }
 
   [settings.modeling]
-  kcl_version = "2.0"
+  kcl_version = "3.0-preview"

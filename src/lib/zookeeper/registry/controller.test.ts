@@ -588,6 +588,22 @@ describe('Zookeeper session controller', () => {
     ).toHaveLength(0)
   })
 
+  it('starts without a saved conversation when its lookup fails', async () => {
+    const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {})
+    const lookup = deferred<string | undefined>()
+    const { actor, controller } = createHarness({
+      actorState: 'ready-await',
+      storeGet: lookup.promise,
+    })
+    lookup.reject(new Error('Cannot read project.toml'))
+    await flushPromises()
+    expect(controller.showManualConnect.value).toBe(false)
+    expect(
+      sentEvents(actor, ZookeeperManagerTransitions.CacheSetupAndConnect)
+    ).toEqual([expect.objectContaining({ conversationId: undefined })])
+    consoleError.mockRestore()
+  })
+
   it('does not repeat setup while the actor waits for auth hydration', async () => {
     const { actor } = createHarness({
       actorState: 'ready-await',
