@@ -16,6 +16,7 @@ const BILLING_CONTEXT_DEFAULTS: BillingContext = {
   lastFetch: undefined,
   usageStartedAt: undefined,
   usageAccumulatedMs: 0,
+  usageEstimateExpiresAt: undefined,
   updateApiToken: undefined,
   pendingUpdateApiToken: undefined,
 }
@@ -93,4 +94,34 @@ test('does not show negative estimated balances', () => {
       })
     )
   ).toBe(0)
+})
+
+test.each([20 * 60_000, 19 * 60 * 60_000])(
+  'discards unconfirmed usage after %i ms instead of exhausting the balance',
+  (elapsedMs) => {
+    const startedAt = new Date('2026-09-25T12:00:00Z')
+    expect(
+      getEstimatedBillingBalance(
+        createBillingContext({
+          balance: 596,
+          payAsYouGoApiCreditPrice: 0.0083,
+          usageStartedAt: startedAt,
+          usageEstimateExpiresAt: new Date(startedAt.getTime() + 20 * 60_000),
+        }),
+        startedAt.getTime() + elapsedMs
+      )
+    ).toBe(596)
+  }
+)
+
+test('expires completed usage while waiting for a server refresh', () => {
+  const expiresAt = new Date('2026-09-25T12:20:00Z')
+  const context = createBillingContext({
+    balance: 596,
+    payAsYouGoApiCreditPrice: 0.0083,
+    usageAccumulatedMs: 120_000,
+    usageEstimateExpiresAt: expiresAt,
+  })
+  expect(getEstimatedBillingBalance(context, expiresAt.getTime() - 1)).toBe(594)
+  expect(getEstimatedBillingBalance(context, expiresAt.getTime())).toBe(596)
 })

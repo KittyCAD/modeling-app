@@ -37,9 +37,22 @@ type Story = StoryObj<typeof meta>
 
 export const Fixed: Story = {}
 
-export const FixedWithOverrun: Story = {
+export const FixedWithRecordedCharges: Story = {
   args: {
     userPaymentBalance,
+  },
+}
+
+export const CreditsAndRecordedCharges: Story = {
+  args: {
+    balance: 596,
+    allowance: 400,
+    userPaymentBalance: {
+      ...userPaymentBalance,
+      monthly_api_credits_remaining_monetary_value: 107.32,
+      stable_api_credits_remaining_monetary_value: 204.82,
+      total_due: 35.53,
+    },
   },
 }
 

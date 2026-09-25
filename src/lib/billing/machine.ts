@@ -3,6 +3,7 @@ import {
   getBillingInfo,
   type IBillingInfo,
 } from '@kittycad/ui-components'
+import { BILLING_ESTIMATE_DURATION_MS } from '@src/lib/billing/estimate'
 import { createKCClient } from '@src/lib/kcClient'
 import type { ActorRefFrom } from 'xstate'
 import { assign, fromPromise, setup } from 'xstate'
@@ -27,6 +28,7 @@ export interface BillingContext extends Partial<IBillingInfo> {
   lastFetch: undefined | Date
   usageStartedAt: undefined | Date
   usageAccumulatedMs: number
+  usageEstimateExpiresAt: undefined | Date
   updateApiToken: undefined | string
   pendingUpdateApiToken: undefined | string
 }
@@ -48,6 +50,7 @@ export const BILLING_CONTEXT_DEFAULTS: BillingContext = Object.freeze({
   lastFetch: undefined,
   usageStartedAt: undefined,
   usageAccumulatedMs: 0,
+  usageEstimateExpiresAt: undefined,
   updateApiToken: undefined,
   pendingUpdateApiToken: undefined,
 })
@@ -72,6 +75,11 @@ function applyBillingUpdateOutput(
     ...output,
     usageStartedAt,
     usageAccumulatedMs: 0,
+    // A refresh must not renew the estimate for a prompt that is still running.
+    usageEstimateExpiresAt:
+      context.usageStartedAt === undefined
+        ? undefined
+        : context.usageEstimateExpiresAt,
     updateApiToken: context.updateApiToken,
     pendingUpdateApiToken: context.pendingUpdateApiToken,
   }
@@ -139,6 +147,10 @@ export const billingMachine = setup({
 
         return {
           usageStartedAt: new Date(),
+          // Keep the deadline across interruptions until billing is refreshed.
+          usageEstimateExpiresAt:
+            context.usageEstimateExpiresAt ??
+            new Date(Date.now() + BILLING_ESTIMATE_DURATION_MS),
         }
       }),
     },
@@ -151,8 +163,11 @@ export const billingMachine = setup({
         return {
           usageStartedAt: undefined,
           usageAccumulatedMs:
-            context.usageAccumulatedMs +
-            Math.max(0, Date.now() - context.usageStartedAt.getTime()),
+            context.usageEstimateExpiresAt !== undefined &&
+            Date.now() >= context.usageEstimateExpiresAt.getTime()
+              ? 0
+              : context.usageAccumulatedMs +
+                Math.max(0, Date.now() - context.usageStartedAt.getTime()),
         }
       }),
     },

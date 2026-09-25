@@ -1,6 +1,7 @@
 import { act, cleanup, fireEvent, render, screen } from '@testing-library/react'
 import '@testing-library/jest-dom'
 import type { CustomerBalance } from '@kittycad/lib'
+import type { MouseEvent } from 'react'
 import {
   BillingDialog,
   BillingError,
@@ -24,7 +25,9 @@ const userPaymentBalance = {
 } satisfies CustomerBalance
 
 test('Shows account billing action when total due is positive', () => {
-  const billingClick = vi.fn()
+  const billingClick = vi.fn((event: MouseEvent<HTMLAnchorElement>) =>
+    event.preventDefault()
+  )
   const { queryByTestId } = render(
     <BillingDialog
       upgradeHref="https://zoo.dev/design-studio-pricing"
@@ -65,6 +68,47 @@ test('Shows total due with two decimal places', () => {
   expect(queryByText('$22.60')).toBeVisible()
   expect(queryByText('$22.6')).toBeNull()
 })
+
+test.each([
+  { balance: 596, monthlyCredits: 107.32, stableCredits: 204.82 },
+  { balance: 8, monthlyCredits: 0, stableCredits: 4 },
+  { balance: 0, monthlyCredits: 0, stableCredits: 0 },
+  { balance: Infinity, monthlyCredits: 0, stableCredits: 0 },
+])(
+  'Does not infer a billing block from recorded charges: %j',
+  ({ balance, monthlyCredits, stableCredits }) => {
+    render(
+      <BillingDialog
+        upgradeHref="https://zoo.dev/design-studio-pricing"
+        accountHref="https://zoo.dev/account/billing"
+        balance={balance}
+        allowance={400}
+        userPaymentBalance={{
+          ...userPaymentBalance,
+          monthly_api_credits_remaining_monetary_value: monthlyCredits,
+          stable_api_credits_remaining_monetary_value: stableCredits,
+          total_due: 35.53,
+        }}
+      />
+    )
+
+    if (Number.isFinite(balance)) {
+      expect(
+        screen.getByText(`${balance} min of Zookeeper reasoning time remaining`)
+      ).toBeVisible()
+    } else {
+      expect(screen.getByText('Unlimited Zookeeper')).toBeVisible()
+    }
+    expect(screen.getByText('Recorded charges:')).toBeVisible()
+    expect(screen.getByText('$35.53')).toBeVisible()
+    expect(screen.getByText(/Available credits may apply/)).toBeVisible()
+    expect(screen.getByRole('link', { name: 'Go to billing' })).toHaveAttribute(
+      'href',
+      'https://zoo.dev/account/billing'
+    )
+    expect(screen.queryByText(/must clear an unpaid total/)).toBeNull()
+  }
+)
 
 test('Shows upgrade action when total due is zero', () => {
   const { queryByTestId } = render(

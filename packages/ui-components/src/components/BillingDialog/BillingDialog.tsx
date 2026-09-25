@@ -72,41 +72,6 @@ export function BillingDialog(props: BillingDialogProps) {
     return () => clearInterval(id)
   }, [refreshTime])
 
-  if (!hasUnlimited && hasTotalDue) {
-    return (
-      <div
-        className={classNames(
-          'box-border flex w-full flex-row justify-center gap-2 rounded-lg bg-ml-green p-4 text-xs leading-4 text-chalkboard-100',
-          props.className
-        )}
-      >
-        <div className="flex min-w-0 flex-1 flex-col gap-2">
-          <div className="flex flex-row gap-2">
-            <div>
-              <div className={iconShellClassName}>
-                <BillingIcon name="exclamationMark" />
-              </div>
-            </div>
-            <div className="text-chalkboard-90">
-              To continue using Zoo's services, you must clear an unpaid total
-              of <span className="font-bold">${totalDueString}</span>.
-            </div>
-          </div>
-          <a
-            className={actionClassName}
-            href={props.accountHref}
-            target="_blank"
-            rel="noopener noreferrer"
-            data-testid="billing-account-button"
-            onClick={props.billingClick}
-          >
-            Go to billing
-          </a>
-        </div>
-      </div>
-    )
-  }
-
   return (
     <div
       className={classNames(
@@ -127,14 +92,18 @@ export function BillingDialog(props: BillingDialogProps) {
         <div className="min-h-5 py-1 font-bold text-chalkboard-100">
           {hasUnlimited
             ? props.text?.heading?.unlimited || defaultText.heading.unlimited
-            : props.text?.heading?.limited || defaultText.heading.limited}
+            : hasTotalDue
+              ? 'Zookeeper balance'
+              : props.text?.heading?.limited || defaultText.heading.limited}
         </div>
-        <div className="text-chalkboard-80">
-          {hasUnlimited
-            ? props.text?.paragraph?.unlimited ||
-              defaultText.paragraph.unlimited
-            : props.text?.paragraph?.limited || defaultText.paragraph.limited}
-        </div>
+        {!hasTotalDue && (
+          <div className="text-chalkboard-80">
+            {hasUnlimited
+              ? props.text?.paragraph?.unlimited ||
+                defaultText.paragraph.unlimited
+              : props.text?.paragraph?.limited || defaultText.paragraph.limited}
+          </div>
+        )}
         <BillingRemaining
           mode={BillingRemainingMode.ProgressBarStretch}
           error={props.error}
@@ -151,16 +120,33 @@ export function BillingDialog(props: BillingDialogProps) {
                 : `Credits refresh in ${ms(refreshTime - now, { long: true })}`}
             </time>
           )}
-        {!hasUnlimited && (
+        {hasTotalDue && (
+          <div className="text-chalkboard-90">
+            <div>
+              Recorded charges:{' '}
+              <span className="font-bold">${totalDueString}</span>
+            </div>
+            <p className="mt-1">
+              Recorded charges do not mean your credits are exhausted. Available
+              credits may apply when usage is invoiced. See billing for invoice
+              details.
+            </p>
+          </div>
+        )}
+        {(hasTotalDue || !hasUnlimited) && (
           <a
             className={actionClassName}
-            href={props.upgradeHref}
+            href={hasTotalDue ? props.accountHref : props.upgradeHref}
             target="_blank"
             rel="noopener noreferrer"
-            data-testid="billing-upgrade-button"
+            data-testid={
+              hasTotalDue ? 'billing-account-button' : 'billing-upgrade-button'
+            }
             onClick={props.billingClick}
           >
-            {props.text?.button?.limited || defaultText.button.limited}
+            {hasTotalDue
+              ? 'Go to billing'
+              : props.text?.button?.limited || defaultText.button.limited}
           </a>
         )}
       </div>
