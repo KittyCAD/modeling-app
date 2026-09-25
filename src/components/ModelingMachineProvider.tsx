@@ -11,6 +11,7 @@ import type { MutableRefObject } from 'react'
 import type { Actor, ContextFrom, Prop, StateFrom } from 'xstate'
 
 import { useNetworkContext } from '@src/hooks/useNetworkContext'
+import { NetworkHealthState } from '@src/hooks/useNetworkStatus'
 import { useApp, useSingletons } from '@src/lib/boot'
 import { modelingMachineCommandConfig } from '@src/lib/commandBarConfigs/modelingCommandConfig'
 import type { Project } from '@src/lib/project'
@@ -171,20 +172,25 @@ export const ModelingMachineProvider = ({
   useMenuListener(cb)
 
   const { overallState } = useNetworkContext()
-  const { isStreamReady } = useAppState()
+  const { isStreamReady, isStreamAcceptingInput } = useAppState()
 
   const toolbarConfigurationName =
     modelingMachineStateToToolbarModeName(modelingState)
   const toolbarModeKeymapScope =
     toolbarModeNameToKeymapScope[toolbarConfigurationName]
   const keymap = registry.get(keymapService)
+  const modelingKeymapEnabled =
+    (overallState === NetworkHealthState.Ok ||
+      overallState === NetworkHealthState.Weak) &&
+    isStreamAcceptingInput
 
   useEffect(() => {
+    if (!modelingKeymapEnabled) return
     keymap.applyScope(toolbarModeKeymapScope)
     return () => {
       keymap.removeScope(toolbarModeKeymapScope)
     }
-  }, [keymap, toolbarModeKeymapScope])
+  }, [keymap, modelingKeymapEnabled, toolbarModeKeymapScope])
 
   // Assumes all commands are network commands
   useSketchModeMenuEnableDisable(
@@ -192,6 +198,7 @@ export const ModelingMachineProvider = ({
     overallState,
     kclManager.isExecutingSignal.value,
     isStreamReady,
+    isStreamAcceptingInput,
     [
       { menuLabel: 'View.Standard views' },
       { menuLabel: 'View.Named views' },

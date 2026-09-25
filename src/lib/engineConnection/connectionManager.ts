@@ -1099,6 +1099,11 @@ export class ConnectionManager extends EventTarget {
 
   tearDown(options: ManagerTearDown) {
     const connection = this.connection
+    if (connection) {
+      this.dispatchEvent(
+        new CustomEvent(EngineConnectionManagerEvents.BeforeTeardown)
+      )
+    }
     const isFirstShutdownTrigger = this.recordShutdownTrigger(options)
 
     EngineDebugger.addLog({

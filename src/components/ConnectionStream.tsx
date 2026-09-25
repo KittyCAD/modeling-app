@@ -1,6 +1,7 @@
 import { useAppState } from '@src/AppState'
 import { ClientSideScene } from '@src/clientSideScene/ClientSideSceneComp'
 import Loading from '@src/components/Loading'
+import { Spinner } from '@src/components/Spinner'
 import { ViewControlContextMenu } from '@src/components/ViewControlMenu'
 import { useOnOfflineToExitSketchMode } from '@src/hooks/network/useOnOfflineToExitSketchMode'
 import { useOnPageExit } from '@src/hooks/network/useOnPageExit'
@@ -33,7 +34,10 @@ import {
   NUMBER_OF_ENGINE_RETRIES,
 } from '@src/lib/constants'
 import { EngineDebugger } from '@src/lib/debugger'
-import { EngineConnectionManagerEvents } from '@src/lib/engineConnection/utils'
+import {
+  EngineConnectionErrorKind,
+  EngineConnectionManagerEvents,
+} from '@src/lib/engineConnection/utils'
 import { prepareEditCommand } from '@src/lib/featureTree'
 import { createThumbnailPNGOnDesktop } from '@src/lib/screenshot'
 import {
@@ -42,15 +46,60 @@ import {
 } from '@src/lib/selections'
 import { getResolvedTheme, Themes } from '@src/lib/theme'
 import { err, reportRejection } from '@src/lib/trap'
+import { showFreezeFrame, showLiveVideoOnNextFrame } from '@src/lib/videoStream'
 import type {
   EngineSceneExtensionContext,
   EngineSceneStreamLayer,
 } from '@src/registry/contracts/engineScene'
 import type { MouseEventHandler } from 'react'
-import { use, useCallback, useMemo, useRef, useState } from 'react'
+import { use, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import toast from 'react-hot-toast'
 
 const TIME_TO_CONNECT = 30_000
+
+const EngineReconnectInteractionGuard = () => {
+  const [showFeedback, setShowFeedback] = useState(false)
+  const revealFeedback = useCallback(() => setShowFeedback(true), [])
+
+  useEffect(() => {
+    const revealFeedbackForKeyboard = (event: KeyboardEvent) => {
+      const target = event.target
+      if (
+        target instanceof Element &&
+        target.closest(
+          'input, textarea, select, [contenteditable="true"], .cm-editor'
+        )
+      ) {
+        return
+      }
+      revealFeedback()
+    }
+
+    window.addEventListener('keydown', revealFeedbackForKeyboard)
+    return () =>
+      window.removeEventListener('keydown', revealFeedbackForKeyboard)
+  }, [revealFeedback])
+
+  return (
+    <>
+      <div
+        className="absolute inset-0 z-20 cursor-pointer"
+        onPointerDown={revealFeedback}
+        onWheel={revealFeedback}
+        onContextMenu={(event) => event.preventDefault()}
+      />
+      {showFeedback && (
+        <div
+          role="status"
+          className="pointer-events-none absolute bottom-4 left-1/2 z-30 flex -translate-x-1/2 items-center gap-2 rounded-full border border-chalkboard-30 bg-chalkboard-10/95 px-4 py-2 text-xs text-chalkboard-100 shadow-sm dark:border-chalkboard-70 dark:bg-chalkboard-90/95 dark:text-chalkboard-10"
+        >
+          <Spinner className="h-3.5 w-3.5" aria-hidden={true} />
+          Reconnecting...
+        </div>
+      )}
+    </>
+  )
+}
 
 const stringHash = (value: string) => {
   let hash = 0
@@ -89,7 +138,8 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
   const isIdle = useRef(false)
   const [isSceneReady, setIsSceneReady] = useState(false)
   const settingsValues = settings.useSettings()
-  const { setAppState } = useAppState()
+  const { isStreamAcceptingInput, setAppState } = useAppState()
+  const hasConnectedScene = useRef(false)
   const { overallState } = useNetworkContext()
   const { state: modelingMachineState, send: modelingSend } =
     useModelingContext()
@@ -103,12 +153,50 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
   const isNetworkOkay =
     overallState === NetworkHealthState.Ok ||
     overallState === NetworkHealthState.Weak
+  const waitForStreamPresentation = useCallback(async (signal: AbortSignal) => {
+    if (signal.aborted) return false
+    if (!videoRef.current || !canvasRef.current) {
+      return false
+    }
+    if (canvasRef.current.style.display !== 'block') {
+      hasConnectedScene.current = true
+      return true
+    }
+    const presented = await showLiveVideoOnNextFrame(
+      videoRef.current,
+      canvasRef.current,
+      { signal }
+    )
+    if (presented) hasConnectedScene.current = true
+    return presented
+  }, [])
   const {
     tryConnecting,
     isConnecting,
     numberOfConnectionAttempts,
     abnormalCloseRetries,
-  } = useTryConnect()
+  } = useTryConnect(waitForStreamPresentation)
+  useEffect(() => {
+    const preserveFrame = () => {
+      setAppState({ isStreamAcceptingInput: false })
+      if (hasConnectedScene.current) {
+        sceneInfra.camControls.captureCameraStateBeforeReconnect()
+      }
+      if (!videoRef.current || !canvasRef.current) return
+      showFreezeFrame(videoRef.current, canvasRef.current)
+    }
+
+    engineCommandManager.addEventListener(
+      EngineConnectionManagerEvents.BeforeTeardown,
+      preserveFrame
+    )
+    return () => {
+      engineCommandManager.removeEventListener(
+        EngineConnectionManagerEvents.BeforeTeardown,
+        preserveFrame
+      )
+    }
+  }, [engineCommandManager, sceneInfra.camControls, setAppState])
   const safariObjectFitClass = useMemo(() => {
     // on safari we want to apply object-fit: fill to fix video resize bug
     const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent)
@@ -326,7 +414,8 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
           sceneInfra,
           settingsActor: settings.actor,
         })
-          .then(() => {
+          .then((result) => {
+            if (result !== 'connected') return
             // Take a screen shot after the page mounts and zoom to fit runs
             if (projectIORef && projectIORef.path) {
               createThumbnailPNGOnDesktop({
@@ -541,7 +630,10 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
   const onWindowOnlineOfflineParams = useMemo(
     () => ({
       close: () => {
-        setShowManualConnect(true)
+        // Keep terminal failures manually recoverable across offline events.
+        setShowManualConnect(
+          engineCommandManager.lastConnectionError?.terminal === true
+        )
         EngineDebugger.addLog({
           label: 'ConnectionStream.tsx',
           message: 'window offline, calling tearDown()',
@@ -609,8 +701,22 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
       sceneInfra.camControls.wasDragging === false && btnName(e).right === true,
     [sceneInfra.camControls.wasDragging]
   )
+  const shouldBlockSceneInteraction =
+    isSceneReady &&
+    (!isNetworkOkay || !isStreamAcceptingInput) &&
+    !showManualConnect
+  const isTransientlyDisconnected =
+    hasConnectedScene.current && shouldBlockSceneInteraction
 
-  return (
+  const canInteractWithScene = isNetworkOkay && isStreamAcceptingInput
+  const terminalConnectionError = engineCommandManager.lastConnectionError
+  const manualConnectTitle =
+    terminalConnectionError?.kind ===
+    EngineConnectionErrorKind.UnsupportedVideoCodec
+      ? 'Unsupported video codec'
+      : undefined
+
+  const stream = (
     <div
       role="presentation"
       ref={videoWrapperRef}
@@ -618,6 +724,7 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
       style={style}
       id="stream"
       data-testid="stream"
+      inert={shouldBlockSceneInteraction}
       onMouseUp={handleMouseUp}
       onDoubleClick={enterEditModeForViewportSelection}
       onContextMenu={(e) => e.preventDefault()}
@@ -636,7 +743,7 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
       <canvas
         key={id + 'canvas'}
         ref={canvasRef}
-        className="cursor-pointer"
+        className="absolute inset-0 hidden h-full w-full cursor-pointer"
         id="freeze-frame"
       >
         No canvas support
@@ -659,11 +766,13 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
           </div>
         )
       })}
-      <ViewControlContextMenu
-        event="mouseup"
-        guard={viewControlContextMenuGuard}
-        menuTargetElement={videoWrapperRef}
-      />
+      {canInteractWithScene && (
+        <ViewControlContextMenu
+          event="mouseup"
+          guard={viewControlContextMenuGuard}
+          menuTargetElement={videoWrapperRef}
+        />
+      )}
       {(!isSceneReady || showManualConnect) && (
         <Loading
           isRetrying={false}
@@ -671,6 +780,12 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
           dataTestId="loading-engine"
           className="absolute inset-0 h-screen"
           showManualConnect={showManualConnect}
+          manualConnectTitle={manualConnectTitle}
+          manualConnectDescription={
+            terminalConnectionError?.terminal
+              ? terminalConnectionError.message
+              : undefined
+          }
           callback={() => {
             abnormalCloseRetries.current = 0
             numberOfConnectionAttempts.current = 0
@@ -697,5 +812,12 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
         </Loading>
       )}
     </div>
+  )
+
+  return (
+    <>
+      {stream}
+      {isTransientlyDisconnected && <EngineReconnectInteractionGuard />}
+    </>
   )
 }

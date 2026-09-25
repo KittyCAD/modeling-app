@@ -21,6 +21,7 @@ export interface ContextMenuProps
   extends Omit<React.HTMLAttributes<HTMLUListElement>, 'children'> {
   items?: React.ReactElement[]
   menuTargetElement?: RefObject<HTMLElement | null>
+  disabled?: boolean
   guard?: (e: globalThis.MouseEvent) => boolean
   event?: 'contextmenu' | 'mouseup'
   callback?: (event: globalThis.MouseEvent) => void
@@ -34,6 +35,7 @@ const DefaultContextMenuItems = [
 export const ContextMenu = memo(function ContextMenu({
   items = DefaultContextMenuItems,
   menuTargetElement,
+  disabled,
   className,
   guard,
   event = 'contextmenu',
@@ -52,6 +54,12 @@ export const ContextMenu = memo(function ContextMenu({
   })
   const handleContextMenu = useCallback(
     (e: globalThis.MouseEvent) => {
+      if (disabled) {
+        if (guard && !guard(e)) return
+        e.preventDefault()
+        e.stopPropagation()
+        return
+      }
       if (callback) {
         callback(e)
       }
@@ -64,8 +72,12 @@ export const ContextMenu = memo(function ContextMenu({
       setPosition({ x: e.clientX, y: e.clientY })
       setOpen(true)
     },
-    [guard, setPosition, setOpen, callback]
+    [callback, disabled, guard]
   )
+
+  useEffect(() => {
+    if (disabled) setOpen(false)
+  }, [disabled])
 
   const onDialogMouseUp = useCallback((e: MouseEvent) => {
     // Prevent mouseup event to propagate to EngineStream's handleMouseUp which would update the selection depending
@@ -126,13 +138,12 @@ export const ContextMenu = memo(function ContextMenu({
 
   // Add context menu listener to target once mounted
   useEffect(() => {
-    menuTargetElement?.current?.addEventListener(event, handleContextMenu)
+    const target = menuTargetElement?.current
+    target?.addEventListener(event, handleContextMenu)
     return () => {
-      // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-      menuTargetElement?.current?.removeEventListener(event, handleContextMenu)
+      target?.removeEventListener(event, handleContextMenu)
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [menuTargetElement?.current, callback])
+  }, [event, handleContextMenu, menuTargetElement])
 
   return (
     <Dialog open={open} onClose={onCloseDialog} onMouseUp={onDialogMouseUp}>

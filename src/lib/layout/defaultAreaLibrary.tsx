@@ -1,4 +1,5 @@
 import { useSignals } from '@preact/signals-react/runtime'
+import { useAppState } from '@src/AppState'
 import { DEFAULT_SKETCH_SOLVE_STREAM_DIMMING } from '@src/clientSideScene/ClientSideSceneComp'
 import { ConnectionStream } from '@src/components/ConnectionStream'
 import { BodiesPane } from '@src/components/layout/areas/BodiesPane'
@@ -10,6 +11,8 @@ import { LogsPane } from '@src/components/layout/areas/LoggingPanes'
 import { MemoryPane } from '@src/components/layout/areas/MemoryPane'
 import { ProjectExplorerPane } from '@src/components/layout/areas/ProjectExplorerPane'
 import { useModelingContext } from '@src/hooks/useModelingContext'
+import { useNetworkContext } from '@src/hooks/useNetworkContext'
+import { NetworkHealthState } from '@src/hooks/useNetworkStatus'
 import { kclErrorsByFilename } from '@src/lang/errors'
 import { useApp, useSingletons } from '@src/lib/boot'
 import { NAMED_VIEWS_UI_FEATURE_FLAG } from '@src/lib/constants'
@@ -31,7 +34,12 @@ function ModelingArea() {
   useSignals()
   const { auth, registry } = useApp()
   const { state, send } = useModelingContext()
+  const { overallState } = useNetworkContext()
+  const { isStreamAcceptingInput } = useAppState()
   const authToken = auth.useToken()
+  const isNetworkOkay =
+    overallState === NetworkHealthState.Ok ||
+    overallState === NetworkHealthState.Weak
   const [sketchSolveStreamDimming, setSketchSolveStreamDimming] = useState(
     DEFAULT_SKETCH_SOLVE_STREAM_DIMMING
   )
@@ -64,6 +72,7 @@ function ModelingArea() {
       />
       <EngineSceneViewExtensionOverlay
         extensions={engineSceneViewExtensions}
+        inert={!isNetworkOkay || !isStreamAcceptingInput}
         {...engineSceneContext}
       />
     </div>
