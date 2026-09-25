@@ -1581,7 +1581,9 @@ impl ExecutorContext {
             .push_new_env_for_scope()
             .map_err(KclErrorWithOutputs::no_outputs)?;
 
-        let (main_ref, _) = self.inner_run(program, &mut exec_state, PreserveMem::Always).await?;
+        let (main_ref, _) = self
+            .inner_run(program, &mut exec_state, PreserveMem::Always, true)
+            .await?;
 
         Ok((exec_state, main_ref))
     }
@@ -1780,6 +1782,7 @@ impl ExecutorContext {
                                 &mut new_exec_state,
                                 Some((new_universe, new_universe_map)),
                                 PreserveMem::Normal,
+                                true,
                             )
                             .await;
 
@@ -1795,7 +1798,7 @@ impl ExecutorContext {
                             .map_err(KclErrorWithOutputs::no_outputs)?;
 
                         let result = self
-                            .run_concurrent_inner(&program, &mut exec_state, None, PreserveMem::Normal)
+                            .run_concurrent_inner(&program, &mut exec_state, None, PreserveMem::Normal, true)
                             .await;
 
                         (exec_state, result)
@@ -1808,7 +1811,7 @@ impl ExecutorContext {
                             .map_err(KclErrorWithOutputs::no_outputs)?;
 
                         let result = self
-                            .run_concurrent_inner(&program, &mut exec_state, None, PreserveMem::Always)
+                            .run_concurrent_inner(&program, &mut exec_state, None, PreserveMem::Always, true)
                             .await;
 
                         (exec_state, result)
@@ -1824,7 +1827,7 @@ impl ExecutorContext {
                     .map_err(KclErrorWithOutputs::no_outputs)?;
 
                 let result = self
-                    .run_concurrent_inner(&program, &mut exec_state, None, PreserveMem::Normal)
+                    .run_concurrent_inner(&program, &mut exec_state, None, PreserveMem::Normal, true)
                     .await;
 
                 (program, exec_state, result)
@@ -1850,6 +1853,28 @@ impl ExecutorContext {
             .await
             .map_err(KclErrorWithOutputs::no_outputs)?;
         Ok(outcome)
+    }
+
+    /// Execute a complete program in a fresh scene, invalidating previous caches
+    /// without retaining incremental-execution or sketch-mode state. The resulting scene remains
+    /// available for inspection and export.
+    pub async fn run_without_caching(&self, program: crate::Program) -> Result<ExecOutcome, KclErrorWithOutputs> {
+        self.with_engine_execution(Box::pin(async {
+            cache::bust_cache().await;
+            cache::clear_mem_cache().await;
+            let mut exec_state = ExecState::new(self);
+            self.send_clear_scene(&mut exec_state, Default::default())
+                .await
+                .map_err(KclErrorWithOutputs::no_outputs)?;
+            let (env_ref, _) = self
+                .run_concurrent_inner(&program, &mut exec_state, None, PreserveMem::Normal, false)
+                .await?;
+            exec_state
+                .into_exec_outcome(env_ref, self)
+                .await
+                .map_err(KclErrorWithOutputs::no_outputs)
+        }))
+        .await
     }
 
     /// Perform the execution of a program.
@@ -1880,6 +1905,7 @@ impl ExecutorContext {
             exec_state,
             universe_info,
             preserve_mem,
+            true,
         )))
         .await
     }
@@ -1932,6 +1958,7 @@ impl ExecutorContext {
         exec_state: &mut ExecState,
         universe_info: Option<(Universe, UniverseMap)>,
         preserve_mem: PreserveMem,
+        cache_memory: bool,
     ) -> Result<(EnvironmentRef, Option<ModelingSessionData>), KclErrorWithOutputs> {
         // Record the entry point's kclVersion before anything executes;
         // imported modules pre-execute on clones of this state below and must
@@ -2158,7 +2185,7 @@ impl ExecutorContext {
             .root_module_artifacts
             .extend(std::mem::take(&mut exec_state.mod_local.artifacts));
 
-        self.inner_run(program, exec_state, preserve_mem)
+        self.inner_run(program, exec_state, preserve_mem, cache_memory)
             .await
             .map_err(|mut error| {
                 // Engine rejections of async commands (e.g. foreign imports)
@@ -2216,6 +2243,7 @@ impl ExecutorContext {
         program: &crate::Program,
         exec_state: &mut ExecState,
         preserve_mem: PreserveMem,
+        cache_memory: bool,
     ) -> Result<(EnvironmentRef, Option<ModelingSessionData>), KclErrorWithOutputs> {
         let _stats = crate::log::LogPerfStats::new("Interpretation");
 
@@ -2286,7 +2314,7 @@ impl ExecutorContext {
             Err((err, env_ref)) => {
                 // Preserve memory on execution failures so follow-up mock
                 // execution can still reuse stable IDs before the error.
-                if let Some(env_ref) = env_ref {
+                if cache_memory && let Some(env_ref) = env_ref {
                     write_old_memory(self, exec_state, env_ref)
                         .await
                         .map_err(|err| exec_state.error_with_outputs(err, Some(env_ref), default_planes.clone()))?;
@@ -2295,9 +2323,11 @@ impl ExecutorContext {
             }
         };
 
-        write_old_memory(self, exec_state, env_ref)
-            .await
-            .map_err(|err| exec_state.error_with_outputs(err, Some(env_ref), default_planes.clone()))?;
+        if cache_memory {
+            write_old_memory(self, exec_state, env_ref)
+                .await
+                .map_err(|err| exec_state.error_with_outputs(err, Some(env_ref), default_planes.clone()))?;
+        }
 
         let session_data = self.engine.get_session_data().await;
 
@@ -5086,6 +5116,30 @@ solid7 = extrude(r7, length = width)
         assert_eq!(exec_state.mod_local.constraint_state, mem.constraint_state);
 
         clear_mem_cache().await;
+        ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn run_without_caching_does_not_retain_success_or_failure() {
+        cache::bust_cache().await;
+        clear_mem_cache().await;
+        let ctx = ExecutorContext::new_with_engine(Arc::new(EngineManager::new_mock()), Default::default());
+        let code = "@settings(kclVersion = 2.0)\nanswer = 42";
+        let program = crate::Program::parse_no_errs(code).unwrap();
+        let expected = ctx.run_with_caching(program.clone()).await.unwrap();
+        assert!(cache::read_old_ast().await.is_some());
+        assert!(cache::read_old_memory().await.is_some());
+
+        let actual = ctx.run_without_caching(program).await.unwrap();
+        assert_eq!(actual.variables, expected.variables);
+        assert!(cache::read_old_ast().await.is_none());
+        assert!(cache::read_old_memory().await.is_none());
+
+        let program = crate::Program::parse_no_errs(&format!("{code}\nbad = missingValue")).unwrap();
+        let error = ctx.run_without_caching(program).await.unwrap_err();
+        assert_eq!(error.variables.get("answer"), expected.variables.get("answer"));
+        assert!(cache::read_old_ast().await.is_none());
+        assert!(cache::read_old_memory().await.is_none());
         ctx.close().await;
     }
 
