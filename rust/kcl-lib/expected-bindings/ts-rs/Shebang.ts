@@ -4,7 +4,7 @@
  * A shebang.
  * This is a special type of comment that is at the top of the file.
  * It looks like this:
- * ```python,noRender
+ * ```python,no_run
  * #!/usr/bin/env python
  * ```
  */
