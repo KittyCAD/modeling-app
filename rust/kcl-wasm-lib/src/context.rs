@@ -45,7 +45,7 @@ impl ExecutionCallbacks for JsExecutionCallbacks {
 
 #[wasm_bindgen]
 pub struct Context {
-    engine: Arc<kcl_lib::wasm_engine::EngineConnection>,
+    pub(crate) engine: Arc<kcl_lib::wasm_engine::EngineConnection>,
     response_context: Arc<kcl_lib::wasm_engine::ResponseContext>,
     fs: kcl_lib::FileSystemHandle,
     mock_engine: Arc<kcl_lib::wasm_engine::EngineConnection>,

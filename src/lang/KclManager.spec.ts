@@ -15,7 +15,8 @@ import {
 } from '@src/editor/plugins/operations'
 import { File, KclManager } from '@src/lang/KclManager'
 import { DEFAULT_KCL_VERSION } from '@src/lib/kclVersion'
-import { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
+import type { WebSocketResponse } from '@kittycad/lib'
+import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import * as UserFeatures from '@src/machines/userFeaturesMachine'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -137,8 +138,6 @@ function enableSketchSolveEditorExecution(kclManager: KclManager) {
 }
 
 beforeEach(() => {
-  // These tests mock execution and have no engine socket.
-  vi.spyOn(ConnectionManager.prototype, 'setKclVersion').mockResolvedValue()
   vi.spyOn(UserFeatures, 'waitForUserFeaturesSettled').mockResolvedValue()
 })
 
@@ -151,27 +150,82 @@ afterEach(() => {
 })
 
 describe('KclManager engine language version', () => {
+  const versionAcknowledgement: [WebSocketResponse] = [
+    {
+      success: true,
+      resp: {
+        type: 'modeling',
+        data: { modeling_response: { type: 'set_kcl_version', data: {} } },
+      },
+    },
+  ]
+
+  // Exercise the real Wasm executor; only the engine socket is mocked.
+  function mockEngine(kclManager: KclManager) {
+    kclManager.engineCommandManager.started = true
+    kclManager.engineCommandManager.connection = {
+      connected: true,
+      websocket: { readyState: WebSocket.OPEN },
+    } as unknown as typeof kclManager.engineCommandManager.connection
+    return vi
+      .spyOn(kclManager.engineCommandManager, 'sendCommand')
+      .mockImplementation(
+        async (id, { command }): Promise<[WebSocketResponse]> => {
+          if (command.type === 'modeling_cmd_batch_req') {
+            return [
+              {
+                success: true,
+                request_id: id,
+                resp: {
+                  type: 'modeling_batch',
+                  data: {
+                    responses: Object.fromEntries(
+                      command.requests.map(({ cmd_id }) => [
+                        cmd_id,
+                        { success: true, response: { type: 'empty' } },
+                      ])
+                    ),
+                  },
+                },
+              },
+            ]
+          }
+          return [
+            {
+              success: true,
+              request_id: id,
+              resp: {
+                type: 'modeling',
+                data: { modeling_response: { type: 'empty' } },
+              },
+            },
+          ]
+        }
+      )
+  }
+
+  function sentVersions(send: ReturnType<typeof mockEngine>) {
+    return send.mock.calls.flatMap(([, { command }]) =>
+      command.type === 'modeling_cmd_req' &&
+      command.cmd.type === 'set_kcl_version'
+        ? [command.cmd.kcl_version]
+        : []
+    )
+  }
+
   it('recovers when an invalid KCL version is corrected', async () => {
     const { kclManager } = createKclManagerTestHarness(
       '@settings(kclVersion = "abcd")\nx = 1'
     )
     kclManager.engineCommandManager.started = true
-    const setVersion = vi.spyOn(
-      kclManager.engineCommandManager,
-      'setKclVersion'
-    )
-    const execute = vi
-      .spyOn(kclManager.rustContext, 'execute')
-      .mockResolvedValue(emptyExecState())
+    const send = mockEngine(kclManager)
 
     await kclManager.executeCode()
     expect(kclManager.hasErrors()).toBe(true)
-    expect(setVersion).not.toHaveBeenCalled()
-    expect(execute).not.toHaveBeenCalled()
+    expect(sentVersions(send)).toEqual([])
 
     await kclManager.executeCode('@settings(kclVersion = 2.0)\nx = 1')
-    expect(setVersion).toHaveBeenCalledExactlyOnceWith('2.0')
-    expect(execute).toHaveBeenCalledOnce()
+    expect(sentVersions(send)).toEqual(['2.0'])
     expect(kclManager.hasErrors()).toBe(false)
   })
 
@@ -186,14 +240,9 @@ describe('KclManager engine language version', () => {
       kclManager.engineCommandManager.started = true
       const modelingSend = vi.fn()
       kclManager.modelingSend = modelingSend
-      const setVersion = vi
-        .spyOn(kclManager.engineCommandManager, 'setKclVersion')
-        .mockRejectedValueOnce([
-          { success: false, errors: [{ message: 'Unsupported KCL version' }] },
-        ])
-      const execute = vi
-        .spyOn(kclManager.rustContext, 'execute')
-        .mockResolvedValue(emptyExecState())
+      const send = mockEngine(kclManager).mockRejectedValueOnce([
+        { success: false, errors: [{ message: 'Unsupported KCL version' }] },
+      ])
       const sceneGraphDelta = createEmptySceneGraphDelta()
       const sketchExecute = vi
         .spyOn(kclManager.rustContext, 'hackSetProgram')
@@ -228,8 +277,7 @@ describe('KclManager engine language version', () => {
       }
 
       await updateSketch('@settings(kclVersion = "3.0-preview")\nx = 1')
-      expect(setVersion).toHaveBeenCalledExactlyOnceWith('3.0-preview')
-      expect(execute).not.toHaveBeenCalled()
+      expect(sentVersions(send)).toEqual(['3.0-preview'])
       expect(sketchExecute).not.toHaveBeenCalled()
       expect(modelingSend).not.toHaveBeenCalledWith(
         expect.objectContaining({ type: 'update sketch outcome' })
@@ -238,8 +286,7 @@ describe('KclManager engine language version', () => {
       expect(kclManager.isExecuting).toBe(false)
 
       await updateSketch('@settings(kclVersion = "3.0-preview")\nx = 2')
-      expect(setVersion).toHaveBeenCalledTimes(2)
-      expect(execute).toHaveBeenCalledOnce()
+      expect(sentVersions(send)).toEqual(['3.0-preview', '3.0-preview'])
       expect(sketchExecute).toHaveBeenCalledOnce()
       expect(modelingSend).toHaveBeenCalledWith(
         expect.objectContaining({ type: 'update sketch outcome' })
@@ -259,13 +306,10 @@ describe('KclManager engine language version', () => {
     const modelingSend = vi.fn()
     kclManager.modelingSend = modelingSend
     vi.spyOn(kclManager, 'writeToFile').mockResolvedValue(undefined)
-    const acknowledgement = createDeferred<undefined>()
-    const setVersion = vi
-      .spyOn(kclManager.engineCommandManager, 'setKclVersion')
-      .mockReturnValueOnce(acknowledgement.promise)
-    const execute = vi
-      .spyOn(kclManager.rustContext, 'execute')
-      .mockResolvedValue(emptyExecState())
+    const acknowledgement = createDeferred<[WebSocketResponse]>()
+    const send = mockEngine(kclManager).mockReturnValueOnce(
+      acknowledgement.promise
+    )
     const sceneGraphDelta = createEmptySceneGraphDelta()
     const sketchExecute = vi
       .spyOn(kclManager.rustContext, 'hackSetProgram')
@@ -279,18 +323,17 @@ describe('KclManager engine language version', () => {
       changes: { from: code2.length - 1, to: code2.length, insert: '2' },
     })
     await vi.advanceTimersByTimeAsync(1000)
-    expect(setVersion).toHaveBeenCalledWith('2.0')
-    expect(execute).not.toHaveBeenCalled()
+    expect(sentVersions(send)).toEqual(['2.0'])
+    expect(send).toHaveBeenCalledOnce()
     kclManager.editorView.dispatch({
       changes: { from: 0, to: kclManager.code.length, insert: code3 },
     })
     await vi.advanceTimersByTimeAsync(1000)
     expect(kclManager.executeIsStale).not.toBeNull()
-    acknowledgement.resolve(undefined)
+    acknowledgement.resolve(versionAcknowledgement)
     await kclManager.flushPendingEditorExecution()
 
-    expect(setVersion.mock.calls).toEqual([['2.0'], ['3.0-preview']])
-    expect(execute).toHaveBeenCalledOnce()
+    expect(sentVersions(send)).toEqual(['2.0', '3.0-preview'])
     expect(sketchExecute).toHaveBeenCalledExactlyOnceWith(
       kclManager.ast,
       expect.anything()
@@ -303,36 +346,25 @@ describe('KclManager engine language version', () => {
     )
   })
 
-  it('synchronizes checkpoint undo and redo before publishing the restored sketch', async () => {
+  it('synchronizes checkpoint undo and redo in Rust before publishing the restored sketch', async () => {
     const code2 = '@settings(kclVersion = 2.0)\nx = 1'
     const code3 = '@settings(kclVersion = "3.0-preview")\nx = 1'
     const { kclManager } = createKclManagerTestHarness(code2)
     await kclManager.wasmInstancePromise
     enableSketchSolveEditorExecution(kclManager)
-    kclManager.engineCommandManager.started = true
+    const send = mockEngine(kclManager)
     const modelingSend = vi.fn()
     kclManager.modelingSend = modelingSend
     vi.spyOn(kclManager, 'writeToFile').mockResolvedValue(undefined)
-    const setVersion = vi.spyOn(
-      kclManager.engineCommandManager,
-      'setKclVersion'
+    await kclManager.executeCode()
+    const baseline = await kclManager.rustContext.hackSetProgram(
+      kclManager.ast,
+      jsAppSettings(kclManager.systemDeps.settings)
     )
-    vi.spyOn(kclManager.rustContext, 'execute').mockResolvedValue(
-      emptyExecState()
-    )
-    const sceneGraphDelta = createEmptySceneGraphDelta()
-    vi.spyOn(kclManager.rustContext, 'hackSetProgram').mockResolvedValue({
-      type: 'Success',
-      sceneGraph: sceneGraphDelta.new_graph,
-      execOutcome: sceneGraphDelta.exec_outcome,
-      checkpointId: 42,
-    })
-    const restore = vi
-      .spyOn(kclManager.rustContext, 'restoreSketchCheckpoint')
-      .mockImplementation(async (id) => ({
-        kclSource: { text: id === 11 ? code2 : code3 },
-        sceneGraphDelta,
-      }))
+    if (baseline.type !== 'Success' || baseline.checkpointId == null) {
+      throw new Error('Expected a sketch checkpoint')
+    }
+    const restore = vi.spyOn(kclManager.rustContext, 'restoreSketchCheckpoint')
     kclManager.updateCodeEditor(
       code2,
       {
@@ -340,57 +372,66 @@ describe('KclManager engine language version', () => {
         shouldWriteToDisk: false,
         shouldClearHistory: true,
       },
-      { sketchCheckpointId: 11 }
+      { sketchCheckpointId: baseline.checkpointId }
     )
+    send.mockClear()
     kclManager.editorView.dispatch({
       changes: { from: 0, to: code2.length, insert: code3 },
     })
     await kclManager.flushPendingEditorExecution()
-    expect(setVersion).toHaveBeenCalledExactlyOnceWith('3.0-preview')
+    expect(sentVersions(send)).toEqual(['3.0-preview'])
     modelingSend.mockClear()
 
-    const acknowledgement = createDeferred<undefined>()
-    setVersion.mockReturnValueOnce(acknowledgement.promise)
+    const acknowledgement = createDeferred<[WebSocketResponse]>()
+    send.mockReturnValueOnce(acknowledgement.promise)
     kclManager.undo()
-    await vi.waitFor(() => expect(setVersion).toHaveBeenLastCalledWith('2.0'))
-    expect(restore).toHaveBeenCalledExactlyOnceWith(11)
+    await vi.waitFor(() =>
+      expect(sentVersions(send)).toEqual(['3.0-preview', '2.0'])
+    )
+    expect(restore).toHaveBeenCalledExactlyOnceWith(baseline.checkpointId)
     expect(kclManager.code).toBe(code2)
     expect(modelingSend).not.toHaveBeenCalled()
-    acknowledgement.resolve(undefined)
+    acknowledgement.resolve(versionAcknowledgement)
     await vi.waitFor(() => expect(modelingSend).toHaveBeenCalledOnce())
 
     kclManager.redo()
     await vi.waitFor(() => expect(modelingSend).toHaveBeenCalledTimes(2))
-    expect(restore).toHaveBeenLastCalledWith(42)
     expect(kclManager.code).toBe(code3)
-    expect(setVersion.mock.calls).toEqual([
-      ['3.0-preview'],
-      ['2.0'],
-      ['3.0-preview'],
-    ])
+    expect(sentVersions(send)).toEqual(['3.0-preview', '2.0', '3.0-preview'])
   })
 
-  it('does not execute or publish an old file after a switch during the version acknowledgement', async () => {
+  it('switches back after evaluation fails following a successful version change', async () => {
+    const { kclManager } = createKclManagerTestHarness(
+      '@settings(kclVersion = 2.0)\nx = 1'
+    )
+    const send = mockEngine(kclManager)
+    await kclManager.executeCode()
+    await kclManager.executeCode(
+      '@settings(kclVersion = "3.0-preview")\nx = missingVariable'
+    )
+    expect(kclManager.hasErrors()).toBe(true)
+    await kclManager.executeCode('@settings(kclVersion = 2.0)\nx = 1')
+    expect(kclManager.hasErrors()).toBe(false)
+    expect(sentVersions(send)).toEqual(['2.0', '3.0-preview', '2.0'])
+  })
+
+  it('does not publish an old file after a switch during the version acknowledgement', async () => {
     const { kclManager } = createKclManagerTestHarness()
     kclManager.engineCommandManager.started = true
-    const acknowledgement = createDeferred<undefined>()
-    const setVersion = vi
-      .spyOn(kclManager.engineCommandManager, 'setKclVersion')
-      .mockReturnValueOnce(acknowledgement.promise)
-    const execute = vi
-      .spyOn(kclManager.rustContext, 'execute')
-      .mockResolvedValue(emptyExecState())
+    const acknowledgement = createDeferred<[WebSocketResponse]>()
+    const send = mockEngine(kclManager).mockReturnValueOnce(
+      acknowledgement.promise
+    )
     const pending = kclManager.executeCode('@settings(kclVersion = 2.0)')
-    await vi.waitFor(() => expect(setVersion).toHaveBeenCalledWith('2.0'))
+    await vi.waitFor(() => expect(sentVersions(send)).toEqual(['2.0']))
     const newAst = await kclManager.safeParse(
       '@settings(kclVersion = "3.0-preview")'
     )
     if (!newAst) throw new Error('Expected a valid program')
     kclManager.path = '/project/new.kcl'
     kclManager.ast = newAst
-    acknowledgement.resolve(undefined)
+    acknowledgement.resolve(versionAcknowledgement)
     await pending
-    expect(execute).not.toHaveBeenCalled()
     expect(kclManager.ast).toBe(newAst)
     expect(kclManager.isExecuting).toBe(false)
   })

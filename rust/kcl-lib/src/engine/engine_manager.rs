@@ -455,6 +455,23 @@ impl EngineManager {
         Ok(())
     }
 
+    /// Configure the language version before any geometry commands are sent.
+    pub async fn set_kcl_version(&self, version: crate::KclVersion, source_range: SourceRange) -> Result<(), KclError> {
+        let version = match version {
+            crate::KclVersion::V1 => kcmc::KclVersion::V1,
+            crate::KclVersion::V2 => kcmc::KclVersion::V2,
+            crate::KclVersion::V3Preview => kcmc::KclVersion::V3Preview,
+        };
+        self.send_modeling_cmd(
+            &EngineBatchContext::new(),
+            Uuid::new_v4(),
+            source_range,
+            &ModelingCmd::from(mcmd::SetKclVersion::builder().kcl_version(version).build()),
+        )
+        .await
+        .map(|_| ())
+    }
+
     /// Send the modeling cmd and wait for the response.
     pub async fn send_modeling_cmd(
         &self,
