@@ -1,5 +1,5 @@
 /**
- * Route initialization, as plain functions.
+ * Legacy React Router initialization, as plain functions.
  *
  * These used to be the bodies of the React Router loaders in `routeLoaders.ts`.
  * They were never really data loaders: nothing calls `useLoaderData`, so their
@@ -19,10 +19,8 @@ import type { App } from '@src/lib/app'
 import { getRouterSearchFromRequestUrl, PATHS } from '@src/lib/paths'
 import { loadHomeProjects } from '@src/lib/routeLoaderUtils'
 import type { FileLoaderData, HomeLoaderData } from '@src/lib/types'
-import {
-  appNavigationService,
-  openProjectIntent,
-} from '@src/registry/contracts/appNavigation'
+import { appNavigationService } from '@src/registry/contracts/appNavigation'
+import { openProjectIntent } from '@src/registry/contracts/projectSession'
 
 /**
  * What a route wants to happen, said rather than done.

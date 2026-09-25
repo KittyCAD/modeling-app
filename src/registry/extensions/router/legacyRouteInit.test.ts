@@ -4,7 +4,7 @@ import {
   initFileRoute,
   initHomeRoute,
   initIndexRoute,
-} from '@src/lib/routeInit'
+} from '@src/registry/extensions/router/legacyRouteInit'
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
 
 /**

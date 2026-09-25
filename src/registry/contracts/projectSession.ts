@@ -2,6 +2,40 @@ import { defineContract, defineService } from '@kittycad/registry'
 import type { Signal } from '@preact/signals-core'
 import type { KclManager, ZDSProject } from '@src/lang/KclManager'
 import type { Project } from '@src/lib/project'
+import type { IndexLoaderData } from '@src/lib/types'
+import { defineAppNavigationIntent } from '@src/registry/contracts/appNavigation'
+
+/**
+ * An application-level request to enter a project.
+ *
+ * `target` is deliberately broader than a file path while the existing
+ * `/file/*` URL shape is supported. ProjectSession owns resolving that legacy
+ * target into a project and optional initial editor.
+ */
+export interface OpenProjectRequest {
+  target?: string
+  requestUrl?: string
+  /**
+   * Transitional React Router loader cancellation. Once startup is no longer
+   * loader-owned, projectSession keeps latest-intent cancellation private.
+   */
+  signal?: AbortSignal
+}
+
+export type OpenProjectOutcome =
+  | { kind: 'opened'; data: IndexLoaderData }
+  /**
+   * Transitional loader-compatible result used while React Router still
+   * initiates project opens. The final inversion replaces this with opening
+   * normalized project state and projecting its canonical URL afterward.
+   */
+  | { kind: 'redirect'; to: string }
+
+/** Enter a project through the projectSession capability. */
+export const openProjectIntent = defineAppNavigationIntent<
+  OpenProjectRequest,
+  OpenProjectOutcome
+>('project.open')
 
 /**
  * Transitional guard against an older asynchronous project open publishing

@@ -11,11 +11,7 @@ import { effect, type Signal, signal } from '@preact/signals-core'
 import { buildFSHistoryExtension } from '@src/editor/plugins/fs'
 import { File, KclManager, ZDSProject } from '@src/lang/KclManager'
 import { lspService } from '@src/lang/lsp/registry/contract'
-import {
-  createAppNavigationService,
-  createOpenProjectIntentContribution,
-} from '@src/lib/appNavigation'
-import { createAppNavigationDependencies } from '@src/lib/appNavigationRuntime'
+import { createAppNavigationService } from '@src/lib/appNavigation'
 import { type BillingRegistryService, billingService } from '@src/lib/billing'
 import { createAuthCommands } from '@src/lib/commandBarConfigs/authCommandConfig'
 import { createProjectCommands } from '@src/lib/commandBarConfigs/projectsCommandConfig'
@@ -104,6 +100,8 @@ import {
   userFeaturesService,
 } from '@src/registry/contracts/userFeatures'
 import { wasmPromiseValueSpec } from '@src/registry/contracts/wasm'
+import { createOpenProjectIntentContribution } from '@src/registry/extensions/projectSession/navigation'
+import { createProjectNavigationDependencies } from '@src/registry/extensions/projectSession/runtime'
 import {
   type ZdsPluginActivationSetting,
   zdsPluginActivationSettingsValueSpec,
@@ -830,7 +828,7 @@ export class App implements AppSubsystems {
     kclManager.fileOperations = this.fileOperations
 
     const openProjectNavigation = createOpenProjectIntentContribution(
-      createAppNavigationDependencies(this)
+      createProjectNavigationDependencies(this)
     )
     const preloadedNavigationIntents = [
       ...this.registry.get(appNavigationIntentContributionsValueSpec),

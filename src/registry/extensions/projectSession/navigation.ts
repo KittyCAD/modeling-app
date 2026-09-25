@@ -25,8 +25,32 @@ import type { ProjectLibrarySetting } from '@src/lib/projectLibraries'
 import { getOnboardingChildRoute } from '@src/lib/routeLoaderNavigation'
 import type { DeepPartial } from '@src/lib/types'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import type { OpenProjectRequest } from '@src/registry/contracts/appNavigation'
 import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
+import {
+  defineAppNavigationIntentContribution,
+  type AppNavigationIntentContribution,
+} from '@src/registry/contracts/appNavigation'
+import {
+  openProjectIntent,
+  type OpenProjectOutcome,
+  type OpenProjectRequest,
+} from '@src/registry/contracts/projectSession'
+
+export interface ProjectNavigationDependencies {
+  /**
+   * The redirect alternative is transitional while route loaders remain.
+   * Once startup dispatches application intents directly, resolution always
+   * produces project state and URL canonicalization becomes a later effect.
+   */
+  resolveProjectOpen: (
+    request: OpenProjectRequest,
+    throwIfSuperseded: () => void
+  ) => Promise<{ kind: 'redirect'; to: string } | ResolvedProjectOpen>
+  openResolvedProject: (
+    resolution: ResolvedProjectOpen,
+    throwIfSuperseded: () => void
+  ) => Promise<Extract<OpenProjectOutcome, { kind: 'opened' }>>
+}
 
 export interface ResolvedProjectOpen {
   kind: 'resolved'
@@ -54,10 +78,7 @@ export interface ProjectOpenResolutionSettings {
 /** External observations needed to resolve one project-open request. */
 export interface ProjectOpenResolverDependencies {
   wasmInstancePromise: Promise<ModuleType>
-  loadSettings: (
-    wasmInstance: ModuleType,
-    projectPath?: string
-  ) => Promise<ProjectOpenResolutionSettings>
+  loadSettings: (projectPath?: string) => Promise<ProjectOpenResolutionSettings>
   getCurrentProjectPath: () => string | undefined
   getProjectLibraryOwnership: (
     libraries: readonly ProjectLibrarySetting[],
@@ -81,7 +102,7 @@ export async function resolveProjectOpenRequest(
   const wasmInstance = await dependencies.wasmInstancePromise
   throwIfSuperseded()
 
-  const appSettings = await dependencies.loadSettings(wasmInstance)
+  const appSettings = await dependencies.loadSettings()
   throwIfSuperseded()
   const targetLibraryPath = target
     ? (
@@ -107,7 +128,7 @@ export async function resolveProjectOpenRequest(
     )
   }
 
-  await dependencies.loadSettings(wasmInstance, projectPathData.projectPath)
+  await dependencies.loadSettings(projectPathData.projectPath)
   throwIfSuperseded()
 
   const { projectName, projectPath } = projectPathData
@@ -198,6 +219,77 @@ export async function resolveProjectOpenRequest(
     file: {
       name: currentFileName || '',
       path: currentFilePath || '',
+    },
+  }
+}
+
+/**
+ * Build projectSession's application-navigation contribution.
+ *
+ * The contribution owns transient project-open ordering while durable project
+ * and editor state remains behind the projectSession service.
+ */
+export function createOpenProjectIntentContribution(
+  dependencies: ProjectNavigationDependencies
+): {
+  contribution: AppNavigationIntentContribution
+  supersedeProjectOpen: (signal?: AbortSignal) => void
+} {
+  let activeProjectOpen: AbortController | undefined
+
+  const beginProjectOpen = (requestSignal?: AbortSignal) => {
+    activeProjectOpen?.abort()
+
+    const controller = new AbortController()
+    activeProjectOpen = controller
+    const signal = requestSignal
+      ? AbortSignal.any([requestSignal, controller.signal])
+      : controller.signal
+
+    return {
+      throwIfSuperseded: () => signal.throwIfAborted(),
+      finish: () => {
+        if (activeProjectOpen === controller) {
+          activeProjectOpen = undefined
+        }
+      },
+    }
+  }
+
+  const openProject = async (
+    request: OpenProjectRequest
+  ): Promise<OpenProjectOutcome> => {
+    const projectOpen = beginProjectOpen(request.signal)
+    try {
+      projectOpen.throwIfSuperseded()
+      const resolution = await dependencies.resolveProjectOpen(
+        request,
+        projectOpen.throwIfSuperseded
+      )
+      projectOpen.throwIfSuperseded()
+
+      if (resolution.kind === 'redirect') {
+        return resolution
+      }
+
+      return dependencies.openResolvedProject(
+        resolution,
+        projectOpen.throwIfSuperseded
+      )
+    } finally {
+      projectOpen.finish()
+    }
+  }
+
+  return {
+    contribution: defineAppNavigationIntentContribution(
+      openProjectIntent,
+      openProject
+    ),
+    supersedeProjectOpen: (signal) => {
+      activeProjectOpen?.abort()
+      activeProjectOpen = undefined
+      signal?.throwIfAborted()
     },
   }
 }

@@ -4,18 +4,37 @@ import {
   defineValueSpec,
 } from '@kittycad/registry'
 import type { ReadonlySignal } from '@preact/signals-core'
+import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
+import type { ProjectLibrarySetting } from '@src/lib/projectLibraries'
 import {
   type ExtensionSettingsContribution,
   type ResolvedExtensionSettings,
   mergeExtensionSettings,
 } from '@src/lib/settings/extensionSettings'
 import type { SettingsType } from '@src/lib/settings/initialSettings'
+import type { DeepPartial } from '@src/lib/types'
 import type { SettingsActorType } from '@src/machines/settingsMachine'
+
+export interface LoadedPersistedSettings {
+  settings: {
+    app: {
+      libraries?: {
+        current?: readonly ProjectLibrarySetting[]
+      }
+    }
+  }
+  configuration: DeepPartial<Configuration>
+}
 
 export type SettingsRegistryService = {
   actor: SettingsActorType
   current: ReadonlySignal<SettingsType>
   get: () => SettingsType
+  /**
+   * Read persisted app or project settings, recreating missing settings files.
+   * Callers must resolve the project root before providing `projectPath`.
+   */
+  loadOrCreate: (projectPath?: string) => Promise<LoadedPersistedSettings>
   send: SettingsActorType['send']
   useSettings: () => SettingsType
 }

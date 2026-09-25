@@ -2,21 +2,21 @@
 
 import { projectFsManager } from '@src/lang/std/fileSystemManager'
 import type { App } from '@src/lib/app'
-import type { AppNavigationDependencies } from '@src/lib/appNavigation'
 import { getProjectInfo, isPathNotFoundError } from '@src/lib/desktop'
 import { getParentAbsolutePath } from '@src/lib/paths'
-import {
-  resolveProjectOpenRequest,
-  type ResolvedProjectOpen,
-} from '@src/lib/projectOpen'
 import { getProjectLibraryOwnership } from '@src/lib/projectLibraryOwnership'
 import { isRequestedFileLoaded } from '@src/lib/routeLoaderNavigation'
-import { loadRouteSettings } from '@src/lib/routeSettings'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/events'
 import { SystemIOMachineStates } from '@src/machines/systemIO/states'
 import { fileOperationsService } from '@src/registry/contracts/fileOperations'
 import { projectSession } from '@src/registry/contracts/projectSession'
+import { settingsService } from '@src/registry/contracts/settings'
 import { waitFor } from 'xstate'
+import {
+  type ProjectNavigationDependencies,
+  resolveProjectOpenRequest,
+  type ResolvedProjectOpen,
+} from './navigation'
 
 /**
  * Transitional App-backed implementation of opening a resolved project.
@@ -105,18 +105,18 @@ async function openResolvedProject(
  * with registry-owned capabilities as project opening and home navigation are
  * decoupled, then compose appNavigation directly from those capabilities.
  */
-export function createAppNavigationDependencies(
+export function createProjectNavigationDependencies(
   app: App
-): AppNavigationDependencies {
+): ProjectNavigationDependencies {
   const fileOperations = app.registry.get(fileOperationsService)
+  const settings = app.registry.get(settingsService)
 
   return {
     resolveProjectOpen: (request, throwIfSuperseded) =>
       resolveProjectOpenRequest(
         {
           wasmInstancePromise: app.singletons.kclManager.wasmInstancePromise,
-          loadSettings: (wasmInstance, projectPath) =>
-            loadRouteSettings(app, wasmInstance, projectPath),
+          loadSettings: settings.loadOrCreate,
           getCurrentProjectPath: () =>
             app.project?.projectIORefSignal.value.path,
           getProjectLibraryOwnership,

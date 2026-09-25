@@ -1,5 +1,5 @@
 /**
- * React Router adapters over the plain route-init functions in `routeInit.ts`.
+ * React Router adapters over the router capability's legacy initialization.
  *
  * The initialization work itself no longer knows the router exists; these
  * translate its `redirect` outcome into a `Response`. Keeping the throw and the
@@ -12,7 +12,7 @@ import {
   initFileRoute,
   initHomeRoute,
   initIndexRoute,
-} from '@src/lib/routeInit'
+} from '@src/registry/extensions/router/legacyRouteInit'
 import type { FileLoaderData, HomeLoaderData } from '@src/lib/types'
 import type { LoaderFunction } from 'react-router-dom'
 import { redirect } from 'react-router-dom'
