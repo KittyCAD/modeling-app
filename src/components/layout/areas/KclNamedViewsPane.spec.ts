@@ -1,13 +1,78 @@
 import type { ModulePath } from '@rust/kcl-lib/bindings/ModulePath'
+import { render, screen } from '@testing-library/react'
+import { createElement, Suspense } from 'react'
+import { describe, expect, it, vi } from 'vitest'
+
+const renderMocks = vi.hoisted(() => {
+  const wasmInstance = {}
+  const wasmInstancePromise = Object.assign(Promise.resolve(wasmInstance), {
+    status: 'fulfilled',
+    value: wasmInstance,
+  })
+
+  return {
+    wasmInstance,
+    namedViewCameraSummary: vi.fn(() => 'Front Orthographic'),
+    kclManager: {
+      get wasmInstance() {
+        throw new Error('The synchronous WASM getter must not be used')
+      },
+      wasmInstancePromise,
+      ast: {},
+      code: '',
+      execStateSignal: {
+        value: { artifactGraph: new Map(), filenames: {} },
+      },
+      isExecutingSignal: { value: false },
+      systemDeps: { projectPath: { value: '/project' } },
+    },
+  }
+})
+
+vi.mock('@src/lib/boot', () => ({
+  useApp: () => ({ commands: { actor: { send: vi.fn() } } }),
+  useSingletons: () => ({ kclManager: renderMocks.kclManager }),
+}))
+
+vi.mock('@src/hooks/useModelingContext', () => ({
+  useModelingContext: () => ({ state: null }),
+}))
+
+vi.mock('@src/hooks/useReliesOnEngine', () => ({
+  useReliesOnEngine: () => false,
+}))
+
+vi.mock('@src/lib/kclNamedViewEdit', () => ({
+  namedViewCameraSummary: renderMocks.namedViewCameraSummary,
+  prepareNamedViewEditCommand: vi.fn(),
+}))
+
+vi.mock('@src/components/ActionButton', () => ({
+  ActionButton: () => null,
+}))
+
+vi.mock('@src/components/ContextMenu', () => ({
+  ContextMenu: () => null,
+  ContextMenuItem: () => null,
+}))
+
+vi.mock('@src/components/CustomIcon', () => ({
+  CustomIcon: () => null,
+}))
+
+vi.mock('@src/components/layout/Panel', () => ({
+  LayoutPanel: ({ children }: { children: unknown }) => children,
+  LayoutPanelHeader: ({ Menu }: { Menu: unknown }) => Menu,
+}))
 
 import {
+  KclNamedViewsPane,
   canManageNamedView,
   nextViewSelection,
   viewRows,
 } from '@src/components/layout/areas/KclNamedViewsPane'
 import type { KclNamedView } from '@src/lang/std/kclNamedViews'
 import { KCL_DEFAULT_VIEW_NAME } from '@src/lang/std/kclNamedViews'
-import { describe, expect, it } from 'vitest'
 
 const CODE_REF = {
   range: [0, 0, 0] as [number, number, number],
@@ -142,6 +207,34 @@ describe('viewRows', () => {
     expect(canManageNamedView(view({ name: 'Root' }))).toBe(true)
     expect(canManageNamedView(view({ name: 'Import', moduleId: 1 }))).toBe(
       false
+    )
+  })
+})
+
+describe('KclNamedViewsPane', () => {
+  it('uses promised WASM instead of reading the unsafe synchronous getter', async () => {
+    const namedView = view({ name: 'Front', modulePath: { type: 'Main' } })
+    renderMocks.kclManager.execStateSignal.value = {
+      artifactGraph: new Map([
+        [namedView.artifact.id, { type: 'namedView', ...namedView.artifact }],
+      ]),
+      filenames: { 0: { type: 'Main' } },
+    }
+    renderMocks.namedViewCameraSummary.mockClear()
+
+    render(
+      createElement(
+        Suspense,
+        { fallback: createElement('div', null, 'Loading WASM') },
+        createElement(KclNamedViewsPane, {
+          layout: { id: 'named-views', label: 'Named Views' },
+          onClose: vi.fn(),
+        } as never)
+      )
+    )
+    expect(await screen.findByText('Front')).toBeInTheDocument()
+    expect(renderMocks.namedViewCameraSummary).toHaveBeenCalledWith(
+      expect.objectContaining({ wasmInstance: renderMocks.wasmInstance })
     )
   })
 })

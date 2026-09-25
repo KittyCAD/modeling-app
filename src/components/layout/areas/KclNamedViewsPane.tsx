@@ -41,7 +41,7 @@ import {
 } from '@src/lib/kclNamedViewEdit'
 import type { AreaTypeComponentProps } from '@src/lib/layout'
 import { isErr, reportRejection } from '@src/lib/trap'
-import { useEffect, useRef, useState } from 'react'
+import { use, useEffect, useRef, useState } from 'react'
 import toast from 'react-hot-toast'
 
 export type ViewRow = {
@@ -159,6 +159,7 @@ export function KclNamedViewsPane(props: AreaTypeComponentProps) {
   useSignals()
   const app = useApp()
   const { kclManager } = useSingletons()
+  const wasmInstance = use(kclManager.wasmInstancePromise)
   const [selectedKeys, setSelectedKeys] = useState<Set<string>>(new Set())
   const [selectionAnchor, setSelectionAnchor] = useState<number | null>(null)
   const [editingKey, setEditingKey] = useState<string | null>(null)
@@ -182,7 +183,7 @@ export function KclNamedViewsPane(props: AreaTypeComponentProps) {
           artifact: view.artifact,
           ast: kclManager.ast,
           code: kclManager.code,
-          wasmInstance: kclManager.wasmInstance,
+          wasmInstance,
         })
       : undefined
   )

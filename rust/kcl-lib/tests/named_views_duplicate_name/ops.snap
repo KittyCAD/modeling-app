@@ -3,7 +3,6 @@ source: kcl-lib/src/simulation_tests.rs
 description: Operations executed named_views_duplicate_name.kcl
 ---
 {
-  "rust/kcl-lib/tests/named_views_duplicate_name/input.kcl": [],
   "std::math": [
     {
       "type": "VariableDeclaration",

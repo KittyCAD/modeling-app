@@ -19,7 +19,6 @@ description: Operations executed named_views_duplicate_across_modules.kcl
       "sourceRange": []
     }
   ],
-  "rust/kcl-lib/tests/named_views_duplicate_across_modules/panel.kcl": [],
   "std::math": [
     {
       "type": "VariableDeclaration",

@@ -272,13 +272,17 @@ describe('applyNamedViewCamera', () => {
 
       expect(f.setCameraToAxis).toHaveBeenCalledWith({
         axis: '-y',
-        target: undefined,
+        target: CURRENT_TARGET,
         distance: 7,
       })
+      expect(f.getCameraView).toHaveBeenCalledOnce()
       expect(sentCommandTypes(f.sendSceneCommand)).toEqual([
         'zoom_to_fit',
         'default_camera_get_settings',
       ])
+      expect(f.sendSceneCommand.mock.invocationCallOrder.at(-1)).toBeLessThan(
+        f.setCameraToAxis.mock.invocationCallOrder[0]
+      )
     })
 
     it('fits the model when the view has no distance', async () => {
@@ -291,7 +295,16 @@ describe('applyNamedViewCamera', () => {
         engineCommandManager: f.engineCommandManager,
       })
 
-      expect(sentCommandTypes(f.sendSceneCommand)).toContain('zoom_to_fit')
+      expect(f.setCameraToAxis).toHaveBeenCalledWith({
+        axis: '-y',
+        target: { x: 1, y: 2, z: 3 },
+        distance: CURRENT_DISTANCE,
+      })
+      expect(f.getCameraView).toHaveBeenCalledOnce()
+      expect(sentCommandTypes(f.sendSceneCommand)).toEqual([
+        'zoom_to_fit',
+        'default_camera_get_settings',
+      ])
     })
 
     it('does not fit the model when the view gives both', async () => {
@@ -346,10 +359,10 @@ describe('applyNamedViewCamera', () => {
         engineCommandManager: f.engineCommandManager,
       })
 
-      expect(f.sendSceneCommand).toHaveBeenNthCalledWith(
-        1,
+      expect(f.sendSceneCommand).toHaveBeenCalledWith(
         expect.objectContaining({
           cmd: expect.objectContaining({
+            type: 'default_camera_look_at',
             center: CURRENT_TARGET,
             vantage: {
               x: CURRENT_TARGET.x - CURRENT_DISTANCE,
@@ -359,6 +372,12 @@ describe('applyNamedViewCamera', () => {
           }),
         })
       )
+      expect(sentCommandTypes(f.sendSceneCommand)).toEqual([
+        'zoom_to_fit',
+        'default_camera_get_settings',
+        'default_camera_look_at',
+        'default_camera_get_settings',
+      ])
     })
   })
 

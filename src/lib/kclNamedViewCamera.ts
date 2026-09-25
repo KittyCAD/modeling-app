@@ -119,22 +119,39 @@ export async function applyNamedViewCamera({
       })
       return
     }
+  }
 
-    await sceneInfra.camControls.setCameraToAxis({ axis, target, distance })
+  let resolvedTarget = target
+  let resolvedDistance = distance
+  if (target === undefined || distance === undefined) {
+    await engineStreamZoomToFit({ engineCommandManager, padding: FIT_PADDING })
+    await getCameraSettings(engineCommandManager)
+
+    const fittedView = await sceneInfra.camControls.getCameraView()
+    if (!err(fittedView)) {
+      resolvedTarget ??= fittedView.pivot_position
+      resolvedDistance ??= fittedView.eye_offset
+    }
+  }
+
+  if (camera.look.type === 'oriented') {
+    const axis = ORIENTATION_AXES[camera.look.orientation]
+    if (axis !== null) {
+      await sceneInfra.camControls.setCameraToAxis({
+        axis,
+        target: resolvedTarget,
+        distance: resolvedDistance,
+      })
+    }
   } else {
     await lookAlongDirection({
       direction: camera.look.direction,
       up: camera.look.up,
-      target,
-      distance,
+      target: resolvedTarget,
+      distance: resolvedDistance,
       sceneInfra,
       engineCommandManager,
     })
-  }
-
-  if (target === undefined || distance === undefined) {
-    await engineStreamZoomToFit({ engineCommandManager, padding: FIT_PADDING })
-    await getCameraSettings(engineCommandManager)
   }
 }
 
