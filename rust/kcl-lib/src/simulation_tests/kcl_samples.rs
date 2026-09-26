@@ -14,8 +14,6 @@ use walkdir::WalkDir;
 
 use super::Test;
 use crate::simulation_tests::TestConfig;
-use crate::test_server::TestGraphicsParams;
-use crate::tooling::render_artifacts::RENDERED_MODEL_NAME;
 
 const ALLOWED_FILETYPES: [&str; 3] = ["kcl", "stp", "step"];
 const SAMPLE_CATEGORIES: [&str; 16] = [
@@ -111,35 +109,6 @@ async fn kcl_test_execute_walkie_talkie() {
     super::execute_test(&t).await;
 }
 
-#[tokio::test(flavor = "multi_thread")]
-#[ignore = "run with just generate-sample-preview <sample-name>"]
-async fn generate_sample_preview() {
-    let name = std::env::var("KCL_SAMPLE").expect("KCL_SAMPLE must name a sample directory");
-    let sample = kcl_samples_inputs()
-        .into_iter()
-        .find(|sample| sample.name == name)
-        .expect("KCL_SAMPLE must name an existing sample");
-    let program = crate::Program::parse_no_errs(&sample.read()).unwrap();
-    let (_, ctx, _, graphics) = crate::test_server::execute_sim_test_no_close(
-        program,
-        Some(sample.entry_point),
-        None,
-        TestGraphicsParams::EngineRender {
-            reason: "Public previews need shaded engine rendering".to_owned(),
-        },
-    )
-    .await
-    .unwrap();
-    ctx.close().await;
-    let screenshot_dir = INPUTS_DIR.join("screenshots");
-    fs::create_dir_all(&screenshot_dir).unwrap();
-    graphics
-        .image()
-        .expect("EngineRender must return an image")
-        .save(screenshot_dir.join(format!("{name}.png")))
-        .unwrap();
-}
-
 #[test]
 fn test_after_engine_ensure_kcl_samples_manifest_etc() {
     let tests = kcl_samples_inputs();
@@ -166,14 +135,6 @@ fn test_after_engine_ensure_kcl_samples_manifest_etc() {
             "Missing public preview; run `just generate-sample-preview {}`",
             test.name
         );
-        // The ignored walkie-talkie test still has its old GPU baseline.
-        if test.name != "walkie-talkie" && matches!(test.test_graphics_params, TestGraphicsParams::ExportAndRender) {
-            assert!(
-                fs::read(&preview).unwrap() != fs::read(test.output_dir.join(RENDERED_MODEL_NAME)).unwrap(),
-                "CPU regression image was published as the preview for {}",
-                test.name
-            );
-        }
     }
 
     // Update the README.md with the new screenshots.

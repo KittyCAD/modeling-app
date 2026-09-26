@@ -51,7 +51,7 @@ new-sim-test test_name:
 
 # Generate a shaded public preview without changing simulation snapshots.
 generate-sample-preview sample_name:
-    KCL_SAMPLE={{ quote(sample_name) }} cargo nextest run {{ kcl_lib_flags }} --run-ignored ignored-only --retries 0 -E 'test(=simulation_tests::kcl_samples::generate_sample_preview)'
+    zoo kcl snapshot ../public/kcl-samples/{{ quote(sample_name) }}/main.kcl ../public/kcl-samples/screenshots/{{ quote(sample_name) }}.png --angle iso
 
 # Run a KCL deterministic simulation test case and accept output.
 overwrite-sim-test-sample test_name:

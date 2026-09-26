@@ -30,10 +30,11 @@ just overwrite-sim-test-sample samplename
 
 ex. `just overwrite-sim-test-sample angle-gauge`
 
-Public previews use GPU engine rendering and are published to the documentation
-and Aquarium. Generate the preview before updating the simulation snapshots for
-a new sample. CPU regression images stay in `rust/kcl-lib/tests/kcl_samples` and
-are never copied to the public screenshots directory.
+Public previews use GPU engine rendering through the Zoo CLI and are published
+to the documentation and Aquarium. Generate the preview before updating the
+simulation snapshots for a new sample. CPU regression images stay in
+`rust/kcl-lib/tests/kcl_samples` and are never copied to the public screenshots
+directory.
 
 ---
 #### [angle-gauge](angle-gauge/main.kcl) ([screenshot](screenshots/angle-gauge.png))
