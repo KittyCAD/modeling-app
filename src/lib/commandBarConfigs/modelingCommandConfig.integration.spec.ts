@@ -2,19 +2,19 @@ import { getNextAvailableDatumName } from '@src/lang/modifyAst/gdt'
 import { type Artifact, assertParse } from '@src/lang/wasm'
 import { modelingCommandCodemods } from '@src/lib/commandBarConfigs/modelingCommandCodemods'
 import {
-  type ModelingCommandSchema,
-  extrudeSelectionRequiresMethod,
   extrudeSelectionRequiresBodyType,
+  extrudeSelectionRequiresMethod,
   getDefaultGdtTolerance,
+  type ModelingCommandSchema,
   modelingMachineCommandConfig,
   profileSelectionRequiresBodyType,
 } from '@src/lib/commandBarConfigs/modelingCommandConfig'
 import {
-  type StdLibCommandDriftConfig,
   modelingCommandStdLibDriftConfig,
   modelingStdLibCommandArgs,
   modelingStdLibCommandStatus,
   modelingStdLibCommandUsesExperimentalFeatures,
+  type StdLibCommandDriftConfig,
   stdLibCommandStatus,
 } from '@src/lib/commandBarConfigs/modelingCommandStdLib'
 import { STD_LIB_COMMANDS } from '@src/lib/commandBarConfigs/modelingCommandStdLibCommands'
@@ -33,8 +33,10 @@ import {
   type ResolvedSelectionType,
 } from '@src/lib/selections'
 import { isArray } from '@src/lib/utils'
-import type { ModelingMachineContext } from '@src/machines/modelingSharedTypes'
-import type { Selections } from '@src/machines/modelingSharedTypes'
+import type {
+  ModelingMachineContext,
+  Selections,
+} from '@src/machines/modelingSharedTypes'
 import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
 import { describe, expect, it } from 'vitest'
 
@@ -491,6 +493,21 @@ describe('Transform arguments', () => {
 
 const uniqueSorted = (values: string[]) => [...new Set(values)].sort()
 
+const isDeprecatedStdLibArg = (
+  arg: (typeof STD_LIB_COMMANDS)[keyof typeof STD_LIB_COMMANDS]['args'][number]
+) => arg.deprecated || arg.deprecatedSince !== null
+
+function pointAndClickStdLibArgs(config: StdLibCommandDriftConfig) {
+  const omitted = new Set<string>(config.omittedStdLibArgs ?? [])
+  const includedDeprecated = new Set<string>(config.deprecatedStdLibArgs ?? [])
+
+  return STD_LIB_COMMANDS[config.stdLibName].args
+    .filter(
+      (arg) => !isDeprecatedStdLibArg(arg) || includedDeprecated.has(arg.name)
+    )
+    .filter((arg) => !omitted.has(arg.name))
+}
+
 describe('stdlib command arg derivation', () => {
   it('derives base command-bar arg config from KCL stdlib metadata', () => {
     const args = modelingStdLibCommandArgs<ModelingCommandSchema['Extrude']>(
@@ -585,6 +602,77 @@ describe('modeling command stdlib drift', () => {
     )
   })
 
+  it('validates every stdlib drift classification', () => {
+    const unclassifiedArgs = Object.entries(modelingCommandStdLibDriftConfig)
+      .flatMap(([commandName, driftConfig]) => {
+        const config = driftConfig as StdLibCommandDriftConfig
+        const omitted = new Set<string>(config.omittedStdLibArgs ?? [])
+        const included = new Set<string>(config.deprecatedStdLibArgs ?? [])
+
+        return STD_LIB_COMMANDS[config.stdLibName].args
+          .filter((arg) => !arg.special && isDeprecatedStdLibArg(arg))
+          .filter((arg) => !omitted.has(arg.name) && !included.has(arg.name))
+          .map((arg) => `${commandName} (${config.stdLibName}).${arg.name}`)
+      })
+      .sort()
+
+    expect(
+      unclassifiedArgs,
+      'Deprecated labeled KCL args must be listed in omittedStdLibArgs or deprecatedStdLibArgs.'
+    ).toEqual([])
+
+    for (const [commandName, driftConfig] of Object.entries(
+      modelingCommandStdLibDriftConfig
+    )) {
+      const config = driftConfig as StdLibCommandDriftConfig
+      const stdLibArgNames = new Set<string>(
+        STD_LIB_COMMANDS[config.stdLibName].args.map((arg) => arg.name)
+      )
+      const includedDeprecated = new Set<string>(
+        config.deprecatedStdLibArgs ?? []
+      )
+      const pointAndClickArgNames = new Set<string>(
+        pointAndClickStdLibArgs(config).map((arg) => arg.name)
+      )
+      const configuredNames = [
+        ...(config.omittedStdLibArgs ?? []),
+        ...(config.deprecatedStdLibArgs ?? []),
+        ...Object.keys(config.argAliases ?? {}),
+      ]
+
+      expect(
+        uniqueSorted(
+          configuredNames.filter((argName) => !stdLibArgNames.has(argName))
+        ),
+        `${commandName} has stale or misspelled KCL argument exceptions.`
+      ).toEqual([])
+
+      expect(
+        (config.omittedStdLibArgs ?? []).filter((argName) =>
+          includedDeprecated.has(argName)
+        ),
+        `${commandName} cannot both omit and include the same deprecated KCL argument.`
+      ).toEqual([])
+
+      expect(
+        (config.deprecatedStdLibArgs ?? []).filter((argName) => {
+          const arg = STD_LIB_COMMANDS[config.stdLibName].args.find(
+            (candidate) => candidate.name === argName
+          )
+          return arg && !isDeprecatedStdLibArg(arg)
+        }),
+        `${commandName} lists active KCL arguments as deprecated.`
+      ).toEqual([])
+
+      expect(
+        Object.keys(config.argAliases ?? {}).filter(
+          (argName) => !pointAndClickArgNames.has(argName)
+        ),
+        `${commandName} aliases KCL arguments that are not exposed.`
+      ).toEqual([])
+    }
+  })
+
   it('keeps command-bar args aligned with KCL stdlib signatures', () => {
     for (const [commandName, driftConfig] of Object.entries(
       modelingCommandStdLibDriftConfig
@@ -603,19 +691,10 @@ describe('modeling command stdlib drift', () => {
         `${commandName} references missing stdlib function ${driftConfig.stdLibName}`
       ).toBeDefined()
 
-      const omittedStdLibArgs = new Set(driftConfig.omittedStdLibArgs ?? [])
-      const deprecatedStdLibArgs = new Set(
-        driftConfig.deprecatedStdLibArgs ?? []
-      )
       const editFlowArgs = driftConfig.editFlow ? ['nodeToEdit'] : []
-      const expectedStdLibArgOrder = stdLibCommand.args
-        .filter(
-          (arg) =>
-            (!arg.deprecated && arg.deprecatedSince === null) ||
-            deprecatedStdLibArgs.has(arg.name)
-        )
-        .filter((arg) => !omittedStdLibArgs.has(arg.name))
-        .map((arg) => driftConfig.argAliases?.[arg.name] ?? arg.name)
+      const expectedStdLibArgOrder = pointAndClickStdLibArgs(driftConfig).map(
+        (arg) => driftConfig.argAliases?.[arg.name] ?? arg.name
+      )
       const expectedArgs = uniqueSorted([
         ...expectedStdLibArgOrder,
         ...(driftConfig.uiOnlyArgs ?? []),
