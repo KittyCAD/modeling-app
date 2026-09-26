@@ -232,9 +232,6 @@ export const MAKE_TOAST_MESSAGES = {
   SUCCESS: 'Started print successfully.',
 }
 
-/** Toast id for the insert foreign part toast */
-export const INSERT_FOREIGN_TOAST_ID = 'insert-foreign-toast'
-
 /** Toast id for the onboarding */
 export const ONBOARDING_TOAST_ID = 'onboarding-toast'
 
