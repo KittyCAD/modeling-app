@@ -241,6 +241,7 @@ describe('ZookeeperConversation', () => {
     const resumeButton = screen.getByRole('button', {
       name: 'Resume interrupted request',
     })
+    expect(screen.getByRole('button', { name: /Clear chat/ })).toBeDisabled()
     fireEvent.click(resumeButton)
     expect(onResumeInterruptedTurn).toHaveBeenCalledOnce()
     expect(
@@ -998,6 +999,48 @@ describe('ZookeeperConversation', () => {
       within(attachments).getByText('requirements.pdf')
     ).toBeInTheDocument()
     expect(within(attachments).queryByText('+ more')).not.toBeInTheDocument()
+  })
+
+  test('keeps conversation visible but disables mutations while reconnecting', () => {
+    const conversation: Conversation = {
+      exchanges: [
+        {
+          request: {
+            type: 'user',
+            content: 'Keep this transcript visible',
+          },
+          responses: [],
+          deltasAggregated: '',
+        },
+      ],
+    }
+    const reconnectProps = {
+      isLoading: false,
+      onProcess: vi.fn(),
+      onClickClearChat: vi.fn(),
+      onReconnect: vi.fn(),
+      onCancel: vi.fn(),
+      needsReconnect: true,
+      disabled: true,
+      hasPromptCompleted: true,
+      contexts: [],
+      isProcessing: false,
+      queue: [],
+      onRemoveFromQueue: vi.fn(),
+      onSteer: vi.fn(),
+    }
+    render(
+      <ZookeeperConversation {...reconnectProps} conversation={conversation} />
+    )
+
+    expect(screen.getByText('Keep this transcript visible')).toBeInTheDocument()
+    expect(
+      screen.queryByRole('button', { name: /Reconnect/ })
+    ).not.toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /Clear chat/ })).toBeDisabled()
+    expect(
+      screen.getByTestId('ml-ephant-conversation-input').closest('[inert]')
+    ).not.toBeNull()
   })
 
   test('expands and collapses user message attachments when there are more than two', () => {
