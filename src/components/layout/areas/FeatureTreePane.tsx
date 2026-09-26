@@ -57,6 +57,12 @@ import { useSignals } from '@preact/signals-react/runtime'
 import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import { FeatureTreeMenu } from '@src/components/layout/areas/FeatureTreeMenu'
+import {
+  FeatureTreeModule,
+  FeatureTreeModules,
+  useFeatureTreeModuleChildren,
+  useRevealFeatureTreeModule,
+} from '@src/components/layout/areas/FeatureTreeModules'
 import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
 import { RowItemWithIconMenuAndToggle } from '@src/components/RowItemWithIconMenuAndToggle'
 import Tooltip from '@src/components/Tooltip'
@@ -99,7 +105,6 @@ import { useNavigate } from 'react-router-dom'
 
 type Singletons = ReturnType<typeof useSingletons>
 
-type ModuleInstanceOperation = Extract<Operation, { type: 'ModuleInstance' }>
 type StdLibCallOperation = Extract<Operation, { type: 'StdLibCall' }>
 
 type SystemDeps = Pick<Singletons, 'kclManager'> & {
@@ -289,9 +294,9 @@ export const FeatureTreePaneContents = memo(() => {
     hasParseErrors || disableModelingForUnrenderedChanges
 
   // We filter out operations that are not useful to show in the feature tree
-  const operationList = buildOperationTree(
-    unfilteredOperationsByModule,
-    ROOT_MODULE_ID
+  const operationTree = useMemo(
+    () => buildOperationTree(unfilteredOperationsByModule, ROOT_MODULE_ID),
+    [unfilteredOperationsByModule]
   )
   const getVisibilityState = useMemo(() => {
     const operationsCache = new WeakMap<OperationsByModule, Operation[]>()
@@ -320,10 +325,10 @@ export const FeatureTreePaneContents = memo(() => {
       })
     }
   }, [kclManager])
-  const isShowingStaleFeatureTree = hasParseErrors && operationList.length > 0
+  const isShowingStaleFeatureTree =
+    hasParseErrors && operationTree.nodes.length > 0
 
-  // Live execution tracking: expand only the active module branch.
-  const liveActiveModuleId = kclManager.liveActiveModuleId
+  // Highlight new operations without opening modules the user left collapsed.
   const liveLatestOperationKey = kclManager.liveLatestOperationKey
 
   function goToError() {
@@ -419,22 +424,27 @@ export const FeatureTreePaneContents = memo(() => {
               </div>
             </div>
           )}
-          {operationList.map((node) => (
-            <OperationTreeNodeItem
-              key={getOperationTreeNodeKey(node)}
-              node={node}
-              code={operationsCode}
-              isStaleReference={isReadOnlyFeatureTree}
-              sketchNoFace={sketchNoFace}
-              systemDeps={systemDeps}
-              modelingActor={modelingActor}
-              engineCommandManager={engineCommandManager}
-              onSelect={selectOperation}
-              getVisibilityState={getVisibilityState}
-              liveActiveModuleId={liveActiveModuleId}
-              liveLatestOperationKey={liveLatestOperationKey}
-            />
-          ))}
+          <FeatureTreeModules
+            key={kclManager.path}
+            tree={operationTree}
+            executionGeneration={kclManager.operationExecutionGeneration}
+          >
+            {operationTree.nodes.map((node) => (
+              <OperationTreeNodeItem
+                key={getOperationTreeNodeKey(node)}
+                node={node}
+                code={operationsCode}
+                isStaleReference={isReadOnlyFeatureTree}
+                sketchNoFace={sketchNoFace}
+                systemDeps={systemDeps}
+                modelingActor={modelingActor}
+                engineCommandManager={engineCommandManager}
+                onSelect={selectOperation}
+                getVisibilityState={getVisibilityState}
+                liveLatestOperationKey={liveLatestOperationKey}
+              />
+            ))}
+          </FeatureTreeModules>
         </>
       </section>
     </div>
@@ -593,111 +603,6 @@ function OperationItemGroup({
   )
 }
 
-function OperationBranchGroup({
-  parentItem,
-  childItems,
-  code,
-  isStaleReference,
-  sketchNoFace,
-  systemDeps,
-  modelingActor,
-  engineCommandManager,
-  onSelect,
-  getVisibilityState,
-  isModuleOwned = false,
-  liveActiveModuleId,
-  liveLatestOperationKey,
-}: Omit<OperationProps, 'item'> & {
-  parentItem: ModuleInstanceOperation
-  childItems: OperationTreeNode[]
-  isModuleOwned?: boolean
-}) {
-  if (childItems.length === 0) {
-    return (
-      <OperationItem
-        item={parentItem}
-        code={code}
-        isStaleReference={isStaleReference}
-        sketchNoFace={sketchNoFace}
-        systemDeps={systemDeps}
-        modelingActor={modelingActor}
-        engineCommandManager={engineCommandManager}
-        onSelect={onSelect}
-        getVisibilityState={getVisibilityState}
-        isModuleOwned={true}
-        liveLatestOperationKey={liveLatestOperationKey}
-      />
-    )
-  }
-
-  // During live execution, only expand the branch whose module received the
-  // latest operation.  Outside live execution every branch defaults open.
-  // Changing the key forces a Disclosure remount with the new defaultOpen
-  // (headlessui v1 does not support a controlled `open` prop).
-  const isLive = liveActiveModuleId != null
-  const shouldBeOpen = !isLive || liveActiveModuleId === parentItem.moduleId
-
-  return (
-    <Disclosure
-      key={`${parentItem.moduleId}-${shouldBeOpen}`}
-      defaultOpen={shouldBeOpen}
-    >
-      <div
-        className="flex items-start gap-1"
-        data-module-branch={parentItem.moduleId}
-      >
-        <Disclosure.Button
-          data-testid="operation-group-caret"
-          className="reset !px-0 !py-1 self-stretch !border-transparent focus-within:bg-primary/25 hover:!bg-2 hover:focus-within:bg-primary/25"
-        >
-          <CustomIcon
-            name="caretDown"
-            className="w-4 h-4 block -rotate-90 ui-open:rotate-0 ui-open:transform"
-            aria-hidden
-          />
-        </Disclosure.Button>
-        <div className="flex-1 min-w-0">
-          <OperationItem
-            item={parentItem}
-            code={code}
-            isStaleReference={isStaleReference}
-            sketchNoFace={sketchNoFace}
-            systemDeps={systemDeps}
-            modelingActor={modelingActor}
-            engineCommandManager={engineCommandManager}
-            onSelect={onSelect}
-            getVisibilityState={getVisibilityState}
-            isModuleOwned={true}
-            liveLatestOperationKey={liveLatestOperationKey}
-          />
-        </div>
-      </div>
-      <Disclosure.Panel>
-        <div className="border-l b-4 ml-6">
-          {childItems.map((node) => {
-            return (
-              <OperationTreeNodeItem
-                key={getOperationTreeNodeKey(node)}
-                node={node}
-                code={code}
-                isStaleReference={isStaleReference}
-                sketchNoFace={sketchNoFace}
-                systemDeps={systemDeps}
-                modelingActor={modelingActor}
-                engineCommandManager={engineCommandManager}
-                onSelect={onSelect}
-                getVisibilityState={getVisibilityState}
-                isModuleOwned={true}
-                liveLatestOperationKey={liveLatestOperationKey}
-              />
-            )
-          })}
-        </div>
-      </Disclosure.Panel>
-    </Disclosure>
-  )
-}
-
 function OperationTreeNodeItem({
   node,
   ...props
@@ -705,17 +610,29 @@ function OperationTreeNodeItem({
   node: OperationTreeNode
   isModuleOwned?: boolean
 }) {
+  const getModuleChildren = useFeatureTreeModuleChildren()
   if (isArray(node)) {
     return <OperationItemGroup items={node} {...props} />
   }
 
   if (isOperationTreeBranch(node)) {
     return (
-      <OperationBranchGroup
-        parentItem={node.parent}
-        childItems={node.children}
-        {...props}
-      />
+      <FeatureTreeModule
+        moduleId={node.parent.moduleId}
+        name={node.parent.name}
+        heading={<OperationItem item={node.parent} {...props} isModuleOwned />}
+      >
+        {() =>
+          (getModuleChildren?.(node) ?? []).map((child) => (
+            <OperationTreeNodeItem
+              key={getOperationTreeNodeKey(child)}
+              node={child}
+              {...props}
+              isModuleOwned
+            />
+          ))
+        }
+      </FeatureTreeModule>
     )
   }
 
@@ -872,8 +789,6 @@ interface OperationProps {
   getVisibilityState: (item: Operation) => FeatureTreeVisibilityState
   size?: 'default' | 'sm'
   isModuleOwned?: boolean
-  /** During live execution, the module that received the latest operation. */
-  liveActiveModuleId?: number | null
   /** During live execution, the operation that was most recently added. */
   liveLatestOperationKey: string | null
   /** When set, this item is a deduplicated module reference; clicking scrolls to the expanded branch. */
@@ -1013,6 +928,7 @@ const OperationItem = ({
 }: OperationProps) => {
   useSignals()
   const app = useApp()
+  const revealModule = useRevealFeatureTreeModule()
   const navigate = useNavigate()
   const { layout } = app
   const { kclManager, commandBarActor } = systemDeps
@@ -1546,27 +1462,7 @@ const OperationItem = ({
       menuItems={menuItems}
       onClick={
         referenceModuleId != null
-          ? (e) => {
-              const container = (e.target as HTMLElement).closest(
-                '[data-testid="debug-panel"]'
-              )
-              const branch = container?.querySelector(
-                `[data-module-branch="${referenceModuleId}"]`
-              ) as HTMLElement | null
-              if (branch) {
-                branch.scrollIntoView({ block: 'center', behavior: 'smooth' })
-                // Brief highlight on the module heading row.
-                const row = branch.querySelector<HTMLElement>(
-                  '[data-testid="feature-tree-operation-item"]'
-                )
-                if (row) {
-                  row.classList.add('bg-primary/25')
-                  setTimeout(() => {
-                    row.classList.remove('bg-primary/25')
-                  }, 1500)
-                }
-              }
-            }
+          ? () => revealModule?.(referenceModuleId)
           : isStaleReference || isModuleOwned
             ? undefined
             : () => {

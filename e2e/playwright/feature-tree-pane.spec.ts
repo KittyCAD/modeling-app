@@ -88,6 +88,120 @@ hidden001 = hide([cylinder, extrude001])
 `
 
 test.describe('Feature Tree pane', { tag: '@desktop' }, () => {
+  test('Imported modules expand lazily and references reveal collapsed ancestors', async ({
+    homePage,
+    scene,
+    toolbar,
+    folderSetupFn,
+  }) => {
+    await folderSetupFn(async (dir) => {
+      const projectDir = join(dir, 'lazy-module-tree')
+      await fsp.mkdir(projectDir, { recursive: true })
+      const files = {
+        'main.kcl': `@settings(kclVersion = 2.0)
+import firstValue from "firstAssembly.kcl"
+import secondValue from "secondAssembly.kcl"
+rootValue = firstValue + secondValue
+`,
+        'firstAssembly.kcl': `@settings(kclVersion = 2.0)
+import sharedValue from "sharedParameters.kcl"
+export firstValue = sharedValue + 1
+`,
+        'secondAssembly.kcl': `@settings(kclVersion = 2.0)
+import sharedValue from "sharedParameters.kcl"
+export secondValue = sharedValue + 2
+`,
+        'sharedParameters.kcl': `@settings(kclVersion = 2.0)
+export sharedValue = 42
+`,
+      }
+      await Promise.all(
+        Object.entries(files).map(([name, code]) =>
+          fsp.writeFile(join(projectDir, name), code, 'utf-8')
+        )
+      )
+    })
+
+    await homePage.openProject('lazy-module-tree')
+    await scene.settled()
+    await toolbar.openFeatureTreePane()
+
+    const tree = toolbar.featureTreePane
+    const operations = tree.getByTestId('feature-tree-operation-item')
+    const firstValue = operations.getByRole('button', { name: 'firstValue' })
+    const sharedValue = operations.getByRole('button', { name: 'sharedValue' })
+    const secondValue = operations.getByRole('button', { name: 'secondValue' })
+    const sharedModule = operations.getByRole('button', {
+      name: 'sharedParameters',
+    })
+
+    await test.step('Only root operations and collapsed module headings mount', async () => {
+      await expect(
+        operations.getByRole('button', { name: 'rootValue' })
+      ).toBeVisible()
+      await expect(
+        tree.getByRole('button', { name: 'Expand firstAssembly', exact: true })
+      ).toBeVisible()
+      await expect(
+        tree.getByRole('button', { name: 'Expand secondAssembly', exact: true })
+      ).toBeVisible()
+      await expect(sharedModule).toHaveCount(0)
+      await expect(firstValue).toHaveCount(0)
+      await expect(sharedValue).toHaveCount(0)
+      await expect(secondValue).toHaveCount(0)
+    })
+
+    await test.step('Expanding a module leaves its nested import collapsed', async () => {
+      await tree
+        .getByRole('button', { name: 'Expand firstAssembly', exact: true })
+        .click()
+      await expect(firstValue).toBeVisible()
+      await expect(
+        tree.getByRole('button', {
+          name: 'Expand sharedParameters',
+          exact: true,
+        })
+      ).toBeVisible()
+      await expect(sharedValue).toHaveCount(0)
+      await expect(secondValue).toHaveCount(0)
+
+      await tree
+        .getByRole('button', { name: 'Expand sharedParameters', exact: true })
+        .click()
+      await expect(sharedValue).toBeVisible()
+    })
+
+    await test.step('A duplicate reference reveals its branch beneath collapsed ancestors', async () => {
+      await tree
+        .getByRole('button', { name: 'Collapse firstAssembly', exact: true })
+        .click()
+      await expect(firstValue).toHaveCount(0)
+      await expect(sharedValue).toHaveCount(0)
+
+      await tree
+        .getByRole('button', { name: 'Expand secondAssembly', exact: true })
+        .click()
+      await expect(secondValue).toBeVisible()
+      await sharedModule.click()
+
+      await expect(firstValue).toBeVisible()
+      await expect(sharedValue).toBeVisible()
+      await expect(secondValue).toBeVisible()
+      await expect(
+        tree.getByRole('button', {
+          name: 'Collapse firstAssembly',
+          exact: true,
+        })
+      ).toBeVisible()
+      await expect(
+        tree.getByRole('button', {
+          name: 'Collapse sharedParameters',
+          exact: true,
+        })
+      ).toBeVisible()
+    })
+  })
+
   test('User can go to definition and go to function definition', async ({
     homePage,
     scene,
