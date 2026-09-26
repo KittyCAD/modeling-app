@@ -38,9 +38,11 @@ if [[ ! -f "test-results/.last-run.json" ]]; then
     if [[ "$3" == *ubuntu* ]]; then
         xvfb-run --auto-servernum --server-args="-screen 0 1280x960x24" -- npm run test:e2e:desktop -- --shard=$1/$2 || true
     elif [[ "$3" == *windows* ]]; then
-        npm run test:e2e:desktop -- --grep=@windows --grep-invert=@web --shard=$1/$2 || true
+        # Last --grep wins over package.json's @desktop; require both tags so
+        # web-only @windows tests are not included.
+        npm run test:e2e:desktop -- --grep='(?=.*@desktop)(?=.*@windows)' --shard=$1/$2 || true
     elif [[ "$3" == *macos* ]]; then
-        npm run test:e2e:desktop -- --grep=@macos --grep-invert=@web --shard=$1/$2 || true
+        npm run test:e2e:desktop -- --grep='(?=.*@desktop)(?=.*@macos)' --shard=$1/$2 || true
     else
         echo "Do not run Playwright. Unable to detect os runtime."
         exit 1
@@ -66,9 +68,9 @@ while [[ $retry -le $max_retries ]]; do
             if [[ "$3" == *ubuntu* ]]; then
                 xvfb-run --auto-servernum --server-args="-screen 0 1280x960x24" -- npm run test:e2e:desktop -- --last-failed || true
             elif [[ "$3" == *windows* ]]; then
-                npm run test:e2e:desktop -- --grep=@windows --grep-invert=@web --last-failed || true
+                npm run test:e2e:desktop -- --grep='(?=.*@desktop)(?=.*@windows)' --last-failed || true
             elif [[ "$3" == *macos* ]]; then
-                npm run test:e2e:desktop -- --grep=@macos --grep-invert=@web --last-failed || true
+                npm run test:e2e:desktop -- --grep='(?=.*@desktop)(?=.*@macos)' --last-failed || true
             else
                 echo "Do not run playwright. Unable to detect os runtime."
                 exit 1
