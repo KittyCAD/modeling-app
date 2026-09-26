@@ -69,8 +69,7 @@ debug-sim-test test_name:
 # Regenerate all the simulation test output.
 redo-sim-tests:
     ZOO_SIM_UPDATE=always EXPECTORATE=overwrite TWENTY_TWENTY=update {{ cita }} {{ kcl_lib_flags }} --no-quiet -- simulation_tests
-    # This copies PNG files generated during tests to the public folder. It
-    # needs to happen *after* they're all generated.
+    # Refresh the generated KCL sample metadata after all tests have run.
     ZOO_SIM_UPDATE=always EXPECTORATE=overwrite TWENTY_TWENTY=update {{ cita }} {{ kcl_lib_flags }} --no-quiet -- simulation_tests::kcl_samples::test_after_engine
 
 # Regenerate sketch visualizer PNG snapshots.
@@ -80,8 +79,7 @@ redo-sketch-visualizer-snapshots:
 # Regenerate all simulation test output, forcing one test at a time.
 redo-sim-tests-serial:
     ZOO_SIM_UPDATE=always EXPECTORATE=overwrite TWENTY_TWENTY=update {{ cita }} --test-runner=cargo-test {{ kcl_lib_flags }} --no-quiet -- simulation_tests -- --test-threads=1
-    # This copies PNG files generated during tests to the public folder. It
-    # needs to happen *after* they're all generated.
+    # Refresh the generated KCL sample metadata after all tests have run.
     ZOO_SIM_UPDATE=always EXPECTORATE=overwrite TWENTY_TWENTY=update {{ cita }} --test-runner=cargo-test {{ kcl_lib_flags }} --no-quiet -- simulation_tests::kcl_samples::test_after_engine -- --test-threads=1
 
 test:

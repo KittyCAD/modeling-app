@@ -14,7 +14,6 @@ use walkdir::WalkDir;
 
 use super::Test;
 use crate::simulation_tests::TestConfig;
-use crate::tooling::render_artifacts::RENDERED_MODEL_NAME;
 
 const ALLOWED_FILETYPES: [&str; 3] = ["kcl", "stp", "step"];
 const SAMPLE_CATEGORIES: [&str; 16] = [
@@ -127,28 +126,8 @@ fn test_after_engine_ensure_kcl_samples_manifest_etc() {
         OUTPUTS_DIR.to_string_lossy()
     );
 
-    // We want to move the screenshot for the inputs to the public/kcl-samples
-    // directory so that they can be used as inputs for the next run.
-    // First ensure each directory exists.
-    let public_screenshot_dir = INPUTS_DIR.join("screenshots");
-    for dir in [&public_screenshot_dir] {
-        if !dir.exists() {
-            std::fs::create_dir_all(dir).unwrap();
-        }
-    }
-    for tests in &tests {
-        let screenshot_file = OUTPUTS_DIR.join(&tests.name).join(RENDERED_MODEL_NAME);
-        if !screenshot_file.exists() {
-            panic!("Missing screenshot for test: {}", tests.name);
-        }
-        std::fs::copy(
-            screenshot_file,
-            public_screenshot_dir.join(format!("{}.png", tests.name)),
-        )
-        .unwrap();
-    }
-
-    // Update the README.md with the new screenshots.
+    // Public screenshots are website assets and are intentionally not generated
+    // or updated by simulation tests. Keep only the README index in sync here.
     let mut new_content = String::new();
     for test in tests {
         // Format:
