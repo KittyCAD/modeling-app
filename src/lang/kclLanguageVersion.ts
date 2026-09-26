@@ -1,13 +1,39 @@
 import type { KclVersion } from '@rust/kcl-lib/bindings/KclVersion'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { Program } from '@src/lang/wasm'
-import { kclSettings } from '@src/lang/wasm'
-import { err } from '@src/lib/trap'
+import { parse, resultIsOk } from '@src/lang/wasm'
+import { err, isErr } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 // Note: this module is about the KCL *language* version declared in a file's
 // `@settings(kclVersion = ...)` annotation. It is unrelated to the kcl-lib
 // crate version in src/lib/kclVersion.ts.
+
+/** Resolve the entry point's version, including the legacy default, in Rust. */
+export function getKclLanguageVersion(
+  code: string | Node<Program>,
+  instance: ModuleType
+): KclVersion | Error {
+  let program: Node<Program>
+  if (typeof code === 'string') {
+    const result = parse(code, instance)
+    if (isErr(result)) return result
+    if (!resultIsOk(result)) {
+      return new Error('Cannot determine the KCL version of an invalid program')
+    }
+    program = result.program
+  } else {
+    program = code
+  }
+
+  try {
+    return instance.kcl_language_version(JSON.stringify(program))
+  } catch (cause) {
+    return new Error(`Cannot determine the KCL version: ${String(cause)}`, {
+      cause,
+    })
+  }
+}
 
 // Exhaustive over KclVersion: a future union member fails compilation here
 // until it's mapped.
@@ -35,9 +61,6 @@ export function programUsesKclV3(
   program: Node<Program>,
   instance: ModuleType
 ): boolean {
-  const settings = kclSettings(program, instance)
-  if (err(settings) || settings === null) {
-    return false
-  }
-  return isAtLeastKclV3(settings.kclVersion)
+  const version = getKclLanguageVersion(program, instance)
+  return !err(version) && isAtLeastKclV3(version)
 }

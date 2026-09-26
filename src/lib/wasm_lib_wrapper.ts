@@ -22,6 +22,7 @@ import type {
   is_kcl_empty_or_only_settings as IsKclEmptyOrOnlySettings,
   is_points_ccw as IsPointsCcw,
   kcl_lint as KclLint,
+  kcl_language_version as KclLanguageVersion,
   kcl_settings as KclSettings,
   node_path_from_range as NodePathFromRange,
   parse_app_settings as ParseAppSettings,
@@ -107,6 +108,9 @@ export const base64_decode: typeof Base64Decode = (...args) => {
 }
 export const kcl_settings: typeof KclSettings = (...args) => {
   return getModule().kcl_settings(...args)
+}
+export const kcl_language_version: typeof KclLanguageVersion = (...args) => {
+  return getModule().kcl_language_version(...args)
 }
 export const change_default_units: typeof ChangeDefaultUnits = (...args) => {
   return getModule().change_default_units(...args)

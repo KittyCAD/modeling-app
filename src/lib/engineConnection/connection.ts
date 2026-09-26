@@ -182,9 +182,13 @@ export class Connection extends EventTarget {
     // The API derives the engine's geometry_only setting from the CPU pool.
     const poolQuery = pool ? `&pool=${pool}` : ''
     const postEffectQuery = pool ? '' : '&post_effect=ssao'
-    const url = withKittycadWebSocketURL(
-      `?video_res_width=${256}&video_res_height=${256}${postEffectQuery}${webrtcQuery}${poolQuery}`
+    const url = new URL(
+      withKittycadWebSocketURL(
+        `?video_res_width=${256}&video_res_height=${256}${postEffectQuery}${webrtcQuery}${poolQuery}`
+      )
     )
+    const kclVersion = new URL(this.url, url).searchParams.get('kcl_version')
+    if (kclVersion !== null) url.searchParams.set('kcl_version', kclVersion)
     this.websocket = new WebSocket(url, [])
     this.websocket.binaryType = 'arraybuffer'
     const onWebSocketOpen = (event: Event) => {

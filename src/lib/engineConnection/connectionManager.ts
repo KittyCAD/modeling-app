@@ -8,6 +8,7 @@ import {
   encode as msgpackEncode,
 } from '@msgpack/msgpack'
 import type { useModelingContext } from '@src/hooks/useModelingContext'
+import type { KclVersion } from '@rust/kcl-lib/bindings/KclVersion'
 import { defaultSourceRange } from '@src/lang/sourceRange'
 import type { EngineCommand, ResponseMap } from '@src/lang/std/artifactGraph'
 import type { CommandLog } from '@src/lang/std/commandLog'
@@ -107,6 +108,7 @@ export class ConnectionManager extends EventTarget {
   commandLogs: CommandLog[] = []
 
   connection: Connection | undefined
+  private kclVersion: KclVersion | undefined
   lastConnectionError: EngineConnectionError | undefined
   private connectionStartedAt = performance.now()
   private shutdownReported = false
@@ -189,6 +191,7 @@ export class ConnectionManager extends EventTarget {
     unitTestWebrtc,
     unitTestPool,
     rustContext,
+    kclVersion,
   }: {
     width: number
     height: number
@@ -198,6 +201,7 @@ export class ConnectionManager extends EventTarget {
     unitTestWebrtc?: boolean
     unitTestPool?: 'cpu'
     rustContext?: RustContext
+    kclVersion?: KclVersion
   }) {
     EngineDebugger.addLog({
       label: 'connectionManager',
@@ -235,6 +239,7 @@ export class ConnectionManager extends EventTarget {
 
     const handleMessage = this.createMessageHandler(rustContext)
 
+    this.kclVersion = kclVersion
     const url = this.generateWebsocketURL()
     this.connection = new Connection({
       url,
@@ -406,6 +411,9 @@ export class ConnectionManager extends EventTarget {
     let additionalSettings = this.settings.enableSSAO ? '&post_effect=ssao' : ''
     additionalSettings +=
       '&show_grid=' + (this.settings.showScaleGrid ? 'true' : 'false')
+    if (this.kclVersion !== undefined) {
+      additionalSettings += `&kcl_version=${encodeURIComponent(this.kclVersion)}`
+    }
     const url = withKittycadWebSocketURL(
       `?video_res_width=${this.streamDimensions.width}&video_res_height=${this.streamDimensions.height}${additionalSettings}`
     )
@@ -1190,6 +1198,7 @@ export class ConnectionManager extends EventTarget {
     this.removeAllEventListeners()
     this.connection?.disconnectAll()
     this.connection = undefined
+    this.kclVersion = undefined
 
     // It is possible all connections never even started, but we still want
     // to signal to the whole application we are "offline".
@@ -1445,12 +1454,46 @@ export class ConnectionManager extends EventTarget {
     if (this.executionIsStale) {
       return Promise.reject(EXECUTE_AST_INTERRUPT_ERROR_MESSAGE)
     }
+    const connection = this.connection
+    const version =
+      command.type === 'modeling_cmd_req' &&
+      command.cmd.type === 'set_kcl_version'
+        ? command.cmd.kcl_version
+        : undefined
     try {
+      // Rust owns version changes; this transport owns the confirmed session state.
+      if (version !== undefined) {
+        if (!this.isReady) {
+          return Promise.reject(REJECTED_TOO_EARLY_WEBSOCKET_MESSAGE)
+        }
+        if (this.kclVersion === version) {
+          const response: WebSocketResponse = {
+            success: true,
+            request_id: id,
+            resp: {
+              type: 'modeling',
+              data: {
+                modeling_response: { type: 'set_kcl_version', data: {} },
+              },
+            },
+          }
+          return msgpackEncode(response)
+        }
+        // A rejected/interrupted command may still have reached the engine.
+        this.kclVersion = undefined
+        this.addCommandLog({ type: CommandLogType.SendScene, data: command })
+      }
       const resp = await this.sendCommand(id, {
         command,
         range,
         idToRangeMap,
       })
+      if (version !== undefined) {
+        if (this.connection !== connection || !this.isReady) {
+          return Promise.reject(EXECUTE_AST_INTERRUPT_ERROR_MESSAGE)
+        }
+        this.kclVersion = version
+      }
       return msgpackEncode(resp[0])
     } catch (e) {
       const isExecutionInterrupt =

@@ -583,6 +583,16 @@ impl FrontendState {
     pub fn clear_sketch_checkpoints(&mut self) {
         self.sketch_checkpoints.clear();
     }
+
+    /// Checkpoint restores bypass execution, but still change the engine's language version.
+    pub async fn sync_engine_kcl_version(
+        &self,
+        engine: &crate::engine_connection::EngineManager,
+    ) -> Result<(), KclError> {
+        engine
+            .set_kcl_version(self.program.language_version()?, self.program.ast.as_source_range())
+            .await
+    }
     fn scene_graph_for_ui(&self) -> SceneGraph {
         let has_control_point_splines = self.scene_graph.objects.iter().any(|object| {
             matches!(

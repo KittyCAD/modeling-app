@@ -1,7 +1,11 @@
 import { join } from 'node:path'
 import type { KclVersion } from '@rust/kcl-lib/bindings/KclVersion'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
-import { isAtLeastKclV3, programUsesKclV3 } from '@src/lang/kclLanguageVersion'
+import {
+  getKclLanguageVersion,
+  isAtLeastKclV3,
+  programUsesKclV3,
+} from '@src/lang/kclLanguageVersion'
 import { parse } from '@src/lang/wasm'
 import type { Program } from '@src/lang/wasm'
 import { loadAndInitialiseWasmInstance } from '@src/lang/wasmUtilsNode'
@@ -46,6 +50,29 @@ describe('isAtLeastKclV3', () => {
   it('treats missing versions as pre-3.0', () => {
     expect(isAtLeastKclV3(null)).toBe(false)
     expect(isAtLeastKclV3(undefined)).toBe(false)
+  })
+})
+
+describe('getKclLanguageVersion', () => {
+  it.each<[string, KclVersion]>([
+    ['', '1.0'],
+    ['x = 1', '1.0'],
+    ['@settings(defaultLengthUnit = mm)\nx = 1', '1.0'],
+    ['@settings(kclVersion = 1.0)\nx = 1', '1.0'],
+    ['@settings(kclVersion = 2.0)\nx = 1', '2.0'],
+    ['@settings(kclVersion = "3.0-preview")\nx = 1', '3.0-preview'],
+  ])('resolves %j to %s using Wasm', (code, expected) => {
+    expect(getKclLanguageVersion(code, getInstance())).toBe(expected)
+    expect(getKclLanguageVersion(parseProgram(code), getInstance())).toBe(
+      expected
+    )
+  })
+
+  it.each([
+    '@settings(kclVersion = "abcd")',
+    '@settings(kclVersion = 2.0)\nx =',
+  ])('does not supply a fallback for invalid source: %s', (code) => {
+    expect(getKclLanguageVersion(code, getInstance())).toBeInstanceOf(Error)
   })
 })
 

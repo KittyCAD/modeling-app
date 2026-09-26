@@ -12,6 +12,7 @@ import {
   kclErrorsToDiagnostics,
 } from '@src/lang/errors'
 import { executeAst, executeAstMock, lintAst } from '@src/lang/langHelpers'
+import { getKclLanguageVersion } from '@src/lang/kclLanguageVersion'
 import { refactorZ0006Unified } from '@src/lang/modifyAst/edges'
 import {
   ensureDefaultKclVersionOnBlankMain,
@@ -1764,7 +1765,12 @@ export class KclManager extends File {
            * take that path is what overwrote freshly typed sketch lines.
            */
           await this.executeCode(newCode)
-          if (!isCurrentDirectEditorExecution()) return
+          // executeCode can queue behind an active render and return early.
+          // Wait for that render, then check its diagnostics and document.
+          await this.waitForExecutionQueueToIdle()
+          if (!isCurrentDirectEditorExecution() || this.hasErrors()) {
+            return
+          }
 
           const setProgramOutcome = await this.rustContext.hackSetProgram(
             this.ast,
@@ -2538,6 +2544,11 @@ export class KclManager extends File {
     return result.program
   }
 
+  async getLanguageVersion() {
+    const instance = await this.wasmInstancePromise
+    return getKclLanguageVersion(this.code, instance)
+  }
+
   // This NEVER updates the code, if you want to update the code DO NOT add to
   // this function, too many other things that don't want it exist. For that,
   // use updateModelingState().
@@ -2571,12 +2582,22 @@ export class KclManager extends File {
     this.beginLiveOperationUpdates(currentExecutionId)
 
     const codeThatExecuted = this.code
+    const pathThatExecuted = this.path
     const { logs, errors, execState, isInterrupted } = await executeAst({
       ast,
-      path: this.path,
+      path: pathThatExecuted,
       rustContext: this.rustContext,
       callbacks: this.createExecutionCallbacks(currentExecutionId),
     })
+
+    if (this.path !== pathThatExecuted) {
+      this.endLiveOperationUpdates()
+      this._cancelTokens.delete(currentExecutionId)
+      markOnce('code/endExecuteAst')
+      this.notifyExecutionCompletion('cancelled')
+      this.isExecuting = false
+      return
+    }
 
     const livePathsToWatch = Object.values(execState.filenames)
       .filter((file) => {
@@ -3663,11 +3684,15 @@ export class KclManager extends File {
 
     const requestId = ++this.lastSketchCheckpointRestoreRequestId
     const requestedDocumentVersion = this._documentVersion
+    const isCurrentRestore = () =>
+      requestId === this.lastSketchCheckpointRestoreRequestId &&
+      requestedDocumentVersion === this._documentVersion
     try {
+      await this.waitForExecutionQueueToIdle()
+      if (!isCurrentRestore()) return
       const result =
         await this.rustContext.restoreSketchCheckpoint(checkpointId)
-      if (requestId !== this.lastSketchCheckpointRestoreRequestId) return
-      if (requestedDocumentVersion !== this._documentVersion) return
+      if (!isCurrentRestore()) return
 
       this.sendModelingEvent({
         type: 'update sketch outcome',
@@ -3680,20 +3705,21 @@ export class KclManager extends File {
         },
       })
     } catch (error) {
-      if (requestId !== this.lastSketchCheckpointRestoreRequestId) return
+      if (!isCurrentRestore()) return
 
       console.warn('Failed to restore sketch checkpoint, falling back', error)
 
       try {
         const currentCode = this.editorState.doc.toString()
         await this.executeCode(currentCode)
+        await this.waitForExecutionQueueToIdle()
+        if (!isCurrentRestore() || this.hasErrors()) return
         const setProgramOutcome = await this.rustContext.hackSetProgram(
           this.ast,
           jsAppSettings(this.systemDeps.settings)
         )
 
-        if (requestId !== this.lastSketchCheckpointRestoreRequestId) return
-        if (requestedDocumentVersion !== this._documentVersion) return
+        if (!isCurrentRestore()) return
         if (setProgramOutcome.type !== 'Success') return
 
         this.sendModelingEvent({

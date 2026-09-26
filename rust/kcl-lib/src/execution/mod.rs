@@ -1196,7 +1196,6 @@ impl ExecutorContext {
     }
 
     /// Open an engine session for the entrypoint's resolved `Program::language_version()`.
-    /// The version is fixed for the lifetime of this connection.
     #[cfg(not(target_arch = "wasm32"))]
     pub async fn new(client: &kittycad::Client, settings: ExecutorSettings, kcl_version: KclVersion) -> Result<Self> {
         let pr = std::env::var("ZOO_ENGINE_PR").ok().and_then(|s| s.parse().ok());
@@ -1236,8 +1235,13 @@ impl ExecutorContext {
             .get("x-request-id")
             .and_then(|id| id.to_str().ok())
             .map(str::to_owned);
-        let engine_conn =
-            EngineManager::new_websocket_transport_with_request_id(ws, settings.heartbeats, request_id).await;
+        let engine_conn = EngineManager::new_websocket_transport_with_request_id(
+            ws,
+            settings.heartbeats,
+            request_id,
+            Some(kcl_version),
+        )
+        .await;
         let engine = Arc::new(engine_conn);
 
         Ok(Self::new_with_engine(engine, settings))
@@ -1449,9 +1453,14 @@ impl ExecutorContext {
         // We specifically want to be returned the objects after the scene is reset.
         // Like the default planes so it is easier to just execute an empty program
         // after the cache is busted.
-        let outcome = self.run_with_caching(crate::Program::empty()).await?;
-
-        Ok(outcome)
+        // This is a scene reset, not a user program: preserve the session's KCL version.
+        let result = self
+            .with_engine_execution(Box::pin(self.run_with_caching_inner(crate::Program::empty())))
+            .await;
+        if result.is_err() {
+            cache::bust_cache().await;
+        }
+        result
     }
 
     async fn prepare_mem(&self, exec_state: &mut ExecState) -> Result<(), KclErrorWithOutputs> {
@@ -1594,6 +1603,13 @@ impl ExecutorContext {
     /// frames are not held underneath deep KCL execution in debug builds.
     pub async fn run_with_caching(&self, program: crate::Program) -> Result<ExecOutcome, KclErrorWithOutputs> {
         assert!(!self.is_mock());
+        self.engine
+            .set_kcl_version(
+                program.language_version().map_err(KclErrorWithOutputs::no_outputs)?,
+                program.ast.as_source_range(),
+            )
+            .await
+            .map_err(KclErrorWithOutputs::no_outputs)?;
         let result = self
             .with_engine_execution(Box::pin(self.run_with_caching_inner(program)))
             .await;

@@ -1061,6 +1061,10 @@ impl Context {
             .restore_sketch_checkpoint(checkpoint_id)
             .await
             .map_err(|e: Error| js_value_from_serde(&e))?;
+        guard
+            .sync_engine_kcl_version(&self.engine)
+            .await
+            .map_err(|e| js_value_from_serde(&e))?;
 
         Ok(JsValue::from_serde(&result)
             .map_err(|e| format!("Could not serialize sketch checkpoint restore result. {TRUE_BUG} Details: {e}"))?)
