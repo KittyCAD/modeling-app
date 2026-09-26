@@ -29,6 +29,7 @@ use crate::execution::kcl_value::TypeDef;
 use crate::execution::memory::{self};
 use crate::fmt;
 use crate::modules::ModuleItems;
+use crate::modules::ModulePath;
 use crate::parsing::ast::types::ABSOLUTE_PATHS_NOT_SUPPORTED;
 use crate::parsing::ast::types::Identifier;
 use crate::parsing::ast::types::Name;
@@ -118,7 +119,7 @@ pub(super) async fn resolve_named_type_def(
             None => exec_state
                 .stack()
                 .get(&key, segment.as_source_range())
-                .map_err(|_| unknown_type())?,
+                .map_err(|_| exec_state.with_not_yet_added_hint(&[&key], unknown_type()))?,
         };
         let KclValue::Module { value: module_id, .. } = module else {
             return Err(unknown_type());
@@ -350,7 +351,18 @@ impl RuntimeType {
         suppress_warnings: bool,
     ) -> Result<Self, KclError> {
         match value {
-            Type::Primitive(pt) => Ok(Self::from_parsed_primitive(pt, exec_state)),
+            Type::Primitive(pt) => {
+                if matches!(pt, AstPrimitiveType::Never)
+                    && !matches!(exec_state.mod_local.path, ModulePath::Std { .. })
+                    && !exec_state.entry_point_version_is_v3_or_higher()
+                {
+                    return Err(crate::parsing::never_type_error(
+                        source_range,
+                        exec_state.entry_point_kcl_version(),
+                    ));
+                }
+                Ok(Self::from_parsed_primitive(pt, exec_state))
+            }
             Type::Named { name } => Self::from_alias(&name, exec_state, ctx, source_range, suppress_warnings).await,
             Type::Array { ty, len } => Ok(RuntimeType::Array(
                 Box::new(
@@ -2696,6 +2708,7 @@ mod test {
             EnumTypeDef::new(
                 EnumTypeId::new(ModuleId::from_usize(module_id as usize), name),
                 variants.iter().map(|v| (*v).to_owned()).collect(),
+                false,
             )
             .unwrap(),
         )
@@ -2788,7 +2801,9 @@ mod test {
             .add(
                 format!("{}Color", memory::TYPE_PREFIX),
                 KclValue::Type {
-                    value: TypeDef::Enum(Arc::new(EnumTypeDef::new(id.clone(), vec!["Red".to_owned()]).unwrap())),
+                    value: TypeDef::Enum(Arc::new(
+                        EnumTypeDef::new(id.clone(), vec!["Red".to_owned()], false).unwrap(),
+                    )),
                     experimental: false,
                     meta: vec![],
                 },

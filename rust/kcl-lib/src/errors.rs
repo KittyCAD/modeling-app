@@ -247,6 +247,17 @@ impl KclErrorWithOutputs {
         crate::execution::sketch_constraint_report_from_scene_objects(&self.scene_objects)
     }
 
+    /// Get a debug visualization of the named sketch.
+    /// If there's multiple sketches with the same name, disambiguate them
+    /// with `instance_index`.
+    pub fn render_sketch_png_instance(
+        &self,
+        sketch_name: &str,
+        instance_index: Option<usize>,
+    ) -> std::result::Result<Vec<u8>, crate::tooling::sketch_visualizer::SketchVisualizationError> {
+        crate::execution::render_sketch_png_from_scene_objects(&self.scene_objects, sketch_name, instance_index)
+    }
+
     pub fn into_miette_report_with_outputs(self, code: &str) -> anyhow::Result<ReportWithOutputs> {
         let source_ranges = self.error.source_ranges();
 

@@ -4,6 +4,7 @@ import { MAX_PROJECT_NAME_LENGTH } from '@src/lib/constants'
 import {
   getHomeProjectDeleteWarningMessage,
   getHomeProjectDisplayName,
+  homeProjectDisplayNameExists,
 } from '@src/lib/homeProjects'
 import { isDesktop } from '@src/lib/isDesktop'
 import { PATHS } from '@src/lib/paths'
@@ -61,23 +62,21 @@ interface HomeProjectCommandTarget {
   project: HomeProjectEntry
 }
 
-function defaultEnableProjectDirectoryCommands() {
-  return typeof window !== 'undefined' && Boolean(window.electron)
-}
-
 export function createProjectCommands({
   systemIOActor,
-  enableProjectDirectoryCommands = defaultEnableProjectDirectoryCommands(),
   getCurrentProjectDirectoryName,
+  getCurrentProjectPath,
   getCurrentProjectLibraryId,
+  getProjectLibraries,
   getCreateProjectLibraryTargets,
   getHomeProjectActions,
   getHomeProjectEntries,
 }: {
   systemIOActor: ActorRefFrom<typeof systemIOMachine>
-  enableProjectDirectoryCommands?: boolean
   getCurrentProjectDirectoryName?: () => string | undefined
+  getCurrentProjectPath?: () => string | undefined
   getCurrentProjectLibraryId?: () => string | undefined
+  getProjectLibraries?: () => readonly ProjectLibrary[]
   getCreateProjectLibraryTargets?: () => readonly CreateProjectLibraryTarget[]
   getHomeProjectActions?: () => HomeProjectActionsService | undefined
   getHomeProjectEntries?: () => readonly HomeProjectEntry[] | undefined
@@ -105,6 +104,11 @@ export function createProjectCommands({
   const homeProjectEntriesSnapshot = () => getHomeProjectEntries?.()
 
   const isCurrentHomeProject = (project: HomeProjectEntry) => {
+    const currentProjectPath = getCurrentProjectPath?.()
+    if (currentProjectPath) {
+      return project.localProjectPath === currentProjectPath
+    }
+
     const currentProjectDirectoryName = currentProjectDirectoryNameSnapshot()
     return Boolean(
       currentProjectDirectoryName &&
@@ -159,12 +163,19 @@ export function createProjectCommands({
 
   const homeProjectOptions = (
     action: HomeProjectCommandAction
-  ): CommandArgumentOption<string>[] | undefined =>
-    homeProjectCommandTargets(action)?.map(({ project }) => ({
+  ): CommandArgumentOption<string>[] | undefined => {
+    const libraries = getProjectLibraries?.() ?? []
+    return homeProjectCommandTargets(action)?.map(({ project }) => ({
       name: getHomeProjectDisplayName(project),
+      description:
+        libraries
+          .filter((library) => project.libraryIds?.includes(library.id))
+          .map((library) => library.title)
+          .join(', ') || undefined,
       value: project.id,
       isCurrent: isCurrentHomeProject(project),
     }))
+  }
 
   const projectOptions = (action: HomeProjectCommandAction) => {
     if (action === 'moveToLibrary') {
@@ -581,6 +592,26 @@ export function createProjectCommands({
         displayName: 'New title',
         inputType: 'string',
         required: true,
+        validation: async ({ context, data }) => {
+          const projectName = context.argumentsToSubmit.oldName
+          const requestedName = data.newName
+          const target = selectedHomeProjectTarget(projectName, 'rename')
+          const titleExists = target
+            ? homeProjectDisplayNameExists({
+                entries: homeProjectEntriesSnapshot(),
+                requestedName,
+                projectId: target.project.id,
+              })
+            : folderSnapshot()?.some(
+                (project) =>
+                  project.name !== projectName &&
+                  getProjectDisplayName(project) === requestedName
+              )
+
+          return titleExists
+            ? `Project with title "${requestedName}" already exists`
+            : true
+        },
         defaultValue: (context: ContextFrom<typeof commandBarMachine>) => {
           const projectDirectoryName = context.argumentsToSubmit.oldName as
             | string
@@ -687,16 +718,12 @@ export function createProjectCommands({
     },
   }
 
-  const projectCommands = enableProjectDirectoryCommands
-    ? [
-        openProjectCommand,
-        createProjectCommand,
-        moveToLibraryCommand,
-        deleteProjectCommand,
-        renameProjectCommand,
-        importFileFromURL,
-      ]
-    : [importFileFromURL]
-
-  return projectCommands
+  return [
+    openProjectCommand,
+    createProjectCommand,
+    moveToLibraryCommand,
+    deleteProjectCommand,
+    renameProjectCommand,
+    importFileFromURL,
+  ]
 }

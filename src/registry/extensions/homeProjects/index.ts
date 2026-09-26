@@ -8,7 +8,10 @@ import {
 import { computed } from '@preact/signals-core'
 import { getCloudProjectLibraryMaterializationDirectoryPath } from '@src/lib/cloudSync/paths'
 import { getProjectInfo } from '@src/lib/desktop'
-import { getHomeProjectDisplayName } from '@src/lib/homeProjects'
+import {
+  getHomeProjectDisplayName,
+  homeProjectDisplayNameExists,
+} from '@src/lib/homeProjects'
 import { separateProjectsSharingProjectId } from '@src/lib/projectIdentity'
 import {
   CLOUD_PROJECT_LIBRARY_TYPE,
@@ -17,10 +20,6 @@ import {
   projectLibrariesFromSettings,
 } from '@src/lib/projectLibraries'
 import { invalidateProjectLibraryRealizations } from '@src/lib/projectLibraries/registry/invalidation'
-import {
-  makeZookeeperConversationStore,
-  type ZookeeperConversationStore,
-} from '@src/lib/zookeeper/zookeeperConversationStore'
 import {
   type CloudProjectRelationship,
   type CloudProjectRelationshipRealization,
@@ -51,24 +50,6 @@ import { settingsService } from '@src/registry/contracts/settings'
 import { wasmPromiseValueSpec } from '@src/registry/contracts/wasm'
 import toast from 'react-hot-toast'
 import { NIL as uuidNIL } from 'uuid'
-
-function homeProjectDisplayNameExists({
-  entries,
-  requestedName,
-  projectId,
-}: {
-  entries: readonly HomeProjectEntry[] | undefined
-  requestedName: string
-  projectId: string
-}) {
-  return Boolean(
-    entries?.some(
-      (project) =>
-        project.id !== projectId &&
-        getHomeProjectDisplayName(project) === requestedName
-    )
-  )
-}
 
 function homeProjectStatusFromRealization(
   realization: ProjectLibraryRealization
@@ -411,13 +392,6 @@ export function deriveHomeProjectEntryContributions({
 const homeProjectActions = defineRegistryItemFactory((ctx) => {
   const settings = ctx.services.signal(settingsService)
   const cloudSync = ctx.services.signal(cloudSyncService)
-  let zookeeperConversationStore: ZookeeperConversationStore | undefined
-  const getZookeeperConversationStore = () => {
-    zookeeperConversationStore ??= makeZookeeperConversationStore(
-      ctx.services.get(fileOperationsService)
-    )
-    return zookeeperConversationStore
-  }
 
   const getWasmPromise = () =>
     ctx.valueSpecs.get(wasmPromiseValueSpec) ??
@@ -759,22 +733,12 @@ const homeProjectActions = defineRegistryItemFactory((ctx) => {
         project.localProjectPath,
         ...(project.duplicateProjectIdPaths ?? []),
       ].filter((projectPath): projectPath is string => Boolean(projectPath))
-      const { sharedProjectId } = await separateProjectsSharingProjectId({
+      await separateProjectsSharingProjectId({
         fileOperations: ctx.services.get(fileOperationsService),
         projectPaths,
         keepProjectPath,
       })
-      try {
-        if (!keepProjectPath) {
-          await getZookeeperConversationStore().deleteProjectConversationId(
-            sharedProjectId
-          )
-        }
-      } finally {
-        // The project files have already been updated, so refresh Home even if
-        // cleaning up the now-orphaned conversation mapping fails.
-        invalidateProjectLibraryRealizations()
-      }
+      invalidateProjectLibraryRealizations()
       toast.success(
         keepProjectPath
           ? 'Separated project copies. The selected project kept its Zookeeper history.'

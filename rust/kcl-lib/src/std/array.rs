@@ -378,8 +378,8 @@ mod tests {
     use crate::execution::MockConfig;
 
     #[tokio::test(flavor = "multi_thread")]
-    async fn flatten_consumed_solid_reports_deprecation_warning() {
-        let code = r#"
+    async fn flatten_consumed_solid_warns_before_v3_and_errors_in_v3() {
+        let body = r#"
 targetSketch = sketch(on = XY) {
   line1 = line(start = [var -10, var -10], end = [var 10, var -10])
   line2 = line(start = [var 10, var -10], end = [var 10, var 10])
@@ -412,13 +412,24 @@ result = subtract(target, tools = [tool])
 flattened = flatten([[target]])
 "#;
 
-        let ctx = crate::ExecutorContext::new_mock(None).await;
-        let program = crate::Program::parse_no_errs(code).unwrap();
-        let result = ctx.run_mock(&program, &MockConfig::default()).await;
-        ctx.close().await;
+        for (version, should_error) in [("2.0", false), ("\"3.0-preview\"", true)] {
+            let code = format!("@settings(kclVersion = {version})\n{body}");
+            let ctx = crate::ExecutorContext::new_mock(None).await;
+            let program = crate::Program::parse_no_errs(&code).unwrap();
+            let result = ctx.run_mock(&program, &MockConfig::default()).await;
+            ctx.close().await;
 
-        match result {
-            Ok(outcome) => {
+            if should_error {
+                let err = result.unwrap_err();
+                assert!(matches!(&err.error, crate::errors::KclError::Semantic { .. }));
+                assert!(
+                    err.error
+                        .message()
+                        .contains("`target` was already consumed by a `subtract` operation"),
+                    "{err:?}"
+                );
+            } else {
+                let outcome = result.unwrap();
                 let flattened = outcome.variables.get("flattened").unwrap();
                 let KclValueView::HomArray { value, .. } = flattened else {
                     panic!("expected `flattened` to be an array, got: {flattened:?}");
@@ -438,14 +449,6 @@ flattened = flatten([[target]])
                     "expected flatten consumed-solid deprecation warning, got: {:#?}",
                     outcome.issues
                 );
-            }
-            Err(err) => {
-                let message = err.error.message();
-                assert!(
-                    message.contains("`target` was already consumed by a `subtract` operation"),
-                    "{message}"
-                );
-                panic!("flatten should warn for consumed-solid validation, but failed with: {message}");
             }
         }
     }

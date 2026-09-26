@@ -1070,7 +1070,7 @@ impl ExecutorContext {
         // Check the imported file's declared version and effective keyword
         // restrictions before executing its body.
         exec_state
-            .validate_imported_module(path, program, None)
+            .validate_imported_module(path, module_id, program, None)
             .map_err(|err| (err, None, None))?;
 
         // When executing only the new statements in incremental execution or
@@ -1354,6 +1354,24 @@ impl ExecutorContext {
             &self.settings.project_directory,
             &exec_state.mod_local.path,
         )?;
+        if matches!(&module_path, ModulePath::Std { value } if value == "view")
+            && !exec_state.entry_point_version_is_v3_or_higher()
+        {
+            if matches!(&exec_state.mod_local.path, ModulePath::Std { value } if value == "prelude") {
+                // The prelude must remain usable before V3, but its view module
+                // must be absent from those programs.
+                let added_in = annotations::VersionConstraint::new(3, 0);
+                exec_state.record_not_yet_added(format!("{}view", memory::MODULE_PREFIX), added_in, true);
+                return Ok(());
+            }
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                format!(
+                    "The `std::view` module requires KCL 3.0-preview, but this program uses KCL {}.",
+                    exec_state.entry_point_kcl_version().as_str()
+                ),
+                vec![source_range],
+            )));
+        }
         let module_id = self
             .open_module(&import_stmt.path, attrs, &module_path, exec_state, source_range)
             .await?;
@@ -1366,7 +1384,7 @@ impl ExecutorContext {
             && let Some(ModuleRepr::Kcl(program, _)) =
                 exec_state.global.module_infos.get(&module_id).map(|info| &info.repr)
         {
-            exec_state.validate_imported_module(&module_path, program, Some(source_range))?;
+            exec_state.validate_imported_module(&module_path, module_id, program, Some(source_range))?;
         }
 
         if let ModulePath::Local { value, .. } = &module_path {
@@ -1560,6 +1578,27 @@ impl ExecutorContext {
     ) -> Result<(), KclError> {
         let metadata = Metadata::from(ty);
         let attrs = annotations::get_fn_attrs(&ty.outer_attrs, metadata.source_range)?.unwrap_or_default();
+        let v3_only_feature = match (attrs.impl_, &ty.definition) {
+            (annotations::Impl::Kcl | annotations::Impl::KclConstrainable, TypeDeclarationDefinition::Alias { .. }) => {
+                Some("Type aliases")
+            }
+            (annotations::Impl::Kcl | annotations::Impl::KclConstrainable, TypeDeclarationDefinition::Enum(_)) => {
+                Some("Enum declarations")
+            }
+            _ => None,
+        };
+        if let Some(feature) = v3_only_feature
+            && !matches!(exec_state.mod_local.path, ModulePath::Std { .. })
+            && !exec_state.entry_point_version_is_v3_or_higher()
+        {
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                format!(
+                    "{feature} require KCL 3.0-preview, but this program uses KCL {}.",
+                    exec_state.entry_point_kcl_version().as_str()
+                ),
+                vec![metadata.source_range],
+            )));
+        }
         match attrs.impl_ {
             annotations::Impl::Rust | annotations::Impl::RustConstrainable | annotations::Impl::RustConstraint => {
                 let std_path = match &exec_state.mod_local.path {
@@ -1666,7 +1705,7 @@ impl ExecutorContext {
                     // Constructing the definition is the validation step: nothing
                     // below runs, so nothing reaches memory, unless every variant
                     // name is distinct.
-                    let def = EnumTypeDef::new(id, variants).map_err(|duplicate| {
+                    let def = EnumTypeDef::new(id, variants, attrs.experimental).map_err(|duplicate| {
                         KclError::new_semantic(KclErrorDetails::new(
                             format!("Duplicate variant `{}` in enum `{}`.", duplicate.name, ty.name.name),
                             vec![
@@ -1849,8 +1888,9 @@ impl ExecutorContext {
                 exec_state.add_path_to_source_id(resolved_path.clone(), id);
                 let source = resolved_path.source(&self.fs, source_range).await?;
                 exec_state.add_id_to_source(id, source.clone());
-                // TODO handle parsing errors properly
-                let parsed = crate::parsing::parse_str_deferred_use_keyword(&source.source, id).parse_errs_as_err()?;
+                let (parsed, never_type_ranges) = crate::parsing::parse_str_syntax(&source.source, id)?;
+                // Defer validation until module execution or the mock import site.
+                exec_state.global.never_type_ranges.insert(id, never_type_ranges);
                 exec_state.add_module(id, resolved_path.clone(), ModuleRepr::Kcl(parsed, None));
 
                 Ok(id)
@@ -1886,9 +1926,12 @@ impl ExecutorContext {
                 exec_state.add_path_to_source_id(resolved_path.clone(), id);
                 let source = resolved_path.source(&self.fs, source_range).await?;
                 exec_state.add_id_to_source(id, source.clone());
-                let parsed = crate::parsing::parse_str(&source.source, id)
-                    .parse_errs_as_err()
-                    .unwrap();
+                let (parsed, never_type_ranges) = crate::parsing::parse_str_syntax(&source.source, id).unwrap();
+                crate::parsing::validate_never_type_ranges(
+                    &never_type_ranges,
+                    crate::parsing::SyntaxSource::BundledStdlib,
+                )
+                .unwrap();
                 exec_state.add_module(id, resolved_path.clone(), ModuleRepr::Kcl(parsed, None));
                 Ok(id)
             }
@@ -2365,7 +2408,10 @@ fn type_used_as_value(exec_state: &ExecState, name: &Node<Identifier>) -> Option
 }
 
 enum EnumPathHead {
-    Enum(Arc<EnumTypeDef>),
+    Enum {
+        def: Arc<EnumTypeDef>,
+        binding_experimental: bool,
+    },
     NonEnumType,
 }
 
@@ -2383,8 +2429,12 @@ fn enum_named_by_segment(
     match type_value_named_by_segment(exec_state, segment, within)? {
         KclValue::Type {
             value: TypeDef::Enum(def),
+            experimental,
             ..
-        } => Some(EnumPathHead::Enum(def)),
+        } => Some(EnumPathHead::Enum {
+            def,
+            binding_experimental: experimental,
+        }),
         KclValue::Type { .. } => Some(EnumPathHead::NonEnumType),
         _ => None,
     }
@@ -2403,6 +2453,7 @@ fn non_enum_type_in_path(segment: &Node<Identifier>) -> KclError {
 /// `Red` in `Color::Red`.
 fn enum_variant_value(
     def: Arc<EnumTypeDef>,
+    binding_experimental: bool,
     variant: &Node<Identifier>,
     exec_state: &mut ExecState,
 ) -> Result<KclValue, KclError> {
@@ -2421,13 +2472,11 @@ fn enum_variant_value(
         )));
     }
 
-    // Every V1 enum is experimental, not only those with an annotation, so this
-    // call is unconditional. `warn_experimental` reads the setting of the module
-    // being executed and does nothing when that setting is `allow`, so an enum
-    // imported from a permissive module is still reported in a consumer that has
-    // not opted in. Declarations are gated during parsing; type positions by
-    // `RuntimeType::from_alias`.
-    exec_state.warn_experimental(&format!("the enum `{enum_name}`"), variant.as_source_range());
+    // Older KCL versions report every enum use. In V3, an explicit experimental
+    // annotation on either the declaration or the binding still applies.
+    if !exec_state.entry_point_version_is_v3_or_higher() || def.is_experimental() || binding_experimental {
+        exec_state.warn_experimental(&format!("the enum `{enum_name}`"), variant.as_source_range());
+    }
 
     // The value holds the declaration itself, so its identity is read off that
     // declaration and can never be rebuilt from a name. A later enum v2 adding a
@@ -3456,7 +3505,7 @@ impl Node<Name> {
             // that instead: "is not defined" would point away from the mistake.
             // Failing that, the name may be a declaration skipped as not yet added.
             return Err(type_used_as_value(exec_state, &self.name)
-                .unwrap_or_else(|| exec_state.with_not_yet_added_hint(&[&self.name.name], not_defined)));
+                .unwrap_or_else(|| exec_state.with_not_yet_added_hint(&[&self.name.name, &mod_name], not_defined)));
         }
 
         let mut mem_spec: Option<ModuleItems> = None;
@@ -3464,7 +3513,10 @@ impl Node<Name> {
             // Only the last segment can name an enum, because what follows an
             // enum is a variant rather than something to traverse into.
             let non_enum_type = match enum_named_by_segment(exec_state, p, mem_spec.as_ref()) {
-                Some(EnumPathHead::Enum(def)) => {
+                Some(EnumPathHead::Enum {
+                    def,
+                    binding_experimental,
+                }) => {
                     if let Some(next) = self.path.get(index + 1) {
                         return Err(KclError::new_semantic(KclErrorDetails::new(
                             format!(
@@ -3475,7 +3527,7 @@ impl Node<Name> {
                         )));
                     }
 
-                    return enum_variant_value(def, &self.name, exec_state);
+                    return enum_variant_value(def, binding_experimental, &self.name, exec_state);
                 }
                 Some(EnumPathHead::NonEnumType) => true,
                 None => false,
@@ -3498,14 +3550,14 @@ impl Node<Name> {
                         .memory
                         .get_from_owned(&p.name, items.environment, p.as_source_range(), 0)?
                 }
-                None => match exec_state
-                    .stack()
-                    .get(&format!("{}{}", memory::MODULE_PREFIX, p.name), self.into())
-                {
-                    Ok(value) => value,
-                    Err(_) if non_enum_type => return Err(non_enum_type_in_path(p)),
-                    Err(err) => return Err(err),
-                },
+                None => {
+                    let module_key = format!("{}{}", memory::MODULE_PREFIX, p.name);
+                    match exec_state.stack().get(&module_key, self.into()) {
+                        Ok(value) => value,
+                        Err(_) if non_enum_type => return Err(non_enum_type_in_path(p)),
+                        Err(err) => return Err(exec_state.with_not_yet_added_hint(&[&module_key], err)),
+                    }
+                }
             };
 
             let module_id = match value {

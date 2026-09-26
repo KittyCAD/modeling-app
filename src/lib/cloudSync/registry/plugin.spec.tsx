@@ -16,7 +16,6 @@ import {
   cloudSyncProjectLibraryType,
   getCloudSyncStatusBarPresentation,
 } from '@src/lib/cloudSync/registry/plugin'
-import { OPFS_CLOUD_FEATURE_FLAG } from '@src/lib/constants'
 import { testFileOperations } from '@src/lib/fileSystem/testRuntime'
 import fsZds from '@src/lib/fs-zds'
 import { fsZdsConstants } from '@src/lib/fs-zds/constants'
@@ -363,7 +362,7 @@ function createSettingsService({
 }
 
 function createUserFeaturesService(
-  featureIds: Set<Feature> = new Set([OPFS_CLOUD_FEATURE_FLAG])
+  featureIds: Set<Feature> = new Set()
 ): UserFeaturesRegistryService {
   const context = signal({
     featureIds,
@@ -1026,45 +1025,6 @@ describe('cloud sync project library', () => {
           isDesktop: false,
         })
       ).toEqual([getDefaultCloudProjectLibrarySetting()])
-      expect(
-        personalCloudPolicy?.getDefaultLibraries({
-          initialDefaultDir: '/projects',
-          isDesktop: true,
-        })
-      ).toBeUndefined()
-    } finally {
-      registry[Symbol.dispose]()
-    }
-  })
-
-  test('keeps the cloud project library default gated by feature flag and platform', () => {
-    const registry = new Registry()
-    const userFeaturesExtension = defineRegistryItem({
-      id: 'test-user-features-service',
-      providesServices: [
-        provideService(
-          userFeaturesService,
-          createUserFeaturesService(new Set())
-        ),
-      ],
-    })
-    registry.configure([userFeaturesExtension, cloudSyncProjectLibraryType])
-
-    try {
-      const defaultPolicies = registry.get(
-        projectLibrarySettingDefaultPoliciesValueSpec
-      )
-      const personalCloudPolicy = defaultPolicies.find(
-        (policy) =>
-          policy.id === 'cloud-sync.personal-cloud-library-default-policy'
-      )
-
-      expect(
-        personalCloudPolicy?.getDefaultLibraries({
-          initialDefaultDir: '/projects',
-          isDesktop: false,
-        })
-      ).toBeUndefined()
       expect(
         personalCloudPolicy?.getDefaultLibraries({
           initialDefaultDir: '/projects',

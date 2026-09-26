@@ -1,0 +1,27 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Error from executing stdlib_kcl_error_right_code_path.kcl
+---
+KCL Semantic error
+
+  × semantic: The `polygon` function requires a keyword argument `numSides`
+   ╭─[7:24]
+ 6 │   |> close()
+ 7 │   |> subtract2d(tool = polygon(center = [2, 8], radius = .5), numSides = 3)
+   ·                        ──────────────────┬──────────────────
+   ·                                          ╰── tests/stdlib_kcl_error_right_code_path/input.kcl
+ 8 │   |> subtract2d(tool = polygon(center = [2, 8], radius = .5))
+   ╰────
+  ╰─▶ KCL Semantic error
+      
+        × semantic: The `polygon` function requires a keyword argument
+        │ `numSides`
+         ╭─[7:24]
+       6 │   |> close()
+       7 │   |> subtract2d(tool = polygon(center = [2, 8], radius = .5),
+      numSides = 3)
+         ·                        ──────────────────┬──────────────────
+         ·                                          ╰── tests/
+      stdlib_kcl_error_right_code_path/input.kcl
+       8 │   |> subtract2d(tool = polygon(center = [2, 8], radius = .5))
+         ╰────

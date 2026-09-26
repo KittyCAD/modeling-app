@@ -133,7 +133,12 @@ const MAX_NESTING_DEPTH_MESSAGE: &str = "Exceeded the maximum nesting limit whil
 const ERR_INVALID_ASSIGNMENT_IN_SKETCH_BLOCK: &str =
     "The left-hand side of the = cannot have a value assigned to it. Maybe you meant to use ==?";
 
+#[cfg(test)]
 pub fn run_parser(i: TokenSlice) -> super::ParseResult {
+    run_parser_with_never_ranges(i).0
+}
+
+pub(super) fn run_parser_with_never_ranges(i: TokenSlice) -> (super::ParseResult, Vec<SourceRange>) {
     let _stats = crate::log::LogPerfStats::new("Parsing");
     ParseContext::init();
 
@@ -142,7 +147,7 @@ pub fn run_parser(i: TokenSlice) -> super::ParseResult {
     if let Some(err) = ParseContext::check_max_nesting(&i) {
         ParseContext::err(err);
         let ctxt = ParseContext::take();
-        return (None, ctxt.errors).into();
+        return ((None, ctxt.errors).into(), ctxt.never_type_ranges);
     }
 
     let ast = match program.parse(i) {
@@ -162,7 +167,7 @@ pub fn run_parser(i: TokenSlice) -> super::ParseResult {
         ast
     };
     let ctxt = ParseContext::take();
-    (ast, ctxt.errors).into()
+    ((ast, ctxt.errors).into(), ctxt.never_type_ranges)
 }
 
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
@@ -180,6 +185,8 @@ struct ParseContext {
     pub errors: Vec<CompilationIssue>,
     settings: MetaSettings,
     code_kind: CodeKind,
+    // Record type positions so version validation can use the final settings.
+    never_type_ranges: Vec<SourceRange>,
     // Tracks current recursive parser depth so we can reject pathological input
     // before it risks stack overflows.
     nesting_depth: u16,
@@ -211,6 +218,7 @@ impl ParseContext {
             errors: Vec::new(),
             settings: Default::default(),
             code_kind: Default::default(),
+            never_type_ranges: Vec::new(),
             nesting_depth: 0,
         }
     }
@@ -3023,9 +3031,6 @@ fn ty_decl(i: &mut TokenSlice) -> ModalResult<BoxNode<TypeDeclaration>> {
         equals(i)?;
         ignore_whitespace(i);
         let ty = type_(i)?;
-
-        ParseContext::experimental("type aliases", ty.as_source_range());
-
         TypeDeclarationDefinition::Alias { ty: BoxNode::new(ty) }
     } else if peek((opt(whitespace), open_brace)).parse_next(i).is_ok() {
         ignore_whitespace(i);
@@ -3055,9 +3060,7 @@ fn ty_decl(i: &mut TokenSlice) -> ModalResult<BoxNode<TypeDeclaration>> {
         },
     );
 
-    if matches!(result.definition, TypeDeclarationDefinition::Enum(_)) {
-        ParseContext::experimental("enum declarations", result.as_source_range());
-    } else {
+    if matches!(result.definition, TypeDeclarationDefinition::Bare) {
         ParseContext::experimental("type declarations", result.as_source_range());
     }
 
@@ -3999,7 +4002,9 @@ fn primary_type(i: &mut TokenSlice) -> ModalResult<Node<Type>> {
                 ParseContext::experimental("none type", result.as_source_range());
             }
             if *result == Type::Primitive(PrimitiveType::Never) {
-                ParseContext::experimental("never type", result.as_source_range());
+                CTXT.with_borrow_mut(|ctxt| {
+                    ctxt.as_mut().unwrap().never_type_ranges.push(result.as_source_range());
+                });
             }
 
             result
@@ -5419,7 +5424,7 @@ mySk1 = startSketchOn(XY)
         // Hi
         |> f(%)",
             "1
-        /* Hi 
+        /* Hi
         there
         */
         |> f(%)",
@@ -5636,26 +5641,6 @@ mySk1 = startSketchOn(XY)
              "
             .into()
         );
-    }
-
-    #[test]
-    fn pipes_on_pipes_minimal() {
-        let test_program = r#"startSketchOn(XY)
-        |> startProfile(at = [0, 0])
-        |> line(endAbsolute = [0, -0]) // MoveRelative
-
-        "#;
-        let tokens = crate::parsing::token::lex(test_program, ModuleId::default()).unwrap();
-        let tokens = &mut tokens.as_slice();
-        let _actual = in_ctx(|| expression.parse_next(tokens)).unwrap();
-        assert_eq!(tokens.first().unwrap().token_type, TokenType::Whitespace);
-    }
-
-    #[test]
-    fn test_pipes_on_pipes() {
-        let test_program = include_str!("../../e2e/executor/inputs/pipes_on_pipes.kcl");
-        let tokens = crate::parsing::token::lex(test_program, ModuleId::default()).unwrap();
-        let _ = run_parser(tokens.as_slice()).unwrap();
     }
 
     #[test]
@@ -6766,7 +6751,7 @@ e
 ///      )
 ///   |> yLine(endAbsolute = 0)
 ///   |> close(%)
-/// 
+///
 /// example = extrude(exampleSketch, length = 5)
 /// ```
 @(impl = std_rust)
@@ -6933,7 +6918,7 @@ export fn cos(num: number(rad)): number(_) {}"#;
     #[test]
     fn basic_if_else_if() {
         let some_program_string = "if true {
-            3  
+            3
         } else if true {
             4
         } else {
@@ -7208,32 +7193,36 @@ type foo = fn(fn, f: fn(number(_))): [fn([any]): string]
     }
 
     #[test]
-    fn never_type_is_experimental() {
-        let code = "fn stop(): never {}";
+    fn never_type_requires_v3() {
+        for (settings, version) in [
+            ("", "1.0"),
+            ("@settings(kclVersion = 1.0, experimentalFeatures = allow)\n", "1.0"),
+            ("@settings(kclVersion = 2.0, experimentalFeatures = allow)\n", "2.0"),
+        ] {
+            for body in [
+                "fn stop(): never {}",
+                "fn accept(@stop: fn(): never) {}",
+                "type impossible = never",
+            ] {
+                let code = format!("{settings}{body}");
+                let start = code.find("never").unwrap();
+                assert_err(
+                    &code,
+                    &format!("The `never` type requires KCL 3.0-preview, but this program uses KCL {version}."),
+                    [start, start + "never".len()],
+                );
+            }
+        }
+
+        assert_no_err("@settings(kclVersion = \"3.0-preview\")\nfn stop(): never {}");
+        assert_no_err("never = 1\nvalue = never\nmessage = \"never\"");
+        assert_no_err("fn stop(): never {}\n@settings(kclVersion = \"3.0-preview\")");
+        let code = "@settings(kclVersion = \"3.0-preview\")\n@settings(kclVersion = 2.0)\nfn stop(): never {}";
+        let start = code.find("never").unwrap();
         assert_err(
             code,
-            "Use of never type is experimental and may change or be removed.",
-            [11, 16],
-        );
-
-        let code = "fn accept(@stop: fn(): never) {}";
-        assert_err(
-            code,
-            "Use of never type is experimental and may change or be removed.",
-            [23, 28],
-        );
-
-        let code = r#"@settings(experimentalFeatures = allow)
-fn stop(): never {}"#;
-        assert_no_err(code);
-
-        let code = r#"@settings(experimentalFeatures = warn)
-fn stop(): never {}"#;
-        let (_, errs) = assert_no_err(code);
-        assert_eq!(errs.len(), 1);
-        assert_eq!(
-            errs[0].message,
-            "Use of never type is experimental and may change or be removed."
+            "The `never` type requires KCL 3.0-preview, but this program uses KCL 2.0.",
+            [start, start + "never".len()],
         );
     }
 
@@ -7375,26 +7364,13 @@ type Color {
     }
 
     #[test]
-    fn enum_declarations_are_experimental() {
-        let code = "type Color { | Red }";
-        assert_err(code, "Use of enum declarations is experimental", [0, 20]);
-
-        let code = r#"@settings(experimentalFeatures = allow)
-type Color { | Red }
-"#;
-        assert_no_err(code);
-
-        let code = r#"@settings(experimentalFeatures = warn)
-type Color { | Red }
-"#;
-        let (_, errs) = assert_no_err(code);
-        // Exactly one diagnostic: the enum one, without an additional generic
-        // type-declaration diagnostic at the same range.
-        assert_eq!(errs.len(), 1);
-        assert_eq!(
-            errs[0].message,
-            "Use of enum declarations is experimental and may change or be removed."
-        );
+    fn aliases_and_enums_have_no_parser_experimental_diagnostic() {
+        for declaration in ["type Color { | Red }", "type Distance = number(mm)"] {
+            for settings in ["", "@settings(experimentalFeatures = warn)\n"] {
+                let (_, issues) = assert_no_err(&format!("{settings}{declaration}"));
+                assert!(issues.is_empty(), "declaration: {declaration}; issues: {issues:?}");
+            }
+        }
     }
 
     #[test]

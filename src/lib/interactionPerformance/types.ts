@@ -9,6 +9,7 @@ export interface InteractionSample {
   sequence: number
   id: string | null
   targetTag: string
+  /** Pointerdown timestamp, or the activation click when no pointerdown was captured. */
   startTime: number
   renderOpportunityMs: number | null
   outcomeMs: number | null
@@ -32,5 +33,6 @@ export interface InteractionSnapshot {
 }
 
 export interface InteractionDefinition extends InteractionDescription {
+  matchesTarget: (target: Element) => boolean
   isReady: (document: Document) => boolean
 }
