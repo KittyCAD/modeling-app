@@ -123,6 +123,7 @@ export async function routeCloudProjects(
   options: {
     remoteProjects: CloudProject[]
     listedProjects?: CloudProject[]
+    listPageSize?: number
     remoteArchives?: Map<string, Buffer>
     remoteListGate?: RemoteListGate
     brokenArchiveProjectIds?: Iterable<string>
@@ -169,13 +170,23 @@ export async function routeCloudProjects(
     if (pathname === '/user/projects' && request.method() === 'GET') {
       await remoteListGate.wait()
       calls.remoteListResponses += 1
+      const projects = listedProjects.map((project) =>
+        cloudProjectResponse(project)
+      )
+      const start = Number(url.searchParams.get('page_token') ?? 0)
+      const end = start + (options.listPageSize ?? projects.length)
+      const body =
+        options.listPageSize === undefined
+          ? projects
+          : {
+              items: projects.slice(start, end),
+              next_page: end < projects.length ? String(end) : null,
+            }
       await route
         .fulfill({
           status: 200,
           contentType: 'application/json',
-          body: JSON.stringify(
-            listedProjects.map((project) => cloudProjectResponse(project))
-          ),
+          body: JSON.stringify(body),
         })
         .catch(() => undefined)
       return
