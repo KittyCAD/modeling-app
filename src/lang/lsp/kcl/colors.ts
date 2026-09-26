@@ -283,7 +283,11 @@ export const makeColorPicker = (options: IFactoryOptions) =>
       }
 
       update(update: ViewUpdate) {
-        if (update.docChanged || update.viewportChanged) {
+        if (
+          update.docChanged ||
+          update.viewportChanged ||
+          syntaxTree(update.startState) !== syntaxTree(update.state)
+        ) {
           this.decorations = colorPickersDecorations(
             update.view,
             options.discoverColors
