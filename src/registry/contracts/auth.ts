@@ -8,7 +8,37 @@ import {
 import type { ReadonlySignal } from '@preact/signals-core'
 import type { SessionExpiredNotice } from '@src/lib/sessionExpired'
 import type { authMachine } from '@src/machines/authMachine'
+import {
+  defineAppNavigationIntent,
+  type AppNavigationIntent,
+} from '@src/registry/contracts/appNavigation'
 import type { ActorRefFrom, SnapshotFrom } from 'xstate'
+
+/** Why the application is entering its auth-owned sign-in destination. */
+export type StartSignInRequest =
+  | { reason: 'logged-out' }
+  | { reason: 'session-expired' }
+  | { reason: 'user'; environment?: string }
+
+/**
+ * Enter the auth-owned sign-in flow.
+ *
+ * Auth contributes the handler; appNavigation only dispatches the typed intent.
+ */
+export const startSignInIntent: AppNavigationIntent<
+  StartSignInRequest,
+  undefined
+> = defineAppNavigationIntent('auth.start-sign-in')
+
+/** Desktop device-flow state displayed by the sign-in destination. */
+export type DesktopSignInState =
+  | { status: 'idle' }
+  | { status: 'authorizing' }
+  | {
+      status: 'verification'
+      userCode: string
+      verificationUri: string
+    }
 
 /**
  * Registry contribution called when auth detects an expired session.
@@ -29,6 +59,8 @@ export type AuthRegistryService = {
   isLoggedIn: ReadonlySignal<boolean>
   sessionExpiredNotice: ReadonlySignal<SessionExpiredNotice | undefined>
   clearSessionExpiredNotice: () => void
+  desktopSignInState: ReadonlySignal<DesktopSignInState>
+  cancelDesktopSignIn: () => Promise<void>
   useAuthState: () => SnapshotFrom<typeof authMachine>
   useToken: () => string
   useUser: () => UserResponse | undefined
