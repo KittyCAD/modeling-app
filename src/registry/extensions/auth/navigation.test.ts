@@ -1,4 +1,4 @@
-import type { RouterRegistryService } from '@src/registry/contracts/router'
+import type { AppUrlService } from '@src/registry/contracts/appUrl'
 import { createStartSignInIntentContribution } from './navigation'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -21,8 +21,7 @@ function contribution({
   mobile?: boolean
 } = {}) {
   return createStartSignInIntentContribution({
-    getRouter: () =>
-      ({ navigate, getLocation }) as unknown as RouterRegistryService,
+    getAppUrl: () => ({ navigate, getLocation }) as unknown as AppUrlService,
     startDesktopSignIn,
     isDesktop: () => desktop,
     isMobile: () => mobile,
