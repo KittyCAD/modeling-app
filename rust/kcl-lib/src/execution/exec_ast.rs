@@ -80,6 +80,7 @@ use crate::execution::sketch_solve::UnsatisfiedDirectionalConstraint;
 use crate::execution::sketch_solve::create_segment_scene_objects;
 use crate::execution::sketch_solve::normalize_to_solver_angle_unit;
 use crate::execution::sketch_solve::normalize_to_solver_distance_unit;
+use crate::execution::sketch_solve::solver_convergence_tolerance;
 use crate::execution::sketch_solve::solver_numeric_type;
 use crate::execution::sketch_solve::substitute_sketch_var_in_segment;
 use crate::execution::sketch_solve::substitute_sketch_vars;
@@ -141,7 +142,6 @@ use crate::std::args::FromKclValue;
 use crate::std::args::TyF64;
 use crate::std::shapes::SketchOrSurface;
 use crate::std::sketch::ensure_sketch_plane_in_engine;
-use crate::std::solver::SOLVER_CONVERGENCE_TOLERANCE;
 use crate::std::solver::create_segments_in_engine;
 use crate::std::utils::intersect_lines_2d;
 use crate::std::utils::normalize_rad;
@@ -3015,7 +3015,7 @@ impl Node<SketchBlock> {
         // Solve constraints.
         let config = ezpz::Config::default()
             .with_max_iterations(50)
-            .with_convergence_tolerance(SOLVER_CONVERGENCE_TOLERANCE);
+            .with_convergence_tolerance(solver_convergence_tolerance(exec_state));
         let solve_result = if exec_state.mod_local.freedom_analysis {
             ezpz::solve_analysis(&constraints, initial_guesses.clone(), config).map(|outcome| {
                 let freedom_analysis = FreedomAnalysis::from_ezpz_analysis(outcome.analysis, constraints.len());

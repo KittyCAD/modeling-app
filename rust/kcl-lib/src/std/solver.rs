@@ -41,7 +41,10 @@ use crate::std::utils::untype_point;
 use crate::std::utils::untyped_point_to_mm;
 use crate::std_utils::untyped_point_to_unit;
 
+/// Unitless convergence tolerance used for KCL 2 sketch solving.
 pub const SOLVER_CONVERGENCE_TOLERANCE: f64 = 1e-8;
+/// Physical point-point coincidence tolerance for KCL 3, in millimeters.
+pub(crate) const POINT_POINT_2D_COINCIDENT_TOLERANCE_MM: f64 = 1e-8;
 const CONTROL_POINT_SPLINE_SAMPLES_PER_SPAN: usize = 24;
 
 fn build_open_uniform_knot_vector(control_count: usize, degree: usize) -> Vec<f64> {

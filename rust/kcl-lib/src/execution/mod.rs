@@ -1926,6 +1926,17 @@ impl ExecutorContext {
             .map(|_| ())
     }
 
+    fn default_tolerance_command(exec_state: &ExecState) -> Option<ModelingCmd> {
+        exec_state.entry_point_version_is_v3_or_higher().then(|| {
+            let tolerance = kcmc::shared::Tolerance::builder()
+                .point_point_2d_coincident(kcmc::length_unit::LengthUnit(
+                    crate::std::solver::POINT_POINT_2D_COINCIDENT_TOLERANCE_MM,
+                ))
+                .build();
+            ModelingCmd::from(mcmd::SetDefaultSystemProperties::builder().tolerance(tolerance).build())
+        })
+    }
+
     async fn run_concurrent_inner(
         &self,
         program: &crate::Program,
@@ -1939,6 +1950,13 @@ impl ExecutorContext {
         exec_state
             .set_entry_point_kcl_version(program)
             .map_err(KclErrorWithOutputs::no_outputs)?;
+
+        // Apply the physical tolerance before imported modules send geometry commands.
+        if let Some(cmd) = Self::default_tolerance_command(exec_state) {
+            self.send_execution_boundary(cmd)
+                .await
+                .map_err(KclErrorWithOutputs::no_outputs)?;
+        }
 
         // Reuse our cached universe if we have one.
 
@@ -5401,6 +5419,34 @@ startSketchOn(XY)
                 result.exec_state.entry_point_version_is_v3_or_higher(),
                 expected == Some(KclVersion::V3Preview),
                 "code={code}"
+            );
+        }
+    }
+
+    #[tokio::test]
+    async fn default_tolerance_command_is_sent_only_for_kcl_3() {
+        let ctx = ExecutorContext::new_mock(None).await;
+        let mut exec_state = ExecState::new(&ctx);
+
+        for version in [None, Some(KclVersion::V1), Some(KclVersion::V2)] {
+            exec_state.global.entry_point_kcl_version = version;
+            assert!(ExecutorContext::default_tolerance_command(&exec_state).is_none());
+        }
+
+        exec_state.global.entry_point_kcl_version = Some(KclVersion::V3Preview);
+        for unit in [kcl_api::UnitLength::Millimeters, kcl_api::UnitLength::Inches] {
+            exec_state.mod_local.settings.default_length_units = unit;
+            let Some(ModelingCmd::SetDefaultSystemProperties(properties)) =
+                ExecutorContext::default_tolerance_command(&exec_state)
+            else {
+                panic!("expected KCL 3 default system properties command");
+            };
+            let tolerance = properties.tolerance.expect("expected KCL 3 tolerance");
+            approx::assert_relative_eq!(
+                tolerance.point_point_2d_coincident.0,
+                1e-8,
+                epsilon = 0.0,
+                max_relative = 1e-12
             );
         }
     }
