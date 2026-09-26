@@ -50,7 +50,7 @@ export function absDistanceInfo({
   const _nodes = selectionRanges.graphSelections.map(({ codeRef }) => {
     const tmp = getNodeFromPath<Expr>(
       kclManager.ast,
-      codeRef.pathToNode,
+      codeRef?.pathToNode ?? [],
       wasmInstance,
       ['CallExpressionKw']
     )

@@ -371,6 +371,20 @@ export class ToolbarFixture {
       .nth(operationIndex)
   }
 
+  async openFeatureTreeOperationContextMenu(
+    operationName: string,
+    operationIndex: number
+  ) {
+    const operationButton = await this.getFeatureTreeOperation(
+      operationName,
+      operationIndex
+    )
+    const operationRow = operationButton.locator(
+      'xpath=ancestor::*[@data-testid="feature-tree-operation-item"][1]'
+    )
+    await operationRow.click({ button: 'right' })
+  }
+
   /**
    * Get a specific sketch solve group caret button from the Feature Tree pane.
    * Index is 0-based.

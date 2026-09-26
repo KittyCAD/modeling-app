@@ -50,7 +50,6 @@ test.describe(
       }
 
       const code = `@settings(defaultLengthUnit = in, kclVersion = "3.0-preview")sketch001 = sketch(on = ${plane}) {}`
-
       await test.step(`Sketch on the ${plane} plane using custom camera commands to orient`, async () => {
         await u.openDebugPanel()
         await u.clearCommandLogs()

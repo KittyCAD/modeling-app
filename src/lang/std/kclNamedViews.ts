@@ -217,6 +217,8 @@ function engineIdForSweep(
     case 'revolve':
     case 'revolveAboutEdge':
     case 'sweep': {
+      if (!sweep.pathId) return sweep.id
+
       const basePath = artifactGraph.get(sweep.pathId)
       const pathPointsBack =
         basePath?.type === 'path' && basePath.sweepId === sweep.id

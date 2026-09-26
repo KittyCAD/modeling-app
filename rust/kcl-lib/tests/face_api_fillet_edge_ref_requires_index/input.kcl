@@ -1,0 +1,51 @@
+@settings(defaultLengthUnit = mm, kclVersion = 2.0, experimentalFeatures = allow)
+
+sketch001 = sketch(on = -XZ) {
+  circle1 = circle(start = [var 5.65mm, var 5.03mm], center = [var 3.75mm, var 3.53mm])
+}
+hidden001 = hide(sketch001)
+region001 = region(segments = [sketch001.circle1])
+extrude001 = extrude(region001, length = 5)
+sketch002 = sketch(on = YZ) {
+  line1 = line(start = [var 0.53mm, var -1.43mm], end = [var 2.31mm, var 3.36mm])
+  line2 = line(start = [var 2.31mm, var 3.36mm], end = [var 5.04mm, var -2.99mm])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 5.04mm, var -2.99mm], end = [var 0.53mm, var -1.43mm])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line1.start])
+}
+hidden002 = hide(sketch002)
+region002 = region(segments = [sketch002.line1, sketch002.line2], direction = CW)
+extrude002 = extrude(region002, length = -20)
+solid001 = intersect([extrude002, extrude001])
+sketch003 = sketch(on = -XZ) {
+  line1 = line(start = [var 1.32mm, var 3.62mm], end = [var 3.47mm, var 3.7mm])
+  line2 = line(start = [var 3.85mm, var 3.56mm], end = [var 5.7mm, var 3.53mm])
+  arc1 = arc(start = [var 4.04mm, var 3.56mm], end = [var 5.39mm, var 3.54mm], center = [var 4.72mm, var 3.82mm])
+  coincident([arc1.start, line2])
+  coincident([arc1.end, line2])
+  arc2 = arc(start = [var 1.67mm, var 3.63mm], end = [var 3.18mm, var 3.69mm], center = [var 2.42mm, var 3.83mm])
+  coincident([arc2.start, line1])
+  coincident([arc2.end, line1])
+}
+
+region003 = region(segments = [sketch003.arc1, sketch003.line2])
+extrude003 = extrude(region003, length = 5)
+hidden003 = hide(sketch003)
+solid002 = subtract(solid001, tools = extrude003)
+
+fillet001 = fillet(
+  solid002,
+  version = 2,
+  edges = [
+    {
+      sideFaces = [
+        region002.tags.line1,
+        region002.tags.line2
+      ],
+      index = 1
+    }
+  ],
+  radius = 0.05,
+)
+rotate(solid002, yaw = -50deg)

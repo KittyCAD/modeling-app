@@ -432,6 +432,7 @@ export const createLabeledArg = (label: string, arg: Expr): LabeledArg => {
   return { label: createIdentifier(label), arg, type: 'LabeledArg' }
 }
 
+/** Creates a member expression object.propertyName (e.g. base.tags or bs.tags.edge7 when chained). */
 export function createMemberExpression(
   parent: string | Expr,
   property: string | Expr,
@@ -445,6 +446,7 @@ export function createMemberExpression(
     outerAttrs: [],
     preComments: [],
     commentStart: 0,
+
     object: typeof parent === 'string' ? createLocalName(parent) : parent,
     property:
       typeof property === 'string' ? createLocalName(property) : property,

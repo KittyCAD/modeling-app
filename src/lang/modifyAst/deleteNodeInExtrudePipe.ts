@@ -24,5 +24,7 @@ export function deleteNodeInExtrudePipe(
     return new Error("Couldn't find node to delete in looked up extrusion")
   }
 
-  lookup.variableDeclarator.init.body.splice(node[pipeIndex][0], 1)
+  // Every later pipe operation consumes the selected operation's result, so
+  // deleting from the middle must also remove the dependent tail.
+  lookup.variableDeclarator.init.body.splice(node[pipeIndex][0])
 }

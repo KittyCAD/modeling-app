@@ -213,6 +213,7 @@ pub enum EdgeRefactorStdlibFn {
     GetPreviousAdjacentEdge,
     GetCommonEdge,
     EdgeId,
+    DirectEdgeTag,
 }
 
 /// Metadata collected when a deprecated edge stdlib function runs, for refactor-to-edgeRefs lint/code mod.
@@ -1241,9 +1242,6 @@ impl ExecState {
         edge_id: Uuid,
         argument_source_range: SourceRange,
     ) -> Option<PendingEdgeRefactorMeta> {
-        if !crate::runtime_flags::z0006_refactor_metadata_enabled() {
-            return None;
-        }
         if let Some(pending) = self
             .mod_local
             .artifacts

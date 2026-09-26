@@ -31,6 +31,7 @@
 import { join } from 'path'
 import type { KclManager } from '@src/lang/KclManager'
 import {
+  findBoundedEdgeCallsToFix,
   findExtrudeEdgeCallsToFix,
   findExtrudeToCallsToFix,
   findGdtDistanceEndpointCallsToFix,
@@ -504,6 +505,12 @@ gdt001 = gdt::distance(
 )
 `
 
+const KCL_GET_BOUNDED_EDGE_GET_COMMON_EDGE = `bounded001 = getBoundedEdge(
+  surface001,
+  edge = getCommonEdge(faces = [face1, face2]),
+)
+`
+
 const KCL_SKETCH_BLOCK_REGION_GET_OPPOSITE_EDGE = `@settings(kclVersion = 2.0)
 
 profile = sketch(on = XY) {
@@ -551,8 +558,12 @@ filleted = fillet(
   edges = [
     {
       sideFaces = [
-        baseRegion.tags.edge1,
-        capEnd001
+        body.faces.capEnd001,
+        baseRegion.tags.edge1
+      ],
+      endFaces = [
+        baseRegion.tags.edge4,
+        baseRegion.tags.edge2
       ]
     }
   ],
@@ -698,11 +709,15 @@ myExtrude = extrude(
   tagEnd = $endCap,
   tagStart = $startCap,
 )
+yodawg = getCommonEdge(faces = [
+  baseRegion.tags.hi,
+  baseRegion.tags.yoyo
+])
 
 cutSketch = sketch(on = YZ) {
-  cut1 = line(start = [-3.29, 4.75], end = [2.03, 2.44])
-  cut2 = line(start = [2.03, 2.44], end = [-3.49, 0.31])
-  cut3 = line(start = [-3.49, 0.31], end = [-3.29, 4.75])
+  myDisambigutator = line(start = [-3.29, 4.75], end = [2.03, 2.44])
+  myDisambigutator2 = line(start = [2.03, 2.44], end = [-3.49, 0.31])
+  line3 = line(start = [-3.49, 0.31], end = [-3.29, 4.75])
 }
 
 cutRegion = region(point = [-1.5833333333, 2.5], sketch = cutSketch)
@@ -728,11 +743,15 @@ myExtrude = extrude(
   tagEnd = $endCap,
   tagStart = $startCap,
 )
+yodawg = getCommonEdge(faces = [
+  baseRegion.tags.hi,
+  baseRegion.tags.yoyo
+])
 
 cutSketch = sketch(on = YZ) {
-  cut1 = line(start = [-3.29, 4.75], end = [2.03, 2.44])
-  cut2 = line(start = [2.03, 2.44], end = [-3.49, 0.31])
-  cut3 = line(start = [-3.49, 0.31], end = [-3.29, 4.75])
+  myDisambigutator = line(start = [-3.29, 4.75], end = [2.03, 2.44])
+  myDisambigutator2 = line(start = [2.03, 2.44], end = [-3.49, 0.31])
+  line3 = line(start = [-3.49, 0.31], end = [-3.29, 4.75])
 }
 
 cutRegion = region(point = [-1.5833333333, 2.5], sketch = cutSketch)
@@ -847,18 +866,6 @@ const KCL_DIRECT_TAG_FILLET = `body = startSketchOn(XY)
   |> close()
   |> extrude(length = 5, tagStart = $capStart001)
   |> fillet(radius = 1, tags = [e1])
-`
-
-/** Tags and edges both present: auto-convert should be available and should merge into one edges array. */
-const KCL_TAGS_AND_EDGE_REFS = `body = startSketchOn(XY)
-  |> startProfile(at = [0, 0])
-  |> line(endAbsolute = [10, 0], tag = $e1)
-  |> line(endAbsolute = [10, 10])
-  |> line(endAbsolute = [0, 10])
-  |> line(endAbsolute = [0, 0])
-  |> close()
-  |> extrude(length = 5, tagStart = $capStart001)
-  |> fillet(radius = 1, tags = [e1], edges = [{ sideFaces = [e1, capStart001] }])
 `
 
 /** Mixed direct tag + stdlib in same tags array: both should be converted to edgeRefs (two entries). */
@@ -987,6 +994,122 @@ describe('refactorZ0006Unified', () => {
   })
 
   describe('unit (no engine)', () => {
+    describe.each([
+      ['fillet', 'fillet(solid001, radius = 0.1, tags = [EDGE])'],
+      ['chamfer', 'chamfer(solid001, length = 0.1, tags = [EDGE])'],
+      [
+        'helix',
+        'helix(axis = EDGE, radius = 1mm, length = 5mm, revolutions = 2)',
+      ],
+      ['revolve', 'revolve(baseRegion, axis = EDGE, angle = 90deg)'],
+      ['mirror3d', 'mirror3d(solid001, across = EDGE)'],
+      ['GD&T edges', 'gdt::straightness(edges = [EDGE], tolerance = 0.1mm)'],
+      [
+        'GD&T from',
+        'gdt::distance(from = EDGE, to = [0, 0, 0], tolerance = 0.1mm)',
+      ],
+      [
+        'GD&T to',
+        'gdt::distance(from = [0, 0, 0], to = EDGE, tolerance = 0.1mm)',
+      ],
+      ['getBoundedEdge', 'getBoundedEdge(solid001, edge = EDGE)'],
+      ['extrude target', 'extrude(EDGE, length = 5mm, bodyType = SURFACE)'],
+      ['extrude to', 'extrude(baseRegion, to = EDGE)'],
+      [
+        'extrude direction',
+        'extrude(baseRegion, direction = EDGE, length = 5mm)',
+      ],
+    ])('%s split-edge migration', (operation, call) => {
+      const selections =
+        operation === 'getBoundedEdge'
+          ? ['inline']
+          : operation === 'mirror3d'
+            ? ['inline', 'variable', 'direct tag']
+            : ['inline', 'variable']
+      it.each(selections)(
+        'preserves endFaces for %s selection',
+        (selection) => {
+          const edge =
+            selection === 'variable'
+              ? 'yo'
+              : selection === 'direct tag'
+                ? 'myExtrude.sketch.tags.yoyo'
+                : 'edgeId(solid001, index = 5)'
+          const sample =
+            selection === 'variable'
+              ? KCL_SKETCH_BLOCK_EDGE_ID_VARIABLE
+              : KCL_SKETCH_BLOCK_EDGE_ID_INLINE
+          const code = `@settings(defaultLengthUnit = mm, kclVersion = 2.0)\n${sample.slice(0, sample.lastIndexOf('\nfillet('))}
+${call.replace('EDGE', edge)}
+`
+          const ast = assertParse(code, wasmInstance)
+          const [start, end] = sourceRangeForCall(ast, 'extrude')
+          const graph = defaultArtifactGraph()
+          for (const [name, snippet] of [
+            ['hi', 'line(start = [7, 12], end = [startX, 0])'],
+            ['yoyo', 'line(start = [startX, 0], end = [7, 6])'],
+          ]) {
+            for (const [id, artifact] of createTaggedWallAndCapGraph(
+              ast,
+              code,
+              {
+                segmentId: `segment-${name}`,
+                wallId: `wall-${name}`,
+                capId: 'cap-end',
+                pathId: `path-${name}`,
+                sweepId: `sweep-${name}`,
+                segmentSnippet: snippet,
+                extrudeSnippet: code.slice(start, end),
+              }
+            )) {
+              if (artifact.type === 'segment') {
+                const originalSegId = `original-${id}`
+                graph.set(originalSegId, { ...artifact, id: originalSegId })
+                artifact.originalSegId = originalSegId
+              }
+              if (artifact.type === 'path' || artifact.type === 'segment') {
+                if (artifact.type === 'path') artifact.subType = 'region'
+                artifact.codeRef = {
+                  ...codeRefFromRange(sourceRangeForCall(ast, 'region'), ast),
+                  nodePath: { steps: [] },
+                }
+              }
+              graph.set(id, artifact)
+            }
+          }
+          // The notch leaves two edges with the same side faces. Preserve the
+          // end face so editing cannot expand one selected edge into both.
+          const metadata: EdgeRefactorMeta[] = [
+            {
+              edgeId: 'split-edge',
+              sourceRange:
+                selection === 'direct tag'
+                  ? sourceRangeForSnippet(code, edge)
+                  : sourceRangeForCall(ast, 'edgeId'),
+              faceIds: facePair('wall-hi', 'wall-yoyo'),
+              endFaceIds: ['cap-end'],
+              stdlibFn: selection === 'direct tag' ? 'directEdgeTag' : 'edgeId',
+            },
+          ]
+          const result = refactorZ0006Unified(
+            ast,
+            metadata,
+            [],
+            graph,
+            wasmInstance
+          )
+          if (err(result)) throw result
+          expect(result.replace(/\s/g, '')).toContain(
+            'sideFaces=[baseRegion.tags.hi,baseRegion.tags.yoyo],endFaces=[endCap]'
+          )
+          expect(norm(result)).not.toContain('tags = [')
+          expect(
+            sourceRangesForCalls(assertParse(result, wasmInstance), 'edgeId')
+          ).toHaveLength(selection === 'variable' ? 1 : 0)
+        }
+      )
+    })
+
     it('returns Error when edgeRefactorMetadata is empty', () => {
       const code =
         'body = startSketchOn(XY)\n  |> extrude(length = 1)\n  |> fillet(radius = 0.1, tags = [getOppositeEdge(e1)])'
@@ -1155,23 +1278,24 @@ describe('refactorZ0006Unified', () => {
       expect(findExtrudeEdgeCallsToFix(ast, metadata)).toEqual([])
     })
 
-    it('finds a direct tagged-edge extrude target from the artifact graph', () => {
+    it('finds a direct tagged-edge extrude target from execution metadata', () => {
       const ast = assertParse(KCL_EXTRUDE_TARGET_DIRECT_TAG, wasmInstance)
-      const graph = createTaggedWallAndCapGraph(
-        ast,
-        KCL_EXTRUDE_TARGET_DIRECT_TAG,
+      const metadata: EdgeRefactorMeta[] = [
         {
-          segmentId: 'segment-1',
-          wallId: 'wall-1',
-          capId: 'cap-1',
-          pathId: 'path-1',
-          sweepId: 'sweep-1',
-          segmentSnippet:
-            'line1 = line(start = [-6.36mm, -3.01mm], end = [3.61mm, 6.24mm])',
-          extrudeSnippet: 'extrude(region001, length = 5mm)',
-        }
-      )
-      const callsToFix = findExtrudeEdgeCallsToFix(ast, [], graph, wasmInstance)
+          edgeId: '00000000-0000-0000-0000-000000000000',
+          sourceRange: sourceRangeForSnippet(
+            KCL_EXTRUDE_TARGET_DIRECT_TAG,
+            'extrude001.sketch.tags.line1'
+          ),
+          faceIds: facePair(
+            '00000000-0000-0000-0000-000000000001',
+            '00000000-0000-0000-0000-000000000002'
+          ),
+          endFaceIds: [],
+          stdlibFn: 'directEdgeTag',
+        },
+      ]
+      const callsToFix = findExtrudeEdgeCallsToFix(ast, metadata)
       expect(callsToFix).toHaveLength(1)
       expect(callsToFix[0]?.replacements.map((item) => item.argument)).toEqual([
         'target',
@@ -1196,7 +1320,7 @@ describe('refactorZ0006Unified', () => {
       ]
       const toFix = findRevolveHelixCallsToFix(ast, metadata)
       expect(toFix.length).toBeGreaterThanOrEqual(1)
-      expect(toFix[0]?.faceIds).toHaveLength(2)
+      expect(toFix[0]?.payload.side_faces).toHaveLength(2)
       expect(toFix[0]?.pathToCall?.length ?? 0).toBeGreaterThan(0)
     })
 
@@ -1257,6 +1381,30 @@ describe('refactorZ0006Unified', () => {
         'from',
         'to',
       ])
+      expect(toFix[0]?.pathToCall?.length ?? 0).toBeGreaterThan(0)
+    })
+
+    it('finds getBoundedEdge edge calls with deprecated stdlib for Z0006 refactor', () => {
+      const ast = assertParse(
+        KCL_GET_BOUNDED_EDGE_GET_COMMON_EDGE,
+        wasmInstance
+      )
+      const metadata: EdgeRefactorMeta[] = [
+        {
+          edgeId: '00000000-0000-0000-0000-000000000000',
+          sourceRange: sourceRangeForCall(ast, 'getCommonEdge'),
+          faceIds: facePair(
+            '00000000-0000-0000-0000-000000000001',
+            '00000000-0000-0000-0000-000000000002'
+          ),
+          stdlibFn: 'getCommonEdge',
+        },
+      ]
+
+      const toFix = findBoundedEdgeCallsToFix(ast, metadata)
+
+      expect(toFix).toHaveLength(1)
+      expect(toFix[0]?.payload.side_faces).toHaveLength(2)
       expect(toFix[0]?.pathToCall?.length ?? 0).toBeGreaterThan(0)
     })
 
@@ -1615,9 +1763,6 @@ part = bracket()
           webrtc: false,
           pool: 'cpu',
         })
-      instance.set_kcl_runtime_flags(
-        JSON.stringify({ enable_z0006_lint: 'On' })
-      )
       instanceInThisFile = instance
       kclManagerInThisFile = kclManager
       engineCommandManagerInThisFile = engineCommandManager
@@ -1654,8 +1799,11 @@ part = bracket()
         kcl: SAMPLE_KCL,
         expected: [
           'extrude(length = 5, tagEnd = $capEnd001)',
-          'fillet(radius = 1, edges = [',
-          'sideFaces = [e1, capEnd001]',
+          'fillet(',
+          'radius = 1',
+          'edges = [',
+          'sideFaces = [capEnd001, e1]',
+          'endFaces = [seg01, seg02]',
         ],
       },
       {
@@ -1665,18 +1813,18 @@ part = bracket()
           'extrude(length = 5, tagEnd = $capEnd001)',
           'fillet(',
           'edges = [',
-          'sideFaces = [e1, capEnd001]',
+          'sideFaces = [capEnd001, e1]',
         ],
       },
       {
         name: 'refactors getNextAdjacentEdge in fillet to edgeRefs with tag names not UUIDs',
         kcl: KCL_GET_NEXT_ADJACENT_EDGE,
-        expected: ['fillet(', 'edges = [', 'sideFaces = [e1, seg01]'],
+        expected: ['fillet(', 'edges = [', 'sideFaces = [seg01, e1]'],
       },
       {
         name: 'refactors getPreviousAdjacentEdge in fillet to edgeRefs with tag names not UUIDs',
         kcl: KCL_GET_PREVIOUS_ADJACENT_EDGE,
-        expected: ['fillet(', 'edges = [', 'sideFaces = [e1, seg01]'],
+        expected: ['fillet(', 'edges = [', 'sideFaces = [seg01, e1]'],
       },
       {
         name: 'refactors getCommonEdge in fillet to edgeRefs with tag names (e1, cap1) not UUIDs',
@@ -1724,7 +1872,9 @@ part = bracket()
         expect(err(refactored)).toBe(false)
         if (err(refactored)) throw refactored
         const n = norm(refactored)
-        expect(n).toContain('to = { sideFaces = [facetag0, facetag1] }')
+        expect(n).toContain(
+          'to = { sideFaces = [facetag0, facetag1], endFaces = [capStart001, capEnd001] }'
+        )
         expect(n).not.toContain('getCommonEdge(faces = [facetag0, facetag1])')
       }
     )
@@ -1776,11 +1926,14 @@ surface001 = extrude(
         const refactoredAst = assertParse(refactored, instanceInThisFile)
         await kclManagerInThisFile.executeAst({ ast: refactoredAst })
         expect(kclManagerInThisFile.errors).toEqual([])
-        expect(
-          [...kclManagerInThisFile.execState.artifactGraph.values()].filter(
-            (artifact) => artifact.type === 'sweep' && !artifact.consumed
-          )
-        ).toHaveLength(1)
+        const sweeps = [
+          ...kclManagerInThisFile.execState.artifactGraph.values(),
+        ].filter(
+          (artifact): artifact is Extract<Artifact, { type: 'sweep' }> =>
+            artifact.type === 'sweep' && !artifact.consumed
+        )
+        expect(sweeps).toHaveLength(2)
+        expect(sweeps.filter((sweep) => sweep.pathId)).toHaveLength(1)
       }
     )
 
@@ -1939,7 +2092,9 @@ surface001 = extrude(
         expect(err(refactored)).toBe(false)
         if (err(refactored)) throw refactored
         const n = norm(refactored)
-        expect(n).toContain('to = { sideFaces = [facetag0, facetag1] }')
+        expect(n).toContain(
+          'to = { sideFaces = [facetag0, facetag1], endFaces = [capStart001, capEnd001] }'
+        )
         expect(n).not.toContain('to = targetEdge')
       }
     )
@@ -2052,9 +2207,10 @@ surface001 = extrude(
         expect(n).toContain('fillet(')
         expect(n).toContain('radius = 0.1')
         expect(n).toContain('edges = [')
-        expect(n).toContain('sideFaces = [ baseRegion.tags.')
-        expect(n).toContain('endFaces = [')
-        expect(n).toMatch(/endFaces = \[\s*(?:startCap|cutRegion\.tags\.)/)
+        expect(n).toContain(
+          'sideFaces = [ baseRegion.tags.line2, baseRegion.tags.yoyo ]'
+        )
+        expect(n).toContain('endFaces = [startCap, cutRegion.tags.line3]')
         expect(n).not.toContain(removed)
       })
     }
@@ -2069,7 +2225,7 @@ surface001 = extrude(
         expect(n).toContain('extrude(length = 5, tagEnd = $capEnd001)')
         expect(n).toContain('fillet(')
         expect(n).toContain('edges = [')
-        expect(n).toContain('sideFaces = [e1, capEnd001]')
+        expect(n).toContain('sideFaces = [capEnd001, e1]')
         expect(n).toContain('sideFaces = [e2, capEnd001]')
       }
     )
@@ -2205,12 +2361,12 @@ surface001 = extrude(
         }
         expect(n).toContain('axis')
         expect(n).not.toContain('axis = getOppositeEdge')
-        // Assert full revolve line after successful refactor: axis = { sideFaces = [seg02, capEnd001] } (order may vary)
+        // Assert the axis keeps both side faces and the two end faces (side-face order may vary).
         const revolveLineWithAxis =
-          /revolve001\s*=\s*revolve\s*\(\s*profile001\s*,\s*angle\s*=\s*360deg\s*,\s*axis\s*=\s*\{\s*sideFaces\s*=\s*\[\s*(?:seg02\s*,\s*capEnd001|capEnd001\s*,\s*seg02)\s*\]\s*\}\s*\)/
+          /revolve001\s*=\s*revolve\s*\(\s*profile001\s*,\s*angle\s*=\s*360deg\s*,\s*axis\s*=\s*\{\s*sideFaces\s*=\s*\[\s*(?:seg02\s*,\s*capEnd001|capEnd001\s*,\s*seg02)\s*\],\s*endFaces\s*=\s*\[\s*\w+\s*,\s*\w+\s*,?\s*\]\s*,?\s*\}\s*,?\s*\)/
         expect(
           n,
-          'Refactored code should contain revolve line with axis and sideFaces = [seg02, capEnd001] (or [capEnd001, seg02])'
+          'Refactored revolve axis should contain sideFaces = [seg02, capEnd001] (either order) and two endFaces'
         ).toMatch(revolveLineWithAxis)
       }
     )
@@ -2372,16 +2528,20 @@ surface001 = extrude(
        radius = radius,
        edges = [
          {
-           sideFaces = [bs.tags.edge6, bs.tags.edge7]
+           sideFaces = [bs.tags.edge7, bs.tags.edge6],
+           endFaces = [capEnd001, capStart001]
          },
          {
-           sideFaces = [bs.tags.edge1, bs.tags.edge2]
+           sideFaces = [bs.tags.edge1, bs.tags.edge2],
+           endFaces = [capEnd001, capStart001]
          },
          {
-           sideFaces = [bs.tags.edge2, bs.tags.edge3]
+           sideFaces = [bs.tags.edge2, bs.tags.edge3],
+           endFaces = [capEnd001, capStart001]
          },
          {
-           sideFaces = [bs.tags.edge5, bs.tags.edge6]
+           sideFaces = [bs.tags.edge5, bs.tags.edge6],
+           endFaces = [capEnd001, capStart001]
          }
        ],
      )`
@@ -2416,38 +2576,6 @@ surface001 = extrude(
     )
 
     it(
-      'fillet with both tags and edgeRefs: refactor merges tags into edgeRefs (auto-convert should be available)',
-      { timeout: 30_000 },
-      async () => {
-        const ast = assertParse(KCL_TAGS_AND_EDGE_REFS, instanceInThisFile)
-        await kclManagerInThisFile.executeAst({ ast })
-        const execState = kclManagerInThisFile.execState
-        if ((execState.directTagFilletMetadata?.length ?? 0) < 1) {
-          expect(execState.artifactGraph.size).toBeGreaterThan(0)
-          return
-        }
-        const refactored = refactorZ0006Unified(
-          ast,
-          execState.edgeRefactorMetadata ?? [],
-          execState.directTagFilletMetadata ?? [],
-          execState.artifactGraph,
-          instanceInThisFile
-        )
-        expect(err(refactored)).toBe(false)
-        if (err(refactored)) throw refactored
-        expect(refactored).not.toMatch(UUID_IN_FACES_REGEX)
-        const n = norm(refactored)
-        expect(n).toContain('fillet(')
-        expect(n).toContain('edges = [')
-        // Should have at least two edge refs: one from tags=[e1], one from existing edgeRefs
-        const sideFaceCount = (refactored.match(/sideFaces\s*=\s*\[/g) ?? [])
-          .length
-        expect(sideFaceCount).toBeGreaterThanOrEqual(2)
-        expect(n).toContain('sideFaces = [e1, capStart001]')
-      }
-    )
-
-    it(
       'fillet with mixed direct tag and stdlib (tags = [e1, getOppositeEdge(e1)]): refactor converts both to edgeRefs in order',
       { timeout: 30_000 },
       async () => {
@@ -2477,7 +2605,7 @@ surface001 = extrude(
         const sideFaceCount = (refactored.match(/sideFaces\s*=\s*\[/g) ?? [])
           .length
         expect(sideFaceCount).toBe(2)
-        expect(n).toContain('sideFaces = [e1, capEnd001]')
+        expect(n).toContain('sideFaces = [capEnd001, e1]')
       }
     )
 
@@ -2503,7 +2631,7 @@ surface001 = extrude(
         expect(refactored).not.toMatch(UUID_IN_FACES_REGEX)
         const n = norm(refactored)
         expect(n).toMatch(/fillet\(\s*radius = 1,\s*edges = \[/)
-        expect(n).toContain('sideFaces = [e1, capEnd001]')
+        expect(n).toContain('sideFaces = [capEnd001, e1]')
         expect(n).toContain('sideFaces = [seg01, capStart001]')
         const sideFaceCount = (refactored.match(/sideFaces\s*=\s*\[/g) ?? [])
           .length

@@ -125,7 +125,7 @@ export class ZookeeperFileRequestProcessor {
 
     this.deps.kclManager.engineCommandManager.modelingSend({
       type: 'Set selection',
-      data: { selection: undefined, selectionType: 'singleCodeCursor' },
+      data: { selection: {}, selectionType: 'singleCodeCursor' },
     })
   }
 

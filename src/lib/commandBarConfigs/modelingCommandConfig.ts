@@ -194,6 +194,7 @@ export function extrudeSelectionRequiresMethod({
   return (
     sketches.graphSelections.some(
       (selection) =>
+        selection.entityRef?.type === 'edge' ||
         selection.artifact?.type === 'sweepEdge' ||
         selection.artifact?.type === 'primitiveEdge'
     ) ||

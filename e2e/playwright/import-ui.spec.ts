@@ -77,7 +77,9 @@ sketch002 = startSketchOn(extrude001, face = seg01)`
       await test.step('check code highlight works for code define in the file being edited', async () => {
         await hoverOverNonImport()
         await editor.expectState({
-          highlightedCode: 'startProfile(sketch001,at = [-134.53,-56.17])',
+          // Hover can highlight both the profile and the extrude that produced the face
+          highlightedCode:
+            'startProfile(sketch001,at=[-134.53,-56.17])extrude(profile001,length=100)',
           diagnostics: [],
           activeLines: ['import"toBeImported.kcl"asimportedCube'],
         })

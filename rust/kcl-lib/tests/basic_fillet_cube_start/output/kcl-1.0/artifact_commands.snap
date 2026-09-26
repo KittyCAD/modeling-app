@@ -1,5 +1,6 @@
 ---
 source: kcl-lib/src/simulation_tests.rs
+assertion_line: 505
 description: Artifact commands basic_fillet_cube_start.kcl
 ---
 {

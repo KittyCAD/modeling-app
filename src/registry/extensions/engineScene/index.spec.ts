@@ -48,14 +48,15 @@ vi.mock('@src/components/UnitsMenu', () => ({
 
 function createExecutingEditorService(
   isExecuting = signal(false),
-  showExperimentalFeaturesStatusBarItem = signal(true)
+  showExperimentalFeaturesStatusBarItem = signal(true),
+  selectionStatusLabel = signal('No selection')
 ): ExecutingEditorService {
   return {
     code: signal(''),
     hasEditsSinceLastExecution: signal(false),
     isExecuting,
     executionElapsedMs: signal<number | null>(null),
-    selectionStatusLabel: signal('No selection'),
+    selectionStatusLabel,
     showExperimentalFeaturesStatusBarItem,
     getPendingCommandCount: vi.fn(() => 0),
     executeCode: vi.fn(),
@@ -135,6 +136,34 @@ describe('engineScene extension', () => {
         scopes: ['file'],
       },
     ])
+  })
+
+  it('updates the selection status item when its label changes', () => {
+    const registry = new Registry()
+    const selectionStatusLabel = signal('No selection')
+    const executionService = createExecutingEditorService(
+      undefined,
+      undefined,
+      selectionStatusLabel
+    )
+    registry.configure([
+      defineRegistryItem({
+        id: 'test-executing-editor-service',
+        providesServices: [
+          provideService(executingEditorService, executionService),
+        ],
+      }),
+      engineSceneExtension,
+    ])
+
+    const before = registry.get(statusBarLocalItemsValueSpec)
+    selectionStatusLabel.value = '1 edge'
+    const after = registry.get(statusBarLocalItemsValueSpec)
+
+    expect(after).not.toBe(before)
+    expect(after.find((item) => item.id === 'selection')).not.toBe(
+      before.find((item) => item.id === 'selection')
+    )
   })
 
   it('contributes a command and modeling keybinding to open the measure tool', () => {

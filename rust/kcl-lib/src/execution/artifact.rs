@@ -790,7 +790,9 @@ fn add_composite_sweep_clone_id_mappings(
                 return None;
             }
 
-            let has_mapped_topology = entity_id_map.contains_key(&sweep.path_id)
+            let has_mapped_topology = sweep
+                .path_id
+                .is_some_and(|path_id| entity_id_map.contains_key(&path_id))
                 || sweep.surface_ids.iter().any(|id| entity_id_map.contains_key(id))
                 || sweep.edge_ids.iter().any(|id| entity_id_map.contains_key(id));
             has_mapped_topology.then_some(sweep.id)
@@ -922,7 +924,7 @@ fn remap_artifact_for_clone(
         Artifact::Sweep(source) => Artifact::Sweep(Sweep {
             id: remap_id_for_clone(source.id, entity_id_map),
             sub_type: source.sub_type,
-            path_id: remap_id_for_clone(source.path_id, entity_id_map),
+            path_id: remap_opt_id_for_clone(source.path_id, entity_id_map),
             surface_ids: remap_ids_for_clone(&source.surface_ids, entity_id_map),
             edge_ids: remap_ids_for_clone(&source.edge_ids, entity_id_map),
             code_ref: clone_code_ref.clone(),
@@ -966,7 +968,8 @@ fn remap_artifact_for_clone(
         Artifact::EdgeCut(source) => Artifact::EdgeCut(EdgeCut {
             id: remap_id_for_clone(source.id, entity_id_map),
             sub_type: source.sub_type,
-            consumed_edge_id: remap_id_for_clone(source.consumed_edge_id, entity_id_map),
+            source_selector_index: source.source_selector_index,
+            consumed_edge_id: remap_opt_id_for_clone(source.consumed_edge_id, entity_id_map),
             edge_ids: remap_ids_for_clone(&source.edge_ids, entity_id_map),
             surface_id: remap_opt_id_for_clone(source.surface_id, entity_id_map),
             code_ref: clone_code_ref.clone(),
@@ -1037,7 +1040,7 @@ fn pattern_source_ids(artifacts: &IndexMap<ArtifactId, Artifact>, source_id: Art
 
     for artifact in artifacts.values() {
         match artifact {
-            Artifact::Sweep(sweep) if sweep.path_id == source_id => source_ids.push(sweep.id),
+            Artifact::Sweep(sweep) if sweep.path_id == Some(source_id) => source_ids.push(sweep.id),
             Artifact::CompositeSolid(composite)
                 if composite.solid_ids.contains(&source_id) || composite.tool_ids.contains(&source_id) =>
             {
@@ -1651,6 +1654,54 @@ fn artifacts_to_update(
                 code_ref,
             })]);
         }
+        ModelingCmd::EntityGetAllChildUuids(kcmc::EntityGetAllChildUuids { entity_id, .. }) => {
+            let body_id = ArtifactId::new(*entity_id);
+            let Some(Artifact::Sweep(sweep)) = artifacts.get(&body_id) else {
+                return Ok(Vec::new());
+            };
+            if sweep.path_id.is_some() {
+                return Ok(Vec::new());
+            }
+            let Some(OkModelingCmdResponse::EntityGetAllChildUuids(child_ids_response)) = response else {
+                return Ok(Vec::new());
+            };
+
+            let surface_ids = child_ids_response
+                .entity_ids
+                .first()
+                .copied()
+                .map(ArtifactId::new)
+                .into_iter()
+                .collect::<Vec<_>>();
+            let edge_ids = child_ids_response
+                .entity_ids
+                .get(1)
+                .copied()
+                .map(ArtifactId::new)
+                .into_iter()
+                .collect::<Vec<_>>();
+
+            let mut updated_sweep = sweep.clone();
+            updated_sweep.surface_ids = surface_ids.clone();
+            updated_sweep.edge_ids = edge_ids.clone();
+
+            let mut return_arr = vec![Artifact::Sweep(updated_sweep)];
+            return_arr.extend(surface_ids.into_iter().map(|id| {
+                Artifact::PrimitiveFace(PrimitiveFace {
+                    id,
+                    solid_id: body_id,
+                    code_ref: sweep.code_ref.clone(),
+                })
+            }));
+            return_arr.extend(edge_ids.into_iter().map(|id| {
+                Artifact::PrimitiveEdge(PrimitiveEdge {
+                    id,
+                    solid_id: body_id,
+                    code_ref: sweep.code_ref.clone(),
+                })
+            }));
+            return Ok(return_arr);
+        }
         ModelingCmd::EntityLinearPatternTransform(pattern_cmd) => {
             let face_edge_infos = match response {
                 Some(OkModelingCmdResponse::EntityLinearPatternTransform(resp)) => resp.entity_face_edge_ids.as_slice(),
@@ -1858,7 +1909,21 @@ fn artifacts_to_update(
                     target: None,
                     target_reference: Some(_),
                     ..
-                }) => return Ok(Vec::new()),
+                }) => {
+                    return Ok(vec![Artifact::Sweep(Sweep {
+                        id,
+                        sub_type: SweepSubType::Extrusion,
+                        path_id: None,
+                        surface_ids: Vec::new(),
+                        edge_ids: Vec::new(),
+                        code_ref,
+                        source_sweep_id: None,
+                        trajectory_id: None,
+                        method: ArtifactSweepMethod::New,
+                        consumed: false,
+                        pattern_ids: Vec::new(),
+                    })]);
+                }
                 ModelingCmd::Extrude(kcmc::Extrude { target: None, .. }) => return Ok(Vec::new()),
                 ModelingCmd::TwistExtrude(kcmc::TwistExtrude { target, .. })
                 | ModelingCmd::Revolve(kcmc::Revolve { target, .. })
@@ -1900,7 +1965,7 @@ fn artifacts_to_update(
             return_arr.push(Artifact::Sweep(Sweep {
                 id,
                 sub_type,
-                path_id: target,
+                path_id: Some(target),
                 surface_ids: Vec::new(),
                 edge_ids: Vec::new(),
                 code_ref,
@@ -1937,7 +2002,7 @@ fn artifacts_to_update(
             return_arr.push(Artifact::Sweep(Sweep {
                 id,
                 sub_type,
-                path_id: target,
+                path_id: Some(target),
                 surface_ids: Vec::new(),
                 edge_ids: Vec::new(),
                 code_ref,
@@ -1986,13 +2051,13 @@ fn artifacts_to_update(
                 match artifacts.get(&surface_id) {
                     Some(Artifact::Path(path)) => Some(path.id),
                     Some(Artifact::Segment(segment)) => Some(segment.path_id),
-                    Some(Artifact::Sweep(sweep)) => Some(sweep.path_id),
+                    Some(Artifact::Sweep(sweep)) => sweep.path_id,
                     Some(Artifact::Wall(wall)) => artifacts.get(&wall.sweep_id).and_then(|artifact| match artifact {
-                        Artifact::Sweep(sweep) => Some(sweep.path_id),
+                        Artifact::Sweep(sweep) => sweep.path_id,
                         _ => None,
                     }),
                     Some(Artifact::Cap(cap)) => artifacts.get(&cap.sweep_id).and_then(|artifact| match artifact {
-                        Artifact::Sweep(sweep) => Some(sweep.path_id),
+                        Artifact::Sweep(sweep) => sweep.path_id,
                         _ => None,
                     }),
                     _ => None,
@@ -2002,7 +2067,7 @@ fn artifacts_to_update(
                 internal_error!(range, "SurfaceBlend command has no surfaces: id={id:?}, cmd={cmd:?}");
             };
             let first_surface_id = ArtifactId::new(first_surface_ref.object_id);
-            let path_id = surface_id_to_path_id(first_surface_id).unwrap_or(first_surface_id);
+            let path_id = surface_id_to_path_id(first_surface_id);
             let trajectory_id = surface_blend_cmd
                 .surfaces
                 .get(1)
@@ -2033,12 +2098,12 @@ fn artifacts_to_update(
                 sub_type: SweepSubType::Loft,
                 // TODO: Using the first one.  Make sure to revisit this
                 // choice, don't think it matters for now.
-                path_id: ArtifactId::new(*loft_cmd.section_ids.first().ok_or_else(|| {
+                path_id: Some(ArtifactId::new(*loft_cmd.section_ids.first().ok_or_else(|| {
                     KclError::new_internal(KclErrorDetails::new(
                         format!("Expected at least one section ID in Loft command: {id:?}; cmd={cmd:?}"),
                         vec![range],
                     ))
-                })?),
+                })?)),
                 surface_ids: Vec::new(),
                 edge_ids: Vec::new(),
                 code_ref,
@@ -2241,7 +2306,10 @@ fn artifacts_to_update(
                 let Some(Artifact::Sweep(sweep)) = artifacts.get(&wall.sweep_id) else {
                     continue;
                 };
-                let Some(Artifact::Path(_)) = artifacts.get(&sweep.path_id) else {
+                let Some(path_id) = sweep.path_id else {
+                    continue;
+                };
+                let Some(Artifact::Path(_)) = artifacts.get(&path_id) else {
                     continue;
                 };
 
@@ -2364,7 +2432,8 @@ fn artifacts_to_update(
             return_arr.push(Artifact::EdgeCut(EdgeCut {
                 id,
                 sub_type: edge_cut_sub_type(cmd.cut_type),
-                consumed_edge_id: edge_id,
+                source_selector_index: None,
+                consumed_edge_id: Some(edge_id),
                 edge_ids: Vec::new(),
                 surface_id: None,
                 code_ref,
@@ -2389,7 +2458,8 @@ fn artifacts_to_update(
             return_arr.push(Artifact::EdgeCut(EdgeCut {
                 id,
                 sub_type: edge_cut_sub_type_v2(cmd.cut_type),
-                consumed_edge_id: edge_id,
+                source_selector_index: None,
+                consumed_edge_id: Some(edge_id),
                 edge_ids: Vec::new(),
                 surface_id: None,
                 code_ref,
@@ -2403,6 +2473,24 @@ fn artifacts_to_update(
                 // TODO: Handle other types like SweepEdge.
             }
             return Ok(return_arr);
+        }
+        ModelingCmd::Solid3dCutEdgeReferences(cmd) => {
+            let face_ids = std::iter::once(id).chain(cmd.extra_face_ids.iter().copied().map(ArtifactId::new));
+            return Ok(face_ids
+                .take(cmd.edges_references.len())
+                .enumerate()
+                .map(|(source_selector_index, face_id)| {
+                    Artifact::EdgeCut(EdgeCut {
+                        id: face_id,
+                        sub_type: edge_cut_sub_type_v2(cmd.cut_type),
+                        source_selector_index: Some(source_selector_index),
+                        consumed_edge_id: None,
+                        edge_ids: Vec::new(),
+                        surface_id: None,
+                        code_ref: code_ref.clone(),
+                    })
+                })
+                .collect());
         }
         ModelingCmd::EntityMakeHelix(cmd) => {
             let cylinder_id = ArtifactId::new(cmd.cylinder_id);

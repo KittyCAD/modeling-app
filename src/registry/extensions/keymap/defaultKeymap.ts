@@ -14,7 +14,7 @@ import {
   keymapValueSpec,
 } from '@src/registry/contracts/keymap'
 import { APP_COMMAND_IDS } from '@src/registry/extensions/commands/appCommands'
-import { TOOLBAR_COMMAND_IDS } from '@src/registry/extensions/commands/toolbarCommands'
+import { TOOLBAR_COMMAND_IDS } from '@src/registry/extensions/commands/toolbarCommandIds'
 
 const BASE_KEYMAP_SOURCE = 'Base'
 const FILE_KEYMAP_SCOPES = [
