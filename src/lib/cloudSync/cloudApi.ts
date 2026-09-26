@@ -1,4 +1,5 @@
 import env from '@src/env'
+import { collectApiList, type ApiListResponse } from '@src/lib/apiPagination'
 import {
   CloudSyncError,
   withCloudSyncFailureContext,
@@ -143,7 +144,9 @@ function appendExpectedRevisionParam(pathname: string, revision?: Revision) {
 }
 
 export async function listRemoteProjects(config: CloudSyncConfig) {
-  return cloudJson<RemoteProjectSummary[]>(config, '/user/projects')
+  return collectApiList<RemoteProjectSummary>('/user/projects', (path) =>
+    cloudJson<ApiListResponse<RemoteProjectSummary>>(config, path)
+  )
 }
 
 export async function getRemoteProject(

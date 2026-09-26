@@ -1,6 +1,6 @@
 import type { Announcement } from '@kittycad/lib'
-import { meta } from '@kittycad/lib'
 import { MarkdownText } from '@src/components/MarkdownText'
+import { listClientItems } from '@src/lib/apiPagination'
 import { createKCClient } from '@src/lib/kcClient'
 import { useEffect, useState } from 'react'
 
@@ -17,11 +17,16 @@ export function Announcements({ token }: { token?: string }) {
     async function fetchAnnouncements() {
       try {
         const client = createKCClient(token)
-        const result = await meta.get_announcements({ client })
+        const result = await listClientItems<Announcement>(
+          client,
+          '/announcements',
+          controller.signal
+        )
         if (!controller.signal.aborted) {
-          setAnnouncements(result.announcements)
+          setAnnouncements(result)
         }
       } catch (e) {
+        if (controller.signal.aborted) return
         console.error('Error fetching announcements:', e)
       }
     }

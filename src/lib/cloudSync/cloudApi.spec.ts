@@ -281,3 +281,56 @@ describe('remote project thumbnail URLs', () => {
     } satisfies Partial<CloudApiError>)
   })
 })
+
+describe('remote project list compatibility', () => {
+  const config = {
+    enabled: true,
+    baseUrl: 'https://api.example.test',
+    token: 'test-token',
+  }
+
+  test('collects all pages, including empty intermediate pages, before returning the index', async () => {
+    const projects = [
+      { id: 'first', title: 'First' },
+      { id: 'last', title: 'Last' },
+    ]
+    const fetchMock = vi
+      .fn<typeof fetch>()
+      .mockResolvedValueOnce(
+        Response.json({ items: [projects[0]], next_page: 'empty' })
+      )
+      .mockResolvedValueOnce(Response.json({ items: [], next_page: 'last' }))
+      .mockResolvedValueOnce(
+        Response.json({ items: [projects[1]], next_page: null })
+      )
+    vi.stubGlobal('fetch', fetchMock)
+
+    await expect(listRemoteProjects(config)).resolves.toEqual(projects)
+    expect(fetchMock).toHaveBeenCalledTimes(3)
+    expect(fetchMock).toHaveBeenLastCalledWith(
+      'https://api.example.test/user/projects?page_token=last',
+      expect.objectContaining({
+        credentials: 'include',
+        headers: new Headers({ Authorization: 'Bearer test-token' }),
+      })
+    )
+  })
+
+  test('rejects a later-page failure instead of returning an incomplete cloud index', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi
+        .fn<typeof fetch>()
+        .mockResolvedValueOnce(
+          Response.json({ items: [{ id: 'first' }], next_page: 'more' })
+        )
+        .mockResolvedValueOnce(
+          Response.json({ message: 'Try again' }, { status: 503 })
+        )
+    )
+
+    await expect(listRemoteProjects(config)).rejects.toMatchObject({
+      status: 503,
+    })
+  })
+})
