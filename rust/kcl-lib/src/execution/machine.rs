@@ -1271,7 +1271,7 @@ async fn step_eval(
             let node = node.arc();
             if node.properties.is_empty() {
                 return Ok(Control::Apply(Applied::Value(KclValue::Object {
-                    value: KclObjectFields::with_capacity(0),
+                    value: KclObjectFields::with_capacity(0).into(),
                     meta: vec![Metadata {
                         source_range: SourceRange::from(node.as_ref()),
                     }],
@@ -1468,7 +1468,7 @@ async fn step_apply(
                 Ok(Control::Eval(Box::new(prop)))
             } else {
                 Ok(Control::Apply(Applied::Value(KclValue::Object {
-                    value: done,
+                    value: done.into(),
                     meta: vec![Metadata {
                         source_range: SourceRange::from(node.as_ref()),
                     }],

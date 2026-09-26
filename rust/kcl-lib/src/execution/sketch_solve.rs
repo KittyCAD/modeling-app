@@ -187,7 +187,7 @@ fn substitute_sketch_var(
             object_kind,
             meta,
         } => {
-            let subbed = value
+            let subbed = Arc::unwrap_or_clone(value)
                 .into_iter()
                 .map(|(k, v)| {
                     substitute_sketch_var(v, surface, sketch_id, sketch, solve_outcome, solution_ty, analysis)
@@ -195,7 +195,7 @@ fn substitute_sketch_var(
                 })
                 .collect::<Result<HashMap<_, _>, KclError>>()?;
             Ok(KclValue::Object {
-                value: subbed,
+                value: subbed.into(),
                 constrainable,
                 object_kind,
                 meta,
@@ -1169,6 +1169,13 @@ mod tests {
         let mut variables = IndexMap::new();
         variables.insert("line1".to_owned(), test_line_value(1));
         variables.insert("line2".to_owned(), test_line_value(4));
+        let nested = KclValue::Object {
+            value: HashMap::from([("line".to_owned(), test_line_value(7))]).into(),
+            constrainable: false,
+            object_kind: Default::default(),
+            meta: Vec::new(),
+        };
+        variables.insert("nested".to_owned(), nested.clone());
         let solved = Solved {
             final_values: vec![],
             iterations: 0,
@@ -1194,5 +1201,11 @@ mod tests {
         let line2_sketch = segment_sketch(&substituted["line2"]);
         assert!(Arc::ptr_eq(line1_sketch, line2_sketch));
         assert_eq!(line1_sketch.id, sketch.id);
+        let nested_line = &substituted["nested"].as_object().unwrap()["line"];
+        assert!(Arc::ptr_eq(line1_sketch, segment_sketch(nested_line)));
+        let KclValue::Segment { value } = &nested.as_object().unwrap()["line"] else {
+            panic!("expected segment");
+        };
+        assert!(matches!(value.repr, SegmentRepr::Unsolved { .. }));
     }
 }

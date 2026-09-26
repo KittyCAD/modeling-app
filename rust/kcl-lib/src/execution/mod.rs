@@ -7496,6 +7496,28 @@ leaked = a
     }
 
     #[tokio::test(flavor = "multi_thread")]
+    async fn negating_shared_object_preserves_original_and_alias() {
+        let code = r#"@settings(kclVersion = "2.0")
+fn makeAxis(): Axis2d {
+  return { origin = [0mm, 0mm], direction = [1, 2] }
+}
+axis = makeAxis()
+container = { axis = axis }
+alias = container
+fn flip(@obj) {
+  return -obj.axis
+}
+reversed = container |> flip(%)
+assert(axis.direction[0], isEqualTo = 1)
+assert(alias.axis.direction[1], isEqualTo = 2)
+assert(reversed.direction[0], isEqualTo = -1)
+assert(reversed.direction[1], isEqualTo = -2)
+assert(reversed.origin[0], isEqualTo = 0mm)
+"#;
+        parse_execute(code).await.unwrap();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
     async fn member_expression_evaluates_object_before_property_in_v3() {
         // Both operands are undefined, so the error names whichever one is
         // evaluated first. KCL 3.0 evaluates in source order: `a` before `b`.
