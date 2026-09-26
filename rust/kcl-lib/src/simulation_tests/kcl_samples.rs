@@ -14,6 +14,7 @@ use walkdir::WalkDir;
 
 use super::Test;
 use crate::simulation_tests::TestConfig;
+use crate::test_server::TestGraphicsParams;
 use crate::tooling::render_artifacts::RENDERED_MODEL_NAME;
 
 const ALLOWED_FILETYPES: [&str; 3] = ["kcl", "stp", "step"];
@@ -110,6 +111,35 @@ async fn kcl_test_execute_walkie_talkie() {
     super::execute_test(&t).await;
 }
 
+#[tokio::test(flavor = "multi_thread")]
+#[ignore = "run with just generate-sample-preview <sample-name>"]
+async fn generate_sample_preview() {
+    let name = std::env::var("KCL_SAMPLE").expect("KCL_SAMPLE must name a sample directory");
+    let sample = kcl_samples_inputs()
+        .into_iter()
+        .find(|sample| sample.name == name)
+        .expect("KCL_SAMPLE must name an existing sample");
+    let program = crate::Program::parse_no_errs(&sample.read()).unwrap();
+    let (_, ctx, _, graphics) = crate::test_server::execute_sim_test_no_close(
+        program,
+        Some(sample.entry_point),
+        None,
+        TestGraphicsParams::EngineRender {
+            reason: "Public previews need shaded engine rendering".to_owned(),
+        },
+    )
+    .await
+    .unwrap();
+    ctx.close().await;
+    let screenshot_dir = INPUTS_DIR.join("screenshots");
+    fs::create_dir_all(&screenshot_dir).unwrap();
+    graphics
+        .image()
+        .expect("EngineRender must return an image")
+        .save(screenshot_dir.join(format!("{name}.png")))
+        .unwrap();
+}
+
 #[test]
 fn test_after_engine_ensure_kcl_samples_manifest_etc() {
     let tests = kcl_samples_inputs();
@@ -127,25 +157,23 @@ fn test_after_engine_ensure_kcl_samples_manifest_etc() {
         OUTPUTS_DIR.to_string_lossy()
     );
 
-    // We want to move the screenshot for the inputs to the public/kcl-samples
-    // directory so that they can be used as inputs for the next run.
-    // First ensure each directory exists.
+    // CPU regression renders must never replace shaded public previews.
     let public_screenshot_dir = INPUTS_DIR.join("screenshots");
-    for dir in [&public_screenshot_dir] {
-        if !dir.exists() {
-            std::fs::create_dir_all(dir).unwrap();
+    for test in &tests {
+        let preview = public_screenshot_dir.join(format!("{}.png", test.name));
+        assert!(
+            preview.is_file(),
+            "Missing public preview; run `just generate-sample-preview {}`",
+            test.name
+        );
+        // The ignored walkie-talkie test still has its old GPU baseline.
+        if test.name != "walkie-talkie" && matches!(test.test_graphics_params, TestGraphicsParams::ExportAndRender) {
+            assert!(
+                fs::read(&preview).unwrap() != fs::read(test.output_dir.join(RENDERED_MODEL_NAME)).unwrap(),
+                "CPU regression image was published as the preview for {}",
+                test.name
+            );
         }
-    }
-    for tests in &tests {
-        let screenshot_file = OUTPUTS_DIR.join(&tests.name).join(RENDERED_MODEL_NAME);
-        if !screenshot_file.exists() {
-            panic!("Missing screenshot for test: {}", tests.name);
-        }
-        std::fs::copy(
-            screenshot_file,
-            public_screenshot_dir.join(format!("{}.png", tests.name)),
-        )
-        .unwrap();
     }
 
     // Update the README.md with the new screenshots.
