@@ -33,7 +33,7 @@
     "react-dom": "^19.0.0"
   },
   "dependencies": {
-    "@kittycad/lib": "^4.3.29",
+    "@kittycad/lib": "^4.5.6",
     "@tiptap/core": "^3.27.2",
     "@tiptap/extension-link": "^3.27.2",
     "@tiptap/markdown": "^3.27.2",
