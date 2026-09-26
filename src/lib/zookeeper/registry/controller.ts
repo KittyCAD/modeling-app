@@ -5,7 +5,7 @@ import {
   untracked,
 } from '@preact/signals-core'
 import type { KclManager, ZDSProject } from '@src/lang/KclManager'
-import { BillingTransition } from '@src/lib/billing'
+import { BillingState, BillingTransition } from '@src/lib/billing'
 import type { BillingRegistryService } from '@src/lib/billing/registry/contract'
 import { getParentAbsolutePath } from '@src/lib/paths'
 import type { Project } from '@src/lib/project'
@@ -75,6 +75,8 @@ export interface ZookeeperSessionController {
 
 type ZookeeperSnapshot = SnapshotFrom<ZookeeperManagerActor>
 
+const BILLING_REFRESH_INTERVAL_MS = 60_000
+
 class SessionController implements ZookeeperSessionController {
   readonly actor: ZookeeperManagerActor
   readonly projectPath: string
@@ -116,6 +118,7 @@ class SessionController implements ZookeeperSessionController {
   private steeredId: string | null = null
   private stopProjectEffect: (() => void) | undefined
   private wasPromptRunning = false
+  private billingRefreshTimer: ReturnType<typeof setInterval> | undefined
 
   private readonly history: ZookeeperEditPatchHistory
   private readonly fileRequestProcessor: ZookeeperFileRequestProcessor
@@ -403,6 +406,7 @@ class SessionController implements ZookeeperSessionController {
     this.clearOperationGeneration += 1
     this.continueCheckGeneration += 1
     this.clearReconnectTimer()
+    clearInterval(this.billingRefreshTimer)
     this.clearSubscription?.unsubscribe()
     this.actorSubscription?.unsubscribe()
     this.stopProjectEffect?.()
@@ -573,9 +577,21 @@ class SessionController implements ZookeeperSessionController {
     this.wasPromptRunning = isPromptRunning
     if (isPromptRunning) {
       this.deps.billing.send({ type: BillingTransition.UsageStarted })
+      this.billingRefreshTimer = setInterval(() => {
+        // A stalled request must not accumulate queued refreshes.
+        if (!this.deps.billing.state.peek().matches(BillingState.Waiting)) {
+          return
+        }
+        this.deps.billing.send({
+          type: BillingTransition.Update,
+          apiToken: this.apiToken,
+        })
+      }, BILLING_REFRESH_INTERVAL_MS)
       return
     }
 
+    clearInterval(this.billingRefreshTimer)
+    this.billingRefreshTimer = undefined
     this.deps.billing.send({ type: BillingTransition.UsageEnded })
     this.deps.billing.send({
       type: BillingTransition.Update,

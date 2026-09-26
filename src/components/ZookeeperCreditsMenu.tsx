@@ -20,7 +20,9 @@ const BILLING_BALANCE_TICK_MS = 1000
 
 function useEstimatedBillingBalance(billingContext: BillingContext) {
   const [now, setNow] = useState(Date.now())
-  const shouldTick = billingContext.usageStartedAt !== undefined
+  const shouldTick =
+    billingContext.usageEstimateExpiresAt !== undefined &&
+    now < billingContext.usageEstimateExpiresAt.getTime()
 
   useEffect(() => {
     if (!shouldTick) {
@@ -64,7 +66,10 @@ function BillingStatusBarItem(props: { billingContext: BillingContext }) {
             hoverOnly
             wrapperClassName="ui-open:!hidden"
           >
-            Zoo balance
+            {props.billingContext.usageEstimateExpiresAt !== undefined &&
+            Date.now() >= props.billingContext.usageEstimateExpiresAt.getTime()
+              ? 'Last reported Zoo balance'
+              : 'Zoo balance'}
           </Tooltip>
         )}
       </Popover.Button>

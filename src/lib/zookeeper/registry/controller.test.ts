@@ -72,7 +72,7 @@ vi.mock('@src/lib/zookeeper/registry/ZookeeperFileRequestProcessor', () => ({
 }))
 
 import type { ZDSProject } from '@src/lang/KclManager'
-import { BillingTransition } from '@src/lib/billing'
+import { BillingState, BillingTransition } from '@src/lib/billing'
 import type { Project } from '@src/lib/project'
 import {
   createZookeeperSessionController,
@@ -202,6 +202,7 @@ function createHarness({
   managerMocks.create.mockReturnValue(actor)
 
   const billingSend = vi.fn()
+  const billingState = signal(BillingState.Waiting)
   const conversationStore: ZookeeperConversationStore = {
     deleteProjectConversationId: vi.fn().mockResolvedValue(undefined),
     getProjectConversationId: vi.fn().mockReturnValue(storeGet),
@@ -248,7 +249,14 @@ function createHarness({
   const projectSignal = signal<ZDSProject | undefined>(zdsProject)
   const dependencies = {
     apiToken,
-    billing: { send: billingSend },
+    billing: {
+      send: billingSend,
+      state: {
+        peek: () => ({
+          matches: (state: BillingState) => state === billingState.peek(),
+        }),
+      },
+    },
     conversationStore,
     fileOperations: {
       readFile: vi.fn(async () => new Uint8Array()),
@@ -265,6 +273,7 @@ function createHarness({
   return {
     actor,
     billingSend,
+    billingState,
     controller,
     conversationStore,
     executingEditor,
@@ -338,6 +347,52 @@ describe('Zookeeper session controller', () => {
     expect(billingSend.mock.calls.map(([event]) => event)).toEqual([
       { type: BillingTransition.UsageStarted },
       { type: BillingTransition.UsageEnded },
+      { type: BillingTransition.Update, apiToken: 'rotated-token' },
+    ])
+  })
+
+  it('refreshes active prompts every minute with the current token and skips in-flight requests', () => {
+    vi.useFakeTimers()
+    const { actor, billingSend, billingState, controller } = createHarness()
+
+    vi.advanceTimersByTime(60_000)
+    expect(billingSend).not.toHaveBeenCalled()
+    actor.emit('other', { awaitingResponse: true })
+    billingSend.mockClear()
+    vi.advanceTimersByTime(30_000)
+    actor.emit('other', { awaitingResponse: true })
+    vi.advanceTimersByTime(29_999)
+    expect(billingSend).not.toHaveBeenCalled()
+    vi.advanceTimersByTime(1)
+    expect(billingSend.mock.calls.map(([event]) => event)).toEqual([
+      { type: BillingTransition.Update, apiToken: 'initial-token' },
+    ])
+
+    controller.updateAuthToken('rotated-token')
+    vi.advanceTimersByTime(60_000)
+    expect(billingSend).toHaveBeenLastCalledWith({
+      type: BillingTransition.Update,
+      apiToken: 'rotated-token',
+    })
+    billingState.value = BillingState.Updating
+    vi.advanceTimersByTime(120_000)
+    expect(billingSend).toHaveBeenCalledTimes(2)
+    billingState.value = BillingState.Throttling
+    vi.advanceTimersByTime(60_000)
+    expect(billingSend).toHaveBeenCalledTimes(2)
+    billingState.value = BillingState.Waiting
+    vi.advanceTimersByTime(60_000)
+    expect(billingSend).toHaveBeenCalledTimes(3)
+
+    actor.emit('other', { awaitingResponse: false })
+    billingSend.mockClear()
+    vi.advanceTimersByTime(60_000)
+    expect(billingSend).not.toHaveBeenCalled()
+
+    actor.emit('other', { awaitingResponse: true })
+    vi.advanceTimersByTime(60_000)
+    expect(billingSend.mock.calls.map(([event]) => event)).toEqual([
+      { type: BillingTransition.UsageStarted },
       { type: BillingTransition.Update, apiToken: 'rotated-token' },
     ])
   })
@@ -1043,7 +1098,7 @@ describe('Zookeeper session controller', () => {
     const disposal = controller.dispose()
     online = false
     window.dispatchEvent(new Event('offline'))
-    vi.advanceTimersByTime(3000)
+    vi.advanceTimersByTime(120_000)
     actor.emit('other', { awaitingResponse: false })
     controller.updateAuthToken('ignored-after-dispose')
     await disposal
