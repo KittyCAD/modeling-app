@@ -124,7 +124,6 @@ export type RevolveCommandArgs = Override<
     axisOrEdge: 'Axis' | 'Edge'
     axis: string | undefined
     edge: Selections | undefined
-    angle: KclCommandValue
     bodyType?: KclPreludeBodyType
   }
 >

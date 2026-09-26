@@ -1,8 +1,5 @@
-import { useAppState } from '@src/AppState'
-import { useEffect } from 'react'
-import type { Actor, AnyStateMachine, EventFrom, StateFrom } from 'xstate'
-
 import { useSignals } from '@preact/signals-react/runtime'
+import { useAppState } from '@src/AppState'
 import { useNetworkContext } from '@src/hooks/useNetworkContext'
 import { NetworkHealthState } from '@src/hooks/useNetworkStatus'
 import { shouldDisableModelingForUnrenderedChanges } from '@src/lib/automaticRendering'
@@ -14,6 +11,8 @@ import type {
 } from '@src/lib/commandTypes'
 import { EXPERIMENTAL_POINT_AND_CLICK_FLAG } from '@src/lib/constants'
 import { createMachineCommand } from '@src/lib/createMachineCommand'
+import { useEffect } from 'react'
+import type { Actor, AnyStateMachine, EventFrom, StateFrom } from 'xstate'
 
 interface UseStateMachineCommandsArgs<
   T extends AnyStateMachine,
@@ -56,6 +55,10 @@ export default function useStateMachineCommands<
     EXPERIMENTAL_POINT_AND_CLICK_FLAG,
     false
   )
+  const useModelingDialogFeature = userFeatures.useHas(
+    'modeling_dialogs',
+    false
+  )
   const settingsValues = settings.useSettings()
   const { overallState } = useNetworkContext()
   const { isStreamReady } = useAppState()
@@ -72,7 +75,9 @@ export default function useStateMachineCommands<
     isExecuting ||
     !isStreamReady ||
     disableForUnrenderedChanges
+  const useModelingDialog = machineId === 'modeling' && useModelingDialogFeature
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: command registrations intentionally refresh only when command enablement or configuration changes.
   useEffect(() => {
     const newCommands = Object.keys(commandBarConfig || {})
       .flatMap((type) => {
@@ -91,7 +96,15 @@ export default function useStateMachineCommands<
           showExperimentalCommands,
         })
       })
-      .filter((c) => c !== null) as Command[] // TS isn't smart enough to know this filter removes nulls
+      .filter((c) => c !== null)
+      .map((command) =>
+        useModelingDialog
+          ? {
+              ...command,
+              useModelingDialog,
+            }
+          : command
+      ) as Command[] // TS isn't smart enough to know this filter removes nulls
 
     commands.send({
       type: 'Add commands',
@@ -109,6 +122,7 @@ export default function useStateMachineCommands<
     shouldDisableEngineCommands,
     showExperimentalCommands,
     commandBarConfig,
+    useModelingDialog,
     scopes,
   ])
 }

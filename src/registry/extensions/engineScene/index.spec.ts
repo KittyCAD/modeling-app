@@ -285,6 +285,7 @@ describe('engineScene extension', () => {
       { id: 'engine-scene.sketch-background-opacity', zone: 'bottom-left' },
       { id: 'engine-scene.sketch-constraints-toggle', zone: 'bottom-left' },
       { id: 'engine-scene.gizmo', zone: 'bottom-right' },
+      { id: 'engine-scene.modeling-dialog', zone: 'overlay' },
     ])
   })
 
@@ -344,7 +345,11 @@ describe('engineScene extension', () => {
         extensions,
         createEngineSceneViewExtensionContext(false)
       ).map((extension) => extension.id)
-    ).toEqual(['engine-scene.toolbar', 'engine-scene.gizmo'])
+    ).toEqual([
+      'engine-scene.toolbar',
+      'engine-scene.gizmo',
+      'engine-scene.modeling-dialog',
+    ])
 
     expect(
       resolveEngineSceneViewExtensions(
@@ -356,6 +361,7 @@ describe('engineScene extension', () => {
       'engine-scene.sketch-background-opacity',
       'engine-scene.sketch-constraints-toggle',
       'engine-scene.gizmo',
+      'engine-scene.modeling-dialog',
     ])
   })
 })
