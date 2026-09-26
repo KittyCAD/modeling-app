@@ -369,17 +369,10 @@ async fn new_context_with_heartbeats(
         highlight_edges: true,
         enable_ssao: false,
         show_grid: false,
-        replay: None,
-        project_directory: None,
-        current_file: None,
-        fixed_size_grid: true,
-        skip_artifact_graph: false,
-        heartbeats,
         default_backface_color: Some("#00D5FF".to_owned()),
-        pool: None,
-        video_res_width: None,
-        video_res_height: None,
+        heartbeats,
         geometry_only,
+        ..Default::default()
     };
     if let Some(current_file) = current_file {
         settings.with_current_file(crate::TypedPath(current_file));

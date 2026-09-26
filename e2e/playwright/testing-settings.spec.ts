@@ -577,7 +577,7 @@ test.describe(
           ).toBeVisible()
           await expect
             .poll(() => fsp.readFile(mainFilePath, 'utf8'))
-            .toContain('@settings(defaultLengthUnit = in)')
+            .toContain('@settings(defaultLengthUnit = in, kclVersion = 1.0)')
         })
       }
     )

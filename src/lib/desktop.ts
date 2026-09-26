@@ -24,6 +24,7 @@ import {
   TELEMETRY_FILE_NAME,
   TELEMETRY_RAW_FILE_NAME,
 } from '@src/lib/constants'
+import { DEFAULT_KCL_VERSION } from '@src/lib/kclVersion'
 import {
   FileAlreadyExists,
   FileNotFound,
@@ -157,12 +158,14 @@ async function ensureProjectTomlTitle({
   projectPath,
   title,
   defaultFile,
+  kclVersion,
   readExistingProjectToml = true,
 }: {
   fileOperations: FileOperationsRegistryService
   projectPath: string
   title: string
   defaultFile: string
+  kclVersion?: string
   readExistingProjectToml?: boolean
 }) {
   const projectTomlPath = fsZds.join(projectPath, PROJECT_SETTINGS_FILE_NAME)
@@ -188,10 +191,22 @@ async function ensureProjectTomlTitle({
     : `default_file = ${JSON.stringify(defaultFile.replaceAll('\\', '/'))}\n${
         projectToml.trim() ? `\n${projectToml}` : ''
       }`
-  const nextProjectToml = setProjectTitleInProjectTomlContents(
+  let nextProjectToml = setProjectTitleInProjectTomlContents(
     projectTomlWithDefaultFile,
     title
   )
+  if (kclVersion && !/^\s*kcl_version\s*=/m.test(nextProjectToml)) {
+    if (/\[settings\.modeling\]/.test(nextProjectToml)) {
+      nextProjectToml = nextProjectToml.replace(
+        /\[settings\.modeling\]/,
+        `[settings.modeling]\nkcl_version = ${JSON.stringify(kclVersion)}`
+      )
+    } else {
+      nextProjectToml = `${nextProjectToml.trimEnd()}\n\n[settings.modeling]\nkcl_version = ${JSON.stringify(
+        kclVersion
+      )}\n`
+    }
+  }
   await fileOperations.writeFile(projectTomlPath, nextProjectToml)
 }
 
@@ -352,6 +367,7 @@ export async function createNewProjectDirectory(
     projectPath: projectDir,
     title: projectTitle,
     defaultFile: kclFileName,
+    kclVersion: initialCode ? undefined : DEFAULT_KCL_VERSION,
     readExistingProjectToml: !projectDirectoryCreated,
   })
   let metadata: FileMetadata | null = null
