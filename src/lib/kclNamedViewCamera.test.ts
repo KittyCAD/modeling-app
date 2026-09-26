@@ -8,7 +8,11 @@ import type {
 
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
-import { applyNamedViewCamera } from '@src/lib/kclNamedViewCamera'
+import {
+  applyNamedViewCamera,
+  captureNamedViewCamera,
+} from '@src/lib/kclNamedViewCamera'
+import { PerspectiveCamera, Vector3 } from 'three'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 const CURRENT_TARGET = { x: 10, y: 20, z: 30 }
@@ -102,6 +106,63 @@ function fakes() {
 function sentCommandTypes(sendSceneCommand: ReturnType<typeof vi.fn>) {
   return sendSceneCommand.mock.calls.map(([command]) => command.cmd.type)
 }
+
+describe('captureNamedViewCamera', () => {
+  it('captures the current camera as a directed KCL view', async () => {
+    const camera = new PerspectiveCamera()
+    camera.position.set(0, -10, 0)
+    camera.up.set(0, 0, 1)
+    camera.lookAt(0, 0, 0)
+    camera.updateMatrixWorld()
+
+    const getCameraView = vi.fn().mockResolvedValue({
+      pivot_position: { x: 1, y: 2, z: 3 },
+      eye_offset: 25,
+    })
+    const result = await captureNamedViewCamera({
+      camControls: {
+        camera,
+        target: new Vector3(0, 0, 0),
+        isPerspective: true,
+        getCameraView,
+      },
+    } as unknown as SceneInfra)
+    if (result instanceof Error) throw result
+
+    expect(result.direction[0]).toBeCloseTo(0)
+    expect(result.direction[1]).toBeCloseTo(1)
+    expect(result.direction[2]).toBeCloseTo(0)
+    expect(result.up[0]).toBeCloseTo(0)
+    expect(result.up[1]).toBeCloseTo(0)
+    expect(result.up[2]).toBeCloseTo(1)
+    expect(result.target).toEqual([1, 2, 3])
+    expect(result.distance).toBe(25)
+    expect(result.projection).toBe('Perspective')
+  })
+
+  it('uses the effective engine eye offset so orthographic zoom is preserved', async () => {
+    const camera = new PerspectiveCamera()
+    camera.position.set(0, -10, 0)
+    camera.lookAt(0, 0, 0)
+    camera.updateMatrixWorld()
+
+    const result = await captureNamedViewCamera({
+      camControls: {
+        camera,
+        isPerspective: false,
+        getCameraView: vi.fn().mockResolvedValue({
+          pivot_position: { x: 0, y: 0, z: 0 },
+          eye_offset: 80,
+        }),
+      },
+    } as unknown as SceneInfra)
+    if (result instanceof Error) throw result
+
+    expect(camera.position.length()).toBe(10)
+    expect(result.distance).toBe(80)
+    expect(result.projection).toBe('Orthographic')
+  })
+})
 
 describe('applyNamedViewCamera', () => {
   let f: ReturnType<typeof fakes>
@@ -211,13 +272,17 @@ describe('applyNamedViewCamera', () => {
 
       expect(f.setCameraToAxis).toHaveBeenCalledWith({
         axis: '-y',
-        target: undefined,
+        target: CURRENT_TARGET,
         distance: 7,
       })
+      expect(f.getCameraView).toHaveBeenCalledOnce()
       expect(sentCommandTypes(f.sendSceneCommand)).toEqual([
         'zoom_to_fit',
         'default_camera_get_settings',
       ])
+      expect(f.sendSceneCommand.mock.invocationCallOrder.at(-1)).toBeLessThan(
+        f.setCameraToAxis.mock.invocationCallOrder[0]
+      )
     })
 
     it('fits the model when the view has no distance', async () => {
@@ -230,7 +295,16 @@ describe('applyNamedViewCamera', () => {
         engineCommandManager: f.engineCommandManager,
       })
 
-      expect(sentCommandTypes(f.sendSceneCommand)).toContain('zoom_to_fit')
+      expect(f.setCameraToAxis).toHaveBeenCalledWith({
+        axis: '-y',
+        target: { x: 1, y: 2, z: 3 },
+        distance: CURRENT_DISTANCE,
+      })
+      expect(f.getCameraView).toHaveBeenCalledOnce()
+      expect(sentCommandTypes(f.sendSceneCommand)).toEqual([
+        'zoom_to_fit',
+        'default_camera_get_settings',
+      ])
     })
 
     it('does not fit the model when the view gives both', async () => {
@@ -285,10 +359,10 @@ describe('applyNamedViewCamera', () => {
         engineCommandManager: f.engineCommandManager,
       })
 
-      expect(f.sendSceneCommand).toHaveBeenNthCalledWith(
-        1,
+      expect(f.sendSceneCommand).toHaveBeenCalledWith(
         expect.objectContaining({
           cmd: expect.objectContaining({
+            type: 'default_camera_look_at',
             center: CURRENT_TARGET,
             vantage: {
               x: CURRENT_TARGET.x - CURRENT_DISTANCE,
@@ -298,6 +372,12 @@ describe('applyNamedViewCamera', () => {
           }),
         })
       )
+      expect(sentCommandTypes(f.sendSceneCommand)).toEqual([
+        'zoom_to_fit',
+        'default_camera_get_settings',
+        'default_camera_look_at',
+        'default_camera_get_settings',
+      ])
     })
   })
 

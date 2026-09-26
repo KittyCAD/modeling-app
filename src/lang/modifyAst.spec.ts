@@ -970,7 +970,7 @@ plane003 = offsetPlane(plane001, offset = 10)`
     await enginelessExecutor(result, rustContextInThisFile)
   })
 
-  it('deletes a KCL named view selected from the feature tree operation range', async () => {
+  it('deletes a KCL named view selected from the named views pane', async () => {
     const codeBefore = `@settings(kclVersion = "3.0-preview")
 
 sketch001 = sketch(on = XY) {
@@ -985,23 +985,17 @@ generatedTopView = view::named(
 )`
     const ast = assertParse(codeBefore, instanceInThisFile)
     const execState = await enginelessExecutor(ast, rustContextInThisFile)
-    const namedViewOperation = getAllOperations(execState.operations).find(
-      (op) => op.type === 'StdLibCall' && op.name === 'view::named'
+    const artifact = [...execState.artifactGraph.values()].find(
+      (candidate) => candidate.type === 'namedView'
     )
-    if (!namedViewOperation || namedViewOperation.type !== 'StdLibCall') {
-      throw new Error('Could not find named view operation')
+    if (!artifact || artifact.type !== 'namedView') {
+      throw new Error('Could not find named view artifact')
     }
-    const artifact =
-      getArtifactFromRange(
-        namedViewOperation.sourceRange,
-        execState.artifactGraph
-      ) ?? undefined
-    expect(artifact?.type).toBe('namedView')
 
     const result = await deleteFromSelection(
       ast,
       {
-        codeRef: codeRefFromRange(namedViewOperation.sourceRange, ast),
+        codeRef: artifact.codeRef,
         artifact,
       },
       execState.variables,

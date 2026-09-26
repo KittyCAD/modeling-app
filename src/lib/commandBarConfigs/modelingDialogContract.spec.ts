@@ -24,6 +24,7 @@ beforeAll(async () => {
 })
 
 type DialogCommandName =
+  | 'Named View'
   | 'Extrude'
   | 'Sweep'
   | 'Loft'
@@ -261,6 +262,23 @@ runDialogContract('Appearance', [
     name: 'preserves the authored color when editing',
     authored: { nodeToEdit: [], color: '#ff0000' },
     expectedValues: { color: '#ff0000' },
+  },
+])
+
+runDialogContract('Named View', [
+  {
+    name: 'starts with a fitted isometric view and a visible baseline',
+    expectedValues: {
+      orientation: 'Isometric',
+      projection: 'Orthographic',
+      baseline: 'Show',
+    },
+    fields: {
+      name: { hidden: false, required: true },
+      except: { hidden: false, required: false },
+      target: { hidden: false, required: false },
+      distance: { hidden: false, required: false },
+    },
   },
 ])
 

@@ -5,6 +5,7 @@ import type {
 } from '@rust/kcl-lib/bindings/Artifact'
 
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
+import type { NamedViewCameraSnapshot } from '@src/lang/modifyAst/namedViews'
 import { AxisNames } from '@src/lib/constants'
 import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 import { err } from '@src/lib/trap'
@@ -13,6 +14,7 @@ import {
   engineViewIsometric,
   uuidv4,
 } from '@src/lib/utils'
+import { Vector3 } from 'three'
 
 const ORIENTATION_AXES = {
   front: AxisNames.NEG_Y,
@@ -29,6 +31,48 @@ const ORIENTATION_AXES = {
  * sites use 0.2.
  */
 const FIT_PADDING = 0.1
+
+/** Read the client camera in the form `view::directed` stores in KCL. */
+export async function captureNamedViewCamera(
+  sceneInfra: SceneInfra
+): Promise<NamedViewCameraSnapshot | Error> {
+  const { camera, isPerspective } = sceneInfra.camControls
+  const engineView = await sceneInfra.camControls.getCameraView()
+  if (err(engineView)) {
+    return engineView
+  }
+
+  camera.updateMatrixWorld()
+
+  const direction = camera.getWorldDirection(new Vector3()).normalize()
+  const up = new Vector3(0, 1, 0).applyQuaternion(camera.quaternion).normalize()
+  const target = engineView.pivot_position
+  const distance = engineView.eye_offset
+
+  const numbers = [
+    direction.x,
+    direction.y,
+    direction.z,
+    up.x,
+    up.y,
+    up.z,
+    target.x,
+    target.y,
+    target.z,
+    distance,
+  ]
+  if (!numbers.every(Number.isFinite) || distance <= 0) {
+    return new Error('Could not read the current camera.')
+  }
+
+  return {
+    direction: [direction.x, direction.y, direction.z],
+    up: [up.x, up.y, up.z],
+    target: [target.x, target.y, target.z],
+    distance,
+    projection: isPerspective ? 'Perspective' : 'Orthographic',
+  }
+}
 
 function enginePoint(point: ArtifactPoint3d): {
   x: number
@@ -75,22 +119,39 @@ export async function applyNamedViewCamera({
       })
       return
     }
+  }
 
-    await sceneInfra.camControls.setCameraToAxis({ axis, target, distance })
+  let resolvedTarget = target
+  let resolvedDistance = distance
+  if (target === undefined || distance === undefined) {
+    await engineStreamZoomToFit({ engineCommandManager, padding: FIT_PADDING })
+    await getCameraSettings(engineCommandManager)
+
+    const fittedView = await sceneInfra.camControls.getCameraView()
+    if (!err(fittedView)) {
+      resolvedTarget ??= fittedView.pivot_position
+      resolvedDistance ??= fittedView.eye_offset
+    }
+  }
+
+  if (camera.look.type === 'oriented') {
+    const axis = ORIENTATION_AXES[camera.look.orientation]
+    if (axis !== null) {
+      await sceneInfra.camControls.setCameraToAxis({
+        axis,
+        target: resolvedTarget,
+        distance: resolvedDistance,
+      })
+    }
   } else {
     await lookAlongDirection({
       direction: camera.look.direction,
       up: camera.look.up,
-      target,
-      distance,
+      target: resolvedTarget,
+      distance: resolvedDistance,
       sceneInfra,
       engineCommandManager,
     })
-  }
-
-  if (target === undefined || distance === undefined) {
-    await engineStreamZoomToFit({ engineCommandManager, padding: FIT_PADDING })
-    await getCameraSettings(engineCommandManager)
   }
 }
 

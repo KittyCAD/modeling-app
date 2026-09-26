@@ -94,6 +94,30 @@ type GdtObjectsCommandArgs<Name extends ModelingStdLibCommandName> =
 
 export type HelixModes = 'Axis' | 'Edge' | 'Cylinder'
 
+export type NamedViewOrientation =
+  | 'Front'
+  | 'Back'
+  | 'Left'
+  | 'Right'
+  | 'Top'
+  | 'Bottom'
+  | 'Isometric'
+
+export type NamedViewProjection = 'Orthographic' | 'Perspective'
+export type NamedViewVisibility = 'Show' | 'Hide'
+
+export type NamedViewCommandArgs = Override<
+  PointAndClickCommandArgs<'Named View'>,
+  {
+    baseline: NamedViewVisibility
+    except?: Selections
+    orientation: NamedViewOrientation
+    target?: KclCommandValue
+    distance?: KclCommandValue
+    projection: NamedViewProjection
+  }
+>
+
 export type ExtrudeCommandArgs = Override<
   PointAndClickCommandArgs<'Extrude'>,
   {
@@ -284,6 +308,7 @@ export type BlendCommandArgs = PointAndClickCommandArgs<'Blend'>
 export type JoinSurfacesCommandArgs = PointAndClickCommandArgs<'Join Surfaces'>
 
 export type StdLibModelingCommandSchema = {
+  'Named View': NamedViewCommandArgs
   Extrude: ExtrudeCommandArgs
   Sweep: SweepCommandArgs
   Loft: LoftCommandArgs

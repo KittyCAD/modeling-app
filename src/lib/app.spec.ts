@@ -9,6 +9,10 @@ import {
   KCL_NEW_LEXER_PARSER_FEATURE_FLAG,
 } from '@src/lib/constants'
 import fsZds, { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
+import {
+  activeViewSignal,
+  lockedNamedViewKeysSignal,
+} from '@src/lib/kclNamedViewActivation'
 import type { Project } from '@src/lib/project'
 import {
   DIRECTORY_PROJECT_LIBRARY_TYPE,
@@ -1138,11 +1142,15 @@ describe('project system', () => {
     File.ioImplementations.write = () => Promise.resolve()
 
     try {
+      activeViewSignal.value = { name: 'Front', moduleKey: 'Main' }
+      lockedNamedViewKeysSignal.value = new Set(['locked-view'])
       const project = await app.openProject(mockProject)
 
       expect(app.project).toBeDefined()
       expect(app.project?.executingPath).toBeNull()
       expect(app.project?.executingFileEntry.value.name).toEqual('')
+      expect(activeViewSignal.value).toBeNull()
+      expect(lockedNamedViewKeysSignal.value.size).toBe(0)
 
       const [mainEntry] = mockProject.children ?? []
       expect(mainEntry).toBeDefined()
@@ -1154,9 +1162,13 @@ describe('project system', () => {
       expect(app.project?.executingPath).toEqual('/some-dir/test/main.kcl')
       expect(app.project?.executingFileEntry.value.name).toEqual('main.kcl')
 
+      activeViewSignal.value = { name: 'Front', moduleKey: 'Main' }
+      lockedNamedViewKeysSignal.value = new Set(['locked-view'])
       app.closeProject()
 
       expect(app.project).toBeUndefined()
+      expect(activeViewSignal.value).toBeNull()
+      expect(lockedNamedViewKeysSignal.value.size).toBe(0)
     } finally {
       app.dispose()
     }

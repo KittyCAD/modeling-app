@@ -2664,6 +2664,10 @@ impl ExecTestResults {
         &self.exec_state.global.root_module_artifacts.commands
     }
 
+    pub(crate) fn root_module_operations(&self) -> &[Operation] {
+        &self.exec_state.global.root_module_artifacts.operations
+    }
+
     /// The diagnostics the run reported. Non-fatal issues, such as use of an
     /// experimental feature without the opt-in, are recorded here rather than
     /// returned as an error, so this is the only place a test can see them.

@@ -1,9 +1,78 @@
 import type { ModulePath } from '@rust/kcl-lib/bindings/ModulePath'
+import { render, screen } from '@testing-library/react'
+import { createElement, Suspense } from 'react'
+import { describe, expect, it, vi } from 'vitest'
 
-import { viewRows } from '@src/components/layout/areas/KclNamedViewsPane'
+const renderMocks = vi.hoisted(() => {
+  const wasmInstance = {}
+  const wasmInstancePromise = Object.assign(Promise.resolve(wasmInstance), {
+    status: 'fulfilled',
+    value: wasmInstance,
+  })
+
+  return {
+    wasmInstance,
+    namedViewCameraSummary: vi.fn(() => 'Front Orthographic'),
+    kclManager: {
+      get wasmInstance() {
+        throw new Error('The synchronous WASM getter must not be used')
+      },
+      wasmInstancePromise,
+      ast: {},
+      code: '',
+      execStateSignal: {
+        value: { artifactGraph: new Map(), filenames: {} },
+      },
+      isExecutingSignal: { value: false },
+      systemDeps: { projectPath: { value: '/project' } },
+    },
+  }
+})
+
+vi.mock('@src/lib/boot', () => ({
+  useApp: () => ({ commands: { actor: { send: vi.fn() } } }),
+  useSingletons: () => ({ kclManager: renderMocks.kclManager }),
+}))
+
+vi.mock('@src/hooks/useModelingContext', () => ({
+  useModelingContext: () => ({ state: null }),
+}))
+
+vi.mock('@src/hooks/useReliesOnEngine', () => ({
+  useReliesOnEngine: () => false,
+}))
+
+vi.mock('@src/lib/kclNamedViewEdit', () => ({
+  namedViewCameraSummary: renderMocks.namedViewCameraSummary,
+  prepareNamedViewEditCommand: vi.fn(),
+}))
+
+vi.mock('@src/components/ActionButton', () => ({
+  ActionButton: () => null,
+}))
+
+vi.mock('@src/components/ContextMenu', () => ({
+  ContextMenu: () => null,
+  ContextMenuItem: () => null,
+}))
+
+vi.mock('@src/components/CustomIcon', () => ({
+  CustomIcon: () => null,
+}))
+
+vi.mock('@src/components/layout/Panel', () => ({
+  LayoutPanel: ({ children }: { children: unknown }) => children,
+  LayoutPanelHeader: ({ Menu }: { Menu: unknown }) => Menu,
+}))
+
+import {
+  KclNamedViewsPane,
+  canManageNamedView,
+  nextViewSelection,
+  viewRows,
+} from '@src/components/layout/areas/KclNamedViewsPane'
 import type { KclNamedView } from '@src/lang/std/kclNamedViews'
 import { KCL_DEFAULT_VIEW_NAME } from '@src/lang/std/kclNamedViews'
-import { describe, expect, it } from 'vitest'
 
 const CODE_REF = {
   range: [0, 0, 0] as [number, number, number],
@@ -15,10 +84,12 @@ function view({
   name,
   id = `view-${name}`,
   modulePath,
+  moduleId = 0,
 }: {
   name: string
   id?: string
   modulePath?: ModulePath
+  moduleId?: number
 }): KclNamedView {
   return {
     artifact: {
@@ -35,7 +106,7 @@ function view({
       hideIds: [],
       codeRef: CODE_REF,
     },
-    moduleId: 0,
+    moduleId,
     modulePath,
   }
 }
@@ -122,5 +193,120 @@ describe('viewRows', () => {
     const rows = viewRows([view({ name: 'Front', id: 'view-1' })])
 
     expect(rows.map((row) => row.key)).toEqual(['kcl-default', 'view-1'])
+  })
+
+  it('uses the source-derived camera summary beside each declared view', () => {
+    const namedView = view({ name: 'Front' })
+
+    expect(
+      viewRows([namedView], () => 'Front 200mm Perspective')[1].detail
+    ).toBe('Front 200mm Perspective')
+  })
+
+  it('only lets the root module manage a declared view', () => {
+    expect(canManageNamedView(view({ name: 'Root' }))).toBe(true)
+    expect(canManageNamedView(view({ name: 'Import', moduleId: 1 }))).toBe(
+      false
+    )
+  })
+})
+
+describe('KclNamedViewsPane', () => {
+  it('uses promised WASM instead of reading the unsafe synchronous getter', async () => {
+    const namedView = view({ name: 'Front', modulePath: { type: 'Main' } })
+    renderMocks.kclManager.execStateSignal.value = {
+      artifactGraph: new Map([
+        [namedView.artifact.id, { type: 'namedView', ...namedView.artifact }],
+      ]),
+      filenames: { 0: { type: 'Main' } },
+    }
+    renderMocks.namedViewCameraSummary.mockClear()
+
+    render(
+      createElement(
+        Suspense,
+        { fallback: createElement('div', null, 'Loading WASM') },
+        createElement(KclNamedViewsPane, {
+          layout: { id: 'named-views', label: 'Named Views' },
+          onClose: vi.fn(),
+        } as never)
+      )
+    )
+    expect(await screen.findByText('Front')).toBeInTheDocument()
+    expect(renderMocks.namedViewCameraSummary).toHaveBeenCalledWith(
+      expect.objectContaining({ wasmInstance: renderMocks.wasmInstance })
+    )
+  })
+})
+
+describe('nextViewSelection', () => {
+  const rowKeys = ['default', 'front', 'top', 'detail']
+
+  it('makes a plain click the only selection', () => {
+    const result = nextViewSelection({
+      selected: new Set(['front', 'top']),
+      rowKey: 'detail',
+      rowIndex: 3,
+      anchorIndex: 1,
+      rowKeys,
+      shiftKey: false,
+      toggleKey: false,
+    })
+
+    expect([...result.selected]).toEqual(['detail'])
+    expect(result.anchorIndex).toBe(3)
+  })
+
+  it('toggles a row with Command or Control click', () => {
+    const added = nextViewSelection({
+      selected: new Set(['front']),
+      rowKey: 'top',
+      rowIndex: 2,
+      anchorIndex: 1,
+      rowKeys,
+      shiftKey: false,
+      toggleKey: true,
+    })
+    expect([...added.selected]).toEqual(['front', 'top'])
+
+    const removed = nextViewSelection({
+      selected: added.selected,
+      rowKey: 'front',
+      rowIndex: 1,
+      anchorIndex: added.anchorIndex,
+      rowKeys,
+      shiftKey: false,
+      toggleKey: true,
+    })
+    expect([...removed.selected]).toEqual(['top'])
+  })
+
+  it('selects a contiguous range with Shift click', () => {
+    const result = nextViewSelection({
+      selected: new Set(['front']),
+      rowKey: 'detail',
+      rowIndex: 3,
+      anchorIndex: 1,
+      rowKeys,
+      shiftKey: true,
+      toggleKey: false,
+    })
+
+    expect([...result.selected]).toEqual(['front', 'top', 'detail'])
+    expect(result.anchorIndex).toBe(1)
+  })
+
+  it('adds a Shift range when Command or Control is also held', () => {
+    const result = nextViewSelection({
+      selected: new Set(['default']),
+      rowKey: 'detail',
+      rowIndex: 3,
+      anchorIndex: 2,
+      rowKeys,
+      shiftKey: true,
+      toggleKey: true,
+    })
+
+    expect([...result.selected]).toEqual(['default', 'top', 'detail'])
   })
 })

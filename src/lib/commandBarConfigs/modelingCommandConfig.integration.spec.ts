@@ -1210,6 +1210,7 @@ function pointAndClickStdLibArgs(config: StdLibCommandDriftConfig) {
 
 describe('stdlib command arg derivation', () => {
   const commandsUsingCanonicalSummary = [
+    'Named View',
     'Sweep',
     'Loft',
     'Offset plane',

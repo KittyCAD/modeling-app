@@ -18,6 +18,7 @@ import { isPlaywright } from '@src/lib/isPlaywright'
 import { EngineDebugger } from '@src/lib/debugger'
 import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 import { setKclRuntimeFlagsOnWasm } from '@src/lib/kclRuntimeFlags'
+import { resetNamedViewSession } from '@src/lib/kclNamedViewActivation'
 import { layoutService } from '@src/lib/layout/registry/contract'
 import type { LayoutService } from '@src/lib/layout/types'
 import type { MachineManager } from '@src/lib/MachineManager'
@@ -399,6 +400,7 @@ export class App implements AppSubsystems {
     const nextProject = await ZDSProject.open(projectIORefSignal, this)
     assertCurrent()
 
+    resetNamedViewSession()
     this.disposeProjectHistoryExtensions?.()
     this.project = nextProject
     this.setCloudSyncOpenedProject(ownedProject)
@@ -516,6 +518,7 @@ export class App implements AppSubsystems {
   }
 
   closeProject() {
+    resetNamedViewSession()
     this.disposeProjectHistoryExtensions?.()
     this.disposeProjectHistoryExtensions = undefined
     this.unsubscribeFromSettings?.unsubscribe()

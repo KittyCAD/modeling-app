@@ -26,6 +26,7 @@ import {
   isSameView,
   isSketchSessionOpen,
   moduleKeyOf,
+  namedViewSessionKey,
   reapplyActiveViewAfterReconnect,
   resetNamedViewSession,
 } from '@src/lib/kclNamedViewActivation'
@@ -38,7 +39,10 @@ const CODE_REF = {
   pathToNode: [],
 }
 
-const SAVED_CAMERA = { eye_offset: 42 } as unknown as CameraViewState
+const SAVED_CAMERA = {
+  pivot_position: { x: 4, y: 5, z: 6 },
+  eye_offset: 42,
+} as unknown as CameraViewState
 
 /** An unconsumed extrusion, so the universe has one member to report on. */
 function body(id: string): Extract<Artifact, { type: 'sweep' }> {
@@ -242,6 +246,24 @@ describe('isSameView', () => {
   })
 })
 
+describe('namedViewSessionKey', () => {
+  it('survives artifact ID changes but distinguishes projects and views', () => {
+    const original = declaredView('Front')
+    const regenerated = declaredView('Front')
+    regenerated.artifact.id = 'a-new-execution-id'
+
+    expect(namedViewSessionKey('/project-a', original)).toBe(
+      namedViewSessionKey('/project-a', regenerated)
+    )
+    expect(namedViewSessionKey('/project-a', original)).not.toBe(
+      namedViewSessionKey('/project-b', regenerated)
+    )
+    expect(namedViewSessionKey('/project-a', original)).not.toBe(
+      namedViewSessionKey('/project-a', declaredView('Back'))
+    )
+  })
+})
+
 describe('isSketchSessionOpen', () => {
   it('reports both sketch sessions and nothing else', () => {
     expect(isSketchSessionOpen(modelingStateIn('Sketch'))).toBe(true)
@@ -310,8 +332,8 @@ describe('activateNamedView', () => {
     )
     expect(f.setCameraToAxis).toHaveBeenCalledWith({
       axis: '-y',
-      target: undefined,
-      distance: undefined,
+      target: SAVED_CAMERA.pivot_position,
+      distance: SAVED_CAMERA.eye_offset,
     })
     expect(activeViewSignal.value).toEqual({ name: 'Front', moduleKey: 'Main' })
   })
@@ -399,7 +421,7 @@ describe('the pre-activation camera', () => {
       kclManager: f.kclManager,
     })
 
-    expect(f.getCameraView).toHaveBeenCalledOnce()
+    expect(f.getCameraView).toHaveBeenCalledTimes(2)
     expect(f.setCameraView).toHaveBeenCalledWith(SAVED_CAMERA)
   })
 
@@ -415,7 +437,7 @@ describe('the pre-activation camera', () => {
       kclManager: f.kclManager,
     })
 
-    expect(f.getCameraView).toHaveBeenCalledOnce()
+    expect(f.getCameraView).toHaveBeenCalledTimes(3)
   })
 
   it('is not put back twice', async () => {
@@ -652,8 +674,8 @@ describe('reapplying the active view after a reconnection', () => {
     )
     expect(f.setCameraToAxis).toHaveBeenCalledWith({
       axis: '-y',
-      target: undefined,
-      distance: undefined,
+      target: SAVED_CAMERA.pivot_position,
+      distance: SAVED_CAMERA.eye_offset,
     })
   })
 

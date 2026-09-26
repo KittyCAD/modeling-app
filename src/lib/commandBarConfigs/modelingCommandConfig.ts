@@ -41,6 +41,10 @@ import {
   loftDialogOverrides,
 } from '@src/lib/commandBarConfigs/modelingDialogs/loft'
 import {
+  namedViewDialogLayout,
+  namedViewDialogOverrides,
+} from '@src/lib/commandBarConfigs/modelingDialogs/namedView'
+import {
   revolveDialogLayout,
   revolveDialogOverrides,
 } from '@src/lib/commandBarConfigs/modelingDialogs/revolve'
@@ -549,6 +553,22 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         },
       },
     },
+  },
+  'Named View': {
+    description: modelingStdLibCommandSummary('Named View'),
+    icon: 'namedView',
+    status: modelingStdLibCommandStatus('Named View'),
+    needsReview: true,
+    dialogLayout: namedViewDialogLayout,
+    reviewValidation: createModelingCodemodReviewValidation(
+      modelingCommandCodemods['Named View']
+    ),
+    args: modelingStdLibCommandArgs<ModelingCommandSchema['Named View']>(
+      'Named View',
+      {
+        overrides: namedViewDialogOverrides,
+      }
+    ),
   },
   Extrude: {
     description: modelingStdLibCommandSummary('Extrude'),
