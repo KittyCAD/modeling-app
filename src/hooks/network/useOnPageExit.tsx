@@ -36,7 +36,8 @@ export const useOnPageExit = ({
         route: 'page-exit',
         initiatedBy: 'client',
       })
-      sceneInfra.camControls.oldCameraState = undefined
+      sceneInfra.camControls.clearOldCameraState()
+      sceneInfra.camControls.clearCameraStateBeforeReconnect()
     }
   }, [callback, engineCommandManager, sceneInfra])
 }

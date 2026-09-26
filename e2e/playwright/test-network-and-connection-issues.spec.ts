@@ -8,27 +8,52 @@ test.use({ userFeatures: [LEGACY_SKETCH_MODE_FEATURE_FLAG] })
 
 test.describe('Test network related behaviors', { tag: '@desktop' }, () => {
   test(
-    'simulate network down and network little widget',
+    'preserves the scene while offline',
     { tag: '@skipLocalEngine' },
-    async ({ page, homePage, toolbar, scene, cmdBar }) => {
+    async ({ page, context, homePage, toolbar, scene }) => {
       const networkToggleConnectedText = page.getByText(
         'Network health (Strong)'
       )
       const networkToggleWeakText = page.getByText('Network health (Ok)')
 
-      const u = await getUtils(page)
-      await page.setBodyDimensions({ width: 1200, height: 500 })
+      await context.addInitScript(
+        (initialCode) => {
+          localStorage.setItem('persistCode', initialCode)
+        },
+        `@settings(kclVersion = 2.0)
+
+sketch001 = sketch(on = XY) {
+  circle1 = circle(start = [var 50mm, var 0mm], center = [var 0mm, var 0mm])
+}
+region001 = region(point = [0mm, 0mm], sketch = sketch001)
+extrude001 = extrude(region001, length = 20mm)`
+      )
+
+      const dimensions = { width: 1200, height: 500 }
+      const modelProbe = {
+        x: dimensions.width / 2 + dimensions.width / 100,
+        y: dimensions.height / 2,
+      }
+      await page.setBodyDimensions(dimensions)
 
       await homePage.waitForAuthentication()
       await homePage.goToModelingScene()
       await scene.settled()
+      await scene.moveCameraTo({ x: 80, y: -60, z: 55 })
+      const cameraBeforeDisconnect = await scene.getCameraInfo()
+      await scene.expectPixelColorNotToBe(
+        [TEST_COLORS.DARK_MODE_BKGD, TEST_COLORS.WHITE],
+        modelProbe,
+        15
+      )
+      const u = await getUtils(page)
+      const streamProbe = await scene.convertPagePositionToStream(
+        modelProbe.x,
+        modelProbe.y
+      )
+      const [modelPixel] = await u.getPixelRGBs(streamProbe, 1)
 
       const networkToggle = page.getByTestId(/network-toggle/)
-
-      // This is how we wait until the stream is online
-      await expect(toolbar.startSketchBtn).not.toBeDisabled({
-        timeout: 15000,
-      })
 
       await expect(networkToggle).toBeVisible()
       await networkToggle.hover()
@@ -51,18 +76,27 @@ test.describe('Test network related behaviors', { tag: '@desktop' }, () => {
       await page.mouse.click(100, 100)
       await expect(networkPopover).not.toBeVisible()
 
-      // Turn off the network
-      await u.emulateNetworkConditions({
-        offline: true,
-        // values of 0 remove any active throttling. crbug.com/456324#c9
-        latency: 0,
-        downloadThroughput: -1,
-        uploadThroughput: -1,
-      })
+      const viewControlsMenu = page.getByTestId('view-controls-menu')
+      await page.getByLabel('View orientation gizmo').click({ button: 'right' })
+      await expect(viewControlsMenu).toBeVisible()
 
-      // Expect the network to be down
+      // Exercise Chromium's actual offline path so the WebSocket and WebRTC
+      // transports close in the same order they do for a real network loss.
+      await context.setOffline(true)
       await expect(networkToggle).toContainText('Network health (Offline)')
       await expect(scene.networkToggleConnected).toHaveCount(0)
+      await expect(scene.engineConnectionsSpinner).not.toBeVisible()
+      await expect(scene.streamWrapper).toHaveAttribute('inert')
+      await expect(
+        page.getByTestId('engine-scene-view-extension-overlay')
+      ).toHaveAttribute('inert')
+      await expect(viewControlsMenu).not.toBeVisible()
+      const reconnectingChip = page.getByText('Reconnecting...')
+      await expect(reconnectingChip).not.toBeVisible()
+      await page.keyboard.press('s')
+      await expect(toolbar.exitSketchBtn).not.toBeVisible()
+      await expect(reconnectingChip).toBeVisible()
+      await scene.expectPixelColor(modelPixel, modelProbe, 15)
 
       // Click the network toggle
       await networkToggle.click()
@@ -74,20 +108,28 @@ test.describe('Test network related behaviors', { tag: '@desktop' }, () => {
       await page.mouse.click(0, 0)
       await expect(networkPopover).not.toBeVisible()
 
-      // Turn back on the network
-      await u.emulateNetworkConditions({
-        offline: false,
-        // values of 0 remove any active throttling. crbug.com/456324#c9
-        latency: 0,
-        downloadThroughput: -1,
-        uploadThroughput: -1,
-      })
+      await context.setOffline(false)
 
       await expect(toolbar.startSketchBtn).not.toBeDisabled({
-        timeout: 15000,
+        timeout: 15_000,
       })
+      await expect(reconnectingChip).not.toBeVisible()
+      const cameraAfterReconnect = await scene.getCameraInfo()
+      for (const [
+        index,
+        coordinate,
+      ] of cameraBeforeDisconnect.position.entries()) {
+        expect(cameraAfterReconnect.position[index]).toBeCloseTo(coordinate, 1)
+      }
+      for (const [
+        index,
+        coordinate,
+      ] of cameraBeforeDisconnect.target.entries()) {
+        expect(cameraAfterReconnect.target[index]).toBeCloseTo(coordinate, 1)
+      }
 
       // (Second check) expect the network to be up
+      await networkToggle.hover()
       await expect(
         networkToggleConnectedText.or(networkToggleWeakText)
       ).toBeVisible()

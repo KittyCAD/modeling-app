@@ -206,6 +206,29 @@ describe('ConnectionManager', () => {
     }
   )
 
+  it('notifies before closing the connection', () => {
+    const manager = createConnectionManager()
+    addConnectedState(manager)
+    const connection = manager.connection
+    const disconnect = vi.spyOn(connection!, 'disconnectAll')
+    const beforeTeardown = vi.fn(() => {
+      expect(manager.connection).toBe(connection)
+      expect(disconnect).not.toHaveBeenCalled()
+    })
+    manager.addEventListener(
+      EngineConnectionManagerEvents.BeforeTeardown,
+      beforeTeardown
+    )
+
+    manager.tearDown({
+      route: 'websocket-closed',
+      initiatedBy: 'unknown',
+    })
+
+    expect(beforeTeardown).toHaveBeenCalledOnce()
+    expect(disconnect).toHaveBeenCalledOnce()
+  })
+
   it.each([
     [{ width: 240, height: 256 }, 'width must be between 256 and 2160, 240'],
     [{ width: 256, height: 240 }, 'height must be between 256 and 2160, 240'],

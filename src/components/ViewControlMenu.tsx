@@ -1,6 +1,7 @@
 import { memo, useMemo } from 'react'
 
 import { useSignals } from '@preact/signals-react/runtime'
+import { useAppState } from '@src/AppState'
 import type { ContextMenuProps } from '@src/components/ContextMenu'
 import {
   ContextMenu,
@@ -8,6 +9,8 @@ import {
   ContextMenuItem,
 } from '@src/components/ContextMenu'
 import { useModelingContext } from '@src/hooks/useModelingContext'
+import { useNetworkContext } from '@src/hooks/useNetworkContext'
+import { NetworkHealthState } from '@src/hooks/useNetworkStatus'
 import { getSelectedSketchTarget } from '@src/lang/queryAst'
 import { useApp, useSingletons } from '@src/lib/boot'
 import type { AxisNames } from '@src/lib/constants'
@@ -220,14 +223,22 @@ export function useViewControlMenuItems() {
 
 export const ViewControlContextMenu = memo(function ViewControlContextMenu({
   menuTargetElement: wrapperRef,
+  disabled,
   ...props
 }: ContextMenuProps) {
   const menuItems = useViewControlMenuItems()
+  const { isStreamAcceptingInput } = useAppState()
+  const { overallState } = useNetworkContext()
+  const isNetworkOkay =
+    overallState === NetworkHealthState.Ok ||
+    overallState === NetworkHealthState.Weak
+
   return (
     <ContextMenu
       data-testid="view-controls-menu"
       menuTargetElement={wrapperRef}
       items={menuItems}
+      disabled={disabled || !isNetworkOkay || !isStreamAcceptingInput}
       {...props}
     />
   )
