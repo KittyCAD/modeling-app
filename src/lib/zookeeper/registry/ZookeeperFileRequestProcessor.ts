@@ -46,6 +46,10 @@ export class ZookeeperFileRequestProcessor {
     private readonly deps: ZookeeperFileRequestProcessorDependencies
   ) {}
 
+  waitForPendingWrites() {
+    return this.queue
+  }
+
   dispose() {
     if (!this.disposed) {
       this.disposed = true

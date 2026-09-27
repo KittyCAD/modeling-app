@@ -27,6 +27,7 @@ const workerMocks = vi.hoisted(() => ({
     dispose: ReturnType<typeof vi.fn>
     handleActorSnapshot: ReturnType<typeof vi.fn>
     reset: ReturnType<typeof vi.fn>
+    waitForPendingWrites: ReturnType<typeof vi.fn>
   }>,
 }))
 
@@ -64,6 +65,7 @@ vi.mock('@src/lib/zookeeper/registry/ZookeeperFileRequestProcessor', () => ({
     readonly dispose = vi.fn(async () => undefined)
     readonly handleActorSnapshot = vi.fn()
     readonly reset = vi.fn(async () => undefined)
+    readonly waitForPendingWrites = vi.fn(async () => undefined)
 
     constructor() {
       workerMocks.processors.push(this)
@@ -416,6 +418,42 @@ describe('Zookeeper session controller', () => {
     })
   })
 
+  it.each<TestState>(['other', 'ready-await'])(
+    'waits for returned files before collecting a prompt from %s',
+    async (actorState) => {
+      const writes = deferred<undefined>()
+      const { actor, controller, kclManager } = createHarness({ actorState })
+      workerMocks.processors[0].waitForPendingWrites.mockReturnValue(
+        writes.promise
+      )
+
+      controller.sendOrQueue('use the updated files', undefined, [])
+      actor.emit('ready-await')
+      await flushPromises()
+
+      expect(projectFilesMocks.collect).not.toHaveBeenCalled()
+      expect(
+        sentEvents(actor, ZookeeperManagerTransitions.MessageSend)
+      ).toHaveLength(0)
+
+      kclManager.code = 'length = 20'
+      writes.resolve(undefined)
+
+      await vi.waitFor(() => {
+        expect(
+          sentEvents(actor, ZookeeperManagerTransitions.MessageSend)
+        ).toHaveLength(1)
+      })
+      expect(projectFilesMocks.collect).toHaveBeenCalledWith(
+        expect.objectContaining({ selectedFileContents: 'length = 20' })
+      )
+      expect(
+        sentEvents(actor, ZookeeperManagerTransitions.MessageSend)[0]
+          ?.fileSelectedDuringPrompting.content
+      ).toBe('length = 20')
+    }
+  )
+
   it('retains a prompt through a same-project editor readiness gap', async () => {
     const { actor, controller, executingEditor, kclManager } = createHarness({
       actorState: 'ready-await',
@@ -450,7 +488,9 @@ describe('Zookeeper session controller', () => {
       throw new Error('Expected the prompt to be queued')
     }
     actor.emit('ready-await', { awaitingResponse: false })
-    expect(projectFilesMocks.collect).toHaveBeenCalledOnce()
+    await vi.waitFor(() => {
+      expect(projectFilesMocks.collect).toHaveBeenCalledOnce()
+    })
 
     controller.removeQueued(queuedMessage.id)
     collectedFiles.resolve([])
@@ -493,7 +533,9 @@ describe('Zookeeper session controller', () => {
     controller.sendOrQueue('first prompt', undefined, [])
     controller.sendOrQueue('second prompt', undefined, [])
 
-    expect(projectFilesMocks.collect).toHaveBeenCalledOnce()
+    await vi.waitFor(() => {
+      expect(projectFilesMocks.collect).toHaveBeenCalledOnce()
+    })
     expect(controller.queue.value.map(({ text }) => text)).toEqual([
       'first prompt',
       'second prompt',
@@ -525,6 +567,9 @@ describe('Zookeeper session controller', () => {
     })
 
     controller.sendOrQueue('use the current code', undefined, [])
+    await vi.waitFor(() => {
+      expect(projectFilesMocks.collect).toHaveBeenCalledOnce()
+    })
     kclManager.code = 'updated code'
     firstCollection.resolve([])
 
@@ -773,6 +818,9 @@ describe('Zookeeper session controller', () => {
     ).mockReturnValueOnce(deletion.promise)
 
     controller.sendOrQueue('do not send this', undefined, [])
+    await vi.waitFor(() => {
+      expect(projectFilesMocks.collect).toHaveBeenCalledOnce()
+    })
     const clearPromise = controller.clearConversation()
     collectedFiles.resolve([])
     await flushPromises()
@@ -798,6 +846,9 @@ describe('Zookeeper session controller', () => {
     const { actor, controller } = createHarness({ actorState: 'ready-await' })
 
     controller.sendOrQueue('old prompt', undefined, [])
+    await vi.waitFor(() => {
+      expect(projectFilesMocks.collect).toHaveBeenCalledOnce()
+    })
     await controller.clearConversation()
     actor.emit('await')
     await flushPromises()
