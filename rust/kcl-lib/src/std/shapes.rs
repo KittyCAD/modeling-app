@@ -465,12 +465,14 @@ async fn inner_polygon(
 
     let half_angle = std::f64::consts::PI / num_sides as f64;
 
+    // `units` comes from the sketch when one is piped in, so convert `radius` to it.
+    let radius_u = radius.to_length_units(units);
     let radius_to_vertices = if inscribed.unwrap_or(true) {
         // inscribed
-        radius.n
+        radius_u
     } else {
         // circumscribed
-        radius.n / libm::cos(half_angle)
+        radius_u / libm::cos(half_angle)
     };
 
     let angle_step = std::f64::consts::TAU / num_sides as f64;
@@ -846,6 +848,9 @@ mod tests {
             "@settings(kclVersion = 2.0, defaultLengthUnit = mm)\np = startSketchOn(XY) |> polygon(radius = 25.4, numSides = 4, center = [0, 0])",
             "@settings(kclVersion = 2.0, defaultLengthUnit = in)\np = startSketchOn(XY) |> polygon(radius = 25.4mm, numSides = 4, center = [0, 0])",
             "@settings(kclVersion = 2.0, defaultLengthUnit = in)\np = startSketchOn(XY) |> polygon(radius = 1, numSides = 4, center = [0, 0])",
+            // A sketch piped in instead of a plane: the units come from the sketch.
+            "@settings(kclVersion = 2.0, defaultLengthUnit = mm)\np = startSketchOn(XY) |> startProfile(at = [0, 0]) |> polygon(radius = 1in, numSides = 4, center = [0, 0])",
+            "@settings(kclVersion = 2.0, defaultLengthUnit = in)\np = startSketchOn(XY) |> startProfile(at = [0, 0]) |> polygon(radius = 25.4mm, numSides = 4, center = [0, 0])",
         ];
         // The vertices after the first one, then back to the first one.
         let expected = [[0.0, 25.4], [-25.4, 0.0], [0.0, -25.4], [25.4, 0.0]];
