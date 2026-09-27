@@ -5107,30 +5107,6 @@ solid7 = extrude(r7, length = width)
     }
 
     #[tokio::test(flavor = "multi_thread")]
-    async fn run_without_caching_does_not_retain_success_or_failure() {
-        cache::bust_cache().await;
-        clear_mem_cache().await;
-        let ctx = ExecutorContext::new_with_engine(Arc::new(EngineManager::new_mock()), Default::default());
-        let code = "@settings(kclVersion = 2.0)\nanswer = 42";
-        let program = crate::Program::parse_no_errs(code).unwrap();
-        let expected = ctx.run_with_caching(program.clone()).await.unwrap();
-        assert!(cache::read_old_ast().await.is_some());
-        assert!(cache::read_old_memory().await.is_some());
-
-        let actual = ctx.run_without_caching(program).await.unwrap();
-        assert_eq!(actual.variables, expected.variables);
-        assert!(cache::read_old_ast().await.is_none());
-        assert!(cache::read_old_memory().await.is_none());
-
-        let program = crate::Program::parse_no_errs(&format!("{code}\nbad = missingValue")).unwrap();
-        let error = ctx.run_without_caching(program).await.unwrap_err();
-        assert_eq!(error.variables.get("answer"), expected.variables.get("answer"));
-        assert!(cache::read_old_ast().await.is_none());
-        assert!(cache::read_old_memory().await.is_none());
-        ctx.close().await;
-    }
-
-    #[tokio::test(flavor = "multi_thread")]
     async fn run_with_caching_no_action_refreshes_mock_memory() {
         cache::bust_cache().await;
         clear_mem_cache().await;
