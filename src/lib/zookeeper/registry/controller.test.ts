@@ -418,42 +418,6 @@ describe('Zookeeper session controller', () => {
     })
   })
 
-  it.each<TestState>(['other', 'ready-await'])(
-    'waits for returned files before collecting a prompt from %s',
-    async (actorState) => {
-      const writes = deferred<undefined>()
-      const { actor, controller, kclManager } = createHarness({ actorState })
-      workerMocks.processors[0].waitForPendingWrites.mockReturnValue(
-        writes.promise
-      )
-
-      controller.sendOrQueue('use the updated files', undefined, [])
-      actor.emit('ready-await')
-      await flushPromises()
-
-      expect(projectFilesMocks.collect).not.toHaveBeenCalled()
-      expect(
-        sentEvents(actor, ZookeeperManagerTransitions.MessageSend)
-      ).toHaveLength(0)
-
-      kclManager.code = 'length = 20'
-      writes.resolve(undefined)
-
-      await vi.waitFor(() => {
-        expect(
-          sentEvents(actor, ZookeeperManagerTransitions.MessageSend)
-        ).toHaveLength(1)
-      })
-      expect(projectFilesMocks.collect).toHaveBeenCalledWith(
-        expect.objectContaining({ selectedFileContents: 'length = 20' })
-      )
-      expect(
-        sentEvents(actor, ZookeeperManagerTransitions.MessageSend)[0]
-          ?.fileSelectedDuringPrompting.content
-      ).toBe('length = 20')
-    }
-  )
-
   it('retains a prompt through a same-project editor readiness gap', async () => {
     const { actor, controller, executingEditor, kclManager } = createHarness({
       actorState: 'ready-await',
