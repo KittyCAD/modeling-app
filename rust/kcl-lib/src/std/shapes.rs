@@ -17,6 +17,7 @@ use super::utils::point_to_mm;
 use super::utils::point_to_typed;
 use super::utils::untype_point;
 use super::utils::untyped_point_to_mm;
+use super::utils::untyped_point_to_unit;
 use crate::SourceRange;
 use crate::errors::KclError;
 use crate::errors::KclErrorDetails;
@@ -521,7 +522,9 @@ async fn inner_polygon(
         let current_path = Path::ToPoint {
             base: BasePath {
                 from: from.ignore_units(),
-                to: *vertex,
+                // The vertices are in the units of `radius`, which can differ
+                // from the units of the sketch.
+                to: untyped_point_to_unit(*vertex, units, sketch.units),
                 tag: None,
                 units: sketch.units,
                 geo_meta: GeoMeta {
@@ -558,7 +561,7 @@ async fn inner_polygon(
     let current_path = Path::ToPoint {
         base: BasePath {
             from: from.ignore_units(),
-            to: vertices[0],
+            to: untyped_point_to_unit(vertices[0], units, sketch.units),
             tag: None,
             units: sketch.units,
             geo_meta: GeoMeta {
@@ -831,6 +834,68 @@ mod tests {
                 assert_close(&actual_segments, &segments, code);
                 assert_close(&actual_corners, &corners, code);
             }
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn polygon_records_its_vertices_in_the_units_of_the_sketch() {
+        // Every case is the same square with vertices 1in = 25.4mm from the
+        // center, written with different units.
+        let cases = [
+            "@settings(kclVersion = 2.0, defaultLengthUnit = mm)\np = startSketchOn(XY) |> polygon(radius = 1in, numSides = 4, center = [0, 0])",
+            "@settings(kclVersion = 2.0, defaultLengthUnit = mm)\np = startSketchOn(XY) |> polygon(radius = 25.4, numSides = 4, center = [0, 0])",
+            "@settings(kclVersion = 2.0, defaultLengthUnit = in)\np = startSketchOn(XY) |> polygon(radius = 25.4mm, numSides = 4, center = [0, 0])",
+            "@settings(kclVersion = 2.0, defaultLengthUnit = in)\np = startSketchOn(XY) |> polygon(radius = 1, numSides = 4, center = [0, 0])",
+        ];
+        // The vertices after the first one, then back to the first one.
+        let expected = [[0.0, 25.4], [-25.4, 0.0], [0.0, -25.4], [25.4, 0.0]];
+
+        for case in cases {
+            let code = format!("{case}\nlastX = lastSegX(p)\nstartX = profileStartX(p)");
+            let result = parse_execute(&code).await.unwrap();
+
+            // What the engine was told to draw.
+            let engine: Vec<[f64; 2]> = result
+                .root_module_artifact_commands()
+                .iter()
+                .filter_map(|command| match &command.command {
+                    ModelingCmd::ExtendPath(extend) => match &extend.segment {
+                        PathSegment::Line { end, relative: false } => Some([end.x.0, end.y.0]),
+                        other => panic!("expected an absolute line, got {other:?}"),
+                    },
+                    _ => None,
+                })
+                .collect();
+
+            // What KCL recorded in the sketch.
+            let KclValue::Sketch { value: sketch } = result.variable("p") else {
+                panic!("expected `p` to be a sketch");
+            };
+            let recorded: Vec<[f64; 2]> = sketch
+                .paths
+                .iter()
+                .map(|path| {
+                    let [x, y] = path.get_to();
+                    [x.to_mm(), y.to_mm()]
+                })
+                .collect();
+
+            for actual in [&engine, &recorded] {
+                assert_eq!(actual.len(), expected.len(), "{code}");
+                for (a, e) in actual.iter().zip(expected) {
+                    assert!(
+                        (a[0] - e[0]).abs() < 1e-9 && (a[1] - e[1]).abs() < 1e-9,
+                        "expected {expected:?}, got engine {engine:?} and recorded {recorded:?} for:\n{code}"
+                    );
+                }
+            }
+
+            let last_x = result.variable("lastX").as_ty_f64().unwrap().to_mm();
+            let start_x = result.variable("startX").as_ty_f64().unwrap().to_mm();
+            assert!(
+                (last_x - 25.4).abs() < 1e-9 && (start_x - 25.4).abs() < 1e-9,
+                "lastSegX = {last_x} mm, profileStartX = {start_x} mm for:\n{code}"
+            );
         }
     }
 }
