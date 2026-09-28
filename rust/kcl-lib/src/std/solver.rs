@@ -152,6 +152,12 @@ pub(crate) async fn create_segments_in_engine(
         Reverse,
     }
 
+    let contact_tolerance_mm = if exec_state.entry_point_version_is_v3_or_higher() {
+        POINT_POINT_2D_COINCIDENT_TOLERANCE_MM
+    } else {
+        SOLVER_CONVERGENCE_TOLERANCE
+    };
+
     let mut outer_sketch: Option<Sketch> = None;
     for segment in segments.iter() {
         if segment.is_construction() {
@@ -193,9 +199,9 @@ pub(crate) async fn create_segments_in_engine(
             let entry_point = match &segment.kind {
                 SegmentKind::Line { end, .. } | SegmentKind::Arc { end, .. } => {
                     let reverse_start_mm = point_to_mm(end.clone());
-                    if distance(forward_start_mm, current_pen_mm) <= SOLVER_CONVERGENCE_TOLERANCE {
+                    if distance(forward_start_mm, current_pen_mm) <= contact_tolerance_mm {
                         forward_start.clone()
-                    } else if distance(reverse_start_mm, current_pen_mm) <= SOLVER_CONVERGENCE_TOLERANCE {
+                    } else if distance(reverse_start_mm, current_pen_mm) <= contact_tolerance_mm {
                         traversal = SegmentTraversal::Reverse;
                         end.clone()
                     } else {
@@ -211,9 +217,9 @@ pub(crate) async fn create_segments_in_engine(
                         ))
                     })?;
                     let reverse_start_mm = point_to_mm(reverse_start.clone());
-                    if distance(forward_start_mm, current_pen_mm) <= SOLVER_CONVERGENCE_TOLERANCE {
+                    if distance(forward_start_mm, current_pen_mm) <= contact_tolerance_mm {
                         forward_start.clone()
-                    } else if distance(reverse_start_mm, current_pen_mm) <= SOLVER_CONVERGENCE_TOLERANCE {
+                    } else if distance(reverse_start_mm, current_pen_mm) <= contact_tolerance_mm {
                         traversal = SegmentTraversal::Reverse;
                         reverse_start
                     } else {
@@ -226,7 +232,7 @@ pub(crate) async fn create_segments_in_engine(
 
             // If the next segment already starts where the pen is, preserve continuity by
             // skipping both the engine pen move and the synthetic bookkeeping jump.
-            if distance(entry_point_mm, current_pen_mm) > SOLVER_CONVERGENCE_TOLERANCE {
+            if distance(entry_point_mm, current_pen_mm) > contact_tolerance_mm {
                 let id = exec_state.next_uuid();
                 if !exec_state.sketch_mode() {
                     exec_state
