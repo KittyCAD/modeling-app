@@ -104,7 +104,6 @@ test.describe('Face API edge selection', { tag: '@web' }, () => {
       // Update state after profile selection
       state.currentArgKey = 'axisOrEdge'
       state.headerArguments.Profiles = '1 profile'
-      state.headerArguments.BodyType = ''
       state.highlightedHeaderArg = 'axisOrEdge'
       await cmdBar.progressCmdBar()
       await cmdBar.expectState(state)
@@ -129,19 +128,11 @@ test.describe('Face API edge selection', { tag: '@web' }, () => {
       await cmdBar.progressCmdBar()
       await cmdBar.expectState(state)
 
-      // Move to review stage
-      state.currentArgKey = 'bodyType'
-      state.currentArgValue = ''
-      state.highlightedHeaderArg = 'bodyType'
-      state.headerArguments.Angle = '360deg'
-      await cmdBar.progressCmdBar()
-      await cmdBar.expectState(state)
-
-      // Move to review stage
+      // Closed profiles use the default solid body type and go directly to review.
       state.currentArgKey = ''
       state.currentArgValue = ''
       state.highlightedHeaderArg = ''
-      state.headerArguments.BodyType = 'SURFACE'
+      state.headerArguments.Angle = '360deg'
       await cmdBar.progressCmdBar()
       await cmdBar.expectState({
         commandName: state.commandName,
@@ -199,7 +190,6 @@ test.describe('Face API edge selection', { tag: '@web' }, () => {
       // Update state after profile selection
       state.currentArgKey = 'axisOrEdge'
       state.headerArguments.Profiles = '1 profile'
-      state.headerArguments.BodyType = ''
       state.highlightedHeaderArg = 'axisOrEdge'
       await cmdBar.progressCmdBar()
       await cmdBar.expectState(state)
@@ -223,19 +213,11 @@ test.describe('Face API edge selection', { tag: '@web' }, () => {
       await cmdBar.progressCmdBar()
       await cmdBar.expectState(state)
 
-      // Move to review stage
-      state.currentArgKey = 'bodyType'
-      state.currentArgValue = ''
-      state.highlightedHeaderArg = 'bodyType'
-      state.headerArguments.Angle = '360deg'
-      await cmdBar.progressCmdBar()
-      await cmdBar.expectState(state)
-
-      // Move to review stage
+      // Closed profiles use the default solid body type and go directly to review.
       state.currentArgKey = ''
       state.currentArgValue = ''
       state.highlightedHeaderArg = ''
-      state.headerArguments.BodyType = 'SURFACE'
+      state.headerArguments.Angle = '360deg'
       await cmdBar.progressCmdBar()
       await cmdBar.expectState({
         commandName: state.commandName,

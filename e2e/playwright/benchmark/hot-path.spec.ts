@@ -103,34 +103,20 @@ test.describe('Hot path', { tag: '@desktop' }, () => {
       await page.keyboard.type('1')
     })
 
-    await test.step('Click Continue and accept the default body type', async () => {
-      await cmdBar.progressCmdBar()
-      await cmdBar.expectState({
-        stage: 'arguments',
-        currentArgKey: 'bodyType',
-        currentArgValue: '',
-        headerArguments: {
-          Profiles: '1 profile',
-          Length: '1',
-          BodyType: '',
-        },
-        highlightedHeaderArg: 'bodyType',
-        commandName: 'Extrude',
-      })
-    })
-
-    await test.step('Click Continue, expect the review page without errors, and click Submit', async () => {
+    await test.step('Click Continue and advance directly to review for a closed profile', async () => {
       await cmdBar.progressCmdBar()
       await cmdBar.expectState({
         stage: 'review',
         headerArguments: {
           Profiles: '1 profile',
           Length: '1',
-          BodyType: 'SURFACE',
         },
         commandName: 'Extrude',
         reviewValidationError: undefined,
       })
+    })
+
+    await test.step('Submit the default solid extrude', async () => {
       await page.waitForTimeout(timeout)
       await cmdBar.submit()
     })
