@@ -3,32 +3,19 @@ import { SessionExpiredDialogHost } from '@src/components/SessionExpiredDialog'
 import { useAuthNavigation } from '@src/hooks/useAuthNavigation'
 import { useFileSystemWatcher } from '@src/hooks/useFileSystemWatcher'
 import { useApp, useSingletons } from '@src/lib/boot'
-import { getAppSettingsFilePath } from '@src/lib/desktop'
-import { getStringAfterLastSeparator, PATHS } from '@src/lib/paths'
-import { trap } from '@src/lib/trap'
+import { getStringAfterLastSeparator } from '@src/lib/paths'
 import type { ReactNode } from 'react'
-import { createContext, useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { createContext } from 'react'
 
 export const RouteProviderContext = createContext({})
 
 export function RouteProvider({ children }: { children: ReactNode }) {
   useSignals()
   const app = useApp()
-  const { fileOperations, settings, project } = app
+  const { project } = app
   const { kclManager } = useSingletons()
-  const settingsActor = settings.actor
   useAuthNavigation()
-  const loadedProject = project?.projectIORefSignal.value
   const loadedFile = project?.executingFileEntry.value
-  const [settingsPath, setSettingsPath] = useState<string | undefined>(
-    undefined
-  )
-  const navigate = useNavigate()
-
-  useEffect(() => {
-    getAppSettingsFilePath().then(setSettingsPath).catch(trap)
-  }, [])
 
   useFileSystemWatcher(
     async (eventType: string, path: string) => {
@@ -88,41 +75,6 @@ export function RouteProvider({ children }: { children: ReactNode }) {
     },
     // This will build up for as many files you select and never remove until you exit the project to unmount the file watcher hook
     kclManager.livePathsToWatch.value
-  )
-
-  useFileSystemWatcher(
-    async (eventType: string) => {
-      // If there is a projectPath but it no longer exists it means
-      // it was externally removed. If we let the code past this condition
-      // execute it will recreate the directory due to code in
-      // loadAndValidateSettings trying to recreate files. I do not
-      // wish to change the behavior in case anything else uses it.
-      // Go home.
-      if (loadedProject?.path) {
-        if (!(await fileOperations.exists(loadedProject.path))) {
-          if (
-            app.project !== project ||
-            app.project?.projectIORefSignal.value.path !== loadedProject.path
-          ) {
-            return
-          }
-          void navigate(PATHS.HOME)
-          return
-        }
-      }
-
-      // Only reload if there are changes. Ignore everything else.
-      if (eventType !== 'change') return
-
-      // Note: currently settings are watched, reloaded even if it was initiated by us (e.g. by a user changing some settings),
-      // writeCausedByAppCheckedInFileTreeFileSystemWatcher is not used here.
-      settingsActor.send({
-        type: 'reload.settings',
-      })
-    },
-    [settingsPath, loadedProject?.path].filter(
-      (x: string | undefined) => x !== undefined
-    )
   )
 
   return (
