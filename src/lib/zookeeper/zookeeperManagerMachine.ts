@@ -950,7 +950,10 @@ export const zookeeperManagerMachine = setup({
           event.type === ZookeeperManagerTransitions.ResumeSuperseded,
         ...zookeeperErrorContext(context),
       })
-      if (closeReason && accessDeniedCode === undefined) {
+      if (
+        closeReason === ZOOKEEPER_PROJECT_TOO_LARGE_CLOSE_REASON &&
+        accessDeniedCode === undefined
+      ) {
         toast.error(closeReason)
       }
       return {
@@ -1060,6 +1063,9 @@ export const zookeeperManagerMachine = setup({
     prepareSetup: assign(({ context, event }) => {
       assertEvent(event, ZookeeperManagerTransitions.CacheSetupAndConnect)
       closeZookeeperWebSocket(context.ws)
+      const isSameConversationReconnect =
+        event.conversationId !== undefined &&
+        event.conversationId === context.conversationId
 
       return {
         ws: undefined,
@@ -1071,7 +1077,9 @@ export const zookeeperManagerMachine = setup({
         closeReason: undefined,
         lastMessageId: undefined,
         lastMessageType: undefined,
-        conversation: undefined,
+        conversation: isSameConversationReconnect
+          ? context.conversation
+          : undefined,
         conversationId: event.conversationId || undefined,
         defaultMode: undefined,
         modeOptions: undefined,
@@ -1082,10 +1090,11 @@ export const zookeeperManagerMachine = setup({
         cachedSetup: {
           refParentSend: event.refParentSend,
           conversationId: event.conversationId,
-          activeExchangeStartedAt:
-            context.conversation?.exchanges.findLast((exchange) =>
-              isMlCopilotUserRequest(exchange.request)
-            )?.startedAt ?? context.cachedSetup?.activeExchangeStartedAt,
+          activeExchangeStartedAt: isSameConversationReconnect
+            ? (context.conversation?.exchanges.findLast((exchange) =>
+                isMlCopilotUserRequest(exchange.request)
+              )?.startedAt ?? context.cachedSetup?.activeExchangeStartedAt)
+            : undefined,
         },
       }
     }),
