@@ -3433,9 +3433,6 @@ async function syncRemoteIndex(
       )
     }
   })
-  if (configGeneration !== indexConfigGeneration) {
-    return
-  }
   const remoteProjectIds = new Set(
     remoteProjects.map((remoteProject) => remoteProject.id).filter(Boolean)
   )
