@@ -13,6 +13,7 @@ import {
 } from '@src/lang/create'
 import { splitPathAtLastIndex } from '@src/lang/modifyAst'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
+import { engineIdForSweep } from '@src/lang/std/kclNamedViews'
 import type { CodeRef } from '@src/lang/std/artifactGraph'
 import {
   type ResolvedGraphSelection,
@@ -1692,6 +1693,89 @@ export function artifactToEntityRef(
   if (artifactType === 'edgeCut')
     return { type: 'solid2d_edge', edge_id: artifactId }
   return undefined
+}
+
+/** Build an engine-addressable reference from an artifact graph node. */
+export function artifactToEngineEntityRef(
+  artifact: Artifact,
+  artifactGraph: ArtifactGraph
+): EntityReference | undefined {
+  if (artifact.type === 'sketchBlock') {
+    const sketchPath = [...artifactGraph.values()].find(
+      (candidate): candidate is Extract<Artifact, { type: 'path' }> =>
+        candidate.type === 'path' &&
+        candidate.subType === 'sketch' &&
+        candidate.sketchBlockId === artifact.id
+    )
+    if (sketchPath?.solid2dId) {
+      return { type: 'solid2d', solid2d_id: sketchPath.solid2dId }
+    }
+  }
+
+  if (artifact.type === 'segment') {
+    const mappedSegments = [...artifactGraph.values()].filter(
+      (candidate): candidate is Extract<Artifact, { type: 'segment' }> =>
+        candidate.type === 'segment' && candidate.originalSegId === artifact.id
+    )
+    if (mappedSegments.length === 1) {
+      const [mappedSegment] = mappedSegments
+      return artifactToEntityRef(
+        mappedSegment.type,
+        mappedSegment.id,
+        mappedSegment.pathId
+      )
+    }
+  }
+
+  if (artifact.type === 'path') {
+    return {
+      type: 'solid2d',
+      solid2d_id: artifact.solid2dId ?? artifact.id,
+    }
+  }
+
+  const engineId =
+    artifact.type === 'sweep'
+      ? engineIdForSweep(artifact, artifactGraph)
+      : artifact.id
+  return artifactToEntityRef(
+    artifact.type,
+    engineId,
+    artifact.type === 'segment' ? artifact.pathId : undefined
+  )
+}
+
+/** Build every engine reference represented by an artifact. */
+export function artifactToEngineEntityRefs(
+  artifact: Artifact,
+  artifactGraph: ArtifactGraph
+): EntityReference[] {
+  if (artifact.type === 'sketchBlock') {
+    const sketchPath = [...artifactGraph.values()].find(
+      (candidate): candidate is Extract<Artifact, { type: 'path' }> =>
+        candidate.type === 'path' &&
+        candidate.subType === 'sketch' &&
+        candidate.sketchBlockId === artifact.id
+    )
+    if (sketchPath) {
+      const sourceSegmentIds = new Set(sketchPath.segIds)
+      const mappedSegments = [...artifactGraph.values()].filter(
+        (candidate): candidate is Extract<Artifact, { type: 'segment' }> =>
+          candidate.type === 'segment' &&
+          candidate.originalSegId != null &&
+          sourceSegmentIds.has(candidate.originalSegId)
+      )
+      const mappedReferences = mappedSegments
+        .map((segment) =>
+          artifactToEntityRef(segment.type, segment.id, segment.pathId)
+        )
+        .filter((ref): ref is EntityReference => ref !== undefined)
+      if (mappedReferences.length) return mappedReferences
+    }
+  }
+
+  const reference = artifactToEngineEntityRef(artifact, artifactGraph)
+  return reference ? [reference] : []
 }
 
 function getPatternExprFromSelection(

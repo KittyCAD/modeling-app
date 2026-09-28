@@ -50,7 +50,13 @@ import {
   isEnginePrimitiveSelection,
   isSingleCursorInPipe,
 } from '@src/lang/queryAst'
-import { artifactToEntityRef, resolveToCodeRef } from '@src/lang/queryAst'
+import {
+  artifactToEngineEntityRef,
+  artifactToEngineEntityRefs,
+  artifactToEntityRef,
+  resolveToCodeRef,
+} from '@src/lang/queryAst'
+import { engineIdForSweep } from '@src/lang/std/kclNamedViews'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import { defaultSourceRange } from '@src/lang/sourceRange'
 import type {
@@ -1633,24 +1639,27 @@ export async function getEventForQueryEntityTypeWithPoint(
     }
   }
 
-  if (clickEntityId && engineCommandManager) {
-    const primitiveSel = await getPrimitiveSelectionForEntity(
-      clickEntityId,
-      engineCommandManager,
-      artifactGraph
-    )
-    if (
-      primitiveSel &&
-      (primitiveSel.primitiveType === 'edge' ||
-        String(primitiveSel.primitiveType).toLowerCase() === 'edge')
-    ) {
-      return {
-        type: 'Set selection',
-        data: {
-          selectionType: 'enginePrimitiveSelection',
-          selection: primitiveSel,
-        },
-      }
+  const primitiveSelection =
+    clickEntityId && engineCommandManager
+      ? await getPrimitiveSelectionForEntity(
+          clickEntityId,
+          engineCommandManager,
+          artifactGraph
+        )
+      : null
+
+  if (
+    primitiveSelection &&
+    entityRef.type === 'edge' &&
+    entityRef.side_faces.length === 0 &&
+    (!entityRef.end_faces || entityRef.end_faces.length === 0)
+  ) {
+    return {
+      type: 'Set selection',
+      data: {
+        selectionType: 'enginePrimitiveSelection',
+        selection: primitiveSelection,
+      },
     }
   }
 
@@ -1748,7 +1757,13 @@ export async function getEventForQueryEntityTypeWithPoint(
   // Edge + topology_fallback: keep graph SelectionV2 (with engineTopologyFallback) for fillet/chamfer.
   // Otherwise region selection wins and we never attach engine topology data (e.g. shell inner edges).
   const engineTopologyFallbackEarly =
-    engineTopologyFallbackFromReference(reference)
+    engineTopologyFallbackFromReference(reference) ??
+    (primitiveSelection?.parentEntityId
+      ? {
+          parentId: primitiveSelection.parentEntityId,
+          primitiveIndex: primitiveSelection.primitiveIndex,
+        }
+      : undefined)
   let engineTopologyFallbackResolved = engineTopologyFallbackEarly
   if (engineTopologyFallbackEarly && engineCommandManager) {
     // Faces need their direct engine parent so primitive-index KCL can resolve
@@ -1844,9 +1859,8 @@ export async function getEventForQueryEntityTypeWithPoint(
     }
   }
 
-  // Prefer engine primitive index for solid edge picks when the API supports it.
-  // The artifact graph often lacks wall/cap entries for shell/boolean edges, but
-  // entity_get_primitive_index + parent id still drives fillet/chamfer edgeId codemods.
+  // Keep primitive topology as a fallback for edges that cannot be reconstructed
+  // from their Face API reference (for example, some shell and boolean edges).
   const patternArtifact = entityId
     ? getPatternArtifactForCopyId(entityId, artifactGraph)
     : undefined
@@ -2111,6 +2125,7 @@ export function handleSelectionBatch({
 type SelectionToEngine = {
   id?: string
   range: SourceRange
+  artifact?: Artifact
 }
 
 export function processCodeMirrorRanges({
@@ -2166,7 +2181,7 @@ export function processCodeMirrorRanges({
     artifactIndex
   )
   const graphSelections: Selection[] = []
-  for (const { id, range } of idBasedSelections) {
+  for (const { id, range, artifact: selectionArtifact } of idBasedSelections) {
     const pathToNode = getNodePathFromSourceRange(ast, range)
     const codeRef = { range, pathToNode }
     if (!id) {
@@ -2181,20 +2196,23 @@ export function processCodeMirrorRanges({
       graphSelections.push({ codeRef })
       continue
     }
-    const artifact = artifactGraph.get(id)
-    const codeRefs = getCodeRefsByArtifactId(id, artifactGraph)
+    const artifact = selectionArtifact ?? artifactGraph.get(id)
+    const codeRefs = artifact
+      ? getCodeRefsByArtifactId(artifact.id, artifactGraph)
+      : null
     const resolvedCodeRef = codeRefs?.[0] ?? codeRef
     if (artifact) {
-      graphSelections.push({
-        entityRef: artifactToEntityRef(
-          artifact.type,
-          id,
-          artifact.type === 'segment'
-            ? (artifact as { pathId: string }).pathId
-            : undefined
-        ),
-        codeRef: resolvedCodeRef,
-      })
+      const entityRefs = artifactToEngineEntityRefs(artifact, artifactGraph)
+      if (entityRefs.length) {
+        graphSelections.push(
+          ...entityRefs.map((entityRef, index) => ({
+            entityRef,
+            ...(index === 0 ? { codeRef: resolvedCodeRef } : {}),
+          }))
+        )
+      } else {
+        graphSelections.push({ codeRef: resolvedCodeRef })
+      }
     } else {
       graphSelections.push({ codeRef: resolvedCodeRef })
     }
@@ -2213,8 +2231,10 @@ export function processCodeMirrorRanges({
         },
       },
     },
-    engineEvents: resetAndSetEngineEntitySelectionCmds(
-      idBasedSelections.filter(({ id }) => !!id),
+    engineEvents: setEngineEntitySelectionV2(
+      graphSelections
+        .map((selection) => selection.entityRef)
+        .filter((ref): ref is EntityReference => ref !== undefined),
       systemDeps
     ),
   }
@@ -2364,6 +2384,10 @@ function getEngineEntityIdForSelection(
   selection: Selection,
   artifactGraph: ArtifactGraph
 ): string | undefined {
+  if (selection.artifact?.type === 'sweep') {
+    return engineIdForSweep(selection.artifact, artifactGraph)
+  }
+
   if (selection.engineEntityId) {
     return selection.engineEntityId
   }
@@ -2708,6 +2732,18 @@ function getBestCandidates(
     return []
   }
 
+  const edgeCut = entries.find((entry) => entry.artifact.type === 'edgeCut')
+  if (edgeCut) {
+    return [edgeCut]
+  }
+
+  const compositeSolid = entries.find(
+    (entry) => entry.artifact.type === 'compositeSolid'
+  )
+  if (compositeSolid) {
+    return [compositeSolid]
+  }
+
   const overlappingRegions = entries.filter(
     (entry) =>
       entry.artifact.type === 'path' && entry.artifact.subType === 'region'
@@ -2756,7 +2792,8 @@ function getBestCandidates(
 
 function createSelectionToEngine(
   selection: Selection,
-  candidateId?: ArtifactId
+  candidateId?: ArtifactId,
+  artifact?: Artifact
 ): SelectionToEngine {
   const codeRef = selection.codeRef
   if (!codeRef?.range) {
@@ -2764,11 +2801,19 @@ function createSelectionToEngine(
   }
   return {
     ...(candidateId && { id: candidateId }),
+    ...(artifact && { artifact }),
     range: codeRef.range,
   }
 }
 
-function getEngineEntityIdsForSelection(selection: Selection): ArtifactId[] {
+function getEngineEntityIdsForSelection(
+  selection: Selection,
+  artifactGraph: ArtifactGraph
+): ArtifactId[] {
+  if (selection.artifact?.type === 'sweep') {
+    return [engineIdForSweep(selection.artifact, artifactGraph)]
+  }
+
   if (selection.engineEntityId) {
     return [selection.engineEntityId]
   }
@@ -2818,10 +2863,21 @@ export function codeToIdSelections(
           ...selection,
           artifact: resolved.artifact,
         }
-        const engineIds = getEngineEntityIdsForSelection(selectionWithArtifact)
+        const engineIds = getEngineEntityIdsForSelection(
+          selectionWithArtifact,
+          artifactGraph
+        )
         return engineIds.length
-          ? engineIds.map((id) => createSelectionToEngine(selection, id))
-          : [createSelectionToEngine(selection, resolved.artifact.id)]
+          ? engineIds.map((id) =>
+              createSelectionToEngine(selection, id, resolved.artifact)
+            )
+          : [
+              createSelectionToEngine(
+                selection,
+                resolved.artifact.id,
+                resolved.artifact
+              ),
+            ]
       }
 
       // Find matching artifacts by code range overlap
@@ -2835,13 +2891,18 @@ export function codeToIdSelections(
       )
       if (bestCandidates.length) {
         return bestCandidates.flatMap((entry) => {
-          const engineIds = getEngineEntityIdsForSelection({
-            ...selection,
-            artifact: entry.artifact,
-          })
+          const engineIds = getEngineEntityIdsForSelection(
+            {
+              ...selection,
+              artifact: entry.artifact,
+            },
+            artifactGraph
+          )
           return engineIds.length
-            ? engineIds.map((id) => createSelectionToEngine(selection, id))
-            : [createSelectionToEngine(selection, entry.id)]
+            ? engineIds.map((id) =>
+                createSelectionToEngine(selection, id, entry.artifact)
+              )
+            : [createSelectionToEngine(selection, entry.id, entry.artifact)]
         })
       }
 
@@ -3703,6 +3764,8 @@ export function getCodeRefsFromEntityReference(
       if (!err(extrusion) && extrusion.codeRef) {
         codeRefs.push({ range: extrusion.codeRef.range })
       }
+    } else if (faceArtifact.type === 'edgeCut') {
+      codeRefs.push({ range: faceArtifact.codeRef.range })
     }
   } else if (entityRef.type === 'solid2d_edge' && entityRef.edge_id) {
     // Solid2D edge ids normally map directly to segment artifacts. Prefer the
@@ -3757,11 +3820,19 @@ export function getCodeRefsFromEntityReference(
   ) {
     // For edges, find segments from side_faces and end_faces
     // Handle both Solid3D (2+ faces) and Solid2D (1 face) cases
-    const faceIds = [...entityRef.side_faces]
-    // Also include end faces
-    if (entityRef.end_faces && entityRef.end_faces.length > 0) {
-      faceIds.push(...entityRef.end_faces)
-    }
+    const sideFaceArtifacts = entityRef.side_faces.map((id) => ({
+      id,
+      artifact: artifactGraph.get(id),
+    }))
+    const wallSideFaces = sideFaceArtifacts.filter(
+      ({ artifact }) => artifact?.type === 'wall'
+    )
+    // End faces disambiguate the engine reference but do not describe the
+    // authored edge. If a side wall exists, its sketch segment is more precise
+    // than a cap's profile range.
+    const faceIds = (
+      wallSideFaces.length ? wallSideFaces : sideFaceArtifacts
+    ).map(({ id }) => id)
     const seenSegments = new Set<string>()
 
     for (const faceId of faceIds) {
@@ -3789,7 +3860,14 @@ export function getCodeRefsFromEntityReference(
             artifactGraph
           )
           if (!err(segArtifact) && segArtifact.codeRef) {
-            codeRefs.push({ range: segArtifact.codeRef.range })
+            const originalSegment = getOriginalSegmentArtifact(
+              segArtifact.id,
+              artifactGraph
+            )
+            codeRefs.push({
+              range:
+                originalSegment?.codeRef?.range ?? segArtifact.codeRef.range,
+            })
           }
         }
         // For edges, don't include the extrude - only highlight the segments

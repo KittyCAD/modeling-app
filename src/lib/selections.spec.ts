@@ -90,11 +90,42 @@ test('includes region, source segment, and sweep ranges for a wall face', () => 
     method: 'new',
     consumed: false,
   } satisfies Extract<Artifact, { type: 'sweep' }>
+  const regionPath = {
+    type: 'path',
+    id: 'region-path',
+    subType: 'region',
+    planeId: 'xy-plane',
+    segIds: [],
+    consumed: false,
+    trajectorySweepId: null,
+    sweepId: sweep.id,
+    codeRef: {
+      range: regionRange,
+      nodePath: { steps: [] },
+      pathToNode: [],
+    },
+  } satisfies Extract<Artifact, { type: 'path' }>
+  const cap = {
+    type: 'cap',
+    id: 'cap',
+    sweepId: sweep.id,
+    subType: 'start',
+    edgeCutEdgeIds: [],
+    pathIds: [],
+    faceCodeRef: {
+      range: sweepRange,
+      nodePath: { steps: [] },
+      pathToNode: [],
+    },
+    cmdId: 'cap-command',
+  } satisfies Extract<Artifact, { type: 'cap' }>
   const artifactGraph = new Map<string, Artifact>([
     [sourceSegment.id, sourceSegment],
     [regionSegment.id, regionSegment],
     [wall.id, wall],
     [sweep.id, sweep],
+    [regionPath.id, regionPath],
+    [cap.id, cap],
   ])
 
   expect(
@@ -107,6 +138,38 @@ test('includes region, source segment, and sweep ranges for a wall face', () => 
     { range: sourceSegmentRange },
     { range: sweepRange },
   ])
+
+  const edgeCodeRefs = getCodeRefsFromEntityReference(
+    {
+      type: 'edge',
+      side_faces: ['cap', 'wall'],
+      end_faces: ['cap'],
+    },
+    artifactGraph
+  )
+  expect(edgeCodeRefs).toEqual([{ range: sourceSegmentRange }])
+})
+
+test('resolves an edge-treatment face to its operation for hover', () => {
+  const range = [10, 20, 0] as SourceRange
+  const edgeCut = {
+    type: 'edgeCut',
+    id: 'chamfer-face',
+    subType: 'chamfer',
+    edgeIds: [],
+    codeRef: {
+      range,
+      nodePath: { steps: [] },
+      pathToNode: [],
+    },
+  } satisfies Extract<Artifact, { type: 'edgeCut' }>
+
+  expect(
+    getCodeRefsFromEntityReference(
+      { type: 'face', face_id: edgeCut.id },
+      new Map([[edgeCut.id, edgeCut]])
+    )
+  ).toEqual([{ range }])
 })
 
 describe('testing source range to artifact conversion', () => {
@@ -1455,7 +1518,13 @@ profile004 = circle(sketch003, center = [-88.54, 209.41], radius = 42.72)
       if (!artifactSelection.id) {
         throw new Error('id is falsy')
       }
-      const artifact = ___artifactGraph.get(artifactSelection.id)
+      const engineArtifact = ___artifactGraph.get(artifactSelection.id)
+      const artifact =
+        artifactDetails.type === 'sweep' &&
+        engineArtifact?.type === 'path' &&
+        engineArtifact.sweepId
+          ? ___artifactGraph.get(engineArtifact.sweepId)
+          : engineArtifact
       expect(artifact).toBeTruthy()
       if (!artifact) {
         throw new Error('artifact is falsy')
