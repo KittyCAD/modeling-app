@@ -69,6 +69,26 @@ fn init_handlebars() -> Result<handlebars::Handlebars<'static>> {
     );
 
     hbs.register_helper(
+        "firstLineTableCell",
+        Box::new(
+            |h: &handlebars::Helper,
+             _: &handlebars::Handlebars,
+             _: &handlebars::Context,
+             _: &mut handlebars::RenderContext,
+             out: &mut dyn handlebars::Output|
+             -> handlebars::HelperResult {
+                let param = h.param(0).and_then(|v| v.value().as_str()).unwrap_or("");
+                let first = param.lines().next().unwrap_or("");
+
+                // A literal pipe starts a new Markdown table cell, even when it
+                // appears inside inline code.
+                out.write(&first.replace('|', "\\|"))?;
+                Ok(())
+            },
+        ),
+    );
+
+    hbs.register_helper(
         "frontmatter_escape",
         Box::new(
             |h: &handlebars::Helper,
@@ -746,7 +766,7 @@ fn test_render_function_page_marks_arg_lifecycle() {
     }
     let version = crate::execution::annotations::VersionConstraint::parse;
 
-    let mut new_arg = arg("newArg", "A new argument.");
+    let mut new_arg = arg("newArg", "A new argument accepting `Face | Tag`.");
     new_arg.added_in = version("3.0");
     let mut old_arg = arg("oldArg", "An old argument.");
     old_arg.added_in = version("2.0");
@@ -778,7 +798,9 @@ fn test_render_function_page_marks_arg_lifecycle() {
     let page = render_function_page(&function, "std-foo", &crate::docs::kcl_doc::walk_stdlib()).unwrap();
 
     assert!(
-        page.contains("| `newArg` | `number` | **Added in KCL 3.0.** A new argument. | No |"),
+        page.contains(
+            "| `newArg` | `number` | **Added in KCL 3.0.** A new argument accepting `Face \\| Tag`. | No |"
+        ),
         "expected the added-in marker, got:\n{page}"
     );
     // Markers follow the parameter's lifecycle: added, deprecated, removed.
