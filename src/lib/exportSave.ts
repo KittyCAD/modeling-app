@@ -42,6 +42,7 @@ const save_ = async (
       }
 
       // Open a dialog to save the file.
+      toast.loading(EXPORT_TOAST_MESSAGES.CHOOSE_LOCATION, { id: toastId })
       const filePathMeta = await window.electron.save({
         defaultPath: file.name,
         filters: [

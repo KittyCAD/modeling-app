@@ -64,11 +64,15 @@ flowchart LR
   34["SweepEdge Adjacent"]
   35["SweepEdge Opposite"]
   36["SweepEdge Adjacent"]
-  37["SketchBlock<br>[93, 571, 0]"]
+  37["EdgeCut Chamfer<br>[696, 862, 0]"]
+    %% [ProgramBodyItem { index: 3 }, ExpressionStatementExpr]
+  38["EdgeCut Chamfer<br>[696, 862, 0]"]
+    %% [ProgramBodyItem { index: 3 }, ExpressionStatementExpr]
+  39["SketchBlock<br>[93, 571, 0]"]
     %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   1 --- 2
   1 <--x 9
-  1 <--x 37
+  1 <--x 39
   2 --- 3
   2 --- 4
   2 --- 5
@@ -76,7 +80,7 @@ flowchart LR
   2 --- 7
   2 --- 8
   2 <--x 9
-  37 --- 2
+  39 --- 2
   3 <--x 10
   4 <--x 11
   5 <--x 12

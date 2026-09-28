@@ -2,16 +2,18 @@ import type {
   SceneGraphDelta,
   SourceDelta,
 } from '@rust/kcl-lib/bindings/FrontendApi'
+import type { ImportStatement } from '@rust/kcl-lib/bindings/ImportStatement'
 import type { KclManager } from '@src/lang/KclManager'
 import { executeAstMock } from '@src/lang/executeAstMock'
 import { programUsesKclV3 } from '@src/lang/kclLanguageVersion'
 import { updateModelingState } from '@src/lang/modelingWorkflows'
 import { deleteFromSelection } from '@src/lang/modifyAst/deleteFromSelection'
 import { rewireAfterDelete } from '@src/lang/modifyAst/rewire'
+import { getNodeFromPath, resolveToCodeRef } from '@src/lang/queryAst'
 import { EXECUTION_TYPE_REAL, SKETCH_FILE_VERSION } from '@src/lib/constants'
 import type RustContext from '@src/lib/rustContext'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
-import { err } from '@src/lib/trap'
+import { err, isErr } from '@src/lib/trap'
 import type { Selection } from '@src/machines/modelingSharedTypes'
 
 export const deletionErrorMessage =
@@ -38,12 +40,32 @@ export async function deleteSelectionPromise({
   }
 }): Promise<Error | undefined> {
   const ast = systemDeps.kclManager.ast
+  const resolvedSelection = resolveToCodeRef(
+    selection,
+    systemDeps.kclManager.artifactGraph
+  )
+  if (!resolvedSelection) {
+    return new Error(deletionErrorMessage)
+  }
+  const wasmInstance = await systemDeps.kclManager.wasmInstancePromise
+  const selectedImport = getNodeFromPath<ImportStatement>(
+    ast,
+    resolvedSelection.codeRef.pathToNode,
+    wasmInstance,
+    'ImportStatement'
+  )
+  // Imported artifacts share the import's code reference. Delete the import,
+  // rather than dispatching deletion to one of its internal sketches or faces.
+  const artifact =
+    !isErr(selectedImport) && selectedImport.node.type === 'ImportStatement'
+      ? undefined
+      : resolvedSelection.artifact
 
   // Filtering on type here for Rust API based deletion, as this is the point of convergence
   // of deletion calls, from the feature tree but also Delete hotkey globally.
   if (
-    selection.artifact?.type === 'sketchBlock' ||
-    selection.artifact?.type === 'sketchBlockConstraint'
+    artifact?.type === 'sketchBlock' ||
+    artifact?.type === 'sketchBlockConstraint'
   ) {
     let result:
       | {
@@ -53,26 +75,25 @@ export async function deleteSelectionPromise({
       | undefined = undefined
     try {
       const settings = jsAppSettings(systemDeps.rustContext.settingsActor)
-      switch (selection.artifact.type) {
-        // TODO: slot regions in here as well and hopefully more
+      switch (artifact.type) {
         case 'sketchBlock':
           result = await systemDeps.rustContext.deleteSketch(
             SKETCH_FILE_VERSION,
-            selection.artifact.sketchId,
+            artifact.sketchId,
             settings
           )
           break
         case 'sketchBlockConstraint':
           result = await systemDeps.rustContext.deleteObjects(
             SKETCH_FILE_VERSION,
-            selection.artifact.sketchId,
-            [selection.artifact.constraintId],
+            artifact.sketchId,
+            [artifact.constraintId],
             [],
             settings
           )
           break
         default: {
-          const _exhaustiveCheck: never = selection.artifact
+          const _exhaustiveCheck: never = artifact
           return new Error('Should never happen at runtime')
         }
       }
@@ -90,10 +111,9 @@ export async function deleteSelectionPromise({
   }
 
   // AST based deletion, we should stop adding cases in there
-  const wasmInstance = await systemDeps.kclManager.wasmInstancePromise
   const modifiedAst = await deleteFromSelection(
     ast,
-    selection,
+    { codeRef: resolvedSelection.codeRef, artifact },
     systemDeps.kclManager.variables,
     systemDeps.kclManager.artifactGraph,
     wasmInstance,
