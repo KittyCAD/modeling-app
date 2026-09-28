@@ -121,7 +121,7 @@ async function dragBetweenRatios(
 const TEST_CODE = `mySketch = startSketchOn(XZ)
 myProfile = startProfile(mySketch, at = [0, 1])
   |> line(end = [-2.5, 3.75])
-sketch(on = XZ) {
+newSketch = sketch(on = XZ) {
   line(start = [var -0.88mm, var 0.54mm], end = [var 0.63mm, var 1.18mm])
   line(start = [var 0.85mm, var -0.57mm], end = [var -0.21mm, var 1.55mm])
   line(start = [var -1.59mm, var -0.49mm], end = [var 0.09mm, var -0.56mm])
@@ -858,7 +858,10 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
       await expect(page.getByText('Building feature tree')).not.toBeVisible({
         timeout: 10000,
       })
-      const sketchOperation = await toolbar.getFeatureTreeOperation('Sketch', 0)
+      const sketchOperation = await toolbar.getFeatureTreeOperation(
+        'sketch001',
+        0
+      )
       await sketchOperation.dblclick()
       await page.waitForTimeout(600)
       await expect(toolbar.exitSketchBtn).toBeEnabled()
@@ -1063,7 +1066,10 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
       await expect(page.getByText('Building feature tree')).not.toBeVisible({
         timeout: 10000,
       })
-      const sketchOperation = await toolbar.getFeatureTreeOperation('Sketch', 0)
+      const sketchOperation = await toolbar.getFeatureTreeOperation(
+        'sketch001',
+        0
+      )
       await sketchOperation.dblclick()
       await page.waitForTimeout(600)
       await expect(toolbar.exitSketchBtn).toBeEnabled()
@@ -1182,7 +1188,10 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
       await expect(page.getByText('Building feature tree')).not.toBeVisible({
         timeout: 10000,
       })
-      const sketchOperation = await toolbar.getFeatureTreeOperation('Sketch', 0)
+      const sketchOperation = await toolbar.getFeatureTreeOperation(
+        'sketch001',
+        0
+      )
       await sketchOperation.dblclick()
       await page.waitForTimeout(600)
       await expect(toolbar.exitSketchBtn).toBeEnabled()
@@ -1771,7 +1780,10 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
       await expect(page.getByText('Building feature tree')).not.toBeVisible({
         timeout: 10000,
       })
-      const sketchOperation = await toolbar.getFeatureTreeOperation('Sketch', 0)
+      const sketchOperation = await toolbar.getFeatureTreeOperation(
+        'sketch001',
+        0
+      )
       await sketchOperation.dblclick()
       await page.waitForTimeout(600)
       await expect(toolbar.exitSketchBtn).toBeEnabled()
@@ -2073,7 +2085,10 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
       await expect(page.getByText('Building feature tree')).not.toBeVisible({
         timeout: 10000,
       })
-      const sketchOperation = await toolbar.getFeatureTreeOperation('Sketch', 0)
+      const sketchOperation = await toolbar.getFeatureTreeOperation(
+        'sketch001',
+        0
+      )
       await sketchOperation.dblclick()
       await page.waitForTimeout(600)
       await expect(toolbar.exitSketchBtn).toBeEnabled()
