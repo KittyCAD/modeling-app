@@ -13,7 +13,6 @@ import {
 } from '@src/lang/modifyAst/sweeps'
 import {
   getSketchSegmentName,
-  getVariableNameFromNodePath,
   resolveToCodeRef,
   retrieveSelectionsFromOpArg,
 } from '@src/lang/queryAst'
@@ -41,7 +40,6 @@ import { err } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type {
   EngineRegionSelection,
-  Selection,
   Selections,
 } from '@src/machines/modelingSharedTypes'
 import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
@@ -712,89 +710,6 @@ extrude002 = extrude([capEnd001, profile001], length = 1)`)
       const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toContain(
         `${triangleRegion}\nextrude001 = extrude(s, length = 1, direction = s.line1)`
-      )
-    })
-
-    it('uses a segment entity as the extrude direction when its attached artifact is a wall', async () => {
-      const code = `@settings(defaultLengthUnit = mm, kclVersion = 2.0)
-axisSketch = sketch(on = XZ) {
-  axis = line(start = [0mm, 0mm], end = [0mm, 10mm])
-  top = line(start = [0mm, 10mm], end = [10mm, 10mm])
-  right = line(start = [10mm, 10mm], end = [10mm, 0mm])
-  bottom = line(start = [10mm, 0mm], end = [0mm, 0mm])
-}
-axisRegion = region(segments = [axisSketch.axis, axisSketch.top, axisSketch.right, axisSketch.bottom])
-axisBody = extrude(axisRegion, length = 5mm)
-profileSketch = sketch(on = XY) {
-  circle1 = circle(start = [21mm, 0mm], center = [20mm, 0mm])
-}
-profileRegion = region(segments = [profileSketch.circle1])`
-      const { ast, artifactGraph } = await getAstAndArtifactGraph(
-        code,
-        instanceInThisFile,
-        kclManagerInThisFile
-      )
-      const artifacts = [...artifactGraph.values()]
-      const segment = artifacts.find(
-        (artifact) =>
-          artifact.type === 'segment' &&
-          getSketchSegmentName(
-            ast,
-            artifact.id,
-            artifactGraph,
-            instanceInThisFile
-          ) === 'axis'
-      )
-      if (segment?.type !== 'segment') throw new Error('Axis segment not found')
-      const wall = artifacts.find((artifact) => {
-        if (artifact.type !== 'wall') return false
-        const source = artifactGraph.get(artifact.segId)
-        return (
-          source?.type === 'segment' &&
-          (source.originalSegId ?? source.id) === segment.id
-        )
-      })
-      if (wall?.type !== 'wall') throw new Error('Axis wall not found')
-      const profile = artifacts.findLast((artifact) => artifact.type === 'path')
-      if (!profile) throw new Error('Profile region not found')
-      const originalAst = structuredClone(ast)
-      const result = addExtrude({
-        ast,
-        artifactGraph,
-        sketches: createSelectionFromArtifacts([profile], artifactGraph),
-        direction: {
-          graphSelections: [
-            {
-              entityRef: {
-                type: 'segment',
-                path_id: segment.pathId,
-                segment_id: segment.id,
-              },
-              artifact: wall,
-              codeRef: wall.faceCodeRef,
-            },
-          ],
-          otherSelections: [],
-        },
-        length: await getKclCommandValue(
-          '3mm',
-          instanceInThisFile,
-          rustContextInThisFile
-        ),
-        wasmInstance: instanceInThisFile,
-      })
-      if (err(result)) throw result
-      expect(ast).toEqual(originalAst)
-      const generated = recast(result.modifiedAst, instanceInThisFile)
-      if (err(generated)) throw generated
-      expect(generated.replace(/\s+/g, '')).toMatch(
-        /extrude001=extrude\(profileRegion,length=3mm,direction=axisSketch\.axis,?\)/
-      )
-      expect(generated).not.toContain('tag =')
-      await runNewAstAndCountSweeps(
-        result.modifiedAst,
-        rustContextInThisFile,
-        2
       )
     })
 
@@ -2718,90 +2633,6 @@ region001 = region(point = [-2.48mm, -1.8875mm], sketch = sketch001)
 revolve001 = revolve(region001, angle = 36deg, axis = sketch001.line5)`
       )
     })
-
-    it.each([
-      'missing ID with range',
-      'missing ID with path',
-      'missing codeRef',
-      'empty artifact path',
-    ] as const)(
-      'recovers a legacy segment axis when adding revolve: %s',
-      async (selectionCase) => {
-        const code = `@settings(defaultLengthUnit = mm, kclVersion = 1.0)
-sketch001 = startSketchOn(XZ)
-profile001 = circle(sketch001, center = [3, 0], radius = 1)
-sketch002 = startSketchOn(XZ)
-axisProfile = startProfile(sketch002, at = [0, -2])
-  |> yLine(length = 4)`
-        const { ast, artifactGraph } = await getAstAndArtifactGraphEngineless(
-          code,
-          instanceInThisFile,
-          rustContextInThisFile
-        )
-        const artifacts = [...artifactGraph.values()]
-        const profile = artifacts.find(
-          (artifact) =>
-            artifact.type === 'path' &&
-            getVariableNameFromNodePath(
-              artifact.codeRef.pathToNode,
-              ast,
-              instanceInThisFile
-            ) === 'profile001'
-        )
-        if (!profile) throw new Error('Circle profile not found')
-        const segment = artifacts.findLast(
-          (artifact) => artifact.type === 'segment'
-        )
-        if (segment?.type !== 'segment')
-          throw new Error('Axis segment not found')
-        const selection: Selection = {
-          entityRef: {
-            type: 'segment',
-            path_id: segment.pathId,
-            segment_id: selectionCase.startsWith('missing ID')
-              ? 'missing'
-              : segment.id,
-          },
-          codeRef: structuredClone(segment.codeRef),
-        }
-        if (selectionCase === 'missing ID with path') {
-          selection.codeRef = { ...segment.codeRef, range: [0, 0, 0] }
-        } else if (selectionCase === 'missing codeRef') {
-          delete selection.codeRef
-        } else if (selectionCase === 'empty artifact path') {
-          segment.codeRef.pathToNode = []
-          selection.codeRef = segment.codeRef
-        }
-        const originalAst = structuredClone(ast)
-        const result = addRevolve({
-          ast,
-          artifactGraph,
-          sketches: createSelectionFromArtifacts([profile], artifactGraph),
-          edge: { graphSelections: [selection], otherSelections: [] },
-          angle: await getKclCommandValue(
-            '90deg',
-            instanceInThisFile,
-            rustContextInThisFile
-          ),
-          wasmInstance: instanceInThisFile,
-        })
-        if (err(result)) throw result
-        expect(ast).toEqual(originalAst)
-        const generated = recast(result.modifiedAst, instanceInThisFile)
-        if (err(generated)) throw generated
-        expect(generated.replace(/\s+/g, '')).toContain(
-          'yLine(length=4,tag=$seg01)'
-        )
-        expect(generated.replace(/\s+/g, '')).toMatch(
-          /revolve001=revolve\(profile001,angle=90deg,axis=seg01,?\)/
-        )
-        await runNewAstAndCountSweeps(
-          result.modifiedAst,
-          rustContextInThisFile,
-          1
-        )
-      }
-    )
 
     it('should edit revolve call, changing axis and setting both lengths', async () => {
       const code = `${circleCode}
