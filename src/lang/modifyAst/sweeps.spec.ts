@@ -15,9 +15,7 @@ import {
   resolveToCodeRef,
   retrieveSelectionsFromOpArg,
 } from '@src/lang/queryAst'
-import {
-  getWallCodeRef,
-} from '@src/lang/std/artifactGraph'
+import { getWallCodeRef } from '@src/lang/std/artifactGraph'
 import {
   type Artifact,
   type ArtifactGraph,
