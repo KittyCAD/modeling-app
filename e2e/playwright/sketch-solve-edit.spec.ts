@@ -182,7 +182,7 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
       await page.setBodyDimensions({ width: 1200, height: 500 })
 
       await homePage.goToModelingScene()
-      await scene.settled(cmdBar, { expectError: true })
+      await scene.settled({ expectError: true })
 
       await editor.expectEditor.toContain('sketch(on = XZ)')
     })
@@ -275,7 +275,7 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
       await page.setBodyDimensions({ width: 1200, height: 500 })
 
       await homePage.goToModelingScene()
-      await scene.settled(cmdBar)
+      await scene.settled()
     })
 
     await test.step('Start a new sketch and select a plane', async () => {
@@ -465,7 +465,7 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
 
       await page.setBodyDimensions({ width: 1200, height: 500 })
       await homePage.goToModelingScene()
-      await scene.settled(cmdBar)
+      await scene.settled()
 
       await toolbar.startSketchOnDefaultPlane('Top plane')
       await editor.expectEditor.toContain('sketch(on = XY) {')
@@ -720,7 +720,7 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
 
       await page.setBodyDimensions({ width: 1200, height: 500 })
       await homePage.goToModelingScene()
-      await scene.settled(cmdBar)
+      await scene.settled()
     })
 
     await test.step('Start a new sketch and equip line tool', async () => {
@@ -849,7 +849,7 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
 
       await page.setBodyDimensions({ width: 1200, height: 600 })
       await homePage.goToModelingScene()
-      await scene.settled(cmdBar)
+      await scene.settled()
       await editor.expectEditor.toContain('sketch001 = sketch(on = XY) {')
     })
 
@@ -1056,7 +1056,7 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
 
       await page.setBodyDimensions({ width: 1200, height: 600 })
       await homePage.goToModelingScene()
-      await scene.settled(cmdBar)
+      await scene.settled()
       await editor.expectEditor.toContain('sketch001 = sketch(on = XY) {')
 
       await toolbar.openFeatureTreePane()
@@ -1175,7 +1175,7 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
 
       await page.setBodyDimensions({ width: 1200, height: 600 })
       await homePage.goToModelingScene()
-      await scene.settled(cmdBar)
+      await scene.settled()
       await editor.expectEditor.toContain('sketch001 = sketch(on = XY) {')
 
       await toolbar.openFeatureTreePane()
@@ -1318,7 +1318,7 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
 
       await page.setBodyDimensions({ width: 1200, height: 500 })
       await homePage.goToModelingScene()
-      await scene.settled(cmdBar)
+      await scene.settled()
     })
 
     await test.step('Start a new sketch and equip center arc', async () => {
@@ -1762,7 +1762,7 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
 
       await page.setBodyDimensions({ width: 1400, height: 900 })
       await homePage.goToModelingScene()
-      await scene.settled(cmdBar)
+      await scene.settled()
       await editor.expectEditor.toContain('sketch001 = sketch(on = XY) {')
     })
 
@@ -2064,7 +2064,7 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
 
       await page.setBodyDimensions({ width: 1400, height: 900 })
       await homePage.goToModelingScene()
-      await scene.settled(cmdBar)
+      await scene.settled()
       await editor.expectEditor.toContain('sketch001 = sketch(on = YZ) {')
     })
 
@@ -2173,7 +2173,7 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
       }, square)
       await page.setBodyDimensions({ width: 1200, height: 500 })
       await homePage.goToModelingScene()
-      await scene.settled(cmdBar)
+      await scene.settled()
       await editor.expectEditor.toContain('sketch001 = sketch(on = XZ) {')
     })
 
@@ -2216,7 +2216,7 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
     })
 
     await test.step('Expect extrusion', async () => {
-      await scene.settled(cmdBar)
+      await scene.settled()
       await editor.expectEditor.toContain('hidden001 = hide(sketch001)')
       await editor.expectEditor.toContain(
         'region(point = [0.025mm, -1.9875mm], sketch = sketch001)'
@@ -2237,7 +2237,7 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
       await expect(extrudeOp).toBeVisible()
       await extrudeOp.click({ button: 'right' })
       await page.getByRole('button', { name: 'Delete' }).click()
-      await scene.settled(cmdBar)
+      await scene.settled()
       await editor.expectEditor.not.toContain('extrude(')
     })
 
@@ -2249,7 +2249,7 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
       await expect(regionOp).toBeVisible()
       await regionOp.click({ button: 'right' })
       await page.getByRole('button', { name: 'Delete' }).click()
-      await scene.settled(cmdBar)
+      await scene.settled()
       await editor.expectEditor.not.toContain('region(')
       await editor.expectEditor.toContain(square, { shouldNormalise: true })
     })
@@ -2274,7 +2274,7 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
       }, squareInches)
       await page.setBodyDimensions({ width: 1200, height: 500 })
       await homePage.goToModelingScene()
-      await scene.settled(cmdBar)
+      await scene.settled()
       await editor.expectEditor.toContain('@settings(defaultLengthUnit = in')
       await editor.expectEditor.toContain('sketch001 = sketch(on = XZ) {')
     })
@@ -2318,7 +2318,7 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
     })
 
     await test.step('Expect extrusion uses inches for region point', async () => {
-      await scene.settled(cmdBar)
+      await scene.settled()
       await editor.expectEditor.toContain('hidden001 = hide(sketch001)')
       await editor.expectEditor.toContain(
         'region(point = [0.0009843in, -0.078248in], sketch = sketch001)'
@@ -2362,7 +2362,7 @@ extrude001 = extrude(region001, length = 5)`
       await page.setBodyDimensions({ width: 1200, height: 1000 })
 
       await homePage.goToModelingScene()
-      await scene.settled(cmdBar)
+      await scene.settled()
     })
 
     await test.step('Start sketch and click center face', async () => {
@@ -2415,7 +2415,7 @@ extrude001 = extrude(profile001, length = 5)`
       await page.setBodyDimensions({ width: 1200, height: 1000 })
 
       await homePage.goToModelingScene()
-      await scene.settled(cmdBar)
+      await scene.settled()
     })
 
     await test.step('Start sketch and click top face', async () => {
@@ -2469,7 +2469,7 @@ hide(sketch001)`
     )
     await page.setBodyDimensions({ width: 1200, height: 800 })
     await homePage.goToModelingScene()
-    await scene.settled(cmdBar)
+    await scene.settled()
     await editor.expectEditor.toContain('body001 = extrude')
     await scene.moveCameraTo(
       { x: 43.8, y: -79.54, z: 9.08 },
@@ -2538,7 +2538,7 @@ hide(sketch001)`
     )
     await page.setBodyDimensions({ width: 1200, height: 800 })
     await homePage.goToModelingScene()
-    await scene.settled(cmdBar)
+    await scene.settled()
     await editor.closePane()
     await scene.moveCameraTo(
       { x: 39.68, y: -7.24, z: 19.4 },

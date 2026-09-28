@@ -82,7 +82,7 @@ test.describe('Hot path', { tag: '@desktop' }, () => {
         highlightedHeaderArg: 'Profiles',
         commandName: 'Extrude',
       })
-      await scene.settled(cmdBar)
+      await scene.settled()
       await clickCenter()
     })
 

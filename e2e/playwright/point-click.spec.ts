@@ -1393,7 +1393,7 @@ revolve001 = revolve(profile001, angle = 360deg, axis = getOppositeEdge(seg02))
       }, initialCode)
       await page.setBodyDimensions({ width: 1000, height: 500 })
       await homePage.goToModelingScene()
-      await scene.settled(cmdBar)
+      await scene.settled()
     })
 
     await test.step('Edit revolve via feature tree (triggers auto-fix then edit)', async () => {
@@ -1481,7 +1481,7 @@ helix001 = helix(
       }, initialCode)
       await page.setBodyDimensions({ width: 1000, height: 500 })
       await homePage.goToModelingScene()
-      await scene.settled(cmdBar)
+      await scene.settled()
     })
 
     await test.step('Edit helix via feature tree (triggers auto-fix then edit)', async () => {
@@ -2435,7 +2435,7 @@ extrude001 = extrude(profile001, length = 500)`
         commandName: 'Shell',
       })
       await cmdBar.submit()
-      await scene.settled(cmdBar)
+      await scene.settled()
     })
 
     await test.step('Confirm secondary shell code exists without diagnostics', async () => {
@@ -2566,7 +2566,7 @@ chamfer001 = chamfer(
       commandName: 'Delete Face',
     })
     await cmdBar.submit()
-    await scene.settled(cmdBar)
+    await scene.settled()
 
     await editor.expectEditor.toContain('tag = $chamferFace01')
     await editor.expectEditor.toContain(
@@ -2625,7 +2625,7 @@ hide(sketch001)`
       commandName: 'Delete Face',
     })
     await cmdBar.submit()
-    await scene.settled(cmdBar)
+    await scene.settled()
 
     await editor.expectEditor.toContain('tag = $chamferFace01')
     await editor.expectEditor.toContain(
@@ -2686,7 +2686,7 @@ hide(sketch001)`
       commandName: 'Delete Face',
     })
     await cmdBar.submit()
-    await scene.settled(cmdBar)
+    await scene.settled()
 
     await editor.expectEditor.toContain('tag = $filletFace01')
     await editor.expectEditor.toContain(

@@ -61,7 +61,7 @@ test.describe('Face API edge selection', { tag: '@web' }, () => {
     }, testCode)
 
     await homePage.goToModelingScene()
-    await scene.settled(cmdBar)
+    await scene.settled()
     await scene.waitForExecutionDoneAfter(() =>
       editor.replaceCode('', testCode)
     )
@@ -97,7 +97,7 @@ test.describe('Face API edge selection', { tag: '@web' }, () => {
 
       await toolbar.revolveButton.click()
       await cmdBar.expectState(state)
-      await scene.settled(cmdBar)
+      await scene.settled()
 
       await clickProfile()
 
@@ -192,7 +192,7 @@ test.describe('Face API edge selection', { tag: '@web' }, () => {
       // Click revolve tool again
       await toolbar.revolveButton.click()
       await cmdBar.expectState(state)
-      await scene.settled(cmdBar)
+      await scene.settled()
 
       await clickProfile2()
 
@@ -286,7 +286,7 @@ test.describe('Face API edge selection', { tag: '@web' }, () => {
     }, testCode)
 
     await homePage.goToModelingScene()
-    await scene.settled(cmdBar)
+    await scene.settled()
     await scene.waitForExecutionDoneAfter(() =>
       editor.replaceCode('', testCode)
     )
@@ -398,7 +398,7 @@ hide(sketch001)`
     )
     await page.setBodyDimensions({ width: 1200, height: 800 })
     await homePage.goToModelingScene()
-    await scene.settled(cmdBar)
+    await scene.settled()
     await scene.waitForExecutionDoneAfter(() => editor.replaceCode('', code))
     await editor.expectEditor.toContain('surface001 = extrude')
     await editor.closePane()

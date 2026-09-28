@@ -83,7 +83,7 @@ test.describe('Face API selection regressions', { tag: '@web' }, () => {
     }, edgeTreatmentCode)
     await page.setBodyDimensions({ width: 1200, height: 800 })
     await homePage.goToModelingScene()
-    await scene.settled(cmdBar)
+    await scene.settled()
     await scene.waitForExecutionDoneAfter(() =>
       editor.replaceCode('', edgeTreatmentCode)
     )
@@ -103,7 +103,7 @@ test.describe('Face API selection regressions', { tag: '@web' }, () => {
     await cmdBar.currentArgumentInput.locator('.cm-content').fill('0.3')
     await cmdBar.progressCmdBar()
     await cmdBar.submit()
-    await scene.settled(cmdBar)
+    await scene.settled()
 
     await editor.expectEditor.toContain('tag = $')
     await editor.expectEditor.toContain('fillet001 = fillet(')
@@ -127,7 +127,7 @@ test.describe('Face API selection regressions', { tag: '@web' }, () => {
     }, shellCode)
     await page.setBodyDimensions({ width: 1200, height: 800 })
     await homePage.goToModelingScene()
-    await scene.settled(cmdBar)
+    await scene.settled()
     await scene.waitForExecutionDoneAfter(() =>
       editor.replaceCode('', shellCode)
     )
@@ -165,7 +165,7 @@ test.describe('Face API selection regressions', { tag: '@web' }, () => {
       reviewValidationError: undefined,
     })
     await cmdBar.submit()
-    await scene.settled(cmdBar)
+    await scene.settled()
 
     await editor.expectEditor.toContain('edgeId(body001')
     await editor.expectEditor.toContain('fillet001 = fillet(body001')
@@ -187,7 +187,7 @@ test.describe('Face API selection regressions', { tag: '@web' }, () => {
     }, csgSurfaceExtrudeCode)
     await page.setBodyDimensions({ width: 1200, height: 800 })
     await homePage.goToModelingScene()
-    await scene.settled(cmdBar)
+    await scene.settled()
     await scene.waitForExecutionDoneAfter(() =>
       editor.replaceCode('', csgSurfaceExtrudeCode)
     )
@@ -227,7 +227,7 @@ test.describe('Face API selection regressions', { tag: '@web' }, () => {
     await cmdBar.selectOption({ name: 'Surface' }).click()
     await cmdBar.selectOption({ name: 'New' }).click()
     await cmdBar.submit()
-    await scene.settled(cmdBar)
+    await scene.settled()
 
     await editor.expectEditor.toContain('sideFaces = [')
     await editor.expectEditor.toContain('method = NEW')
@@ -248,7 +248,7 @@ test.describe('Face API selection regressions', { tag: '@web' }, () => {
     }, standaloneHelixCode)
     await page.setBodyDimensions({ width: 1200, height: 800 })
     await homePage.goToModelingScene()
-    await scene.settled(cmdBar)
+    await scene.settled()
     await scene.waitForExecutionDoneAfter(() =>
       editor.replaceCode('', standaloneHelixCode)
     )

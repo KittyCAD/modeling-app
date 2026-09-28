@@ -1415,7 +1415,7 @@ fillet(extrude001, radius = 5, edges = [{ sideFaces = [seg02, capEnd001] }])
         await scene.waitForExecutionDoneAfter(() =>
           editor.replaceCode('', standaloneFilletCode)
         )
-        await scene.settled(cmdBar)
+        await scene.settled()
         await editor.expectEditor.toContain(standaloneAssignedFilletDeclaration)
         await editor.expectEditor.toContain(
           standaloneUnassignedFilletDeclaration
