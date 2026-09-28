@@ -1,5 +1,8 @@
+use std::collections::BTreeMap;
+
 use indexmap::IndexMap;
-use kittycad_modeling_cmds::shared::KclSource;
+use kittycad_modeling_cmds::shared::KclFile;
+use kittycad_modeling_cmds::shared::KclProject;
 use typed_path::Utf8TypedPath;
 
 use crate::ExecutorSettings;
@@ -12,7 +15,7 @@ pub(super) fn collect(
     sources: &IndexMap<ModuleId, ModuleSource>,
     settings: &ExecutorSettings,
     entrypoint_source: &str,
-) -> Option<KclSource> {
+) -> Option<KclProject> {
     if entrypoint_source.is_empty() {
         return None;
     }
@@ -67,13 +70,16 @@ pub(super) fn collect(
     let files = files
         .into_iter()
         .map(|(_, path, source)| Some((relative(&path)?, source)))
+        .collect::<Option<BTreeMap<_, _>>>()?;
+    let files = files
+        .into_iter()
+        .map(|(path, source)| Some(KclFile::new(path.parse().ok()?, source.into_bytes())))
         .collect::<Option<_>>()?;
-    Some(KclSource::builder().entrypoint(entrypoint).files(files).build())
+    Some(KclProject::new(files, entrypoint.parse().ok()?))
 }
 
 #[cfg(test)]
 mod tests {
-    use std::collections::BTreeMap;
     use std::collections::HashMap;
     use std::sync::Arc;
 
@@ -100,9 +106,13 @@ mod tests {
     use crate::execution::MockConfig;
     use crate::execution::cache;
 
+    fn file(path: &str, source: &str) -> KclFile {
+        KclFile::new(path.parse().unwrap(), source.as_bytes().to_vec())
+    }
+
     struct RecordingTransport {
         inner: Arc<Box<dyn EngineTransport>>,
-        exports: Arc<RwLock<Vec<Option<KclSource>>>>,
+        exports: Arc<RwLock<Vec<Option<KclProject>>>>,
     }
 
     #[async_trait::async_trait]
@@ -166,13 +176,10 @@ mod tests {
         let main = "@settings(kclVersion = \"2.0\")\r\nimport width from \"lib/main.kcl\"\r\n// Designer's \"part\": \u{03c0}\r\nshape = sketch(on = XY) {\r\n  edge = line(start = [var 0mm, var 0mm], end = [width, var 0mm])\r\n}\r\n";
         let width = "@settings(kclVersion = \"2.0\")\nexport width = 10mm\n";
         let newer_width = "@settings(kclVersion = \"2.0\")\nexport width = 20mm\n";
-        let mut expected = KclSource::builder()
-            .entrypoint("assembly.kcl".to_owned())
-            .files(BTreeMap::from([
-                ("assembly.kcl".to_owned(), main.to_owned()),
-                ("lib/main.kcl".to_owned(), width.to_owned()),
-            ]))
-            .build();
+        let mut expected = KclProject::new(
+            vec![file("assembly.kcl", main), file("lib/main.kcl", width)],
+            "assembly.kcl".parse().unwrap(),
+        );
         let exports = Arc::new(RwLock::new(Vec::new()));
         let mut engine = EngineManager::new_mock();
         engine.transport = Arc::new(Box::new(RecordingTransport {
@@ -206,7 +213,7 @@ mod tests {
         let main = format!("{main}\n// Updated comment\n");
         let program = Program::parse_no_errs(&main).unwrap();
         ctx.run_with_caching(program.clone()).await.unwrap();
-        expected.files.insert("assembly.kcl".to_owned(), main.clone());
+        expected.files[0].contents = main.as_bytes().to_vec();
         ctx.export_step(true).await.unwrap();
         assert_eq!(exports.read().await.last(), Some(&Some(expected.clone())));
 
@@ -228,7 +235,7 @@ mod tests {
 
         ctx.run_with_caching(program.clone()).await.unwrap();
         let mut updated = expected;
-        updated.files.insert("lib/main.kcl".to_owned(), newer_width.to_owned());
+        updated.files[1].contents = newer_width.as_bytes().to_vec();
         ctx.export_step(true).await.unwrap();
         assert_eq!(exports.read().await.last(), Some(&Some(updated.clone())));
 
@@ -243,9 +250,9 @@ mod tests {
 
         ctx.settings.current_file = Some(directory.join("renamed.kcl"));
         ctx.run_with_caching(program.clone()).await.unwrap();
-        updated.entrypoint = "renamed.kcl".to_owned();
-        let main_source = updated.files.remove("assembly.kcl").unwrap();
-        updated.files.insert("renamed.kcl".to_owned(), main_source);
+        updated.entrypoint = "renamed.kcl".parse().unwrap();
+        updated.files[0].path = "renamed.kcl".parse().unwrap();
+        updated.files.sort_by_key(|file| file.path.to_string());
         export_ctx.export_step(true).await.unwrap();
         assert_eq!(exports.read().await.last(), Some(&Some(updated.clone())));
 
@@ -254,7 +261,7 @@ mod tests {
         ctx.settings.current_file = Some(other_directory.join("renamed.kcl"));
         ctx.fs = project_fs(&other_directory, width);
         ctx.run_with_caching(program.clone()).await.unwrap();
-        updated.files.insert("lib/main.kcl".to_owned(), width.to_owned());
+        updated.files[0].contents = width.as_bytes().to_vec();
         export_ctx.export_step(true).await.unwrap();
         assert_eq!(exports.read().await.last(), Some(&Some(updated.clone())));
 
@@ -307,13 +314,13 @@ mod tests {
                 "// entry\r\n",
             )
             .unwrap();
-            assert_eq!(bundle.entrypoint, "design.kcl");
+            assert_eq!(bundle.entrypoint.to_string(), "design.kcl");
             assert_eq!(
                 bundle.files,
-                BTreeMap::from([
-                    ("design.kcl".to_owned(), "// entry\r\n".to_owned()),
-                    ("size.kcl".to_owned(), "export size = 2\n".to_owned())
-                ])
+                vec![
+                    file("design.kcl", "// entry\r\n"),
+                    file("size.kcl", "export size = 2\n")
+                ]
             );
         }
     }

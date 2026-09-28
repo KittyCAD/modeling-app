@@ -96,7 +96,7 @@ pub struct EngineManager {
 
     /// Source of the last successful execution in this engine session.
     #[builder(default)]
-    pub(crate) export_source: RwLock<Option<kcmc::shared::KclSource>>,
+    pub(crate) export_source: RwLock<Option<kcmc::shared::KclProject>>,
 }
 
 impl std::fmt::Debug for EngineManager {

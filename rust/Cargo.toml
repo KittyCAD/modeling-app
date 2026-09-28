@@ -110,4 +110,4 @@ debug = "line-tables-only"
 # kittycad-modeling-cmds = { path = "../../modeling-api/modeling-cmds" }
 
 [patch.crates-io]
-kittycad-modeling-cmds = { git = "https://github.com/KittyCAD/modeling-api", rev = "9017773fb1d8f99ba5a3bd8e2b644afc27658e61" }
+kittycad-modeling-cmds = { git = "https://github.com/KittyCAD/modeling-api", rev = "5cec143a85642938dddc9a753c190e436cb6c15f" }
