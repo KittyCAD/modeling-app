@@ -23,7 +23,7 @@ OK, let's start. Let's assume we're adding a new stdlib function called `cube`.
  - Write your new KCL function, declaring its type signature. Something like this:
   ```
   /// Document your function here in this docstring.
-  @(impl = std_rust, feature_tree = true, experimental = true, added_in = "3.0-preview")
+  @(impl = std_rust, feature_tree = true, experimental = true, added_in = "3.0")
   export fn cube(
     /// Docstring for the first argument
     @sketch: Sketch,

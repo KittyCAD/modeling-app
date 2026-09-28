@@ -1,3 +1,4 @@
+import { withCloudSyncFailureContext } from '@src/lib/cloudSync/failureContext'
 import { normalizePathForSync } from '@src/lib/cloudSync/paths'
 import type {
   CloudSyncProjectMetadataIndexEntry,
@@ -16,7 +17,7 @@ function outboxEntryWithoutId(entry: OutboxEntry) {
   return entryWithoutId
 }
 
-function openSyncDb(): Promise<IDBDatabase> {
+function openSyncDbUncategorized(): Promise<IDBDatabase> {
   return new Promise((resolve, reject) => {
     if (typeof indexedDB === 'undefined') {
       reject(new Error('IndexedDB is unavailable for cloud sync metadata.'))
@@ -41,7 +42,14 @@ function openSyncDb(): Promise<IDBDatabase> {
   })
 }
 
-async function withStore<T>(
+function openSyncDb() {
+  return withCloudSyncFailureContext(
+    { stage: 'database', point: 'open-sync-database' },
+    openSyncDbUncategorized
+  )
+}
+
+async function withStoreUncategorized<T>(
   storeName: string,
   mode: IDBTransactionMode,
   callback: (store: IDBObjectStore) => IDBRequest<T> | T
@@ -87,6 +95,20 @@ async function withStore<T>(
       resolve(callbackResult)
     }
   })
+}
+
+function withStore<T>(
+  storeName: string,
+  mode: IDBTransactionMode,
+  callback: (store: IDBObjectStore) => IDBRequest<T> | T
+) {
+  return withCloudSyncFailureContext(
+    {
+      stage: 'database',
+      point: mode === 'readonly' ? 'read-sync-state' : 'write-sync-state',
+    },
+    () => withStoreUncategorized(storeName, mode, callback)
+  )
 }
 
 export async function getProjectMetadata(projectPath: string) {
@@ -153,7 +175,7 @@ export async function getAllProjectMetadata() {
   )
 }
 
-export async function appendOutboxEntry(entry: Omit<OutboxEntry, 'id'>) {
+async function appendOutboxEntryUncategorized(entry: Omit<OutboxEntry, 'id'>) {
   const normalizedProjectPath = normalizePathForSync(entry.projectPath)
   const nextEntry = {
     ...entry,
@@ -251,6 +273,13 @@ export async function appendOutboxEntry(entry: Omit<OutboxEntry, 'id'>) {
   })
 }
 
+export function appendOutboxEntry(entry: Omit<OutboxEntry, 'id'>) {
+  return withCloudSyncFailureContext(
+    { stage: 'database', point: 'write-sync-state' },
+    () => appendOutboxEntryUncategorized(entry)
+  )
+}
+
 export async function getAllOutboxEntries() {
   return withStore<OutboxEntry[]>(OUTBOX_STORE, 'readonly', (store) =>
     store.getAll()
@@ -284,7 +313,7 @@ function pathTouchesProjectRoot(
   )
 }
 
-export async function clearOutboxEntriesForProject(projectPath: string) {
+async function clearOutboxEntriesForProjectUncategorized(projectPath: string) {
   const normalizedProjectPath = normalizePathForSync(projectPath)
   const db = await openSyncDb()
   await new Promise<void>((resolve, reject) => {
@@ -313,12 +342,19 @@ export async function clearOutboxEntriesForProject(projectPath: string) {
   })
 }
 
+export function clearOutboxEntriesForProject(projectPath: string) {
+  return withCloudSyncFailureContext(
+    { stage: 'database', point: 'write-sync-state' },
+    () => clearOutboxEntriesForProjectUncategorized(projectPath)
+  )
+}
+
 /**
  * Clear only the mutation generation a sync attempt actually observed. The
  * read and deletes share one IndexedDB transaction, so a newer queued mutation
  * cannot be mistaken for work acknowledged by an older network response.
  */
-export async function clearOutboxEntriesForProjectAtGeneration(
+async function clearOutboxEntriesForProjectAtGenerationUncategorized(
   projectPath: string,
   expectedGeneration: number
 ) {
@@ -362,7 +398,23 @@ export async function clearOutboxEntriesForProjectAtGeneration(
   })
 }
 
-export async function clearOutboxEntriesTouchingProject(projectPath: string) {
+export function clearOutboxEntriesForProjectAtGeneration(
+  projectPath: string,
+  expectedGeneration: number
+) {
+  return withCloudSyncFailureContext(
+    { stage: 'database', point: 'write-sync-state' },
+    () =>
+      clearOutboxEntriesForProjectAtGenerationUncategorized(
+        projectPath,
+        expectedGeneration
+      )
+  )
+}
+
+async function clearOutboxEntriesTouchingProjectUncategorized(
+  projectPath: string
+) {
   const normalizedProjectPath = normalizePathForSync(projectPath)
   const db = await openSyncDb()
   await new Promise<void>((resolve, reject) => {
@@ -395,7 +447,16 @@ export async function clearOutboxEntriesTouchingProject(projectPath: string) {
   })
 }
 
-export async function clearLegacyConflictCopyReferences(projectPath: string) {
+export function clearOutboxEntriesTouchingProject(projectPath: string) {
+  return withCloudSyncFailureContext(
+    { stage: 'database', point: 'write-sync-state' },
+    () => clearOutboxEntriesTouchingProjectUncategorized(projectPath)
+  )
+}
+
+async function clearLegacyConflictCopyReferencesUncategorized(
+  projectPath: string
+) {
   const normalizedProjectPath = normalizePathForSync(projectPath)
   const db = await openSyncDb()
   await new Promise<void>((resolve, reject) => {
@@ -433,4 +494,11 @@ export async function clearLegacyConflictCopyReferences(projectPath: string) {
       resolve()
     }
   })
+}
+
+export function clearLegacyConflictCopyReferences(projectPath: string) {
+  return withCloudSyncFailureContext(
+    { stage: 'database', point: 'write-sync-state' },
+    () => clearLegacyConflictCopyReferencesUncategorized(projectPath)
+  )
 }

@@ -56,9 +56,14 @@ from_entity_id?: string | null,
  */
 from_edge_reference?: EdgeSpecifier | null, 
 /**
- * Normalized position within the entity to position the dimension from
+ * Position within the entity to position the dimension leader from
  */
-from_entity_pos: Point2d<number>, 
+from_entity_leader_pos?: AnnotationMbdLeaderPosition | null, 
+/**
+ * Normalized position within the entity to position the dimension from
+ * Deprecated; please use `from_entity_leader_pos`
+ */
+from_entity_pos?: Point2d<number> | null, 
 /**
  * Entity to measure the dimension to
  */
@@ -69,9 +74,14 @@ to_entity_id?: string | null,
  */
 to_edge_reference?: EdgeSpecifier | null, 
 /**
- * Normalized position within the entity to position the dimension to
+ * Position within the entity to position the dimension leader from
  */
-to_entity_pos: Point2d<number>, 
+to_entity_leader_pos?: AnnotationMbdLeaderPosition | null, 
+/**
+ * Normalized position within the entity to position the dimension to
+ * Deprecated; please use `to_entity_leader_pos`
+ */
+to_entity_pos?: Point2d<number> | null, 
 /**
  * Basic dimension parameters (symbol and tolerance)
  */
@@ -115,9 +125,14 @@ entity_id?: string | null,
  */
 edge_reference?: EdgeSpecifier | null, 
 /**
- * Normalized position within the entity to position the annotation leader from
+ * Position within the entity to position the annotation leader from
  */
-entity_pos: Point2d<number>, 
+entity_leader_pos?: AnnotationMbdLeaderPosition | null, 
+/**
+ * Normalized position within the entity to position the annotation leader from
+ * Deprecated; please use `entity_leader_pos`
+ */
+entity_pos?: Point2d<number> | null, 
 /**
  * Type of leader to use
  */
@@ -181,9 +196,14 @@ entity_id?: string | null,
  */
 edge_reference?: EdgeSpecifier | null, 
 /**
- * Normalized position within the entity to position the annotation leader from
+ * Position within the entity to position the annotation leader from
  */
-entity_pos: Point2d<number>, 
+entity_leader_pos?: AnnotationMbdLeaderPosition | null, 
+/**
+ * Normalized position within the entity to position the annotation leader from
+ * Deprecated; please use `entity_leader_pos`
+ */
+entity_pos?: Point2d<number> | null, 
 /**
  * Type of leader to use
  */
@@ -290,6 +310,15 @@ secondary_datum: string | null,
  * Tertiary datum
  */
 tertiary_datum: string | null, };
+
+/**
+ * Parameters for defining a specific MBD Leader Position within an Entity
+ */
+export type AnnotationMbdLeaderPosition = { "normalized_pos": { 
+/**
+ * The position
+ */
+pos: Point2d<number>, } } | { "centroid": Record<symbol, never> };
 
 /**
  * Options for annotations

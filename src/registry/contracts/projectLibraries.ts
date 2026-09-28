@@ -17,6 +17,7 @@ import {
 } from '@src/lib/projectLibraries'
 import type { HideOnPlatformValue } from '@src/lib/settings/settingsTypes'
 import { isArray } from '@src/lib/utils'
+import type { CloudProjectRelationship } from '@src/registry/contracts/cloudSync'
 import type {
   HomeProjectEntry,
   HomeProjectOpenResult,
@@ -249,6 +250,17 @@ export interface ProjectLibraryHomeSummaryProps {
   projects: readonly HomeProjectEntry[]
 }
 
+/**
+ * Projects discovered through a relationship provider can be assigned to a
+ * library by policy instead of by their local storage path. Keeping the policy
+ * on the library definition lets different libraries project the same remote
+ * index according to their own domain boundary.
+ */
+export interface ProjectLibraryRelationshipMembershipPolicy {
+  libraryId: string
+  includes: (input: { relationship: CloudProjectRelationship }) => boolean
+}
+
 export interface ProjectLibraryTypeContribution {
   type: ProjectLibraryType
   title: string
@@ -262,6 +274,8 @@ export interface ProjectLibraryTypeContribution {
   settingsDetails?: ComponentType<ProjectLibrarySettingsDetailsProps>
   /** Optional compact status/action component for Home library surfaces. */
   homeSummary?: ComponentType<ProjectLibraryHomeSummaryProps>
+  /** Policies assigning provider relationships to specific libraries. */
+  relationshipMembershipPolicies?: readonly ProjectLibraryRelationshipMembershipPolicy[]
   /** Hide this type from creation/editing UI while keeping runtime support. */
   hideInSettingsOnPlatform?: HideOnPlatformValue
   operations?: ProjectLibraryTypeOperations
@@ -303,12 +317,20 @@ export function combineProjectLibraryTypes(
       ...previousContribution?.operations,
       ...contribution.operations,
     }
+    const relationshipMembershipPolicies = [
+      ...(previousContribution?.relationshipMembershipPolicies ?? []),
+      ...(contribution.relationshipMembershipPolicies ?? []),
+    ]
     const nextContribution: ProjectLibraryTypeContribution = {
       ...previousContribution,
       ...contribution,
     }
     if (Object.keys(operations).length > 0) {
       nextContribution.operations = operations
+    }
+    if (relationshipMembershipPolicies.length > 0) {
+      nextContribution.relationshipMembershipPolicies =
+        relationshipMembershipPolicies
     }
     typeById.set(contribution.type, nextContribution)
   }

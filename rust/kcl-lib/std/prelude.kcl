@@ -32,7 +32,6 @@ export import "std::hole"
 export import "std::gear"
 @(experimental = true)
 export import * from "std::runtime"
-@(experimental = true)
 export import "std::view"
 
 /// An abstract 3d plane aligned with the X and Y axes. Its normal is the positive Z axis.
@@ -652,6 +651,7 @@ export fn assertIs(
 /// specific error message. `fail` never returns a value.
 ///
 /// ```kcl,norun,sketchSyntaxAgnostic
+/// @settings(kclVersion = "3.0-preview")
 /// fn positive(@value: number): number {
 ///   return if value > 0 {
 ///     value
@@ -660,7 +660,7 @@ export fn assertIs(
 ///   }
 /// }
 /// ```
-@(impl = std_rust, experimental = true, feature_tree = false)
+@(impl = std_rust, added_in = "3.0", feature_tree = false)
 export fn fail(
   /// Message reported to the caller.
   @msg: string,

@@ -1,0 +1,65 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Lints plumbus_fillets.kcl
+---
+[
+  {
+    "finding": {
+      "code": "Z0001",
+      "title": "Identifiers should be lowerCamelCase",
+      "description": "By convention, variable names are lowerCamelCase, not snake_case, kebab-case,\nnor upper CamelCase (aka PascalCase). 🐪\n\nFor instance, a good identifier for the variable representing 'box height'\nwould be 'boxHeight', not 'BOX_HEIGHT', 'box_height' nor 'BoxHeight'. For\nmore information there's a pretty good Wikipedia page at\n\nhttps://en.wikipedia.org/wiki/Camel_case\n",
+      "experimental": false,
+      "family": "style"
+    },
+    "description": "found 'make_circle'",
+    "pos": [
+      3,
+      14,
+      0
+    ],
+    "overridden": false,
+    "suggestion": {
+      "title": "rename 'make_circle' to 'makeCircle'",
+      "insert": "fn makeCircle(ext, face, pos, radius) {\n  sg = startSketchOn(ext, face = face)\n    |> startProfile(at = [pos[0] + radius, pos[1]])\n    |> arc(\n         angleEnd = 360,\n         angleStart = 0,\n         radius = radius,\n         tag = $arc1,\n       )\n    |> close()\n\n  return sg\n}\n\nfn pentagon(@len) {\n  sg = startSketchOn(XY)\n    |> startProfile(at = [-len / 2, -len / 2])\n    |> angledLine(angle = 0, length = len, tag = $a)\n    |> angledLine(angle = segAng(a) + 180 - 108, length = len, tag = $b)\n    |> angledLine(angle = segAng(b) + 180 - 108, length = len, tag = $c)\n    |> angledLine(angle = segAng(c) + 180 - 108, length = len, tag = $d)\n    |> angledLine(angle = segAng(d) + 180 - 108, length = len)\n\n  return sg\n}\n\np = pentagon(32)\n  |> extrude(length = 10)\n\ncircle0 = makeCircle(\n  ext = p,\n  face = p.sketch.tags.a,\n  pos = [0, 0],\n  radius = 2.5,\n)\nplumbus0 = circle0\n  |> extrude(length = 10)\n  |> fillet(\n       radius = 0.5,\n       tags = [\n         circle0.tags.arc1,\n         getOppositeEdge(circle0.tags.arc1)\n       ],\n     )\n\ncircle1 = makeCircle(\n  ext = p,\n  face = p.sketch.tags.b,\n  pos = [0, 0],\n  radius = 2.5,\n)\nplumbus1 = circle1\n  |> extrude(length = 10)\n  |> fillet(\n       radius = 0.5,\n       tags = [\n         circle1.tags.arc1,\n         getOppositeEdge(circle1.tags.arc1)\n       ],\n     )\n",
+      "source_range": [
+        0,
+        1326,
+        0
+      ]
+    }
+  },
+  {
+    "finding": {
+      "code": "Z0006",
+      "title": "Prefer edges or edge specifiers over deprecated edge stdlib calls",
+      "description": "Using 'tags' in fillet/chamfer, 'axis' in revolve/helix, 'across' in mirror3d, or edge arguments in extrude with deprecated stdlib (e.g. getOppositeEdge, getCommonEdge) or direct tags is deprecated. Prefer 'edges' (fillet/chamfer) or an edge specifier object such as { sideFaces = [tag1, tag2] }. The auto-fix will convert it.\n",
+      "experimental": false,
+      "family": "simplify"
+    },
+    "description": "fillet uses 'tags'; prefer edges",
+    "pos": [
+      913,
+      1046,
+      0
+    ],
+    "overridden": false,
+    "suggestion": null
+  },
+  {
+    "finding": {
+      "code": "Z0006",
+      "title": "Prefer edges or edge specifiers over deprecated edge stdlib calls",
+      "description": "Using 'tags' in fillet/chamfer, 'axis' in revolve/helix, 'across' in mirror3d, or edge arguments in extrude with deprecated stdlib (e.g. getOppositeEdge, getCommonEdge) or direct tags is deprecated. Prefer 'edges' (fillet/chamfer) or an edge specifier object such as { sideFaces = [tag1, tag2] }. The auto-fix will convert it.\n",
+      "experimental": false,
+      "family": "simplify"
+    },
+    "description": "fillet uses 'tags'; prefer edges",
+    "pos": [
+      1192,
+      1325,
+      0
+    ],
+    "overridden": false,
+    "suggestion": null
+  }
+]

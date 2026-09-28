@@ -1,5 +1,7 @@
 import type { CustomerBalance } from '@kittycad/lib'
+import ms from 'ms'
 import type { MouseEventHandler } from 'react'
+import { useEffect, useState } from 'react'
 import type { BillingError } from '../../lib/billing'
 import { classNames } from '../../lib/classNames'
 import type { DeepPartial } from '../../lib/types'
@@ -59,6 +61,16 @@ export function BillingDialog(props: BillingDialogProps) {
   const totalDue = props.userPaymentBalance?.total_due ?? 0
   const hasTotalDue = Number(totalDue) > 0
   const totalDueString = Number(totalDue).toFixed(2)
+  const refreshAt = props.userPaymentBalance?.monthly_api_credits_refresh_at
+  const refreshTime = refreshAt ? Date.parse(refreshAt) : Number.NaN
+  const [now, setNow] = useState(Date.now)
+
+  useEffect(() => {
+    if (!Number.isFinite(refreshTime)) return
+    setNow(Date.now())
+    const id = setInterval(() => setNow(Date.now()), 60_000)
+    return () => clearInterval(id)
+  }, [refreshTime])
 
   if (!hasUnlimited && hasTotalDue) {
     return (
@@ -129,6 +141,16 @@ export function BillingDialog(props: BillingDialogProps) {
           balance={props.balance}
           allowance={props.allowance}
         />
+        {!props.error &&
+          Number.isFinite(props.balance) &&
+          (props.allowance ?? 0) > 0 &&
+          Number.isFinite(refreshTime) && (
+            <time dateTime={refreshAt} className="text-chalkboard-90">
+              {refreshTime <= now
+                ? 'Credit refresh pending'
+                : `Credits refresh in ${ms(refreshTime - now, { long: true })}`}
+            </time>
+          )}
         {!hasUnlimited && (
           <a
             className={actionClassName}

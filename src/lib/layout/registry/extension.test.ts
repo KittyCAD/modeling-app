@@ -6,7 +6,7 @@ import {
   provideService,
 } from '@kittycad/registry'
 import { signal } from '@preact/signals-core'
-import { OPFS_CLOUD_FEATURE_FLAG } from '@src/lib/constants'
+import { EXPERIMENTAL_POINT_AND_CLICK_FLAG } from '@src/lib/constants'
 import {
   DefaultLayoutToolbarID,
   defaultLayoutConfig,
@@ -256,7 +256,7 @@ describe('layout extension', () => {
         provides: [
           provide(layoutUserFeatureTransformationsValueSpec, {
             id: 'test-user-feature-layout',
-            feature: OPFS_CLOUD_FEATURE_FLAG,
+            feature: EXPERIMENTAL_POINT_AND_CLICK_FLAG,
             transform: setFeatureControlledPaneEnabled,
           }),
         ],
@@ -268,7 +268,7 @@ describe('layout extension', () => {
     testSettingsService.resolve()
     expect(hasFeatureControlledPane(layout.get())).toBe(false)
 
-    testUserFeaturesService.setFeatureIds([OPFS_CLOUD_FEATURE_FLAG])
+    testUserFeaturesService.setFeatureIds([EXPERIMENTAL_POINT_AND_CLICK_FLAG])
     expect(hasFeatureControlledPane(layout.get())).toBe(true)
 
     testUserFeaturesService.setFeatureIds([])

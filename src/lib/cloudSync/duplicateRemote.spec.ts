@@ -61,7 +61,7 @@ describe('duplicateRemoteCloudProject', () => {
             {
               relativePath: 'project.toml',
               contents:
-                'title = "Bracket"\ndefault_file = "main.kcl"\n\n[settings.meta]\nid = "source-project-uuid"\n\n[cloud."dev.zoo.dev"]\nproject_id = "remote-project-123"\n',
+                'title = "Bracket"\ndefault_file = "main.kcl"\n\n[settings.meta]\nid = "source-project-uuid"\n\n[zookeeper."dev.zoo.dev"]\nconversation_ids = ["old-conversation"]\n\n[cloud."dev.zoo.dev"]\nproject_id = "remote-project-123"\n',
             },
           ],
         })

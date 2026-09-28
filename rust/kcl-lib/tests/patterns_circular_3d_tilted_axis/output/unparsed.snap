@@ -1,0 +1,18 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing patterns_circular_3d_tilted_axis.kcl
+---
+part = startSketchOn(XY)
+  |> startProfile(at = [0, 0])
+  |> line(end = [0, 1])
+  |> line(end = [1, 0])
+  |> line(end = [0, -1])
+  |> close()
+  |> extrude(length = 1)
+  |> patternCircular3d(
+       axis = [1, 1, 0],
+       center = [10, 0, 10],
+       instances = 11,
+       arcDegrees = 360,
+       rotateDuplicates = true,
+     )

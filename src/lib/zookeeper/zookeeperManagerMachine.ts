@@ -228,6 +228,7 @@ export enum ZookeeperManagerTransitions {
   AuthTokenChanged = 'auth-token-changed',
   MessageSend = 'message-send',
   ResponseReceive = 'response-receive',
+  EditApplied = 'edit-applied',
   ModesReceive = 'modes-receive',
   ConversationClose = 'conversation-close',
   Cancel = 'cancel',
@@ -377,6 +378,10 @@ export type ZookeeperManagerEvents =
       response: MlCopilotServerMessage
     }
   | {
+      type: ZookeeperManagerTransitions.EditApplied
+      response: MlCopilotServerMessage
+    }
+  | {
       type: ZookeeperManagerTransitions.ModesReceive
       defaultMode?: MlCopilotModeId
       modeOptions: MlCopilotModeOption[]
@@ -425,6 +430,10 @@ export interface Exchange {
   // NOTE: THIS WILL *NOT* INCLUDE `delta` RESPONSES! SEE BELOW.
   responses: MlCopilotServerMessage[]
 
+  // Local acknowledgements only; replayed edits must never be applied again.
+  // Keep these references only until a later final answer allows cleanup.
+  appliedEditResponses?: MlCopilotServerMessage[]
+
   // BELOW:
   // An optimization. `delta` messages will be appended here.
   deltasAggregated: string
@@ -437,13 +446,50 @@ export type Conversation = {
   exchanges: Exchange[]
 }
 
+function isSuccessfulEdit(response: MlCopilotServerMessage) {
+  return (
+    'tool_output' in response &&
+    response.tool_output.result.type === 'edit_kcl_code' &&
+    response.tool_output.result.error == null &&
+    response.tool_output.result.status_code >= 200 &&
+    response.tool_output.result.status_code < 300
+  )
+}
+
+function compactAppliedEdits(exchange: Exchange): Exchange {
+  if (!exchange.appliedEditResponses?.length) {
+    return exchange
+  }
+
+  const applied = new Set(exchange.appliedEditResponses)
+  const finalAnswerIndex = exchange.responses.findLastIndex(
+    (response) =>
+      'end_of_stream' in response &&
+      Boolean(response.end_of_stream.whole_response?.trim())
+  )
+  const responses = exchange.responses.filter((response, index) => {
+    if (index < finalAnswerIndex && applied.delete(response)) {
+      return false
+    }
+    return true
+  })
+  if (responses.length === exchange.responses.length) {
+    return exchange
+  }
+  return {
+    ...exchange,
+    responses,
+    appliedEditResponses: applied.size ? Array.from(applied) : undefined,
+  }
+}
+
 export type ZookeeperAttachmentFetchState =
   | { status: 'loading' }
   | { status: 'loaded'; file: MlCopilotFile }
   | { status: 'error'; message: string }
 
 export const getZookeeperAttachmentKey = (
-  attachmentRef: AttachmentRef
+  attachmentRef: Pick<AttachmentRef, 'prompt_id' | 'seq' | 'index'>
 ): string =>
   `${attachmentRef.prompt_id}:${attachmentRef.seq}:${attachmentRef.index}`
 
@@ -1073,6 +1119,7 @@ export const zookeeperManagerMachine = setup({
         prompt_id,
         seq,
         indices: [index],
+        supports_attachments_error: true,
       }
 
       context.ws.send(JSON.stringify(request))
@@ -1512,7 +1559,7 @@ export const zookeeperManagerMachine = setup({
     }),
     [ZookeeperManagerTransitions.MessageSend]: fromPromise(async function (
       args: XSInput<ZookeeperManagerTransitions.MessageSend>
-    ): Promise<Partial<ZookeeperManagerContext>> {
+    ) {
       const { context, event } = args.input
       if (!isPresent<WebSocket>(context.ws))
         return Promise.reject(new Error('WebSocket not present'))
@@ -1571,19 +1618,15 @@ export const zookeeperManagerMachine = setup({
 
       context.ws.send(JSON.stringify(request))
 
-      const conversation: Conversation = {
-        exchanges: Array.from(context.conversation.exchanges),
-      }
-
-      conversation.exchanges.push({
+      const exchange: Exchange = {
         request,
         responses: [],
         deltasAggregated: '',
         startedAt: new Date(),
-      })
+      }
 
       return {
-        conversation,
+        exchange,
         fileFocusedOnInEditor: event.fileSelectedDuringPrompting.entry,
         projectNameCurrentlyOpened: requestData.body.project_name,
         attachmentsLoadedForCurrentPrompt:
@@ -1696,6 +1739,35 @@ export const zookeeperManagerMachine = setup({
     closeZookeeperWebSocket(args.context?.ws)
   },
   on: {
+    [ZookeeperManagerTransitions.EditApplied]: {
+      actions: assign(({ context, event }) => {
+        // Identity fences late acknowledgements after clear/reconnect. An
+        // exchange index or message counter can be reused by a new transcript.
+        if (!isSuccessfulEdit(event.response) || !context.conversation) {
+          return {}
+        }
+        const exchangeIndex = context.conversation.exchanges.findIndex(
+          (exchange) => exchange.responses.includes(event.response)
+        )
+        const exchange = context.conversation.exchanges[exchangeIndex]
+        if (
+          !exchange ||
+          exchange.appliedEditResponses?.includes(event.response)
+        ) {
+          return {}
+        }
+        const exchanges = Array.from(context.conversation.exchanges)
+        exchanges[exchangeIndex] = compactAppliedEdits({
+          ...exchange,
+          appliedEditResponses: [
+            ...(exchange.appliedEditResponses ?? []),
+            event.response,
+          ],
+        })
+        // This is bookkeeping, not a new server message or a completed turn.
+        return { conversation: { ...context.conversation, exchanges } }
+      }),
+    },
     [ZookeeperManagerTransitions.AuthTokenChanged]: {
       actions: ['assignApiToken'],
     },
@@ -1941,6 +2013,33 @@ export const zookeeperManagerMachine = setup({
                       ZookeeperManagerTransitions.ResponseReceive,
                     ])
 
+                    if ('attachments_error' in event.response) {
+                      const { prompt_id, seq, indices, detail } =
+                        event.response.attachments_error
+
+                      const attachmentFetches = { ...context.attachmentFetches }
+
+                      for (const index of indices) {
+                        const key = getZookeeperAttachmentKey({
+                          prompt_id,
+                          seq,
+                          index,
+                        })
+
+                        if (attachmentFetches[key]?.status !== 'loading') {
+                          continue
+                        }
+
+                        attachmentFetches[key] = {
+                          status: 'error',
+                          message: detail,
+                        }
+                      }
+
+                      // Attachment failures must not change conversation or generation state.
+                      return { attachmentFetches }
+                    }
+
                     if ('attachments' in event.response) {
                       const attachmentFetches: Record<
                         string,
@@ -2029,6 +2128,12 @@ export const zookeeperManagerMachine = setup({
                       lastExchange.responses.push(event.response)
                     }
 
+                    if ('end_of_stream' in event.response) {
+                      conversation.exchanges[
+                        conversation.exchanges.length - 1
+                      ] = compactAppliedEdits(lastExchange)
+                    }
+
                     // This sucks but must be done because we can't
                     // enumerate the message types.
                     const r = event.response
@@ -2104,14 +2209,22 @@ export const zookeeperManagerMachine = setup({
                 onDone: {
                   target: S.Await,
                   actions: [
-                    assign(({ event, context }) => ({
-                      ...event.output,
-                      awaitingResponse: true,
-                      attachmentsLoadedForCurrentPrompt:
-                        event.output.attachmentsLoadedForCurrentPrompt ??
-                        context.attachmentsLoadedForCurrentPrompt,
-                      pendingBackendShutdown: context.pendingBackendShutdown,
-                    })),
+                    assign(({ event, context }) => {
+                      const { exchange, ...updates } = event.output
+                      return {
+                        ...updates,
+                        // Edit acknowledgements can compact earlier exchanges
+                        // while this prompt is being prepared.
+                        conversation: {
+                          ...context.conversation,
+                          exchanges: [
+                            ...(context.conversation?.exchanges ?? []),
+                            exchange,
+                          ],
+                        },
+                        awaitingResponse: true,
+                      }
+                    }),
                   ],
                 },
                 onError: { target: S.Await, actions: ['toastError'] },

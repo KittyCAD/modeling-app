@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties loft_arc_subtract.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": 0.0,
+      "y": -4.95,
+      "z": -1.743895694544268
+    },
+    "dimensions": {
+      "x": 10.0,
+      "y": 10.1,
+      "z": 3.487791389088539
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 265.73313993338843
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 0.10202833852548016
+  }
+}

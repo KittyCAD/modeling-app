@@ -26,6 +26,7 @@ boxVisible = extrude(region(point = [1750, 250], sketch = anchorSketch), length 
 
 hide(cube)
 
+@(added_in = "3.0")
 importedView = view::named(
   "Anchor only",
   camera = view::oriented(view::Orientation::Isometric),

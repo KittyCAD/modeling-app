@@ -5,9 +5,9 @@ excerpt: "Create a camera view that looks along a custom direction."
 layout: manual
 ---
 
-**WARNING:** This function is experimental and may change or be removed.
-
 Create a camera view that looks along a custom direction.
+
+**Added in KCL 3.0.**
 
 ```kcl
 view::directed(
@@ -64,7 +64,7 @@ resolve. A `target` is a point, so its coordinates may be negative.
 ### Examples
 
 ```kcl
-@settings(experimentalFeatures = allow)
+@settings(kclVersion = "3.0-preview")
 
 overheadView = view::directed([0, 1, -2])
 

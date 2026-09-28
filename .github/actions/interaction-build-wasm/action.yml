@@ -1,0 +1,48 @@
+name: interaction-build-wasm
+description: Build and record Wasm from the application checked out at the workspace root.
+inputs:
+  variant:
+    description: Application variant, base or candidate.
+    required: true
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-node@v7.0.0
+      with:
+        node-version-file: .nvmrc
+        package-manager-cache: false
+    - run: npm ci
+      shell: bash
+    - name: Use correct Rust toolchain
+      shell: bash
+      run: |
+        [ -e rust-toolchain.toml ] || cp rust/rust-toolchain.toml ./
+    - uses: actions-rust-lang/setup-rust-toolchain@v1.17.0
+      with:
+        cache: false
+        rustflags: "" # use .cargo/config.toml
+    - uses: taiki-e/install-action@c30ba1cbe2face7f695d394a2c95af204d417b29
+      with:
+        tool: wasm-pack
+    - name: Build Wasm and committed TypeScript bindings
+      shell: bash
+      run: |
+        cargo fetch --locked --manifest-path rust/Cargo.toml
+        npm run build:wasm
+    - name: Record Wasm provenance and reject lockfile drift
+      shell: bash
+      run: node .performance-pipeline/e2e/performance/build-comparison.cjs wasm .
+    - uses: actions/upload-artifact@v7
+      with:
+        name: prepared-wasm-interaction-${{ inputs.variant }}
+        path: |
+          rust/kcl-wasm-lib/pkg/kcl_wasm_lib*
+          rust/kcl-wasm-lib/pkg/interaction-wasm-manifest.json
+        if-no-files-found: error
+        retention-days: 7
+    - uses: actions/upload-artifact@v7
+      with:
+        name: prepared-ts-rs-bindings-interaction-${{ inputs.variant }}
+        path: rust/kcl-lib/bindings/*
+        if-no-files-found: error
+        retention-days: 7

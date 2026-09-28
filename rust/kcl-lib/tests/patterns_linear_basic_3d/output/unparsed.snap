@@ -1,0 +1,12 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing patterns_linear_basic_3d.kcl
+---
+part = startSketchOn(XY)
+  |> startProfile(at = [0, 0])
+  |> line(end = [0, 1])
+  |> line(end = [1, 0])
+  |> line(end = [0, -1])
+  |> close()
+  |> extrude(length = 1)
+  |> patternLinear3d(axis = [1, 0, 1], instances = 4, distance = 6)

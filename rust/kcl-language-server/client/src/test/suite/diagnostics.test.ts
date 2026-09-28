@@ -21,8 +21,8 @@ const SETUP_TIMEOUT_MS = 60_000
 const DIAGNOSTIC_TIMEOUT_MS = 30_000
 const POLL_INTERVAL_MS = 250
 
-const ENUM_DECLARATION = 'type Color { | Red }\n'
-const ENUM_DECLARATION_MESSAGE = 'Use of enum declarations is experimental'
+const BARE_TYPE_DECLARATION = 'type Color\n'
+const BARE_TYPE_DECLARATION_MESSAGE = 'Use of type declarations is experimental'
 
 function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms))
@@ -80,12 +80,12 @@ suite('KCL language server diagnostics', function () {
     }
   })
 
-  // An enum declaration without `@settings(experimentalFeatures = allow)` raises
+  // A bare type declaration without `@settings(experimentalFeatures = allow)` raises
   // an Error-severity issue during parsing. The issue is not fatal, so the pass
   // continues to the end, and the pass used to clear every Error diagnostic once
   // it got there. That discarded this one before the editor saw it.
   test('an Error-severity parse issue reaches the editor', async () => {
-    const uri = await openKclDocument(ENUM_DECLARATION)
+    const uri = await openKclDocument(BARE_TYPE_DECLARATION)
 
     const diagnostics = await waitForDiagnostics(uri)
 
@@ -105,7 +105,7 @@ suite('KCL language server diagnostics', function () {
     )
     assert.strictEqual(diagnostic.severity, vscode.DiagnosticSeverity.Error)
     assert.ok(
-      diagnostic.message.includes(ENUM_DECLARATION_MESSAGE),
+      diagnostic.message.includes(BARE_TYPE_DECLARATION_MESSAGE),
       `unexpected message: ${diagnostic.message}`
     )
   })
@@ -119,7 +119,7 @@ suite('KCL language server diagnostics', function () {
   // the file.
   test('a clean document reaches the editor with no diagnostics', async () => {
     const cleanUri = await openKclDocument('x = 1\n')
-    const erroringUri = await openKclDocument(ENUM_DECLARATION)
+    const erroringUri = await openKclDocument(BARE_TYPE_DECLARATION)
 
     assert.strictEqual(
       (await waitForDiagnostics(erroringUri)).length,

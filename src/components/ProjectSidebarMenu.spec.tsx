@@ -10,7 +10,6 @@ import type { FileEntry, Project } from '@src/lib/project'
 
 import ProjectSidebarMenu, {
   ProjectBreadcrumbButton,
-  canNavigateHome,
 } from '@src/components/ProjectSidebarMenu'
 
 beforeAll(async () => {
@@ -69,28 +68,14 @@ function renderBreadcrumb() {
 }
 
 describe('ProjectSidebarMenu tests', () => {
-  test('enables home navigation for desktop or cloud-backed web', () => {
-    expect(
-      canNavigateHome({ isDesktopApp: true, hasCloudSyncFeature: false })
-    ).toBe(true)
-    expect(
-      canNavigateHome({ isDesktopApp: false, hasCloudSyncFeature: true })
-    ).toBe(true)
-    expect(
-      canNavigateHome({ isDesktopApp: false, hasCloudSyncFeature: false })
-    ).toBe(false)
-  })
-
   test('Disables popover menu by default', () => {
     renderWithRouter(<ProjectSidebarMenu project={projectWellFormed} />)
 
     expect(screen.getByTestId('project-name')).toHaveTextContent('Simple Box')
   })
 
-  test('Links the logo to Home when home navigation is enabled', () => {
-    renderWithRouter(
-      <ProjectSidebarMenu project={projectWellFormed} hasCloudSyncFeature />
-    )
+  test('Links the logo to Home', () => {
+    renderWithRouter(<ProjectSidebarMenu project={projectWellFormed} />)
 
     const logoLink = screen.getByTestId('app-logo').closest('a')
 

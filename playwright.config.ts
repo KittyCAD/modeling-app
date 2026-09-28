@@ -1,5 +1,11 @@
 import os from 'os'
 import { defineConfig, devices } from '@playwright/test'
+import type { ReporterDescription } from '@playwright/test'
+
+const discoveryReporters: ReporterDescription[] =
+  process.env.PLAYWRIGHT_INTERACTION_DISCOVERY === '1'
+    ? [['./e2e/playwright/lib/interaction-discovery-reporter.ts']]
+    : []
 
 const platform = os.platform() // 'linux' (Ubuntu), 'darwin' (macOS), 'win32' (Windows)
 
@@ -44,6 +50,7 @@ export default defineConfig({
     ['json', { outputFile: './test-results/report.json' }],
     ['html'],
     ['./e2e/playwright/lib/api-reporter.ts'],
+    ...discoveryReporters,
   ],
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {

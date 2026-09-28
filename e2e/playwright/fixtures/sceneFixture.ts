@@ -124,8 +124,8 @@ export class SceneFixture {
     this.page = page
     this.streamWrapper = page.getByTestId('stream')
     this.networkToggleConnected = page
-      .getByTestId('network-toggle-ok')
-      .or(page.getByTestId('network-toggle-other'))
+      .getByTestId(/^network-toggle-/)
+      .filter({ hasText: /Network health \((Strong|Ok)\)/ })
     this.engineConnectionsSpinner = page.getByTestId(`loading-engine`)
     this.startEditSketchBtn = page
       .getByRole('button', { name: 'Start Sketch' })

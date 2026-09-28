@@ -96,6 +96,17 @@ async def test_kcl_execute():
     await execute_with_retries(kcl.execute, lego_file)
 
 
+@requires_engine
+@pytest.mark.asyncio
+async def test_kcl_session_connection_ids():
+    code = "@settings(kclVersion = 2.0)\nvalue = 1"
+    async with await execute_with_retries(kcl.new_kcl_session_code, code) as session:
+        assert isinstance(session.api_call_id, str)
+        assert session.api_call_id
+        assert isinstance(session.websocket_upgrade_request_id, str)
+        assert session.websocket_upgrade_request_id
+
+
 @pytest.mark.asyncio
 @pytest.mark.parametrize("from_file", [False, True])
 async def test_kcl_session_context_manager(tmp_path, from_file):
@@ -450,73 +461,13 @@ async def test_duplicate_sketch_instances(use_session) -> None:
         outcome.render_sketch_png("profile", instance_index=-1)
 
 
-@pytest.mark.asyncio
-async def test_kcl_mock_execute_code():
-    # Read from a file.
-    with open(lego_file, "r") as f:
-        code = str(f.read())
-        assert code is not None
-        assert len(code) > 0
-        outcome = await kcl.mock_execute_code(code)
-        assert outcome.issues() == []
-
-
 @requires_engine
 @pytest.mark.asyncio
-async def test_kcl_execute_code():
-    # Read from a file.
-    with open(lego_file, "r") as f:
-        code = str(f.read())
-        assert code is not None
-        assert len(code) > 0
-        await execute_with_retries(kcl.execute_code, code)
-
-
-@requires_engine
-@pytest.mark.asyncio
-async def test_kcl_execute_code_geometry_only():
-    outcome = await execute_with_retries(kcl.execute_code, box_code, geometry_only=True)
+async def test_kcl_execute_geometry_only(tmp_path):
+    source = tmp_path / "main.kcl"
+    source.write_text(box_code)
+    outcome = await execute_with_retries(kcl.execute, str(source), geometry_only=True)
     assert outcome.issues() == []
-
-
-@requires_engine
-@pytest.mark.asyncio
-async def test_kcl_execute_code_and_snapshot():
-    # Read from a file.
-    with open(lego_file, "r") as f:
-        code = str(f.read())
-        assert code is not None
-        assert len(code) > 0
-        image_bytes = await execute_with_retries(
-            kcl.execute_code_and_snapshot,
-            code,
-            kcl.ImageFormat.Jpeg,
-            highlight_edges=False,
-        )
-        assert image_bytes is not None
-        assert len(image_bytes) > 0
-
-
-@requires_engine
-@pytest.mark.asyncio
-async def test_kcl_execute_code_and_export():
-    # Read from a file.
-    with open(lego_file, "r") as f:
-        code = str(f.read())
-        assert code is not None
-        assert len(code) > 0
-        files = await execute_with_retries(
-            kcl.execute_code_and_export, code, kcl.FileExportFormat.Step
-        )
-        assert files is not None
-        assert len(files) > 0
-        assert files[0] is not None
-        name = files[0].name
-        contents = files[0].contents
-        assert name is not None
-        assert len(name) > 0
-        assert contents is not None
-        assert len(contents) > 0
 
 
 @requires_engine
@@ -636,36 +587,7 @@ async def test_kcl_execute_and_snapshot_dir():
 
 @requires_engine
 @pytest.mark.asyncio
-async def test_kcl_execute_and_measure():
-    # Read from a file.
-    with open(lego_file, "r") as f:
-        code = str(f.read())
-        assert code is not None
-        assert len(code) > 0
-
-        # Send the request
-        request = kcl.PhysicalPropertiesRequest()
-        request.set_volume(kcl.UnitVolume.CubicMillimeters)
-        request.set_center_of_mass(kcl.UnitLength.Centimeters)
-        response = await execute_with_retries(
-            kcl.execute_code_and_measure, code, request
-        )
-        assert response is not None
-
-        # Check the response is as expected.
-        assert response.get_volume() == pytest.approx(945.57216312, rel=0, abs=1e-5)
-        assert response.get_volume_unit() == kcl.UnitVolume.CubicMillimeters
-        com = response.get_center_of_mass()
-        print(com.x, com.y, com.z)
-        assert com.x == pytest.approx(0.01788371801376342, rel=0, abs=1e-5)
-        assert com.y == pytest.approx(0.02166672982275486, rel=0, abs=1e-5)
-        assert com.z == pytest.approx(0.24748362600803375, rel=0, abs=1e-5)
-        assert response.get_center_of_mass_unit() == kcl.UnitLength.Centimeters
-
-
-@requires_engine
-@pytest.mark.asyncio
-@pytest.mark.parametrize("entry_point", ["code", "file", "session"])
+@pytest.mark.parametrize("entry_point", ["file", "session"])
 async def test_kcl_measure_all_physical_properties(tmp_path, entry_point):
     request = kcl.PhysicalPropertiesRequest()
     request.set_volume(kcl.UnitVolume.CubicCentimeters)
@@ -677,11 +599,7 @@ async def test_kcl_measure_all_physical_properties(tmp_path, entry_point):
     request.set_surface_area(kcl.UnitArea.SquareCentimeters)
     request.set_bounding_box(kcl.UnitLength.Inches)
 
-    if entry_point == "code":
-        response = await kcl.execute_code_and_measure(
-            box_code, request, geometry_only=True
-        )
-    elif entry_point == "file":
+    if entry_point == "file":
         source = tmp_path / "main.kcl"
         source.write_text(box_code)
         response = await kcl.execute_and_measure(
@@ -742,12 +660,12 @@ async def test_kcl_measure_subset_keeps_unrequested_properties_unavailable():
 
 @requires_engine
 @pytest.mark.asyncio
-async def test_kcl_execute_code_and_measure_bounding_box_cm():
+async def test_kcl_execute_and_measure_bounding_box_cm(tmp_path):
     request = kcl.PhysicalPropertiesRequest()
     request.set_bounding_box(kcl.UnitLength.Centimeters)
-    response = await execute_with_retries(
-        kcl.execute_code_and_measure, box_code, request
-    )
+    source = tmp_path / "main.kcl"
+    source.write_text(box_code)
+    response = await execute_with_retries(kcl.execute_and_measure, str(source), request)
     assert response is not None
 
     bounding_box = response.get_bounding_box()
@@ -765,12 +683,12 @@ async def test_kcl_execute_code_and_measure_bounding_box_cm():
 
 @requires_engine
 @pytest.mark.asyncio
-async def test_kcl_execute_code_and_measure_bounding_box_mm():
+async def test_kcl_execute_and_measure_bounding_box_mm(tmp_path):
     request = kcl.PhysicalPropertiesRequest()
     request.set_bounding_box(kcl.UnitLength.Millimeters)
-    response = await execute_with_retries(
-        kcl.execute_code_and_measure, box_code, request
-    )
+    source = tmp_path / "main.kcl"
+    source.write_text(box_code)
+    response = await execute_with_retries(kcl.execute_and_measure, str(source), request)
     assert response is not None
 
     bounding_box = response.get_bounding_box()
@@ -788,8 +706,10 @@ async def test_kcl_execute_code_and_measure_bounding_box_mm():
 
 @requires_engine
 @pytest.mark.asyncio
-async def test_kcl_execute_code_and_bounding_box():
-    response = await execute_with_retries(kcl.execute_code_and_bounding_box, box_code)
+async def test_kcl_execute_and_bounding_box(tmp_path):
+    source = tmp_path / "main.kcl"
+    source.write_text(box_code)
+    response = await execute_with_retries(kcl.execute_and_bounding_box, str(source))
     assert response is not None
 
     center = response.get_center()
@@ -806,7 +726,7 @@ async def test_kcl_execute_code_and_bounding_box():
 
 @requires_engine
 @pytest.mark.asyncio
-async def test_kcl_execute_and_bounding_box():
+async def test_kcl_execute_and_bounding_box_with_linter_errors():
     box_file = os.path.join(files_dir, "box_with_linter_errors.kcl")
     response = await execute_with_retries(kcl.execute_and_bounding_box, box_file, [])
     assert response is not None
@@ -921,13 +841,11 @@ def test_kcl_lint_fix_no_style():
 
 
 @pytest.mark.asyncio
-async def test_kcl_execute_code_and_export_with_bad_units():
+async def test_kcl_execute_and_export_with_bad_units():
     bad_units_file = os.path.join(tests_dir, "bad_units_in_annotation", "input.kcl")
-    with open(bad_units_file, "r") as f:
-        code = f.read()
 
     with pytest.raises(kcl.KclError) as raised:
-        await kcl.execute_code_and_export(code, kcl.FileExportFormat.Step)
+        await kcl.execute_and_export(bad_units_file, kcl.FileExportFormat.Step)
 
     error = str(raised.value)
     assert "KCL Semantic error" in error
@@ -1244,6 +1162,7 @@ async def test_primary_execution_error_carries_partial_constraint_report():
     with pytest.raises(kcl.KclError) as raised:
         await kcl.new_kcl_session_code(execution_error_after_sketch_code, mock=True)
 
+    # Validate that the exception still gives you a sketch report.
     report = raised.value.sketch_constraint_report
     assert report is not None
     assert report.total_sketches() == 1
@@ -1256,3 +1175,7 @@ async def test_primary_execution_error_carries_partial_constraint_report():
     assert raised.value.args == (report.kcl_error.text, False)
     assert raised.value.is_retryable() is False
     assert str(raised.value) == str(kcl.KclError(report.kcl_error.text, False))
+
+    # Validate that the exception still gives you a sketch debug visualization.
+    png = bytes(raised.value.render_sketch_png("s1"))
+    assert png.startswith(b"\x89PNG\r\n\x1a\n")

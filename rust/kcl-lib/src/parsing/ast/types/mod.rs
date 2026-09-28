@@ -5013,7 +5013,7 @@ cylinder = startSketchOn(-XZ)
     #[test]
     fn test_parse_never_type() {
         let program = parse(
-            "@settings(experimentalFeatures = allow)\n\
+            "@settings(kclVersion = \"3.0-preview\")\n\
              fn stop(@impossible: never): never { return impossible }\n\
              type impossible = never\n\
              type neverReturns = fn(): never\n\

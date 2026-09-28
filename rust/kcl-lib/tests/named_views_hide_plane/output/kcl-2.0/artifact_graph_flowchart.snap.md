@@ -62,9 +62,6 @@ flowchart LR
     %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlockBody, SketchBlockBodyItem { index: 6 }, ExpressionStatementExpr]
   33["SketchBlockConstraint Coincident<br>[808, 844, 0]"]
     %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlockBody, SketchBlockBodyItem { index: 7 }, ExpressionStatementExpr]
-  34["NamedView "Near plane"<br>Baseline: Show<br>[962, 1112, 0]"]
-    %% [ProgramBodyItem { index: 5 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  2 <--x 34
   3 --- 4
   3 <--x 9
   3 <--x 29

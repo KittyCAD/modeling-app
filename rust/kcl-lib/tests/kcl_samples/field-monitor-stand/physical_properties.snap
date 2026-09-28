@@ -5,12 +5,12 @@ description: Physical properties field-monitor-stand.kcl
 {
   "bounding_box": {
     "center": {
-      "x": 33.0,
+      "x": 33.00000000000001,
       "y": -30.0,
       "z": 56.85140355754746
     },
     "dimensions": {
-      "x": 66.0,
+      "x": 66.00000000000001,
       "y": 72.0,
       "z": 136.4433685381139
     },

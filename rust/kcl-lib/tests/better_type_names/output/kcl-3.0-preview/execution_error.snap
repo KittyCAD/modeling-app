@@ -1,0 +1,28 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Error from executing better_type_names.kcl
+---
+KCL Semantic error
+
+  × semantic: The `appearance` function expected the input argument to be one
+  │ or more Solids or ImportedGeometry or Plane but it's actually of type
+  │ Sketch. You can convert a sketch (2D) into a Solid (3D) by calling a
+  │ function like `extrude` or `revolve`
+   ╭─[3:6]
+ 2 │   |> circle(center = [-95.51, -74.7], radius = 262.23)
+ 3 │   |> appearance(metalness = 0.9)
+   ·      ─────────────┬─────────────
+   ·                   ╰── tests/better_type_names/input.kcl
+   ╰────
+  ╰─▶ KCL Semantic error
+      
+        × semantic: The `appearance` function expected the input argument to
+        │ be one or more Solids or ImportedGeometry or Plane but it's actually
+        │ of type Sketch. You can convert a sketch (2D) into a Solid (3D) by
+        │ calling a function like `extrude` or `revolve`
+         ╭─[3:6]
+       2 │   |> circle(center = [-95.51, -74.7], radius = 262.23)
+       3 │   |> appearance(metalness = 0.9)
+         ·      ─────────────┬─────────────
+         ·                   ╰── tests/better_type_names/input.kcl
+         ╰────

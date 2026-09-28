@@ -1,0 +1,49 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing different_planes_same_drawing.kcl
+---
+width = 5
+height = 10
+length = 12
+
+fn box(sk1, sk2, scale, plane) {
+  boxsketch = startSketchOn(plane)
+    |> startProfile(at = [sk1, sk2])
+    |> line(end = [0, scale])
+    |> line(end = [scale, 0])
+    |> line(end = [0, -scale])
+    |> close()
+    |> extrude(length = scale)
+  return boxsketch
+}
+
+box(
+  sk1 = 0,
+  sk2 = 0,
+  scale = 5,
+  plane = XY,
+)
+box(
+  sk1 = 10,
+  sk2 = 23,
+  scale = 8,
+  plane = XZ,
+)
+box(
+  sk1 = 30,
+  sk2 = 43,
+  scale = 18,
+  plane = -XY,
+)
+thing = box(
+  sk1 = -12,
+  sk2 = -15,
+  scale = 10,
+  plane = YZ,
+)
+box(
+  sk1 = -20,
+  sk2 = -5,
+  scale = 10,
+  plane = XY,
+)

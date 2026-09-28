@@ -1,0 +1,13 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing holes.kcl
+---
+square = startSketchOn(XY)
+  |> startProfile(at = [0, 0])
+  |> line(end = [0, 10])
+  |> line(end = [10, 0])
+  |> line(end = [0, -10])
+  |> close()
+  |> subtract2d(tool = circle(center = [2, 2], radius = .5))
+  |> subtract2d(tool = circle(center = [2, 8], radius = .5))
+  |> extrude(length = 2)
