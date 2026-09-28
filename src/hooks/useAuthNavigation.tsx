@@ -1,10 +1,8 @@
 import { useApp } from '@src/lib/boot'
 import { PATHS } from '@src/lib/paths'
-import {
-  appNavigationService,
-  showHomeIntent,
-} from '@src/registry/contracts/appNavigation'
+import { appNavigationService } from '@src/registry/contracts/appNavigation'
 import { startSignInIntent } from '@src/registry/contracts/auth'
+import { showHomeIntent } from '@src/registry/contracts/homeProjects'
 import { useEffect } from 'react'
 import { useLocation } from 'react-router-dom'
 

@@ -4,15 +4,13 @@ import fsZds from '@src/lib/fs-zds'
 import { getHomeProjectDisplayName } from '@src/lib/homeProjects'
 import type { Project } from '@src/lib/project'
 import { CLOUD_PROJECT_LIBRARY_TYPE } from '@src/lib/projectLibraries'
-import {
-  appNavigationService,
-  openProjectIntent,
-  showHomeIntent,
-} from '@src/registry/contracts/appNavigation'
+import { appNavigationService } from '@src/registry/contracts/appNavigation'
 import {
   homeProjectActionsService,
   homeProjectEntriesValueSpec,
+  showHomeIntent,
 } from '@src/registry/contracts/homeProjects'
+import { openProjectIntent } from '@src/registry/contracts/projectSession'
 
 /**
  * Releases the open project, relocates it, then routes directly to the moved

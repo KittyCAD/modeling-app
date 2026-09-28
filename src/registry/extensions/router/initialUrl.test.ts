@@ -51,7 +51,7 @@ describe('parseInitialUrl', () => {
     })
   })
 
-  it('treats a desktop document URL without a route hash as the index', () => {
+  it('normalizes a desktop document URL without a route hash to Home', () => {
     expect(
       parseInitialUrl(
         'file:///Applications/Zoo.app/index.html/?cmd=app.theme&groupId=settings',
@@ -59,9 +59,54 @@ describe('parseInitialUrl', () => {
       )
     ).toEqual({
       type: 'launch',
-      destination: { type: 'index' },
+      destination: { type: 'home' },
       search: '?cmd=app.theme&groupId=settings',
       hash: '',
+      shouldProjectUrl: true,
+    })
+  })
+
+  it('normalizes the web index to Home while preserving its query', () => {
+    expect(
+      parseInitialUrl('https://app.zoo.dev/?pool=alpha', {
+        navigationIntents,
+        usesHashRouter: false,
+      })
+    ).toEqual({
+      type: 'launch',
+      destination: { type: 'home' },
+      search: '?pool=alpha',
+      hash: '',
+      shouldProjectUrl: true,
+    })
+  })
+
+  it('leaves the web index for the open-in-desktop handler', () => {
+    expect(
+      parseInitialUrl('https://app.zoo.dev/?ask-open-desktop=true', {
+        navigationIntents,
+        usesHashRouter: false,
+      })
+    ).toEqual({
+      type: 'launch',
+      destination: { type: 'index' },
+      search: '?ask-open-desktop=true',
+      hash: '',
+    })
+  })
+
+  it('normalizes the legacy virtual browser project to Home', () => {
+    expect(
+      parseInitialUrl(
+        'https://app.zoo.dev/file/%2Fbrowser%2Fmain.kcl?pool=discarded',
+        { navigationIntents, usesHashRouter: false }
+      )
+    ).toEqual({
+      type: 'launch',
+      destination: { type: 'home' },
+      search: '',
+      hash: '',
+      shouldProjectUrl: true,
     })
   })
 

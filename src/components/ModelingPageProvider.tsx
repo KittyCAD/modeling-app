@@ -18,11 +18,9 @@ import { kclCommands } from '@src/lib/kclCommands'
 import { markOnce } from '@src/lib/performance'
 import { isArray } from '@src/lib/utils'
 import { modelingMenuCallbackMostActions } from '@src/menu/register'
-import {
-  appNavigationService,
-  showHomeIntent,
-} from '@src/registry/contracts/appNavigation'
+import { appNavigationService } from '@src/registry/contracts/appNavigation'
 import { FILE_AND_CODE_EDITOR_COMMAND_SCOPES } from '@src/registry/contracts/commands'
+import { showHomeIntent } from '@src/registry/contracts/homeProjects'
 import type React from 'react'
 import { use, useEffect, useMemo } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'

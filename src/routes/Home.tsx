@@ -49,11 +49,9 @@ import {
 import { SystemIOMachineStates } from '@src/machines/systemIO/utils'
 import type { WebContentSendPayload } from '@src/menu/channels'
 import { HOME_COMMAND_SCOPE } from '@src/registry/contracts/commands'
-import {
-  appNavigationService,
-  openProjectIntent,
-} from '@src/registry/contracts/appNavigation'
+import { appNavigationService } from '@src/registry/contracts/appNavigation'
 import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
+import { openProjectIntent } from '@src/registry/contracts/projectSession'
 import {
   type HomeProjectActionsService,
   type HomeProjectEntry,

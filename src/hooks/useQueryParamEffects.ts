@@ -33,10 +33,8 @@ import {
   waitForIdleState,
 } from '@src/machines/systemIO/utils'
 import { cloudSyncService } from '@src/registry/contracts/cloudSync'
-import {
-  appNavigationService,
-  openProjectIntent,
-} from '@src/registry/contracts/appNavigation'
+import { appNavigationService } from '@src/registry/contracts/appNavigation'
+import { openProjectIntent } from '@src/registry/contracts/projectSession'
 import { useEffect } from 'react'
 import toast from 'react-hot-toast'
 import { useNavigate, useSearchParams } from 'react-router-dom'

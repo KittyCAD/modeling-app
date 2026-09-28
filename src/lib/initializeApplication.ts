@@ -1,31 +1,16 @@
 import type { App } from '@src/lib/app'
-import {
-  initFileRoute,
-  initIndexRoute,
-  type RouteInitResult,
-} from '@src/registry/extensions/router/legacyRouteInit'
-import type { FileLoaderData } from '@src/lib/types'
-import {
-  appNavigationService,
-  showHomeIntent,
-} from '@src/registry/contracts/appNavigation'
+import { appNavigationService } from '@src/registry/contracts/appNavigation'
 import { startSignInIntent } from '@src/registry/contracts/auth'
-import {
-  type AppDestination,
-  type AppUrlState,
-  appUrlService,
-} from '@src/registry/contracts/appUrl'
-
-const MAX_INITIAL_TRANSITIONS = 8
-
-type InitialResult = RouteInitResult<undefined | FileLoaderData>
+import { appUrlService } from '@src/registry/contracts/appUrl'
+import { showHomeIntent } from '@src/registry/contracts/homeProjects'
+import { openProjectIntent } from '@src/registry/contracts/projectSession'
 
 /**
  * Restore application state from the URL once, before React is mounted.
  *
- * Startup transitions carry typed application destinations rather than URL
- * strings. They are followed directly, then their canonical URL is projected
- * only after the resulting application state has been established.
+ * The URL is parsed once into capability-owned application intents. Those
+ * intents establish state directly; URL projection happens only after the
+ * state has been established.
  */
 export async function initializeApplication(
   app: App,
@@ -44,71 +29,49 @@ export async function initializeApplication(
     return
   }
 
-  let destination: AppDestination = intent.destination
-  let urlState: AppUrlState = {
+  const destination = intent.destination
+  const urlState = {
     ...(intent.additionalIntents
       ? { additionalIntents: intent.additionalIntents }
       : {}),
     search: intent.search,
     hash: intent.hash,
   }
-  let shouldProjectUrl = false
-
-  for (
-    let transitionCount = 0;
-    transitionCount < MAX_INITIAL_TRANSITIONS;
-    transitionCount += 1
-  ) {
-    let result: InitialResult
-    switch (destination.type) {
-      case 'index':
-        result = await initIndexRoute(app, { urlState })
-        break
-      case 'home':
-        await appNavigation.dispatch(showHomeIntent, {
-          ...(destination.libraryId
-            ? { libraryId: destination.libraryId }
-            : {}),
-          startup: urlState,
-        })
-        result = { kind: 'ready', data: undefined }
-        break
-      case 'project':
-        result = await initFileRoute(app, {
-          id: destination.target,
-          startup: urlState,
-        })
-        break
-      case 'sign-in':
-        await appNavigation.dispatch(startSignInIntent, {
-          reason: 'startup',
-          startup: urlState,
-        })
-        result = { kind: 'ready', data: undefined }
-        break
-    }
-
-    if (result.kind === 'ready') {
-      for (const additionalIntent of urlState.additionalIntents ?? []) {
-        await appNavigation.dispatch(
-          additionalIntent.intent,
-          additionalIntent.input
-        )
-      }
-      if (shouldProjectUrl && destination.type !== 'project') {
-        void appUrl.navigate(appUrl.formatUrl({ destination, ...urlState }), {
-          replace: true,
-        })
-      }
+  switch (destination.type) {
+    case 'index':
+      // The sole remaining index intent lets OpenInDesktopAppHandler own its
+      // modal without entering another application destination.
       return
-    }
-
-    destination = result.destination
-    urlState = result.urlState
-    shouldProjectUrl = true
+    case 'home':
+      await appNavigation.dispatch(showHomeIntent, {
+        ...(destination.libraryId ? { libraryId: destination.libraryId } : {}),
+        startup: urlState,
+      })
+      break
+    case 'project':
+      await appNavigation.dispatch(openProjectIntent, {
+        target: destination.target,
+        startup: urlState,
+      })
+      break
+    case 'sign-in':
+      await appNavigation.dispatch(startSignInIntent, {
+        reason: 'startup',
+        startup: urlState,
+      })
+      break
   }
 
-  return Promise.reject(
-    new Error('Too many transitions while restoring initial application state.')
-  )
+  for (const additionalIntent of urlState.additionalIntents ?? []) {
+    await appNavigation.dispatch(
+      additionalIntent.intent,
+      additionalIntent.input
+    )
+  }
+
+  if (intent.shouldProjectUrl && destination.type !== 'project') {
+    void appUrl.navigate(appUrl.formatUrl({ destination, ...urlState }), {
+      replace: true,
+    })
+  }
 }

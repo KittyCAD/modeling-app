@@ -40,11 +40,9 @@ import { waitForToastAnimationEnd } from '@src/lib/toast'
 import { err, reportRejection, trap } from '@src/lib/trap'
 import type { commandBarMachine } from '@src/machines/commandBarMachine'
 import type { SettingsActorType } from '@src/machines/settingsMachine'
-import {
-  appNavigationService,
-  openProjectIntent,
-  showHomeIntent,
-} from '@src/registry/contracts/appNavigation'
+import { appNavigationService } from '@src/registry/contracts/appNavigation'
+import { showHomeIntent } from '@src/registry/contracts/homeProjects'
+import { openProjectIntent } from '@src/registry/contracts/projectSession'
 import { useCallback, useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import {

@@ -7,10 +7,8 @@ import { getAppSettingsFilePath } from '@src/lib/desktop'
 import { getStringAfterLastSeparator, PATHS } from '@src/lib/paths'
 import { markOnce } from '@src/lib/performance'
 import { trap } from '@src/lib/trap'
-import {
-  appNavigationService,
-  showHomeIntent,
-} from '@src/registry/contracts/appNavigation'
+import { appNavigationService } from '@src/registry/contracts/appNavigation'
+import { showHomeIntent } from '@src/registry/contracts/homeProjects'
 import type { ReactNode } from 'react'
 import { createContext, useEffect, useState } from 'react'
 import { useLocation, useNavigation } from 'react-router-dom'

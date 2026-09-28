@@ -161,6 +161,37 @@ export function parseInitialUrl(
     return { type: 'unrecognized', ...applicationUrl }
   }
 
+  if (parsedDestination.destination.type === 'index') {
+    const defersToOpenInDesktop =
+      !usesHashRouter &&
+      new URLSearchParams(applicationUrl.search).has('ask-open-desktop')
+    if (!defersToOpenInDesktop) {
+      return {
+        type: 'launch',
+        destination: { type: 'home' },
+        search: applicationUrl.search,
+        hash: '',
+        shouldProjectUrl: true,
+      }
+    }
+  }
+
+  // Before multi-file web projects, the editor used a virtual `/browser`
+  // project. Those URLs have no modern application-state meaning; restore
+  // Home, where the current default project can be selected.
+  if (
+    parsedDestination.destination.type === 'project' &&
+    parsedDestination.destination.target.startsWith('/browser')
+  ) {
+    return {
+      type: 'launch',
+      destination: { type: 'home' },
+      search: '',
+      hash: '',
+      shouldProjectUrl: true,
+    }
+  }
+
   if (!parsedDestination.intentPath) {
     return {
       type: 'launch',

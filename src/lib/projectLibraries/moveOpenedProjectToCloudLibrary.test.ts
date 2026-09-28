@@ -5,10 +5,8 @@ import {
   DIRECTORY_PROJECT_LIBRARY_TYPE,
 } from '@src/lib/projectLibraries'
 import { moveOpenedProjectToCloudLibrary } from '@src/lib/projectLibraries/moveOpenedProjectToCloudLibrary'
-import {
-  appNavigationService,
-  openProjectIntent,
-} from '@src/registry/contracts/appNavigation'
+import { appNavigationService } from '@src/registry/contracts/appNavigation'
+import { openProjectIntent } from '@src/registry/contracts/projectSession'
 import type {
   HomeProjectActionsService,
   HomeProjectEntry,

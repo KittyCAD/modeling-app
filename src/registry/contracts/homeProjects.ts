@@ -6,7 +6,22 @@ import {
 import type { ProjectLibrary } from '@src/lib/projectLibraries'
 import { uniqueStrings } from '@src/lib/stringUtils'
 import { isArray } from '@src/lib/utils'
+import { defineAppNavigationIntent } from '@src/registry/contracts/appNavigation'
+import type { AppUrlState } from '@src/registry/contracts/appUrl'
 import type { CloudProjectDuplicateRisk } from '@src/registry/contracts/cloudSync'
+
+/** Application-level request to enter Home. */
+export interface ShowHomeRequest {
+  libraryId?: string
+  /** Parsed URL-owned state, present only while restoring cold startup. */
+  startup?: AppUrlState
+}
+
+/** Enter Home and optionally restore its selected project library. */
+export const showHomeIntent = defineAppNavigationIntent<
+  ShowHomeRequest,
+  undefined
+>('home.show')
 
 export type HomeProjectSource = 'local' | 'remote'
 

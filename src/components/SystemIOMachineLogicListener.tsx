@@ -30,11 +30,9 @@ import {
   SystemIOMachineEvents,
   SystemIOMachineStates,
 } from '@src/machines/systemIO/utils'
-import {
-  appNavigationService,
-  openProjectIntent,
-} from '@src/registry/contracts/appNavigation'
+import { appNavigationService } from '@src/registry/contracts/appNavigation'
 import { appUrlService } from '@src/registry/contracts/appUrl'
+import { openProjectIntent } from '@src/registry/contracts/projectSession'
 import { shouldNavigateToRequestedPath } from '@src/routes/Onboarding/navigation'
 import { useEffect } from 'react'
 import { useLocation, useNavigation } from 'react-router-dom'

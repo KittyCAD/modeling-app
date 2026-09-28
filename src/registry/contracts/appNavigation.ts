@@ -4,10 +4,7 @@ import {
   defineService,
 } from '@kittycad/registry'
 import type { ReadonlySignal } from '@preact/signals-core'
-import type {
-  AppUrlState,
-  ParsedAppNavigationIntent,
-} from '@src/registry/contracts/appUrl'
+import type { ParsedAppNavigationIntent } from '@src/registry/contracts/appUrl'
 
 declare const appNavigationIntentInput: unique symbol
 declare const appNavigationIntentOutput: unique symbol
@@ -49,24 +46,11 @@ export function defineAppNavigationIntentContribution<Input, Output>(
   }
 }
 
-/** An application-level request to enter Home. */
-export interface ShowHomeRequest {
-  libraryId?: string
-  /** Parsed URL-owned state, present only while restoring cold startup. */
-  startup?: AppUrlState
-}
-
-/** Enter Home and optionally restore its selected project library. */
-export const showHomeIntent = defineAppNavigationIntent<
-  ShowHomeRequest,
-  undefined
->('home.show')
-
 /**
- * Coordinates application intents without owning durable application state.
+ * Dispatches application intents without owning durable application state.
  *
- * Project and editor lifecycle belongs to `projectSession`; this service only
- * resolves requests and delegates to the capability that owns the result.
+ * Each contribution delegates to the capability that owns the resulting state;
+ * this service only provides typed dispatch and additional-intent presentation.
  */
 export interface AppNavigationService {
   /** The additional application intent currently presented over a destination. */

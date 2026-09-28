@@ -84,11 +84,9 @@ import {
 } from '@src/lib/layout'
 import type RustContext from '@src/lib/rustContext'
 import type { CommandBarActorType } from '@src/machines/commandBarMachine'
-import {
-  appNavigationService,
-  openProjectIntent,
-} from '@src/registry/contracts/appNavigation'
+import { appNavigationService } from '@src/registry/contracts/appNavigation'
 import { executingEditorService } from '@src/registry/contracts/executingEditor'
+import { openProjectIntent } from '@src/registry/contracts/projectSession'
 import {
   findKeymapItemForCommand,
   keymapKeystrokesDisplay,

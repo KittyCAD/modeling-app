@@ -32,10 +32,8 @@ import { getAllSubDirectoriesAtProjectRoot } from '@src/machines/systemIO/snapsh
 import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 import type { RequestedKCLFile } from '@src/machines/systemIO/utils'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
-import {
-  appNavigationService,
-  openProjectIntent,
-} from '@src/registry/contracts/appNavigation'
+import { appNavigationService } from '@src/registry/contracts/appNavigation'
+import { openProjectIntent } from '@src/registry/contracts/projectSession'
 import {
   FILE_AND_CODE_EDITOR_COMMAND_SCOPES,
   GLOBAL_COMMAND_SCOPES,

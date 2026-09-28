@@ -6,7 +6,6 @@ import { getProjectInfo, isPathNotFoundError } from '@src/lib/desktop'
 import { getParentAbsolutePath, PATHS } from '@src/lib/paths'
 import { getProjectLibraryOwnership } from '@src/lib/projectLibraryOwnership'
 import { isRequestedFileLoaded } from '@src/lib/routeLoaderNavigation'
-import { loadHomeProjects } from '@src/lib/routeLoaderUtils'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/events'
 import { SystemIOMachineStates } from '@src/machines/systemIO/states'
 import { appUrlService } from '@src/registry/contracts/appUrl'
@@ -156,12 +155,6 @@ export function createProjectNavigationDependencies(
         void appUrl.navigate(
           `${PATHS.FILE}/${encodeURIComponent(openedFilePath)}`
         )
-      }
-    },
-    showHome: async (request) => {
-      loadHomeProjects(app)
-      if (!request.startup) {
-        void app.registry.get(appUrlService).navigate(PATHS.HOME)
       }
     },
   }

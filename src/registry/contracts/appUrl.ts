@@ -67,6 +67,8 @@ export type InitialUrlIntent =
   | (AppUrlState & {
       type: 'launch'
       destination: AppDestination
+      /** Project this normalized compatibility destination after it loads. */
+      shouldProjectUrl?: boolean
     })
   | {
       type: 'unrecognized'

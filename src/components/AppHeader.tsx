@@ -8,10 +8,8 @@ import { isDesktop } from '@src/lib/isDesktop'
 import { PATHS } from '@src/lib/paths'
 import type { FileEntry, Project } from '@src/lib/project'
 import { appHeaderItemsValueSpec } from '@src/registry/contracts/appHeader'
-import {
-  appNavigationService,
-  showHomeIntent,
-} from '@src/registry/contracts/appNavigation'
+import { appNavigationService } from '@src/registry/contracts/appNavigation'
+import { showHomeIntent } from '@src/registry/contracts/homeProjects'
 import type { ReactNode } from 'react'
 import styles from './AppHeader.module.css'
 

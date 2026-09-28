@@ -102,9 +102,10 @@ import {
 } from '@src/registry/contracts/userFeatures'
 import { wasmPromiseValueSpec } from '@src/registry/contracts/wasm'
 import {
-  createOpenProjectIntentContribution,
+  createHomeNavigationDependencies,
   createShowHomeIntentContribution,
-} from '@src/registry/extensions/projectSession/navigation'
+} from '@src/registry/extensions/homeProjects/navigation'
+import { createOpenProjectIntentContribution } from '@src/registry/extensions/projectSession/navigation'
 import { createProjectNavigationDependencies } from '@src/registry/extensions/projectSession/runtime'
 import {
   type ZdsPluginActivationSetting,
@@ -840,8 +841,9 @@ export class App implements AppSubsystems {
     const openProjectNavigation = createOpenProjectIntentContribution(
       projectNavigationDependencies
     )
+    const homeNavigationDependencies = createHomeNavigationDependencies(this)
     const showHomeNavigation = createShowHomeIntentContribution(
-      projectNavigationDependencies,
+      homeNavigationDependencies,
       openProjectNavigation.cancelProjectOpen
     )
     const preloadedNavigationIntents = [

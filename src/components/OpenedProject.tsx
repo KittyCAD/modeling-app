@@ -42,10 +42,8 @@ import { xStateValueToString } from '@src/lib/xStateValueToString'
 
 import { useFolders, useLastOperation } from '@src/machines/systemIO/hooks'
 import { SystemIOMachineStates } from '@src/machines/systemIO/utils'
-import {
-  appNavigationService,
-  showHomeIntent,
-} from '@src/registry/contracts/appNavigation'
+import { appNavigationService } from '@src/registry/contracts/appNavigation'
+import { showHomeIntent } from '@src/registry/contracts/homeProjects'
 import {
   filterStatusBarItemsForScopes,
   statusBarGlobalItemsValueSpec,
