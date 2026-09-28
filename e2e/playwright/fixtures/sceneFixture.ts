@@ -496,9 +496,9 @@ export class SceneFixture {
     ])
   }
 
-  settled = async (
-    { expectError = false }: Partial<{ expectError: boolean }> = {}
-  ) => {
+  settled = async ({
+    expectError = false,
+  }: Partial<{ expectError: boolean }> = {}) => {
     await closeOnboardingModalIfPresent(this.page)
 
     await this.connectionEstablished()

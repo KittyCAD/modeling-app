@@ -845,7 +845,7 @@ foreign
                   `\n  |> appearance(color = "#ff0000")`
                 )
               })
-          await scene.settled()
+              await scene.settled()
               await toolbar.closePane(DefaultLayoutPaneID.Code)
             },
             300
@@ -864,7 +864,7 @@ foreign
                 path.join(dir, projectName, 'foreign.step')
               )
             })
-          await scene.settled()
+            await scene.settled()
             await toolbar.closePane(DefaultLayoutPaneID.Code)
           })
         })
