@@ -255,14 +255,19 @@ export function getAxisExpression(
     }
 
     // Direct segment case (old sketch)
-    let axisSelection = originalEdgeSelection?.artifact
-    // Engine entity IDs may not map to an artifact. Recover the source
-    // segment/path/edge cut from its code range or AST path instead.
+    const edgeResolved = originalEdgeSelection
+    let axisSelection =
+      edge?.graphSelections[0] != null
+        ? resolveToCodeRef(edge.graphSelections[0], artifactGraph)?.artifact
+        : undefined
+    // Fallback: resolveToCodeRef returns no artifact for entityRef.type === 'edge' (BRep), or segment/solid2d_edge when ID not in graph;
+    // try to find an artifact by codeRef.range or by codeRef.pathToNode (segment/path/edgeCut for tag-based axis).
     if (
       (!axisSelection || !getFaceCodeRef(axisSelection)) &&
-      originalEdgeSelection
+      edge?.graphSelections[0] != null &&
+      artifactGraph
     ) {
-      const resolved = originalEdgeSelection
+      const resolved = resolveToCodeRef(edge.graphSelections[0], artifactGraph)
       if (resolved?.codeRef) {
         const byRange = getArtifactFromRange(
           resolved.codeRef.range,
@@ -304,14 +309,13 @@ export function getAxisExpression(
     }
 
     let pathToAxisSelection: PathToNode
-    const axisCodeRef =
-      getFaceCodeRef(axisSelection) ?? originalEdgeSelection?.codeRef
+    const axisCodeRef = getFaceCodeRef(axisSelection) ?? edgeResolved?.codeRef
     if (axisCodeRef?.pathToNode && axisCodeRef.pathToNode.length > 0) {
       pathToAxisSelection = axisCodeRef.pathToNode
     } else {
       pathToAxisSelection = getNodePathFromSourceRange(
         ast,
-        axisCodeRef?.range ?? originalEdgeSelection?.codeRef?.range ?? [0, 0, 0]
+        axisCodeRef?.range ?? edgeResolved?.codeRef?.range ?? [0, 0, 0]
       )
     }
 
