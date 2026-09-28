@@ -17,7 +17,7 @@ import {
 } from '@src/lib/settings/settingsUtils'
 import { reportRejection } from '@src/lib/trap'
 import type { SettingsActorType } from '@src/machines/settingsMachine'
-import { useRef } from 'react'
+import { useEffect, useRef } from 'react'
 
 /**
  * Helper function, do not call this directly. Use tryConnecting instead.
@@ -178,22 +178,22 @@ const setupSceneAndExecuteCodeAfterOpenedEngineConnection = async ({
   const restoredNamedViewCamera =
     await reapplyActiveViewAfterReconnect(kclManager)
 
-  // Skipped when the view placed the camera, which both branches would undo.
-  if (!restoredNamedViewCamera) {
-    // This means you idled, otherwise you use the reset camera position
-    if (sceneInfra.camControls.oldCameraState) {
-      await sceneInfra.camControls.restoreRemoteCameraStateAndTriggerSync()
-    } else {
-      await resetCameraPosition({
-        sceneInfra,
-        engineCommandManager,
-        settingsActor,
-      })
-    }
+  // The synchronous pre-teardown snapshot is the freshest camera state. It
+  // also preserves manual adjustments made after activating a named view.
+  if (sceneInfra.camControls.cameraStateBeforeReconnect) {
+    await sceneInfra.camControls.restoreCameraState(
+      sceneInfra.camControls.cameraStateBeforeReconnect
+    )
+  } else if (sceneInfra.camControls.oldCameraState) {
+    // This means you idled, otherwise you use the reset camera position.
+    await sceneInfra.camControls.restoreRemoteCameraStateAndTriggerSync()
+  } else if (!restoredNamedViewCamera) {
+    await resetCameraPosition({
+      sceneInfra,
+      engineCommandManager,
+      settingsActor,
+    })
   }
-
-  // Since you reconnected you are not idle, clear the old camera state
-  sceneInfra.camControls.clearOldCameraState()
 }
 
 /**
@@ -225,6 +225,8 @@ export async function tryConnecting({
   engineCommandManager,
   kclManager,
   rustContext,
+  waitForStreamPresentation,
+  signal,
 }: {
   abnormalCloseRetries: React.RefObject<number>
   isConnecting: React.RefObject<boolean>
@@ -241,14 +243,28 @@ export async function tryConnecting({
   engineCommandManager: ConnectionManager
   kclManager: KclManager
   rustContext: RustContext
+  waitForStreamPresentation: (signal: AbortSignal) => Promise<boolean>
+  signal: AbortSignal
 }) {
   const connection = new Promise<string>((resolve, reject) => {
     void (async () => {
+      const finishCancelledConnection = () => {
+        isConnecting.current = false
+        numberOfConnectionAttempts.current = 0
+        resolve('cancelled')
+      }
+
+      if (signal.aborted) {
+        finishCancelledConnection()
+        return
+      }
       if (isConnecting.current) {
         return resolve('connecting')
       }
 
+      engineCommandManager.lastConnectionError = undefined
       isConnecting.current = true
+      setAppState({ isStreamAcceptingInput: false })
 
       async function attempt() {
         numberOfConnectionAttempts.current =
@@ -292,8 +308,30 @@ export async function tryConnecting({
             )
           }
 
+          if (!(await waitForStreamPresentation(signal))) {
+            // eslint-disable-next-line suggest-no-throw/suggest-no-throw
+            throw new Error('engine disconnected before presenting a frame')
+          }
+
+          if (signal.aborted) {
+            finishCancelledConnection()
+            return
+          }
+
+          if (
+            engineCommandManager.started === false &&
+            engineCommandManager.connection === undefined
+          ) {
+            // eslint-disable-next-line suggest-no-throw/suggest-no-throw
+            throw new Error(
+              'engine disconnected before it finished presenting the scene'
+            )
+          }
+
           abnormalCloseRetries.current = 0
           isConnecting.current = false
+          sceneInfra.camControls.clearOldCameraState()
+          sceneInfra.camControls.clearCameraStateBeforeReconnect()
           setAppState({ isStreamAcceptingInput: true })
           numberOfConnectionAttempts.current = 0
           setShowManualConnect(false)
@@ -303,7 +341,10 @@ export async function tryConnecting({
           })
           resolve('connected')
         } catch (e) {
-          setAppState({ isStreamAcceptingInput: false })
+          if (signal.aborted) {
+            finishCancelledConnection()
+            return
+          }
           const terminalConnectionError =
             engineCommandManager.lastConnectionError?.terminal === true
               ? engineCommandManager.lastConnectionError
@@ -336,17 +377,27 @@ export async function tryConnecting({
   })
   return connection
 }
-export const useTryConnect = () => {
+export const useTryConnect = (
+  waitForStreamPresentation: (signal: AbortSignal) => Promise<boolean>
+) => {
   const { kclManager } = useSingletons()
   const isConnecting = useRef(false)
   const numberOfConnectionAttempts = useRef(0)
   const abnormalCloseRetries = useRef(0)
+  const connectionAbortController = useRef(new AbortController())
+  useEffect(() => {
+    const controller = new AbortController()
+    connectionAbortController.current = controller
+    return () => controller.abort()
+  }, [])
   type TryConnectingArgs = Omit<
     Parameters<typeof tryConnecting>[0],
     | 'engineCommandManager'
     | 'kclManager'
     | 'rustContext'
     | 'abnormalCloseRetries'
+    | 'waitForStreamPresentation'
+    | 'signal'
   >
 
   return {
@@ -357,6 +408,8 @@ export const useTryConnect = () => {
         kclManager,
         rustContext: kclManager.rustContext,
         abnormalCloseRetries,
+        waitForStreamPresentation,
+        signal: connectionAbortController.current.signal,
       }),
     isConnecting,
     numberOfConnectionAttempts,

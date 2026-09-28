@@ -3,6 +3,7 @@ import {
   ZOO_STATUS_URL,
 } from '@src/components/ConnectionRecovery'
 import Loading from '@src/components/Loading'
+import { UNSUPPORTED_ENGINE_VIDEO_CODEC_MESSAGE } from '@src/lib/engineConnection/videoCodecSupport'
 import { fireEvent, render, screen } from '@testing-library/react'
 import { expect, test, vi } from 'vitest'
 
@@ -45,6 +46,7 @@ test('Loading uses ConnectionRecovery for Engine manual reconnects', () => {
   render(
     <Loading
       showManualConnect={true}
+      manualConnectDescription="modeling connection interrupted; please reconnect and retry"
       callback={onReconnect}
       dataTestId="loading-engine"
     />
@@ -53,6 +55,26 @@ test('Loading uses ConnectionRecovery for Engine manual reconnects', () => {
   expect(screen.getByTestId('loading-engine')).toHaveTextContent(
     'Failed to connect.'
   )
+  expect(screen.getByRole('alert')).toHaveTextContent(
+    'modeling connection interrupted; please reconnect and retry'
+  )
   fireEvent.click(screen.getByRole('button', { name: /reconnect/i }))
   expect(onReconnect).toHaveBeenCalledTimes(1)
+})
+
+test('Loading explains how to recover from unsupported H.264 video', () => {
+  render(
+    <Loading
+      showManualConnect={true}
+      manualConnectTitle="Unsupported video codec"
+      manualConnectDescription={UNSUPPORTED_ENGINE_VIDEO_CODEC_MESSAGE}
+    />
+  )
+
+  expect(
+    screen.getByRole('heading', { name: 'Unsupported video codec' })
+  ).toBeInTheDocument()
+  expect(screen.getByRole('alert')).toHaveTextContent(
+    UNSUPPORTED_ENGINE_VIDEO_CODEC_MESSAGE
+  )
 })
