@@ -35,6 +35,22 @@ export class EdgeRenderer {
   }
 
   public buildEdges(gltf: KITTYCAD_GLTF) {
+    const brep = gltf.userData.gltfExtensions.KITTYCAD_boundary_representation;
+    for (const solid of brep.solids) {
+      for (const [shellIndex, _] of solid.shells) {
+        const shell = brep.shells[shellIndex];
+        for (const [faceIndex, _] of shell.faces) {
+          const face = brep.faces[faceIndex];
+          for (const [loopIndex, _] of face.loops) {
+            const loop = brep.loops[loopIndex];
+            for (const [edgeIndex, _] of loop.edges) {
+              const edge = brep.edges[edgeIndex];
+              
+            }
+          }
+        }
+      }
+    }
     console.log('gltf', gltf)
   }
 

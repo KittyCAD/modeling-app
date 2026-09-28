@@ -2,21 +2,25 @@ import { GLTF } from 'three/examples/jsm/loaders/GLTFLoader'
 
 export type KITTYCAD_GLTF = GLTF & {
   userData: {
-    KITTYCAD_boundary_representation: {
-      solids: KITTYCAD_GLTF_SOLID[]
-      shells: KITTYCAD_GLTF_SHELL[]
-      faces: KITTYCAD_GLTF_FACE[]
-      loops: KITTYCAD_GLTF_LOOP[]
-      edges: KITTYCAD_GLTF_EDGE[]
-      vertices: KIITYCAD_GLTF_VERTEX[]
-      surfaces: KIITYCAD_GLTF_SURFACE[]
-      curves3D: KITTYCAD_GLTF_CURVE3D[]
+    gltfExtensions: {
+      KITTYCAD_boundary_representation: {
+        solids: KITTYCAD_GLTF_SOLID[]
+        shells: KITTYCAD_GLTF_SHELL[]
+        faces: KITTYCAD_GLTF_FACE[]
+        loops: KITTYCAD_GLTF_LOOP[]
+        edges: KITTYCAD_GLTF_EDGE[]
+        vertices: KIITYCAD_GLTF_VERTEX[]
+        surfaces: KIITYCAD_GLTF_SURFACE[]
+        curves3D: KITTYCAD_GLTF_CURVE3D[]
+      }
     }
   }
 }
 
+type OrientedIndex = [index: number, orientation: number]
+
 type KITTYCAD_GLTF_SOLID = {
-  shells: number[][]
+  shells: OrientedIndex[]
   mesh: number
   extras: {
     KITTYCAD: {
@@ -26,12 +30,12 @@ type KITTYCAD_GLTF_SOLID = {
 }
 
 type KITTYCAD_GLTF_SHELL = {
-  faces: KITTYCAD_GLTF_FACE[]
+  faces: OrientedIndex[]
 }
 
 type KITTYCAD_GLTF_FACE = {
-  surface: number[][]
-  loops: number[][]
+  surface: OrientedIndex
+  loops: OrientedIndex[]
 }
 
 type KITTYCAD_GLTF_LOOP = {
