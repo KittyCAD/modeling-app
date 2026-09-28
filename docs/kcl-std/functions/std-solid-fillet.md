@@ -47,28 +47,53 @@ will smoothly blend the transition.
 ### Examples
 
 ```kcl
+@settings(kclVersion = "3.0-preview", experimentalFeatures = allow)
+
 width = 20
 length = 10
 thickness = 1
 filletRadius = 2
 
-mountingPlateSketch = startSketchOn(XY)
-  |> startProfile(at = [-width / 2, -length / 2])
-  |> line(endAbsolute = [width / 2, -length / 2], tag = $edge1)
-  |> line(endAbsolute = [width / 2, length / 2], tag = $edge2)
-  |> line(endAbsolute = [-width / 2, length / 2], tag = $edge3)
-  |> close(tag = $edge4)
+plateSketch = sketch(on = XY) {
+  line1 = line(start = [var -10mm, var -5mm], end = [var 10mm, var -5mm])
+  line2 = line(start = [var 10mm, var -5mm], end = [var 10mm, var 5mm])
+  line3 = line(start = [var 10mm, var 5mm], end = [var -10mm, var 5mm])
+  line4 = line(start = [var -10mm, var 5mm], end = [var -10mm, var -5mm])
+}
 
-mountingPlate = extrude(mountingPlateSketch, length = thickness)
-  |> fillet(
-       radius = filletRadius,
-       tags = [
-         getNextAdjacentEdge(edge1),
-         getNextAdjacentEdge(edge2),
-         getNextAdjacentEdge(edge3),
-         getNextAdjacentEdge(edge4)
-       ],
-     )
+plateRegion = region(segments = [plateSketch.line4, plateSketch.line1])
+plate = extrude(plateRegion, length = thickness)
+
+fillet001 = fillet(
+  plate,
+  edges = [
+    {
+      sideFaces = [
+        plateRegion.tags.line1,
+        plateRegion.tags.line2
+      ]
+    },
+    {
+      sideFaces = [
+        plateRegion.tags.line2,
+        plateRegion.tags.line3
+      ]
+    },
+    {
+      sideFaces = [
+        plateRegion.tags.line3,
+        plateRegion.tags.line4
+      ]
+    },
+    {
+      sideFaces = [
+        plateRegion.tags.line4,
+        plateRegion.tags.line1
+      ]
+    }
+  ],
+  radius = 4,
+)
 
 ```
 
@@ -87,29 +112,63 @@ mountingPlate = extrude(mountingPlateSketch, length = thickness)
 </model-viewer>
 
 ```kcl
+// Same as the last example, but with an additional fillet that tangent
+// chains around the top face.
+@settings(kclVersion = "3.0-preview", experimentalFeatures = allow)
+
 width = 20
 length = 10
 thickness = 1
-filletRadius = 1
+filletRadius = 2
 
-mountingPlateSketch = startSketchOn(XY)
-  |> startProfile(at = [-width / 2, -length / 2])
-  |> line(endAbsolute = [width / 2, -length / 2], tag = $edge1)
-  |> line(endAbsolute = [width / 2, length / 2], tag = $edge2)
-  |> line(endAbsolute = [-width / 2, length / 2], tag = $edge3)
-  |> close(tag = $edge4)
+plateSketch = sketch(on = XY) {
+  line1 = line(start = [var -10mm, var -5mm], end = [var 10mm, var -5mm])
+  line2 = line(start = [var 10mm, var -5mm], end = [var 10mm, var 5mm])
+  line3 = line(start = [var 10mm, var 5mm], end = [var -10mm, var 5mm])
+  line4 = line(start = [var -10mm, var 5mm], end = [var -10mm, var -5mm])
+}
 
-mountingPlate = extrude(mountingPlateSketch, length = thickness)
-  |> fillet(
-       radius = filletRadius,
-       tolerance = 0.000001,
-       tags = [
-         getNextAdjacentEdge(edge1),
-         getNextAdjacentEdge(edge2),
-         getNextAdjacentEdge(edge3),
-         getNextAdjacentEdge(edge4)
-       ],
-     )
+plateRegion = region(segments = [plateSketch.line4, plateSketch.line1])
+plate = extrude(plateRegion, length = thickness, tagEnd = $capEnd001)
+
+fillet001 = fillet(
+  plate,
+  edges = [
+    {
+      sideFaces = [
+        plateRegion.tags.line1,
+        plateRegion.tags.line2
+      ]
+    },
+    {
+      sideFaces = [
+        plateRegion.tags.line2,
+        plateRegion.tags.line3
+      ]
+    },
+    {
+      sideFaces = [
+        plateRegion.tags.line3,
+        plateRegion.tags.line4
+      ]
+    },
+    {
+      sideFaces = [
+        plateRegion.tags.line4,
+        plateRegion.tags.line1
+      ]
+    }
+  ],
+  radius = 4,
+)
+fillet002 = fillet(
+  plate,
+  tags = getCommonEdge(faces = [
+    plateRegion.tags.line1,
+    plate.faces.capEnd001
+  ]),
+  radius = 0.3,
+)
 
 ```
 
@@ -128,32 +187,63 @@ mountingPlate = extrude(mountingPlateSketch, length = thickness)
 </model-viewer>
 
 ```kcl
-blockProfile = sketch(on = XY) {
-  edge1 = line(start = [var 0mm, var 0mm], end = [var 6mm, var 0mm])
-  edge2 = line(start = [var 6mm, var 0mm], end = [var 6mm, var 4mm])
-  edge3 = line(start = [var 6mm, var 4mm], end = [var 0mm, var 4mm])
-  edge4 = line(start = [var 0mm, var 4mm], end = [var 0mm, var 0mm])
-  coincident([edge1.end, edge2.start])
-  coincident([edge2.end, edge3.start])
-  coincident([edge3.end, edge4.start])
-  coincident([edge4.end, edge1.start])
-  horizontal(edge1)
-  vertical(edge2)
-  horizontal(edge3)
-  vertical(edge4)
+// Same as the previous example, but with tangentChain = false on the final fillet
+@settings(kclVersion = "3.0-preview", experimentalFeatures = allow)
+
+width = 20
+length = 10
+thickness = 1
+filletRadius = 2
+
+plateSketch = sketch(on = XY) {
+  line1 = line(start = [var -10mm, var -5mm], end = [var 10mm, var -5mm])
+  line2 = line(start = [var 10mm, var -5mm], end = [var 10mm, var 5mm])
+  line3 = line(start = [var 10mm, var 5mm], end = [var -10mm, var 5mm])
+  line4 = line(start = [var -10mm, var 5mm], end = [var -10mm, var -5mm])
 }
 
-block = extrude(region(segments = [blockProfile.edge1, blockProfile.edge2]), length = 3, tagEnd = $top)
+plateRegion = region(segments = [plateSketch.line4, plateSketch.line1])
+plate = extrude(plateRegion, length = thickness, tagEnd = $capEnd001)
 
-tabProfile = startSketchOn(block, face = top)
-  |> startProfile(at = [1mm, 1mm])
-  |> line(end = [4mm, 0mm], tag = $tabEdge)
-  |> line(end = [0mm, 1mm])
-  |> line(end = [-4mm, 0mm])
-  |> close()
-
-blockWithTab = extrude(tabProfile, length = 1mm)
-filletedBlock = fillet(blockWithTab, radius = 0.5mm, tags = [getNextAdjacentEdge(tabEdge)])
+fillet001 = fillet(
+  plate,
+  edges = [
+    {
+      sideFaces = [
+        plateRegion.tags.line1,
+        plateRegion.tags.line2
+      ]
+    },
+    {
+      sideFaces = [
+        plateRegion.tags.line2,
+        plateRegion.tags.line3
+      ]
+    },
+    {
+      sideFaces = [
+        plateRegion.tags.line3,
+        plateRegion.tags.line4
+      ]
+    },
+    {
+      sideFaces = [
+        plateRegion.tags.line4,
+        plateRegion.tags.line1
+      ]
+    }
+  ],
+  radius = 4,
+)
+fillet002 = fillet(
+  plate,
+  tags = getCommonEdge(faces = [
+    plateRegion.tags.line1,
+    plate.faces.capEnd001
+  ]),
+  radius = 0.3,
+  tangentChain = false,
+)
 
 ```
 
@@ -322,6 +412,92 @@ fillet001 = fillet(
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-solid-fillet4.png"
+  shadow-intensity="1"
+  camera-controls
+  touch-action="pan-y"
+>
+</model-viewer>
+
+```kcl
+// This example shows a fillet in KCL 1.0 syntax.
+width = 20
+length = 10
+thickness = 1
+filletRadius = 2
+
+mountingPlateSketch = startSketchOn(XY)
+  |> startProfile(at = [-width / 2, -length / 2])
+  |> line(endAbsolute = [width / 2, -length / 2], tag = $edge1)
+  |> line(endAbsolute = [width / 2, length / 2], tag = $edge2)
+  |> line(endAbsolute = [-width / 2, length / 2], tag = $edge3)
+  |> close(tag = $edge4)
+
+mountingPlate = extrude(mountingPlateSketch, length = thickness)
+  |> fillet(
+       radius = filletRadius,
+       tags = [
+         getNextAdjacentEdge(edge1),
+         getNextAdjacentEdge(edge2),
+         getNextAdjacentEdge(edge3),
+         getNextAdjacentEdge(edge4)
+       ],
+     )
+
+```
+
+
+<model-viewer
+  class="kcl-example"
+  alt="Example showing a rendered KCL program that uses the fillet function"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-fillet5_output.glb"
+  ar
+  environment-image="/moon_1k.hdr"
+  poster="/kcl-test-outputs/serial_test_example_fn_std-solid-fillet5.png"
+  shadow-intensity="1"
+  camera-controls
+  touch-action="pan-y"
+>
+</model-viewer>
+
+```kcl
+// This example shows a fillet on an extrude from a face in KCL 1.0 syntax
+blockProfile = sketch(on = XY) {
+  edge1 = line(start = [var 0mm, var 0mm], end = [var 6mm, var 0mm])
+  edge2 = line(start = [var 6mm, var 0mm], end = [var 6mm, var 4mm])
+  edge3 = line(start = [var 6mm, var 4mm], end = [var 0mm, var 4mm])
+  edge4 = line(start = [var 0mm, var 4mm], end = [var 0mm, var 0mm])
+  coincident([edge1.end, edge2.start])
+  coincident([edge2.end, edge3.start])
+  coincident([edge3.end, edge4.start])
+  coincident([edge4.end, edge1.start])
+  horizontal(edge1)
+  vertical(edge2)
+  horizontal(edge3)
+  vertical(edge4)
+}
+
+block = extrude(region(segments = [blockProfile.edge1, blockProfile.edge2]), length = 3, tagEnd = $top)
+
+tabProfile = startSketchOn(block, face = top)
+  |> startProfile(at = [1mm, 1mm])
+  |> line(end = [4mm, 0mm], tag = $tabEdge)
+  |> line(end = [0mm, 1mm])
+  |> line(end = [-4mm, 0mm])
+  |> close()
+
+blockWithTab = extrude(tabProfile, length = 1mm)
+filletedBlock = fillet(blockWithTab, radius = 0.5mm, tags = [getNextAdjacentEdge(tabEdge)])
+
+```
+
+
+<model-viewer
+  class="kcl-example"
+  alt="Example showing a rendered KCL program that uses the fillet function"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-fillet6_output.glb"
+  ar
+  environment-image="/moon_1k.hdr"
+  poster="/kcl-test-outputs/serial_test_example_fn_std-solid-fillet6.png"
   shadow-intensity="1"
   camera-controls
   touch-action="pan-y"
