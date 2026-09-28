@@ -15,7 +15,9 @@ import {
   resolveToCodeRef,
   retrieveSelectionsFromOpArg,
 } from '@src/lang/queryAst'
+import { getSweepEdgeCodeRef } from '@src/lang/std/artifactGraph'
 import {
+  type Artifact,
   type ArtifactGraph,
   type Name,
   assertParse,
@@ -26,10 +28,12 @@ import type RustContext from '@src/lib/rustContext'
 import {
   createSelectionFromArtifacts,
   createSelectionFromPathArtifact,
+  clonedRegionBody,
   enginelessExecutor,
   getAstAndArtifactGraph,
   getAstAndSketchSelections,
   getCapFromCylinder,
+  getClonedSweepEdges,
   getKclCommandValue,
   getWalls,
   runNewAstAndCheckForSweep,
@@ -595,6 +599,41 @@ extrude001 = extrude(region001, length = 1)`
       await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
     })
 
+    it('should edit an extrude call with an inline region selection', async () => {
+      const code = `${triangleRegion}
+extrude001 = extrude(region(point = [1mm, 1mm], sketch = s), length = 1)`
+      const { ast, artifactGraph } = await getAstAndArtifactGraphEngineless(
+        code,
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const region = [...artifactGraph.values()].findLast(
+        (artifact) => artifact.type === 'path'
+      )
+      const sketches = createSelectionFromArtifacts([region!], artifactGraph)
+      const length = await getKclCommandValue(
+        '2',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const nodeToEdit = createPathToNodeForLastVariable(ast)
+      const result = addExtrude({
+        ast,
+        sketches,
+        length,
+        nodeToEdit,
+        artifactGraph,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) throw result
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      expect(newCode).toContain(
+        `extrude001 = extrude(region(point = [1mm, 1mm], sketch = s), length = 2)`
+      )
+      await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
+    })
+
     it('should add a multi-profile extrude call on a profile and a cap', async () => {
       const code = `sketch001 = startSketchOn(XY)
 profile001 = circle(sketch001, center = [0, 0], radius = 1)
@@ -932,6 +971,248 @@ extrude001 = extrude(profile001, length = 2, symmetric = false)`)
         `${triangleRegion}
 extrude001 = extrude([s.line1, s.line2], length = 1, bodyType = SURFACE)`
       )
+      await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
+    })
+
+    it('should add a surface extrude call from a body edge using its Face API reference', async () => {
+      const code = `@settings(kclVersion = 2.0)
+
+${triangleRegion}
+hidden001 = hide(s)
+region001 = region(point = [1mm, 1mm], sketch = s)
+extrude001 = extrude(region001, length = 1, bodyType = SURFACE)`
+      const { ast, artifactGraph } = await getAstAndArtifactGraph(
+        code,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const sweepEdge = [...artifactGraph.values()].find(
+        (artifact) => artifact.type === 'sweepEdge'
+      )
+      if (
+        !sweepEdge ||
+        !sweepEdge.commonSurfaceIds ||
+        sweepEdge.commonSurfaceIds.length < 2
+      ) {
+        throw new Error('Sweep edge adjacent faces not found')
+      }
+      const codeRef = getSweepEdgeCodeRef(sweepEdge, artifactGraph)
+      if (err(codeRef)) throw codeRef
+      const length = await getKclCommandValue(
+        '2',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const result = addExtrude({
+        ast,
+        sketches: {
+          graphSelections: [
+            {
+              entityRef: {
+                type: 'edge',
+                side_faces: sweepEdge.commonSurfaceIds,
+              },
+              codeRef,
+            },
+          ],
+          otherSelections: [],
+        },
+        length,
+        method: 'NEW',
+        bodyType: 'SURFACE',
+        artifactGraph,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) throw result
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      expect(newCode).toContain('extrude002 = extrude(')
+      expect(newCode).toContain('sideFaces = [')
+      expect(newCode).toContain('length = 2')
+      expect(newCode).toContain('method = NEW')
+      expect(newCode).toContain('bodyType = SURFACE')
+      expect(newCode).not.toContain('getOppositeEdge')
+      await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
+    })
+
+    it('should add a surface extrude from an edge on a cloned body using its Face API reference', async () => {
+      const { ast, artifactGraph } = await getAstAndArtifactGraph(
+        clonedRegionBody,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const sweepEdge = getClonedSweepEdges(artifactGraph)[0]
+      if (
+        !sweepEdge ||
+        !sweepEdge.commonSurfaceIds ||
+        sweepEdge.commonSurfaceIds.length < 2
+      ) {
+        throw new Error('Cloned sweep edge adjacent faces not found')
+      }
+      const codeRef = getSweepEdgeCodeRef(sweepEdge, artifactGraph)
+      if (err(codeRef)) throw codeRef
+      const length = await getKclCommandValue(
+        '2',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const result = addExtrude({
+        ast,
+        sketches: {
+          graphSelections: [
+            {
+              entityRef: {
+                type: 'edge',
+                side_faces: sweepEdge.commonSurfaceIds,
+              },
+              codeRef,
+            },
+          ],
+          otherSelections: [],
+        },
+        length,
+        method: 'NEW',
+        bodyType: 'SURFACE',
+        artifactGraph,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) throw result
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      expect(newCode).toContain('extrude001 = extrude(')
+      expect(newCode).toContain('sideFaces = [')
+      expect(newCode).toContain('length = 2')
+      expect(newCode).not.toContain('getOppositeEdge')
+      await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
+    })
+
+    it('should keep the merged-body owner when extruding a Face API edge reference', async () => {
+      const code = `@settings(kclVersion = 2.0)
+
+baseSketch = sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 30mm, var 0mm])
+  line2 = line(start = [var 30mm, var 0mm], end = [var 30mm, var 20mm])
+  line3 = line(start = [var 30mm, var 20mm], end = [var 0mm, var 20mm])
+  line4 = line(start = [var 0mm, var 20mm], end = [var 0mm, var 0mm])
+}
+baseRegion = region(point = [15mm, 10mm], sketch = baseSketch)
+base = extrude(baseRegion, length = 5)
+faceSketch = sketch(on = faceOf(base, face = END)) {
+  circle1 = circle(start = [var 8mm, var 10mm], center = [var 5mm, var 10mm])
+}
+faceRegion = region(point = [5mm, 10mm], sketch = faceSketch)
+merged = extrude(faceRegion, length = 2)`
+      const { ast, artifactGraph } = await getAstAndArtifactGraph(
+        code,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const mergedSweep = [...artifactGraph.values()].find(
+        (artifact): artifact is Extract<Artifact, { type: 'sweep' }> =>
+          artifact.type === 'sweep' &&
+          artifact.codeRef.range[0] >= code.indexOf('merged =')
+      )
+      if (!mergedSweep) throw new Error('Merged sweep not found')
+      const sweepEdge = mergedSweep.edgeIds
+        .map((edgeId) => artifactGraph.get(edgeId))
+        .find(
+          (artifact): artifact is Extract<Artifact, { type: 'sweepEdge' }> =>
+            artifact?.type === 'sweepEdge' &&
+            artifact.subType === 'opposite' &&
+            (artifact.commonSurfaceIds?.length ?? 0) >= 2
+        )
+      const sideFaces =
+        sweepEdge?.type === 'sweepEdge'
+          ? sweepEdge.commonSurfaceIds
+          : undefined
+      if (!sweepEdge || !sideFaces || sideFaces.length < 2) {
+        throw new Error('Merged sweep edge adjacent faces not found')
+      }
+      const codeRef = getSweepEdgeCodeRef(sweepEdge, artifactGraph)
+      if (err(codeRef)) throw codeRef
+      const length = await getKclCommandValue(
+        '2',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const result = addExtrude({
+        ast,
+        sketches: {
+          graphSelections: [
+            {
+              entityRef: {
+                type: 'edge',
+                side_faces: sideFaces,
+              },
+              codeRef,
+            },
+          ],
+          otherSelections: [],
+        },
+        length,
+        method: 'NEW',
+        bodyType: 'SURFACE',
+        artifactGraph,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) throw result
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      expect(newCode).toContain('extrude001 = extrude(')
+      expect(newCode).toContain(
+        'sideFaces = [faceRegion.tags.circle1, capEnd001]'
+      )
+      expect(newCode).toContain('merged = extrude(faceRegion, length = 2, tagEnd = $capEnd001)')
+      expect(newCode).not.toContain('getOppositeEdge')
+      await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
+    })
+
+    it('should add a surface extrude from the previous edge of an open profile', async () => {
+      const code = `@settings(kclVersion = 2.0)
+
+sketch001 = sketch(on = XZ) {
+  line1 = line(start = [var -2.2mm, var 0.4mm], end = [var 3.48mm, var 1.03mm])
+}
+extrude001 = extrude(sketch001.line1, length = 5, bodyType = SURFACE)`
+      const { ast, artifactGraph } = await getAstAndArtifactGraph(
+        code,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const previousAdjacentEdge = [...artifactGraph.values()].find(
+        (artifact) =>
+          artifact.type === 'sweepEdge' &&
+          artifact.subType === 'previousAdjacent'
+      )
+      if (!previousAdjacentEdge) {
+        throw new Error('Previous adjacent sweep edge not found')
+      }
+      const length = await getKclCommandValue(
+        '5',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const result = addExtrude({
+        ast,
+        sketches: createSelectionFromArtifacts(
+          [previousAdjacentEdge],
+          artifactGraph
+        ),
+        length,
+        method: 'NEW',
+        bodyType: 'SURFACE',
+        artifactGraph,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) throw result
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      expect(newCode).toContain(`extrude002 = extrude(
+  getPreviousAdjacentEdge(extrude001.sketch.tags.line1),
+  length = 5,
+  method = NEW,
+  bodyType = SURFACE,
+)`)
       await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
     })
 
