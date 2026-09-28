@@ -15,7 +15,9 @@ import {
   resolveToCodeRef,
   retrieveSelectionsFromOpArg,
 } from '@src/lang/queryAst'
-import { getSweepEdgeCodeRef } from '@src/lang/std/artifactGraph'
+import {
+  getWallCodeRef,
+} from '@src/lang/std/artifactGraph'
 import {
   type Artifact,
   type ArtifactGraph,
@@ -33,7 +35,7 @@ import {
   getAstAndArtifactGraph,
   getAstAndSketchSelections,
   getCapFromCylinder,
-  getClonedSweepEdges,
+  getClonedSweepCapAndSecondWall,
   getKclCommandValue,
   getWalls,
   runNewAstAndCheckForSweep,
@@ -656,7 +658,6 @@ extrude001 = extrude(profile002, length = 1)
       const endCap = [...artifactGraph.values()].findLast(
         (a) => a.type === 'cap'
       )
-      console.log({ profile, endCap })
       expect(profile).toBeDefined()
       expect(endCap).toBeDefined()
       const sketches = createSelectionFromArtifacts(
@@ -986,17 +987,26 @@ extrude001 = extrude(region001, length = 1, bodyType = SURFACE)`
         instanceInThisFile,
         kclManagerInThisFile
       )
-      const sweepEdge = [...artifactGraph.values()].find(
-        (artifact) => artifact.type === 'sweepEdge'
+      const sweep = [...artifactGraph.values()].find(
+        (artifact): artifact is Extract<Artifact, { type: 'sweep' }> =>
+          artifact.type === 'sweep'
       )
-      if (
-        !sweepEdge ||
-        !sweepEdge.commonSurfaceIds ||
-        sweepEdge.commonSurfaceIds.length < 2
-      ) {
-        throw new Error('Sweep edge adjacent faces not found')
+      const firstSurfaceId = sweep?.surfaceIds[0]
+      const secondSurfaceId = sweep?.surfaceIds[1]
+      if (!sweep || !firstSurfaceId || !secondSurfaceId) {
+        throw new Error('Sweep faces not found')
       }
-      const codeRef = getSweepEdgeCodeRef(sweepEdge, artifactGraph)
+      const faces = [firstSurfaceId, secondSurfaceId]
+        .map((surfaceId) => artifactGraph.get(surfaceId))
+        .filter((artifact): artifact is Artifact => artifact !== undefined)
+      const wall = faces.find(
+        (artifact): artifact is Extract<Artifact, { type: 'wall' }> =>
+          artifact.type === 'wall'
+      )
+      if (faces.length !== 2 || !wall) {
+        throw new Error('Sweep first and last faces not found')
+      }
+      const codeRef = getWallCodeRef(wall, artifactGraph)
       if (err(codeRef)) throw codeRef
       const length = await getKclCommandValue(
         '2',
@@ -1010,7 +1020,7 @@ extrude001 = extrude(region001, length = 1, bodyType = SURFACE)`
             {
               entityRef: {
                 type: 'edge',
-                side_faces: sweepEdge.commonSurfaceIds,
+                side_faces: faces.map((face) => face.id),
               },
               codeRef,
             },
@@ -1041,15 +1051,13 @@ extrude001 = extrude(region001, length = 1, bodyType = SURFACE)`
         instanceInThisFile,
         kclManagerInThisFile
       )
-      const sweepEdge = getClonedSweepEdges(artifactGraph)[0]
-      if (
-        !sweepEdge ||
-        !sweepEdge.commonSurfaceIds ||
-        sweepEdge.commonSurfaceIds.length < 2
-      ) {
-        throw new Error('Cloned sweep edge adjacent faces not found')
+      const clonedSweepFaces = getClonedSweepCapAndSecondWall(artifactGraph)
+      if (!clonedSweepFaces) {
+        throw new Error('Cloned sweep end cap and second wall not found')
       }
-      const codeRef = getSweepEdgeCodeRef(sweepEdge, artifactGraph)
+      const { endCap, walls } = clonedSweepFaces
+      const wall = walls[0]
+      const codeRef = getWallCodeRef(wall, artifactGraph)
       if (err(codeRef)) throw codeRef
       const length = await getKclCommandValue(
         '2',
@@ -1063,7 +1071,7 @@ extrude001 = extrude(region001, length = 1, bodyType = SURFACE)`
             {
               entityRef: {
                 type: 'edge',
-                side_faces: sweepEdge.commonSurfaceIds,
+                side_faces: [wall.id, endCap.id],
               },
               codeRef,
             },
@@ -1113,20 +1121,22 @@ merged = extrude(faceRegion, length = 2)`
           artifact.codeRef.range[0] >= code.indexOf('merged =')
       )
       if (!mergedSweep) throw new Error('Merged sweep not found')
-      const sweepEdge = mergedSweep.edgeIds
-        .map((edgeId) => artifactGraph.get(edgeId))
-        .find(
-          (artifact): artifact is Extract<Artifact, { type: 'sweepEdge' }> =>
-            artifact?.type === 'sweepEdge' &&
-            artifact.subType === 'opposite' &&
-            (artifact.commonSurfaceIds?.length ?? 0) >= 2
-        )
-      const sideFaces =
-        sweepEdge?.type === 'sweepEdge' ? sweepEdge.commonSurfaceIds : undefined
-      if (!sweepEdge || !sideFaces || sideFaces.length < 2) {
-        throw new Error('Merged sweep edge adjacent faces not found')
+      const faces = mergedSweep.surfaceIds
+        .map((surfaceId) => artifactGraph.get(surfaceId))
+        .filter((artifact): artifact is Artifact => artifact !== undefined)
+      const endCap = faces.find(
+        (artifact): artifact is Extract<Artifact, { type: 'cap' }> =>
+          artifact.type === 'cap' && artifact.subType === 'end'
+      )
+      const walls = faces.filter(
+        (artifact): artifact is Extract<Artifact, { type: 'wall' }> =>
+          artifact.type === 'wall'
+      )
+      const wall = walls[0]
+      if (!endCap || !wall) {
+        throw new Error('Merged sweep end cap and wall not found')
       }
-      const codeRef = getSweepEdgeCodeRef(sweepEdge, artifactGraph)
+      const codeRef = getWallCodeRef(wall, artifactGraph)
       if (err(codeRef)) throw codeRef
       const length = await getKclCommandValue(
         '2',
@@ -1140,7 +1150,7 @@ merged = extrude(faceRegion, length = 2)`
             {
               entityRef: {
                 type: 'edge',
-                side_faces: sideFaces,
+                side_faces: [wall.id, endCap.id],
               },
               codeRef,
             },
@@ -1179,12 +1189,10 @@ extrude001 = extrude(sketch001.line1, length = 5, bodyType = SURFACE)`
         instanceInThisFile,
         kclManagerInThisFile
       )
-      const previousAdjacentEdge = [...artifactGraph.values()].find(
-        (artifact) =>
-          artifact.type === 'sweepEdge' &&
-          artifact.subType === 'previousAdjacent'
-      )
-      if (!previousAdjacentEdge) {
+      const firstSegment = [...artifactGraph.values()].filter(
+        (artifact) => artifact.type === 'segment'
+      )[0]
+      if (!firstSegment) {
         throw new Error('Previous adjacent sweep edge not found')
       }
       const length = await getKclCommandValue(
@@ -1194,10 +1202,7 @@ extrude001 = extrude(sketch001.line1, length = 5, bodyType = SURFACE)`
       )
       const result = addExtrude({
         ast,
-        sketches: createSelectionFromArtifacts(
-          [previousAdjacentEdge],
-          artifactGraph
-        ),
+        sketches: createSelectionFromArtifacts([firstSegment], artifactGraph),
         length,
         method: 'NEW',
         bodyType: 'SURFACE',
@@ -1208,7 +1213,7 @@ extrude001 = extrude(sketch001.line1, length = 5, bodyType = SURFACE)`
 
       const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toContain(`extrude002 = extrude(
-  getPreviousAdjacentEdge(extrude001.sketch.tags.line1),
+  sketch001.line1,
   length = 5,
   method = NEW,
   bodyType = SURFACE,
