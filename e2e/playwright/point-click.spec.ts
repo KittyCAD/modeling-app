@@ -17,7 +17,7 @@ import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 test.describe('Point-and-click tests', { tag: '@desktop' }, () => {
   test.use({ userFeatures: [EXPERIMENTAL_POINT_AND_CLICK_FLAG] })
 
-  test('Create an Extrude operation with a tag and edit it via Feature Tree', async ({
+  test('Create an Extrude operation with a tag', async ({
     context,
     editor,
     homePage,
@@ -62,24 +62,10 @@ region001 = region(segments = [sketch001.circle1])`
         await page.keyboard.insertText('4')
         await cmdBar.progressCmdBar()
         await cmdBar.expectState({
-          stage: 'arguments',
-          currentArgKey: 'bodyType',
-          currentArgValue: '',
-          headerArguments: {
-            Length: '4',
-            Profiles: '1 region',
-            BodyType: '',
-          },
-          highlightedHeaderArg: 'bodyType',
-          commandName: 'Extrude',
-        })
-        await cmdBar.progressCmdBar()
-        await cmdBar.expectState({
           stage: 'review',
           headerArguments: {
             Length: '4',
             Profiles: '1 region',
-            BodyType: 'SURFACE',
           },
           reviewValidationError: undefined,
           commandName: 'Extrude',
@@ -94,7 +80,6 @@ region001 = region(segments = [sketch001.circle1])`
           headerArguments: {
             Length: '4',
             Profiles: '1 region',
-            BodyType: 'SURFACE',
             TagEnd: '',
           },
           highlightedHeaderArg: 'tagEnd',
@@ -107,7 +92,6 @@ region001 = region(segments = [sketch001.circle1])`
           headerArguments: {
             Length: '4',
             Profiles: '1 region',
-            BodyType: 'SURFACE',
             TagEnd: 'myEndTag',
           },
           commandName: 'Extrude',
@@ -119,57 +103,75 @@ region001 = region(segments = [sketch001.circle1])`
           `extrude001 = extrude(
   region001,
   length = 4,
-  tagEnd = $myEndTag,
-  bodyType = SURFACE,
+  tagEnd = $myEndTag
 )`,
           { shouldNormalise: true }
         )
       })
     })
+  })
 
-    await test.step(`Edit first extrude via feature tree`, async () => {
-      await test.step('Open extrude operation from feature tree', async () => {
-        await (await toolbar.getFeatureTreeOperation('Extrude', 0)).dblclick()
-      })
-      await test.step('Edit length argument', async () => {
-        await cmdBar.clickHeaderArgument('length')
-        await cmdBar.expectState({
-          stage: 'arguments',
-          currentArgKey: 'length',
-          currentArgValue: '4',
-          headerArguments: {
-            Length: '4',
-            BodyType: 'SURFACE',
-            TagEnd: 'myEndTag',
-          },
-          highlightedHeaderArg: 'length',
-          commandName: 'Extrude',
-        })
-        await page.keyboard.insertText('3')
-        await cmdBar.progressCmdBar()
-        await cmdBar.expectState({
-          stage: 'review',
-          headerArguments: {
-            Length: '3',
-            BodyType: 'SURFACE',
-            TagEnd: 'myEndTag',
-          },
-          commandName: 'Extrude',
-        })
-      })
-      await test.step('Submit and verify', async () => {
-        await cmdBar.submit()
-        await editor.expectEditor.toContain(
-          `extrude001 = extrude(
+  test('Edit an Extrude operation with a tag via Feature Tree', async ({
+    context,
+    editor,
+    homePage,
+    page,
+    scene,
+    toolbar,
+    cmdBar,
+  }) => {
+    const code = `sketch001 = sketch(on = XY) {
+  circle1 = circle(start = [var 5mm, var 0mm], center = [var 0mm, var 0mm])
+}
+region001 = region(segments = [sketch001.circle1])
+extrude001 = extrude(
+  region001,
+  length = 4,
+  tagEnd = $myEndTag,
+  bodyType = SURFACE,
+)`
+    await context.addInitScript((initialCode) => {
+      localStorage.setItem('persistCode', initialCode)
+    }, code)
+    await page.setBodyDimensions({ width: 1000, height: 500 })
+    await homePage.goToModelingScene()
+    await scene.settled()
+
+    await (await toolbar.getFeatureTreeOperation('Extrude', 0)).dblclick()
+    await cmdBar.clickHeaderArgument('length')
+    await cmdBar.expectState({
+      stage: 'arguments',
+      currentArgKey: 'length',
+      currentArgValue: '4',
+      headerArguments: {
+        Length: '4',
+        BodyType: 'SURFACE',
+        TagEnd: 'myEndTag',
+      },
+      highlightedHeaderArg: 'length',
+      commandName: 'Extrude',
+    })
+    await page.keyboard.insertText('3')
+    await cmdBar.progressCmdBar()
+    await cmdBar.expectState({
+      stage: 'review',
+      headerArguments: {
+        Length: '3',
+        BodyType: 'SURFACE',
+        TagEnd: 'myEndTag',
+      },
+      commandName: 'Extrude',
+    })
+    await cmdBar.submit()
+    await editor.expectEditor.toContain(
+      `extrude001 = extrude(
   region001,
   length = 3,
   tagEnd = $myEndTag,
   bodyType = SURFACE,
 )`,
-          { shouldNormalise: true }
-        )
-      })
-    })
+      { shouldNormalise: true }
+    )
   })
 
   test.describe('verify sketch on chamfer works', () => {

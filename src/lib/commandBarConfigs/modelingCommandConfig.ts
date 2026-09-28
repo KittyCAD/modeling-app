@@ -151,13 +151,24 @@ export function profileSelectionRequiresBodyType({
   const sketches = argumentsToSubmit.sketches
   if (!isSelections(sketches)) return false
 
-  const hasOpenGraphSelection = sketches.graphSelections.some(
-    (selection) =>
+  const hasOpenGraphSelection = sketches.graphSelections.some((selection) => {
+    // Face API selections may intentionally omit the legacy artifact. Use
+    // their entity reference so a closed region is not treated as an edge.
+    if (selection.entityRef) {
+      return (
+        selection.entityRef.type === 'segment' ||
+        selection.entityRef.type === 'solid2d_edge' ||
+        selection.entityRef.type === 'edge'
+      )
+    }
+
+    return (
       !selection.artifact ||
       selection.artifact.type === 'segment' ||
       selection.artifact.type === 'sweepEdge' ||
       selection.artifact.type === 'primitiveEdge'
-  )
+    )
+  })
 
   return (
     hasOpenGraphSelection ||
