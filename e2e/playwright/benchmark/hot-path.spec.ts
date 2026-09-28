@@ -41,11 +41,12 @@ test.describe('Hot path', { tag: '@desktop' }, () => {
     const [clickABitOffCenter] = scene.makeMouseHelpers(0.55, 0.45, {
       format: 'ratio',
     })
+
     // Default step timeout
     const timeout = 500
 
     await test.step('Enter sketch', async () => {
-      const op = await toolbar.getFeatureTreeOperation('Sketch', 0)
+      const op = await toolbar.getFeatureTreeOperation('sketch001', 0)
       await op.dblclick()
       await toolbar.waitUntilSketchingReady()
       await toolbar.closeFeatureTreePane()
@@ -65,7 +66,7 @@ test.describe('Hot path', { tag: '@desktop' }, () => {
       await scene.settled()
       await editor.expectEditor.toContain('circle(')
       await expect(
-        await toolbar.getFeatureTreeOperation('Sketch', 0)
+        await toolbar.getFeatureTreeOperation('sketch001', 0)
       ).toBeVisible()
     })
 
@@ -82,7 +83,6 @@ test.describe('Hot path', { tag: '@desktop' }, () => {
         highlightedHeaderArg: 'Profiles',
         commandName: 'Extrude',
       })
-      await scene.settled()
       await clickCenter()
     })
 
@@ -103,7 +103,7 @@ test.describe('Hot path', { tag: '@desktop' }, () => {
       await page.keyboard.type('1')
     })
 
-    await test.step('Click Continue and advance directly to review for a closed profile', async () => {
+    await test.step('Click Continue, expect the review page without errors, and click Submit', async () => {
       await cmdBar.progressCmdBar()
       await cmdBar.expectState({
         stage: 'review',
@@ -112,11 +112,7 @@ test.describe('Hot path', { tag: '@desktop' }, () => {
           Length: '1',
         },
         commandName: 'Extrude',
-        reviewValidationError: undefined,
       })
-    })
-
-    await test.step('Submit the default solid extrude', async () => {
       await page.waitForTimeout(timeout)
       await cmdBar.submit()
     })
