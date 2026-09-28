@@ -194,6 +194,7 @@ export function ModelingDialogKclInput({
         kclManager.ast.moduleId,
       ],
     [
+      kclManager.ast.moduleId,
       kclManager.codeSignal.value.length,
       selectionRanges.graphSelections,
       sourceRangeForPrevVariables,
