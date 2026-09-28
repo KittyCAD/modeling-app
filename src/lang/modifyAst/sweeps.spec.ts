@@ -1122,9 +1122,7 @@ merged = extrude(faceRegion, length = 2)`
             (artifact.commonSurfaceIds?.length ?? 0) >= 2
         )
       const sideFaces =
-        sweepEdge?.type === 'sweepEdge'
-          ? sweepEdge.commonSurfaceIds
-          : undefined
+        sweepEdge?.type === 'sweepEdge' ? sweepEdge.commonSurfaceIds : undefined
       if (!sweepEdge || !sideFaces || sideFaces.length < 2) {
         throw new Error('Merged sweep edge adjacent faces not found')
       }
@@ -1162,7 +1160,9 @@ merged = extrude(faceRegion, length = 2)`
       expect(newCode).toContain(
         'sideFaces = [faceRegion.tags.circle1, capEnd001]'
       )
-      expect(newCode).toContain('merged = extrude(faceRegion, length = 2, tagEnd = $capEnd001)')
+      expect(newCode).toContain(
+        'merged = extrude(faceRegion, length = 2, tagEnd = $capEnd001)'
+      )
       expect(newCode).not.toContain('getOppositeEdge')
       await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
     })
