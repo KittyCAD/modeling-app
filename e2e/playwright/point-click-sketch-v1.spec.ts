@@ -719,8 +719,7 @@ extrude001 = extrude(profile001, length = 100)`
         `
         helix001 = helix(
           axis = {
-            sideFaces = [capEnd001, seg01],
-            endFaces = [seg02, seg03]
+            sideFaces = [capEnd001, seg01]
           },
           revolutions = 20,
           angleStart = 0,
@@ -795,8 +794,7 @@ extrude001 = extrude(profile001, length = 100)`
         `
         helix001 = helix(
           axis = {
-            sideFaces = [capEnd001, seg01],
-            endFaces = [seg02, seg03]
+            sideFaces = [capEnd001, seg01]
           },
           revolutions = 20,
           angleStart = 0,

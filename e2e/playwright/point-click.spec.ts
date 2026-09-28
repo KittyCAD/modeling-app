@@ -635,11 +635,7 @@ extrude001 = extrude(region001, length = 100)`
         `
         helix001 = helix(
           axis = {
-            sideFaces = [region001.tags.line3, capEnd001],
-            endFaces = [
-              region001.tags.line1,
-              region001.tags.line2
-            ]
+            sideFaces = [region001.tags.line3, capEnd001]
           },
           revolutions = 20,
           angleStart = 0,
@@ -714,11 +710,7 @@ extrude001 = extrude(region001, length = 100)`
         `
         helix001 = helix(
           axis = {
-            sideFaces = [region001.tags.line3, capEnd001],
-            endFaces = [
-              region001.tags.line1,
-              region001.tags.line2
-            ]
+            sideFaces = [region001.tags.line3, capEnd001]
           },
           revolutions = 20,
           angleStart = 0,
@@ -1073,8 +1065,8 @@ region001 = region(segments = [sketch001.circle1])`
 hide(sketch001)
 region001 = region(segments = [sketch001.line1, sketch001.line2])
 extrude001 = extrude(region001, length = -12)`
-    const firstFilletDeclaration = `fillet001 = fillet(extrude001, edges=[{sideFaces=[region001.tags.line2,extrude001.faces.capEnd001],endFaces=[region001.tags.line1,region001.tags.line4]}], radius=5,)`
-    const secondFilletDeclaration = `fillet002 = fillet(extrude001, edges=[{sideFaces=[extrude001.faces.capStart001,region001.tags.line2],endFaces=[region001.tags.line1,region001.tags.line4]}], radius=5,)`
+    const firstFilletDeclaration = `fillet001 = fillet(extrude001, edges=[{sideFaces=[region001.tags.line2,extrude001.faces.capEnd001]}], radius=5,)`
+    const secondFilletDeclaration = `fillet002 = fillet(extrude001, edges=[{sideFaces=[extrude001.faces.capStart001,region001.tags.line2]}], radius=5,)`
 
     // Locators
     // TODO: find a way to not have hardcoded pixel values for region edges and sweepEdges
@@ -1446,7 +1438,7 @@ revolve001 = revolve(profile001, angle = 360deg, axis = getOppositeEdge(seg02))
       const code = await editor.getCurrentCode()
       expect(code).toContain('axis = {')
       expect(code).toContain('sideFaces = [')
-      expect(code).toContain('endFaces = [')
+      expect(code).not.toContain('endFaces = [')
       expect(code).toContain('180deg')
       expect(code).not.toContain('axis = getOppositeEdge')
     })
@@ -1536,7 +1528,7 @@ helix001 = helix(
       const code = await editor.getCurrentCode()
       expect(code).toContain('axis = {')
       expect(code).toContain('sideFaces = [')
-      expect(code).toContain('endFaces = [')
+      expect(code).not.toContain('endFaces = [')
       expect(code).toContain('radius = 2')
       expect(code).not.toContain('axis = getOppositeEdge')
     })
@@ -1800,7 +1792,7 @@ extrude001 = extrude(region001, length = 5)`
 
       expect(normalizedCode).toContain('fillet001=fillet(extrude001,')
       expect(normalizedCode).toContain(
-        'edges=[{sideFaces=[region001.tags.line1,region001.tags.line3],endFaces=[capStart001,capEnd001]}]'
+        'edges=[{sideFaces=[region001.tags.line1,region001.tags.line3]}]'
       )
       expect(normalizedCode).toContain('radius=1000,')
       expect(normalizedCode).not.toContain('tags=[')
@@ -1831,8 +1823,8 @@ sketch001 = sketch(on = XY) {
 hide(sketch001)
 region001 = region(segments = [sketch001.line1, sketch001.line2])
 extrude001 = extrude(region001, length = -12)`
-    const firstChamferDeclaration = `chamfer001 = chamfer(extrude001, edges=[{sideFaces=[extrude001.faces.capEnd001,region001.tags.line2],endFaces=[region001.tags.line1,region001.tags.line4]}], length=5,)`
-    const secondChamferDeclaration = `chamfer002 = chamfer(extrude001, edges=[{sideFaces=[extrude001.faces.capStart001,region001.tags.line2],endFaces=[region001.tags.line1,region001.tags.line4]}], length=5,)`
+    const firstChamferDeclaration = `chamfer001 = chamfer(extrude001, edges=[{sideFaces=[extrude001.faces.capEnd001,region001.tags.line2]}], length=5,)`
+    const secondChamferDeclaration = `chamfer002 = chamfer(extrude001, edges=[{sideFaces=[extrude001.faces.capStart001,region001.tags.line2]}], length=5,)`
 
     // Locators
     const firstEdgeLocation = { x: 600, y: 193 }
@@ -2727,25 +2719,15 @@ region002 = region(point = [-20.0275mm, 10mm], sketch = sketch002)`
   region002,
   angle = 360deg,
   axis = {
-    sideFaces = [region001.tags.line1, capEnd001],
-    endFaces = [
-      region001.tags.line2,
-      region001.tags.line3
-    ]
+    sideFaces = [region001.tags.line1, capEnd001]
   },
-  bodyType = SURFACE,
 )`
     const newCodeToFindAfterEdit = `revolve001 = revolve(
   region002,
   angle = 360deg,
   axis = {
-    sideFaces = [region001.tags.line1, capEnd001],
-    endFaces = [
-      region001.tags.line2,
-      region001.tags.line3
-    ]
+    sideFaces = [region001.tags.line1, capEnd001]
   },
-  bodyType = SURFACE,
 )`
 
     await context.addInitScript((initialCode) => {
@@ -2782,7 +2764,6 @@ region002 = region(point = [-20.0275mm, 10mm], sketch = sketch002)`
           Profiles: '1 region',
           AxisOrEdge: '',
           Angle: '',
-          BodyType: '',
         },
         highlightedHeaderArg: 'axisOrEdge',
         stage: 'arguments',
@@ -2797,7 +2778,6 @@ region002 = region(point = [-20.0275mm, 10mm], sketch = sketch002)`
           Angle: '',
           AxisOrEdge: 'Edge',
           Edge: '',
-          BodyType: '',
         },
         highlightedHeaderArg: 'edge',
         stage: 'arguments',
@@ -2817,7 +2797,6 @@ region002 = region(point = [-20.0275mm, 10mm], sketch = sketch002)`
           Angle: '',
           AxisOrEdge: 'Edge',
           Edge: '1 edge',
-          BodyType: '',
         },
         highlightedHeaderArg: 'angle',
         stage: 'arguments',
@@ -2825,27 +2804,11 @@ region002 = region(point = [-20.0275mm, 10mm], sketch = sketch002)`
       await cmdBar.progressCmdBar()
       await cmdBar.expectState({
         commandName: 'Revolve',
-        currentArgKey: 'bodyType',
-        currentArgValue: '',
         headerArguments: {
           Profiles: '1 region',
           Angle: '360deg',
           AxisOrEdge: 'Edge',
           Edge: '1 edge',
-          BodyType: '',
-        },
-        highlightedHeaderArg: 'bodyType',
-        stage: 'arguments',
-      })
-      await cmdBar.progressCmdBar()
-      await cmdBar.expectState({
-        commandName: 'Revolve',
-        headerArguments: {
-          Profiles: '1 region',
-          Angle: '360deg',
-          AxisOrEdge: 'Edge',
-          Edge: '1 edge',
-          BodyType: 'SURFACE',
         },
         reviewValidationError: undefined,
         stage: 'review',
@@ -2871,7 +2834,6 @@ region002 = region(point = [-20.0275mm, 10mm], sketch = sketch002)`
         currentArgValue: '360deg',
         headerArguments: {
           Angle: '360deg',
-          BodyType: 'SURFACE',
         },
         highlightedHeaderArg: 'angle',
         stage: 'arguments',
@@ -2886,7 +2848,6 @@ region002 = region(point = [-20.0275mm, 10mm], sketch = sketch002)`
         stage: 'review',
         headerArguments: {
           Angle: newAngle,
-          BodyType: 'SURFACE',
         },
         commandName: 'Revolve',
       })
