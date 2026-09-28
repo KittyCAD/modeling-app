@@ -3,7 +3,7 @@ import { Color, Group, Object3D } from 'three'
 import { LineSegmentsGeometry } from 'three/examples/jsm/lines/LineSegmentsGeometry.js'
 import { LineSegments2 } from 'three/examples/jsm/lines/webgpu/LineSegments2.js'
 import { Line2NodeMaterial } from 'three/webgpu'
-import { KITTYCAD_GLTF } from './LocalRenderer'
+import { KITTYCAD_GLTF } from './KITTYCAD_GLTF'
 
 const LIGHT_THEME_EDGE_COLOR = new Color(0x1c1c1c)
 const DARK_THEME_EDGE_COLOR = new Color(0xf9f9f9)

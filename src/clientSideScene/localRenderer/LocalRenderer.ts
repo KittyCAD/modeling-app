@@ -55,6 +55,7 @@ import {
   RenderPipeline,
   WebGPURenderer,
 } from 'three/webgpu'
+import { KITTYCAD_GLTF } from './KITTYCAD_GLTF'
 
 const WEBGPU_PORT_DEBUG_STORAGE_KEY = 'webgpu-port-debug'
 const WEBGPU_PORT_LOG_PREFIX = '[WEBGPU_POC]'
@@ -446,7 +447,7 @@ export class LocalRenderer {
   private readonly syncPreviewCameraFromShared = () => {
     const cameraControls = this.kclManager.sceneInfra.camControls
     if (cameraControls.isDragging) {
-      // Dragging should clear selections, but mouse scroll shouldn't (to avoid flickering when over a plane)
+      // Dragging should clear hover, but mouse scroll shouldn't (to avoid flickering when over a plane)
       this.clearPlaneHover()
     }
     const sharedCamera = cameraControls.camera
@@ -1155,66 +1156,3 @@ function convertEngineWorldVectorToGltfWorld(
   return new Vector3(vector.x * scale, vector.z * scale, -vector.y * scale)
 }
 
-export type KITTYCAD_GLTF = GLTF & {
-  userData: {
-    KITTYCAD_boundary_representation: {
-      solids: KITTYCAD_GLTF_SOLID[]
-      shells: KITTYCAD_GLTF_SHELL[]
-      faces: KITTYCAD_GLTF_FACE[]
-      loops: KITTYCAD_GLTF_LOOP[]
-      edges: KITTYCAD_GLTF_EDGE[]
-      vertices: KIITYCAD_GLTF_VERTEX[]
-      surfaces: KIITYCAD_GLTF_SURFACE[]
-      curves3D: KITTYCAD_GLTF_CURVE3D[]
-    }
-  }
-}
-
-type KITTYCAD_GLTF_SOLID = {
-  sheels: number[][]
-  mesh: number
-  extras: {
-    KITTYCAD: {
-      material: number
-    }
-  }
-}
-
-type KITTYCAD_GLTF_SHELL = {
-  faces: KITTYCAD_GLTF_FACE[]
-}
-
-type KITTYCAD_GLTF_FACE = {
-  surface: number[][]
-  loops: number[][]
-}
-
-type KITTYCAD_GLTF_LOOP = {
-  edges: number[][]
-}
-
-type KITTYCAD_GLTF_EDGE = {
-  curve: number[] //[number, number] ?
-  start: number
-  end: number
-  t: [number, number]
-}
-
-type KIITYCAD_GLTF_VERTEX = [number, number, number]
-
-type KIITYCAD_GLTF_SURFACE = {
-  type: 'plane'
-  plane: {
-    xAxis: [number, number, number]
-    yAxis: [number, number, number]
-    origin: [number, number, number]
-  }
-}
-
-type KITTYCAD_GLTF_CURVE3D = {
-  type: 'line'
-  line: {
-    origin: [number, number, number]
-    direction: [number, number, number]
-  }
-}
