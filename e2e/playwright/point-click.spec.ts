@@ -4352,6 +4352,7 @@ extrude001 = extrude(region001, length = 30)`
       await test.step('Submit and verify all parameters', async () => {
         await cmdBar.progressCmdBar()
         await scene.settled()
+        await editor.expectEditor.not.toContain('experimentalFeatures = allow')
         await editor.expectEditor.toContain('gdt::flatness(')
         await editor.expectEditor.toContain('faces = [capEnd001]')
         await editor.expectEditor.toContain('tolerance = 0.1in')
@@ -4773,6 +4774,7 @@ extrude001 = extrude(region001, length = 30)`
       await test.step('Submit and verify all parameters', async () => {
         await cmdBar.progressCmdBar()
         await scene.settled()
+        await editor.expectEditor.not.toContain('experimentalFeatures = allow')
         await editor.expectEditor.toContain('gdt::datum(')
         await editor.expectEditor.toContain('face = capEnd001')
         await editor.expectEditor.toContain('name = "A"')
