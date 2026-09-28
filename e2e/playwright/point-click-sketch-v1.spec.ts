@@ -646,8 +646,6 @@ openSketch = startSketchOn(XY)
     toolbar,
     cmdBar,
   }) => {
-    test.setTimeout(180_000)
-
     const initialCode = `sketch001 = startSketchOn(XZ)
 profile001 = startProfile(sketch001, at = [0, 0])
 |> yLine(length = 100)
@@ -2982,8 +2980,6 @@ solid001 = extrude(sketch001, length = 5)`
     toolbar,
     cmdBar,
   }) => {
-    test.setTimeout(240_000)
-
     const initialCode = `@settings(defaultLengthUnit = in)
 sketch001 = startSketchOn(XZ)
   |> circle(center = [0, 0], radius = 30)
