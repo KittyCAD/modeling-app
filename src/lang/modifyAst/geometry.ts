@@ -26,6 +26,10 @@ import {
   valueOrVariable,
 } from '@src/lang/queryAst'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
+import {
+  getArtifactFromRange,
+  getFaceCodeRef,
+} from '@src/lang/std/artifactGraph'
 import type {
   ArtifactGraph,
   LabeledArg,
@@ -240,7 +244,8 @@ export function getAxisExpression(
       artifactGraph,
       modifiedAst,
       wasmInstance,
-      nodeToEdit
+      nodeToEdit,
+      { preferDirectSegment: true }
     )
     if (!err(segmentAxisExpr) && segmentAxisExpr.exprs[0]) {
       const directAxisExpr = segmentAxisExpr.exprs[0]
@@ -250,14 +255,66 @@ export function getAxisExpression(
     }
 
     // Direct segment case (old sketch)
-    const edgeCodeRef = edge.graphSelections[0]?.codeRef
-    if (!edgeCodeRef) {
-      return new Error('Selected edge is missing a source range.')
+    let axisSelection = originalEdgeSelection?.artifact
+    // Engine entity IDs may not map to an artifact. Recover the source
+    // segment/path/edge cut from its code range or AST path instead.
+    if (
+      (!axisSelection || !getFaceCodeRef(axisSelection)) &&
+      originalEdgeSelection
+    ) {
+      const resolved = originalEdgeSelection
+      if (resolved?.codeRef) {
+        const byRange = getArtifactFromRange(
+          resolved.codeRef.range,
+          artifactGraph
+        )
+        if (
+          byRange &&
+          (byRange.type === 'segment' ||
+            byRange.type === 'path' ||
+            byRange.type === 'edgeCut')
+        ) {
+          axisSelection = byRange
+        }
+        // If range didn't find one, try matching by pathToNode (e.g. segment on solid2d from engine)
+        if (
+          !axisSelection &&
+          resolved.codeRef.pathToNode &&
+          resolved.codeRef.pathToNode.length > 0
+        ) {
+          const pathStr = JSON.stringify(resolved.codeRef.pathToNode)
+          for (const artifact of artifactGraph.values()) {
+            const cr = getFaceCodeRef(artifact)
+            if (
+              cr &&
+              (artifact.type === 'segment' ||
+                artifact.type === 'path' ||
+                artifact.type === 'edgeCut') &&
+              JSON.stringify(cr.pathToNode) === pathStr
+            ) {
+              axisSelection = artifact
+              break
+            }
+          }
+        }
+      }
     }
-    const pathToAxisSelection = getNodePathFromSourceRange(
-      modifiedAst,
-      edgeCodeRef.range
-    )
+    if (!axisSelection) {
+      return new Error('Generated axis selection is missing.')
+    }
+
+    let pathToAxisSelection: PathToNode
+    const axisCodeRef =
+      getFaceCodeRef(axisSelection) ?? originalEdgeSelection?.codeRef
+    if (axisCodeRef?.pathToNode && axisCodeRef.pathToNode.length > 0) {
+      pathToAxisSelection = axisCodeRef.pathToNode
+    } else {
+      pathToAxisSelection = getNodePathFromSourceRange(
+        ast,
+        axisCodeRef?.range ?? originalEdgeSelection?.codeRef?.range ?? [0, 0, 0]
+      )
+    }
+
     const tagResult = mutateAstWithTagForSketchSegment(
       modifiedAst,
       pathToAxisSelection,
@@ -266,13 +323,6 @@ export function getAxisExpression(
     if (!err(tagResult)) {
       modifiedAst = tagResult.modifiedAst
       const { tag } = tagResult
-      const axisSelection =
-        edge?.graphSelections[0]?.artifact ??
-        resolveToCodeRef(edge.graphSelections[0], artifactGraph)?.artifact
-      if (!axisSelection) {
-        return new Error('Generated axis selection is missing.')
-      }
-
       const generatedAxis = getEdgeTagCall(tag, axisSelection)
       return { generatedAxis, modifiedAst }
     }

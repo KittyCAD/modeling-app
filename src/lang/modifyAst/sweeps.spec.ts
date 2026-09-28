@@ -2,16 +2,17 @@ import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { KclManager } from '@src/lang/KclManager'
 import { mockExecAstAndReportErrors } from '@src/lang/modelingWorkflows'
 import { createPathToNodeForLastVariable } from '@src/lang/modifyAst'
+import { getAxisExpression } from '@src/lang/modifyAst/geometry'
 import {
   addExtrude,
   addLoft,
   addRevolve,
   addSweep,
-  getAxisExpression,
   retrieveAxisOrEdgeSelectionsFromOpArg,
   retrieveBodyTypeFromOpArg,
 } from '@src/lang/modifyAst/sweeps'
 import {
+  getSketchSegmentName,
   resolveToCodeRef,
   retrieveSelectionsFromOpArg,
 } from '@src/lang/queryAst'
@@ -2679,6 +2680,103 @@ revolve001 = revolve(profile001, angle = 10, axis = X)`
   })
 
   describe('Testing getAxisExpression', () => {
+    it.each(['extrude', 'revolve'] as const)(
+      'preserves a face API edge selector when generating %s',
+      async (command) => {
+        const code = `@settings(defaultLengthUnit = mm, kclVersion = 2.0)
+baseSketch = sketch(on = XY) {
+  bottom = line(start = [0mm, 0mm], end = [10mm, 0mm])
+  right = line(start = [10mm, 0mm], end = [10mm, 10mm])
+  top = line(start = [10mm, 10mm], end = [0mm, 10mm])
+  left = line(start = [0mm, 10mm], end = [0mm, 0mm])
+}
+baseRegion = region(segments = [baseSketch.bottom, baseSketch.right, baseSketch.top, baseSketch.left])
+body = extrude(baseRegion, length = 5mm, tagStart = $baseStart, tagEnd = $baseEnd)
+profileSketch = sketch(on = ${command === 'extrude' ? 'XY' : 'XZ'}) {
+  circle1 = circle(start = [21mm, 5mm], center = [20mm, 5mm])
+}
+profileRegion = region(segments = [profileSketch.circle1])`
+        const { ast, artifactGraph } = await getAstAndArtifactGraph(
+          code,
+          instanceInThisFile,
+          kclManagerInThisFile
+        )
+        const artifacts = [...artifactGraph.values()]
+        const walls = ['bottom', 'left'].map((name) => {
+          const wall = artifacts.find((artifact) => {
+            if (artifact.type !== 'wall') return false
+            const segment = artifactGraph.get(artifact.segId)
+            return (
+              segment?.type === 'segment' &&
+              getSketchSegmentName(
+                ast,
+                segment.originalSegId ?? segment.id,
+                artifactGraph,
+                instanceInThisFile
+              ) === name
+            )
+          })
+          if (wall?.type !== 'wall') throw new Error(`Missing ${name} wall`)
+          return wall
+        })
+        const caps = (['start', 'end'] as const).map((subType) => {
+          const cap = artifacts.find(
+            (artifact) =>
+              artifact.type === 'cap' && artifact.subType === subType
+          )
+          if (cap?.type !== 'cap') throw new Error(`Missing ${subType} cap`)
+          return cap
+        })
+        const profile = artifacts.findLast(
+          (artifact) => artifact.type === 'path'
+        )
+        if (!profile) throw new Error('Missing profile region')
+        const sketches = createSelectionFromArtifacts([profile], artifactGraph)
+        const edge: Selections = {
+          graphSelections: [
+            {
+              entityRef: {
+                type: 'edge',
+                side_faces: walls.map(({ id }) => id),
+                end_faces: caps.map(({ id }) => id),
+                index: 0,
+              },
+              codeRef: walls[0].faceCodeRef,
+            },
+          ],
+          otherSelections: [],
+        }
+        const value = await getKclCommandValue(
+          command === 'extrude' ? '3mm' : '90deg',
+          instanceInThisFile,
+          rustContextInThisFile
+        )
+        const args = {
+          ast,
+          artifactGraph,
+          sketches,
+          wasmInstance: instanceInThisFile,
+        }
+        const result =
+          command === 'extrude'
+            ? addExtrude({ ...args, length: value, direction: edge })
+            : addRevolve({ ...args, angle: value, edge })
+        if (err(result)) throw result
+        const newCode = recast(result.modifiedAst, instanceInThisFile)
+        if (err(newCode)) throw newCode
+        const axisArgument = command === 'extrude' ? 'direction' : 'axis'
+        expect(newCode.replace(/\s+/g, '')).toContain(
+          `${axisArgument}={sideFaces=[baseRegion.tags.bottom,baseRegion.tags.left],endFaces=[baseStart,baseEnd],index=0}`
+        )
+        expect(newCode).toContain(`${command}(\n  profileRegion,`)
+        await runNewAstAndCountSweeps(
+          result.modifiedAst,
+          rustContextInThisFile,
+          2
+        )
+      }
+    )
+
     it.each(['X', 'Y', 'Z'])(
       'should return axis expression for default axis %s',
       async (axis) => {
