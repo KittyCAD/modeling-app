@@ -109,9 +109,12 @@ describe('remote inventory pagination and local data safety', () => {
       finishPage = resolve
     })
     fetchMock.mockImplementation(async (input) => {
-      if (getFetchUrl(input) === listUrl)
+      if (getFetchUrl(input) === listUrl) {
         return jsonResponse({ items: [], next_page: 'two' })
-      if (getFetchUrl(input) === `${listUrl}?page_token=two`) return pendingPage
+      }
+      if (getFetchUrl(input) === `${listUrl}?page_token=two`) {
+        return pendingPage
+      }
       return jsonResponse({ message: 'Unexpected request' }, 500)
     })
     startSync()
@@ -139,9 +142,12 @@ describe('remote inventory pagination and local data safety', () => {
     'confirms missing projects individually for paginated=%s inventories',
     async (paginated) => {
       fetchMock.mockImplementation(async (input) => {
-        if (getFetchUrl(input) === listUrl)
+        if (getFetchUrl(input) === listUrl) {
           return jsonResponse(paginated ? { items: [], next_page: null } : [])
-        if (getFetchUrl(input) === detailUrl) return jsonResponse(project)
+        }
+        if (getFetchUrl(input) === detailUrl) {
+          return jsonResponse(project)
+        }
         return jsonResponse({ message: 'Unexpected request' }, 500)
       })
       startSync()
@@ -164,6 +170,7 @@ describe('remote inventory pagination and local data safety', () => {
       )
       startSync()
       await waitForSync('failed')
+      expect(cloudSyncRemoteProjects.value).toEqual([project])
       await expectLocalPreserved()
     }
   )
@@ -202,5 +209,27 @@ describe('remote inventory pagination and local data safety', () => {
     await expectLocalPreserved()
     expect(cloudSyncRemoteProjects.value).toEqual([])
     expect(cloudSyncStatus.value.state).toBe('disabled')
+  })
+
+  it('completes a refresh when the same configuration is applied during a page request', async () => {
+    let finishPage!: (response: Response) => void
+    const pendingPage = new Promise<Response>((resolve) => {
+      finishPage = resolve
+    })
+    fetchMock.mockImplementationOnce(async () => pendingPage)
+    startSync()
+    await vi.waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(1))
+    configureCloudSyncEngine({
+      enabled: true,
+      baseUrl,
+      token: '',
+      environmentName: 'dev.zoo.dev',
+      cloudProjectDirectoryPaths: [directory],
+      autoEnrollCloudLibraryProjects: false,
+    })
+    finishPage(jsonResponse({ items: [project], next_page: null }))
+    await waitForSync('idle')
+    expect(cloudSyncRemoteProjects.value).toEqual([project])
+    await expectLocalPreserved()
   })
 })

@@ -158,10 +158,14 @@ export async function listRemoteProjects(
 ): Promise<RemoteProjectSummary[]> {
   const projects = new Map<string, RemoteProjectSummary>()
   const seenCursors = new Set<string>()
-  let targetPath = '/user/projects'
+  let pageToken: string | undefined
+  let hasMorePages = true
 
-  while (true) {
+  while (hasMorePages) {
     await beforeRequest()
+    const targetPath = pageToken
+      ? `/user/projects?${new URLSearchParams({ page_token: pageToken })}`
+      : '/user/projects'
     const response = await cloudJson<unknown>(config, targetPath)
     const legacy = isArray(response)
     const page =
@@ -178,19 +182,17 @@ export async function listRemoteProjects(
       )
     }
 
-    // Accept legacy arrays so this app can ship before API pagination and survive
-    // API rollback. An array replaces any pages already collected because it is
-    // the complete inventory. Once all supported API deployments use pagination
-    // and the rollback window closes, remove the legacy parsing/branches above
-    // and below, plus the legacy-response tests; keep the pagination safeguards.
+    // A legacy array is the complete inventory, including if the API rolls back
+    // between pages. Keep this branch until all supported deployments paginate.
     if (legacy) {
-      projects.clear()
+      return [...items]
     }
     for (const item of items) {
       projects.set(item.id, item)
     }
-    if (legacy || page?.next_page === null) {
-      return [...projects.values()]
+    if (page?.next_page === null) {
+      hasMorePages = false
+      continue
     }
     const cursor = page?.next_page
     if (
@@ -206,8 +208,10 @@ export async function listRemoteProjects(
       )
     }
     seenCursors.add(cursor)
-    targetPath = `/user/projects?${new URLSearchParams({ page_token: cursor })}`
+    pageToken = cursor
   }
+
+  return [...projects.values()]
 }
 
 export async function getRemoteProject(

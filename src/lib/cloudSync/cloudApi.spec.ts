@@ -305,6 +305,18 @@ describe('remote project pagination', () => {
     )
   })
 
+  test('preserves the legacy array without changing its contents', async () => {
+    const projects = [
+      { id: 'one', title: 'first' },
+      { id: 'one', title: 'second' },
+    ]
+    vi.stubGlobal(
+      'fetch',
+      vi.fn<typeof fetch>().mockResolvedValueOnce(json(projects))
+    )
+    await expect(listRemoteProjects(config)).resolves.toEqual(projects)
+  })
+
   test('loads more than 100 projects and throttles/authenticates every page', async () => {
     const first = Array.from({ length: 100 }, (_, id) => ({
       id: `project-${id}`,

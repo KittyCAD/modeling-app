@@ -163,6 +163,7 @@ let localFs: IZooDesignStudioFS = opfs.impl
 let config: CloudSyncConfig = {
   enabled: false,
 }
+let configGeneration = 0
 let syncTimer: ReturnType<typeof setTimeout> | undefined
 let syncInProgress = false
 const syncIdleWaiters = new Set<() => void>()
@@ -3423,18 +3424,18 @@ async function syncRemoteIndex(
   }
 
   const indexConfig = config
+  const indexConfigGeneration = configGeneration
   const remoteProjects = await listRemoteProjects(indexConfig, async () => {
     await throttleProjectApiRequest()
-    if (config !== indexConfig) {
+    if (configGeneration !== indexConfigGeneration) {
       return Promise.reject(
         new Error('Cloud sync configuration changed during project refresh.')
       )
     }
   })
-  if (config !== indexConfig) {
+  if (configGeneration !== indexConfigGeneration) {
     return
   }
-  cloudSyncRemoteProjects.value = remoteProjects
   const remoteProjectIds = new Set(
     remoteProjects.map((remoteProject) => remoteProject.id).filter(Boolean)
   )
@@ -3491,29 +3492,25 @@ async function syncRemoteIndex(
     }
 
     try {
-      // Listing pages is not a snapshot. Only a confirmed 404 may remove or
-      // detach a local project that was absent from the completed inventory.
-      try {
-        const remoteProjectId = localMetadata.remoteProjectId
-        const existing = await runCloudSyncProjectApiRequest(
-          throttleProjectApiRequest,
-          () => getRemoteProject(indexConfig, remoteProjectId)
-        )
-        if (config !== indexConfig) {
-          return
+      // A project can be skipped when the paginated list changes between pages.
+      // Only a confirmed 404 should remove or detach its local copy.
+      const remoteProjectId = localMetadata.remoteProjectId
+      const existing = await runCloudSyncProjectApiRequest(
+        throttleProjectApiRequest,
+        () => getRemoteProject(indexConfig, remoteProjectId)
+      ).catch((error: unknown) => {
+        if (error instanceof CloudApiError && error.status === 404) {
+          return undefined
         }
+        return Promise.reject(error)
+      })
+      if (configGeneration !== indexConfigGeneration) {
+        return
+      }
+      if (existing) {
         remoteProjects.push(existing)
         remoteProjectIds.add(remoteProjectId)
-        cloudSyncRemoteProjects.value = [...remoteProjects]
         continue
-      } catch (error) {
-        if (config !== indexConfig) {
-          return
-        }
-        if (!(error instanceof CloudApiError && error.status === 404)) {
-          // eslint-disable-next-line suggest-no-throw/suggest-no-throw
-          throw error
-        }
       }
       const nextMetadata = await reconcileMissingRemoteProject(localMetadata, {
         hasPendingLocalChanges: pendingProjectPaths.has(
@@ -3528,6 +3525,13 @@ async function syncRemoteIndex(
     } catch (error) {
       failures.push(error)
     }
+  }
+
+  if (configGeneration !== indexConfigGeneration) {
+    return
+  }
+  if (failures.length === 0) {
+    cloudSyncRemoteProjects.value = remoteProjects
   }
 
   const localProjectsByDirectory = new Map<string, Map<string, string[]>>()
@@ -3826,7 +3830,7 @@ async function runCloudSync() {
     return
   }
 
-  const syncConfig = config
+  const syncConfigGeneration = configGeneration
   syncInProgress = true
   pendingStatusSyncedAt = undefined
   updateStatus({ enabled: true })
@@ -3863,7 +3867,7 @@ async function runCloudSync() {
         }),
       })
       await syncRemoteIndex(throttleProjectApiRequest).catch((error) => {
-        if (config !== syncConfig) {
+        if (configGeneration !== syncConfigGeneration) {
           return
         }
         remoteIndexFailed = true
@@ -3877,7 +3881,7 @@ async function runCloudSync() {
         })
       })
 
-      if (config !== syncConfig) {
+      if (configGeneration !== syncConfigGeneration) {
         return
       }
       entries = await getAllOutboxEntries()
@@ -4561,6 +4565,14 @@ export function configureCloudSyncEngine(nextConfig: CloudSyncConfig) {
   const autoEnrollPolicyChanged =
     previousConfig.autoEnrollCloudLibraryProjects !==
     config.autoEnrollCloudLibraryProjects
+  if (
+    previousConfig.enabled !== config.enabled ||
+    cloudIdentityChanged ||
+    projectDirectoryChanged ||
+    autoEnrollPolicyChanged
+  ) {
+    configGeneration++
+  }
   if (
     cloudIdentityChanged ||
     projectDirectoryChanged ||
