@@ -69,14 +69,14 @@ export const Router = () => {
               }) => {
                 if (
                   formMethod ||
-                  !currentParams.id || 
+                  !currentParams.id ||
                   currentParams.id !== nextParams.id || // if file url changes -> reload project
                   currentUrl.href === nextUrl.href
                 ) {
                   return defaultShouldRevalidate
                 }
 
-                // Avoid calling openEditor when opening / closing settings: 
+                // Avoid calling openEditor when opening / closing settings:
                 // Child routes and query changes within the same file reuse the loaded project.
                 return false
               },
