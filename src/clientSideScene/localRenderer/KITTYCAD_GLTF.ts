@@ -1,4 +1,4 @@
-import { GLTF } from "three/examples/jsm/loaders/GLTFLoader"
+import { GLTF } from 'three/examples/jsm/loaders/GLTFLoader'
 
 export type KITTYCAD_GLTF = GLTF & {
   userData: {
@@ -16,7 +16,7 @@ export type KITTYCAD_GLTF = GLTF & {
 }
 
 type KITTYCAD_GLTF_SOLID = {
-  sheels: number[][]
+  shells: number[][]
   mesh: number
   extras: {
     KITTYCAD: {

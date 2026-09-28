@@ -1155,4 +1155,3 @@ function convertEngineWorldVectorToGltfWorld(
 ): Vector3 {
   return new Vector3(vector.x * scale, vector.z * scale, -vector.y * scale)
 }
-
