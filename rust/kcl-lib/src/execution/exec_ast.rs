@@ -1070,7 +1070,7 @@ impl ExecutorContext {
         // Check the imported file's declared version and effective keyword
         // restrictions before executing its body.
         exec_state
-            .validate_imported_module(path, program, None)
+            .validate_imported_module(path, module_id, program, None)
             .map_err(|err| (err, None, None))?;
 
         // When executing only the new statements in incremental execution or
@@ -1384,7 +1384,7 @@ impl ExecutorContext {
             && let Some(ModuleRepr::Kcl(program, _)) =
                 exec_state.global.module_infos.get(&module_id).map(|info| &info.repr)
         {
-            exec_state.validate_imported_module(&module_path, program, Some(source_range))?;
+            exec_state.validate_imported_module(&module_path, module_id, program, Some(source_range))?;
         }
 
         if let ModulePath::Local { value, .. } = &module_path {
@@ -1888,8 +1888,9 @@ impl ExecutorContext {
                 exec_state.add_path_to_source_id(resolved_path.clone(), id);
                 let source = resolved_path.source(&self.fs, source_range).await?;
                 exec_state.add_id_to_source(id, source.clone());
-                // TODO handle parsing errors properly
-                let parsed = crate::parsing::parse_str_deferred_use_keyword(&source.source, id).parse_errs_as_err()?;
+                let (parsed, never_type_ranges) = crate::parsing::parse_str_syntax(&source.source, id)?;
+                // Defer validation until module execution or the mock import site.
+                exec_state.global.never_type_ranges.insert(id, never_type_ranges);
                 exec_state.add_module(id, resolved_path.clone(), ModuleRepr::Kcl(parsed, None));
 
                 Ok(id)
@@ -1925,9 +1926,12 @@ impl ExecutorContext {
                 exec_state.add_path_to_source_id(resolved_path.clone(), id);
                 let source = resolved_path.source(&self.fs, source_range).await?;
                 exec_state.add_id_to_source(id, source.clone());
-                let parsed = crate::parsing::parse_str(&source.source, id)
-                    .parse_errs_as_err()
-                    .unwrap();
+                let (parsed, never_type_ranges) = crate::parsing::parse_str_syntax(&source.source, id).unwrap();
+                crate::parsing::validate_never_type_ranges(
+                    &never_type_ranges,
+                    crate::parsing::SyntaxSource::BundledStdlib,
+                )
+                .unwrap();
                 exec_state.add_module(id, resolved_path.clone(), ModuleRepr::Kcl(parsed, None));
                 Ok(id)
             }

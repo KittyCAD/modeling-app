@@ -96,12 +96,7 @@ describe('project explorer project menu', () => {
 
     try {
       renderWithRouter(
-        <ProjectSidebarMenu
-          app={app}
-          enableMenu
-          project={projectWellFormed}
-          hasCloudSyncFeature
-        />
+        <ProjectSidebarMenu app={app} enableMenu project={projectWellFormed} />
       )
 
       fireEvent.click(screen.getByTestId('project-sidebar-toggle'))
