@@ -316,10 +316,7 @@ export function resolveEdgeSelectionContext(
   if (err(selectedSweepResult)) {
     return selectedSweepResult
   }
-  const selectedSweep = selectedSweepResult as Extract<
-    Artifact,
-    { type: 'sweep' }
-  >
+  const selectedSweep = selectedSweepResult
 
   return resolveSweepSelectionContext(
     ast,
