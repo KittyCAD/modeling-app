@@ -114,7 +114,6 @@ type SystemDeps = Pick<Singletons, 'kclManager'> & {
 // may fail since operations don't have an identity that persists across
 // executions. Currently, we don't change the operations in an auto-fix, but
 // this seems brittle.
-const ENABLE_Z0006_AUTO_FIX_BEFORE_FEATURE_TREE_EDIT = true
 const UNRENDERED_EXECUTE_HOTKEY = 'mod+s'
 
 const Z0006_AUTO_FIX_BEFORE_EDIT_OPERATION_NAMES = new Set([
@@ -923,7 +922,6 @@ async function prepareFeatureTreeEditCommand({
 
   let operationToEdit: Operation | undefined = operation
   if (
-    ENABLE_Z0006_AUTO_FIX_BEFORE_FEATURE_TREE_EDIT &&
     operation.type === 'StdLibCall' &&
     supportsZ0006AutoFixBeforeFeatureTreeEdit(operation)
   ) {
