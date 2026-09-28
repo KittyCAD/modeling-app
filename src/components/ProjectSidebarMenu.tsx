@@ -46,7 +46,6 @@ interface ProjectSidebarMenuProps extends React.PropsWithChildren {
   enableMenu?: boolean
   project?: Project
   file?: FileEntry
-  hasCloudSyncFeature?: boolean
   app?: App
   absoluteFilePath?: string
   onProjectClose?: ProjectCloseHandler
@@ -94,21 +93,10 @@ const noopHomeNavigate = () => undefined
 const projectMenuItemLabelClassName = 'min-w-0 flex-1 truncate'
 const projectMenuItemHotkeyClassName = 'hotkey shrink-0'
 
-export function canNavigateHome({
-  isDesktopApp,
-  hasCloudSyncFeature,
-}: {
-  isDesktopApp: boolean
-  hasCloudSyncFeature: boolean
-}) {
-  return isDesktopApp || hasCloudSyncFeature
-}
-
 const ProjectSidebarMenu = ({
   project,
   file,
   enableMenu = false,
-  hasCloudSyncFeature = false,
   app,
   absoluteFilePath,
   onProjectClose = noopProjectClose,
@@ -118,10 +106,6 @@ const ProjectSidebarMenu = ({
   // Make room for traffic lights on desktop left side.
   // TODO: make sure this doesn't look like shit on Linux or Windows
   const trafficLightsOffset = window.electron?.os.isMac ? 'ml-20' : ''
-  const homeNavigationEnabled = canNavigateHome({
-    isDesktopApp: isDesktop(),
-    hasCloudSyncFeature,
-  })
   const projectDisplayName = project ? getProjectDisplayName(project) : APP_NAME
 
   return (
@@ -130,13 +114,10 @@ const ProjectSidebarMenu = ({
         <AppLogoLink
           project={project}
           file={file}
-          enabled={homeNavigationEnabled}
           onProjectClose={onProjectClose}
           onHomeNavigate={onHomeNavigate}
         />
-        {homeNavigationEnabled && (
-          <Tooltip position="bottom-left">Go home</Tooltip>
-        )}
+        <Tooltip position="bottom-left">Go home</Tooltip>
       </div>
       {enableMenu ? (
         app ? (
@@ -145,7 +126,6 @@ const ProjectSidebarMenu = ({
             project={project}
             file={file}
             filePath={absoluteFilePath}
-            homeNavigationEnabled={homeNavigationEnabled}
             onProjectClose={onProjectClose}
             onHomeNavigate={onHomeNavigate}
           />
@@ -166,32 +146,14 @@ const ProjectSidebarMenu = ({
 function AppLogoLink({
   project,
   file,
-  enabled,
   onProjectClose,
   onHomeNavigate,
 }: {
   project?: IndexLoaderData['project']
   file?: IndexLoaderData['file']
-  enabled: boolean
   onProjectClose: ProjectCloseHandler
   onHomeNavigate: () => void
 }) {
-  const wrapperClassName =
-    "cursor-pointer relative group-hover/home:before:outline h-full grid flex-none place-content-center group p-1.5 before:block before:content-[''] before:absolute before:inset-0 before:bottom-1 before:z-[-1] before:bg-primary before:rounded-b-sm before:transition-[filter] before:duration-100 before:ease-out"
-  const logoClassName = 'w-auto h-4 text-chalkboard-10'
-
-  if (!enabled) {
-    return (
-      <div
-        data-testid="app-logo"
-        className="relative h-full grid flex-none place-content-center group p-1.5 before:block before:content-[''] before:absolute before:inset-0 before:bottom-1 before:z-[-1] before:bg-primary before:rounded-b-sm"
-      >
-        <Logo data-onboarding-id="app-logo" className={logoClassName} />
-        <span className="sr-only">{APP_NAME}</span>
-      </div>
-    )
-  }
-
   return (
     <Link
       data-testid="app-logo"
@@ -200,9 +162,12 @@ function AppLogoLink({
         onHomeNavigate()
       }}
       to={PATHS.HOME}
-      className={`${wrapperClassName} hover:hue-rotate-0 dark:hover:brightness-100 hover:before:drop-shadow-tab-sm`}
+      className="cursor-pointer relative group-hover/home:before:outline h-full grid flex-none place-content-center group p-1.5 before:block before:content-[''] before:absolute before:inset-0 before:bottom-1 before:z-[-1] before:bg-primary before:rounded-b-sm before:transition-[filter] before:duration-100 before:ease-out hover:hue-rotate-0 dark:hover:brightness-100 hover:before:drop-shadow-tab-sm"
     >
-      <Logo data-onboarding-id="app-logo" className={logoClassName} />
+      <Logo
+        data-onboarding-id="app-logo"
+        className="w-auto h-4 text-chalkboard-10"
+      />
       <span className="sr-only">{APP_NAME}</span>
     </Link>
   )
@@ -213,7 +178,6 @@ function ProjectMenuPopover({
   project,
   file,
   filePath,
-  homeNavigationEnabled,
   onProjectClose,
   onHomeNavigate,
 }: {
@@ -221,7 +185,6 @@ function ProjectMenuPopover({
   project?: IndexLoaderData['project']
   file?: IndexLoaderData['file']
   filePath?: string
-  homeNavigationEnabled: boolean
   onProjectClose: ProjectCloseHandler
   onHomeNavigate: () => void
 }) {
@@ -485,7 +448,6 @@ function ProjectMenuPopover({
           children: (
             <span className={projectMenuItemLabelClassName}>Go to Home</span>
           ),
-          className: !homeNavigationEnabled ? 'hidden' : '',
           onClick: () => {
             onProjectClose(file || null, project?.path || null, true)
             onHomeNavigate()
@@ -530,7 +492,6 @@ function ProjectMenuPopover({
       commands.send,
       onHomeNavigate,
       onProjectClose,
-      homeNavigationEnabled,
       projectPath,
       project,
       getCurrentFileForDuplicate,
