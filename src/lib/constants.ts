@@ -216,6 +216,8 @@ export const EXECUTE_AST_INTERRUPT_ERROR_MESSAGE = JSON.stringify(
 /** The messages that appear for exporting toasts */
 export const EXPORT_TOAST_MESSAGES = {
   START: 'Exporting...',
+  CHOOSE_LOCATION:
+    'Export ready to save. Choose a location in the save dialog.',
   SUCCESS: 'Exported successfully.',
   FAILED: 'Export failed.',
 }
