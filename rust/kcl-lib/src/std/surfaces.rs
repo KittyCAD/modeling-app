@@ -19,12 +19,13 @@ use crate::errors::KclError;
 use crate::errors::KclErrorDetails;
 use crate::execution::BoundedEdge;
 use crate::execution::ConsumedSolidOperation;
-use crate::execution::CurveType;
 use crate::execution::ExecState;
 use crate::execution::KclValue;
 use crate::execution::ModelingCmdMeta;
+use crate::execution::Sketch;
 use crate::execution::Solid;
 use crate::execution::SolidCreator;
+use crate::execution::TagIdentifier;
 use crate::execution::types::ArrayLen;
 use crate::execution::types::PrimitiveType;
 use crate::execution::types::RuntimeType;
@@ -467,6 +468,44 @@ async fn inner_join(
     }
 }
 
+#[derive(Debug, Clone, PartialEq)]
+enum CurveType {
+    Sketch(Box<Sketch>),
+    EdgeTag(Box<TagIdentifier>),
+    Edge(uuid::Uuid),
+}
+
+impl From<Sketch> for CurveType {
+    fn from(value: Sketch) -> Self {
+        Self::Sketch(Box::new(value))
+    }
+}
+
+impl<'a> FromKclValue<'a> for CurveType {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
+        Box::<Sketch>::from_kcl_val(arg)
+            .map(Self::Sketch)
+            .or_else(|| uuid::Uuid::from_kcl_val(arg).map(Self::Edge))
+            .or_else(|| Box::<TagIdentifier>::from_kcl_val(arg).map(Self::EdgeTag))
+    }
+}
+
+impl CurveType {
+    fn operation_id(&self, args: &Args) -> Result<uuid::Uuid, KclError> {
+        match self {
+            Self::Sketch(sketch) => Ok(sketch.id),
+            Self::EdgeTag(edge_tag) => match edge_tag.get_cur_info() {
+                Some(info) => Ok(info.id),
+                None => Err(KclError::new_type(KclErrorDetails::new(
+                    "Could not find a valid curve id for creating a planar surface".to_owned(),
+                    vec![args.source_range],
+                ))),
+            },
+            Self::Edge(edge) => Ok(*edge),
+        }
+    }
+}
+
 /// Used the provided segments or edges to create a planar surface
 pub async fn planar_surface(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let curve_values: Vec<KclValue> = args.get_unlabeled_kw_arg(
@@ -587,6 +626,11 @@ fn prepare_single_closed_region(curves: &mut Vec<CurveType>, source_range: crate
                 vertices.len() - 1
             }
         });
+        // A straight edge collapsed by endpoint tolerance adds no boundary.
+        // Keep closed curves: a circle still contributes two incidences.
+        if from == to && matches!(path, crate::execution::Path::ToPoint { .. }) {
+            continue;
+        }
         let path_index = path_ids.len();
         path_ids.push(path.get_id());
         // A closed circle contributes both ends to the same vertex.
@@ -660,7 +704,7 @@ async fn inner_planar_surface(
 
     let mut curve_ids: Vec<uuid::Uuid> = Vec::new();
     for curve in curves {
-        let id = curve.operation_id(&args).await?;
+        let id = curve.operation_id(&args)?;
         curve_ids.push(id);
     }
 
@@ -729,6 +773,31 @@ surface = planarSurface(profile, tolerance = 0.01mm)
 
         assert_eq!(command.curve_ids.len(), 1);
         assert_eq!(command.tolerance, LengthUnit(0.01));
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn planar_surface_accepts_a_tiny_straight_closing_edge() {
+        for version in ["2.0", "\"3.0-preview\""] {
+            let result = parse_execute(&format!(
+                r#"
+@settings(kclVersion = {version}, experimentalFeatures = allow)
+profile = sketch(on = XY) {{
+  bottom = line(start = [0mm, 0mm], end = [2mm, 0mm])
+  right = line(start = [2mm, 0mm], end = [2mm, 2mm])
+  top = line(start = [2mm, 2mm], end = [0mm, 2mm])
+  left = line(start = [0mm, 2mm], end = [0mm, 0.000000002mm])
+  closing = line(start = [0mm, 0.000000002mm], end = [0mm, 0mm])
+}}
+surface = planarSurface(profile)
+"#,
+            ))
+            .await
+            .unwrap();
+
+            assert!(result.root_module_artifact_commands().iter().any(|artifact_command| {
+                matches!(&artifact_command.command, ModelingCmd::CreatePlanarSurface(command) if command.curve_ids.len() == 1)
+            }));
+        }
     }
 
     #[tokio::test(flavor = "multi_thread")]

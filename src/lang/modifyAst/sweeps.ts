@@ -15,7 +15,6 @@ import {
   createVariableExpressionsArray,
   insertRegionVariablesAndOffsetPathToNode,
   insertVariableAndOffsetPathToNode,
-  pathsReferToSamePipe,
   setCallInAst,
 } from '@src/lang/modifyAst'
 import { retrieveEdgeSelectionsFromSingleEdgeRef } from '@src/lang/modifyAst/edges'
@@ -44,7 +43,6 @@ import {
   getVariableExprsFromSelection,
   getVariableNameFromNodePath,
   isCallExprWithName,
-  stringifyPathToNode,
   valueOrVariable,
 } from '@src/lang/queryAst'
 import {
@@ -1297,16 +1295,6 @@ export function getEdgeProfileExprsFromSelection({
     const sourceSurfaceArtifact = edgeContext.sourceSweep
     const sourceSurfaceExpr = edgeContext.selectedBodyExpr
     if (preserveBodyContext && edgeContext.pathIfPipe) {
-      if (
-        pathIfPipe &&
-        stringifyPathToNode(pathIfPipe) !==
-          stringifyPathToNode(edgeContext.pathIfPipe) &&
-        !pathsReferToSamePipe(pathIfPipe, edgeContext.pathIfPipe)
-      ) {
-        return new Error(
-          'Assign variables to the selected bodies before combining their edges.'
-        )
-      }
       pathIfPipe = structuredClone(edgeContext.pathIfPipe)
     }
 
