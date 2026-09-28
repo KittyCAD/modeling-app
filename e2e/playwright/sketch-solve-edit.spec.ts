@@ -1,6 +1,4 @@
 import type { SceneFixture } from '@e2e/playwright/fixtures/sceneFixture'
-import { TEST_SETTINGS, TEST_SETTINGS_KEY } from '@e2e/playwright/storageStates'
-import { settingsToToml } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 import type { Page } from '@playwright/test'
 import { isArray } from '@src/lib/utils'
@@ -146,43 +144,16 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
     cmdBar,
     editor,
     toolbar,
-    tronApp,
   }) => {
-    const userSettingsToml = settingsToToml({
-      settings: {
-        ...TEST_SETTINGS,
-        modeling: {
-          ...TEST_SETTINGS.modeling,
-          use_sketch_solve_mode: true,
-        },
-      },
-    })
-
     await test.step('Set up the app with test code', async () => {
-      if (tronApp) {
-        await tronApp.cleanProjectDir({
-          modeling: {
-            use_sketch_solve_mode: true,
-          },
-        })
-      }
-
-      await context.addInitScript(
-        async ({ code, settingsKey, settingsToml }) => {
-          localStorage.setItem('persistCode', code)
-          localStorage.setItem(settingsKey, settingsToml)
-        },
-        {
-          code: TEST_CODE,
-          settingsKey: TEST_SETTINGS_KEY,
-          settingsToml: userSettingsToml,
-        }
-      )
+      await context.addInitScript(async (code) => {
+        localStorage.setItem('persistCode', code)
+      }, TEST_CODE)
 
       await page.setBodyDimensions({ width: 1200, height: 500 })
 
       await homePage.goToModelingScene()
-      await scene.settled({ expectError: true })
+      await scene.settled()
 
       await editor.expectEditor.toContain('sketch(on = XZ)')
     })
@@ -196,48 +167,62 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
       ).toBeVisible()
     })
 
-    await test.step('Enter sketch edit mode from feature tree', async () => {
-      await toolbar.editSketch(1)
+    await test.step('Open feature tree and enter sketch edit mode', async () => {
+      await toolbar.openFeatureTreePane()
+      await expect(page.getByText('Building feature tree')).not.toBeVisible({
+        timeout: 10000,
+      })
+
+      const solveSketchOperation = await toolbar.getFeatureTreeOperation(
+        'newSketch',
+        0
+      )
+      await solveSketchOperation.dblclick()
+
+      await page.waitForTimeout(600)
       await expect(toolbar.exitSketchBtn).toBeEnabled()
     })
 
-    await test.step('Edit an existing segment and verify code updates', async () => {
-      await test.step('Drag point segment 13 down', async () => {
-        const segmentBox = await scene.getBoundingBoxOrThrow(
-          '[data-segment_id="14"]'
-        )
+    await test.step('Verify point handles are visible', async () => {
+      const pointHandles = page.locator('[data-handle="sketch-point-handle"]')
+      await expect(pointHandles).toHaveCount(9)
+    })
 
-        const centerX = segmentBox.x + segmentBox.width / 2
-        const centerY = segmentBox.y + segmentBox.height / 2
+    await test.step('Drag point segment 13 down', async () => {
+      const segmentBox = await scene.getBoundingBoxOrThrow(
+        '[data-segment_id="14"]'
+      )
 
-        const lineToEdit = getCodeLine({ code: TEST_CODE, line: 9 })
-        await editor.expectEditor.toContain(lineToEdit)
+      const centerX = segmentBox.x + segmentBox.width / 2
+      const centerY = segmentBox.y + segmentBox.height / 2
 
-        await page.mouse.move(centerX, centerY)
-        await page.mouse.down()
-        await page.mouse.move(centerX, centerY + 50, { steps: 5 })
-        await page.mouse.up()
+      const lineToEdit = getCodeLine({ code: TEST_CODE, line: 9 })
+      await editor.expectEditor.toContain(lineToEdit)
 
-        await page.waitForTimeout(500)
+      await page.mouse.move(centerX, centerY)
+      await page.mouse.down()
+      await page.mouse.move(centerX, centerY + 50, { steps: 5 })
+      await page.mouse.up()
 
-        await editor.expectEditor.not.toContain(lineToEdit)
-      })
+      await page.waitForTimeout(500)
 
-      await test.step('Drag line segment by dragging midpoint between points 8 and 9 down', async () => {
-        const midpoint = await getMidpointBetweenSegments(scene, '9', '10')
+      await editor.expectEditor.not.toContain(lineToEdit)
+    })
 
-        const lineToEdit = getCodeLine({ code: TEST_CODE, line: 6 })
-        await editor.expectEditor.toContain(lineToEdit)
+    await test.step('Drag line segment by dragging midpoint between points 8 and 9 down', async () => {
+      const midpoint = await getMidpointBetweenSegments(scene, '9', '10')
 
-        await page.mouse.move(midpoint.x, midpoint.y)
-        await page.mouse.down()
-        await page.mouse.move(midpoint.x, midpoint.y + 50, { steps: 5 })
-        await page.mouse.up()
+      const lineToEdit = getCodeLine({ code: TEST_CODE, line: 6 })
+      await editor.expectEditor.toContain(lineToEdit)
 
-        await page.waitForTimeout(500)
+      await page.mouse.move(midpoint.x, midpoint.y)
+      await page.mouse.down()
+      await page.mouse.move(midpoint.x, midpoint.y + 50, { steps: 5 })
+      await page.mouse.up()
 
-        await editor.expectEditor.not.toContain(lineToEdit)
-      })
+      await page.waitForTimeout(500)
+
+      await editor.expectEditor.not.toContain(lineToEdit)
     })
   })
 
@@ -249,20 +234,11 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
     cmdBar,
     editor,
     toolbar,
-    tronApp,
   }) => {
     const INITIAL_CODE = ''
     const pointHandles = page.locator('[data-handle="sketch-point-handle"]')
 
     await test.step('Set up the app with initial code and enable sketch solve mode', async () => {
-      if (tronApp) {
-        await tronApp.cleanProjectDir({
-          modeling: {
-            use_sketch_solve_mode: true,
-          },
-        })
-      }
-
       await context.addInitScript(
         async ({ code }) => {
           localStorage.setItem('persistCode', code)
@@ -445,20 +421,10 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
     context,
     homePage,
     scene,
-    cmdBar,
     editor,
     toolbar,
-    tronApp,
   }) => {
     await test.step('Set up the app and enter sketch solve mode', async () => {
-      if (tronApp) {
-        await tronApp.cleanProjectDir({
-          modeling: {
-            use_sketch_solve_mode: true,
-          },
-        })
-      }
-
       await context.addInitScript(() => {
         localStorage.setItem('persistCode', '')
       })
@@ -694,21 +660,12 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
     cmdBar,
     editor,
     toolbar,
-    tronApp,
   }) => {
     const INITIAL_CODE = ''
     const pointHandles = page.locator('[data-handle="sketch-point-handle"]')
     const getLineCount = (code: string) => (code.match(/line\(/g) ?? []).length
 
     await test.step('Set up the app with initial code and enable sketch solve mode', async () => {
-      if (tronApp) {
-        await tronApp.cleanProjectDir({
-          modeling: {
-            use_sketch_solve_mode: true,
-          },
-        })
-      }
-
       await context.addInitScript(
         async ({ code }) => {
           localStorage.setItem('persistCode', code)
@@ -2244,26 +2201,24 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
       ).not.toBeInViewport()
     })
 
-    await test.step('Delete extrude from feature tree', async () => {
+    await test.step('Remove extrude from feature tree', async () => {
       await toolbar.openFeatureTreePane()
       const extrudeOp = toolbar.featureTreePane
         .getByRole('button', { name: /^(Extrude|extrude001)$/ })
         .first()
       await expect(extrudeOp).toBeVisible()
-      await extrudeOp.click({ button: 'right' })
-      await page.getByRole('button', { name: 'Delete' }).click()
+      await toolbar.removeFeatureTreeOperation(extrudeOp)
       await scene.settled()
       await editor.expectEditor.not.toContain('extrude(')
     })
 
-    await test.step('Delete region from feature tree and expect original code', async () => {
+    await test.step('Remove region from feature tree and expect original code', async () => {
       await toolbar.openFeatureTreePane()
       const regionOp = toolbar.featureTreePane
         .getByRole('button', { name: /^(Region|region001)$/ })
         .first()
       await expect(regionOp).toBeVisible()
-      await regionOp.click({ button: 'right' })
-      await page.getByRole('button', { name: 'Delete' }).click()
+      await toolbar.removeFeatureTreeOperation(regionOp)
       await scene.settled()
       await editor.expectEditor.not.toContain('region(')
       await editor.expectEditor.toContain(square, { shouldNormalise: true })

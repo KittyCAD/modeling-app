@@ -1,6 +1,4 @@
 import type { CmdBarSerialised } from '@e2e/playwright/fixtures/cmdBarFixture'
-import { TEST_SETTINGS, TEST_SETTINGS_KEY } from '@e2e/playwright/storageStates'
-import { settingsToToml } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 
 /**
@@ -336,7 +334,6 @@ test.describe('Face API edge selection', { tag: '@web' }, () => {
     cmdBar,
     editor,
     toolbar,
-    tronApp,
     homePage,
   }) => {
     const code = `@settings(defaultLengthUnit = mm)
@@ -353,29 +350,12 @@ surface001 = extrude(
 )
 hide(sketch001)`
 
-    const settings = {
-      ...TEST_SETTINGS,
-      modeling: {
-        ...TEST_SETTINGS.modeling,
-        use_sketch_solve_mode: true,
-      },
-    }
-    if (tronApp) {
-      await tronApp.cleanProjectDir({
-        modeling: {
-          use_sketch_solve_mode: true,
-        },
-      })
-    }
     await context.addInitScript(
-      ({ initialCode, settingsKey, settingsToml }) => {
+      ({ initialCode }) => {
         localStorage.setItem('persistCode', initialCode)
-        localStorage.setItem(settingsKey, settingsToml)
       },
       {
         initialCode: code,
-        settingsKey: TEST_SETTINGS_KEY,
-        settingsToml: settingsToToml({ settings }),
       }
     )
     await page.setBodyDimensions({ width: 1200, height: 800 })
