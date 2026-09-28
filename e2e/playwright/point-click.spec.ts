@@ -761,10 +761,9 @@ region002 = region(point = [0mm, 0mm], sketch = sketch002)`
     await homePage.goToModelingScene()
     await scene.settled()
 
-    const loftDeclaration =
-      'loft001 = loft([region001, region002], bodyType = SURFACE)'
+    const loftDeclaration = 'loft001 = loft([region001, region002])'
     const editedLoftDeclaration =
-      'loft001 = loft([region001, region002], vDegree = 3, bodyType = SURFACE)'
+      'loft001 = loft([region001, region002], vDegree = 3)'
 
     async function selectSketches() {
       const multiCursorKey = process.platform === 'linux' ? 'Control' : 'Meta'
@@ -790,17 +789,8 @@ region002 = region(point = [0mm, 0mm], sketch = sketch002)`
       await selectSketches()
       await cmdBar.progressCmdBar()
       await cmdBar.expectState({
-        stage: 'arguments',
-        currentArgKey: 'bodyType',
-        currentArgValue: '',
-        headerArguments: { Profiles: '2 regions', BodyType: '' },
-        highlightedHeaderArg: 'bodyType',
-        commandName: 'Loft',
-      })
-      await cmdBar.progressCmdBar()
-      await cmdBar.expectState({
         stage: 'review',
-        headerArguments: { Profiles: '2 regions', BodyType: 'SURFACE' },
+        headerArguments: { Profiles: '2 regions' },
         reviewValidationError: undefined,
         commandName: 'Loft',
       })
@@ -823,9 +813,7 @@ region002 = region(point = [0mm, 0mm], sketch = sketch002)`
       await op.dblclick()
       await cmdBar.expectState({
         stage: 'review',
-        headerArguments: {
-          BodyType: 'SURFACE',
-        },
+        headerArguments: {},
         reviewValidationError: undefined,
         commandName: 'Loft',
       })
@@ -835,7 +823,6 @@ region002 = region(point = [0mm, 0mm], sketch = sketch002)`
         currentArgKey: 'vDegree',
         currentArgValue: '',
         headerArguments: {
-          BodyType: 'SURFACE',
           VDegree: '',
         },
         highlightedHeaderArg: 'vDegree',
@@ -846,7 +833,6 @@ region002 = region(point = [0mm, 0mm], sketch = sketch002)`
       await cmdBar.expectState({
         stage: 'review',
         headerArguments: {
-          BodyType: 'SURFACE',
           VDegree: '3',
         },
         commandName: 'Loft',
@@ -893,7 +879,6 @@ region001 = region(segments = [sketch001.circle1])`
     const sweepDeclaration = `sweep001 = sweep(
   region001,
   path = helix001,
-  bodyType = SURFACE,
   version = 2,
   translateProfileToPath = false,
   orientProfilePerpendicular = false,
@@ -902,12 +887,10 @@ region001 = region(segments = [sketch001.circle1])`
   region001,
   path = helix001,
   sectional = true,
-  bodyType = SURFACE,
   version = 2,
   translateProfileToPath = false,
   orientProfilePerpendicular = false,
 )`
-
     await context.addInitScript((initialCode) => {
       localStorage.setItem('persistCode', initialCode)
     }, initialCode)
@@ -937,7 +920,6 @@ region001 = region(segments = [sketch001.circle1])`
         headerArguments: {
           Profiles: '1 region',
           Path: '',
-          BodyType: '',
         },
         highlightedHeaderArg: 'path',
         stage: 'arguments',
@@ -951,7 +933,6 @@ region001 = region(segments = [sketch001.circle1])`
         headerArguments: {
           Profiles: '1 region',
           Path: '',
-          BodyType: '',
         },
         highlightedHeaderArg: 'path',
         stage: 'arguments',
@@ -959,32 +940,19 @@ region001 = region(segments = [sketch001.circle1])`
       await cmdBar.progressCmdBar()
       await cmdBar.expectState({
         commandName: 'Sweep',
-        currentArgKey: 'bodyType',
-        currentArgValue: '',
         headerArguments: {
           Profiles: '1 region',
           Path: '1 helix',
-          BodyType: '',
         },
-        highlightedHeaderArg: 'bodyType',
-        stage: 'arguments',
-      })
-      await cmdBar.progressCmdBar()
-      await cmdBar.expectState({
-        commandName: 'Sweep',
-        headerArguments: {
-          Profiles: '1 region',
-          Path: '1 helix',
-          BodyType: 'SURFACE',
-        },
+        reviewValidationError: undefined,
         stage: 'review',
       })
-      await cmdBar.progressCmdBar(true)
+      await scene.waitForExecutionDoneAfter(() => cmdBar.progressCmdBar(true))
+      await scene.settled()
       await editor.expectEditor.toContain(sweepDeclaration, {
         shouldNormalise: true,
       })
     })
-
     await test.step('Go through the edit flow via feature tree', async () => {
       await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
       const op = await toolbar.getFeatureTreeOperation('Sweep', 0)
@@ -992,12 +960,10 @@ region001 = region(segments = [sketch001.circle1])`
       await cmdBar.expectState({
         stage: 'review',
         headerArguments: {
-          BodyType: 'SURFACE',
           Version: '2',
           TranslateProfileToPath: 'false',
           OrientProfilePerpendicular: 'false',
         },
-        reviewValidationError: undefined,
         commandName: 'Sweep',
       })
       await cmdBar.clickOptionalArgument('sectional')
@@ -1006,7 +972,6 @@ region001 = region(segments = [sketch001.circle1])`
         currentArgKey: 'sectional',
         currentArgValue: '',
         headerArguments: {
-          BodyType: 'SURFACE',
           Version: '2',
           TranslateProfileToPath: 'false',
           OrientProfilePerpendicular: 'false',
@@ -1019,7 +984,6 @@ region001 = region(segments = [sketch001.circle1])`
       await cmdBar.expectState({
         stage: 'review',
         headerArguments: {
-          BodyType: 'SURFACE',
           Version: '2',
           TranslateProfileToPath: 'false',
           OrientProfilePerpendicular: 'false',
@@ -1027,7 +991,8 @@ region001 = region(segments = [sketch001.circle1])`
         },
         commandName: 'Sweep',
       })
-      await cmdBar.submit()
+      await scene.waitForExecutionDoneAfter(() => cmdBar.submit())
+      await scene.settled()
       await editor.expectEditor.toContain(editedSweepDeclaration, {
         shouldNormalise: true,
       })
@@ -1036,7 +1001,8 @@ region001 = region(segments = [sketch001.circle1])`
     await test.step('Delete sweep via feature tree selection', async () => {
       const sweep = await toolbar.getFeatureTreeOperation('Sweep', 0)
       await sweep.click()
-      await page.keyboard.press('Delete')
+      await scene.waitForExecutionDoneAfter(() => page.keyboard.press('Delete'))
+      await scene.settled()
       await editor.expectEditor.not.toContain(editedSweepDeclaration, {
         shouldNormalise: true,
       })
