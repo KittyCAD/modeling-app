@@ -39,11 +39,43 @@ pub fn parse_str(code: &str, module_id: ModuleId) -> ParseResult {
     parse_tokens(tokens)
 }
 
-/// Parse local imported KCL before comparing its declared version with the
-/// entry point. Defer V3 keyword validation so a version mismatch is reported first.
-pub(crate) fn parse_str_deferred_use_keyword(code: &str, module_id: ModuleId) -> ParseResult {
-    let tokens = pr_try!(crate::parsing::token::lex(code, module_id));
-    parse_tokens_with_use_policy(tokens, UseKeywordPolicy::Deferred)
+/// The source's role determines whether versioned syntax is available after parsing.
+pub(crate) enum SyntaxSource {
+    UserCode(crate::KclVersion),
+    BundledStdlib,
+}
+
+/// Parse syntax without deciding whether the `never` type is available.
+/// See :https://github.com/KittyCAD/modeling-app/issues/14158
+pub(crate) fn parse_str_syntax(code: &str, module_id: ModuleId) -> Result<(Node<Program>, Vec<SourceRange>), KclError> {
+    let tokens = crate::parsing::token::lex(code, module_id)?;
+    let (result, never_type_ranges) = parse_tokens_with_version_policy(tokens, VersionedSyntaxPolicy::Deferred);
+    Ok((result.parse_errs_as_err()?, never_type_ranges))
+}
+
+/// Validate parser-recorded `never` type uses for the source's role and KCL version.
+pub(crate) fn validate_never_type_ranges(ranges: &[SourceRange], source: SyntaxSource) -> Result<(), KclError> {
+    if let SyntaxSource::UserCode(version) = source
+        && version < crate::KclVersion::V3Preview
+        && let Some(range) = ranges.first().copied()
+    {
+        return Err(never_type_error(range, version));
+    }
+    Ok(())
+}
+
+fn never_type_issue(range: SourceRange, version: crate::KclVersion) -> CompilationIssue {
+    CompilationIssue::err(
+        range,
+        format!(
+            "The `never` type requires KCL 3.0-preview, but this program uses KCL {}.",
+            version.as_str()
+        ),
+    )
+}
+
+pub(crate) fn never_type_error(range: SourceRange, version: crate::KclVersion) -> KclError {
+    KclError::new_syntax(never_type_issue(range, version).into())
 }
 
 pub(crate) const RESERVED_USE_MESSAGE: &str =
@@ -122,17 +154,20 @@ fn reserved_import_modifier_issues(tokens: &TokenStream) -> Vec<CompilationIssue
 }
 
 #[derive(Clone, Copy)]
-enum UseKeywordPolicy {
+enum VersionedSyntaxPolicy {
     DeclaredVersion,
     Deferred,
 }
 
 /// Parse the supplied tokens into an AST.
 pub fn parse_tokens(tokens: TokenStream) -> ParseResult {
-    parse_tokens_with_use_policy(tokens, UseKeywordPolicy::DeclaredVersion)
+    parse_tokens_with_version_policy(tokens, VersionedSyntaxPolicy::DeclaredVersion).0
 }
 
-fn parse_tokens_with_use_policy(mut tokens: TokenStream, use_policy: UseKeywordPolicy) -> ParseResult {
+fn parse_tokens_with_version_policy(
+    mut tokens: TokenStream,
+    policy: VersionedSyntaxPolicy,
+) -> (ParseResult, Vec<SourceRange>) {
     let unknown_tokens = tokens.remove_unknown();
 
     if !unknown_tokens.is_empty() {
@@ -143,18 +178,21 @@ fn parse_tokens_with_use_policy(mut tokens: TokenStream, use_policy: UseKeywordP
         } else {
             format!("found unknown tokens [{}]", token_list.join(", "))
         };
-        return KclError::new_lexical(KclErrorDetails::new(message, source_ranges)).into();
+        return (
+            KclError::new_lexical(KclErrorDetails::new(message, source_ranges)).into(),
+            Vec::new(),
+        );
     }
 
     // Important, to not call this before the unknown tokens check.
     if tokens.is_empty() {
         // Empty file should just do nothing.
-        return Node::<Program>::default().into();
+        return (Node::<Program>::default().into(), Vec::new());
     }
 
     // Check all the tokens are whitespace.
     if tokens.iter().all(|t| t.token_type.is_whitespace()) {
-        return Node::<Program>::default().into();
+        return (Node::<Program>::default().into(), Vec::new());
     }
 
     let mut reserved_issues = reserved_import_modifier_issues(&tokens);
@@ -166,18 +204,30 @@ fn parse_tokens_with_use_policy(mut tokens: TokenStream, use_policy: UseKeywordP
             .map(|range| CompilationIssue::err(range, RESERVED_USE_MESSAGE)),
     );
     reserved_issues.sort_by_key(|issue| issue.source_range.start());
-    let mut result = parser::run_parser(tokens.as_slice());
-    if matches!(use_policy, UseKeywordPolicy::DeclaredVersion)
-        && let Ok((Some(program), issues)) = &mut result.0
-        && !reserved_issues.is_empty()
-        && matches!(
-            crate::execution::declared_kcl_version(program),
-            Ok(Some((version, _))) if version >= crate::KclVersion::V3Preview
-        )
-    {
-        issues.extend(reserved_issues);
+    let (mut result, never_type_ranges) = parser::run_parser_with_never_ranges(tokens.as_slice());
+    if let Ok((Some(program), issues)) = &mut result.0 {
+        let version = match policy {
+            VersionedSyntaxPolicy::DeclaredVersion => match crate::execution::declared_kcl_version(program) {
+                Ok(Some((version, _))) => Some(version),
+                Ok(None) => Some(crate::KclVersion::default()),
+                Err(_) => None,
+            },
+            VersionedSyntaxPolicy::Deferred => None,
+        };
+        if let Some(version) = version {
+            if version >= crate::KclVersion::V3Preview {
+                issues.extend(reserved_issues);
+            } else {
+                issues.extend(
+                    never_type_ranges
+                        .iter()
+                        .copied()
+                        .map(|range| never_type_issue(range, version)),
+                );
+            }
+        }
     }
-    result
+    (result, never_type_ranges)
 }
 
 /// Result of parsing.
@@ -300,6 +350,29 @@ pub fn deprecation(s: &str, kind: DeprecationKind) -> Option<&'static str> {
 mod tests {
     use super::*;
     use crate::parsing::token::LexerMode;
+
+    #[test]
+    fn syntax_validation_uses_source_role_and_effective_version() {
+        for mode in [LexerMode::Old, LexerMode::New] {
+            let _guard = LexerMode::override_for_test(mode);
+            let code = "fn stop(): never {}";
+            let (_, ranges) = parse_str_syntax(code, ModuleId::default()).unwrap();
+            let error = validate_never_type_ranges(&ranges, SyntaxSource::UserCode(crate::KclVersion::V2)).unwrap_err();
+            assert_eq!(
+                error.message(),
+                "The `never` type requires KCL 3.0-preview, but this program uses KCL 2.0."
+            );
+            let range = error.source_ranges()[0];
+            let start = code.find("never").unwrap();
+            assert_eq!((range.start(), range.end()), (start, start + "never".len()));
+
+            validate_never_type_ranges(&ranges, SyntaxSource::UserCode(crate::KclVersion::V3Preview)).unwrap();
+            validate_never_type_ranges(&ranges, SyntaxSource::BundledStdlib).unwrap();
+            let (_, identifier_ranges) =
+                parse_str_syntax("never = 1\nmessage = \"never\"", ModuleId::default()).unwrap();
+            validate_never_type_ranges(&identifier_ranges, SyntaxSource::UserCode(crate::KclVersion::V2)).unwrap();
+        }
+    }
 
     #[test]
     fn use_identifiers_remain_valid_before_v3() {

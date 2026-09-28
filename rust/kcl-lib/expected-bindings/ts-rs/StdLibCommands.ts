@@ -2091,10 +2091,10 @@ export default {
     "qualName": "std::fail",
     "moduleName": "std",
     "returnType": "never",
-    "addedIn": null,
+    "addedIn": "3.0",
     "deprecated": false,
     "deprecatedSince": null,
-    "experimental": true,
+    "experimental": false,
     "docHidden": false,
     "args": [
       {
