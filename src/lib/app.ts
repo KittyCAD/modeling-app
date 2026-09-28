@@ -480,6 +480,7 @@ export class App implements AppSubsystems {
     this.lastSettings = getAllCurrentSettings(
       getOnlySettingsFromContext(this.settings.actor.getSnapshot().context)
     )
+    this.unsubscribeFromSettings?.unsubscribe()
     this.unsubscribeFromSettings = this.settings.actor.subscribe(
       this.onSettingsUpdate
     )
