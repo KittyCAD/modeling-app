@@ -1055,12 +1055,16 @@ async fn inner_distance(
             DistanceEndpoint {
                 entity_id,
                 edge_reference: edge_reference.clone(),
-                entity_pos: AnnotationMbdLeaderPosition::Centroid {},
+                entity_pos: AnnotationMbdLeaderPosition::NormalizedPos {
+                    pos: KPoint2d { x: 0.0, y: 0.0 },
+                },
             },
             DistanceEndpoint {
                 entity_id,
                 edge_reference,
-                entity_pos: AnnotationMbdLeaderPosition::Centroid {},
+                entity_pos: AnnotationMbdLeaderPosition::NormalizedPos {
+                    pos: KPoint2d { x: 1.0, y: 0.0 },
+                },
             },
             &tolerance,
             precision,
