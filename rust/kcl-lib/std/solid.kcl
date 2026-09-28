@@ -18,7 +18,7 @@ import Axis3d, BoundedEdge, Edge, Face, Plane, Point3d, Solid, TaggedEdge, Tagge
 /// width = 20
 /// length = 10
 /// thickness = 1
-/// filletRadius = 2
+/// cornerFilletRadius = 4
 ///
 /// plateSketch = sketch(on = XY) {
 ///   line1 = line(start = [var -10mm, var -5mm], end = [var 10mm, var -5mm])
@@ -58,7 +58,7 @@ import Axis3d, BoundedEdge, Edge, Face, Plane, Point3d, Solid, TaggedEdge, Tagge
 ///       ]
 ///     }
 ///   ],
-///   radius = 4,
+///   radius = cornerFilletRadius,
 /// )
 /// ```
 ///
@@ -70,7 +70,8 @@ import Axis3d, BoundedEdge, Edge, Face, Plane, Point3d, Solid, TaggedEdge, Tagge
 /// width = 20
 /// length = 10
 /// thickness = 1
-/// filletRadius = 2
+/// cornerFilletRadius = 4
+/// topFilletRadius = 0.3
 ///
 /// plateSketch = sketch(on = XY) {
 ///   line1 = line(start = [var -10mm, var -5mm], end = [var 10mm, var -5mm])
@@ -110,7 +111,7 @@ import Axis3d, BoundedEdge, Edge, Face, Plane, Point3d, Solid, TaggedEdge, Tagge
 ///       ]
 ///     }
 ///   ],
-///   radius = 4,
+///   radius = cornerFilletRadius,
 /// )
 /// fillet002 = fillet(
 ///   plate,
@@ -118,7 +119,7 @@ import Axis3d, BoundedEdge, Edge, Face, Plane, Point3d, Solid, TaggedEdge, Tagge
 ///     plateRegion.tags.line1,
 ///     plate.faces.capEnd001
 ///   ]),
-///   radius = 0.3,
+///   radius = topFilletRadius,
 /// )
 /// ```
 ///
@@ -129,7 +130,8 @@ import Axis3d, BoundedEdge, Edge, Face, Plane, Point3d, Solid, TaggedEdge, Tagge
 /// width = 20
 /// length = 10
 /// thickness = 1
-/// filletRadius = 2
+/// cornerFilletRadius = 4
+/// topFilletRadius = 0.3
 ///
 /// plateSketch = sketch(on = XY) {
 ///   line1 = line(start = [var -10mm, var -5mm], end = [var 10mm, var -5mm])
@@ -169,7 +171,7 @@ import Axis3d, BoundedEdge, Edge, Face, Plane, Point3d, Solid, TaggedEdge, Tagge
 ///       ]
 ///     }
 ///   ],
-///   radius = 4,
+///   radius = cornerFilletRadius,
 /// )
 /// fillet002 = fillet(
 ///   plate,
@@ -177,7 +179,7 @@ import Axis3d, BoundedEdge, Edge, Face, Plane, Point3d, Solid, TaggedEdge, Tagge
 ///     plateRegion.tags.line1,
 ///     plate.faces.capEnd001
 ///   ]),
-///   radius = 0.3,
+///   radius = topFilletRadius,
 ///   tangentChain = false
 /// )
 /// ```

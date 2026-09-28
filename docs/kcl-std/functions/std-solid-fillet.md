@@ -52,7 +52,7 @@ will smoothly blend the transition.
 width = 20
 length = 10
 thickness = 1
-filletRadius = 2
+cornerFilletRadius = 4
 
 plateSketch = sketch(on = XY) {
   line1 = line(start = [var -10mm, var -5mm], end = [var 10mm, var -5mm])
@@ -92,7 +92,7 @@ fillet001 = fillet(
       ]
     }
   ],
-  radius = 4,
+  radius = cornerFilletRadius,
 )
 
 ```
@@ -119,7 +119,8 @@ fillet001 = fillet(
 width = 20
 length = 10
 thickness = 1
-filletRadius = 2
+cornerFilletRadius = 4
+topFilletRadius = 0.3
 
 plateSketch = sketch(on = XY) {
   line1 = line(start = [var -10mm, var -5mm], end = [var 10mm, var -5mm])
@@ -159,7 +160,7 @@ fillet001 = fillet(
       ]
     }
   ],
-  radius = 4,
+  radius = cornerFilletRadius,
 )
 fillet002 = fillet(
   plate,
@@ -167,7 +168,7 @@ fillet002 = fillet(
     plateRegion.tags.line1,
     plate.faces.capEnd001
   ]),
-  radius = 0.3,
+  radius = topFilletRadius,
 )
 
 ```
@@ -193,7 +194,8 @@ fillet002 = fillet(
 width = 20
 length = 10
 thickness = 1
-filletRadius = 2
+cornerFilletRadius = 4
+topFilletRadius = 0.3
 
 plateSketch = sketch(on = XY) {
   line1 = line(start = [var -10mm, var -5mm], end = [var 10mm, var -5mm])
@@ -233,7 +235,7 @@ fillet001 = fillet(
       ]
     }
   ],
-  radius = 4,
+  radius = cornerFilletRadius,
 )
 fillet002 = fillet(
   plate,
@@ -241,7 +243,7 @@ fillet002 = fillet(
     plateRegion.tags.line1,
     plate.faces.capEnd001
   ]),
-  radius = 0.3,
+  radius = topFilletRadius,
   tangentChain = false,
 )
 
