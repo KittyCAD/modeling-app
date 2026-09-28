@@ -224,11 +224,10 @@ description: Artifact commands panic_repro_cube.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "solid3d_get_next_adjacent_edge",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]",
-        "face_id": "[uuid]"
-      }
+        "type": "query_entity_type",
+        "entity_id": "[uuid]"
+      },
+      "omitFromGraph": true
     },
     {
       "cmdId": "[uuid]",
@@ -239,6 +238,34 @@ description: Artifact commands panic_repro_cube.kcl
         "edge_id": "[uuid]",
         "face_id": "[uuid]"
       }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "query_entity_type",
+        "entity_id": "[uuid]"
+      },
+      "omitFromGraph": true
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "solid3d_get_next_adjacent_edge",
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]",
+        "face_id": "[uuid]"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "query_entity_type",
+        "entity_id": "[uuid]"
+      },
+      "omitFromGraph": true
     }
   ]
 }

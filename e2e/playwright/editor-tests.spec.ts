@@ -1140,6 +1140,7 @@ sketch001 = startSketchOn(XZ)
         Length: '5',
       },
       commandName: 'Extrude',
+      reviewValidationError: undefined,
     })
     await cmdBar.progressCmdBar()
     await scene.settled()

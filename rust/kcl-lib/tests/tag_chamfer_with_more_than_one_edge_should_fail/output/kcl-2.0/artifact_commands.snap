@@ -202,6 +202,15 @@ description: Artifact commands tag_chamfer_with_more_than_one_edge_should_fail.k
         "edge_id": "[uuid]",
         "face_id": "[uuid]"
       }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "query_entity_type",
+        "entity_id": "[uuid]"
+      },
+      "omitFromGraph": true
     }
   ]
 }
