@@ -163,7 +163,6 @@ let localFs: IZooDesignStudioFS = opfs.impl
 let config: CloudSyncConfig = {
   enabled: false,
 }
-let configGeneration = 0
 let syncTimer: ReturnType<typeof setTimeout> | undefined
 let syncInProgress = false
 const syncIdleWaiters = new Set<() => void>()
@@ -3424,10 +3423,9 @@ async function syncRemoteIndex(
   }
 
   const indexConfig = config
-  const indexConfigGeneration = configGeneration
   const remoteProjects = await listRemoteProjects(indexConfig, async () => {
     await throttleProjectApiRequest()
-    if (configGeneration !== indexConfigGeneration) {
+    if (config !== indexConfig) {
       return Promise.reject(
         new Error('Cloud sync configuration changed during project refresh.')
       )
@@ -3501,7 +3499,7 @@ async function syncRemoteIndex(
         }
         return Promise.reject(error)
       })
-      if (configGeneration !== indexConfigGeneration) {
+      if (config !== indexConfig) {
         return
       }
       if (existing) {
@@ -3524,7 +3522,7 @@ async function syncRemoteIndex(
     }
   }
 
-  if (configGeneration !== indexConfigGeneration) {
+  if (config !== indexConfig) {
     return
   }
   if (failures.length === 0) {
@@ -3827,7 +3825,7 @@ async function runCloudSync() {
     return
   }
 
-  const syncConfigGeneration = configGeneration
+  const syncConfig = config
   syncInProgress = true
   pendingStatusSyncedAt = undefined
   updateStatus({ enabled: true })
@@ -3864,7 +3862,7 @@ async function runCloudSync() {
         }),
       })
       await syncRemoteIndex(throttleProjectApiRequest).catch((error) => {
-        if (configGeneration !== syncConfigGeneration) {
+        if (config !== syncConfig) {
           return
         }
         remoteIndexFailed = true
@@ -3878,7 +3876,7 @@ async function runCloudSync() {
         })
       })
 
-      if (configGeneration !== syncConfigGeneration) {
+      if (config !== syncConfig) {
         return
       }
       entries = await getAllOutboxEntries()
@@ -4562,14 +4560,6 @@ export function configureCloudSyncEngine(nextConfig: CloudSyncConfig) {
   const autoEnrollPolicyChanged =
     previousConfig.autoEnrollCloudLibraryProjects !==
     config.autoEnrollCloudLibraryProjects
-  if (
-    previousConfig.enabled !== config.enabled ||
-    cloudIdentityChanged ||
-    projectDirectoryChanged ||
-    autoEnrollPolicyChanged
-  ) {
-    configGeneration++
-  }
   if (
     cloudIdentityChanged ||
     projectDirectoryChanged ||

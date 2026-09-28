@@ -210,26 +210,4 @@ describe('remote inventory pagination and local data safety', () => {
     expect(cloudSyncRemoteProjects.value).toEqual([])
     expect(cloudSyncStatus.value.state).toBe('disabled')
   })
-
-  it('completes a refresh when the same configuration is applied during a page request', async () => {
-    let finishPage!: (response: Response) => void
-    const pendingPage = new Promise<Response>((resolve) => {
-      finishPage = resolve
-    })
-    fetchMock.mockImplementationOnce(async () => pendingPage)
-    startSync()
-    await vi.waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(1))
-    configureCloudSyncEngine({
-      enabled: true,
-      baseUrl,
-      token: '',
-      environmentName: 'dev.zoo.dev',
-      cloudProjectDirectoryPaths: [directory],
-      autoEnrollCloudLibraryProjects: false,
-    })
-    finishPage(jsonResponse({ items: [project], next_page: null }))
-    await waitForSync('idle')
-    expect(cloudSyncRemoteProjects.value).toEqual([project])
-    await expectLocalPreserved()
-  })
 })
