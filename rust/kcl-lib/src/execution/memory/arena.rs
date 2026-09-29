@@ -31,7 +31,7 @@
 //!
 //! Example:
 //!
-//! ```noRender
+//! ```no_run
 //! a = 10
 //!
 //! fn foo() {
