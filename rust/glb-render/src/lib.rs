@@ -81,7 +81,7 @@ fn render_image(gltf: gltf::Gltf, edges: &BrepRenderData, view: ViewProjection) 
     Ok(face_pass.image)
 }
 
-pub fn save(image: RgbaImage, name: &str) -> Result<(), String> {
+pub fn save(image: DynamicImage, name: &str) -> Result<(), String> {
     let name = format!("{name}.png");
     image
         .save_with_format(&name, ImageFormat::Png)
@@ -99,8 +99,8 @@ pub fn cpu_render_from_disk(args: Vec<OsString>) -> Result<(), String> {
 
     let render_started = Instant::now();
     let view = ViewProjection::from_model(&gltf, &edges, image_size.x, image_size.y)?;
-    save(render_edges(&edges, view), "edges")?;
-    save(render_image(gltf, &edges, view)?, "faces")?;
+    save(render_edges(&edges, view).into(), "edges")?;
+    save(render_image(gltf, &edges, view)?.into(), "faces")?;
 
     let render_time = render_started.elapsed();
 
