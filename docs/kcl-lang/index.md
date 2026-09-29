@@ -18,6 +18,7 @@ things in a more tutorial fashion. See also our documentation of the [standard l
 * [Arrays and ranges](/docs/kcl-lang/arrays)
 * [Enums](/docs/kcl-lang/enums)
 * [Sketch on Face](/docs/kcl-lang/sketch-on-face)
+* [Edge references](/docs/kcl-lang/edge-references)
 * [Projects and modules](/docs/kcl-lang/modules)
 * [Attributes](/docs/kcl-lang/attributes)
 * [Python-to-KCL Cheat Sheet](/docs/kcl-lang/python-cheat-sheet)

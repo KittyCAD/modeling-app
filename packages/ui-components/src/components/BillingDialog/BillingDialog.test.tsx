@@ -20,10 +20,11 @@ const userPaymentBalance = {
   stable_api_credits_remaining: 0,
   stable_api_credits_remaining_monetary_value: 0,
   total_due: 14.75,
+  amount_due_after_credits: 14.75,
   updated_at: '2026-01-02T21:57:20.048Z',
 } satisfies CustomerBalance
 
-test('Shows account billing action when total due is positive', () => {
+test('Shows account billing action when the amount due after credits is positive', () => {
   const billingClick = vi.fn()
   const { queryByTestId } = render(
     <BillingDialog
@@ -48,7 +49,7 @@ test('Shows account billing action when total due is positive', () => {
   expect(billingClick).toHaveBeenCalledOnce()
 })
 
-test('Shows total due with two decimal places', () => {
+test('Shows the amount due after credits with two decimal places', () => {
   const { queryByText } = render(
     <BillingDialog
       upgradeHref="https://zoo.dev/design-studio-pricing"
@@ -57,16 +58,16 @@ test('Shows total due with two decimal places', () => {
       allowance={20}
       userPaymentBalance={{
         ...userPaymentBalance,
-        total_due: 22.6,
+        amount_due_after_credits: 2.6,
       }}
     />
   )
 
-  expect(queryByText('$22.60')).toBeVisible()
-  expect(queryByText('$22.6')).toBeNull()
+  expect(queryByText('$2.60')).toBeVisible()
+  expect(queryByText('$14.75')).toBeNull()
 })
 
-test('Shows upgrade action when total due is zero', () => {
+test('Shows upgrade action when credits cover the recorded charges', () => {
   const { queryByTestId } = render(
     <BillingDialog
       upgradeHref="https://zoo.dev/design-studio-pricing"
@@ -75,7 +76,7 @@ test('Shows upgrade action when total due is zero', () => {
       allowance={20}
       userPaymentBalance={{
         ...userPaymentBalance,
-        total_due: 0,
+        amount_due_after_credits: 0,
       }}
     />
   )
@@ -91,7 +92,7 @@ const refreshProps = {
   allowance: 20,
   userPaymentBalance: {
     ...userPaymentBalance,
-    total_due: 0,
+    amount_due_after_credits: 0,
     monthly_api_credits_refresh_at: '2026-09-22T12:02:00Z',
   },
 }

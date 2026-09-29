@@ -376,6 +376,7 @@ describe('toolbar state helpers', () => {
     const sketchItem = findModelingToolbarItem('sketch')
     const modelingState = {
       context: {
+        kclManager: { artifactGraph: new Map() },
         selectionRanges: {
           graphSelections: [],
           otherSelections: [],
@@ -404,6 +405,7 @@ describe('toolbar state helpers', () => {
     })
     const modelingState = {
       context: {
+        kclManager: { artifactGraph: new Map() },
         selectionRanges: {
           graphSelections: [],
           otherSelections: [],
@@ -427,15 +429,27 @@ describe('toolbar state helpers', () => {
   test('still edits sketch blocks without the legacy sketch mode flag', () => {
     const modelingSend = vi.fn()
     const sketchItem = findModelingToolbarItem('sketch')
+    const sketchBlock = {
+      type: 'sketchBlock' as const,
+      id: 'sketch-block-1',
+      codeRef: {
+        range: [0, 0, 0] as [number, number, number],
+        pathToNode: [['body', 'Program']] as [string, string][],
+        nodePath: { steps: [] },
+      },
+      planeId: 'plane-1',
+      sketchId: 1,
+    }
     const modelingState = {
       context: {
+        kclManager: {
+          artifactGraph: new Map([[sketchBlock.id, sketchBlock]]),
+        },
         selectionRanges: {
           graphSelections: [
             {
-              artifact: {
-                type: 'sketchBlock',
-                sketchId: 1,
-              },
+              artifact: sketchBlock,
+              codeRef: sketchBlock.codeRef,
             },
           ],
           otherSelections: [],

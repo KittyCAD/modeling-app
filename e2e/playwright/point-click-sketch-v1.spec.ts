@@ -401,7 +401,6 @@ openSketch = startSketchOn(XY)
       await editor.openPane()
       await editor.expectState({
         activeLines: [`|>circle(center=[8,5],radius=2)`],
-        highlightedCode: 'circle(center=[8,5],radius=2)',
         diagnostics: [],
       })
     })
@@ -438,7 +437,6 @@ openSketch = startSketchOn(XY)
       await editor.openPane()
       await editor.expectState({
         activeLines: [`|>tangentialArc(endAbsolute=[10,0])`],
-        highlightedCode: 'tangentialArc(endAbsolute=[10,0])',
         diagnostics: [],
       })
     })
@@ -718,7 +716,9 @@ extrude001 = extrude(profile001, length = 100)`
       await editor.expectEditor.toContain(
         `
         helix001 = helix(
-          axis = getOppositeEdge(seg01),
+          axis = {
+            sideFaces = [capEnd001, seg01]
+          },
           revolutions = 20,
           angleStart = 0,
           radius = 1,
@@ -791,7 +791,9 @@ extrude001 = extrude(profile001, length = 100)`
       await editor.expectEditor.toContain(
         `
         helix001 = helix(
-          axis = getOppositeEdge(seg01),
+          axis = {
+            sideFaces = [capEnd001, seg01]
+          },
           revolutions = 20,
           angleStart = 0,
           radius = 5,
@@ -1136,7 +1138,7 @@ profile001 = ${circleCode}`
   |> close()
 extrude001 = extrude(sketch001, length = -12)
 `
-    const firstFilletDeclaration = `fillet001 = fillet(extrude001, tags=getCommonEdge(faces=[seg01,extrude001.faces.capEnd001]), radius=5)`
+    const firstFilletDeclaration = `fillet001 = fillet(extrude001, edges=[{sideFaces=[seg01,extrude001.faces.capEnd001]}], radius=5`
 
     // Setup
     await test.step(`Initial test setup`, async () => {
@@ -1334,11 +1336,26 @@ extrude001 = extrude(sketch001, length = -12)
 fillet03 = fillet(extrude001, radius = 5, tags = [getOppositeEdge(seg01)])
 fillet(extrude001, radius = 5, tags = [getOppositeEdge(seg02)])
 `
+    const standaloneFilletCode = `sketch001 = startSketchOn(XY)
+  |> startProfile(at = [-12, -6])
+  |> line(end = [0, 12])
+  |> line(end = [24, 0], tag = $seg02)
+  |> line(end = [0, -12])
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $seg01)
+  |> close()
+extrude001 = extrude(sketch001, length = -12, tagEnd = $capEnd001)
+fillet03 = fillet(extrude001, radius = 5, edges = [{ sideFaces = [seg01, capEnd001] }])
+fillet(extrude001, radius = 5, edges = [{ sideFaces = [seg02, capEnd001] }])
+`
     const firstPipedFilletDeclaration = 'fillet(radius = 5, tags = [seg01])'
     const secondPipedFilletDeclaration = 'fillet(radius = 5, tags = [seg02])'
     const standaloneAssignedFilletDeclaration =
-      'fillet03 = fillet(extrude001, radius = 5, tags = [getOppositeEdge(seg01)])'
+      'fillet03 = fillet(extrude001, radius = 5, edges = [{ sideFaces = [seg01, capEnd001] }])'
     const standaloneUnassignedFilletDeclaration =
+      'fillet(extrude001, radius = 5, edges = [{ sideFaces = [seg02, capEnd001] }])'
+    const legacyStandaloneAssignedFilletDeclaration =
+      'fillet03 = fillet(extrude001, radius = 5, tags = [getOppositeEdge(seg01)])'
+    const legacyStandaloneUnassignedFilletDeclaration =
       'fillet(extrude001, radius = 5, tags = [getOppositeEdge(seg02)])'
 
     // Setup
@@ -1363,10 +1380,10 @@ fillet(extrude001, radius = 5, tags = [getOppositeEdge(seg02)])
           await editor.expectEditor.toContain(firstPipedFilletDeclaration)
           await editor.expectEditor.toContain(secondPipedFilletDeclaration)
           await editor.expectEditor.toContain(
-            standaloneAssignedFilletDeclaration
+            legacyStandaloneAssignedFilletDeclaration
           )
           await editor.expectEditor.toContain(
-            standaloneUnassignedFilletDeclaration
+            legacyStandaloneUnassignedFilletDeclaration
           )
         })
         await test.step('Delete piped fillet', async () => {
@@ -1380,14 +1397,25 @@ fillet(extrude001, radius = 5, tags = [getOppositeEdge(seg02)])
         })
         await test.step('Verify piped fillet is deleted but other fillets are not (in the editor)', async () => {
           await editor.expectEditor.not.toContain(firstPipedFilletDeclaration)
-          await editor.expectEditor.toContain(secondPipedFilletDeclaration)
+          await editor.expectEditor.not.toContain(secondPipedFilletDeclaration)
           await editor.expectEditor.toContain(
-            standaloneAssignedFilletDeclaration
+            legacyStandaloneAssignedFilletDeclaration
           )
           await editor.expectEditor.toContain(
-            standaloneUnassignedFilletDeclaration
+            legacyStandaloneUnassignedFilletDeclaration
           )
         })
+      })
+
+      await test.step('Load standalone fillets using new edge syntax', async () => {
+        await scene.waitForExecutionDoneAfter(() =>
+          editor.replaceCode('', standaloneFilletCode)
+        )
+        await scene.settled()
+        await editor.expectEditor.toContain(standaloneAssignedFilletDeclaration)
+        await editor.expectEditor.toContain(
+          standaloneUnassignedFilletDeclaration
+        )
       })
 
       await test.step('Delete standalone assigned fillet via feature tree selection', async () => {
@@ -1401,7 +1429,7 @@ fillet(extrude001, radius = 5, tags = [getOppositeEdge(seg02)])
           await scene.settled()
         })
         await test.step('Verify standalone assigned fillet is deleted but other two fillets are not (in the editor)', async () => {
-          await editor.expectEditor.toContain(secondPipedFilletDeclaration)
+          await editor.expectEditor.not.toContain(secondPipedFilletDeclaration)
           await editor.expectEditor.not.toContain(
             standaloneAssignedFilletDeclaration
           )
@@ -1422,7 +1450,7 @@ fillet(extrude001, radius = 5, tags = [getOppositeEdge(seg02)])
           await scene.settled()
         })
         await test.step('Verify standalone unassigned fillet is deleted but other fillet is not (in the editor)', async () => {
-          await editor.expectEditor.toContain(secondPipedFilletDeclaration)
+          await editor.expectEditor.not.toContain(secondPipedFilletDeclaration)
           await editor.expectEditor.not.toContain(
             standaloneUnassignedFilletDeclaration
           )

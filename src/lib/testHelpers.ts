@@ -1,6 +1,7 @@
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 
 import type { KclManager } from '@src/lang/KclManager'
+import { artifactToEntityRef } from '@src/lang/queryAst'
 import { getCodeRefsByArtifactId } from '@src/lang/std/artifactGraph'
 import {
   type Artifact,
@@ -15,7 +16,7 @@ import type RustContext from '@src/lib/rustContext'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import { err } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
+import type { Selections } from '@src/machines/modelingSharedTypes'
 import { expect } from 'vitest'
 
 export const clonedRegionBody = `@settings(kclVersion = 2.0)
@@ -56,6 +57,28 @@ export function getClonedSweepEdges(artifactGraph: ArtifactGraph) {
       (artifact): artifact is Extract<Artifact, { type: 'sweepEdge' }> =>
         artifact?.type === 'sweepEdge'
     )
+}
+
+export function getClonedSweepCapAndSecondWall(artifactGraph: ArtifactGraph) {
+  const clonedSweep = [...artifactGraph.values()].find(
+    (artifact): artifact is Extract<Artifact, { type: 'sweep' }> =>
+      artifact.type === 'sweep' && artifact.sourceSweepId !== undefined
+  )
+  if (!clonedSweep) return null
+
+  const faces = clonedSweep.surfaceIds
+    .map((surfaceId) => artifactGraph.get(surfaceId))
+    .filter((artifact): artifact is Artifact => artifact !== undefined)
+  const endCap = faces.find(
+    (artifact): artifact is Extract<Artifact, { type: 'cap' }> =>
+      artifact.type === 'cap' && artifact.subType === 'end'
+  )
+  const walls = faces.filter(
+    (artifact): artifact is Extract<Artifact, { type: 'wall' }> =>
+      artifact.type === 'wall'
+  )
+
+  return endCap && walls ? { clonedSweep, endCap, walls } : null
 }
 
 export async function enginelessExecutor(
@@ -123,7 +146,8 @@ export async function getAstAndSketchSelections(
   }
 
   const sketches = createSelectionFromPathArtifact(
-    artifacts.slice(count ? -count : undefined)
+    artifacts.slice(count ? -count : undefined),
+    artifactGraph
   )
   return { artifactGraph, ast, sketches }
 }
@@ -134,14 +158,19 @@ export function createSelectionFromArtifacts(
 ): Selections {
   const graphSelections = artifacts.flatMap((artifact) => {
     const codeRefs = getCodeRefsByArtifactId(artifact.id, artifactGraph)
-    if (!codeRefs || codeRefs.length === 0) {
-      return []
-    }
-
-    return {
-      codeRef: codeRefs[0],
-      artifact,
-    }
+    const codeRef =
+      codeRefs?.[0] ?? ('codeRef' in artifact ? artifact.codeRef : undefined)
+    return [
+      {
+        artifact,
+        entityRef: artifactToEntityRef(
+          artifact.type,
+          artifact.id,
+          artifact.type === 'segment' ? artifact.pathId : undefined
+        ),
+        codeRef,
+      },
+    ]
   })
   return {
     graphSelections,
@@ -150,12 +179,23 @@ export function createSelectionFromArtifacts(
 }
 
 export function createSelectionFromPathArtifact(
-  artifacts: (Artifact & { codeRef: CodeRef })[]
+  artifacts: (Artifact & { codeRef: CodeRef })[],
+  artifactGraph: ArtifactGraph
 ): Selections {
-  const graphSelections = artifacts.map((artifact) => ({
-    codeRef: artifact.codeRef,
-    artifact,
-  }))
+  const graphSelections = artifacts.map((artifact) => {
+    let id: string | undefined
+    for (const [k, a] of artifactGraph) {
+      if (a === artifact) {
+        id = k
+        break
+      }
+    }
+    return {
+      entityRef:
+        id != null ? artifactToEntityRef(artifact.type, id) : undefined,
+      codeRef: artifact.codeRef,
+    }
+  })
   return {
     graphSelections,
     otherSelections: [],

@@ -245,8 +245,7 @@ async fn inner_fillet(
             EdgeReference::Uuid(_) => String::new(),
         };
         for edge_id in ids {
-            if crate::runtime_flags::z0006_refactor_metadata_enabled()
-                && let Ok(face_ids) = super::edge::get_face_ids_for_edge(exec_state, solid.id, edge_id, &args).await
+            if let Ok(face_ids) = super::edge::get_face_ids_for_edge(exec_state, solid.id, edge_id, &args).await
                 && let [a, b] = face_ids.as_slice()
             {
                 if !tag_identifier.is_empty() {
