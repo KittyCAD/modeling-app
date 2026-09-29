@@ -1,4 +1,3 @@
-import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { KclManager } from '@src/lang/KclManager'
 import { mockExecAstAndReportErrors } from '@src/lang/modelingWorkflows'
 import { createPathToNodeForLastVariable } from '@src/lang/modifyAst'
@@ -7,7 +6,6 @@ import {
   addLoft,
   addRevolve,
   addSweep,
-  getAxisExpression,
   retrieveAxisOrEdgeSelectionsFromOpArg,
   retrieveBodyTypeFromOpArg,
 } from '@src/lang/modifyAst/sweeps'
@@ -17,7 +15,6 @@ import {
 } from '@src/lang/queryAst'
 import {
   type ArtifactGraph,
-  type Name,
   assertParse,
   getAllOperations,
   recast,
@@ -2675,66 +2672,6 @@ revolve001 = revolve(profile001, angle = 10, axis = X)`
   axis = Y,
   bidirectionalAngle = 30,
 )`)
-    })
-  })
-
-  describe('Testing getAxisExpression', () => {
-    it.each(['X', 'Y', 'Z'])(
-      'should return axis expression for default axis %s',
-      async (axis) => {
-        const { instance } = await buildTheWorldAndNoEngineConnection()
-        const ast = assertParse('', instance)
-        const result = getAxisExpression(
-          axis,
-          undefined,
-          ast,
-          instanceInThisFile
-        )
-        if (err(result)) throw result
-        expect(result.generatedAxis.type).toEqual('Name')
-        expect((result.generatedAxis as Node<Name>).name.name).toEqual(axis)
-      }
-    )
-
-    it('should return a generated axis pointing to the selected segment', async () => {
-      const { ast, artifactGraph } = await getAstAndArtifactGraph(
-        `sketch001 = startSketchOn(XY)
-profile001 = startProfile(sketch001, at = [0, 0])
-  |> xLine(length = 1)`,
-        instanceInThisFile,
-        kclManagerInThisFile
-      )
-      const edgeArtifact = [...artifactGraph.values()].find(
-        (a) => a.type === 'segment'
-      )
-      const edge: Selections = createSelectionFromPathArtifact(
-        [edgeArtifact!],
-        artifactGraph
-      )
-      const result = getAxisExpression(
-        undefined,
-        edge,
-        ast,
-        instanceInThisFile,
-        artifactGraph
-      )
-      if (err(result)) throw result
-      expect(result.generatedAxis.type).toEqual('Name')
-      expect((result.generatedAxis as Node<Name>).name.name).toEqual('seg01')
-      expect(recast(result.modifiedAst, instanceInThisFile)).toContain(
-        `xLine(length = 1, tag = $seg01)`
-      )
-    })
-
-    it('should error if nothing is provided', async () => {
-      const { instance } = await buildTheWorldAndNoEngineConnection()
-      const result = getAxisExpression(
-        undefined,
-        undefined,
-        assertParse('', instance),
-        instanceInThisFile
-      )
-      expect(result).toBeInstanceOf(Error)
     })
   })
 
