@@ -66,7 +66,7 @@ pub async fn revolve(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
     let tag_end = args.get_kw_arg_opt("tagEnd", &RuntimeType::tag_decl(), exec_state)?;
     let symmetric = args.get_kw_arg_opt("symmetric", &RuntimeType::bool(), exec_state)?;
     let bidirectional_angle: Option<TyF64> =
-        args.get_kw_arg_opt("bidirectionalAngle", &RuntimeType::angle(), exec_state)?;
+        args.get_kw_arg_opt("bidirectionalAngle", &RuntimeType::degrees(), exec_state)?;
     let body_type: BodyType = args
         .get_kw_arg_opt("bodyType", &RuntimeType::string(), exec_state)?
         .unwrap_or_default();
@@ -490,5 +490,71 @@ body = revolve(profile, axis = Y, angle = 90deg)
         ctx.close().await;
 
         outcome.unwrap();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn revolve_converts_bidirectional_angle_to_degrees() {
+        // https://github.com/KittyCAD/modeling-app/issues/14209
+        // Like `angle`, `bidirectionalAngle` must reach the engine in degrees,
+        // whatever unit it was written in.
+        for (bidirectional_angle, expected_degrees) in [
+            ("2rad", 2.0_f64.to_degrees()),
+            ("30deg", 30.0),
+            ("30", 30.0),
+            ("0.5rad", 0.5_f64.to_degrees()),
+        ] {
+            let code = format!(
+                r#"
+profile = startSketchOn(XZ)
+  |> startProfile(at = [10, 0])
+  |> line(end = [0, 10])
+  |> line(end = [-10, 0])
+  |> close()
+
+body = revolve(profile, axis = Y, angle = 90deg, bidirectionalAngle = {bidirectional_angle})
+"#
+            );
+            let result = crate::execution::parse_execute(&code).await.unwrap();
+            let opposite = result
+                .root_module_artifact_commands()
+                .iter()
+                .find_map(|artifact_command| match &artifact_command.command {
+                    ModelingCmd::Revolve(command) => Some(command.opposite.clone()),
+                    _ => None,
+                })
+                .expect("expected revolve() to send a Revolve command");
+
+            let Opposite::Other(actual) = opposite else {
+                panic!("bidirectionalAngle = {bidirectional_angle}: expected an opposite angle, got {opposite:?}");
+            };
+            assert!(
+                (actual.to_degrees() - expected_degrees).abs() < 1e-9,
+                "bidirectionalAngle = {bidirectional_angle}: expected {expected_degrees} deg, got {} deg",
+                actual.to_degrees()
+            );
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn revolve_checks_bidirectional_angle_range_in_degrees() {
+        // 7rad is about 401 degrees, which is out of range. Before the fix it
+        // was read as 7 degrees and accepted.
+        let code = r#"
+profile = startSketchOn(XZ)
+  |> startProfile(at = [10, 0])
+  |> line(end = [0, 10])
+  |> line(end = [-10, 0])
+  |> close()
+
+body = revolve(profile, axis = Y, angle = 90deg, bidirectionalAngle = 7rad)
+"#;
+        let Err(err) = crate::execution::parse_execute(code).await else {
+            panic!("expected bidirectionalAngle = 7rad to be rejected as out of range");
+        };
+        assert!(
+            err.message()
+                .contains("Expected bidirectional angle to be between -360 and 360"),
+            "{err:?}"
+        );
     }
 }
