@@ -71,18 +71,6 @@ description: Variables in memory after executing hex_fillet.kcl
     "type": "TagIdentifier",
     "value": "circle3"
   },
-  "edge001": {
-    "type": "Uuid",
-    "value": "[uuid]"
-  },
-  "edge002": {
-    "type": "Uuid",
-    "value": "[uuid]"
-  },
-  "edge003": {
-    "type": "Uuid",
-    "value": "[uuid]"
-  },
   "extrude001": {
     "type": "Solid",
     "value": {
@@ -97,10 +85,10 @@ description: Variables in memory after executing hex_fillet.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 71,
-            "end": 76,
+            "commentStart": 82,
+            "end": 87,
             "moduleId": 0,
-            "start": 71,
+            "start": 82,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -111,10 +99,10 @@ description: Variables in memory after executing hex_fillet.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 154,
-            "end": 158,
+            "commentStart": 165,
+            "end": 169,
             "moduleId": 0,
-            "start": 154,
+            "start": 165,
             "type": "TagDeclarator",
             "value": "arc1"
           },
@@ -125,10 +113,10 @@ description: Variables in memory after executing hex_fillet.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 371,
-            "end": 376,
+            "commentStart": 382,
+            "end": 387,
             "moduleId": 0,
-            "start": 371,
+            "start": 382,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -139,10 +127,10 @@ description: Variables in memory after executing hex_fillet.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 491,
-            "end": 495,
+            "commentStart": 502,
+            "end": 506,
             "moduleId": 0,
-            "start": 491,
+            "start": 502,
             "type": "TagDeclarator",
             "value": "arc2"
           },
@@ -153,10 +141,10 @@ description: Variables in memory after executing hex_fillet.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 706,
-            "end": 711,
+            "commentStart": 717,
+            "end": 722,
             "moduleId": 0,
-            "start": 706,
+            "start": 717,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -167,10 +155,10 @@ description: Variables in memory after executing hex_fillet.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 827,
-            "end": 831,
+            "commentStart": 838,
+            "end": 842,
             "moduleId": 0,
-            "start": 827,
+            "start": 838,
             "type": "TagDeclarator",
             "value": "arc3"
           },
@@ -181,10 +169,10 @@ description: Variables in memory after executing hex_fillet.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1043,
-            "end": 1048,
+            "commentStart": 1054,
+            "end": 1059,
             "moduleId": 0,
-            "start": 1043,
+            "start": 1054,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -195,10 +183,10 @@ description: Variables in memory after executing hex_fillet.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1164,
-            "end": 1168,
+            "commentStart": 1175,
+            "end": 1179,
             "moduleId": 0,
-            "start": 1164,
+            "start": 1175,
             "type": "TagDeclarator",
             "value": "arc4"
           },
@@ -209,10 +197,10 @@ description: Variables in memory after executing hex_fillet.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1620,
-            "end": 1627,
+            "commentStart": 1631,
+            "end": 1638,
             "moduleId": 0,
-            "start": 1620,
+            "start": 1631,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -223,10 +211,10 @@ description: Variables in memory after executing hex_fillet.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1712,
-            "end": 1719,
+            "commentStart": 1723,
+            "end": 1730,
             "moduleId": 0,
-            "start": 1712,
+            "start": 1723,
             "type": "TagDeclarator",
             "value": "circle2"
           },
@@ -237,10 +225,10 @@ description: Variables in memory after executing hex_fillet.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1837,
-            "end": 1844,
+            "commentStart": 1848,
+            "end": 1855,
             "moduleId": 0,
-            "start": 1837,
+            "start": 1848,
             "type": "TagDeclarator",
             "value": "circle3"
           },
@@ -251,10 +239,10 @@ description: Variables in memory after executing hex_fillet.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2142,
-            "end": 2154,
+            "commentStart": 2153,
+            "end": 2165,
             "moduleId": 0,
-            "start": 2142,
+            "start": 2153,
             "type": "TagDeclarator",
             "value": "capStart001"
           },
@@ -265,10 +253,10 @@ description: Variables in memory after executing hex_fillet.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2117,
-            "end": 2127,
+            "commentStart": 2128,
+            "end": 2138,
             "moduleId": 0,
-            "start": 2117,
+            "start": 2128,
             "type": "TagDeclarator",
             "value": "capEnd001"
           },
@@ -300,10 +288,10 @@ description: Variables in memory after executing hex_fillet.kcl
               1.6593171489068888
             ],
             "tag": {
-              "commentStart": 71,
-              "end": 76,
+              "commentStart": 82,
+              "end": 87,
               "moduleId": 0,
-              "start": 71,
+              "start": 82,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -330,10 +318,10 @@ description: Variables in memory after executing hex_fillet.kcl
             ],
             "radius": 1.4601890993789832,
             "tag": {
-              "commentStart": 154,
-              "end": 158,
+              "commentStart": 165,
+              "end": 169,
               "moduleId": 0,
-              "start": 154,
+              "start": 165,
               "type": "TagDeclarator",
               "value": "arc1"
             },
@@ -354,10 +342,10 @@ description: Variables in memory after executing hex_fillet.kcl
               2.491142512175489
             ],
             "tag": {
-              "commentStart": 371,
-              "end": 376,
+              "commentStart": 382,
+              "end": 387,
               "moduleId": 0,
-              "start": 371,
+              "start": 382,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -384,10 +372,10 @@ description: Variables in memory after executing hex_fillet.kcl
             ],
             "radius": 2.3835627974334934,
             "tag": {
-              "commentStart": 491,
-              "end": 495,
+              "commentStart": 502,
+              "end": 506,
               "moduleId": 0,
-              "start": 491,
+              "start": 502,
               "type": "TagDeclarator",
               "value": "arc2"
             },
@@ -408,10 +396,10 @@ description: Variables in memory after executing hex_fillet.kcl
               -2.9788872040368455
             ],
             "tag": {
-              "commentStart": 706,
-              "end": 711,
+              "commentStart": 717,
+              "end": 722,
               "moduleId": 0,
-              "start": 706,
+              "start": 717,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -438,10 +426,10 @@ description: Variables in memory after executing hex_fillet.kcl
             ],
             "radius": 2.877294619476584,
             "tag": {
-              "commentStart": 827,
-              "end": 831,
+              "commentStart": 838,
+              "end": 842,
               "moduleId": 0,
-              "start": 827,
+              "start": 838,
               "type": "TagDeclarator",
               "value": "arc3"
             },
@@ -462,10 +450,10 @@ description: Variables in memory after executing hex_fillet.kcl
               -4.3228878246913265
             ],
             "tag": {
-              "commentStart": 1043,
-              "end": 1048,
+              "commentStart": 1054,
+              "end": 1059,
               "moduleId": 0,
-              "start": 1043,
+              "start": 1054,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -492,10 +480,10 @@ description: Variables in memory after executing hex_fillet.kcl
             ],
             "radius": 3.162182113239889,
             "tag": {
-              "commentStart": 1164,
-              "end": 1168,
+              "commentStart": 1175,
+              "end": 1179,
               "moduleId": 0,
-              "start": 1164,
+              "start": 1175,
               "type": "TagDeclarator",
               "value": "arc4"
             },
@@ -522,10 +510,10 @@ description: Variables in memory after executing hex_fillet.kcl
             ],
             "radius": 0.8374365647617735,
             "tag": {
-              "commentStart": 1620,
-              "end": 1627,
+              "commentStart": 1631,
+              "end": 1638,
               "moduleId": 0,
-              "start": 1620,
+              "start": 1631,
               "type": "TagDeclarator",
               "value": "circle1"
             },
@@ -552,10 +540,10 @@ description: Variables in memory after executing hex_fillet.kcl
             ],
             "radius": 0.8969392398596462,
             "tag": {
-              "commentStart": 1712,
-              "end": 1719,
+              "commentStart": 1723,
+              "end": 1730,
               "moduleId": 0,
-              "start": 1712,
+              "start": 1723,
               "type": "TagDeclarator",
               "value": "circle2"
             },
@@ -582,10 +570,10 @@ description: Variables in memory after executing hex_fillet.kcl
             ],
             "radius": 0.5630275304103698,
             "tag": {
-              "commentStart": 1837,
-              "end": 1844,
+              "commentStart": 1848,
+              "end": 1855,
               "moduleId": 0,
-              "start": 1837,
+              "start": 1848,
               "type": "TagDeclarator",
               "value": "circle3"
             },
@@ -723,10 +711,10 @@ description: Variables in memory after executing hex_fillet.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 71,
-            "end": 76,
+            "commentStart": 82,
+            "end": 87,
             "moduleId": 0,
-            "start": 71,
+            "start": 82,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -737,10 +725,10 @@ description: Variables in memory after executing hex_fillet.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 154,
-            "end": 158,
+            "commentStart": 165,
+            "end": 169,
             "moduleId": 0,
-            "start": 154,
+            "start": 165,
             "type": "TagDeclarator",
             "value": "arc1"
           },
@@ -751,10 +739,10 @@ description: Variables in memory after executing hex_fillet.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 371,
-            "end": 376,
+            "commentStart": 382,
+            "end": 387,
             "moduleId": 0,
-            "start": 371,
+            "start": 382,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -765,10 +753,10 @@ description: Variables in memory after executing hex_fillet.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 491,
-            "end": 495,
+            "commentStart": 502,
+            "end": 506,
             "moduleId": 0,
-            "start": 491,
+            "start": 502,
             "type": "TagDeclarator",
             "value": "arc2"
           },
@@ -779,10 +767,10 @@ description: Variables in memory after executing hex_fillet.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 706,
-            "end": 711,
+            "commentStart": 717,
+            "end": 722,
             "moduleId": 0,
-            "start": 706,
+            "start": 717,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -793,10 +781,10 @@ description: Variables in memory after executing hex_fillet.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 827,
-            "end": 831,
+            "commentStart": 838,
+            "end": 842,
             "moduleId": 0,
-            "start": 827,
+            "start": 838,
             "type": "TagDeclarator",
             "value": "arc3"
           },
@@ -807,10 +795,10 @@ description: Variables in memory after executing hex_fillet.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1043,
-            "end": 1048,
+            "commentStart": 1054,
+            "end": 1059,
             "moduleId": 0,
-            "start": 1043,
+            "start": 1054,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -821,10 +809,10 @@ description: Variables in memory after executing hex_fillet.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1164,
-            "end": 1168,
+            "commentStart": 1175,
+            "end": 1179,
             "moduleId": 0,
-            "start": 1164,
+            "start": 1175,
             "type": "TagDeclarator",
             "value": "arc4"
           },
@@ -835,10 +823,10 @@ description: Variables in memory after executing hex_fillet.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1620,
-            "end": 1627,
+            "commentStart": 1631,
+            "end": 1638,
             "moduleId": 0,
-            "start": 1620,
+            "start": 1631,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -849,10 +837,10 @@ description: Variables in memory after executing hex_fillet.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1712,
-            "end": 1719,
+            "commentStart": 1723,
+            "end": 1730,
             "moduleId": 0,
-            "start": 1712,
+            "start": 1723,
             "type": "TagDeclarator",
             "value": "circle2"
           },
@@ -863,10 +851,10 @@ description: Variables in memory after executing hex_fillet.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1837,
-            "end": 1844,
+            "commentStart": 1848,
+            "end": 1855,
             "moduleId": 0,
-            "start": 1837,
+            "start": 1848,
             "type": "TagDeclarator",
             "value": "circle3"
           },
@@ -877,10 +865,10 @@ description: Variables in memory after executing hex_fillet.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2142,
-            "end": 2154,
+            "commentStart": 2153,
+            "end": 2165,
             "moduleId": 0,
-            "start": 2142,
+            "start": 2153,
             "type": "TagDeclarator",
             "value": "capStart001"
           },
@@ -891,10 +879,10 @@ description: Variables in memory after executing hex_fillet.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2117,
-            "end": 2127,
+            "commentStart": 2128,
+            "end": 2138,
             "moduleId": 0,
-            "start": 2117,
+            "start": 2128,
             "type": "TagDeclarator",
             "value": "capEnd001"
           },
@@ -926,10 +914,10 @@ description: Variables in memory after executing hex_fillet.kcl
               1.6593171489068888
             ],
             "tag": {
-              "commentStart": 71,
-              "end": 76,
+              "commentStart": 82,
+              "end": 87,
               "moduleId": 0,
-              "start": 71,
+              "start": 82,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -956,10 +944,10 @@ description: Variables in memory after executing hex_fillet.kcl
             ],
             "radius": 1.4601890993789832,
             "tag": {
-              "commentStart": 154,
-              "end": 158,
+              "commentStart": 165,
+              "end": 169,
               "moduleId": 0,
-              "start": 154,
+              "start": 165,
               "type": "TagDeclarator",
               "value": "arc1"
             },
@@ -980,10 +968,10 @@ description: Variables in memory after executing hex_fillet.kcl
               2.491142512175489
             ],
             "tag": {
-              "commentStart": 371,
-              "end": 376,
+              "commentStart": 382,
+              "end": 387,
               "moduleId": 0,
-              "start": 371,
+              "start": 382,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -1010,10 +998,10 @@ description: Variables in memory after executing hex_fillet.kcl
             ],
             "radius": 2.3835627974334934,
             "tag": {
-              "commentStart": 491,
-              "end": 495,
+              "commentStart": 502,
+              "end": 506,
               "moduleId": 0,
-              "start": 491,
+              "start": 502,
               "type": "TagDeclarator",
               "value": "arc2"
             },
@@ -1034,10 +1022,10 @@ description: Variables in memory after executing hex_fillet.kcl
               -2.9788872040368455
             ],
             "tag": {
-              "commentStart": 706,
-              "end": 711,
+              "commentStart": 717,
+              "end": 722,
               "moduleId": 0,
-              "start": 706,
+              "start": 717,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -1064,10 +1052,10 @@ description: Variables in memory after executing hex_fillet.kcl
             ],
             "radius": 2.877294619476584,
             "tag": {
-              "commentStart": 827,
-              "end": 831,
+              "commentStart": 838,
+              "end": 842,
               "moduleId": 0,
-              "start": 827,
+              "start": 838,
               "type": "TagDeclarator",
               "value": "arc3"
             },
@@ -1088,10 +1076,10 @@ description: Variables in memory after executing hex_fillet.kcl
               -4.3228878246913265
             ],
             "tag": {
-              "commentStart": 1043,
-              "end": 1048,
+              "commentStart": 1054,
+              "end": 1059,
               "moduleId": 0,
-              "start": 1043,
+              "start": 1054,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -1118,10 +1106,10 @@ description: Variables in memory after executing hex_fillet.kcl
             ],
             "radius": 3.162182113239889,
             "tag": {
-              "commentStart": 1164,
-              "end": 1168,
+              "commentStart": 1175,
+              "end": 1179,
               "moduleId": 0,
-              "start": 1164,
+              "start": 1175,
               "type": "TagDeclarator",
               "value": "arc4"
             },
@@ -1148,10 +1136,10 @@ description: Variables in memory after executing hex_fillet.kcl
             ],
             "radius": 0.8374365647617735,
             "tag": {
-              "commentStart": 1620,
-              "end": 1627,
+              "commentStart": 1631,
+              "end": 1638,
               "moduleId": 0,
-              "start": 1620,
+              "start": 1631,
               "type": "TagDeclarator",
               "value": "circle1"
             },
@@ -1178,10 +1166,10 @@ description: Variables in memory after executing hex_fillet.kcl
             ],
             "radius": 0.8969392398596462,
             "tag": {
-              "commentStart": 1712,
-              "end": 1719,
+              "commentStart": 1723,
+              "end": 1730,
               "moduleId": 0,
-              "start": 1712,
+              "start": 1723,
               "type": "TagDeclarator",
               "value": "circle2"
             },
@@ -1208,10 +1196,10 @@ description: Variables in memory after executing hex_fillet.kcl
             ],
             "radius": 0.5630275304103698,
             "tag": {
-              "commentStart": 1837,
-              "end": 1844,
+              "commentStart": 1848,
+              "end": 1855,
               "moduleId": 0,
-              "start": 1837,
+              "start": 1848,
               "type": "TagDeclarator",
               "value": "circle3"
             },
@@ -1331,24 +1319,6 @@ description: Variables in memory after executing hex_fillet.kcl
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "edgeCuts": [
-        {
-          "type": "fillet",
-          "id": "[uuid]",
-          "radius": {
-            "n": 0.3,
-            "ty": {
-              "type": "Default",
-              "value": {
-                "len": "mm",
-                "angle": "degrees"
-              }
-            }
-          },
-          "edgeId": "[uuid]",
-          "tag": null
-        }
-      ],
       "units": "mm",
       "sectional": false
     }
@@ -1367,10 +1337,10 @@ description: Variables in memory after executing hex_fillet.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 71,
-            "end": 76,
+            "commentStart": 82,
+            "end": 87,
             "moduleId": 0,
-            "start": 71,
+            "start": 82,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -1381,10 +1351,10 @@ description: Variables in memory after executing hex_fillet.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 154,
-            "end": 158,
+            "commentStart": 165,
+            "end": 169,
             "moduleId": 0,
-            "start": 154,
+            "start": 165,
             "type": "TagDeclarator",
             "value": "arc1"
           },
@@ -1395,10 +1365,10 @@ description: Variables in memory after executing hex_fillet.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 371,
-            "end": 376,
+            "commentStart": 382,
+            "end": 387,
             "moduleId": 0,
-            "start": 371,
+            "start": 382,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -1409,10 +1379,10 @@ description: Variables in memory after executing hex_fillet.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 491,
-            "end": 495,
+            "commentStart": 502,
+            "end": 506,
             "moduleId": 0,
-            "start": 491,
+            "start": 502,
             "type": "TagDeclarator",
             "value": "arc2"
           },
@@ -1423,10 +1393,10 @@ description: Variables in memory after executing hex_fillet.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 706,
-            "end": 711,
+            "commentStart": 717,
+            "end": 722,
             "moduleId": 0,
-            "start": 706,
+            "start": 717,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -1437,10 +1407,10 @@ description: Variables in memory after executing hex_fillet.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 827,
-            "end": 831,
+            "commentStart": 838,
+            "end": 842,
             "moduleId": 0,
-            "start": 827,
+            "start": 838,
             "type": "TagDeclarator",
             "value": "arc3"
           },
@@ -1451,10 +1421,10 @@ description: Variables in memory after executing hex_fillet.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1043,
-            "end": 1048,
+            "commentStart": 1054,
+            "end": 1059,
             "moduleId": 0,
-            "start": 1043,
+            "start": 1054,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -1465,10 +1435,10 @@ description: Variables in memory after executing hex_fillet.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1164,
-            "end": 1168,
+            "commentStart": 1175,
+            "end": 1179,
             "moduleId": 0,
-            "start": 1164,
+            "start": 1175,
             "type": "TagDeclarator",
             "value": "arc4"
           },
@@ -1479,10 +1449,10 @@ description: Variables in memory after executing hex_fillet.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1620,
-            "end": 1627,
+            "commentStart": 1631,
+            "end": 1638,
             "moduleId": 0,
-            "start": 1620,
+            "start": 1631,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -1493,10 +1463,10 @@ description: Variables in memory after executing hex_fillet.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1712,
-            "end": 1719,
+            "commentStart": 1723,
+            "end": 1730,
             "moduleId": 0,
-            "start": 1712,
+            "start": 1723,
             "type": "TagDeclarator",
             "value": "circle2"
           },
@@ -1507,10 +1477,10 @@ description: Variables in memory after executing hex_fillet.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1837,
-            "end": 1844,
+            "commentStart": 1848,
+            "end": 1855,
             "moduleId": 0,
-            "start": 1837,
+            "start": 1848,
             "type": "TagDeclarator",
             "value": "circle3"
           },
@@ -1521,10 +1491,10 @@ description: Variables in memory after executing hex_fillet.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2142,
-            "end": 2154,
+            "commentStart": 2153,
+            "end": 2165,
             "moduleId": 0,
-            "start": 2142,
+            "start": 2153,
             "type": "TagDeclarator",
             "value": "capStart001"
           },
@@ -1535,10 +1505,10 @@ description: Variables in memory after executing hex_fillet.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2117,
-            "end": 2127,
+            "commentStart": 2128,
+            "end": 2138,
             "moduleId": 0,
-            "start": 2117,
+            "start": 2128,
             "type": "TagDeclarator",
             "value": "capEnd001"
           },
@@ -1570,10 +1540,10 @@ description: Variables in memory after executing hex_fillet.kcl
               1.6593171489068888
             ],
             "tag": {
-              "commentStart": 71,
-              "end": 76,
+              "commentStart": 82,
+              "end": 87,
               "moduleId": 0,
-              "start": 71,
+              "start": 82,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -1600,10 +1570,10 @@ description: Variables in memory after executing hex_fillet.kcl
             ],
             "radius": 1.4601890993789832,
             "tag": {
-              "commentStart": 154,
-              "end": 158,
+              "commentStart": 165,
+              "end": 169,
               "moduleId": 0,
-              "start": 154,
+              "start": 165,
               "type": "TagDeclarator",
               "value": "arc1"
             },
@@ -1624,10 +1594,10 @@ description: Variables in memory after executing hex_fillet.kcl
               2.491142512175489
             ],
             "tag": {
-              "commentStart": 371,
-              "end": 376,
+              "commentStart": 382,
+              "end": 387,
               "moduleId": 0,
-              "start": 371,
+              "start": 382,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -1654,10 +1624,10 @@ description: Variables in memory after executing hex_fillet.kcl
             ],
             "radius": 2.3835627974334934,
             "tag": {
-              "commentStart": 491,
-              "end": 495,
+              "commentStart": 502,
+              "end": 506,
               "moduleId": 0,
-              "start": 491,
+              "start": 502,
               "type": "TagDeclarator",
               "value": "arc2"
             },
@@ -1678,10 +1648,10 @@ description: Variables in memory after executing hex_fillet.kcl
               -2.9788872040368455
             ],
             "tag": {
-              "commentStart": 706,
-              "end": 711,
+              "commentStart": 717,
+              "end": 722,
               "moduleId": 0,
-              "start": 706,
+              "start": 717,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -1708,10 +1678,10 @@ description: Variables in memory after executing hex_fillet.kcl
             ],
             "radius": 2.877294619476584,
             "tag": {
-              "commentStart": 827,
-              "end": 831,
+              "commentStart": 838,
+              "end": 842,
               "moduleId": 0,
-              "start": 827,
+              "start": 838,
               "type": "TagDeclarator",
               "value": "arc3"
             },
@@ -1732,10 +1702,10 @@ description: Variables in memory after executing hex_fillet.kcl
               -4.3228878246913265
             ],
             "tag": {
-              "commentStart": 1043,
-              "end": 1048,
+              "commentStart": 1054,
+              "end": 1059,
               "moduleId": 0,
-              "start": 1043,
+              "start": 1054,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -1762,10 +1732,10 @@ description: Variables in memory after executing hex_fillet.kcl
             ],
             "radius": 3.162182113239889,
             "tag": {
-              "commentStart": 1164,
-              "end": 1168,
+              "commentStart": 1175,
+              "end": 1179,
               "moduleId": 0,
-              "start": 1164,
+              "start": 1175,
               "type": "TagDeclarator",
               "value": "arc4"
             },
@@ -1792,10 +1762,10 @@ description: Variables in memory after executing hex_fillet.kcl
             ],
             "radius": 0.8374365647617735,
             "tag": {
-              "commentStart": 1620,
-              "end": 1627,
+              "commentStart": 1631,
+              "end": 1638,
               "moduleId": 0,
-              "start": 1620,
+              "start": 1631,
               "type": "TagDeclarator",
               "value": "circle1"
             },
@@ -1822,10 +1792,10 @@ description: Variables in memory after executing hex_fillet.kcl
             ],
             "radius": 0.8969392398596462,
             "tag": {
-              "commentStart": 1712,
-              "end": 1719,
+              "commentStart": 1723,
+              "end": 1730,
               "moduleId": 0,
-              "start": 1712,
+              "start": 1723,
               "type": "TagDeclarator",
               "value": "circle2"
             },
@@ -1852,10 +1822,10 @@ description: Variables in memory after executing hex_fillet.kcl
             ],
             "radius": 0.5630275304103698,
             "tag": {
-              "commentStart": 1837,
-              "end": 1844,
+              "commentStart": 1848,
+              "end": 1855,
               "moduleId": 0,
-              "start": 1837,
+              "start": 1848,
               "type": "TagDeclarator",
               "value": "circle3"
             },
@@ -1975,24 +1945,6 @@ description: Variables in memory after executing hex_fillet.kcl
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "edgeCuts": [
-        {
-          "type": "fillet",
-          "id": "[uuid]",
-          "radius": {
-            "n": 0.3,
-            "ty": {
-              "type": "Default",
-              "value": {
-                "len": "mm",
-                "angle": "degrees"
-              }
-            }
-          },
-          "edgeId": "[uuid]",
-          "tag": null
-        }
-      ],
       "units": "mm",
       "sectional": false
     }
@@ -2011,10 +1963,10 @@ description: Variables in memory after executing hex_fillet.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 71,
-            "end": 76,
+            "commentStart": 82,
+            "end": 87,
             "moduleId": 0,
-            "start": 71,
+            "start": 82,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -2025,10 +1977,10 @@ description: Variables in memory after executing hex_fillet.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 154,
-            "end": 158,
+            "commentStart": 165,
+            "end": 169,
             "moduleId": 0,
-            "start": 154,
+            "start": 165,
             "type": "TagDeclarator",
             "value": "arc1"
           },
@@ -2039,10 +1991,10 @@ description: Variables in memory after executing hex_fillet.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 371,
-            "end": 376,
+            "commentStart": 382,
+            "end": 387,
             "moduleId": 0,
-            "start": 371,
+            "start": 382,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -2053,10 +2005,10 @@ description: Variables in memory after executing hex_fillet.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 491,
-            "end": 495,
+            "commentStart": 502,
+            "end": 506,
             "moduleId": 0,
-            "start": 491,
+            "start": 502,
             "type": "TagDeclarator",
             "value": "arc2"
           },
@@ -2067,10 +2019,10 @@ description: Variables in memory after executing hex_fillet.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 706,
-            "end": 711,
+            "commentStart": 717,
+            "end": 722,
             "moduleId": 0,
-            "start": 706,
+            "start": 717,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -2081,10 +2033,10 @@ description: Variables in memory after executing hex_fillet.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 827,
-            "end": 831,
+            "commentStart": 838,
+            "end": 842,
             "moduleId": 0,
-            "start": 827,
+            "start": 838,
             "type": "TagDeclarator",
             "value": "arc3"
           },
@@ -2095,10 +2047,10 @@ description: Variables in memory after executing hex_fillet.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1043,
-            "end": 1048,
+            "commentStart": 1054,
+            "end": 1059,
             "moduleId": 0,
-            "start": 1043,
+            "start": 1054,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -2109,10 +2061,10 @@ description: Variables in memory after executing hex_fillet.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1164,
-            "end": 1168,
+            "commentStart": 1175,
+            "end": 1179,
             "moduleId": 0,
-            "start": 1164,
+            "start": 1175,
             "type": "TagDeclarator",
             "value": "arc4"
           },
@@ -2123,10 +2075,10 @@ description: Variables in memory after executing hex_fillet.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1620,
-            "end": 1627,
+            "commentStart": 1631,
+            "end": 1638,
             "moduleId": 0,
-            "start": 1620,
+            "start": 1631,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -2137,10 +2089,10 @@ description: Variables in memory after executing hex_fillet.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1712,
-            "end": 1719,
+            "commentStart": 1723,
+            "end": 1730,
             "moduleId": 0,
-            "start": 1712,
+            "start": 1723,
             "type": "TagDeclarator",
             "value": "circle2"
           },
@@ -2151,10 +2103,10 @@ description: Variables in memory after executing hex_fillet.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1837,
-            "end": 1844,
+            "commentStart": 1848,
+            "end": 1855,
             "moduleId": 0,
-            "start": 1837,
+            "start": 1848,
             "type": "TagDeclarator",
             "value": "circle3"
           },
@@ -2165,10 +2117,10 @@ description: Variables in memory after executing hex_fillet.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2142,
-            "end": 2154,
+            "commentStart": 2153,
+            "end": 2165,
             "moduleId": 0,
-            "start": 2142,
+            "start": 2153,
             "type": "TagDeclarator",
             "value": "capStart001"
           },
@@ -2179,10 +2131,10 @@ description: Variables in memory after executing hex_fillet.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2117,
-            "end": 2127,
+            "commentStart": 2128,
+            "end": 2138,
             "moduleId": 0,
-            "start": 2117,
+            "start": 2128,
             "type": "TagDeclarator",
             "value": "capEnd001"
           },
@@ -2214,10 +2166,10 @@ description: Variables in memory after executing hex_fillet.kcl
               1.6593171489068888
             ],
             "tag": {
-              "commentStart": 71,
-              "end": 76,
+              "commentStart": 82,
+              "end": 87,
               "moduleId": 0,
-              "start": 71,
+              "start": 82,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -2244,10 +2196,10 @@ description: Variables in memory after executing hex_fillet.kcl
             ],
             "radius": 1.4601890993789832,
             "tag": {
-              "commentStart": 154,
-              "end": 158,
+              "commentStart": 165,
+              "end": 169,
               "moduleId": 0,
-              "start": 154,
+              "start": 165,
               "type": "TagDeclarator",
               "value": "arc1"
             },
@@ -2268,10 +2220,10 @@ description: Variables in memory after executing hex_fillet.kcl
               2.491142512175489
             ],
             "tag": {
-              "commentStart": 371,
-              "end": 376,
+              "commentStart": 382,
+              "end": 387,
               "moduleId": 0,
-              "start": 371,
+              "start": 382,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -2298,10 +2250,10 @@ description: Variables in memory after executing hex_fillet.kcl
             ],
             "radius": 2.3835627974334934,
             "tag": {
-              "commentStart": 491,
-              "end": 495,
+              "commentStart": 502,
+              "end": 506,
               "moduleId": 0,
-              "start": 491,
+              "start": 502,
               "type": "TagDeclarator",
               "value": "arc2"
             },
@@ -2322,10 +2274,10 @@ description: Variables in memory after executing hex_fillet.kcl
               -2.9788872040368455
             ],
             "tag": {
-              "commentStart": 706,
-              "end": 711,
+              "commentStart": 717,
+              "end": 722,
               "moduleId": 0,
-              "start": 706,
+              "start": 717,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -2352,10 +2304,10 @@ description: Variables in memory after executing hex_fillet.kcl
             ],
             "radius": 2.877294619476584,
             "tag": {
-              "commentStart": 827,
-              "end": 831,
+              "commentStart": 838,
+              "end": 842,
               "moduleId": 0,
-              "start": 827,
+              "start": 838,
               "type": "TagDeclarator",
               "value": "arc3"
             },
@@ -2376,10 +2328,10 @@ description: Variables in memory after executing hex_fillet.kcl
               -4.3228878246913265
             ],
             "tag": {
-              "commentStart": 1043,
-              "end": 1048,
+              "commentStart": 1054,
+              "end": 1059,
               "moduleId": 0,
-              "start": 1043,
+              "start": 1054,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -2406,10 +2358,10 @@ description: Variables in memory after executing hex_fillet.kcl
             ],
             "radius": 3.162182113239889,
             "tag": {
-              "commentStart": 1164,
-              "end": 1168,
+              "commentStart": 1175,
+              "end": 1179,
               "moduleId": 0,
-              "start": 1164,
+              "start": 1175,
               "type": "TagDeclarator",
               "value": "arc4"
             },
@@ -2436,10 +2388,10 @@ description: Variables in memory after executing hex_fillet.kcl
             ],
             "radius": 0.8374365647617735,
             "tag": {
-              "commentStart": 1620,
-              "end": 1627,
+              "commentStart": 1631,
+              "end": 1638,
               "moduleId": 0,
-              "start": 1620,
+              "start": 1631,
               "type": "TagDeclarator",
               "value": "circle1"
             },
@@ -2466,10 +2418,10 @@ description: Variables in memory after executing hex_fillet.kcl
             ],
             "radius": 0.8969392398596462,
             "tag": {
-              "commentStart": 1712,
-              "end": 1719,
+              "commentStart": 1723,
+              "end": 1730,
               "moduleId": 0,
-              "start": 1712,
+              "start": 1723,
               "type": "TagDeclarator",
               "value": "circle2"
             },
@@ -2496,10 +2448,10 @@ description: Variables in memory after executing hex_fillet.kcl
             ],
             "radius": 0.5630275304103698,
             "tag": {
-              "commentStart": 1837,
-              "end": 1844,
+              "commentStart": 1848,
+              "end": 1855,
               "moduleId": 0,
-              "start": 1837,
+              "start": 1848,
               "type": "TagDeclarator",
               "value": "circle3"
             },
@@ -2619,3246 +2571,19 @@ description: Variables in memory after executing hex_fillet.kcl
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "edgeCuts": [
-        {
-          "type": "fillet",
-          "id": "[uuid]",
-          "radius": {
-            "n": 0.2,
-            "ty": {
-              "type": "Default",
-              "value": {
-                "len": "mm",
-                "angle": "degrees"
-              }
-            }
-          },
-          "edgeId": "[uuid]",
-          "tag": null
-        }
-      ],
       "units": "mm",
       "sectional": false
     }
   },
-  "fillet004": {
-    "type": "Solid",
-    "value": {
-      "type": "Solid",
-      "id": "[uuid]",
-      "originalId": "[uuid]",
-      "topologyId": "[uuid]",
-      "artifactId": "[uuid]",
-      "value": [
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 71,
-            "end": 76,
-            "moduleId": 0,
-            "start": 71,
-            "type": "TagDeclarator",
-            "value": "line1"
-          },
-          "type": "extrudePlane"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 154,
-            "end": 158,
-            "moduleId": 0,
-            "start": 154,
-            "type": "TagDeclarator",
-            "value": "arc1"
-          },
-          "type": "extrudeArc"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 371,
-            "end": 376,
-            "moduleId": 0,
-            "start": 371,
-            "type": "TagDeclarator",
-            "value": "line2"
-          },
-          "type": "extrudePlane"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 491,
-            "end": 495,
-            "moduleId": 0,
-            "start": 491,
-            "type": "TagDeclarator",
-            "value": "arc2"
-          },
-          "type": "extrudeArc"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 706,
-            "end": 711,
-            "moduleId": 0,
-            "start": 706,
-            "type": "TagDeclarator",
-            "value": "line3"
-          },
-          "type": "extrudePlane"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 827,
-            "end": 831,
-            "moduleId": 0,
-            "start": 827,
-            "type": "TagDeclarator",
-            "value": "arc3"
-          },
-          "type": "extrudeArc"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 1043,
-            "end": 1048,
-            "moduleId": 0,
-            "start": 1043,
-            "type": "TagDeclarator",
-            "value": "line4"
-          },
-          "type": "extrudePlane"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 1164,
-            "end": 1168,
-            "moduleId": 0,
-            "start": 1164,
-            "type": "TagDeclarator",
-            "value": "arc4"
-          },
-          "type": "extrudeArc"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 1620,
-            "end": 1627,
-            "moduleId": 0,
-            "start": 1620,
-            "type": "TagDeclarator",
-            "value": "circle1"
-          },
-          "type": "extrudeArc"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 1712,
-            "end": 1719,
-            "moduleId": 0,
-            "start": 1712,
-            "type": "TagDeclarator",
-            "value": "circle2"
-          },
-          "type": "extrudeArc"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 1837,
-            "end": 1844,
-            "moduleId": 0,
-            "start": 1837,
-            "type": "TagDeclarator",
-            "value": "circle3"
-          },
-          "type": "extrudeArc"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 2142,
-            "end": 2154,
-            "moduleId": 0,
-            "start": 2142,
-            "type": "TagDeclarator",
-            "value": "capStart001"
-          },
-          "type": "extrudePlane"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 2117,
-            "end": 2127,
-            "moduleId": 0,
-            "start": 2117,
-            "type": "TagDeclarator",
-            "value": "capEnd001"
-          },
-          "type": "extrudePlane"
-        }
-      ],
-      "faces": {
-        "capEnd001": {
-          "type": "TagIdentifier",
-          "value": "capEnd001"
-        },
-        "capStart001": {
-          "type": "TagIdentifier",
-          "value": "capStart001"
-        }
-      },
-      "sketch": {
-        "creatorType": "sketch",
-        "type": "Sketch",
-        "id": "[uuid]",
-        "paths": [
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -2.9386611317249196,
-              1.6593171489068888
-            ],
-            "tag": {
-              "commentStart": 71,
-              "end": 76,
-              "moduleId": 0,
-              "start": 71,
-              "type": "TagDeclarator",
-              "value": "line1"
-            },
-            "to": [
-              -1.671413455123158,
-              2.3809725226490364
-            ],
-            "type": "ToPoint",
-            "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "ccw": false,
-            "center": [
-              -0.9488568191257514,
-              1.1120895045101233
-            ],
-            "from": [
-              -1.671413455123158,
-              2.3809725226490364
-            ],
-            "radius": 1.4601890993789832,
-            "tag": {
-              "commentStart": 154,
-              "end": 158,
-              "moduleId": 0,
-              "start": 154,
-              "type": "TagDeclarator",
-              "value": "arc1"
-            },
-            "to": [
-              -0.4688932705157399,
-              2.491142512175489
-            ],
-            "type": "Arc",
-            "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -0.4688932705157399,
-              2.491142512175489
-            ],
-            "tag": {
-              "commentStart": 371,
-              "end": 376,
-              "moduleId": 0,
-              "start": 371,
-              "type": "TagDeclarator",
-              "value": "line2"
-            },
-            "to": [
-              2.9853471046859004,
-              1.2889877760129855
-            ],
-            "type": "ToPoint",
-            "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "ccw": false,
-            "center": [
-              2.2017678431008814,
-              -0.9620953299879584
-            ],
-            "from": [
-              2.9853471046859004,
-              1.2889877760129855
-            ],
-            "radius": 2.3835627974334934,
-            "tag": {
-              "commentStart": 491,
-              "end": 495,
-              "moduleId": 0,
-              "start": 491,
-              "type": "TagDeclarator",
-              "value": "arc2"
-            },
-            "to": [
-              3.4721701990808125,
-              -2.9788872040368455
-            ],
-            "type": "Arc",
-            "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              3.4721701990808125,
-              -2.9788872040368455
-            ],
-            "tag": {
-              "commentStart": 706,
-              "end": 711,
-              "moduleId": 0,
-              "start": 706,
-              "type": "TagDeclarator",
-              "value": "line3"
-            },
-            "to": [
-              2.0379981557451625,
-              -3.882305863568651
-            ],
-            "type": "ToPoint",
-            "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "ccw": false,
-            "center": [
-              0.5043060858109292,
-              -1.4478422754470817
-            ],
-            "from": [
-              2.0379981557451625,
-              -3.882305863568651
-            ],
-            "radius": 2.877294619476584,
-            "tag": {
-              "commentStart": 827,
-              "end": 831,
-              "moduleId": 0,
-              "start": 827,
-              "type": "TagDeclarator",
-              "value": "arc3"
-            },
-            "to": [
-              0.39056331883316764,
-              -4.3228878246913265
-            ],
-            "type": "Arc",
-            "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              0.39056331883316764,
-              -4.3228878246913265
-            ],
-            "tag": {
-              "commentStart": 1043,
-              "end": 1048,
-              "moduleId": 0,
-              "start": 1043,
-              "type": "TagDeclarator",
-              "value": "line4"
-            },
-            "to": [
-              -1.4988594191981486,
-              -4.248176308525822
-            ],
-            "type": "ToPoint",
-            "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "ccw": false,
-            "center": [
-              -1.3737159083829549,
-              -1.088471445885145
-            ],
-            "from": [
-              -1.4988594191981486,
-              -4.248176308525822
-            ],
-            "radius": 3.162182113239889,
-            "tag": {
-              "commentStart": 1164,
-              "end": 1168,
-              "moduleId": 0,
-              "start": 1164,
-              "type": "TagDeclarator",
-              "value": "arc4"
-            },
-            "to": [
-              -2.938661132003835,
-              1.6593171493966108
-            ],
-            "type": "Arc",
-            "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "ccw": true,
-            "center": [
-              -2.46,
-              -1.86
-            ],
-            "from": [
-              -2.63,
-              -1.04
-            ],
-            "radius": 0.8374365647617735,
-            "tag": {
-              "commentStart": 1620,
-              "end": 1627,
-              "moduleId": 0,
-              "start": 1620,
-              "type": "TagDeclarator",
-              "value": "circle1"
-            },
-            "to": [
-              -2.63,
-              -1.04
-            ],
-            "type": "Circle",
-            "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "ccw": true,
-            "center": [
-              1.82,
-              0.0
-            ],
-            "from": [
-              1.48,
-              -0.83
-            ],
-            "radius": 0.8969392398596462,
-            "tag": {
-              "commentStart": 1712,
-              "end": 1719,
-              "moduleId": 0,
-              "start": 1712,
-              "type": "TagDeclarator",
-              "value": "circle2"
-            },
-            "to": [
-              1.48,
-              -0.83
-            ],
-            "type": "Circle",
-            "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "ccw": true,
-            "center": [
-              0.64,
-              -3.17
-            ],
-            "from": [
-              0.45,
-              -2.64
-            ],
-            "radius": 0.5630275304103698,
-            "tag": {
-              "commentStart": 1837,
-              "end": 1844,
-              "moduleId": 0,
-              "start": 1837,
-              "type": "TagDeclarator",
-              "value": "circle3"
-            },
-            "to": [
-              0.45,
-              -2.64
-            ],
-            "type": "Circle",
-            "units": "mm"
-          }
-        ],
-        "on": {
-          "type": "plane",
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
-          "objectId": 0,
-          "kind": "Custom",
-          "origin": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": 0.0,
-            "units": "mm"
-          },
-          "xAxis": {
-            "x": 1.0,
-            "y": 0.0,
-            "z": 0.0,
-            "units": null
-          },
-          "yAxis": {
-            "x": 0.0,
-            "y": 1.0,
-            "z": 0.0,
-            "units": null
-          },
-          "zAxis": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": 1.0,
-            "units": null
-          }
-        },
-        "start": {
-          "from": [
-            -2.9386611317249196,
-            1.6593171489068888
-          ],
-          "to": [
-            -2.9386611317249196,
-            1.6593171489068888
-          ],
-          "units": "mm",
-          "tag": null,
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          }
-        },
-        "tags": {
-          "arc1": {
-            "type": "TagIdentifier",
-            "value": "arc1"
-          },
-          "arc2": {
-            "type": "TagIdentifier",
-            "value": "arc2"
-          },
-          "arc3": {
-            "type": "TagIdentifier",
-            "value": "arc3"
-          },
-          "arc4": {
-            "type": "TagIdentifier",
-            "value": "arc4"
-          },
-          "capEnd001": {
-            "type": "TagIdentifier",
-            "value": "capEnd001"
-          },
-          "capStart001": {
-            "type": "TagIdentifier",
-            "value": "capStart001"
-          },
-          "circle1": {
-            "type": "TagIdentifier",
-            "value": "circle1"
-          },
-          "circle2": {
-            "type": "TagIdentifier",
-            "value": "circle2"
-          },
-          "circle3": {
-            "type": "TagIdentifier",
-            "value": "circle3"
-          },
-          "line1": {
-            "type": "TagIdentifier",
-            "value": "line1"
-          },
-          "line2": {
-            "type": "TagIdentifier",
-            "value": "line2"
-          },
-          "line3": {
-            "type": "TagIdentifier",
-            "value": "line3"
-          },
-          "line4": {
-            "type": "TagIdentifier",
-            "value": "line4"
-          }
-        },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "units": "mm",
-        "isClosed": "explicitly"
-      },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
-      "edgeCuts": [
-        {
-          "type": "fillet",
-          "id": "[uuid]",
-          "radius": {
-            "n": 0.2,
-            "ty": {
-              "type": "Default",
-              "value": {
-                "len": "mm",
-                "angle": "degrees"
-              }
-            }
-          },
-          "edgeId": "[uuid]",
-          "tag": null
-        }
-      ],
-      "units": "mm",
-      "sectional": false
-    }
-  },
-  "fillet005": {
-    "type": "Solid",
-    "value": {
-      "type": "Solid",
-      "id": "[uuid]",
-      "originalId": "[uuid]",
-      "topologyId": "[uuid]",
-      "artifactId": "[uuid]",
-      "value": [
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 71,
-            "end": 76,
-            "moduleId": 0,
-            "start": 71,
-            "type": "TagDeclarator",
-            "value": "line1"
-          },
-          "type": "extrudePlane"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 154,
-            "end": 158,
-            "moduleId": 0,
-            "start": 154,
-            "type": "TagDeclarator",
-            "value": "arc1"
-          },
-          "type": "extrudeArc"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 371,
-            "end": 376,
-            "moduleId": 0,
-            "start": 371,
-            "type": "TagDeclarator",
-            "value": "line2"
-          },
-          "type": "extrudePlane"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 491,
-            "end": 495,
-            "moduleId": 0,
-            "start": 491,
-            "type": "TagDeclarator",
-            "value": "arc2"
-          },
-          "type": "extrudeArc"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 706,
-            "end": 711,
-            "moduleId": 0,
-            "start": 706,
-            "type": "TagDeclarator",
-            "value": "line3"
-          },
-          "type": "extrudePlane"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 827,
-            "end": 831,
-            "moduleId": 0,
-            "start": 827,
-            "type": "TagDeclarator",
-            "value": "arc3"
-          },
-          "type": "extrudeArc"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 1043,
-            "end": 1048,
-            "moduleId": 0,
-            "start": 1043,
-            "type": "TagDeclarator",
-            "value": "line4"
-          },
-          "type": "extrudePlane"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 1164,
-            "end": 1168,
-            "moduleId": 0,
-            "start": 1164,
-            "type": "TagDeclarator",
-            "value": "arc4"
-          },
-          "type": "extrudeArc"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 1620,
-            "end": 1627,
-            "moduleId": 0,
-            "start": 1620,
-            "type": "TagDeclarator",
-            "value": "circle1"
-          },
-          "type": "extrudeArc"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 1712,
-            "end": 1719,
-            "moduleId": 0,
-            "start": 1712,
-            "type": "TagDeclarator",
-            "value": "circle2"
-          },
-          "type": "extrudeArc"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 1837,
-            "end": 1844,
-            "moduleId": 0,
-            "start": 1837,
-            "type": "TagDeclarator",
-            "value": "circle3"
-          },
-          "type": "extrudeArc"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 2142,
-            "end": 2154,
-            "moduleId": 0,
-            "start": 2142,
-            "type": "TagDeclarator",
-            "value": "capStart001"
-          },
-          "type": "extrudePlane"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 2117,
-            "end": 2127,
-            "moduleId": 0,
-            "start": 2117,
-            "type": "TagDeclarator",
-            "value": "capEnd001"
-          },
-          "type": "extrudePlane"
-        }
-      ],
-      "faces": {
-        "capEnd001": {
-          "type": "TagIdentifier",
-          "value": "capEnd001"
-        },
-        "capStart001": {
-          "type": "TagIdentifier",
-          "value": "capStart001"
-        }
-      },
-      "sketch": {
-        "creatorType": "sketch",
-        "type": "Sketch",
-        "id": "[uuid]",
-        "paths": [
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -2.9386611317249196,
-              1.6593171489068888
-            ],
-            "tag": {
-              "commentStart": 71,
-              "end": 76,
-              "moduleId": 0,
-              "start": 71,
-              "type": "TagDeclarator",
-              "value": "line1"
-            },
-            "to": [
-              -1.671413455123158,
-              2.3809725226490364
-            ],
-            "type": "ToPoint",
-            "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "ccw": false,
-            "center": [
-              -0.9488568191257514,
-              1.1120895045101233
-            ],
-            "from": [
-              -1.671413455123158,
-              2.3809725226490364
-            ],
-            "radius": 1.4601890993789832,
-            "tag": {
-              "commentStart": 154,
-              "end": 158,
-              "moduleId": 0,
-              "start": 154,
-              "type": "TagDeclarator",
-              "value": "arc1"
-            },
-            "to": [
-              -0.4688932705157399,
-              2.491142512175489
-            ],
-            "type": "Arc",
-            "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -0.4688932705157399,
-              2.491142512175489
-            ],
-            "tag": {
-              "commentStart": 371,
-              "end": 376,
-              "moduleId": 0,
-              "start": 371,
-              "type": "TagDeclarator",
-              "value": "line2"
-            },
-            "to": [
-              2.9853471046859004,
-              1.2889877760129855
-            ],
-            "type": "ToPoint",
-            "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "ccw": false,
-            "center": [
-              2.2017678431008814,
-              -0.9620953299879584
-            ],
-            "from": [
-              2.9853471046859004,
-              1.2889877760129855
-            ],
-            "radius": 2.3835627974334934,
-            "tag": {
-              "commentStart": 491,
-              "end": 495,
-              "moduleId": 0,
-              "start": 491,
-              "type": "TagDeclarator",
-              "value": "arc2"
-            },
-            "to": [
-              3.4721701990808125,
-              -2.9788872040368455
-            ],
-            "type": "Arc",
-            "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              3.4721701990808125,
-              -2.9788872040368455
-            ],
-            "tag": {
-              "commentStart": 706,
-              "end": 711,
-              "moduleId": 0,
-              "start": 706,
-              "type": "TagDeclarator",
-              "value": "line3"
-            },
-            "to": [
-              2.0379981557451625,
-              -3.882305863568651
-            ],
-            "type": "ToPoint",
-            "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "ccw": false,
-            "center": [
-              0.5043060858109292,
-              -1.4478422754470817
-            ],
-            "from": [
-              2.0379981557451625,
-              -3.882305863568651
-            ],
-            "radius": 2.877294619476584,
-            "tag": {
-              "commentStart": 827,
-              "end": 831,
-              "moduleId": 0,
-              "start": 827,
-              "type": "TagDeclarator",
-              "value": "arc3"
-            },
-            "to": [
-              0.39056331883316764,
-              -4.3228878246913265
-            ],
-            "type": "Arc",
-            "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              0.39056331883316764,
-              -4.3228878246913265
-            ],
-            "tag": {
-              "commentStart": 1043,
-              "end": 1048,
-              "moduleId": 0,
-              "start": 1043,
-              "type": "TagDeclarator",
-              "value": "line4"
-            },
-            "to": [
-              -1.4988594191981486,
-              -4.248176308525822
-            ],
-            "type": "ToPoint",
-            "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "ccw": false,
-            "center": [
-              -1.3737159083829549,
-              -1.088471445885145
-            ],
-            "from": [
-              -1.4988594191981486,
-              -4.248176308525822
-            ],
-            "radius": 3.162182113239889,
-            "tag": {
-              "commentStart": 1164,
-              "end": 1168,
-              "moduleId": 0,
-              "start": 1164,
-              "type": "TagDeclarator",
-              "value": "arc4"
-            },
-            "to": [
-              -2.938661132003835,
-              1.6593171493966108
-            ],
-            "type": "Arc",
-            "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "ccw": true,
-            "center": [
-              -2.46,
-              -1.86
-            ],
-            "from": [
-              -2.63,
-              -1.04
-            ],
-            "radius": 0.8374365647617735,
-            "tag": {
-              "commentStart": 1620,
-              "end": 1627,
-              "moduleId": 0,
-              "start": 1620,
-              "type": "TagDeclarator",
-              "value": "circle1"
-            },
-            "to": [
-              -2.63,
-              -1.04
-            ],
-            "type": "Circle",
-            "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "ccw": true,
-            "center": [
-              1.82,
-              0.0
-            ],
-            "from": [
-              1.48,
-              -0.83
-            ],
-            "radius": 0.8969392398596462,
-            "tag": {
-              "commentStart": 1712,
-              "end": 1719,
-              "moduleId": 0,
-              "start": 1712,
-              "type": "TagDeclarator",
-              "value": "circle2"
-            },
-            "to": [
-              1.48,
-              -0.83
-            ],
-            "type": "Circle",
-            "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "ccw": true,
-            "center": [
-              0.64,
-              -3.17
-            ],
-            "from": [
-              0.45,
-              -2.64
-            ],
-            "radius": 0.5630275304103698,
-            "tag": {
-              "commentStart": 1837,
-              "end": 1844,
-              "moduleId": 0,
-              "start": 1837,
-              "type": "TagDeclarator",
-              "value": "circle3"
-            },
-            "to": [
-              0.45,
-              -2.64
-            ],
-            "type": "Circle",
-            "units": "mm"
-          }
-        ],
-        "on": {
-          "type": "plane",
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
-          "objectId": 0,
-          "kind": "Custom",
-          "origin": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": 0.0,
-            "units": "mm"
-          },
-          "xAxis": {
-            "x": 1.0,
-            "y": 0.0,
-            "z": 0.0,
-            "units": null
-          },
-          "yAxis": {
-            "x": 0.0,
-            "y": 1.0,
-            "z": 0.0,
-            "units": null
-          },
-          "zAxis": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": 1.0,
-            "units": null
-          }
-        },
-        "start": {
-          "from": [
-            -2.9386611317249196,
-            1.6593171489068888
-          ],
-          "to": [
-            -2.9386611317249196,
-            1.6593171489068888
-          ],
-          "units": "mm",
-          "tag": null,
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          }
-        },
-        "tags": {
-          "arc1": {
-            "type": "TagIdentifier",
-            "value": "arc1"
-          },
-          "arc2": {
-            "type": "TagIdentifier",
-            "value": "arc2"
-          },
-          "arc3": {
-            "type": "TagIdentifier",
-            "value": "arc3"
-          },
-          "arc4": {
-            "type": "TagIdentifier",
-            "value": "arc4"
-          },
-          "capEnd001": {
-            "type": "TagIdentifier",
-            "value": "capEnd001"
-          },
-          "capStart001": {
-            "type": "TagIdentifier",
-            "value": "capStart001"
-          },
-          "circle1": {
-            "type": "TagIdentifier",
-            "value": "circle1"
-          },
-          "circle2": {
-            "type": "TagIdentifier",
-            "value": "circle2"
-          },
-          "circle3": {
-            "type": "TagIdentifier",
-            "value": "circle3"
-          },
-          "line1": {
-            "type": "TagIdentifier",
-            "value": "line1"
-          },
-          "line2": {
-            "type": "TagIdentifier",
-            "value": "line2"
-          },
-          "line3": {
-            "type": "TagIdentifier",
-            "value": "line3"
-          },
-          "line4": {
-            "type": "TagIdentifier",
-            "value": "line4"
-          }
-        },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "units": "mm",
-        "isClosed": "explicitly"
-      },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
-      "edgeCuts": [
-        {
-          "type": "fillet",
-          "id": "[uuid]",
-          "radius": {
-            "n": 0.2,
-            "ty": {
-              "type": "Default",
-              "value": {
-                "len": "mm",
-                "angle": "degrees"
-              }
-            }
-          },
-          "edgeId": "[uuid]",
-          "tag": null
-        }
-      ],
-      "units": "mm",
-      "sectional": false
-    }
-  },
-  "fillet006": {
-    "type": "Solid",
-    "value": {
-      "type": "Solid",
-      "id": "[uuid]",
-      "originalId": "[uuid]",
-      "topologyId": "[uuid]",
-      "artifactId": "[uuid]",
-      "value": [
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 71,
-            "end": 76,
-            "moduleId": 0,
-            "start": 71,
-            "type": "TagDeclarator",
-            "value": "line1"
-          },
-          "type": "extrudePlane"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 154,
-            "end": 158,
-            "moduleId": 0,
-            "start": 154,
-            "type": "TagDeclarator",
-            "value": "arc1"
-          },
-          "type": "extrudeArc"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 371,
-            "end": 376,
-            "moduleId": 0,
-            "start": 371,
-            "type": "TagDeclarator",
-            "value": "line2"
-          },
-          "type": "extrudePlane"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 491,
-            "end": 495,
-            "moduleId": 0,
-            "start": 491,
-            "type": "TagDeclarator",
-            "value": "arc2"
-          },
-          "type": "extrudeArc"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 706,
-            "end": 711,
-            "moduleId": 0,
-            "start": 706,
-            "type": "TagDeclarator",
-            "value": "line3"
-          },
-          "type": "extrudePlane"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 827,
-            "end": 831,
-            "moduleId": 0,
-            "start": 827,
-            "type": "TagDeclarator",
-            "value": "arc3"
-          },
-          "type": "extrudeArc"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 1043,
-            "end": 1048,
-            "moduleId": 0,
-            "start": 1043,
-            "type": "TagDeclarator",
-            "value": "line4"
-          },
-          "type": "extrudePlane"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 1164,
-            "end": 1168,
-            "moduleId": 0,
-            "start": 1164,
-            "type": "TagDeclarator",
-            "value": "arc4"
-          },
-          "type": "extrudeArc"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 1620,
-            "end": 1627,
-            "moduleId": 0,
-            "start": 1620,
-            "type": "TagDeclarator",
-            "value": "circle1"
-          },
-          "type": "extrudeArc"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 1712,
-            "end": 1719,
-            "moduleId": 0,
-            "start": 1712,
-            "type": "TagDeclarator",
-            "value": "circle2"
-          },
-          "type": "extrudeArc"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 1837,
-            "end": 1844,
-            "moduleId": 0,
-            "start": 1837,
-            "type": "TagDeclarator",
-            "value": "circle3"
-          },
-          "type": "extrudeArc"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 2142,
-            "end": 2154,
-            "moduleId": 0,
-            "start": 2142,
-            "type": "TagDeclarator",
-            "value": "capStart001"
-          },
-          "type": "extrudePlane"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 2117,
-            "end": 2127,
-            "moduleId": 0,
-            "start": 2117,
-            "type": "TagDeclarator",
-            "value": "capEnd001"
-          },
-          "type": "extrudePlane"
-        }
-      ],
-      "faces": {
-        "capEnd001": {
-          "type": "TagIdentifier",
-          "value": "capEnd001"
-        },
-        "capStart001": {
-          "type": "TagIdentifier",
-          "value": "capStart001"
-        }
-      },
-      "sketch": {
-        "creatorType": "sketch",
-        "type": "Sketch",
-        "id": "[uuid]",
-        "paths": [
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -2.9386611317249196,
-              1.6593171489068888
-            ],
-            "tag": {
-              "commentStart": 71,
-              "end": 76,
-              "moduleId": 0,
-              "start": 71,
-              "type": "TagDeclarator",
-              "value": "line1"
-            },
-            "to": [
-              -1.671413455123158,
-              2.3809725226490364
-            ],
-            "type": "ToPoint",
-            "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "ccw": false,
-            "center": [
-              -0.9488568191257514,
-              1.1120895045101233
-            ],
-            "from": [
-              -1.671413455123158,
-              2.3809725226490364
-            ],
-            "radius": 1.4601890993789832,
-            "tag": {
-              "commentStart": 154,
-              "end": 158,
-              "moduleId": 0,
-              "start": 154,
-              "type": "TagDeclarator",
-              "value": "arc1"
-            },
-            "to": [
-              -0.4688932705157399,
-              2.491142512175489
-            ],
-            "type": "Arc",
-            "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -0.4688932705157399,
-              2.491142512175489
-            ],
-            "tag": {
-              "commentStart": 371,
-              "end": 376,
-              "moduleId": 0,
-              "start": 371,
-              "type": "TagDeclarator",
-              "value": "line2"
-            },
-            "to": [
-              2.9853471046859004,
-              1.2889877760129855
-            ],
-            "type": "ToPoint",
-            "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "ccw": false,
-            "center": [
-              2.2017678431008814,
-              -0.9620953299879584
-            ],
-            "from": [
-              2.9853471046859004,
-              1.2889877760129855
-            ],
-            "radius": 2.3835627974334934,
-            "tag": {
-              "commentStart": 491,
-              "end": 495,
-              "moduleId": 0,
-              "start": 491,
-              "type": "TagDeclarator",
-              "value": "arc2"
-            },
-            "to": [
-              3.4721701990808125,
-              -2.9788872040368455
-            ],
-            "type": "Arc",
-            "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              3.4721701990808125,
-              -2.9788872040368455
-            ],
-            "tag": {
-              "commentStart": 706,
-              "end": 711,
-              "moduleId": 0,
-              "start": 706,
-              "type": "TagDeclarator",
-              "value": "line3"
-            },
-            "to": [
-              2.0379981557451625,
-              -3.882305863568651
-            ],
-            "type": "ToPoint",
-            "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "ccw": false,
-            "center": [
-              0.5043060858109292,
-              -1.4478422754470817
-            ],
-            "from": [
-              2.0379981557451625,
-              -3.882305863568651
-            ],
-            "radius": 2.877294619476584,
-            "tag": {
-              "commentStart": 827,
-              "end": 831,
-              "moduleId": 0,
-              "start": 827,
-              "type": "TagDeclarator",
-              "value": "arc3"
-            },
-            "to": [
-              0.39056331883316764,
-              -4.3228878246913265
-            ],
-            "type": "Arc",
-            "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              0.39056331883316764,
-              -4.3228878246913265
-            ],
-            "tag": {
-              "commentStart": 1043,
-              "end": 1048,
-              "moduleId": 0,
-              "start": 1043,
-              "type": "TagDeclarator",
-              "value": "line4"
-            },
-            "to": [
-              -1.4988594191981486,
-              -4.248176308525822
-            ],
-            "type": "ToPoint",
-            "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "ccw": false,
-            "center": [
-              -1.3737159083829549,
-              -1.088471445885145
-            ],
-            "from": [
-              -1.4988594191981486,
-              -4.248176308525822
-            ],
-            "radius": 3.162182113239889,
-            "tag": {
-              "commentStart": 1164,
-              "end": 1168,
-              "moduleId": 0,
-              "start": 1164,
-              "type": "TagDeclarator",
-              "value": "arc4"
-            },
-            "to": [
-              -2.938661132003835,
-              1.6593171493966108
-            ],
-            "type": "Arc",
-            "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "ccw": true,
-            "center": [
-              -2.46,
-              -1.86
-            ],
-            "from": [
-              -2.63,
-              -1.04
-            ],
-            "radius": 0.8374365647617735,
-            "tag": {
-              "commentStart": 1620,
-              "end": 1627,
-              "moduleId": 0,
-              "start": 1620,
-              "type": "TagDeclarator",
-              "value": "circle1"
-            },
-            "to": [
-              -2.63,
-              -1.04
-            ],
-            "type": "Circle",
-            "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "ccw": true,
-            "center": [
-              1.82,
-              0.0
-            ],
-            "from": [
-              1.48,
-              -0.83
-            ],
-            "radius": 0.8969392398596462,
-            "tag": {
-              "commentStart": 1712,
-              "end": 1719,
-              "moduleId": 0,
-              "start": 1712,
-              "type": "TagDeclarator",
-              "value": "circle2"
-            },
-            "to": [
-              1.48,
-              -0.83
-            ],
-            "type": "Circle",
-            "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "ccw": true,
-            "center": [
-              0.64,
-              -3.17
-            ],
-            "from": [
-              0.45,
-              -2.64
-            ],
-            "radius": 0.5630275304103698,
-            "tag": {
-              "commentStart": 1837,
-              "end": 1844,
-              "moduleId": 0,
-              "start": 1837,
-              "type": "TagDeclarator",
-              "value": "circle3"
-            },
-            "to": [
-              0.45,
-              -2.64
-            ],
-            "type": "Circle",
-            "units": "mm"
-          }
-        ],
-        "on": {
-          "type": "plane",
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
-          "objectId": 0,
-          "kind": "Custom",
-          "origin": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": 0.0,
-            "units": "mm"
-          },
-          "xAxis": {
-            "x": 1.0,
-            "y": 0.0,
-            "z": 0.0,
-            "units": null
-          },
-          "yAxis": {
-            "x": 0.0,
-            "y": 1.0,
-            "z": 0.0,
-            "units": null
-          },
-          "zAxis": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": 1.0,
-            "units": null
-          }
-        },
-        "start": {
-          "from": [
-            -2.9386611317249196,
-            1.6593171489068888
-          ],
-          "to": [
-            -2.9386611317249196,
-            1.6593171489068888
-          ],
-          "units": "mm",
-          "tag": null,
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          }
-        },
-        "tags": {
-          "arc1": {
-            "type": "TagIdentifier",
-            "value": "arc1"
-          },
-          "arc2": {
-            "type": "TagIdentifier",
-            "value": "arc2"
-          },
-          "arc3": {
-            "type": "TagIdentifier",
-            "value": "arc3"
-          },
-          "arc4": {
-            "type": "TagIdentifier",
-            "value": "arc4"
-          },
-          "capEnd001": {
-            "type": "TagIdentifier",
-            "value": "capEnd001"
-          },
-          "capStart001": {
-            "type": "TagIdentifier",
-            "value": "capStart001"
-          },
-          "circle1": {
-            "type": "TagIdentifier",
-            "value": "circle1"
-          },
-          "circle2": {
-            "type": "TagIdentifier",
-            "value": "circle2"
-          },
-          "circle3": {
-            "type": "TagIdentifier",
-            "value": "circle3"
-          },
-          "line1": {
-            "type": "TagIdentifier",
-            "value": "line1"
-          },
-          "line2": {
-            "type": "TagIdentifier",
-            "value": "line2"
-          },
-          "line3": {
-            "type": "TagIdentifier",
-            "value": "line3"
-          },
-          "line4": {
-            "type": "TagIdentifier",
-            "value": "line4"
-          }
-        },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "units": "mm",
-        "isClosed": "explicitly"
-      },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
-      "edgeCuts": [
-        {
-          "type": "fillet",
-          "id": "[uuid]",
-          "radius": {
-            "n": 0.3,
-            "ty": {
-              "type": "Default",
-              "value": {
-                "len": "mm",
-                "angle": "degrees"
-              }
-            }
-          },
-          "edgeId": "[uuid]",
-          "tag": null
-        }
-      ],
-      "units": "mm",
-      "sectional": false
-    }
-  },
-  "fillet007": {
-    "type": "Solid",
-    "value": {
-      "type": "Solid",
-      "id": "[uuid]",
-      "originalId": "[uuid]",
-      "topologyId": "[uuid]",
-      "artifactId": "[uuid]",
-      "value": [
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 71,
-            "end": 76,
-            "moduleId": 0,
-            "start": 71,
-            "type": "TagDeclarator",
-            "value": "line1"
-          },
-          "type": "extrudePlane"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 154,
-            "end": 158,
-            "moduleId": 0,
-            "start": 154,
-            "type": "TagDeclarator",
-            "value": "arc1"
-          },
-          "type": "extrudeArc"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 371,
-            "end": 376,
-            "moduleId": 0,
-            "start": 371,
-            "type": "TagDeclarator",
-            "value": "line2"
-          },
-          "type": "extrudePlane"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 491,
-            "end": 495,
-            "moduleId": 0,
-            "start": 491,
-            "type": "TagDeclarator",
-            "value": "arc2"
-          },
-          "type": "extrudeArc"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 706,
-            "end": 711,
-            "moduleId": 0,
-            "start": 706,
-            "type": "TagDeclarator",
-            "value": "line3"
-          },
-          "type": "extrudePlane"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 827,
-            "end": 831,
-            "moduleId": 0,
-            "start": 827,
-            "type": "TagDeclarator",
-            "value": "arc3"
-          },
-          "type": "extrudeArc"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 1043,
-            "end": 1048,
-            "moduleId": 0,
-            "start": 1043,
-            "type": "TagDeclarator",
-            "value": "line4"
-          },
-          "type": "extrudePlane"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 1164,
-            "end": 1168,
-            "moduleId": 0,
-            "start": 1164,
-            "type": "TagDeclarator",
-            "value": "arc4"
-          },
-          "type": "extrudeArc"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 1620,
-            "end": 1627,
-            "moduleId": 0,
-            "start": 1620,
-            "type": "TagDeclarator",
-            "value": "circle1"
-          },
-          "type": "extrudeArc"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 1712,
-            "end": 1719,
-            "moduleId": 0,
-            "start": 1712,
-            "type": "TagDeclarator",
-            "value": "circle2"
-          },
-          "type": "extrudeArc"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 1837,
-            "end": 1844,
-            "moduleId": 0,
-            "start": 1837,
-            "type": "TagDeclarator",
-            "value": "circle3"
-          },
-          "type": "extrudeArc"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 2142,
-            "end": 2154,
-            "moduleId": 0,
-            "start": 2142,
-            "type": "TagDeclarator",
-            "value": "capStart001"
-          },
-          "type": "extrudePlane"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 2117,
-            "end": 2127,
-            "moduleId": 0,
-            "start": 2117,
-            "type": "TagDeclarator",
-            "value": "capEnd001"
-          },
-          "type": "extrudePlane"
-        }
-      ],
-      "faces": {
-        "capEnd001": {
-          "type": "TagIdentifier",
-          "value": "capEnd001"
-        },
-        "capStart001": {
-          "type": "TagIdentifier",
-          "value": "capStart001"
-        }
-      },
-      "sketch": {
-        "creatorType": "sketch",
-        "type": "Sketch",
-        "id": "[uuid]",
-        "paths": [
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -2.9386611317249196,
-              1.6593171489068888
-            ],
-            "tag": {
-              "commentStart": 71,
-              "end": 76,
-              "moduleId": 0,
-              "start": 71,
-              "type": "TagDeclarator",
-              "value": "line1"
-            },
-            "to": [
-              -1.671413455123158,
-              2.3809725226490364
-            ],
-            "type": "ToPoint",
-            "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "ccw": false,
-            "center": [
-              -0.9488568191257514,
-              1.1120895045101233
-            ],
-            "from": [
-              -1.671413455123158,
-              2.3809725226490364
-            ],
-            "radius": 1.4601890993789832,
-            "tag": {
-              "commentStart": 154,
-              "end": 158,
-              "moduleId": 0,
-              "start": 154,
-              "type": "TagDeclarator",
-              "value": "arc1"
-            },
-            "to": [
-              -0.4688932705157399,
-              2.491142512175489
-            ],
-            "type": "Arc",
-            "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -0.4688932705157399,
-              2.491142512175489
-            ],
-            "tag": {
-              "commentStart": 371,
-              "end": 376,
-              "moduleId": 0,
-              "start": 371,
-              "type": "TagDeclarator",
-              "value": "line2"
-            },
-            "to": [
-              2.9853471046859004,
-              1.2889877760129855
-            ],
-            "type": "ToPoint",
-            "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "ccw": false,
-            "center": [
-              2.2017678431008814,
-              -0.9620953299879584
-            ],
-            "from": [
-              2.9853471046859004,
-              1.2889877760129855
-            ],
-            "radius": 2.3835627974334934,
-            "tag": {
-              "commentStart": 491,
-              "end": 495,
-              "moduleId": 0,
-              "start": 491,
-              "type": "TagDeclarator",
-              "value": "arc2"
-            },
-            "to": [
-              3.4721701990808125,
-              -2.9788872040368455
-            ],
-            "type": "Arc",
-            "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              3.4721701990808125,
-              -2.9788872040368455
-            ],
-            "tag": {
-              "commentStart": 706,
-              "end": 711,
-              "moduleId": 0,
-              "start": 706,
-              "type": "TagDeclarator",
-              "value": "line3"
-            },
-            "to": [
-              2.0379981557451625,
-              -3.882305863568651
-            ],
-            "type": "ToPoint",
-            "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "ccw": false,
-            "center": [
-              0.5043060858109292,
-              -1.4478422754470817
-            ],
-            "from": [
-              2.0379981557451625,
-              -3.882305863568651
-            ],
-            "radius": 2.877294619476584,
-            "tag": {
-              "commentStart": 827,
-              "end": 831,
-              "moduleId": 0,
-              "start": 827,
-              "type": "TagDeclarator",
-              "value": "arc3"
-            },
-            "to": [
-              0.39056331883316764,
-              -4.3228878246913265
-            ],
-            "type": "Arc",
-            "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              0.39056331883316764,
-              -4.3228878246913265
-            ],
-            "tag": {
-              "commentStart": 1043,
-              "end": 1048,
-              "moduleId": 0,
-              "start": 1043,
-              "type": "TagDeclarator",
-              "value": "line4"
-            },
-            "to": [
-              -1.4988594191981486,
-              -4.248176308525822
-            ],
-            "type": "ToPoint",
-            "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "ccw": false,
-            "center": [
-              -1.3737159083829549,
-              -1.088471445885145
-            ],
-            "from": [
-              -1.4988594191981486,
-              -4.248176308525822
-            ],
-            "radius": 3.162182113239889,
-            "tag": {
-              "commentStart": 1164,
-              "end": 1168,
-              "moduleId": 0,
-              "start": 1164,
-              "type": "TagDeclarator",
-              "value": "arc4"
-            },
-            "to": [
-              -2.938661132003835,
-              1.6593171493966108
-            ],
-            "type": "Arc",
-            "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "ccw": true,
-            "center": [
-              -2.46,
-              -1.86
-            ],
-            "from": [
-              -2.63,
-              -1.04
-            ],
-            "radius": 0.8374365647617735,
-            "tag": {
-              "commentStart": 1620,
-              "end": 1627,
-              "moduleId": 0,
-              "start": 1620,
-              "type": "TagDeclarator",
-              "value": "circle1"
-            },
-            "to": [
-              -2.63,
-              -1.04
-            ],
-            "type": "Circle",
-            "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "ccw": true,
-            "center": [
-              1.82,
-              0.0
-            ],
-            "from": [
-              1.48,
-              -0.83
-            ],
-            "radius": 0.8969392398596462,
-            "tag": {
-              "commentStart": 1712,
-              "end": 1719,
-              "moduleId": 0,
-              "start": 1712,
-              "type": "TagDeclarator",
-              "value": "circle2"
-            },
-            "to": [
-              1.48,
-              -0.83
-            ],
-            "type": "Circle",
-            "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "ccw": true,
-            "center": [
-              0.64,
-              -3.17
-            ],
-            "from": [
-              0.45,
-              -2.64
-            ],
-            "radius": 0.5630275304103698,
-            "tag": {
-              "commentStart": 1837,
-              "end": 1844,
-              "moduleId": 0,
-              "start": 1837,
-              "type": "TagDeclarator",
-              "value": "circle3"
-            },
-            "to": [
-              0.45,
-              -2.64
-            ],
-            "type": "Circle",
-            "units": "mm"
-          }
-        ],
-        "on": {
-          "type": "plane",
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
-          "objectId": 0,
-          "kind": "Custom",
-          "origin": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": 0.0,
-            "units": "mm"
-          },
-          "xAxis": {
-            "x": 1.0,
-            "y": 0.0,
-            "z": 0.0,
-            "units": null
-          },
-          "yAxis": {
-            "x": 0.0,
-            "y": 1.0,
-            "z": 0.0,
-            "units": null
-          },
-          "zAxis": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": 1.0,
-            "units": null
-          }
-        },
-        "start": {
-          "from": [
-            -2.9386611317249196,
-            1.6593171489068888
-          ],
-          "to": [
-            -2.9386611317249196,
-            1.6593171489068888
-          ],
-          "units": "mm",
-          "tag": null,
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          }
-        },
-        "tags": {
-          "arc1": {
-            "type": "TagIdentifier",
-            "value": "arc1"
-          },
-          "arc2": {
-            "type": "TagIdentifier",
-            "value": "arc2"
-          },
-          "arc3": {
-            "type": "TagIdentifier",
-            "value": "arc3"
-          },
-          "arc4": {
-            "type": "TagIdentifier",
-            "value": "arc4"
-          },
-          "capEnd001": {
-            "type": "TagIdentifier",
-            "value": "capEnd001"
-          },
-          "capStart001": {
-            "type": "TagIdentifier",
-            "value": "capStart001"
-          },
-          "circle1": {
-            "type": "TagIdentifier",
-            "value": "circle1"
-          },
-          "circle2": {
-            "type": "TagIdentifier",
-            "value": "circle2"
-          },
-          "circle3": {
-            "type": "TagIdentifier",
-            "value": "circle3"
-          },
-          "line1": {
-            "type": "TagIdentifier",
-            "value": "line1"
-          },
-          "line2": {
-            "type": "TagIdentifier",
-            "value": "line2"
-          },
-          "line3": {
-            "type": "TagIdentifier",
-            "value": "line3"
-          },
-          "line4": {
-            "type": "TagIdentifier",
-            "value": "line4"
-          }
-        },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "units": "mm",
-        "isClosed": "explicitly"
-      },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
-      "edgeCuts": [
-        {
-          "type": "fillet",
-          "id": "[uuid]",
-          "radius": {
-            "n": 0.3,
-            "ty": {
-              "type": "Default",
-              "value": {
-                "len": "mm",
-                "angle": "degrees"
-              }
-            }
-          },
-          "edgeId": "[uuid]",
-          "tag": null
-        }
-      ],
-      "units": "mm",
-      "sectional": false
-    }
-  },
-  "fillet008": {
-    "type": "Solid",
-    "value": {
-      "type": "Solid",
-      "id": "[uuid]",
-      "originalId": "[uuid]",
-      "topologyId": "[uuid]",
-      "artifactId": "[uuid]",
-      "value": [
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 71,
-            "end": 76,
-            "moduleId": 0,
-            "start": 71,
-            "type": "TagDeclarator",
-            "value": "line1"
-          },
-          "type": "extrudePlane"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 154,
-            "end": 158,
-            "moduleId": 0,
-            "start": 154,
-            "type": "TagDeclarator",
-            "value": "arc1"
-          },
-          "type": "extrudeArc"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 371,
-            "end": 376,
-            "moduleId": 0,
-            "start": 371,
-            "type": "TagDeclarator",
-            "value": "line2"
-          },
-          "type": "extrudePlane"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 491,
-            "end": 495,
-            "moduleId": 0,
-            "start": 491,
-            "type": "TagDeclarator",
-            "value": "arc2"
-          },
-          "type": "extrudeArc"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 706,
-            "end": 711,
-            "moduleId": 0,
-            "start": 706,
-            "type": "TagDeclarator",
-            "value": "line3"
-          },
-          "type": "extrudePlane"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 827,
-            "end": 831,
-            "moduleId": 0,
-            "start": 827,
-            "type": "TagDeclarator",
-            "value": "arc3"
-          },
-          "type": "extrudeArc"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 1043,
-            "end": 1048,
-            "moduleId": 0,
-            "start": 1043,
-            "type": "TagDeclarator",
-            "value": "line4"
-          },
-          "type": "extrudePlane"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 1164,
-            "end": 1168,
-            "moduleId": 0,
-            "start": 1164,
-            "type": "TagDeclarator",
-            "value": "arc4"
-          },
-          "type": "extrudeArc"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 1620,
-            "end": 1627,
-            "moduleId": 0,
-            "start": 1620,
-            "type": "TagDeclarator",
-            "value": "circle1"
-          },
-          "type": "extrudeArc"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 1712,
-            "end": 1719,
-            "moduleId": 0,
-            "start": 1712,
-            "type": "TagDeclarator",
-            "value": "circle2"
-          },
-          "type": "extrudeArc"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 1837,
-            "end": 1844,
-            "moduleId": 0,
-            "start": 1837,
-            "type": "TagDeclarator",
-            "value": "circle3"
-          },
-          "type": "extrudeArc"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 2142,
-            "end": 2154,
-            "moduleId": 0,
-            "start": 2142,
-            "type": "TagDeclarator",
-            "value": "capStart001"
-          },
-          "type": "extrudePlane"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 2117,
-            "end": 2127,
-            "moduleId": 0,
-            "start": 2117,
-            "type": "TagDeclarator",
-            "value": "capEnd001"
-          },
-          "type": "extrudePlane"
-        }
-      ],
-      "faces": {
-        "capEnd001": {
-          "type": "TagIdentifier",
-          "value": "capEnd001"
-        },
-        "capStart001": {
-          "type": "TagIdentifier",
-          "value": "capStart001"
-        }
-      },
-      "sketch": {
-        "creatorType": "sketch",
-        "type": "Sketch",
-        "id": "[uuid]",
-        "paths": [
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -2.9386611317249196,
-              1.6593171489068888
-            ],
-            "tag": {
-              "commentStart": 71,
-              "end": 76,
-              "moduleId": 0,
-              "start": 71,
-              "type": "TagDeclarator",
-              "value": "line1"
-            },
-            "to": [
-              -1.671413455123158,
-              2.3809725226490364
-            ],
-            "type": "ToPoint",
-            "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "ccw": false,
-            "center": [
-              -0.9488568191257514,
-              1.1120895045101233
-            ],
-            "from": [
-              -1.671413455123158,
-              2.3809725226490364
-            ],
-            "radius": 1.4601890993789832,
-            "tag": {
-              "commentStart": 154,
-              "end": 158,
-              "moduleId": 0,
-              "start": 154,
-              "type": "TagDeclarator",
-              "value": "arc1"
-            },
-            "to": [
-              -0.4688932705157399,
-              2.491142512175489
-            ],
-            "type": "Arc",
-            "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -0.4688932705157399,
-              2.491142512175489
-            ],
-            "tag": {
-              "commentStart": 371,
-              "end": 376,
-              "moduleId": 0,
-              "start": 371,
-              "type": "TagDeclarator",
-              "value": "line2"
-            },
-            "to": [
-              2.9853471046859004,
-              1.2889877760129855
-            ],
-            "type": "ToPoint",
-            "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "ccw": false,
-            "center": [
-              2.2017678431008814,
-              -0.9620953299879584
-            ],
-            "from": [
-              2.9853471046859004,
-              1.2889877760129855
-            ],
-            "radius": 2.3835627974334934,
-            "tag": {
-              "commentStart": 491,
-              "end": 495,
-              "moduleId": 0,
-              "start": 491,
-              "type": "TagDeclarator",
-              "value": "arc2"
-            },
-            "to": [
-              3.4721701990808125,
-              -2.9788872040368455
-            ],
-            "type": "Arc",
-            "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              3.4721701990808125,
-              -2.9788872040368455
-            ],
-            "tag": {
-              "commentStart": 706,
-              "end": 711,
-              "moduleId": 0,
-              "start": 706,
-              "type": "TagDeclarator",
-              "value": "line3"
-            },
-            "to": [
-              2.0379981557451625,
-              -3.882305863568651
-            ],
-            "type": "ToPoint",
-            "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "ccw": false,
-            "center": [
-              0.5043060858109292,
-              -1.4478422754470817
-            ],
-            "from": [
-              2.0379981557451625,
-              -3.882305863568651
-            ],
-            "radius": 2.877294619476584,
-            "tag": {
-              "commentStart": 827,
-              "end": 831,
-              "moduleId": 0,
-              "start": 827,
-              "type": "TagDeclarator",
-              "value": "arc3"
-            },
-            "to": [
-              0.39056331883316764,
-              -4.3228878246913265
-            ],
-            "type": "Arc",
-            "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              0.39056331883316764,
-              -4.3228878246913265
-            ],
-            "tag": {
-              "commentStart": 1043,
-              "end": 1048,
-              "moduleId": 0,
-              "start": 1043,
-              "type": "TagDeclarator",
-              "value": "line4"
-            },
-            "to": [
-              -1.4988594191981486,
-              -4.248176308525822
-            ],
-            "type": "ToPoint",
-            "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "ccw": false,
-            "center": [
-              -1.3737159083829549,
-              -1.088471445885145
-            ],
-            "from": [
-              -1.4988594191981486,
-              -4.248176308525822
-            ],
-            "radius": 3.162182113239889,
-            "tag": {
-              "commentStart": 1164,
-              "end": 1168,
-              "moduleId": 0,
-              "start": 1164,
-              "type": "TagDeclarator",
-              "value": "arc4"
-            },
-            "to": [
-              -2.938661132003835,
-              1.6593171493966108
-            ],
-            "type": "Arc",
-            "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "ccw": true,
-            "center": [
-              -2.46,
-              -1.86
-            ],
-            "from": [
-              -2.63,
-              -1.04
-            ],
-            "radius": 0.8374365647617735,
-            "tag": {
-              "commentStart": 1620,
-              "end": 1627,
-              "moduleId": 0,
-              "start": 1620,
-              "type": "TagDeclarator",
-              "value": "circle1"
-            },
-            "to": [
-              -2.63,
-              -1.04
-            ],
-            "type": "Circle",
-            "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "ccw": true,
-            "center": [
-              1.82,
-              0.0
-            ],
-            "from": [
-              1.48,
-              -0.83
-            ],
-            "radius": 0.8969392398596462,
-            "tag": {
-              "commentStart": 1712,
-              "end": 1719,
-              "moduleId": 0,
-              "start": 1712,
-              "type": "TagDeclarator",
-              "value": "circle2"
-            },
-            "to": [
-              1.48,
-              -0.83
-            ],
-            "type": "Circle",
-            "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "ccw": true,
-            "center": [
-              0.64,
-              -3.17
-            ],
-            "from": [
-              0.45,
-              -2.64
-            ],
-            "radius": 0.5630275304103698,
-            "tag": {
-              "commentStart": 1837,
-              "end": 1844,
-              "moduleId": 0,
-              "start": 1837,
-              "type": "TagDeclarator",
-              "value": "circle3"
-            },
-            "to": [
-              0.45,
-              -2.64
-            ],
-            "type": "Circle",
-            "units": "mm"
-          }
-        ],
-        "on": {
-          "type": "plane",
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
-          "objectId": 0,
-          "kind": "Custom",
-          "origin": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": 0.0,
-            "units": "mm"
-          },
-          "xAxis": {
-            "x": 1.0,
-            "y": 0.0,
-            "z": 0.0,
-            "units": null
-          },
-          "yAxis": {
-            "x": 0.0,
-            "y": 1.0,
-            "z": 0.0,
-            "units": null
-          },
-          "zAxis": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": 1.0,
-            "units": null
-          }
-        },
-        "start": {
-          "from": [
-            -2.9386611317249196,
-            1.6593171489068888
-          ],
-          "to": [
-            -2.9386611317249196,
-            1.6593171489068888
-          ],
-          "units": "mm",
-          "tag": null,
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          }
-        },
-        "tags": {
-          "arc1": {
-            "type": "TagIdentifier",
-            "value": "arc1"
-          },
-          "arc2": {
-            "type": "TagIdentifier",
-            "value": "arc2"
-          },
-          "arc3": {
-            "type": "TagIdentifier",
-            "value": "arc3"
-          },
-          "arc4": {
-            "type": "TagIdentifier",
-            "value": "arc4"
-          },
-          "capEnd001": {
-            "type": "TagIdentifier",
-            "value": "capEnd001"
-          },
-          "capStart001": {
-            "type": "TagIdentifier",
-            "value": "capStart001"
-          },
-          "circle1": {
-            "type": "TagIdentifier",
-            "value": "circle1"
-          },
-          "circle2": {
-            "type": "TagIdentifier",
-            "value": "circle2"
-          },
-          "circle3": {
-            "type": "TagIdentifier",
-            "value": "circle3"
-          },
-          "line1": {
-            "type": "TagIdentifier",
-            "value": "line1"
-          },
-          "line2": {
-            "type": "TagIdentifier",
-            "value": "line2"
-          },
-          "line3": {
-            "type": "TagIdentifier",
-            "value": "line3"
-          },
-          "line4": {
-            "type": "TagIdentifier",
-            "value": "line4"
-          }
-        },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "units": "mm",
-        "isClosed": "explicitly"
-      },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
-      "edgeCuts": [
-        {
-          "type": "fillet",
-          "id": "[uuid]",
-          "radius": {
-            "n": 0.3,
-            "ty": {
-              "type": "Default",
-              "value": {
-                "len": "mm",
-                "angle": "degrees"
-              }
-            }
-          },
-          "edgeId": "[uuid]",
-          "tag": null
-        }
-      ],
-      "units": "mm",
-      "sectional": false
+  "height": {
+    "type": "Number",
+    "value": 3.0,
+    "ty": {
+      "type": "Default",
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "hidden001": {
@@ -5877,10 +2602,10 @@ description: Variables in memory after executing hex_fillet.kcl
             1.6593171489068888
           ],
           "tag": {
-            "commentStart": 71,
-            "end": 76,
+            "commentStart": 82,
+            "end": 87,
             "moduleId": 0,
-            "start": 71,
+            "start": 82,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -5907,10 +2632,10 @@ description: Variables in memory after executing hex_fillet.kcl
           ],
           "radius": 1.4601890993789832,
           "tag": {
-            "commentStart": 154,
-            "end": 158,
+            "commentStart": 165,
+            "end": 169,
             "moduleId": 0,
-            "start": 154,
+            "start": 165,
             "type": "TagDeclarator",
             "value": "arc1"
           },
@@ -5931,10 +2656,10 @@ description: Variables in memory after executing hex_fillet.kcl
             2.491142512175489
           ],
           "tag": {
-            "commentStart": 371,
-            "end": 376,
+            "commentStart": 382,
+            "end": 387,
             "moduleId": 0,
-            "start": 371,
+            "start": 382,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -5961,10 +2686,10 @@ description: Variables in memory after executing hex_fillet.kcl
           ],
           "radius": 2.3835627974334934,
           "tag": {
-            "commentStart": 491,
-            "end": 495,
+            "commentStart": 502,
+            "end": 506,
             "moduleId": 0,
-            "start": 491,
+            "start": 502,
             "type": "TagDeclarator",
             "value": "arc2"
           },
@@ -5985,10 +2710,10 @@ description: Variables in memory after executing hex_fillet.kcl
             -2.9788872040368455
           ],
           "tag": {
-            "commentStart": 706,
-            "end": 711,
+            "commentStart": 717,
+            "end": 722,
             "moduleId": 0,
-            "start": 706,
+            "start": 717,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -6015,10 +2740,10 @@ description: Variables in memory after executing hex_fillet.kcl
           ],
           "radius": 2.877294619476584,
           "tag": {
-            "commentStart": 827,
-            "end": 831,
+            "commentStart": 838,
+            "end": 842,
             "moduleId": 0,
-            "start": 827,
+            "start": 838,
             "type": "TagDeclarator",
             "value": "arc3"
           },
@@ -6039,10 +2764,10 @@ description: Variables in memory after executing hex_fillet.kcl
             -4.3228878246913265
           ],
           "tag": {
-            "commentStart": 1043,
-            "end": 1048,
+            "commentStart": 1054,
+            "end": 1059,
             "moduleId": 0,
-            "start": 1043,
+            "start": 1054,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -6069,10 +2794,10 @@ description: Variables in memory after executing hex_fillet.kcl
           ],
           "radius": 3.162182113239889,
           "tag": {
-            "commentStart": 1164,
-            "end": 1168,
+            "commentStart": 1175,
+            "end": 1179,
             "moduleId": 0,
-            "start": 1164,
+            "start": 1175,
             "type": "TagDeclarator",
             "value": "arc4"
           },
@@ -6116,10 +2841,10 @@ description: Variables in memory after executing hex_fillet.kcl
           ],
           "radius": 0.8374365647617735,
           "tag": {
-            "commentStart": 1620,
-            "end": 1627,
+            "commentStart": 1631,
+            "end": 1638,
             "moduleId": 0,
-            "start": 1620,
+            "start": 1631,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -6163,10 +2888,10 @@ description: Variables in memory after executing hex_fillet.kcl
           ],
           "radius": 0.8969392398596462,
           "tag": {
-            "commentStart": 1712,
-            "end": 1719,
+            "commentStart": 1723,
+            "end": 1730,
             "moduleId": 0,
-            "start": 1712,
+            "start": 1723,
             "type": "TagDeclarator",
             "value": "circle2"
           },
@@ -6210,10 +2935,10 @@ description: Variables in memory after executing hex_fillet.kcl
           ],
           "radius": 0.5630275304103698,
           "tag": {
-            "commentStart": 1837,
-            "end": 1844,
+            "commentStart": 1848,
+            "end": 1855,
             "moduleId": 0,
-            "start": 1837,
+            "start": 1848,
             "type": "TagDeclarator",
             "value": "circle3"
           },
@@ -6367,10 +3092,10 @@ description: Variables in memory after executing hex_fillet.kcl
             1.6593171489068888
           ],
           "tag": {
-            "commentStart": 71,
-            "end": 76,
+            "commentStart": 82,
+            "end": 87,
             "moduleId": 0,
-            "start": 71,
+            "start": 82,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -6397,10 +3122,10 @@ description: Variables in memory after executing hex_fillet.kcl
           ],
           "radius": 1.4601890993789832,
           "tag": {
-            "commentStart": 154,
-            "end": 158,
+            "commentStart": 165,
+            "end": 169,
             "moduleId": 0,
-            "start": 154,
+            "start": 165,
             "type": "TagDeclarator",
             "value": "arc1"
           },
@@ -6421,10 +3146,10 @@ description: Variables in memory after executing hex_fillet.kcl
             2.491142512175489
           ],
           "tag": {
-            "commentStart": 371,
-            "end": 376,
+            "commentStart": 382,
+            "end": 387,
             "moduleId": 0,
-            "start": 371,
+            "start": 382,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -6451,10 +3176,10 @@ description: Variables in memory after executing hex_fillet.kcl
           ],
           "radius": 2.3835627974334934,
           "tag": {
-            "commentStart": 491,
-            "end": 495,
+            "commentStart": 502,
+            "end": 506,
             "moduleId": 0,
-            "start": 491,
+            "start": 502,
             "type": "TagDeclarator",
             "value": "arc2"
           },
@@ -6475,10 +3200,10 @@ description: Variables in memory after executing hex_fillet.kcl
             -2.9788872040368455
           ],
           "tag": {
-            "commentStart": 706,
-            "end": 711,
+            "commentStart": 717,
+            "end": 722,
             "moduleId": 0,
-            "start": 706,
+            "start": 717,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -6505,10 +3230,10 @@ description: Variables in memory after executing hex_fillet.kcl
           ],
           "radius": 2.877294619476584,
           "tag": {
-            "commentStart": 827,
-            "end": 831,
+            "commentStart": 838,
+            "end": 842,
             "moduleId": 0,
-            "start": 827,
+            "start": 838,
             "type": "TagDeclarator",
             "value": "arc3"
           },
@@ -6529,10 +3254,10 @@ description: Variables in memory after executing hex_fillet.kcl
             -4.3228878246913265
           ],
           "tag": {
-            "commentStart": 1043,
-            "end": 1048,
+            "commentStart": 1054,
+            "end": 1059,
             "moduleId": 0,
-            "start": 1043,
+            "start": 1054,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -6559,10 +3284,10 @@ description: Variables in memory after executing hex_fillet.kcl
           ],
           "radius": 3.162182113239889,
           "tag": {
-            "commentStart": 1164,
-            "end": 1168,
+            "commentStart": 1175,
+            "end": 1179,
             "moduleId": 0,
-            "start": 1164,
+            "start": 1175,
             "type": "TagDeclarator",
             "value": "arc4"
           },
@@ -6589,10 +3314,10 @@ description: Variables in memory after executing hex_fillet.kcl
           ],
           "radius": 0.8374365647617735,
           "tag": {
-            "commentStart": 1620,
-            "end": 1627,
+            "commentStart": 1631,
+            "end": 1638,
             "moduleId": 0,
-            "start": 1620,
+            "start": 1631,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -6619,10 +3344,10 @@ description: Variables in memory after executing hex_fillet.kcl
           ],
           "radius": 0.8969392398596462,
           "tag": {
-            "commentStart": 1712,
-            "end": 1719,
+            "commentStart": 1723,
+            "end": 1730,
             "moduleId": 0,
-            "start": 1712,
+            "start": 1723,
             "type": "TagDeclarator",
             "value": "circle2"
           },
@@ -6649,10 +3374,10 @@ description: Variables in memory after executing hex_fillet.kcl
           ],
           "radius": 0.5630275304103698,
           "tag": {
-            "commentStart": 1837,
-            "end": 1844,
+            "commentStart": 1848,
+            "end": 1855,
             "moduleId": 0,
-            "start": 1837,
+            "start": 1848,
             "type": "TagDeclarator",
             "value": "circle3"
           },
@@ -8353,10 +5078,10 @@ description: Variables in memory after executing hex_fillet.kcl
                     1.6593171489068888
                   ],
                   "tag": {
-                    "commentStart": 71,
-                    "end": 76,
+                    "commentStart": 82,
+                    "end": 87,
                     "moduleId": 0,
-                    "start": 71,
+                    "start": 82,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -8383,10 +5108,10 @@ description: Variables in memory after executing hex_fillet.kcl
                   ],
                   "radius": 1.4601890993789832,
                   "tag": {
-                    "commentStart": 154,
-                    "end": 158,
+                    "commentStart": 165,
+                    "end": 169,
                     "moduleId": 0,
-                    "start": 154,
+                    "start": 165,
                     "type": "TagDeclarator",
                     "value": "arc1"
                   },
@@ -8407,10 +5132,10 @@ description: Variables in memory after executing hex_fillet.kcl
                     2.491142512175489
                   ],
                   "tag": {
-                    "commentStart": 371,
-                    "end": 376,
+                    "commentStart": 382,
+                    "end": 387,
                     "moduleId": 0,
-                    "start": 371,
+                    "start": 382,
                     "type": "TagDeclarator",
                     "value": "line2"
                   },
@@ -8437,10 +5162,10 @@ description: Variables in memory after executing hex_fillet.kcl
                   ],
                   "radius": 2.3835627974334934,
                   "tag": {
-                    "commentStart": 491,
-                    "end": 495,
+                    "commentStart": 502,
+                    "end": 506,
                     "moduleId": 0,
-                    "start": 491,
+                    "start": 502,
                     "type": "TagDeclarator",
                     "value": "arc2"
                   },
@@ -8461,10 +5186,10 @@ description: Variables in memory after executing hex_fillet.kcl
                     -2.9788872040368455
                   ],
                   "tag": {
-                    "commentStart": 706,
-                    "end": 711,
+                    "commentStart": 717,
+                    "end": 722,
                     "moduleId": 0,
-                    "start": 706,
+                    "start": 717,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
@@ -8491,10 +5216,10 @@ description: Variables in memory after executing hex_fillet.kcl
                   ],
                   "radius": 2.877294619476584,
                   "tag": {
-                    "commentStart": 827,
-                    "end": 831,
+                    "commentStart": 838,
+                    "end": 842,
                     "moduleId": 0,
-                    "start": 827,
+                    "start": 838,
                     "type": "TagDeclarator",
                     "value": "arc3"
                   },
@@ -8515,10 +5240,10 @@ description: Variables in memory after executing hex_fillet.kcl
                     -4.3228878246913265
                   ],
                   "tag": {
-                    "commentStart": 1043,
-                    "end": 1048,
+                    "commentStart": 1054,
+                    "end": 1059,
                     "moduleId": 0,
-                    "start": 1043,
+                    "start": 1054,
                     "type": "TagDeclarator",
                     "value": "line4"
                   },
@@ -8545,10 +5270,10 @@ description: Variables in memory after executing hex_fillet.kcl
                   ],
                   "radius": 3.162182113239889,
                   "tag": {
-                    "commentStart": 1164,
-                    "end": 1168,
+                    "commentStart": 1175,
+                    "end": 1179,
                     "moduleId": 0,
-                    "start": 1164,
+                    "start": 1175,
                     "type": "TagDeclarator",
                     "value": "arc4"
                   },
@@ -8592,10 +5317,10 @@ description: Variables in memory after executing hex_fillet.kcl
                   ],
                   "radius": 0.8374365647617735,
                   "tag": {
-                    "commentStart": 1620,
-                    "end": 1627,
+                    "commentStart": 1631,
+                    "end": 1638,
                     "moduleId": 0,
-                    "start": 1620,
+                    "start": 1631,
                     "type": "TagDeclarator",
                     "value": "circle1"
                   },
@@ -8639,10 +5364,10 @@ description: Variables in memory after executing hex_fillet.kcl
                   ],
                   "radius": 0.8969392398596462,
                   "tag": {
-                    "commentStart": 1712,
-                    "end": 1719,
+                    "commentStart": 1723,
+                    "end": 1730,
                     "moduleId": 0,
-                    "start": 1712,
+                    "start": 1723,
                     "type": "TagDeclarator",
                     "value": "circle2"
                   },
@@ -8686,10 +5411,10 @@ description: Variables in memory after executing hex_fillet.kcl
                   ],
                   "radius": 0.5630275304103698,
                   "tag": {
-                    "commentStart": 1837,
-                    "end": 1844,
+                    "commentStart": 1848,
+                    "end": 1855,
                     "moduleId": 0,
-                    "start": 1837,
+                    "start": 1848,
                     "type": "TagDeclarator",
                     "value": "circle3"
                   },
