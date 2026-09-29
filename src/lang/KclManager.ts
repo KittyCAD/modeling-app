@@ -189,7 +189,6 @@ import {
   type KeymapService,
 } from '@src/registry/contracts/keymap'
 import toast from 'react-hot-toast'
-import { getKclLanguageVersion } from '@src/lang/kclLanguageVersion'
 
 interface ExecuteArgs {
   ast?: Node<Program>
@@ -2545,11 +2544,6 @@ export class KclManager extends File {
     }
 
     return result.program
-  }
-
-  async getLanguageVersion() {
-    const instance = await this.wasmInstancePromise
-    return getKclLanguageVersion(this.code, instance)
   }
 
   // This NEVER updates the code, if you want to update the code DO NOT add to

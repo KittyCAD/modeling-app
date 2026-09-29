@@ -52,6 +52,9 @@ describe('tryConnecting', () => {
     }
     const setShowManualConnect = vi.fn()
     const numberOfConnectionAttempts = { current: 0 }
+    vi.mock('@src/lang/kclLanguageVersion', () => ({
+      getKclLanguageVersion: vi.fn().mockResolvedValue(testCase.version),
+    }))
 
     await expect(
       tryConnecting({
@@ -70,9 +73,7 @@ describe('tryConnecting', () => {
         setShowManualConnect,
         sceneInfra: {} as SceneInfra,
         engineCommandManager: manager as unknown as ConnectionManager,
-        kclManager: {
-          getLanguageVersion: vi.fn().mockResolvedValue(testCase.version),
-        } as unknown as KclManager,
+        kclManager: {} as KclManager,
         rustContext: {} as RustContext,
       })
     ).rejects.toEqual(connectionError)
