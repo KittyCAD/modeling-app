@@ -1,6 +1,8 @@
+import type { KclVersion } from '@rust/kcl-lib/bindings/KclVersion'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import { tryConnecting } from '@src/hooks/network/useTryConnect'
 import type { KclManager } from '@src/lang/KclManager'
+import { getKclLanguageVersion } from '@src/lang/kclLanguageVersion'
 import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 import {
   type EngineConnectionError,
@@ -11,6 +13,9 @@ import type { SettingsActorType } from '@src/machines/settingsMachine'
 import { describe, expect, it, vi } from 'vitest'
 
 vi.mock('@src/lib/boot', () => ({ useSingletons: vi.fn() }))
+vi.mock('@src/lang/kclLanguageVersion', () => ({
+  getKclLanguageVersion: vi.fn(),
+}))
 vi.mock('@src/lib/kclNamedViewActivation', () => ({
   reapplyActiveViewAfterReconnect: vi.fn(),
 }))
@@ -27,7 +32,19 @@ vi.mock(import('@src/lib/trap'), async (importOriginal) => ({
 }))
 
 describe('tryConnecting', () => {
-  it('stops the initial retry loop after a terminal connection error', async () => {
+  it.each<{
+    source: string
+    version: KclVersion | Error
+    expectedVersion: KclVersion | undefined
+  }>([
+    { source: 'valid', version: '2.0', expectedVersion: '2.0' },
+    {
+      source: 'invalid',
+      version: new Error('Invalid KCL version'),
+      expectedVersion: undefined,
+    },
+  ])('stops terminal retries with $source source', async (testCase) => {
+    vi.mocked(getKclLanguageVersion).mockReturnValue(testCase.version)
     const connectionError: EngineConnectionError = {
       kind: EngineConnectionErrorKind.BackendDisconnect,
       message: 'backend disconnected',
@@ -69,6 +86,9 @@ describe('tryConnecting', () => {
     ).rejects.toEqual(connectionError)
 
     expect(manager.start).toHaveBeenCalledOnce()
+    expect(manager.start).toHaveBeenCalledWith(
+      expect.objectContaining({ kclVersion: testCase.expectedVersion })
+    )
     expect(manager.tearDown).not.toHaveBeenCalled()
     expect(numberOfConnectionAttempts.current).toBe(0)
     expect(setShowManualConnect).toHaveBeenCalledWith(true)
