@@ -2608,6 +2608,9 @@ export class KclManager extends File {
       callbacks: this.createExecutionCallbacks(currentExecutionId),
     })
 
+    // All the files that are imported and not the file path of
+    // this editor itself are "live paths" that we should watch
+    // on disk to re-execute if they change out-of-band.
     const livePathsToWatch = Object.values(execState.filenames)
       .filter((file) => {
         return file?.type === 'Local'
@@ -2615,6 +2618,7 @@ export class KclManager extends File {
       .map((file) => {
         return file.value
       })
+      .filter((file) => file !== this.path)
     this.livePathsToWatch.value = livePathsToWatch
 
     // Program was not interrupted, setup the scene
