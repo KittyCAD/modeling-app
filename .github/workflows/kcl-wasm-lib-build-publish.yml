@@ -103,7 +103,7 @@ jobs:
         env:
           VERSION: ${{ steps.version_check.outputs.local_version }}
         run: |
-          npm install "@kittycad/kcl-wasm-lib@$VERSION" --package-lock-only --ignore-scripts
+          npm install --save-exact "@kittycad/kcl-wasm-lib@$VERSION" --ignore-scripts
           if git diff --quiet; then
             exit 0
           fi

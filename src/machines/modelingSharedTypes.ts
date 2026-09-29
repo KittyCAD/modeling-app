@@ -1,4 +1,5 @@
 import type {
+  EntityReference as SdkEntityReference,
   EntityType,
   Point2d,
   RegionGetResolvableIntersectionInfo,
@@ -21,6 +22,11 @@ import type { EquipTool } from '@src/machines/sketchSolve/sketchSolveImpl'
 import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 
 export type Axis = 'y-axis' | 'x-axis' | 'z-axis'
+
+// Remove this extension once @kittycad/lib includes the Helix schema variant.
+export type EntityReference =
+  | SdkEntityReference
+  | { type: 'helix'; helix_id: string }
 
 export type DefaultPlaneSelection = {
   name: DefaultPlaneStr
@@ -57,9 +63,31 @@ export type NonCodeSelection =
   | EnginePrimitiveSelection
   | EngineRegionSelection
 
+/**
+ * Shape of edgeRef when parsed from op args. KCL uses camelCase (sideFaces, endFaces);
+ * op args may also contain snake_case from API. Use when reading so TS enforces
+ * valid keys (not faces/disambiguators).
+ */
+export type EdgeRefFromOpArgs = {
+  side_faces?: unknown
+  sideFaces?: unknown
+  end_faces?: unknown
+  endFaces?: unknown
+  index?: unknown
+}
+
+/** Engine-provided primitive topology used when an entity cannot be referenced through tagged artifact lineage. */
+export type EngineTopologyFallback = {
+  parentId: string
+  primitiveIndex: number
+}
+
 export interface Selection {
+  entityRef?: EntityReference
   artifact?: Artifact
-  codeRef: CodeRef
+  codeRef?: CodeRef
+  /** From query_entity_type_with_point reference.topology_fallback; carried only on graphSelections rows. */
+  engineTopologyFallback?: EngineTopologyFallback
   engineEntityId?: ArtifactId
   patternIndex?: number
 }
@@ -72,7 +100,7 @@ export type Selections = {
 export type SetSelections =
   | {
       selectionType: 'singleCodeCursor'
-      selection?: Selection
+      selection: Selection
       scrollIntoView?: boolean
     }
   | {
