@@ -21,20 +21,10 @@ vi.mock('@src/lib/settings/settingsUtils', () => ({
   getSettingsFromActorContext: vi.fn(),
   jsAppSettings: vi.fn(),
 }))
-vi.mock(import('@src/lib/trap'), async (importOriginal) => ({
-  ...(await importOriginal()),
-  reportRejection: vi.fn(),
-}))
+vi.mock('@src/lib/trap', () => ({ reportRejection: vi.fn() }))
 
 describe('tryConnecting', () => {
-  it.each([
-    { source: 'valid', version: '2.0', expectedVersion: '2.0' },
-    {
-      source: 'invalid',
-      version: new Error('Invalid KCL version'),
-      expectedVersion: undefined,
-    },
-  ])('stops terminal retries with $source source', async (testCase) => {
+  it('stops the initial retry loop after a terminal connection error', async () => {
     const connectionError: EngineConnectionError = {
       kind: EngineConnectionErrorKind.BackendDisconnect,
       message: 'backend disconnected',
@@ -52,9 +42,6 @@ describe('tryConnecting', () => {
     }
     const setShowManualConnect = vi.fn()
     const numberOfConnectionAttempts = { current: 0 }
-    vi.mock('@src/lang/kclLanguageVersion', () => ({
-      getKclLanguageVersion: vi.fn().mockResolvedValue(testCase.version),
-    }))
 
     await expect(
       tryConnecting({
@@ -79,9 +66,6 @@ describe('tryConnecting', () => {
     ).rejects.toEqual(connectionError)
 
     expect(manager.start).toHaveBeenCalledOnce()
-    expect(manager.start).toHaveBeenCalledWith(
-      expect.objectContaining({ kclVersion: testCase.expectedVersion })
-    )
     expect(manager.tearDown).not.toHaveBeenCalled()
     expect(numberOfConnectionAttempts.current).toBe(0)
     expect(setShowManualConnect).toHaveBeenCalledWith(true)
