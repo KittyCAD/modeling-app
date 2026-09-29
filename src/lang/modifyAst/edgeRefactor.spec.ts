@@ -558,8 +558,8 @@ filleted = fillet(
   edges = [
     {
       sideFaces = [
-        body.faces.capEnd001,
-        baseRegion.tags.edge1
+        baseRegion.tags.edge1,
+        body.faces.capEnd001
       ]
     }
   ],
@@ -1819,7 +1819,7 @@ part = bracket()
       {
         name: 'refactors getPreviousAdjacentEdge in fillet to edgeRefs with tag names not UUIDs',
         kcl: KCL_GET_PREVIOUS_ADJACENT_EDGE,
-        expected: ['fillet(', 'edges = [', 'sideFaces = [seg01, e1]'],
+        expected: ['fillet(', 'edges = [', 'sideFaces = [e1, seg01]'],
       },
       {
         name: 'refactors getCommonEdge in fillet to edgeRefs with tag names (e1, cap1) not UUIDs',
@@ -2199,7 +2199,7 @@ surface001 = extrude(
         expect(n).toContain('radius = 0.1')
         expect(n).toContain('edges = [')
         expect(n).toContain(
-          'sideFaces = [ baseRegion.tags.line2, baseRegion.tags.yoyo ]'
+          'sideFaces = [ baseRegion.tags.yoyo, baseRegion.tags.line2 ]'
         )
         expect(n).toContain('endFaces = [startCap]')
         expect(n).not.toContain(removed)
@@ -2217,7 +2217,7 @@ surface001 = extrude(
         expect(n).toContain('fillet(')
         expect(n).toContain('edges = [')
         expect(n).toContain('sideFaces = [capEnd001, e1]')
-        expect(n).toContain('sideFaces = [e2, capEnd001]')
+        expect(n).toContain('sideFaces = [capEnd001, e2]')
       }
     )
 
@@ -2519,16 +2519,16 @@ surface001 = extrude(
        radius = radius,
        edges = [
          {
-           sideFaces = [bs.tags.edge7, bs.tags.edge6]
+           sideFaces = [bs.tags.edge6, bs.tags.edge7]
          },
          {
-           sideFaces = [bs.tags.edge1, bs.tags.edge2]
+           sideFaces = [bs.tags.edge2, bs.tags.edge1]
          },
          {
            sideFaces = [bs.tags.edge2, bs.tags.edge3]
          },
          {
-           sideFaces = [bs.tags.edge5, bs.tags.edge6]
+           sideFaces = [bs.tags.edge6, bs.tags.edge5]
          }
        ],
      )`
