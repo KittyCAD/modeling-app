@@ -635,7 +635,7 @@ extrude001 = extrude(region001, length = 100)`
         `
         helix001 = helix(
           axis = {
-            sideFaces = [region001.tags.line3, capEnd001]
+            sideFaces = [capEnd001, region001.tags.line3]
           },
           revolutions = 20,
           angleStart = 0,
@@ -710,7 +710,7 @@ extrude001 = extrude(region001, length = 100)`
         `
         helix001 = helix(
           axis = {
-            sideFaces = [region001.tags.line3, capEnd001]
+            sideFaces = [capEnd001, region001.tags.line3]
           },
           revolutions = 20,
           angleStart = 0,
@@ -1031,8 +1031,8 @@ region001 = region(segments = [sketch001.circle1])`
 hide(sketch001)
 region001 = region(segments = [sketch001.line1, sketch001.line2])
 extrude001 = extrude(region001, length = -12)`
-    const firstFilletDeclaration = `fillet001 = fillet(extrude001, edges=[{sideFaces=[region001.tags.line2,extrude001.faces.capEnd001]}], radius=5,)`
-    const secondFilletDeclaration = `fillet002 = fillet(extrude001, edges=[{sideFaces=[extrude001.faces.capStart001,region001.tags.line2]}], radius=5,)`
+    const firstFilletDeclaration = `fillet001 = fillet(extrude001, edges=[{sideFaces=[extrude001.faces.capEnd001,region001.tags.line2]}], radius=5,)`
+    const secondFilletDeclaration = `fillet002 = fillet(extrude001, edges=[{sideFaces=[region001.tags.line2,extrude001.faces.capStart001]}], radius=5,)`
 
     // Locators
     // TODO: find a way to not have hardcoded pixel values for region edges and sweepEdges
@@ -1758,7 +1758,7 @@ extrude001 = extrude(region001, length = 5)`
 
       expect(normalizedCode).toContain('fillet001=fillet(extrude001,')
       expect(normalizedCode).toContain(
-        'edges=[{sideFaces=[region001.tags.line1,region001.tags.line3]}]'
+        'edges=[{sideFaces=[region001.tags.line3,region001.tags.line1]}]'
       )
       expect(normalizedCode).toContain('radius=1000,')
       expect(normalizedCode).not.toContain('tags=[')
@@ -1789,8 +1789,8 @@ sketch001 = sketch(on = XY) {
 hide(sketch001)
 region001 = region(segments = [sketch001.line1, sketch001.line2])
 extrude001 = extrude(region001, length = -12)`
-    const firstChamferDeclaration = `chamfer001 = chamfer(extrude001, edges=[{sideFaces=[extrude001.faces.capEnd001,region001.tags.line2]}], length=5,)`
-    const secondChamferDeclaration = `chamfer002 = chamfer(extrude001, edges=[{sideFaces=[extrude001.faces.capStart001,region001.tags.line2]}], length=5,)`
+    const firstChamferDeclaration = `chamfer001 = chamfer(extrude001, edges=[{sideFaces=[region001.tags.line2,extrude001.faces.capEnd001]}], length=5,)`
+    const secondChamferDeclaration = `chamfer002 = chamfer(extrude001, edges=[{sideFaces=[region001.tags.line2,extrude001.faces.capStart001]}], length=5,)`
 
     // Locators
     const firstEdgeLocation = { x: 600, y: 193 }
@@ -2685,14 +2685,14 @@ region002 = region(point = [-20.0275mm, 10mm], sketch = sketch002)`
   region002,
   angle = 360deg,
   axis = {
-    sideFaces = [region001.tags.line1, capEnd001]
+    sideFaces = [capEnd001, region001.tags.line1]
   },
 )`
     const newCodeToFindAfterEdit = `revolve001 = revolve(
   region002,
   angle = 360deg,
   axis = {
-    sideFaces = [region001.tags.line1, capEnd001]
+    sideFaces = [capEnd001, region001.tags.line1]
   },
 )`
 

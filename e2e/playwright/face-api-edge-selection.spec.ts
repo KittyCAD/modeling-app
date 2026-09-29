@@ -145,7 +145,7 @@ test.describe('Face API edge selection', { tag: '@web' }, () => {
       await editor.expectEditor.toContain(`revolve`)
       await editor.expectEditor.toContain(`sideFaces = [seg01]`)
       await editor.expectEditor.toContain(
-        `endFaces = [seg02, rectangleSegmentA002]`
+        `endFaces = [rectangleSegmentA002, seg02]`
       )
       await expect(page.locator('.cm-lint-marker-error')).toHaveCount(0)
     })
