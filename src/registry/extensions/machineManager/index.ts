@@ -1,7 +1,6 @@
 import {
   defineRegistryItem,
   defineRegistryItemFactory,
-  defineRuntimeRegistryItem,
   provideService,
 } from '@kittycad/registry'
 import { MachineManager } from '@src/lib/MachineManager'
@@ -17,12 +16,10 @@ export const machineManagerExtension = defineRegistryItemFactory(() => {
       : new MachineManager()
 
   return {
-    item: defineRuntimeRegistryItem({
-      id: 'machine-manager-extension',
-      providesServices: [
-        provideService(machineManagerService, { manager: machineManager }),
-      ],
-    }),
+    id: 'machine-manager-extension',
+    providesServices: [
+      provideService(machineManagerService, { manager: machineManager }),
+    ],
   }
 }, 'machine-manager-extension')
 

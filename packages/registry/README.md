@@ -124,6 +124,10 @@ That keeps contracts close to the registry layer while still avoiding a single
 
 ## Factory Dependencies
 
+Factory callbacks return a plain item definition containing contributions, child
+items, and optional `dispose` cleanup. No item wrapper or additional helper is
+needed; keep model state in the callback and expose it through services.
+
 Dependencies are an optional third argument to the ordinary callback helper:
 
 ```ts
@@ -133,13 +137,11 @@ export const settingsTomlSerialization = defineRegistryItemFactory(
     const settings = valueSpecs.signal(settingsValueSpecExperimental)
 
     return {
-      item: {
-        providesServices: [
-          provideService(settingsTomlService, {
-            load: () => loadSettings(files.value, settings.value),
-          }),
-        ],
-      },
+      providesServices: [
+        provideService(settingsTomlService, {
+          load: () => loadSettings(files.value, settings.value),
+        }),
+      ],
     }
   },
   'settings-toml',
