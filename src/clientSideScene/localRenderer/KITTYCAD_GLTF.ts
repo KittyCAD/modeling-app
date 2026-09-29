@@ -43,11 +43,21 @@ type KITTYCAD_GLTF_LOOP = {
 }
 
 type KITTYCAD_GLTF_EDGE = {
-  curve: number[] //[number, number] ?
-  start: number
-  end: number
-  t: [number, number]
-}
+  curve: OrientedIndex
+  t: [min: number, max: number]
+  name?: string
+} & (
+  | {
+    closed?: false // Omitted means open
+    start: number
+    end: number
+  }
+  | {
+    closed: true // closed curves are allowed not to have vertices
+    start?: number | null
+    end?: number | null
+  }
+)
 
 type KIITYCAD_GLTF_VERTEX = [number, number, number]
 

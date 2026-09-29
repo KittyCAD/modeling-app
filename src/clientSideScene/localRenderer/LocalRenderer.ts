@@ -1022,7 +1022,10 @@ export class LocalRenderer {
       this.clearModel()
       this.currentModel = gltf.scene
       this.scene?.add(gltf.scene)
+      
       this.edgeRenderer?.buildEdges(gltf)
+      this.edgeRenderer?.addTo(gltf.scene)
+
       this.rebuildPlaneTargets()
       const bounds = new Box3().setFromObject(gltf.scene)
       this.updateAmbientOcclusionScale(bounds)

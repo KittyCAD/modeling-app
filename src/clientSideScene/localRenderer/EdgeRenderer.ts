@@ -34,24 +34,48 @@ export class EdgeRenderer {
     this.group.visible = visible
   }
 
+  // TODO defer building if edges are not visible
   public buildEdges(gltf: KITTYCAD_GLTF) {
-    const brep = gltf.userData.gltfExtensions.KITTYCAD_boundary_representation;
-    for (const solid of brep.solids) {
-      for (const [shellIndex, _] of solid.shells) {
-        const shell = brep.shells[shellIndex];
-        for (const [faceIndex, _] of shell.faces) {
-          const face = brep.faces[faceIndex];
-          for (const [loopIndex, _] of face.loops) {
-            const loop = brep.loops[loopIndex];
-            for (const [edgeIndex, _] of loop.edges) {
-              const edge = brep.edges[edgeIndex];
-              
+    const brep = gltf.userData.gltfExtensions.KITTYCAD_boundary_representation
+    // for (const solid of brep.solids) {
+    //   for (const [shellIndex, _] of solid.shells) {
+    //     const shell = brep.shells[shellIndex]
+    //     for (const [faceIndex, _] of shell.faces) {
+    //       const face = brep.faces[faceIndex]
+    //       for (const [loopIndex, _] of face.loops) {
+    //         const loop = brep.loops[loopIndex]
+    //         for (const [edgeIndex, _] of loop.edges) {
+    //           const edge = brep.edges[edgeIndex]
+    //         }
+    //       }
+    //     }
+    //   }
+    // }
+    const positions: number[] = []
+    for (const edge of brep.edges) {
+      const curve = brep.curves3D[edge.curve[0]]
+      if (curve) {
+        if (curve.type === 'line') {
+          if (edge.closed) {
+            const {origin, direction} = curve.line
+            for (const t of edge.t) {
+              positions.push(
+                origin[0] + direction[0] * t,
+                origin[1] + direction[1] * t,
+                origin[2] + direction[2] * t,
+              )
             }
+          }
+          else {
+            const start = brep.vertices[edge.start]
+            const end = brep.vertices[edge.end]
+            positions.push(...start, ...end)
           }
         }
       }
     }
-    console.log('gltf', gltf)
+    this.geometry.setPositions(positions);
+    //console.log('gltf', gltf, positions)
   }
 
   addTo(parent: Object3D) {
@@ -83,5 +107,5 @@ function getEdgeColorForBackground(backgroundColor: string) {
   const background = new Color(backgroundColor)
   const luminance =
     background.r * 0.2126 + background.g * 0.7152 + background.b * 0.0722
-  return luminance > 0.5 ? LIGHT_THEME_EDGE_COLOR : DARK_THEME_EDGE_COLOR
+  return luminance < 0.5 ? LIGHT_THEME_EDGE_COLOR : DARK_THEME_EDGE_COLOR
 }
