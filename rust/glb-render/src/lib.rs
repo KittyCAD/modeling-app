@@ -2,7 +2,6 @@ use std::collections::HashMap;
 use std::ffi::OsString;
 use std::fs;
 use std::path::PathBuf;
-use std::time::Duration;
 use std::time::Instant;
 
 use bevy_math::Mat4;
@@ -14,7 +13,7 @@ use image::RgbaImage;
 
 mod sampling;
 
-use sampling::BrepRenderData;
+use crate::sampling::BrepRenderData;
 
 pub const HELP: &str = r#"Usage:
   kcl-render <MODEL.glb>
@@ -24,23 +23,25 @@ Options:
 
 The renderer reads one local Zoo GLB and writes edges.png (x-ray B-rep edges)
 and faces.png (flat-colored faces with green mesh silhouettes and blue B-rep
-edges) in the current directory. Both passes fit within 1024x1024, trimming
-unused space to leave five percent margins. Rasterization runs directly on
-the CPU without initializing Bevy's renderer or using a GPU."#;
+edges) in the current directory. Unused space in the image dimensions is trimmed to leave 5% margins.
+Rasterization runs directly onthe CPU."#;
 
 const BACKGROUND: Rgba<u8> = Rgba([255, 255, 255, 0]);
 const EDGE_COLOR: Rgba<u8> = Rgba([0, 107, 184, 255]);
 const SILHOUETTE_COLOR: Rgba<u8> = Rgba([0, 180, 0, 255]);
 const LINE_WIDTH: f32 = 2.5;
 const FRAME_PADDING: f32 = 0.05;
-const MAX_OUTPUT_SIZE: ImageSize = ImageSize { x: 1024, y: 1024 };
-const EDGE_OUTPUT: &str = "edges.png";
-const FACE_OUTPUT: &str = "faces.png";
 
 #[derive(Debug)]
-struct ImageSize {
-    x: u32,
-    y: u32,
+pub struct ImageSize {
+    pub x: u32,
+    pub y: u32,
+}
+
+impl std::default::Default for ImageSize {
+    fn default() -> Self {
+        ImageSize { x: 1024, y: 1024 }
+    }
 }
 
 #[derive(Debug)]
@@ -54,48 +55,50 @@ struct BatchRenderOptions {
 ///
 /// Returns an error if the GLB or its required Zoo B-rep data cannot be parsed
 /// or rendered.
-pub fn render(glb: &[u8]) -> Result<DynamicImage, String> {
-    let edges = load_edges(glb)?;
-    let view = ViewProjection::from_model(glb, &edges, MAX_OUTPUT_SIZE.x, MAX_OUTPUT_SIZE.y)?;
-    render_image(glb, &edges, view)
+pub fn cpu_render(glb: &[u8], image_size: ImageSize) -> Result<DynamicImage, String> {
+    let (edges, gltf) = parse_glb(glb)?;
+    let view = ViewProjection::from_model(&gltf, &edges, image_size.x, image_size.y)?;
+    render_image(gltf, &edges, view).map(DynamicImage::ImageRgba8)
 }
 
-fn load_edges(glb: &[u8]) -> Result<BrepRenderData, String> {
+fn parse_glb(glb: &[u8]) -> Result<(BrepRenderData, gltf::Gltf), String> {
     let gltf = gltf::Gltf::from_slice(glb).map_err(|error| format!("could not read B-rep data from GLB: {error}"))?;
-    BrepRenderData::from_document(&gltf.document)
-        .map_err(|error| format!("could not sample B-rep data from GLB: {error}"))
+    let edges = BrepRenderData::from_document(&gltf.document)
+        .map_err(|error| format!("could not sample B-rep data from GLB: {error}"))?;
+    Ok((edges, gltf))
 }
 
-fn render_image(glb: &[u8], edges: &BrepRenderData, view: ViewProjection) -> Result<DynamicImage, String> {
-    let mut face_pass = render_faces(glb, view)?;
+fn render_image(gltf: gltf::Gltf, edges: &BrepRenderData, view: ViewProjection) -> Result<RgbaImage, String> {
+    let mut face_pass = render_faces(gltf, view)?;
     draw_silhouettes(&mut face_pass, view);
     draw_depth_tested_edges(&mut face_pass, edges, view);
-    Ok(DynamicImage::ImageRgba8(face_pass.image))
+    Ok(face_pass.image)
 }
 
-pub fn run(args: Vec<OsString>) -> Result<(), String> {
+pub fn save(image: RgbaImage, name: &str) -> Result<(), String> {
+    let name = format!("{name}.png");
+    image
+        .save_with_format(&name, ImageFormat::Png)
+        .map_err(|error| format!("could not save {name}: {error}"))
+}
+
+pub fn cpu_render_from_disk(args: Vec<OsString>) -> Result<(), String> {
     let Some(options) = parse_args(args)? else {
         println!("{HELP}");
         return Ok(());
     };
-    let load_started = Instant::now();
-    let glb = fs::read(&options.glb).map_err(|error| format!("could not read {}: {error}", options.glb.display()))?;
-    let edges = load_edges(&glb)?;
-    let load_time = load_started.elapsed();
+    let bytes = fs::read(&options.glb).map_err(|error| format!("could not read {}: {error}", options.glb.display()))?;
+    let (edges, gltf) = parse_glb(&bytes)?;
+    let image_size = ImageSize::default();
 
     let render_started = Instant::now();
-    let view = ViewProjection::from_model(&glb, &edges, MAX_OUTPUT_SIZE.x, MAX_OUTPUT_SIZE.y)?;
-    let edge_image = render_edges(&edges, view);
-    edge_image
-        .save_with_format(EDGE_OUTPUT, ImageFormat::Png)
-        .map_err(|error| format!("could not save {EDGE_OUTPUT}: {error}"))?;
-    render_image(&glb, &edges, view)?
-        .save_with_format(FACE_OUTPUT, ImageFormat::Png)
-        .map_err(|error| format!("could not save {FACE_OUTPUT}: {error}"))?;
+    let view = ViewProjection::from_model(&gltf, &edges, image_size.x, image_size.y)?;
+    save(render_edges(&edges, view), "edges")?;
+    save(render_image(gltf, &edges, view)?, "faces")?;
+
     let render_time = render_started.elapsed();
 
-    println!("renders saved to {EDGE_OUTPUT} and {FACE_OUTPUT}");
-    print_timings(load_time, render_time);
+    println!("renders saved");
     Ok(())
 }
 
@@ -203,9 +206,7 @@ fn draw_silhouettes(pass: &mut FacePass, view: ViewProjection) {
 }
 
 impl ViewProjection {
-    fn from_model(bytes: &[u8], edges: &BrepRenderData, width: u32, height: u32) -> Result<Self, String> {
-        let gltf =
-            gltf::Gltf::from_slice(bytes).map_err(|error| format!("could not parse exported GLB mesh: {error}"))?;
+    fn from_model(gltf: &gltf::Gltf, edges: &BrepRenderData, width: u32, height: u32) -> Result<Self, String> {
         let blob = gltf
             .blob
             .as_deref()
@@ -365,8 +366,7 @@ fn draw_depth_tested_edges(pass: &mut FacePass, data: &BrepRenderData, view: Vie
     }
 }
 
-fn render_faces(bytes: &[u8], view: ViewProjection) -> Result<FacePass, String> {
-    let gltf = gltf::Gltf::from_slice(bytes).map_err(|error| format!("could not parse exported GLB mesh: {error}"))?;
+fn render_faces(gltf: gltf::Gltf, view: ViewProjection) -> Result<FacePass, String> {
     let blob = gltf
         .blob
         .as_deref()
@@ -615,14 +615,6 @@ fn draw_depth_tested_line(
     }
 }
 
-fn print_timings(load: Duration, render: Duration) {
-    println!("time to execute KCL: n/a (input is already a GLB)");
-    println!("time to export:      n/a (input is already a GLB)");
-    println!("time to download:    n/a (input is a local file)");
-    println!("time to load:        {:.3}s", load.as_secs_f64());
-    println!("time to render:      {:.3}s", render.as_secs_f64());
-}
-
 fn parse_args(args: Vec<OsString>) -> Result<Option<BatchRenderOptions>, String> {
     if args.len() == 1 && (args[0] == "-h" || args[0] == "--help") {
         return Ok(None);
@@ -736,13 +728,14 @@ mod tests {
 
     #[test]
     fn framing_trims_wide_tall_and_square_views_within_default_size() {
+        let image_size = ImageSize::default();
         let basis = ViewProjection::from_points([Vec3::ZERO, Vec3::ONE], 1024, 1024).unwrap();
         for (horizontal, vertical) in [(4.0, 1.0), (1.0, 4.0), (1.0, 1.0), (1000.0, 0.01)] {
             let points = [
                 -basis.right * horizontal - basis.up * vertical,
                 basis.right * horizontal + basis.up * vertical,
             ];
-            let view = ViewProjection::from_points(points, MAX_OUTPUT_SIZE.x, MAX_OUTPUT_SIZE.y).unwrap();
+            let view = ViewProjection::from_points(points, image_size.x, image_size.y).unwrap();
             assert_padded_fit(view, &points);
             assert_eq!(view.width.max(view.height), 1024);
             if horizontal > vertical {
@@ -774,7 +767,7 @@ mod tests {
     fn framing_includes_transformed_mesh_silhouettes_and_brep_geometry() {
         let triangles = square_triangles();
         let nodes = r#"{"translation":[0.04,0,0],"children":[1]},{"mesh":0,"translation":[0,0,0.02],"scale":[2,1,1]}"#;
-        let glb = triangle_glb(&triangles, 1.0, nodes);
+        let bytes = triangle_glb(&triangles, 1.0, nodes);
         let edges = BrepRenderData {
             edge_polylines: vec![vec![Vec3::ZERO, Vec3::new(0.0, 30.0, 0.0)]],
         };
@@ -820,7 +813,7 @@ mod tests {
         let edges = BrepRenderData {
             edge_polylines: vec![vec![Vec3::new(-10.0, -10.0, 0.0), Vec3::new(10.0, -10.0, 0.0)]],
         };
-        let image = render_image(&glb, &edges, view).unwrap().into_rgba8();
+        let image = render_image(&glb, &edges, view).unwrap();
         assert_eq!(*image.get_pixel(16, 6), SILHOUETTE_COLOR);
         assert_eq!(*image.get_pixel(16, 26), EDGE_COLOR);
         assert_eq!(*image.get_pixel(16, 16), Rgba([255, 0, 0, 255]));
@@ -887,15 +880,15 @@ mod tests {
 
     #[test]
     fn rejects_invalid_glb_bytes() {
-        render(&[] as &[u8; 0]).unwrap_err();
-        render(b"not a GLB".as_slice()).unwrap_err();
+        cpu_render(&[] as &[u8; 0], ImageSize::default()).unwrap_err();
+        cpu_render(b"not a GLB".as_slice(), ImageSize::default()).unwrap_err();
     }
 
     #[test]
     fn renders_glb_with_typed_brep_extension() {
         let bytes = triangle_glb(&square_triangles(), 1.0, r#"{"mesh":0}"#);
         assert!(
-            load_edges(&bytes)
+            parse_glb(&bytes)
                 .err()
                 .unwrap()
                 .contains("KITTYCAD_boundary_representation")
@@ -911,10 +904,10 @@ mod tests {
         }});
         glb.json = serde_json::to_vec(&json).unwrap().into();
         let bytes = glb.to_vec().unwrap();
-        let image = render(&bytes).unwrap().into_rgba8();
+        let image = cpu_render(&bytes, ImageSize::default()).unwrap().into_rgba8();
         assert!(image.pixels().any(|pixel| *pixel == EDGE_COLOR));
         assert!(image.pixels().any(|pixel| *pixel == SILHOUETTE_COLOR));
-        assert!(load_edges(&bytes[..bytes.len() - 8]).is_err());
+        assert!(parse_glb(&bytes[..bytes.len() - 8]).is_err());
     }
 
     #[test]
