@@ -560,10 +560,6 @@ filleted = fillet(
       sideFaces = [
         body.faces.capEnd001,
         baseRegion.tags.edge1
-      ],
-      endFaces = [
-        baseRegion.tags.edge4,
-        baseRegion.tags.edge2
       ]
     }
   ],
@@ -1803,7 +1799,6 @@ part = bracket()
           'radius = 1',
           'edges = [',
           'sideFaces = [capEnd001, e1]',
-          'endFaces = [seg01, seg02]',
         ],
       },
       {
@@ -1872,9 +1867,7 @@ part = bracket()
         expect(err(refactored)).toBe(false)
         if (err(refactored)) throw refactored
         const n = norm(refactored)
-        expect(n).toContain(
-          'to = { sideFaces = [facetag0, facetag1], endFaces = [capStart001, capEnd001] }'
-        )
+        expect(n).toContain('to = { sideFaces = [facetag0, facetag1] }')
         expect(n).not.toContain('getCommonEdge(faces = [facetag0, facetag1])')
       }
     )
@@ -2092,9 +2085,7 @@ surface001 = extrude(
         expect(err(refactored)).toBe(false)
         if (err(refactored)) throw refactored
         const n = norm(refactored)
-        expect(n).toContain(
-          'to = { sideFaces = [facetag0, facetag1], endFaces = [capStart001, capEnd001] }'
-        )
+        expect(n).toContain('to = { sideFaces = [facetag0, facetag1] }')
         expect(n).not.toContain('to = targetEdge')
       }
     )
@@ -2210,7 +2201,7 @@ surface001 = extrude(
         expect(n).toContain(
           'sideFaces = [ baseRegion.tags.line2, baseRegion.tags.yoyo ]'
         )
-        expect(n).toContain('endFaces = [startCap, cutRegion.tags.line3]')
+        expect(n).toContain('endFaces = [startCap]')
         expect(n).not.toContain(removed)
       })
     }
@@ -2361,12 +2352,12 @@ surface001 = extrude(
         }
         expect(n).toContain('axis')
         expect(n).not.toContain('axis = getOppositeEdge')
-        // Assert the axis keeps both side faces and the two end faces (side-face order may vary).
+        // The engine now returns the minimal reference: these side faces are sufficient.
         const revolveLineWithAxis =
-          /revolve001\s*=\s*revolve\s*\(\s*profile001\s*,\s*angle\s*=\s*360deg\s*,\s*axis\s*=\s*\{\s*sideFaces\s*=\s*\[\s*(?:seg02\s*,\s*capEnd001|capEnd001\s*,\s*seg02)\s*\],\s*endFaces\s*=\s*\[\s*\w+\s*,\s*\w+\s*,?\s*\]\s*,?\s*\}\s*,?\s*\)/
+          /revolve001\s*=\s*revolve\s*\(\s*profile001\s*,\s*angle\s*=\s*360deg\s*,\s*axis\s*=\s*\{\s*sideFaces\s*=\s*\[\s*(?:seg02\s*,\s*capEnd001|capEnd001\s*,\s*seg02)\s*\]\s*\}\s*,?\s*\)/
         expect(
           n,
-          'Refactored revolve axis should contain sideFaces = [seg02, capEnd001] (either order) and two endFaces'
+          'Refactored revolve axis should contain sideFaces = [seg02, capEnd001] (either order)'
         ).toMatch(revolveLineWithAxis)
       }
     )
@@ -2528,20 +2519,16 @@ surface001 = extrude(
        radius = radius,
        edges = [
          {
-           sideFaces = [bs.tags.edge7, bs.tags.edge6],
-           endFaces = [capEnd001, capStart001]
+           sideFaces = [bs.tags.edge7, bs.tags.edge6]
          },
          {
-           sideFaces = [bs.tags.edge1, bs.tags.edge2],
-           endFaces = [capEnd001, capStart001]
+           sideFaces = [bs.tags.edge1, bs.tags.edge2]
          },
          {
-           sideFaces = [bs.tags.edge2, bs.tags.edge3],
-           endFaces = [capEnd001, capStart001]
+           sideFaces = [bs.tags.edge2, bs.tags.edge3]
          },
          {
-           sideFaces = [bs.tags.edge5, bs.tags.edge6],
-           endFaces = [capEnd001, capStart001]
+           sideFaces = [bs.tags.edge5, bs.tags.edge6]
          }
        ],
      )`

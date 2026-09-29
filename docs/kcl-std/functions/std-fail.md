@@ -5,9 +5,9 @@ excerpt: "Stop KCL evaluation with a user-defined error."
 layout: manual
 ---
 
-**WARNING:** This function is experimental and may change or be removed.
-
 Stop KCL evaluation with a user-defined error.
+
+**Added in KCL 3.0.**
 
 ```kcl
 fail(@msg: string): never
@@ -30,6 +30,8 @@ specific error message. `fail` never returns a value.
 ### Examples
 
 ```kcl
+@settings(kclVersion = "3.0-preview")
+
 fn positive(@value: number): number {
   return if value > 0 {
     value

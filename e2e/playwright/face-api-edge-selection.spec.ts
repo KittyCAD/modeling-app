@@ -1,6 +1,4 @@
 import type { CmdBarSerialised } from '@e2e/playwright/fixtures/cmdBarFixture'
-import { TEST_SETTINGS, TEST_SETTINGS_KEY } from '@e2e/playwright/storageStates'
-import { settingsToToml } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 
 /**
@@ -61,7 +59,7 @@ test.describe('Face API edge selection', { tag: '@web' }, () => {
     }, testCode)
 
     await homePage.goToModelingScene()
-    await scene.settled(cmdBar)
+    await scene.settled()
     await scene.waitForExecutionDoneAfter(() =>
       editor.replaceCode('', testCode)
     )
@@ -97,14 +95,13 @@ test.describe('Face API edge selection', { tag: '@web' }, () => {
 
       await toolbar.revolveButton.click()
       await cmdBar.expectState(state)
-      await scene.settled(cmdBar)
+      await scene.settled()
 
       await clickProfile()
 
       // Update state after profile selection
       state.currentArgKey = 'axisOrEdge'
       state.headerArguments.Profiles = '1 profile'
-      state.headerArguments.BodyType = ''
       state.highlightedHeaderArg = 'axisOrEdge'
       await cmdBar.progressCmdBar()
       await cmdBar.expectState(state)
@@ -129,19 +126,11 @@ test.describe('Face API edge selection', { tag: '@web' }, () => {
       await cmdBar.progressCmdBar()
       await cmdBar.expectState(state)
 
-      // Move to review stage
-      state.currentArgKey = 'bodyType'
-      state.currentArgValue = ''
-      state.highlightedHeaderArg = 'bodyType'
-      state.headerArguments.Angle = '360deg'
-      await cmdBar.progressCmdBar()
-      await cmdBar.expectState(state)
-
-      // Move to review stage
+      // Closed profiles use the default solid body type and go directly to review.
       state.currentArgKey = ''
       state.currentArgValue = ''
       state.highlightedHeaderArg = ''
-      state.headerArguments.BodyType = 'SURFACE'
+      state.headerArguments.Angle = '360deg'
       await cmdBar.progressCmdBar()
       await cmdBar.expectState({
         commandName: state.commandName,
@@ -192,14 +181,13 @@ test.describe('Face API edge selection', { tag: '@web' }, () => {
       // Click revolve tool again
       await toolbar.revolveButton.click()
       await cmdBar.expectState(state)
-      await scene.settled(cmdBar)
+      await scene.settled()
 
       await clickProfile2()
 
       // Update state after profile selection
       state.currentArgKey = 'axisOrEdge'
       state.headerArguments.Profiles = '1 profile'
-      state.headerArguments.BodyType = ''
       state.highlightedHeaderArg = 'axisOrEdge'
       await cmdBar.progressCmdBar()
       await cmdBar.expectState(state)
@@ -223,19 +211,11 @@ test.describe('Face API edge selection', { tag: '@web' }, () => {
       await cmdBar.progressCmdBar()
       await cmdBar.expectState(state)
 
-      // Move to review stage
-      state.currentArgKey = 'bodyType'
-      state.currentArgValue = ''
-      state.highlightedHeaderArg = 'bodyType'
-      state.headerArguments.Angle = '360deg'
-      await cmdBar.progressCmdBar()
-      await cmdBar.expectState(state)
-
-      // Move to review stage
+      // Closed profiles use the default solid body type and go directly to review.
       state.currentArgKey = ''
       state.currentArgValue = ''
       state.highlightedHeaderArg = ''
-      state.headerArguments.BodyType = 'SURFACE'
+      state.headerArguments.Angle = '360deg'
       await cmdBar.progressCmdBar()
       await cmdBar.expectState({
         commandName: state.commandName,
@@ -286,7 +266,7 @@ test.describe('Face API edge selection', { tag: '@web' }, () => {
     }, testCode)
 
     await homePage.goToModelingScene()
-    await scene.settled(cmdBar)
+    await scene.settled()
     await scene.waitForExecutionDoneAfter(() =>
       editor.replaceCode('', testCode)
     )
@@ -354,7 +334,6 @@ test.describe('Face API edge selection', { tag: '@web' }, () => {
     cmdBar,
     editor,
     toolbar,
-    tronApp,
     homePage,
   }) => {
     const code = `@settings(defaultLengthUnit = mm)
@@ -371,34 +350,17 @@ surface001 = extrude(
 )
 hide(sketch001)`
 
-    const settings = {
-      ...TEST_SETTINGS,
-      modeling: {
-        ...TEST_SETTINGS.modeling,
-        use_sketch_solve_mode: true,
-      },
-    }
-    if (tronApp) {
-      await tronApp.cleanProjectDir({
-        modeling: {
-          use_sketch_solve_mode: true,
-        },
-      })
-    }
     await context.addInitScript(
-      ({ initialCode, settingsKey, settingsToml }) => {
+      ({ initialCode }) => {
         localStorage.setItem('persistCode', initialCode)
-        localStorage.setItem(settingsKey, settingsToml)
       },
       {
         initialCode: code,
-        settingsKey: TEST_SETTINGS_KEY,
-        settingsToml: settingsToToml({ settings }),
       }
     )
     await page.setBodyDimensions({ width: 1200, height: 800 })
     await homePage.goToModelingScene()
-    await scene.settled(cmdBar)
+    await scene.settled()
     await scene.waitForExecutionDoneAfter(() => editor.replaceCode('', code))
     await editor.expectEditor.toContain('surface001 = extrude')
     await editor.closePane()

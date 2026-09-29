@@ -1,7 +1,6 @@
 import type { Locator, Page } from '@playwright/test'
 import { isArray, uuidv4 } from '@src/lib/utils'
 
-import type { CmdBarFixture } from '@e2e/playwright/fixtures/cmdBarFixture'
 import {
   closeDebugPanel,
   closeOnboardingModalIfPresent,
@@ -497,16 +496,9 @@ export class SceneFixture {
     ])
   }
 
-  settled = async (
-    cmdBarOrOptions?: CmdBarFixture | Partial<{ expectError: boolean }>,
-    options?: Partial<{ expectError: boolean }>
-  ) => {
-    const settledOptions =
-      cmdBarOrOptions && 'openCmdBar' in cmdBarOrOptions
-        ? options
-        : cmdBarOrOptions
-    const { expectError = false } = settledOptions ?? {}
-
+  settled = async ({
+    expectError = false,
+  }: Partial<{ expectError: boolean }> = {}) => {
     await closeOnboardingModalIfPresent(this.page)
 
     await this.connectionEstablished()

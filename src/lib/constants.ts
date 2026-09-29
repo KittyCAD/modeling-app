@@ -31,7 +31,6 @@ export const FILE_EXT = '.kcl'
 export const EDITABLE_TEXT_FILE_EXTENSIONS = ['.md', '.txt'] as const
 export const EXPERIMENTAL_POINT_AND_CLICK_FLAG: Feature =
   'sketch_experimental_features'
-export const OPFS_CLOUD_FEATURE_FLAG: Feature = 'web_app_file_browser'
 export const SEGMENTS_BASED_REGIONS_FEATURE_FLAG: Feature =
   'segments_based_regions'
 export const KCL_CEK_EXECUTOR_FEATURE_FLAG: Feature = 'kcl_cek_executor'
@@ -216,6 +215,8 @@ export const EXECUTE_AST_INTERRUPT_ERROR_MESSAGE = JSON.stringify(
 /** The messages that appear for exporting toasts */
 export const EXPORT_TOAST_MESSAGES = {
   START: 'Exporting...',
+  CHOOSE_LOCATION:
+    'Export ready to save. Choose a location in the save dialog.',
   SUCCESS: 'Exported successfully.',
   FAILED: 'Export failed.',
 }

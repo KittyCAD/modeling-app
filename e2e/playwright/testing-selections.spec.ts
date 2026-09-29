@@ -593,9 +593,10 @@ sketch001 = sketch(on = face001) {
       })
 
       await cmdBar.submit()
-      await scene.settled(cmdBar)
+      await scene.settled()
       await editor.expectEditor.toContain('fillet')
       await editor.expectEditor.toContain('radius')
+      await editor.expectEditor.toContain('edgeId')
       await expect(page.locator('.cm-lint-marker-error')).toHaveCount(0)
     })
   })

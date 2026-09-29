@@ -690,7 +690,7 @@ export class ConnectionManager extends EventTarget {
       cmd.type === 'highlight_set_entity' &&
       this.connection.unreliableDataChannel
     ) {
-      ;(cmd as any).sequence = this.outSequence
+      cmd.sequence = this.outSequence
       this.outSequence++
       this.connection.unreliableSend(command)
       return Promise.resolve(null)
@@ -1466,22 +1466,6 @@ export class ConnectionManager extends EventTarget {
 
       return Promise.reject(JSON.stringify(error))
     }
-  }
-
-  /**
-   * When an execution takes place we want to wait until we've got replies for all of the commands.
-   * This is used when we build the artifact map synchronously.
-   * We do not await default_camera_set_perspective (engine often does not send a response, e.g. local e2e).
-   */
-  waitForAllCommands() {
-    const pendingToAwait = Object.values(this.pendingCommands).filter(
-      (p) =>
-        !(
-          p.command?.type === 'modeling_cmd_req' &&
-          p.command?.cmd?.type === 'default_camera_set_perspective'
-        )
-    )
-    return Promise.all(pendingToAwait.map(({ promise }) => promise))
   }
 
   /**

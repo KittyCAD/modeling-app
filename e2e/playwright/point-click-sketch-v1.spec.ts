@@ -646,8 +646,6 @@ openSketch = startSketchOn(XY)
     toolbar,
     cmdBar,
   }) => {
-    test.setTimeout(180_000)
-
     const initialCode = `sketch001 = startSketchOn(XZ)
 profile001 = startProfile(sketch001, at = [0, 0])
 |> yLine(length = 100)
@@ -719,8 +717,7 @@ extrude001 = extrude(profile001, length = 100)`
         `
         helix001 = helix(
           axis = {
-            sideFaces = [capEnd001, seg01],
-            endFaces = [seg02, seg03]
+            sideFaces = [capEnd001, seg01]
           },
           revolutions = 20,
           angleStart = 0,
@@ -795,8 +792,7 @@ extrude001 = extrude(profile001, length = 100)`
         `
         helix001 = helix(
           axis = {
-            sideFaces = [capEnd001, seg01],
-            endFaces = [seg02, seg03]
+            sideFaces = [capEnd001, seg01]
           },
           revolutions = 20,
           angleStart = 0,
@@ -1415,7 +1411,7 @@ fillet(extrude001, radius = 5, edges = [{ sideFaces = [seg02, capEnd001] }])
         await scene.waitForExecutionDoneAfter(() =>
           editor.replaceCode('', standaloneFilletCode)
         )
-        await scene.settled(cmdBar)
+        await scene.settled()
         await editor.expectEditor.toContain(standaloneAssignedFilletDeclaration)
         await editor.expectEditor.toContain(
           standaloneUnassignedFilletDeclaration
@@ -2984,8 +2980,6 @@ solid001 = extrude(sketch001, length = 5)`
     toolbar,
     cmdBar,
   }) => {
-    test.setTimeout(240_000)
-
     const initialCode = `@settings(defaultLengthUnit = in)
 sketch001 = startSketchOn(XZ)
   |> circle(center = [0, 0], radius = 30)
@@ -3203,6 +3197,7 @@ extrude001 = extrude(sketch001, length = 30)
       await test.step('Submit and verify all parameters', async () => {
         await cmdBar.progressCmdBar()
         await scene.settled()
+        await editor.expectEditor.not.toContain('experimentalFeatures = allow')
         await editor.expectEditor.toContain('gdt::flatness(')
         await editor.expectEditor.toContain('faces = [capEnd001]')
         await editor.expectEditor.toContain('tolerance = 0.1in')
@@ -3622,6 +3617,7 @@ extrude001 = extrude(sketch001, length = 30)
       await test.step('Submit and verify all parameters', async () => {
         await cmdBar.progressCmdBar()
         await scene.settled()
+        await editor.expectEditor.not.toContain('experimentalFeatures = allow')
         await editor.expectEditor.toContain('gdt::datum(')
         await editor.expectEditor.toContain('face = capEnd001')
         await editor.expectEditor.toContain('name = "A"')

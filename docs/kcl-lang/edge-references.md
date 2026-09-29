@@ -50,6 +50,11 @@ than one match. When a Face API selection supplies an edge-reference object,
 keep the fields it provides rather than converting the selection to legacy
 edge helpers.
 
+An edge-reference object does not have to identify exactly one edge. A broader
+reference can intentionally match multiple edges so that an operation applies
+to all of them. Add `endFaces` or `index` only when the operation should target
+a smaller subset of those matches.
+
 Surface bodies do not always provide two side faces or useful end faces. Their
 edge references can therefore contain a single `sideFaces` entry and rely on
 `index` more often to choose a boundary edge.

@@ -2186,6 +2186,10 @@ export function processCodeMirrorRanges({
     const resolvedCodeRef = codeRefs?.[0] ?? codeRef
     if (artifact) {
       graphSelections.push({
+        // Retain the typed artifact for commands that distinguish a closed
+        // region from an open edge. Some artifacts, such as region paths,
+        // have no direct EntityReference equivalent.
+        artifact,
         entityRef: artifactToEntityRef(
           artifact.type,
           id,

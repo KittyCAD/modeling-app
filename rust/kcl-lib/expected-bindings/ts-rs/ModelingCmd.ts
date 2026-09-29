@@ -3353,6 +3353,10 @@ color: Color | null, };
  */
 export type SetDefaultSystemProperties = { 
 /**
+ * The default tolerance values.
+ */
+tolerance: Tolerance | null, 
+/**
  * The default system color.
  */
 color: Color | null, 
@@ -4157,6 +4161,15 @@ export type TakeSnapshot = {
  * What image format to return.
  */
 format: ImageFormat, };
+
+/**
+ * Default tolerance values for modeling operations.
+ */
+export type Tolerance = { 
+/**
+ * The distance tolerance for 2D point-point coincidence.
+ */
+point_point_2d_coincident: LengthUnit, };
 
 /**
  * Ways to transform each solid being replicated in a repeating pattern.

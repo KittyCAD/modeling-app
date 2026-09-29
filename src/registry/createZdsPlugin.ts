@@ -21,7 +21,7 @@ export type ZdsPluginFeatureActivationPolicy = {
   /**
    * Feature flag that controls whether this plugin may become active.
    */
-  feature: Feature
+  feature?: Feature
   /**
    * When true, feature-flagged users get the plugin enabled by default. Existing
    * user preferences are preserved unless `forceEnabledOnPlatform` matches.

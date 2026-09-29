@@ -446,7 +446,6 @@ export function createMemberExpression(
     outerAttrs: [],
     preComments: [],
     commentStart: 0,
-
     object: typeof parent === 'string' ? createLocalName(parent) : parent,
     property:
       typeof property === 'string' ? createLocalName(property) : property,

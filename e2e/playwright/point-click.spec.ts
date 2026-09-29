@@ -17,7 +17,7 @@ import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 test.describe('Point-and-click tests', { tag: '@desktop' }, () => {
   test.use({ userFeatures: [EXPERIMENTAL_POINT_AND_CLICK_FLAG] })
 
-  test('Create an Extrude operation with a tag and edit it via Feature Tree', async ({
+  test('Create an Extrude operation with a tag', async ({
     context,
     editor,
     homePage,
@@ -62,24 +62,10 @@ region001 = region(segments = [sketch001.circle1])`
         await page.keyboard.insertText('4')
         await cmdBar.progressCmdBar()
         await cmdBar.expectState({
-          stage: 'arguments',
-          currentArgKey: 'bodyType',
-          currentArgValue: '',
-          headerArguments: {
-            Length: '4',
-            Profiles: '1 region',
-            BodyType: '',
-          },
-          highlightedHeaderArg: 'bodyType',
-          commandName: 'Extrude',
-        })
-        await cmdBar.progressCmdBar()
-        await cmdBar.expectState({
           stage: 'review',
           headerArguments: {
             Length: '4',
             Profiles: '1 region',
-            BodyType: 'SURFACE',
           },
           reviewValidationError: undefined,
           commandName: 'Extrude',
@@ -94,7 +80,6 @@ region001 = region(segments = [sketch001.circle1])`
           headerArguments: {
             Length: '4',
             Profiles: '1 region',
-            BodyType: 'SURFACE',
             TagEnd: '',
           },
           highlightedHeaderArg: 'tagEnd',
@@ -107,7 +92,6 @@ region001 = region(segments = [sketch001.circle1])`
           headerArguments: {
             Length: '4',
             Profiles: '1 region',
-            BodyType: 'SURFACE',
             TagEnd: 'myEndTag',
           },
           commandName: 'Extrude',
@@ -119,57 +103,75 @@ region001 = region(segments = [sketch001.circle1])`
           `extrude001 = extrude(
   region001,
   length = 4,
-  tagEnd = $myEndTag,
-  bodyType = SURFACE,
+  tagEnd = $myEndTag
 )`,
           { shouldNormalise: true }
         )
       })
     })
+  })
 
-    await test.step(`Edit first extrude via feature tree`, async () => {
-      await test.step('Open extrude operation from feature tree', async () => {
-        await (await toolbar.getFeatureTreeOperation('Extrude', 0)).dblclick()
-      })
-      await test.step('Edit length argument', async () => {
-        await cmdBar.clickHeaderArgument('length')
-        await cmdBar.expectState({
-          stage: 'arguments',
-          currentArgKey: 'length',
-          currentArgValue: '4',
-          headerArguments: {
-            Length: '4',
-            BodyType: 'SURFACE',
-            TagEnd: 'myEndTag',
-          },
-          highlightedHeaderArg: 'length',
-          commandName: 'Extrude',
-        })
-        await page.keyboard.insertText('3')
-        await cmdBar.progressCmdBar()
-        await cmdBar.expectState({
-          stage: 'review',
-          headerArguments: {
-            Length: '3',
-            BodyType: 'SURFACE',
-            TagEnd: 'myEndTag',
-          },
-          commandName: 'Extrude',
-        })
-      })
-      await test.step('Submit and verify', async () => {
-        await cmdBar.submit()
-        await editor.expectEditor.toContain(
-          `extrude001 = extrude(
+  test('Edit an Extrude operation with a tag via Feature Tree', async ({
+    context,
+    editor,
+    homePage,
+    page,
+    scene,
+    toolbar,
+    cmdBar,
+  }) => {
+    const code = `sketch001 = sketch(on = XY) {
+  circle1 = circle(start = [var 5mm, var 0mm], center = [var 0mm, var 0mm])
+}
+region001 = region(segments = [sketch001.circle1])
+extrude001 = extrude(
+  region001,
+  length = 4,
+  tagEnd = $myEndTag,
+  bodyType = SURFACE,
+)`
+    await context.addInitScript((initialCode) => {
+      localStorage.setItem('persistCode', initialCode)
+    }, code)
+    await page.setBodyDimensions({ width: 1000, height: 500 })
+    await homePage.goToModelingScene()
+    await scene.settled()
+
+    await (await toolbar.getFeatureTreeOperation('Extrude', 0)).dblclick()
+    await cmdBar.clickHeaderArgument('length')
+    await cmdBar.expectState({
+      stage: 'arguments',
+      currentArgKey: 'length',
+      currentArgValue: '4',
+      headerArguments: {
+        Length: '4',
+        BodyType: 'SURFACE',
+        TagEnd: 'myEndTag',
+      },
+      highlightedHeaderArg: 'length',
+      commandName: 'Extrude',
+    })
+    await page.keyboard.insertText('3')
+    await cmdBar.progressCmdBar()
+    await cmdBar.expectState({
+      stage: 'review',
+      headerArguments: {
+        Length: '3',
+        BodyType: 'SURFACE',
+        TagEnd: 'myEndTag',
+      },
+      commandName: 'Extrude',
+    })
+    await cmdBar.submit()
+    await editor.expectEditor.toContain(
+      `extrude001 = extrude(
   region001,
   length = 3,
   tagEnd = $myEndTag,
   bodyType = SURFACE,
 )`,
-          { shouldNormalise: true }
-        )
-      })
-    })
+      { shouldNormalise: true }
+    )
   })
 
   test.describe('verify sketch on chamfer works', () => {
@@ -633,11 +635,7 @@ extrude001 = extrude(region001, length = 100)`
         `
         helix001 = helix(
           axis = {
-            sideFaces = [region001.tags.line3, capEnd001],
-            endFaces = [
-              region001.tags.line1,
-              region001.tags.line2
-            ]
+            sideFaces = [region001.tags.line3, capEnd001]
           },
           revolutions = 20,
           angleStart = 0,
@@ -712,11 +710,7 @@ extrude001 = extrude(region001, length = 100)`
         `
         helix001 = helix(
           axis = {
-            sideFaces = [region001.tags.line3, capEnd001],
-            endFaces = [
-              region001.tags.line1,
-              region001.tags.line2
-            ]
+            sideFaces = [region001.tags.line3, capEnd001]
           },
           revolutions = 20,
           angleStart = 0,
@@ -767,10 +761,9 @@ region002 = region(point = [0mm, 0mm], sketch = sketch002)`
     await homePage.goToModelingScene()
     await scene.settled()
 
-    const loftDeclaration =
-      'loft001 = loft([region001, region002], bodyType = SURFACE)'
+    const loftDeclaration = 'loft001 = loft([region001, region002])'
     const editedLoftDeclaration =
-      'loft001 = loft([region001, region002], vDegree = 3, bodyType = SURFACE)'
+      'loft001 = loft([region001, region002], vDegree = 3)'
 
     async function selectSketches() {
       const multiCursorKey = process.platform === 'linux' ? 'Control' : 'Meta'
@@ -796,17 +789,8 @@ region002 = region(point = [0mm, 0mm], sketch = sketch002)`
       await selectSketches()
       await cmdBar.progressCmdBar()
       await cmdBar.expectState({
-        stage: 'arguments',
-        currentArgKey: 'bodyType',
-        currentArgValue: '',
-        headerArguments: { Profiles: '2 regions', BodyType: '' },
-        highlightedHeaderArg: 'bodyType',
-        commandName: 'Loft',
-      })
-      await cmdBar.progressCmdBar()
-      await cmdBar.expectState({
         stage: 'review',
-        headerArguments: { Profiles: '2 regions', BodyType: 'SURFACE' },
+        headerArguments: { Profiles: '2 regions' },
         reviewValidationError: undefined,
         commandName: 'Loft',
       })
@@ -829,9 +813,7 @@ region002 = region(point = [0mm, 0mm], sketch = sketch002)`
       await op.dblclick()
       await cmdBar.expectState({
         stage: 'review',
-        headerArguments: {
-          BodyType: 'SURFACE',
-        },
+        headerArguments: {},
         reviewValidationError: undefined,
         commandName: 'Loft',
       })
@@ -841,7 +823,6 @@ region002 = region(point = [0mm, 0mm], sketch = sketch002)`
         currentArgKey: 'vDegree',
         currentArgValue: '',
         headerArguments: {
-          BodyType: 'SURFACE',
           VDegree: '',
         },
         highlightedHeaderArg: 'vDegree',
@@ -852,7 +833,6 @@ region002 = region(point = [0mm, 0mm], sketch = sketch002)`
       await cmdBar.expectState({
         stage: 'review',
         headerArguments: {
-          BodyType: 'SURFACE',
           VDegree: '3',
         },
         commandName: 'Loft',
@@ -899,7 +879,6 @@ region001 = region(segments = [sketch001.circle1])`
     const sweepDeclaration = `sweep001 = sweep(
   region001,
   path = helix001,
-  bodyType = SURFACE,
   version = 2,
   translateProfileToPath = false,
   orientProfilePerpendicular = false,
@@ -908,12 +887,10 @@ region001 = region(segments = [sketch001.circle1])`
   region001,
   path = helix001,
   sectional = true,
-  bodyType = SURFACE,
   version = 2,
   translateProfileToPath = false,
   orientProfilePerpendicular = false,
 )`
-
     await context.addInitScript((initialCode) => {
       localStorage.setItem('persistCode', initialCode)
     }, initialCode)
@@ -943,7 +920,6 @@ region001 = region(segments = [sketch001.circle1])`
         headerArguments: {
           Profiles: '1 region',
           Path: '',
-          BodyType: '',
         },
         highlightedHeaderArg: 'path',
         stage: 'arguments',
@@ -957,7 +933,6 @@ region001 = region(segments = [sketch001.circle1])`
         headerArguments: {
           Profiles: '1 region',
           Path: '',
-          BodyType: '',
         },
         highlightedHeaderArg: 'path',
         stage: 'arguments',
@@ -965,32 +940,19 @@ region001 = region(segments = [sketch001.circle1])`
       await cmdBar.progressCmdBar()
       await cmdBar.expectState({
         commandName: 'Sweep',
-        currentArgKey: 'bodyType',
-        currentArgValue: '',
         headerArguments: {
           Profiles: '1 region',
           Path: '1 helix',
-          BodyType: '',
         },
-        highlightedHeaderArg: 'bodyType',
-        stage: 'arguments',
-      })
-      await cmdBar.progressCmdBar()
-      await cmdBar.expectState({
-        commandName: 'Sweep',
-        headerArguments: {
-          Profiles: '1 region',
-          Path: '1 helix',
-          BodyType: 'SURFACE',
-        },
+        reviewValidationError: undefined,
         stage: 'review',
       })
-      await cmdBar.progressCmdBar(true)
+      await scene.waitForExecutionDoneAfter(() => cmdBar.progressCmdBar(true))
+      await scene.settled()
       await editor.expectEditor.toContain(sweepDeclaration, {
         shouldNormalise: true,
       })
     })
-
     await test.step('Go through the edit flow via feature tree', async () => {
       await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
       const op = await toolbar.getFeatureTreeOperation('Sweep', 0)
@@ -998,12 +960,10 @@ region001 = region(segments = [sketch001.circle1])`
       await cmdBar.expectState({
         stage: 'review',
         headerArguments: {
-          BodyType: 'SURFACE',
           Version: '2',
           TranslateProfileToPath: 'false',
           OrientProfilePerpendicular: 'false',
         },
-        reviewValidationError: undefined,
         commandName: 'Sweep',
       })
       await cmdBar.clickOptionalArgument('sectional')
@@ -1012,7 +972,6 @@ region001 = region(segments = [sketch001.circle1])`
         currentArgKey: 'sectional',
         currentArgValue: '',
         headerArguments: {
-          BodyType: 'SURFACE',
           Version: '2',
           TranslateProfileToPath: 'false',
           OrientProfilePerpendicular: 'false',
@@ -1025,7 +984,6 @@ region001 = region(segments = [sketch001.circle1])`
       await cmdBar.expectState({
         stage: 'review',
         headerArguments: {
-          BodyType: 'SURFACE',
           Version: '2',
           TranslateProfileToPath: 'false',
           OrientProfilePerpendicular: 'false',
@@ -1033,7 +991,8 @@ region001 = region(segments = [sketch001.circle1])`
         },
         commandName: 'Sweep',
       })
-      await cmdBar.submit()
+      await scene.waitForExecutionDoneAfter(() => cmdBar.submit())
+      await scene.settled()
       await editor.expectEditor.toContain(editedSweepDeclaration, {
         shouldNormalise: true,
       })
@@ -1042,7 +1001,8 @@ region001 = region(segments = [sketch001.circle1])`
     await test.step('Delete sweep via feature tree selection', async () => {
       const sweep = await toolbar.getFeatureTreeOperation('Sweep', 0)
       await sweep.click()
-      await page.keyboard.press('Delete')
+      await scene.waitForExecutionDoneAfter(() => page.keyboard.press('Delete'))
+      await scene.settled()
       await editor.expectEditor.not.toContain(editedSweepDeclaration, {
         shouldNormalise: true,
       })
@@ -1071,8 +1031,8 @@ region001 = region(segments = [sketch001.circle1])`
 hide(sketch001)
 region001 = region(segments = [sketch001.line1, sketch001.line2])
 extrude001 = extrude(region001, length = -12)`
-    const firstFilletDeclaration = `fillet001 = fillet(extrude001, edges=[{sideFaces=[region001.tags.line2,extrude001.faces.capEnd001],endFaces=[region001.tags.line1,region001.tags.line4]}], radius=5,)`
-    const secondFilletDeclaration = `fillet002 = fillet(extrude001, edges=[{sideFaces=[extrude001.faces.capStart001,region001.tags.line2],endFaces=[region001.tags.line1,region001.tags.line4]}], radius=5,)`
+    const firstFilletDeclaration = `fillet001 = fillet(extrude001, edges=[{sideFaces=[region001.tags.line2,extrude001.faces.capEnd001]}], radius=5,)`
+    const secondFilletDeclaration = `fillet002 = fillet(extrude001, edges=[{sideFaces=[extrude001.faces.capStart001,region001.tags.line2]}], radius=5,)`
 
     // Locators
     // TODO: find a way to not have hardcoded pixel values for region edges and sweepEdges
@@ -1393,7 +1353,7 @@ revolve001 = revolve(profile001, angle = 360deg, axis = getOppositeEdge(seg02))
       }, initialCode)
       await page.setBodyDimensions({ width: 1000, height: 500 })
       await homePage.goToModelingScene()
-      await scene.settled(cmdBar)
+      await scene.settled()
     })
 
     await test.step('Edit revolve via feature tree (triggers auto-fix then edit)', async () => {
@@ -1444,7 +1404,7 @@ revolve001 = revolve(profile001, angle = 360deg, axis = getOppositeEdge(seg02))
       const code = await editor.getCurrentCode()
       expect(code).toContain('axis = {')
       expect(code).toContain('sideFaces = [')
-      expect(code).toContain('endFaces = [')
+      expect(code).not.toContain('endFaces = [')
       expect(code).toContain('180deg')
       expect(code).not.toContain('axis = getOppositeEdge')
     })
@@ -1481,7 +1441,7 @@ helix001 = helix(
       }, initialCode)
       await page.setBodyDimensions({ width: 1000, height: 500 })
       await homePage.goToModelingScene()
-      await scene.settled(cmdBar)
+      await scene.settled()
     })
 
     await test.step('Edit helix via feature tree (triggers auto-fix then edit)', async () => {
@@ -1534,7 +1494,7 @@ helix001 = helix(
       const code = await editor.getCurrentCode()
       expect(code).toContain('axis = {')
       expect(code).toContain('sideFaces = [')
-      expect(code).toContain('endFaces = [')
+      expect(code).not.toContain('endFaces = [')
       expect(code).toContain('radius = 2')
       expect(code).not.toContain('axis = getOppositeEdge')
     })
@@ -1798,7 +1758,7 @@ extrude001 = extrude(region001, length = 5)`
 
       expect(normalizedCode).toContain('fillet001=fillet(extrude001,')
       expect(normalizedCode).toContain(
-        'edges=[{sideFaces=[region001.tags.line1,region001.tags.line3],endFaces=[capStart001,capEnd001]}]'
+        'edges=[{sideFaces=[region001.tags.line1,region001.tags.line3]}]'
       )
       expect(normalizedCode).toContain('radius=1000,')
       expect(normalizedCode).not.toContain('tags=[')
@@ -1829,8 +1789,8 @@ sketch001 = sketch(on = XY) {
 hide(sketch001)
 region001 = region(segments = [sketch001.line1, sketch001.line2])
 extrude001 = extrude(region001, length = -12)`
-    const firstChamferDeclaration = `chamfer001 = chamfer(extrude001, edges=[{sideFaces=[extrude001.faces.capEnd001,region001.tags.line2],endFaces=[region001.tags.line1,region001.tags.line4]}], length=5,)`
-    const secondChamferDeclaration = `chamfer002 = chamfer(extrude001, edges=[{sideFaces=[extrude001.faces.capStart001,region001.tags.line2],endFaces=[region001.tags.line1,region001.tags.line4]}], length=5,)`
+    const firstChamferDeclaration = `chamfer001 = chamfer(extrude001, edges=[{sideFaces=[extrude001.faces.capEnd001,region001.tags.line2]}], length=5,)`
+    const secondChamferDeclaration = `chamfer002 = chamfer(extrude001, edges=[{sideFaces=[extrude001.faces.capStart001,region001.tags.line2]}], length=5,)`
 
     // Locators
     const firstEdgeLocation = { x: 600, y: 193 }
@@ -2435,7 +2395,7 @@ extrude001 = extrude(profile001, length = 500)`
         commandName: 'Shell',
       })
       await cmdBar.submit()
-      await scene.settled(cmdBar)
+      await scene.settled()
     })
 
     await test.step('Confirm secondary shell code exists without diagnostics', async () => {
@@ -2566,7 +2526,7 @@ chamfer001 = chamfer(
       commandName: 'Delete Face',
     })
     await cmdBar.submit()
-    await scene.settled(cmdBar)
+    await scene.settled()
 
     await editor.expectEditor.toContain('tag = $chamferFace01')
     await editor.expectEditor.toContain(
@@ -2625,7 +2585,7 @@ hide(sketch001)`
       commandName: 'Delete Face',
     })
     await cmdBar.submit()
-    await scene.settled(cmdBar)
+    await scene.settled()
 
     await editor.expectEditor.toContain('tag = $chamferFace01')
     await editor.expectEditor.toContain(
@@ -2686,7 +2646,7 @@ hide(sketch001)`
       commandName: 'Delete Face',
     })
     await cmdBar.submit()
-    await scene.settled(cmdBar)
+    await scene.settled()
 
     await editor.expectEditor.toContain('tag = $filletFace01')
     await editor.expectEditor.toContain(
@@ -2725,25 +2685,15 @@ region002 = region(point = [-20.0275mm, 10mm], sketch = sketch002)`
   region002,
   angle = 360deg,
   axis = {
-    sideFaces = [region001.tags.line1, capEnd001],
-    endFaces = [
-      region001.tags.line2,
-      region001.tags.line3
-    ]
+    sideFaces = [region001.tags.line1, capEnd001]
   },
-  bodyType = SURFACE,
 )`
     const newCodeToFindAfterEdit = `revolve001 = revolve(
   region002,
   angle = 360deg,
   axis = {
-    sideFaces = [region001.tags.line1, capEnd001],
-    endFaces = [
-      region001.tags.line2,
-      region001.tags.line3
-    ]
+    sideFaces = [region001.tags.line1, capEnd001]
   },
-  bodyType = SURFACE,
 )`
 
     await context.addInitScript((initialCode) => {
@@ -2780,7 +2730,6 @@ region002 = region(point = [-20.0275mm, 10mm], sketch = sketch002)`
           Profiles: '1 region',
           AxisOrEdge: '',
           Angle: '',
-          BodyType: '',
         },
         highlightedHeaderArg: 'axisOrEdge',
         stage: 'arguments',
@@ -2795,7 +2744,6 @@ region002 = region(point = [-20.0275mm, 10mm], sketch = sketch002)`
           Angle: '',
           AxisOrEdge: 'Edge',
           Edge: '',
-          BodyType: '',
         },
         highlightedHeaderArg: 'edge',
         stage: 'arguments',
@@ -2815,7 +2763,6 @@ region002 = region(point = [-20.0275mm, 10mm], sketch = sketch002)`
           Angle: '',
           AxisOrEdge: 'Edge',
           Edge: '1 edge',
-          BodyType: '',
         },
         highlightedHeaderArg: 'angle',
         stage: 'arguments',
@@ -2823,27 +2770,11 @@ region002 = region(point = [-20.0275mm, 10mm], sketch = sketch002)`
       await cmdBar.progressCmdBar()
       await cmdBar.expectState({
         commandName: 'Revolve',
-        currentArgKey: 'bodyType',
-        currentArgValue: '',
         headerArguments: {
           Profiles: '1 region',
           Angle: '360deg',
           AxisOrEdge: 'Edge',
           Edge: '1 edge',
-          BodyType: '',
-        },
-        highlightedHeaderArg: 'bodyType',
-        stage: 'arguments',
-      })
-      await cmdBar.progressCmdBar()
-      await cmdBar.expectState({
-        commandName: 'Revolve',
-        headerArguments: {
-          Profiles: '1 region',
-          Angle: '360deg',
-          AxisOrEdge: 'Edge',
-          Edge: '1 edge',
-          BodyType: 'SURFACE',
         },
         reviewValidationError: undefined,
         stage: 'review',
@@ -2869,7 +2800,6 @@ region002 = region(point = [-20.0275mm, 10mm], sketch = sketch002)`
         currentArgValue: '360deg',
         headerArguments: {
           Angle: '360deg',
-          BodyType: 'SURFACE',
         },
         highlightedHeaderArg: 'angle',
         stage: 'arguments',
@@ -2884,7 +2814,6 @@ region002 = region(point = [-20.0275mm, 10mm], sketch = sketch002)`
         stage: 'review',
         headerArguments: {
           Angle: newAngle,
-          BodyType: 'SURFACE',
         },
         commandName: 'Revolve',
       })
@@ -4423,6 +4352,7 @@ extrude001 = extrude(region001, length = 30)`
       await test.step('Submit and verify all parameters', async () => {
         await cmdBar.progressCmdBar()
         await scene.settled()
+        await editor.expectEditor.not.toContain('experimentalFeatures = allow')
         await editor.expectEditor.toContain('gdt::flatness(')
         await editor.expectEditor.toContain('faces = [capEnd001]')
         await editor.expectEditor.toContain('tolerance = 0.1in')
@@ -4844,6 +4774,7 @@ extrude001 = extrude(region001, length = 30)`
       await test.step('Submit and verify all parameters', async () => {
         await cmdBar.progressCmdBar()
         await scene.settled()
+        await editor.expectEditor.not.toContain('experimentalFeatures = allow')
         await editor.expectEditor.toContain('gdt::datum(')
         await editor.expectEditor.toContain('face = capEnd001')
         await editor.expectEditor.toContain('name = "A"')
