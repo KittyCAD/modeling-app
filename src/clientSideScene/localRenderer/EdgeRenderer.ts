@@ -38,7 +38,7 @@ export class EdgeRenderer {
 
   // TODO defer building if edges are not visible
   public buildEdges(gltf: KITTYCAD_GLTF) {
-    console.log(">>>", gltf)
+    console.log('>>>', gltf)
     const brep = gltf.userData.gltfExtensions.KITTYCAD_boundary_representation
     // for (const solid of brep.solids) {
     //   for (const [shellIndex, _] of solid.shells) {

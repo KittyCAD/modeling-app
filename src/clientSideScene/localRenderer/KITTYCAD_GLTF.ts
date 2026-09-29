@@ -72,28 +72,29 @@ type KIITYCAD_GLTF_SURFACE = {
   }
 }
 
-export type KITTYCAD_GLTF_CURVE3D = {
-  type: 'line'
-  line: {
-    origin: KIITYCAD_GLTF_VERTEX
-    direction: KIITYCAD_GLTF_VERTEX
-  }
-}
-| {
-  type: 'circle',
-  circle: {
-    origin?: KIITYCAD_GLTF_VERTEX,
-    xAxis?: KIITYCAD_GLTF_VERTEX,
-    yAxis?: KIITYCAD_GLTF_VERTEX,
-    radius: number
-  }
-}
- | {
-  type: 'nurbs',
-  nurbs: {
-    controlPoints: KIITYCAD_GLTF_VERTEX[],
-    order: number,
-    knotVector: number[],
-    weights?: number[]
-  }
- }
+export type KITTYCAD_GLTF_CURVE3D =
+  | {
+      type: 'line'
+      line: {
+        origin: KIITYCAD_GLTF_VERTEX
+        direction: KIITYCAD_GLTF_VERTEX
+      }
+    }
+  | {
+      type: 'circle'
+      circle: {
+        origin?: KIITYCAD_GLTF_VERTEX
+        xAxis?: KIITYCAD_GLTF_VERTEX
+        yAxis?: KIITYCAD_GLTF_VERTEX
+        radius: number
+      }
+    }
+  | {
+      type: 'nurbs'
+      nurbs: {
+        controlPoints: KIITYCAD_GLTF_VERTEX[]
+        order: number
+        knotVector: number[]
+        weights?: number[]
+      }
+    }

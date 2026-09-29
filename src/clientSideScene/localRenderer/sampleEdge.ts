@@ -1,7 +1,10 @@
-import type { KIITYCAD_GLTF_VERTEX, KITTYCAD_GLTF_CURVE3D, KITTYCAD_GLTF_EDGE } from './KITTYCAD_GLTF'
+import type {
+  KIITYCAD_GLTF_VERTEX,
+  KITTYCAD_GLTF_CURVE3D,
+  KITTYCAD_GLTF_EDGE,
+} from './KITTYCAD_GLTF'
 import { Vector3, Vector4 } from 'three'
 import { calcBSplinePoint } from 'three/examples/jsm/curves/NURBSUtils.js'
-
 
 type Evaluate = (t: number) => Vector3
 
@@ -38,14 +41,9 @@ export function sampleEdge(
         }
 
         // Topological endpoints already follow the edge orientation.
-        points = [
-          new Vector3().fromArray(start),
-          new Vector3().fromArray(end),
-        ]
+        points = [new Vector3().fromArray(start), new Vector3().fromArray(end)]
       } else {
-        const origin = new Vector3().fromArray(
-          curve.line.origin ?? [0, 0, 0]
-        )
+        const origin = new Vector3().fromArray(curve.line.origin ?? [0, 0, 0])
         const direction = new Vector3().fromArray(curve.line.direction)
 
         points = [t0, t1].map((t) =>
@@ -62,9 +60,7 @@ export function sampleEdge(
         return new Error('Invalid circle radius')
       }
 
-      const origin = new Vector3().fromArray(
-        circle.origin ?? [0, 0, 0]
-      )
+      const origin = new Vector3().fromArray(circle.origin ?? [0, 0, 0])
       const x = new Vector3().fromArray(circle.xAxis ?? [1, 0, 0])
       const y = new Vector3().fromArray(circle.yAxis ?? [0, 1, 0])
 
@@ -84,12 +80,7 @@ export function sampleEdge(
     }
 
     case 'nurbs': {
-      const {
-        order,
-        controlPoints,
-        knotVector: knots,
-        weights,
-      } = curve.nurbs
+      const { order, controlPoints, knotVector: knots, weights } = curve.nurbs
       const count = controlPoints.length
 
       if (
@@ -102,18 +93,14 @@ export function sampleEdge(
       }
 
       if (
-        knots.some(
-          (k, i) =>
-            !Number.isFinite(k) || (i > 0 && k < knots[i - 1])
-        )
+        knots.some((k, i) => !Number.isFinite(k) || (i > 0 && k < knots[i - 1]))
       ) {
         return new Error('NURBS knots must be finite and nondecreasing')
       }
 
       if (
         weights?.length &&
-        (weights.length !== count ||
-          weights.some((w) => !Number.isFinite(w)))
+        (weights.length !== count || weights.some((w) => !Number.isFinite(w)))
       ) {
         return new Error('Invalid NURBS weights')
       }
@@ -160,9 +147,7 @@ export function sampleEdge(
   if (
     points.some(
       (p) =>
-        !Number.isFinite(p.x) ||
-        !Number.isFinite(p.y) ||
-        !Number.isFinite(p.z)
+        !Number.isFinite(p.x) || !Number.isFinite(p.y) || !Number.isFinite(p.z)
     )
   ) {
     return new Error('Curve produced a non-finite position')
@@ -188,9 +173,7 @@ function circleSegmentCount(radius: number, sweep: number): number {
   const maxAngle =
     CHORD_ERROR >= radius
       ? Math.PI
-      : 2 * Math.acos(
-          Math.max(-1, Math.min(1, 1 - CHORD_ERROR / radius))
-        )
+      : 2 * Math.acos(Math.max(-1, Math.min(1, 1 - CHORD_ERROR / radius)))
 
   const minimum = sweep >= 2 * Math.PI * 0.99 ? 8 : 2
 
@@ -211,11 +194,7 @@ function sampleUniformly(
   )
 }
 
-function distanceToSegment(
-  p: Vector3,
-  a: Vector3,
-  b: Vector3
-): number {
+function distanceToSegment(p: Vector3, a: Vector3, b: Vector3): number {
   const ab = b.clone().sub(a)
   const lengthSquared = ab.lengthSq()
 
@@ -223,10 +202,7 @@ function distanceToSegment(
     return p.distanceTo(a)
   }
 
-  const t = Math.max(
-    0,
-    Math.min(1, p.clone().sub(a).dot(ab) / lengthSquared)
-  )
+  const t = Math.max(0, Math.min(1, p.clone().sub(a).dot(ab) / lengthSquared))
 
   return p.distanceTo(a.clone().addScaledVector(ab, t))
 }
