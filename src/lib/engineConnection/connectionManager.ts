@@ -108,7 +108,6 @@ export class ConnectionManager extends EventTarget {
   commandLogs: CommandLog[] = []
 
   connection: Connection | undefined
-  private kclVersion: KclVersion | undefined
   lastConnectionError: EngineConnectionError | undefined
   private connectionStartedAt = performance.now()
   private shutdownReported = false
@@ -239,8 +238,7 @@ export class ConnectionManager extends EventTarget {
 
     const handleMessage = this.createMessageHandler(rustContext)
 
-    this.kclVersion = kclVersion
-    const url = this.generateWebsocketURL()
+    const url = this.generateWebsocketURL(kclVersion)
     this.connection = new Connection({
       url,
       token,
@@ -408,47 +406,17 @@ export class ConnectionManager extends EventTarget {
     )
   }
 
-  generateWebsocketURL() {
+  generateWebsocketURL(kclVersion: KclVersion | undefined) {
     let additionalSettings = this.settings.enableSSAO ? '&post_effect=ssao' : ''
     additionalSettings +=
       '&show_grid=' + (this.settings.showScaleGrid ? 'true' : 'false')
-    if (this.kclVersion !== undefined) {
-      additionalSettings += `&kcl_version=${encodeURIComponent(this.kclVersion)}`
+    if (kclVersion !== undefined) {
+      additionalSettings += `&kcl_version=${encodeURIComponent(kclVersion)}`
     }
     const url = withKittycadWebSocketURL(
       `?video_res_width=${this.streamDimensions.width}&video_res_height=${this.streamDimensions.height}${additionalSettings}`
     )
     return url
-  }
-
-  /** Do not execute geometry until the engine has acknowledged its version. */
-  async setKclVersion(version: KclVersion): Promise<void> {
-    const connection = this.connection
-    if (!connection || !this.isReady) {
-      return Promise.reject(new Error(REJECTED_TOO_EARLY_WEBSOCKET_MESSAGE))
-    }
-    if (this.kclVersion === version) return
-    // A rejected/interrupted request may still have reached the engine.
-    this.kclVersion = undefined
-
-    const id = uuidv4()
-    const command: EngineCommand = {
-      type: 'modeling_cmd_req',
-      cmd_id: id,
-      cmd: { type: 'set_kcl_version', kcl_version: version },
-    }
-    this.addCommandLog({ type: CommandLogType.SendScene, data: command })
-    await this.sendCommand(id, {
-      command,
-      range: defaultSourceRange(),
-      idToRangeMap: {},
-    })
-
-    // An acknowledgement from an old session cannot configure its replacement.
-    if (this.connection !== connection || !this.isReady) {
-      return Promise.reject(new Error(REJECTED_TOO_EARLY_WEBSOCKET_MESSAGE))
-    }
-    this.kclVersion = version
   }
 
   // Set the engine's theme
@@ -1226,7 +1194,6 @@ export class ConnectionManager extends EventTarget {
     this.removeAllEventListeners()
     this.connection?.disconnectAll()
     this.connection = undefined
-    this.kclVersion = undefined
 
     // It is possible all connections never even started, but we still want
     // to signal to the whole application we are "offline".

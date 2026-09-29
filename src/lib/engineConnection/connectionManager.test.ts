@@ -6,7 +6,6 @@ vi.mock('@src/lib/clientErrors', async (importOriginal) => {
 })
 
 import type * as ClientErrorsModule from '@src/lib/clientErrors'
-import type { WebSocketResponse } from '@kittycad/lib'
 import { EXECUTE_AST_INTERRUPT_ERROR_MESSAGE } from '@src/lib/constants'
 import { EngineDebugger } from '@src/lib/debugger'
 import { Connection } from '@src/lib/engineConnection/connection'
@@ -86,73 +85,6 @@ describe('ConnectionManager', () => {
     vi.unstubAllGlobals()
     reportClientError.mockClear()
     ReconnectTestWebSocket.instances = []
-  })
-
-  describe('KCL language version', () => {
-    const acknowledgement: [WebSocketResponse] = [
-      {
-        success: true,
-        resp: {
-          type: 'modeling',
-          data: { modeling_response: { type: 'set_kcl_version', data: {} } },
-        },
-      },
-    ]
-
-    it('sends version changes, skips confirmed duplicates, and resends after reconnect', async () => {
-      const manager = createConnectionManager()
-      addConnectedState(manager)
-      const send = vi
-        .spyOn(manager, 'sendCommand')
-        .mockResolvedValue(acknowledgement)
-      for (const version of ['2.0', '2.0', '3.0-preview'] as const) {
-        await manager.setKclVersion(version)
-      }
-      expect(send.mock.calls.map(([, { command }]) => command)).toEqual([
-        expect.objectContaining({
-          cmd: { type: 'set_kcl_version', kcl_version: '2.0' },
-        }),
-        expect.objectContaining({
-          cmd: { type: 'set_kcl_version', kcl_version: '3.0-preview' },
-        }),
-      ])
-
-      manager.tearDown({ route: 'service-disposed', initiatedBy: 'client' })
-      addConnectedState(manager)
-      await manager.setKclVersion('3.0-preview')
-      expect(send).toHaveBeenCalledTimes(3)
-    })
-
-    it('does not trust the old version after a failed or interrupted change', async () => {
-      const manager = createConnectionManager()
-      addConnectedState(manager)
-      const send = vi
-        .spyOn(manager, 'sendCommand')
-        .mockResolvedValue(acknowledgement)
-      await manager.setKclVersion('2.0')
-      send.mockRejectedValueOnce(new Error('interrupted'))
-      await expect(manager.setKclVersion('3.0-preview')).rejects.toThrow(
-        'interrupted'
-      )
-      await manager.setKclVersion('2.0')
-      expect(send).toHaveBeenCalledTimes(3)
-    })
-
-    it('does not apply an old session acknowledgement to a replacement connection', async () => {
-      const manager = createConnectionManager()
-      addConnectedState(manager)
-      const deferred = Promise.withResolvers<[WebSocketResponse]>()
-      const send = vi
-        .spyOn(manager, 'sendCommand')
-        .mockReturnValueOnce(deferred.promise)
-        .mockResolvedValue(acknowledgement)
-      const pending = manager.setKclVersion('2.0')
-      addConnectedState(manager)
-      deferred.resolve(acknowledgement)
-      await expect(pending).rejects.toThrow()
-      await manager.setKclVersion('2.0')
-      expect(send).toHaveBeenCalledTimes(2)
-    })
   })
 
   it('warns when Engine rejects a modeling command', async () => {

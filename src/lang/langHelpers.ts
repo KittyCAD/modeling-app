@@ -86,7 +86,7 @@ function getFirstExecutionErrorMessage(e: unknown): string | undefined {
   return firstError.message
 }
 
-export function handleExecuteError(e: unknown): ExecutionResult {
+function handleExecuteError(e: unknown): ExecutionResult {
   let isInterrupted = false
 
   if (e instanceof KCLError) {
