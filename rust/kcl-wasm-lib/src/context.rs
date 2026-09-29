@@ -177,7 +177,7 @@ impl Context {
 
         let frontend = Arc::clone(&self.frontend);
         let mut guard = frontend.write().await;
-        self.sync_engine_kcl_version(&program)
+        self.ensure_engine_kcl_version(&program)
             .await
             .map_err(KclErrorWithOutputs::no_outputs)?;
         guard.engine_execute(&ctx, program).await
@@ -275,7 +275,7 @@ impl Context {
 impl Context {
     /// Confirm the app's program version before execution or checkpoint publication.
     /// The TS transport skips unchanged versions and owns the state across reconnects.
-    pub(crate) async fn sync_engine_kcl_version(&self, program: &Program) -> Result<(), KclError> {
+    pub(crate) async fn ensure_engine_kcl_version(&self, program: &Program) -> Result<(), KclError> {
         self.engine_manager
             .ensure_kcl_version(program.language_version()?, program.ast.as_source_range())
             .await
