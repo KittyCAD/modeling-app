@@ -1,5 +1,6 @@
 @settings(kclVersion = "3.0-preview")
 
+height = 3
 sketch001 = sketch(on = XY) {
   line1 = line(start = [var -2.94mm, var 1.66mm], end = [var -1.67mm, var 2.38mm])
   arc1 = arc(
@@ -65,52 +66,71 @@ extrude001 = extrude(
   tagEnd = $capEnd001,
   tagStart = $capStart001,
 )
+
 fillet001 = fillet(
   extrude001,
-  tags = getCommonEdge(faces = [
-    region001.tags.line4,
-    extrude001.faces.capEnd001
-  ]),
+  edges = [
+    {
+      sideFaces = [
+        extrude001.faces.capEnd001,
+        region001.tags.line3
+      ]
+    }
+  ],
   radius = 0.3,
 )
 fillet002 = fillet(
   extrude001,
-  tags = getCommonEdge(faces = [
-    region001.tags.line4,
-    extrude001.faces.capStart001
-  ]),
+  edges = [
+    {
+      sideFaces = [
+        extrude001.faces.capStart001,
+        region001.tags.arc3
+      ]
+    }
+  ],
   radius = 0.3,
 )
 fillet003 = fillet(
   extrude001,
-  tags = getCommonEdge(faces = [
-    region001.tags.circle1,
-    extrude001.faces.capEnd001
-  ]),
-  radius = innerRadius,
+  edges = [
+    {
+      sideFaces = [
+        extrude001.faces.capStart001,
+        region001.tags.circle3
+      ]
+    },
+    {
+      sideFaces = [
+        region001.tags.circle1,
+        extrude001.faces.capStart001
+      ]
+    },
+    {
+      sideFaces = [
+        region001.tags.circle2,
+        extrude001.faces.capStart001
+      ]
+    },
+    {
+      sideFaces = [
+        region001.tags.circle2,
+        extrude001.faces.capEnd001
+      ]
+    },
+    {
+      sideFaces = [
+        extrude001.faces.capEnd001,
+        region001.tags.circle3
+      ]
+    },
+    {
+      sideFaces = [
+        region001.tags.circle1,
+        extrude001.faces.capEnd001
+      ]
+    }
+  ],
+  radius = 0.2,
 )
-fillet004 = fillet(
-  extrude001,
-  tags = getCommonEdge(faces = [
-    region001.tags.circle3,
-    extrude001.faces.capEnd001
-  ]),
-  radius = innerRadius,
-)
-fillet005 = fillet(
-  extrude001,
-  tags = getCommonEdge(faces = [
-    region001.tags.circle2,
-    extrude001.faces.capEnd001
-  ]),
-  radius = innerRadius,
-)
-
-edge001 = edgeId(extrude001, index = 62)
-fillet006 = fillet(extrude001, tags = edge001, radius = 0.3)
-edge002 = edgeId(extrude001, index = 70)
-fillet007 = fillet(extrude001, tags = edge002, radius = 0.3)
-edge003 = edgeId(extrude001, index = 78)
-fillet008 = fillet(extrude001, tags = edge003, radius = 0.3)
-|> appearance(color = "#ca4333", metalness = 70, roughness = 50)
 

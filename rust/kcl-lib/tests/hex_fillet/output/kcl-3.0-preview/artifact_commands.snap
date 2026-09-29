@@ -451,32 +451,15 @@ description: Artifact commands hex_fillet.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "solid3d_get_common_edge",
+        "type": "solid3d_cut_edge_references",
         "object_id": "[uuid]",
-        "face_ids": [
-          "[uuid]",
-          "[uuid]"
-        ]
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_get_all_edge_faces",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
-      },
-      "omitFromGraph": true
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_cut_edges",
-        "object_id": "[uuid]",
-        "edge_ids": [
-          "[uuid]"
+        "edges_references": [
+          {
+            "side_faces": [
+              "[uuid]",
+              "[uuid]"
+            ]
+          }
         ],
         "cut_type": {
           "fillet": {
@@ -495,32 +478,15 @@ description: Artifact commands hex_fillet.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "solid3d_get_common_edge",
+        "type": "solid3d_cut_edge_references",
         "object_id": "[uuid]",
-        "face_ids": [
-          "[uuid]",
-          "[uuid]"
-        ]
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_get_all_edge_faces",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
-      },
-      "omitFromGraph": true
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_cut_edges",
-        "object_id": "[uuid]",
-        "edge_ids": [
-          "[uuid]"
+        "edges_references": [
+          {
+            "side_faces": [
+              "[uuid]",
+              "[uuid]"
+            ]
+          }
         ],
         "cut_type": {
           "fillet": {
@@ -539,32 +505,45 @@ description: Artifact commands hex_fillet.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "solid3d_get_common_edge",
+        "type": "solid3d_cut_edge_references",
         "object_id": "[uuid]",
-        "face_ids": [
-          "[uuid]",
-          "[uuid]"
-        ]
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_get_all_edge_faces",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
-      },
-      "omitFromGraph": true
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_cut_edges",
-        "object_id": "[uuid]",
-        "edge_ids": [
-          "[uuid]"
+        "edges_references": [
+          {
+            "side_faces": [
+              "[uuid]",
+              "[uuid]"
+            ]
+          },
+          {
+            "side_faces": [
+              "[uuid]",
+              "[uuid]"
+            ]
+          },
+          {
+            "side_faces": [
+              "[uuid]",
+              "[uuid]"
+            ]
+          },
+          {
+            "side_faces": [
+              "[uuid]",
+              "[uuid]"
+            ]
+          },
+          {
+            "side_faces": [
+              "[uuid]",
+              "[uuid]"
+            ]
+          },
+          {
+            "side_faces": [
+              "[uuid]",
+              "[uuid]"
+            ]
+          }
         ],
         "cut_type": {
           "fillet": {
@@ -574,264 +553,15 @@ description: Artifact commands hex_fillet.kcl
         },
         "tolerance": 0.0000001,
         "strategy": "automatic",
-        "extra_face_ids": [],
-        "version": "v2",
-        "tangent_chain": true
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_get_common_edge",
-        "object_id": "[uuid]",
-        "face_ids": [
+        "extra_face_ids": [
+          "[uuid]",
+          "[uuid]",
+          "[uuid]",
           "[uuid]",
           "[uuid]"
-        ]
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_get_all_edge_faces",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
-      },
-      "omitFromGraph": true
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_cut_edges",
-        "object_id": "[uuid]",
-        "edge_ids": [
-          "[uuid]"
         ],
-        "cut_type": {
-          "fillet": {
-            "radius": 0.2,
-            "second_length": null
-          }
-        },
-        "tolerance": 0.0000001,
-        "strategy": "automatic",
-        "extra_face_ids": [],
         "version": "v2",
         "tangent_chain": true
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_get_common_edge",
-        "object_id": "[uuid]",
-        "face_ids": [
-          "[uuid]",
-          "[uuid]"
-        ]
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_get_all_edge_faces",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
-      },
-      "omitFromGraph": true
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_cut_edges",
-        "object_id": "[uuid]",
-        "edge_ids": [
-          "[uuid]"
-        ],
-        "cut_type": {
-          "fillet": {
-            "radius": 0.2,
-            "second_length": null
-          }
-        },
-        "tolerance": 0.0000001,
-        "strategy": "automatic",
-        "extra_face_ids": [],
-        "version": "v2",
-        "tangent_chain": true
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_get_edge_uuid",
-        "object_id": "[uuid]",
-        "edge_index": 62
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "query_entity_type",
-        "entity_id": "[uuid]"
-      },
-      "omitFromGraph": true
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_get_all_edge_faces",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
-      },
-      "omitFromGraph": true
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_cut_edges",
-        "object_id": "[uuid]",
-        "edge_ids": [
-          "[uuid]"
-        ],
-        "cut_type": {
-          "fillet": {
-            "radius": 0.3,
-            "second_length": null
-          }
-        },
-        "tolerance": 0.0000001,
-        "strategy": "automatic",
-        "extra_face_ids": [],
-        "version": "v2",
-        "tangent_chain": true
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_get_edge_uuid",
-        "object_id": "[uuid]",
-        "edge_index": 70
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "query_entity_type",
-        "entity_id": "[uuid]"
-      },
-      "omitFromGraph": true
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_get_all_edge_faces",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
-      },
-      "omitFromGraph": true
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_cut_edges",
-        "object_id": "[uuid]",
-        "edge_ids": [
-          "[uuid]"
-        ],
-        "cut_type": {
-          "fillet": {
-            "radius": 0.3,
-            "second_length": null
-          }
-        },
-        "tolerance": 0.0000001,
-        "strategy": "automatic",
-        "extra_face_ids": [],
-        "version": "v2",
-        "tangent_chain": true
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_get_edge_uuid",
-        "object_id": "[uuid]",
-        "edge_index": 78
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "query_entity_type",
-        "entity_id": "[uuid]"
-      },
-      "omitFromGraph": true
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_get_all_edge_faces",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
-      },
-      "omitFromGraph": true
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_cut_edges",
-        "object_id": "[uuid]",
-        "edge_ids": [
-          "[uuid]"
-        ],
-        "cut_type": {
-          "fillet": {
-            "radius": 0.3,
-            "second_length": null
-          }
-        },
-        "tolerance": 0.0000001,
-        "strategy": "automatic",
-        "extra_face_ids": [],
-        "version": "v2",
-        "tangent_chain": true
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "object_set_material_params_pbr",
-        "object_id": "[uuid]",
-        "color": {
-          "r": 0.7921569,
-          "g": 0.2627451,
-          "b": 0.2,
-          "a": 1.0
-        },
-        "metalness": 0.7,
-        "roughness": 0.5,
-        "ambient_occlusion": 0.0
       }
     }
   ]
