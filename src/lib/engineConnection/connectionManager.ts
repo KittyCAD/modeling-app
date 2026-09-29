@@ -249,6 +249,7 @@ export class ConnectionManager extends EventTarget {
       callbackOnUnitTestingConnection,
       unitTestWebrtc,
       unitTestPool,
+      unitTestKclVersion: kclVersion,
       handleMessage,
       getCloudProjectId: () =>
         this.systemDeps.settingsActor.getSnapshot().context.currentProject
