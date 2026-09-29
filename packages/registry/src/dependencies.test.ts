@@ -1,11 +1,18 @@
-import { computed, signal } from '@preact/signals-core'
-import { describe, expect, it, vi } from 'vitest'
-import { RegistryDependencyError, ServiceResolutionError } from './errors'
+import { computed, signal, type ReadonlySignal } from '@preact/signals-core'
+import { describe, expect, expectTypeOf, it, vi } from 'vitest'
+import {
+  MissingServiceError,
+  RegistryDependencyError,
+  ServiceResolutionError,
+} from './errors'
 import { defineRegistryItemFactory, provide, provideService } from './helpers'
 import { Registry } from './registry'
 import { defineService } from './service'
 import { Slot, type RegistryItem } from './types'
-import { appendValueSpec } from './valueSpec'
+import { appendValueSpec, defineValueSpec } from './valueSpec'
+
+const dependencyToken = appendValueSpec<boolean>('dependency')
+const marker = () => [provide(dependencyToken, true)]
 
 describe('factory dependencies', () => {
   it('plans prerequisites before lazy callbacks and keeps the first factory identity', async () => {
@@ -23,33 +30,33 @@ describe('factory dependencies', () => {
     }, 'provider')
     const unusedDependency = defineRegistryItemFactory(() => {
       events.push('unused dependency')
-      return {}
+      return { provides: marker() }
     })
-    const duplicate = defineRegistryItemFactory(
-      () => {
+    const duplicate = defineRegistryItemFactory({
+      id: 'provider',
+      dependencies: {
+        unused: { registryItem: unusedDependency, token: dependencyToken },
+      },
+      create() {
         events.push('duplicate')
         return {}
       },
-      'provider',
-      [unusedDependency]
-    )
-    const consumer = defineRegistryItemFactory(
-      ({ services }) => {
+    })
+    const consumer = defineRegistryItemFactory({
+      id: 'consumer',
+      dependencies: { files: { registryItem: provider, token: service } },
+      create({ files }) {
         events.push('consumer')
         return {
           providesServices: [
-            provideService(result, {
-              read: () => services.get(service).read(),
-            }),
+            provideService(result, { read: () => files.value.read() }),
           ],
           dispose: () => {
             events.push('dispose consumer')
           },
         }
       },
-      'consumer',
-      [provider]
-    )
+    })
     const container = new Registry()
     container.configure([consumer, duplicate, consumer, provider])
     expect(events).toEqual([])
@@ -61,21 +68,26 @@ describe('factory dependencies', () => {
     expect(events.slice(2)).toEqual(['dispose consumer', 'dispose provider'])
   })
 
-  it('shares the same construction rules with and without dependencies', () => {
+  it('keeps injected service reads lazy like the callback form', () => {
     const service = defineService<{ ok: boolean }>('service')
     const provider = {
       providesServices: [provideService(service, { ok: true })],
     }
-    for (const dependencies of [[], [provider]]) {
-      const container = new Registry()
-      const consumer = defineRegistryItemFactory(
-        ({ services }) => {
-          services.get(service)
+    const consumers = [
+      defineRegistryItemFactory(({ services }) => {
+        services.get(service)
+        return {}
+      }),
+      defineRegistryItemFactory({
+        dependencies: { required: { registryItem: provider, token: service } },
+        create({ required }) {
+          void required.value
           return {}
         },
-        'consumer',
-        dependencies
-      )
+      }),
+    ]
+    for (const consumer of consumers) {
+      const container = new Registry()
       container.configure([provider, consumer])
       expect(() => container.inspect()).toThrow(ServiceResolutionError)
     }
@@ -95,9 +107,11 @@ describe('factory dependencies', () => {
         }),
       ],
     }
-    const consumer = defineRegistryItemFactory(() => ({}), 'consumer', [
-      duplicate,
-    ])
+    const consumer = defineRegistryItemFactory({
+      id: 'consumer',
+      dependencies: { values: { registryItem: duplicate, token: values } },
+      create: () => ({}),
+    })
     const container = new Registry()
     container.configure([original, consumer])
     expect(container.get(values)).toEqual(['original'])
@@ -131,24 +145,26 @@ describe('factory dependencies', () => {
     const events: string[] = []
     const first = defineRegistryItemFactory(() => {
       events.push('first')
-      return {}
+      return { provides: marker() }
     })
-    const second = defineRegistryItemFactory(
-      () => {
+    const second = defineRegistryItemFactory({
+      id: 'second',
+      dependencies: { first: { registryItem: first, token: dependencyToken } },
+      create() {
         events.push('second')
-        return {}
+        return { provides: marker() }
       },
-      'second',
-      [first]
-    )
-    const third = defineRegistryItemFactory(
-      () => {
+    })
+    const third = defineRegistryItemFactory({
+      id: 'third',
+      dependencies: {
+        second: { registryItem: second, token: dependencyToken },
+      },
+      create() {
         events.push('third')
         return {}
       },
-      'third',
-      [second]
-    )
+    })
     const container = new Registry()
     container.configure([third, second, first])
     expect(events).toEqual([])
@@ -159,22 +175,24 @@ describe('factory dependencies', () => {
   it('rejects known dependency cycles before running any callbacks', () => {
     const called = vi.fn()
     const children: RegistryItem[] = []
-    const first = defineRegistryItemFactory(
-      () => {
+    const first = defineRegistryItemFactory({
+      id: 'first',
+      dependencies: {
+        children: { registryItem: { uses: children }, token: dependencyToken },
+      },
+      create() {
         called()
         return {}
       },
-      'first',
-      [{ uses: children }]
-    )
-    const second = defineRegistryItemFactory(
-      () => {
+    })
+    const second = defineRegistryItemFactory({
+      id: 'second',
+      dependencies: { first: { registryItem: first, token: dependencyToken } },
+      create() {
         called()
         return {}
       },
-      'second',
-      [first]
-    )
+    })
     children.push(second)
     const unrelated = defineRegistryItemFactory(() => {
       called()
@@ -186,9 +204,9 @@ describe('factory dependencies', () => {
     expect(called).not.toHaveBeenCalled()
   })
 
-  it('preserves callbacks across dependency replacement and lets live reads follow the graph', async () => {
+  it('preserves callbacks across dependency replacement and lets required signals follow the graph', async () => {
     const service = defineService<{ name: string }>('provider')
-    const output = defineService<{ name(): string | undefined }>('consumer')
+    const output = defineService<{ name(): string }>('consumer')
     const slot = new Slot()
     const unrelated = new Slot()
     const calls = vi.fn()
@@ -203,22 +221,23 @@ describe('factory dependencies', () => {
         }),
         `provider:${name}`
       )
-    const consumer = defineRegistryItemFactory(
-      ({ services }) => {
+    const consumer = defineRegistryItemFactory({
+      id: 'consumer',
+      dependencies: {
+        live: { registryItem: slot.of(provider('one')), token: service },
+      },
+      create({ live }) {
         calls()
-        const live = services.signal(service)
         return {
           providesServices: [
-            provideService(output, { name: () => live.value?.name }),
+            provideService(output, { name: () => live.value.name }),
           ],
           dispose: () => {
             events.push('consumer')
           },
         }
       },
-      'consumer',
-      [slot.of(provider('one'))]
-    )
+    })
     const container = new Registry()
     container.configure([consumer, unrelated.of()])
     const original = container.get(output)
@@ -231,17 +250,24 @@ describe('factory dependencies', () => {
     expect(events).toEqual(['provider:one'])
     await container.configureAsync([])
     expect(events.slice(1)).toEqual(['consumer', 'provider:two'])
+    expect(() => original.name()).toThrow(MissingServiceError)
   })
 
-  it('keeps value-spec signals live without rerunning callbacks', () => {
+  it('keeps value-spec signals live and includes all contributors without rerunning callbacks', () => {
     const values = appendValueSpec<string>('values')
     const output = defineService<{ values(): readonly string[] }>('output')
     const source = signal('one')
     const calls = vi.fn()
-    const consumer = defineRegistryItemFactory(
-      ({ valueSpecs }) => {
+    const consumer = defineRegistryItemFactory({
+      id: 'consumer',
+      dependencies: {
+        live: {
+          registryItem: { provides: [provide(values, source)] },
+          token: values,
+        },
+      },
+      create({ live }) {
         calls()
-        const live = valueSpecs.signal(values)
         return {
           provides: [
             provide(
@@ -254,9 +280,7 @@ describe('factory dependencies', () => {
           ],
         }
       },
-      'consumer',
-      [{ provides: [provide(values, source)] }]
-    )
+    })
     const container = new Registry()
     container.configure([consumer])
     expect(container.get(output).values()).toEqual(['one', 'ONE'])
@@ -268,19 +292,22 @@ describe('factory dependencies', () => {
   it('disposes dependents first through synchronous disposal', () => {
     const events: string[] = []
     const dependency = defineRegistryItemFactory(() => ({
+      provides: marker(),
       dispose: () => {
         events.push('dependency')
       },
     }))
-    const consumer = defineRegistryItemFactory(
-      () => ({
+    const consumer = defineRegistryItemFactory({
+      id: 'consumer',
+      dependencies: {
+        dependency: { registryItem: dependency, token: dependencyToken },
+      },
+      create: () => ({
         dispose: () => {
           events.push('consumer')
         },
       }),
-      'consumer',
-      [dependency]
-    )
+    })
     const container = new Registry()
     container.configure([consumer])
     container.inspect()
@@ -293,18 +320,21 @@ describe('factory dependencies', () => {
     const provider = defineRegistryItemFactory(() => {
       events.push('create')
       return {
+        provides: marker(),
         dispose: () => {
           events.push('dispose')
         },
       }
     })
-    const broken = defineRegistryItemFactory(
-      () => {
+    const broken = defineRegistryItemFactory({
+      id: 'broken',
+      dependencies: {
+        provider: { registryItem: provider, token: dependencyToken },
+      },
+      create() {
         throw new Error('setup failed')
       },
-      'broken',
-      [provider]
-    )
+    })
     const container = new Registry()
     container.configure([broken])
     expect(() => container.inspect()).toThrow('setup failed')
@@ -312,5 +342,174 @@ describe('factory dependencies', () => {
     await container.configureAsync([provider])
     expect(events).toEqual(['create', 'dispose', 'create'])
     await container.disposeAsync()
+  })
+
+  it('infers required service and combined output types, and exposes only named inputs', () => {
+    const files = defineService<{ read(): string }>('files')
+    const count = defineValueSpec<string, number>({
+      name: 'count',
+      defaultValue: 0,
+      combine: (inputs) => inputs.length,
+    })
+    const provider = {
+      providesServices: [provideService(files, { read: () => 'file' })],
+      provides: [provide(count, 'one')],
+    }
+    let read: (() => string) | undefined
+    const create = vi.fn()
+    const consumer = defineRegistryItemFactory({
+      dependencies: {
+        files: { registryItem: provider, token: files },
+        count: { registryItem: provider, token: count },
+      },
+      create(inputs) {
+        expectTypeOf(inputs.files).toEqualTypeOf<
+          ReadonlySignal<{ read(): string }>
+        >()
+        expectTypeOf(inputs.count).toEqualTypeOf<ReadonlySignal<number>>()
+        expectTypeOf<keyof typeof inputs>().toEqualTypeOf<'files' | 'count'>()
+        // @ts-expect-error An undeclared registry context is not available.
+        void inputs.services
+        expect(Object.keys(inputs)).toEqual(['files', 'count'])
+        create()
+        read = () => `${inputs.files.value.read()}:${inputs.count.value}`
+        return {}
+      },
+    })
+    const container = new Registry()
+    container.configure([consumer])
+    container.inspect()
+    expect(read?.()).toBe('file:1')
+    expect(create).toHaveBeenCalledTimes(1)
+
+    defineRegistryItemFactory({
+      dependencies: {
+        // @ts-expect-error Both the registry item and the token are required.
+        missingItem: { token: files },
+      },
+      create: () => ({}),
+    })
+    defineRegistryItemFactory({
+      dependencies: {
+        // @ts-expect-error A token cannot be replaced with a registry item.
+        invalidToken: { registryItem: provider, token: provider },
+      },
+      create: () => ({}),
+    })
+  })
+
+  it.each(['service', 'valueSpec'] as const)(
+    'rejects mismatched %s pairs even if another item provides the token',
+    async (kind) => {
+      const service = defineService<{ ok: boolean }>('files')
+      const values = appendValueSpec<string>('settings')
+      const token = kind === 'service' ? service : values
+      const disposed = vi.fn()
+      const create = vi.fn(() => ({}))
+      const wrongProvider = defineRegistryItemFactory(
+        () => ({ dispose: disposed }),
+        'wrong-provider'
+      )
+      const consumer = defineRegistryItemFactory({
+        id: 'consumer',
+        dependencies: { required: { registryItem: wrongProvider, token } },
+        create,
+      })
+      const container = new Registry()
+      container.configure([
+        {
+          providesServices: [provideService(service, { ok: true })],
+          provides: [provide(values, 'setting')],
+        },
+        consumer,
+      ])
+      expect(() => container.inspect()).toThrow(
+        `Factory consumer dependency "required" does not provide token "${token.name}"`
+      )
+      expect(create).not.toHaveBeenCalled()
+      expect(disposed).toHaveBeenCalledTimes(1)
+      await container.configureAsync([])
+      expect(container.inspect().runtimeInstanceCount).toBe(0)
+    }
+  )
+
+  it('checks the winning instance rather than trusting a discarded provider', () => {
+    const service = defineService<{ ok: boolean }>('files')
+    const first = { id: 'provider' }
+    const discarded = {
+      id: 'provider',
+      providesServices: [provideService(service, { ok: true })],
+    }
+    const create = vi.fn(() => ({}))
+    const consumer = defineRegistryItemFactory({
+      dependencies: { files: { registryItem: discarded, token: service } },
+      create,
+    })
+    const container = new Registry()
+    container.configure([first, consumer])
+    expect(() => container.inspect()).toThrow(RegistryDependencyError)
+    expect(create).not.toHaveBeenCalled()
+  })
+
+  it('accepts tokens provided by a nested factory and shares it between named dependencies', () => {
+    const service = defineService<{ ok: boolean }>('files')
+    const create = vi.fn(() => ({
+      providesServices: [provideService(service, { ok: true })],
+    }))
+    const child = defineRegistryItemFactory(create)
+    let read: (() => boolean) | undefined
+    const consumer = defineRegistryItemFactory({
+      dependencies: {
+        first: { registryItem: { uses: [child] }, token: service },
+        second: { registryItem: child, token: service },
+      },
+      create({ first, second }) {
+        read = () => first.value === second.value
+        return {}
+      },
+    })
+    const container = new Registry()
+    container.configure([consumer])
+    container.inspect()
+    expect(read?.()).toBe(true)
+    expect(create).toHaveBeenCalledTimes(1)
+  })
+
+  it('revalidates cached consumers when a dependency slot loses its provider', async () => {
+    const service = defineService<{ ok: boolean }>('files')
+    const slot = new Slot()
+    const provider = {
+      providesServices: [provideService(service, { ok: true })],
+    }
+    const create = vi.fn(() => ({}))
+    const consumer = defineRegistryItemFactory({
+      dependencies: {
+        files: { registryItem: slot.of(provider), token: service },
+      },
+      create,
+    })
+    const container = new Registry()
+    container.configure([consumer])
+    container.inspect()
+    container.reconfigure(slot, [])
+    expect(() => container.inspect()).toThrow(RegistryDependencyError)
+    await container.reconfigureAsync(slot, [provider])
+    expect(create).toHaveBeenCalledTimes(1)
+  })
+
+  it('keeps ordinary service signals optional for toggleable providers', async () => {
+    const service = defineService<{ ok: boolean }>('optional')
+    const container = new Registry()
+    const live = container.signal(service)
+    expectTypeOf(live).toEqualTypeOf<
+      ReadonlySignal<{ ok: boolean } | undefined>
+    >()
+    expect(live.value).toBeUndefined()
+    await container.configureAsync([
+      { providesServices: [provideService(service, { ok: true })] },
+    ])
+    expect(live.value?.ok).toBe(true)
+    await container.configureAsync([])
+    expect(live.value).toBeUndefined()
   })
 })

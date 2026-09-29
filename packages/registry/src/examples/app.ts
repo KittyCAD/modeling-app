@@ -256,15 +256,19 @@ export const searchRegistryItem = defineRegistryItemFactory(() => {
  * - that keeps graph construction pure and lets the contribution react when the
  *   upstream service changes
  */
-export const searchStatusRegistryItem = defineRegistryItemFactory(
-  ({ services }) => {
+export const searchStatusRegistryItem = defineRegistryItemFactory({
+  id: 'search-status-registry-item',
+  dependencies: {
+    search: { registryItem: searchRegistryItem, token: searchService },
+  },
+  create({ search: searchSignal }) {
     return {
       id: 'search-status-registry-item',
       provides: [
         provide(
           toolbarValueSpec,
           computed(() => {
-            const search = services.get(searchService)
+            const search = searchSignal.value
             return {
               id: 'search.status',
               label: search.query.value
@@ -278,8 +282,7 @@ export const searchStatusRegistryItem = defineRegistryItemFactory(
       ],
     }
   },
-  'search-status-registry-item'
-)
+})
 
 /**
  * `uses` is the structural composition primitive for declarative registry items.

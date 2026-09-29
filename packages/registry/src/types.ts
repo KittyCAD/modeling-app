@@ -46,6 +46,8 @@ export interface ValueSpec<Input, Output> {
   readonly combine: (inputs: readonly Input[]) => Output
 }
 
+declare const serviceType: unique symbol
+
 /**
  * A Service is a named capability exposed by one registry item for other
  * registry items to consume.
@@ -53,7 +55,9 @@ export interface ValueSpec<Input, Output> {
  * Services are the capability / dependency-injection layer. They usually wrap
  * stable objects whose fields may include readonly Preact signals and methods.
  */
-export interface Service<_T> {
+export interface Service<T> {
+  /** Retain the implementation type for dependency inference; no runtime field. */
+  readonly [serviceType]?: T
   readonly id: symbol
   readonly name: string
   readonly multiple: boolean
@@ -108,7 +112,35 @@ export interface RuntimeRegistryItemDefinition extends RegistryItemDefinition {
 export interface RegistryItemFactory {
   (ctx: RegistryItemContext): RuntimeRegistryItemDefinition
   readonly itemKey?: RegistryItemKey
-  readonly dependencies?: readonly RegistryItem[]
+  readonly dependencies?: RegistryDependencies
+}
+
+/** An item to install and the capability or composed value it must contribute. */
+export interface RegistryDependency {
+  readonly registryItem: RegistryItem
+  readonly token: Service<unknown> | ValueSpec<any, unknown>
+}
+
+export type RegistryDependencies = Readonly<Record<string, RegistryDependency>>
+
+/** Named live inputs inferred from tokens. Required services never yield undefined. */
+export type RegistryDependencySignals<D extends RegistryDependencies> = {
+  readonly [K in keyof D]: ReadonlyPreactSignal<
+    D[K]['token'] extends Service<infer T>
+      ? T
+      : D[K]['token'] extends ValueSpec<any, infer O>
+        ? O
+        : never
+  >
+}
+
+/** Declarative prerequisites are planned before the ordinary lazy callback runs. */
+export interface RegistryItemFactoryDefinition<D extends RegistryDependencies> {
+  readonly id?: RegistryItemKey
+  readonly dependencies: D
+  readonly create: (
+    dependencies: RegistryDependencySignals<D>
+  ) => RuntimeRegistryItemDefinition
 }
 
 /**
