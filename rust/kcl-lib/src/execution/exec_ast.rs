@@ -7862,8 +7862,8 @@ d = b + c
         exec_ctxt
             .run(
                 &crate::Program {
-                    kcl_version: main.0,
-                    ast: main.1.clone(),
+                    kcl_version: main.kcl_version,
+                    ast: main.ast.clone(),
                     original_file_contents: "".to_owned(),
                 },
                 &mut exec_state,

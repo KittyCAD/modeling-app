@@ -354,12 +354,12 @@ pub struct Program {
 impl Program {
     pub fn parse(input: &str) -> Result<(Option<Program>, Vec<CompilationIssue>), KclError> {
         let module_id = ModuleId::default();
-        let (ast, errs) = parsing::parse_str(input, module_id).0?;
+        let (program, errs) = parsing::parse_str(input, module_id).0?;
 
         Ok((
-            ast.map(|ast| Program {
-                kcl_version: ast.0,
-                ast: ast.1,
+            program.map(|program| Program {
+                kcl_version: program.kcl_version,
+                ast: program.ast,
                 original_file_contents: input.to_string(),
             }),
             errs,
@@ -368,11 +368,11 @@ impl Program {
 
     pub fn parse_no_errs(input: &str) -> Result<Program, KclError> {
         let module_id = ModuleId::default();
-        let ast = parsing::parse_str(input, module_id).parse_errs_as_err()?;
+        let program = parsing::parse_str(input, module_id).parse_errs_as_err()?;
 
         Ok(Program {
-            kcl_version: ast.0,
-            ast: ast.1,
+            kcl_version: program.kcl_version,
+            ast: program.ast,
             original_file_contents: input.to_string(),
         })
     }

@@ -533,7 +533,7 @@ impl crate::lsp::backend::Backend for Backend {
 
         // Lets update the ast.
 
-        let (ast, errs) = match crate::parsing::parse_tokens(tokens.clone()).0 {
+        let (program, errs) = match crate::parsing::parse_tokens(tokens.clone()).0 {
             Ok(result) => result,
             Err(err) => {
                 self.add_to_diagnostics(&params, &[err], Replaces::All).await;
@@ -549,7 +549,7 @@ impl crate::lsp::backend::Backend for Backend {
             return;
         }
 
-        let Some((kcl_version, mut ast)) = ast else {
+        let Some(mut program) = program else {
             self.remove_from_ast_maps(&filename);
             return;
         };
@@ -557,12 +557,12 @@ impl crate::lsp::backend::Backend for Backend {
         // Here we will want to store the digest and compare, but for now
         // we're doing this in a non-load-bearing capacity so we can remove
         // this if it backfires and only hork the LSP.
-        ast.compute_digest();
+        program.ast.compute_digest();
 
         // Save it as a program.
         let ast = crate::Program {
-            kcl_version,
-            ast,
+            kcl_version: program.kcl_version,
+            ast: program.ast,
             original_file_contents: params.text.clone(),
         };
 
@@ -1027,21 +1027,21 @@ impl Backend {
         // I don't know if we need to do this again since it should be updated in the context.
         // But I figure better safe than sorry since this will write back out to the file.
         let module_id = ModuleId::default();
-        let Ok((_, mut ast)) = crate::parsing::parse_str(current_code, module_id).parse_errs_as_err() else {
+        let Ok(mut program) = crate::parsing::parse_str(current_code, module_id).parse_errs_as_err() else {
             return Ok(None);
         };
 
         // Let's convert the position to a character index.
         let pos = position_to_char_index(params.position, current_code);
         // Now let's perform the rename on the ast.
-        if !ast.rename_symbol(new_name, pos) {
+        if !program.ast.rename_symbol(new_name, pos) {
             // Nothing was renamed, e.g. the position is on a symbol we can't
             // rename yet, like a local in a function body or an if-expression
             // arm. Refuse instead of producing an edit that only reformats.
             return Ok(None);
         }
         // Now recast it.
-        let recast = ast.recast_top(&Default::default(), 0);
+        let recast = program.ast.recast_top(&Default::default(), 0);
 
         Ok(Some((current_code.to_string(), recast)))
     }
@@ -1641,11 +1641,11 @@ impl LanguageServer for Backend {
         // I don't know if we need to do this again since it should be updated in the context.
         // But I figure better safe than sorry since this will write back out to the file.
         let module_id = ModuleId::default();
-        let Ok((_, ast)) = crate::parsing::parse_str(current_code, module_id).parse_errs_as_err() else {
+        let Ok(program) = crate::parsing::parse_str(current_code, module_id).parse_errs_as_err() else {
             return Ok(None);
         };
         // Now recast it.
-        let recast = ast.recast_top(
+        let recast = program.ast.recast_top(
             &crate::parsing::ast::types::FormatOptions {
                 tab_size: params.options.tab_size as usize,
                 insert_final_newline: params.options.insert_final_newline.unwrap_or(false),

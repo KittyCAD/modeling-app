@@ -5912,7 +5912,7 @@ mySk1 = startSketchOn(XY)
         let result = crate::parsing::top_level_parse(p);
         let result = result.0.unwrap();
         assert!(result.1.iter().all(|e| !e.severity.is_err()), "found: {:#?}", result.1);
-        (result.0.unwrap().1, result.1)
+        (result.0.unwrap().ast, result.1)
     }
 
     #[track_caller]
@@ -5924,7 +5924,7 @@ mySk1 = startSketchOn(XY)
             "found: {:#?}",
             result.1
         );
-        (result.0.unwrap().1, result.1)
+        (result.0.unwrap().ast, result.1)
     }
 
     #[track_caller]

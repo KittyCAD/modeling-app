@@ -56,8 +56,8 @@ pub(crate) fn parse_str_syntax(
 ) -> Result<(KclVersion, Node<Program>, Vec<SourceRange>), KclError> {
     let tokens = crate::parsing::token::lex(code, module_id)?;
     let (result, never_type_ranges) = parse_tokens_with_version_policy(tokens, VersionedSyntaxPolicy::Deferred);
-    let parse_result = result.parse_errs_as_err()?;
-    Ok((parse_result.0, parse_result.1, never_type_ranges))
+    let program = result.parse_errs_as_err()?;
+    Ok((program.kcl_version, program.ast, never_type_ranges))
 }
 
 /// Validate parser-recorded `never` type uses for the source's role and KCL version.
@@ -242,9 +242,16 @@ fn parse_tokens_with_version_policy(
     let result = ParseResult(
         inner_result
             .0
-            .map(|(program, issues)| (program.map(|p| (kcl_version, p)), issues)),
+            .map(|(program, issues)| (program.map(|ast| ParsedProgram { kcl_version, ast }), issues)),
     );
     (result, never_type_ranges)
+}
+
+/// A parsed AST and its KCL version.
+#[derive(Debug, Clone)]
+pub struct ParsedProgram {
+    pub kcl_version: KclVersion,
+    pub ast: Node<Program>,
 }
 
 /// Result of parsing.
@@ -252,13 +259,13 @@ fn parse_tokens_with_version_policy(
 /// Will be a KclError if there was a lexing error or some unexpected error during parsing.
 ///   TODO - lexing errors should be included with the parse errors.
 /// Will be Ok otherwise, including if there were parsing errors. Any errors or warnings will
-/// be in the ParseContext. If an AST was produced, then that will be in the Option.
+/// be in the issues vector. If an AST was produced, then that will be in the Option.
 ///
 /// Invariants:
 /// - if there are no errors, then the Option will be Some
-/// - if the Option is None, then there will be at least one error in the ParseContext.
+/// - if the Option is None, then there will be at least one error in the issues vector.
 #[derive(Debug, Clone)]
-pub struct ParseResult(pub Result<(Option<(KclVersion, Node<Program>)>, Vec<CompilationIssue>), KclError>);
+pub struct ParseResult(pub Result<(Option<ParsedProgram>, Vec<CompilationIssue>), KclError>);
 
 impl ParseResult {
     #[cfg(test)]
@@ -267,7 +274,7 @@ impl ParseResult {
         if self.0.is_err() || self.0.as_ref().unwrap().0.is_none() {
             eprint!("{self:#?}");
         }
-        self.0.unwrap().0.unwrap().1
+        self.0.unwrap().0.unwrap().ast
     }
 
     #[cfg(test)]
@@ -285,7 +292,7 @@ impl ParseResult {
     }
 
     /// Treat parsing errors as an Error.
-    pub fn parse_errs_as_err(self) -> Result<(KclVersion, Node<Program>), KclError> {
+    pub fn parse_errs_as_err(self) -> Result<ParsedProgram, KclError> {
         let (p, errs) = self.0?;
 
         if let Some(err) = errs.iter().find(|e| e.severity.is_err()) {
@@ -318,14 +325,14 @@ impl InnerParseResult {
     }
 }
 
-impl From<Result<(Option<(KclVersion, Node<Program>)>, Vec<CompilationIssue>), KclError>> for ParseResult {
-    fn from(r: Result<(Option<(KclVersion, Node<Program>)>, Vec<CompilationIssue>), KclError>) -> Self {
+impl From<Result<(Option<ParsedProgram>, Vec<CompilationIssue>), KclError>> for ParseResult {
+    fn from(r: Result<(Option<ParsedProgram>, Vec<CompilationIssue>), KclError>) -> Self {
         Self(r)
     }
 }
 
-impl From<(Option<(KclVersion, Node<Program>)>, Vec<CompilationIssue>)> for ParseResult {
-    fn from(p: (Option<(KclVersion, Node<Program>)>, Vec<CompilationIssue>)) -> Self {
+impl From<(Option<ParsedProgram>, Vec<CompilationIssue>)> for ParseResult {
+    fn from(p: (Option<ParsedProgram>, Vec<CompilationIssue>)) -> Self {
         Self(Ok(p))
     }
 }
@@ -337,9 +344,9 @@ impl From<KclError> for ParseResult {
 }
 
 impl From<Node<Program>> for ParseResult {
-    fn from(p: Node<Program>) -> Self {
-        let kcl_version = computed_kcl_version(&p);
-        Self(Ok((Some((kcl_version, p)), vec![])))
+    fn from(ast: Node<Program>) -> Self {
+        let kcl_version = computed_kcl_version(&ast);
+        Self(Ok((Some(ParsedProgram { kcl_version, ast }), vec![])))
     }
 }
 
