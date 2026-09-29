@@ -2542,7 +2542,7 @@ chamfer001 = chamfer(
     toolbar,
     cmdBar,
   }) => {
-    const initialCode = `@settings(defaultLengthUnit = mm, experimentalFeatures = allow)
+    const initialCode = `@settings(defaultLengthUnit = mm, experimentalFeatures = allow, kclVersion = "3.0-preview")
 
 sketch001 = sketch(on = XY) {
   bottom = line(start = [0, 0], end = [24, 0])
@@ -2556,7 +2556,7 @@ chamfer001 = chamfer(
   extrude001,
   edges = [
     { sideFaces = [region001.tags.bottom, endCap] },
-    { sideFaces = [region001.tags.right, endCap] }
+    { sideFaces = [region001.tags.left, endCap] }
   ],
   length = 2,
 )
