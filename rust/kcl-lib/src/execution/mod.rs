@@ -79,6 +79,7 @@ pub(crate) use state::PendingEdgeRefactorMeta;
 pub(crate) use state::PendingLegacyAngleRefactorMeta;
 pub use state::RefactorMetadata;
 pub(crate) use state::TangencyMode;
+pub(crate) use state::computed_kcl_version;
 pub(crate) use state::declared_kcl_version;
 
 use crate::CompilationIssue;
@@ -1659,10 +1660,12 @@ impl ExecutorContext {
                     let old = CacheInformation {
                         ast: &cached_state.main.ast,
                         settings: &cached_state.settings,
+                        kcl_version: cached_state.kcl_version,
                     };
                     let new = CacheInformation {
                         ast: &program.ast,
                         settings: &self.settings,
+                        kcl_version: program.kcl_version,
                     };
 
                     // Get the program that actually changed from the old and new information.
@@ -1690,6 +1693,7 @@ impl ExecutorContext {
                                 (
                                     clear_scene,
                                     crate::Program {
+                                        kcl_version: program.kcl_version,
                                         ast: changed_program,
                                         original_file_contents: program.original_file_contents,
                                     },
@@ -1762,6 +1766,7 @@ impl ExecutorContext {
                                 (
                                     true,
                                     crate::Program {
+                                        kcl_version: program.kcl_version,
                                         ast: changed_program,
                                         original_file_contents: program.original_file_contents,
                                     },
@@ -1891,6 +1896,7 @@ impl ExecutorContext {
             cache::write_old_ast(GlobalState::new(
                 (*exec_state).clone(),
                 self.settings.clone(),
+                original_program.kcl_version,
                 original_program.ast,
                 result.0,
             ))
@@ -6324,8 +6330,9 @@ face = disc()
     #[tokio::test(flavor = "multi_thread")]
     async fn never_type_resolution_rejects_an_unvalidated_v2_ast() {
         let source = "@settings(kclVersion = 2.0)\nfn stop(): never {}\n";
-        let (ast, _) = crate::parsing::parse_str_syntax(source, ModuleId::default()).unwrap();
+        let (kcl_version, ast, _) = crate::parsing::parse_str_syntax(source, ModuleId::default()).unwrap();
         let program = crate::Program {
+            kcl_version,
             ast,
             original_file_contents: source.to_owned(),
         };
@@ -9798,7 +9805,13 @@ x = [1, 2]: NewT
             },
         );
 
-        let cached = cache::GlobalState::new(exec_state, ctx.settings.clone(), program.ast.clone(), main_ref);
+        let cached = cache::GlobalState::new(
+            exec_state,
+            ctx.settings.clone(),
+            program.kcl_version,
+            program.ast.clone(),
+            main_ref,
+        );
         let mem = cached.mock_memory_state().unwrap();
         assert_eq!(mem.std_not_yet_added["cube"].added_in, version("3.0"));
 

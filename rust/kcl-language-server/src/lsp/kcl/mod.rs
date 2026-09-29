@@ -549,7 +549,7 @@ impl crate::lsp::backend::Backend for Backend {
             return;
         }
 
-        let Some(mut ast) = ast else {
+        let Some((kcl_version, mut ast)) = ast else {
             self.remove_from_ast_maps(&filename);
             return;
         };
@@ -561,6 +561,7 @@ impl crate::lsp::backend::Backend for Backend {
 
         // Save it as a program.
         let ast = crate::Program {
+            kcl_version,
             ast,
             original_file_contents: params.text.clone(),
         };
@@ -1026,7 +1027,7 @@ impl Backend {
         // I don't know if we need to do this again since it should be updated in the context.
         // But I figure better safe than sorry since this will write back out to the file.
         let module_id = ModuleId::default();
-        let Ok(mut ast) = crate::parsing::parse_str(current_code, module_id).parse_errs_as_err() else {
+        let Ok((_, mut ast)) = crate::parsing::parse_str(current_code, module_id).parse_errs_as_err() else {
             return Ok(None);
         };
 
@@ -1640,7 +1641,7 @@ impl LanguageServer for Backend {
         // I don't know if we need to do this again since it should be updated in the context.
         // But I figure better safe than sorry since this will write back out to the file.
         let module_id = ModuleId::default();
-        let Ok(ast) = crate::parsing::parse_str(current_code, module_id).parse_errs_as_err() else {
+        let Ok((_, ast)) = crate::parsing::parse_str(current_code, module_id).parse_errs_as_err() else {
             return Ok(None);
         };
         // Now recast it.

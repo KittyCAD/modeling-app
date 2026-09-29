@@ -53,7 +53,7 @@ use crate::parsing::deprecation;
 
 #[allow(dead_code)]
 pub fn fmt(input: &str) -> Result<String, KclError> {
-    let program = crate::parsing::parse_str(input, ModuleId::default()).parse_errs_as_err()?;
+    let (_, program) = crate::parsing::parse_str(input, ModuleId::default()).parse_errs_as_err()?;
     Ok(program.recast_top(&Default::default(), 0))
 }
 

@@ -1,8 +1,11 @@
+use kcl_api::KclVersion;
+
 use crate::ModuleId;
 use crate::SourceRange;
 use crate::errors::CompilationIssue;
 use crate::errors::KclError;
 use crate::errors::KclErrorDetails;
+use crate::execution::computed_kcl_version;
 use crate::parsing::ast::types::Node;
 use crate::parsing::ast::types::Program;
 use crate::parsing::token::TokenStream;
@@ -47,10 +50,14 @@ pub(crate) enum SyntaxSource {
 
 /// Parse syntax without deciding whether the `never` type is available.
 /// See :https://github.com/KittyCAD/modeling-app/issues/14158
-pub(crate) fn parse_str_syntax(code: &str, module_id: ModuleId) -> Result<(Node<Program>, Vec<SourceRange>), KclError> {
+pub(crate) fn parse_str_syntax(
+    code: &str,
+    module_id: ModuleId,
+) -> Result<(KclVersion, Node<Program>, Vec<SourceRange>), KclError> {
     let tokens = crate::parsing::token::lex(code, module_id)?;
     let (result, never_type_ranges) = parse_tokens_with_version_policy(tokens, VersionedSyntaxPolicy::Deferred);
-    Ok((result.parse_errs_as_err()?, never_type_ranges))
+    let parse_result = result.parse_errs_as_err()?;
+    Ok((parse_result.0, parse_result.1, never_type_ranges))
 }
 
 /// Validate parser-recorded `never` type uses for the source's role and KCL version.
@@ -204,8 +211,8 @@ fn parse_tokens_with_version_policy(
             .map(|range| CompilationIssue::err(range, RESERVED_USE_MESSAGE)),
     );
     reserved_issues.sort_by_key(|issue| issue.source_range.start());
-    let (mut result, never_type_ranges) = parser::run_parser_with_never_ranges(tokens.as_slice());
-    if let Ok((Some(program), issues)) = &mut result.0 {
+    let (mut inner_result, never_type_ranges) = parser::run_parser_with_never_ranges(tokens.as_slice());
+    let kcl_version = if let Ok((Some(program), issues)) = &mut inner_result.0 {
         let version = match policy {
             VersionedSyntaxPolicy::DeclaredVersion => match crate::execution::declared_kcl_version(program) {
                 Ok(Some((version, _))) => Some(version),
@@ -226,7 +233,17 @@ fn parse_tokens_with_version_policy(
                 );
             }
         }
-    }
+        version
+    } else {
+        None
+    };
+    let kcl_version = kcl_version.unwrap_or_default();
+
+    let result = ParseResult(
+        inner_result
+            .0
+            .map(|(program, issues)| (program.map(|p| (kcl_version, p)), issues)),
+    );
     (result, never_type_ranges)
 }
 
@@ -241,7 +258,7 @@ fn parse_tokens_with_version_policy(
 /// - if there are no errors, then the Option will be Some
 /// - if the Option is None, then there will be at least one error in the ParseContext.
 #[derive(Debug, Clone)]
-pub struct ParseResult(pub Result<(Option<Node<Program>>, Vec<CompilationIssue>), KclError>);
+pub struct ParseResult(pub Result<(Option<(KclVersion, Node<Program>)>, Vec<CompilationIssue>), KclError>);
 
 impl ParseResult {
     #[cfg(test)]
@@ -250,7 +267,7 @@ impl ParseResult {
         if self.0.is_err() || self.0.as_ref().unwrap().0.is_none() {
             eprint!("{self:#?}");
         }
-        self.0.unwrap().0.unwrap()
+        self.0.unwrap().0.unwrap().1
     }
 
     #[cfg(test)]
@@ -268,7 +285,7 @@ impl ParseResult {
     }
 
     /// Treat parsing errors as an Error.
-    pub fn parse_errs_as_err(self) -> Result<Node<Program>, KclError> {
+    pub fn parse_errs_as_err(self) -> Result<(KclVersion, Node<Program>), KclError> {
         let (p, errs) = self.0?;
 
         if let Some(err) = errs.iter().find(|e| e.severity.is_err()) {
@@ -281,27 +298,66 @@ impl ParseResult {
     }
 }
 
-impl From<Result<(Option<Node<Program>>, Vec<CompilationIssue>), KclError>> for ParseResult {
-    fn from(r: Result<(Option<Node<Program>>, Vec<CompilationIssue>), KclError>) -> ParseResult {
-        ParseResult(r)
+#[derive(Debug, Clone)]
+pub(crate) struct InnerParseResult(pub Result<(Option<Node<Program>>, Vec<CompilationIssue>), KclError>);
+
+impl InnerParseResult {
+    #[cfg(test)]
+    #[track_caller]
+    pub fn unwrap(self) -> Node<Program> {
+        if self.0.is_err() || self.0.as_ref().unwrap().0.is_none() {
+            eprint!("{self:#?}");
+        }
+        self.0.unwrap().0.unwrap()
+    }
+
+    #[cfg(test)]
+    #[track_caller]
+    pub fn unwrap_errs(&self) -> impl Iterator<Item = &CompilationIssue> {
+        self.0.as_ref().unwrap().1.iter().filter(|e| e.severity.is_err())
     }
 }
 
-impl From<(Option<Node<Program>>, Vec<CompilationIssue>)> for ParseResult {
-    fn from(p: (Option<Node<Program>>, Vec<CompilationIssue>)) -> ParseResult {
-        ParseResult(Ok(p))
+impl From<Result<(Option<(KclVersion, Node<Program>)>, Vec<CompilationIssue>), KclError>> for ParseResult {
+    fn from(r: Result<(Option<(KclVersion, Node<Program>)>, Vec<CompilationIssue>), KclError>) -> Self {
+        Self(r)
     }
 }
 
-impl From<Node<Program>> for ParseResult {
-    fn from(p: Node<Program>) -> ParseResult {
-        ParseResult(Ok((Some(p), vec![])))
+impl From<(Option<(KclVersion, Node<Program>)>, Vec<CompilationIssue>)> for ParseResult {
+    fn from(p: (Option<(KclVersion, Node<Program>)>, Vec<CompilationIssue>)) -> Self {
+        Self(Ok(p))
     }
 }
 
 impl From<KclError> for ParseResult {
-    fn from(e: KclError) -> ParseResult {
-        ParseResult(Err(e))
+    fn from(e: KclError) -> Self {
+        Self(Err(e))
+    }
+}
+
+impl From<Node<Program>> for ParseResult {
+    fn from(p: Node<Program>) -> Self {
+        let kcl_version = computed_kcl_version(&p);
+        Self(Ok((Some((kcl_version, p)), vec![])))
+    }
+}
+
+impl From<(Option<Node<Program>>, Vec<CompilationIssue>)> for InnerParseResult {
+    fn from(p: (Option<Node<Program>>, Vec<CompilationIssue>)) -> Self {
+        Self(Ok(p))
+    }
+}
+
+impl From<Node<Program>> for InnerParseResult {
+    fn from(p: Node<Program>) -> Self {
+        Self(Ok((Some(p), vec![])))
+    }
+}
+
+impl From<KclError> for InnerParseResult {
+    fn from(e: KclError) -> Self {
+        Self(Err(e))
     }
 }
 
@@ -356,7 +412,7 @@ mod tests {
         for mode in [LexerMode::Old, LexerMode::New] {
             let _guard = LexerMode::override_for_test(mode);
             let code = "fn stop(): never {}";
-            let (_, ranges) = parse_str_syntax(code, ModuleId::default()).unwrap();
+            let (_, _, ranges) = parse_str_syntax(code, ModuleId::default()).unwrap();
             let error = validate_never_type_ranges(&ranges, SyntaxSource::UserCode(crate::KclVersion::V2)).unwrap_err();
             assert_eq!(
                 error.message(),
@@ -368,7 +424,7 @@ mod tests {
 
             validate_never_type_ranges(&ranges, SyntaxSource::UserCode(crate::KclVersion::V3Preview)).unwrap();
             validate_never_type_ranges(&ranges, SyntaxSource::BundledStdlib).unwrap();
-            let (_, identifier_ranges) =
+            let (_, _, identifier_ranges) =
                 parse_str_syntax("never = 1\nmessage = \"never\"", ModuleId::default()).unwrap();
             validate_never_type_ranges(&identifier_ranges, SyntaxSource::UserCode(crate::KclVersion::V2)).unwrap();
         }

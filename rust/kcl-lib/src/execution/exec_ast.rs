@@ -1888,7 +1888,7 @@ impl ExecutorContext {
                 exec_state.add_path_to_source_id(resolved_path.clone(), id);
                 let source = resolved_path.source(&self.fs, source_range).await?;
                 exec_state.add_id_to_source(id, source.clone());
-                let (parsed, never_type_ranges) = crate::parsing::parse_str_syntax(&source.source, id)?;
+                let (_, parsed, never_type_ranges) = crate::parsing::parse_str_syntax(&source.source, id)?;
                 // Defer validation until module execution or the mock import site.
                 exec_state.global.never_type_ranges.insert(id, never_type_ranges);
                 exec_state.add_module(id, resolved_path.clone(), ModuleRepr::Kcl(parsed, None));
@@ -1926,7 +1926,7 @@ impl ExecutorContext {
                 exec_state.add_path_to_source_id(resolved_path.clone(), id);
                 let source = resolved_path.source(&self.fs, source_range).await?;
                 exec_state.add_id_to_source(id, source.clone());
-                let (parsed, never_type_ranges) = crate::parsing::parse_str_syntax(&source.source, id).unwrap();
+                let (_, parsed, never_type_ranges) = crate::parsing::parse_str_syntax(&source.source, id).unwrap();
                 crate::parsing::validate_never_type_ranges(
                     &never_type_ranges,
                     crate::parsing::SyntaxSource::BundledStdlib,
@@ -7862,7 +7862,8 @@ d = b + c
         exec_ctxt
             .run(
                 &crate::Program {
-                    ast: main.clone(),
+                    kcl_version: main.0,
+                    ast: main.1.clone(),
                     original_file_contents: "".to_owned(),
                 },
                 &mut exec_state,

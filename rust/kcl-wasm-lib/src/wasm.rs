@@ -1,6 +1,7 @@
 //! Wasm bindings for `kcl`.
 
 use gloo_utils::format::JsValueSerdeExt;
+use kcl_api::KclVersion;
 use kcl_lib::KclRuntimeFlags;
 use kcl_lib::Program;
 use kcl_lib::SourceRange;
@@ -361,7 +362,7 @@ pub fn change_default_units(code: &str, len_str: &str) -> Result<String, String>
 pub fn change_kcl_version(code: &str, version_str: &str) -> Result<String, String> {
     console_error_panic_hook::set_once();
 
-    let version: Option<String> = serde_json::from_str(version_str).map_err(|e| e.to_string())?;
+    let version: Option<KclVersion> = serde_json::from_str(version_str).map_err(|e| e.to_string())?;
     let program = Program::parse_no_errs(code).map_err(|e| e.to_string())?;
 
     let new_program = program.change_kcl_version(version).map_err(|e| e.to_string())?;

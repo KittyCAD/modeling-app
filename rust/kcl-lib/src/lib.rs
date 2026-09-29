@@ -341,6 +341,7 @@ lazy_static::lazy_static! {
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct Program {
+    pub kcl_version: KclVersion,
     #[serde(flatten)]
     pub ast: parsing::ast::types::Node<parsing::ast::types::Program>,
     // The ui doesn't need to know about this.
@@ -357,7 +358,8 @@ impl Program {
 
         Ok((
             ast.map(|ast| Program {
-                ast,
+                kcl_version: ast.0,
+                ast: ast.1,
                 original_file_contents: input.to_string(),
             }),
             errs,
@@ -369,7 +371,8 @@ impl Program {
         let ast = parsing::parse_str(input, module_id).parse_errs_as_err()?;
 
         Ok(Program {
-            ast,
+            kcl_version: ast.0,
+            ast: ast.1,
             original_file_contents: input.to_string(),
         })
     }
@@ -395,13 +398,15 @@ impl Program {
         length_units: Option<kittycad_modeling_cmds::units::UnitLength>,
     ) -> Result<Self, KclError> {
         Ok(Self {
+            kcl_version: self.kcl_version,
             ast: self.ast.change_default_units(length_units)?,
             original_file_contents: self.original_file_contents.clone(),
         })
     }
 
-    pub fn change_kcl_version(&self, kcl_version: Option<String>) -> Result<Self, KclError> {
+    pub fn change_kcl_version(&self, kcl_version: Option<KclVersion>) -> Result<Self, KclError> {
         Ok(Self {
+            kcl_version: kcl_version.unwrap_or_default(),
             ast: self.ast.change_kcl_version(kcl_version)?,
             original_file_contents: self.original_file_contents.clone(),
         })
@@ -409,6 +414,7 @@ impl Program {
 
     pub fn change_experimental_features(&self, warning_level: Option<WarningLevel>) -> Result<Self, KclError> {
         Ok(Self {
+            kcl_version: self.kcl_version,
             ast: self.ast.change_experimental_features(warning_level)?,
             original_file_contents: self.original_file_contents.clone(),
         })
@@ -454,6 +460,7 @@ impl Program {
     /// Create an empty program.
     pub fn empty() -> Self {
         Self {
+            kcl_version: KclVersion::default(),
             ast: parsing::ast::types::Node::no_src(parsing::ast::types::Program::default()),
             original_file_contents: String::new(),
         }

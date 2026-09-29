@@ -1691,6 +1691,16 @@ pub(crate) fn declared_kcl_version(program: &Node<Program>) -> Result<Option<(Kc
     Ok(Some((version, property.as_source_range())))
 }
 
+/// The effective kclVersion that a program will be run with. If there's an
+/// error parsing, the default is used.
+pub(crate) fn computed_kcl_version(program: &Node<Program>) -> KclVersion {
+    match declared_kcl_version(program) {
+        Ok(Some((version, _))) => version,
+        Ok(None) => KclVersion::default(),
+        Err(_) => KclVersion::default(),
+    }
+}
+
 impl GlobalState {
     fn new(settings: &ExecutorSettings, segment_ids_edited: AhashIndexSet<ObjectId>) -> Self {
         let mut global = GlobalState {
