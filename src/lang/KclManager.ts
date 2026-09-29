@@ -948,7 +948,7 @@ export class KclManager extends File {
    */
   livePathsToWatch = signal<string[]>([])
   private _watchSymbol = Symbol()
-  private _unwatchDependencyReexecution = effect(() => {
+  unwatchDependencyReexecution = effect(() => {
     const reexecute = () => {
       this.executeCode().catch(reportRejection)
     }
@@ -2362,6 +2362,7 @@ export class KclManager extends File {
     this.settingsSubscription?.unsubscribe()
     this.disposeGlobalHistorySubscription?.()
     this.flushRecoverySnapshot()
+    this.unwatchDependencyReexecution()
     this.unwatch()
   }
 
