@@ -7855,6 +7855,7 @@ d = b + c
             execution_callbacks: Default::default(),
             executor_kind: ExecutorKind::resolve(),
             machine_call_depth_limit: crate::execution::machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
+            configure_engine_render: true,
         };
         let mut exec_state = ExecState::new(&exec_ctxt);
 

@@ -963,6 +963,10 @@ pub struct ExecutorContext {
     /// Call-depth limit for the machine executor's runaway-recursion guard.
     /// Crate-internal policy, not user configuration.
     pub(crate) machine_call_depth_limit: usize,
+    /// If true, send BeginExecution and EndExecution before/after executing
+    /// KCL. This might need to be false if the engine server is disabling
+    /// rendering because it's in a headless context.
+    pub configure_engine_render: bool,
 }
 
 impl std::fmt::Debug for ExecutorContext {
@@ -1177,6 +1181,7 @@ impl ExecutorContext {
             execution_callbacks: Default::default(),
             executor_kind: machine::ExecutorKind::resolve(),
             machine_call_depth_limit: machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
+            configure_engine_render: true,
         }
     }
 
@@ -1192,6 +1197,7 @@ impl ExecutorContext {
             // the executor selected for the run instead of the default.
             executor_kind: self.executor_kind,
             machine_call_depth_limit: self.machine_call_depth_limit,
+            configure_engine_render: true,
         }
     }
 
@@ -1265,6 +1271,7 @@ impl ExecutorContext {
             execution_callbacks: Default::default(),
             executor_kind: machine::ExecutorKind::resolve(),
             machine_call_depth_limit: machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
+            configure_engine_render: true,
         }
     }
 
@@ -1279,6 +1286,7 @@ impl ExecutorContext {
             execution_callbacks: Default::default(),
             executor_kind: machine::ExecutorKind::resolve(),
             machine_call_depth_limit: machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
+            configure_engine_render: true,
         }
     }
 
@@ -1300,6 +1308,7 @@ impl ExecutorContext {
             execution_callbacks: Default::default(),
             executor_kind: machine::ExecutorKind::resolve(),
             machine_call_depth_limit: machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
+            configure_engine_render: true,
         })
     }
 
@@ -1314,6 +1323,7 @@ impl ExecutorContext {
             execution_callbacks: Default::default(),
             executor_kind: machine::ExecutorKind::resolve(),
             machine_call_depth_limit: machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
+            configure_engine_render: true,
         }
     }
 
@@ -1600,9 +1610,13 @@ impl ExecutorContext {
     /// frames are not held underneath deep KCL execution in debug builds.
     pub async fn run_with_caching(&self, program: crate::Program) -> Result<ExecOutcome, KclErrorWithOutputs> {
         assert!(!self.is_mock());
-        let result = self
-            .with_engine_execution(Box::pin(self.run_with_caching_inner(program)))
-            .await;
+        let exec_fut = self.run_with_caching_inner(program);
+        let result = if self.configure_engine_render {
+            self.with_engine_execution(Box::pin(exec_fut)).await
+        } else {
+            exec_fut.await
+        };
+
         if result.is_err() {
             cache::bust_cache().await;
         }
@@ -1913,13 +1927,12 @@ impl ExecutorContext {
         universe_info: Option<(Universe, UniverseMap)>,
         preserve_mem: PreserveMem,
     ) -> Result<(EnvironmentRef, Option<ModelingSessionData>), KclErrorWithOutputs> {
-        self.with_engine_execution(Box::pin(self.run_concurrent_inner(
-            program,
-            exec_state,
-            universe_info,
-            preserve_mem,
-        )))
-        .await
+        let execution_fut = self.run_concurrent_inner(program, exec_state, universe_info, preserve_mem);
+        if self.configure_engine_render {
+            self.with_engine_execution(Box::pin(execution_fut)).await
+        } else {
+            execution_fut.await
+        }
     }
 
     /// Enclose the entire execution, including scene setup and cached settings updates.
@@ -2604,6 +2617,7 @@ pub(crate) fn new_mock_executor_context(
         execution_callbacks: Default::default(),
         executor_kind,
         machine_call_depth_limit: crate::execution::machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
+        configure_engine_render: true,
     }
 }
 
@@ -3096,6 +3110,7 @@ mod tests {
             execution_callbacks: Default::default(),
             executor_kind: machine::ExecutorKind::resolve(),
             machine_call_depth_limit: crate::execution::machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
+            configure_engine_render: true,
         };
         let mut exec_state = ExecState::new_with_memory_backend(&ctx, backend);
         let (env_ref, _) = ctx.run(&program, &mut exec_state).await.unwrap();
@@ -5819,6 +5834,7 @@ face = disc()
             execution_callbacks: Default::default(),
             executor_kind: machine::ExecutorKind::resolve(),
             machine_call_depth_limit: crate::execution::machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
+            configure_engine_render: true,
         }
     }
 
@@ -8126,6 +8142,7 @@ type Color { | Red | Green | Red }
             execution_callbacks: Default::default(),
             executor_kind: machine::ExecutorKind::resolve(),
             machine_call_depth_limit: crate::execution::machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
+            configure_engine_render: true,
         };
         let mut exec_state = ExecState::new(&ctx);
         // Close the context even if execution panics, then let the panic
