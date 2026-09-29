@@ -74,7 +74,7 @@ import {
   getEngineTopologyFallbackNormalized,
   isEnginePrimitiveSelection,
 } from '@src/lib/selections'
-import { err } from '@src/lib/trap'
+import { err, isErr } from '@src/lib/trap'
 import { isArray } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type {
@@ -693,8 +693,9 @@ export function entityReferenceToEdgeRefPayload(
  * Creates KCL object expression for an edgeRef payload.
  * Resolves face UUIDs to tags by looking up artifacts and getting/creating tags.
  * @param originalEdgeSelection - Optional original edge selection for Solid2D edge handling
- * @param fallbackCodeRef - Optional codeRef to use when originalEdgeSelection is not available (for SelectionV2-only rows)
+ * @param fallbackCodeRef - Optional code location used when originalEdgeSelection is not available. Accepts either CodeRef: the wasm one carries nodePath, and the app one only needs range and pathToNode.
  * @param tagsBaseExpr - When original tags were referenced as base.tags.x (e.g. bs.tags.edge7), pass the base expr so we emit sideFaces = [base.tags.edge6, base.tags.edge7]
+ * @param options.requireEveryFace - Popover copy path. Every side face and end face must appear in the expression, and building it must not edit the file. Codemod callers leave this off so a missing end face can still produce a useful sideFaces selector.
  */
 export function createEdgeRefObjectExpression(
   payload: FilletEdgeRefPayload,
@@ -702,12 +703,16 @@ export function createEdgeRefObjectExpression(
   ast: Node<Program>,
   artifactGraph: ArtifactGraph,
   originalEdgeSelection?: ResolvedGraphSelection,
-  fallbackCodeRef?: CodeRef,
+  fallbackCodeRef?: Pick<CodeRef, 'range' | 'pathToNode'>,
   tagsBaseExpr?: Expr | null,
-  owningBodyExpr?: Expr | null
+  owningBodyExpr?: Expr | null,
+  options?: { requireEveryFace?: boolean }
 ): { expr: Expr; modifiedAst: Node<Program> } | Error {
   const sideFaceExprs: Expr[] = []
-  let currentAst = ast
+  // Solid2D tagging mutates its AST argument. The popover path must not tag
+  // the live program, so every helper below runs on a clone. Codemod callers
+  // still receive the AST they passed in.
+  let currentAst = options?.requireEveryFace ? structuredClone(ast) : ast
   const effectiveTagsBaseExpr =
     tagsBaseExpr && tagsBaseMatchesOwningBody(tagsBaseExpr, owningBodyExpr)
       ? tagsBaseExpr
@@ -1012,11 +1017,39 @@ export function createEdgeRefObjectExpression(
     properties.index = createLiteral(payload.index, wasmInstance)
   }
 
+  if (options?.requireEveryFace) {
+    const endFaceCount = payload.end_faces?.length ?? 0
+    if (
+      sideFaceExprs.length !== payload.side_faces.length ||
+      endFaceExprs.length !== endFaceCount
+    ) {
+      return new Error(
+        'Not every face in the edge reference could be expressed without editing the file'
+      )
+    }
+    if (!programTextUnchanged(ast, currentAst, wasmInstance)) {
+      return new Error('Edge reference would edit the file')
+    }
+  }
+
   // Create object expression (KCL object literal)
   return {
     expr: createObjectExpression(properties),
     modifiedAst: currentAst,
   }
+}
+
+function programTextUnchanged(
+  before: Node<Program>,
+  after: Node<Program>,
+  wasmInstance: ModuleType
+): boolean {
+  // Same reference is not proof the program is unchanged: some tag helpers
+  // edit the AST they are given and return it.
+  const beforeCode = recast(before, wasmInstance)
+  const afterCode = recast(after, wasmInstance)
+  if (isErr(beforeCode) || isErr(afterCode)) return false
+  return beforeCode === afterCode
 }
 
 const DEPRECATED_EDGE_STDLIB: readonly string[] = [
