@@ -1439,7 +1439,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "39cab71617ae0d63f51a36d69f866391735b51691dbda63cf6f96d042b63efeb"
 dependencies = [
  "libc",
- "windows-sys 0.52.0",
+ "windows-sys 0.59.0",
 ]
 
 [[package]]
@@ -2562,7 +2562,7 @@ checksum = "3640c1c38b8e4e43584d8df18be5fc6b0aa314ce6ebf51b53313d4306cca8e46"
 dependencies = [
  "hermit-abi",
  "libc",
- "windows-sys 0.52.0",
+ "windows-sys 0.59.0",
 ]
 
 [[package]]
@@ -2693,27 +2693,6 @@ dependencies = [
 
 [[package]]
 name = "kcl-api"
-version = "0.2.188"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a1702f63e2cb0a88c4921a418aa4d03c501273efecfd4f6844c4d031e80c4e22"
-dependencies = [
- "euler",
- "indexmap 2.14.2",
- "kcl-error 0.2.188",
- "kittycad-measurements",
- "kittycad-point 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "kittycad-unit-conversion-derive",
- "parse-display",
- "parse-display-derive",
- "schemars 0.8.22",
- "serde",
- "serde_json",
- "ts-rs",
- "uuid",
-]
-
-[[package]]
-name = "kcl-api"
 version = "0.2.189"
 dependencies = [
  "arbitrary",
@@ -2727,6 +2706,27 @@ dependencies = [
  "parse-display-derive",
  "pyo3",
  "pyo3-stub-gen",
+ "schemars 0.8.22",
+ "serde",
+ "serde_json",
+ "ts-rs",
+ "uuid",
+]
+
+[[package]]
+name = "kcl-api"
+version = "0.2.189"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "4feba97feb51c92360305dfb483b648fd4a5a979652e7793b53d9b52b2255403"
+dependencies = [
+ "euler",
+ "indexmap 2.14.2",
+ "kcl-error 0.2.189 (registry+https://github.com/rust-lang/crates.io-index)",
+ "kittycad-measurements",
+ "kittycad-point 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "kittycad-unit-conversion-derive",
+ "parse-display",
+ "parse-display-derive",
  "schemars 0.8.22",
  "serde",
  "serde_json",
@@ -2775,11 +2775,10 @@ dependencies = [
 
 [[package]]
 name = "kcl-error"
-version = "0.2.188"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0cd0092292fd9782aacc37076a8c9e04f23eb94c3a2a3ee08b0be5348b698991"
+version = "0.2.189"
 dependencies = [
  "miette",
+ "pyo3",
  "schemars 0.8.22",
  "serde",
  "serde_json",
@@ -2790,9 +2789,10 @@ dependencies = [
 [[package]]
 name = "kcl-error"
 version = "0.2.189"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "7688d60126de4866b18360b9bd29ab5cd1f6e48b05b6c284c241f22d4aff3fb2"
 dependencies = [
  "miette",
- "pyo3",
  "schemars 0.8.22",
  "serde",
  "serde_json",
@@ -3065,7 +3065,7 @@ dependencies = [
  "euler",
  "http 1.5.0",
  "indexmap 2.14.2",
- "kcl-api 0.2.188",
+ "kcl-api 0.2.189 (registry+https://github.com/rust-lang/crates.io-index)",
  "kittycad-measurements",
  "kittycad-modeling-cmds-macros",
  "kittycad-point 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -4379,7 +4379,7 @@ dependencies = [
  "once_cell",
  "socket2 0.6.3",
  "tracing",
- "windows-sys 0.52.0",
+ "windows-sys 0.59.0",
 ]
 
 [[package]]
@@ -4780,7 +4780,7 @@ dependencies = [
  "errno",
  "libc",
  "linux-raw-sys 0.12.1",
- "windows-sys 0.52.0",
+ "windows-sys 0.59.0",
 ]
 
 [[package]]
@@ -4837,7 +4837,7 @@ dependencies = [
  "security-framework",
  "security-framework-sys",
  "webpki-root-certs",
- "windows-sys 0.52.0",
+ "windows-sys 0.59.0",
 ]
 
 [[package]]
@@ -5633,7 +5633,7 @@ dependencies = [
  "getrandom 0.4.3",
  "once_cell",
  "rustix 1.1.4",
- "windows-sys 0.52.0",
+ "windows-sys 0.59.0",
 ]
 
 [[package]]
@@ -6600,7 +6600,7 @@ version = "0.1.11"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c2a7b1c03c876122aa43f3020e6c3c3ee5c05081c9a00739faf7503aeba10d22"
 dependencies = [
- "windows-sys 0.52.0",
+ "windows-sys 0.59.0",
 ]
 
 [[package]]
