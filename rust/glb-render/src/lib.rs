@@ -16,7 +16,10 @@ mod sampling;
 use crate::sampling::BrepRenderData;
 
 pub const HELP: &str = r#"Usage:
-  kcl-render <MODEL.glb>
+  kcl-render <MODEL.glb> [X Y]
+
+Arguments:
+  X Y                             Maximum width and height in pixels (default: 1024 1024)
 
 Options:
   -h, --help                       Print this help
@@ -32,6 +35,8 @@ const SILHOUETTE_COLOR: Rgba<u8> = Rgba([0, 180, 0, 255]);
 const LINE_WIDTH: f32 = 2.5;
 const FRAME_PADDING: f32 = 0.05;
 
+/// Set the maximum dimensions of the output image.
+/// If the image does not fit inside the basic
 #[derive(Debug)]
 pub struct ImageSize {
     pub x: u32,
@@ -47,6 +52,7 @@ impl std::default::Default for ImageSize {
 #[derive(Debug)]
 struct BatchRenderOptions {
     glb: PathBuf,
+    image_size: ImageSize,
 }
 
 /// Render a Zoo GLB with flat-colored faces, green mesh silhouettes and blue
@@ -89,7 +95,7 @@ pub fn cpu_render_from_disk(args: Vec<OsString>) -> Result<(), String> {
     };
     let bytes = fs::read(&options.glb).map_err(|error| format!("could not read {}: {error}", options.glb.display()))?;
     let (edges, gltf) = parse_glb(&bytes)?;
-    let image_size = ImageSize::default();
+    let image_size = options.image_size;
 
     let render_started = Instant::now();
     let view = ViewProjection::from_model(&gltf, &edges, image_size.x, image_size.y)?;
@@ -98,7 +104,7 @@ pub fn cpu_render_from_disk(args: Vec<OsString>) -> Result<(), String> {
 
     let render_time = render_started.elapsed();
 
-    println!("renders saved");
+    println!("renders saved. total rendering time {}", render_time.as_secs_f32());
     Ok(())
 }
 
@@ -619,14 +625,29 @@ fn parse_args(args: Vec<OsString>) -> Result<Option<BatchRenderOptions>, String>
     if args.len() == 1 && (args[0] == "-h" || args[0] == "--help") {
         return Ok(None);
     }
-    if args.len() != 1 {
-        return Err(format!("expected exactly one GLB path\n\n{HELP}"));
+    if args.len() != 1 && args.len() != 3 {
+        return Err(format!("expected a GLB path optionally followed by X Y\n\n{HELP}"));
     }
     let glb = PathBuf::from(&args[0]);
     if !glb.extension().is_some_and(|extension| extension == "glb") {
         return Err(format!("input must be a .glb file: {}", glb.display()));
     }
-    Ok(Some(BatchRenderOptions { glb }))
+    let image_size = if args.len() == 3 {
+        let parse_dimension = |value: &OsString, name: &str| {
+            value
+                .to_str()
+                .and_then(|value| value.parse::<u32>().ok())
+                .filter(|value| *value > 0)
+                .ok_or_else(|| format!("{name} must be a positive integer no greater than {}", u32::MAX))
+        };
+        ImageSize {
+            x: parse_dimension(&args[1], "X")?,
+            y: parse_dimension(&args[2], "Y")?,
+        }
+    } else {
+        ImageSize::default()
+    };
+    Ok(Some(BatchRenderOptions { glb, image_size }))
 }
 
 #[cfg(test)]
@@ -768,6 +789,7 @@ mod tests {
         let triangles = square_triangles();
         let nodes = r#"{"translation":[0.04,0,0],"children":[1]},{"mesh":0,"translation":[0,0,0.02],"scale":[2,1,1]}"#;
         let bytes = triangle_glb(&triangles, 1.0, nodes);
+        let glb = gltf::Gltf::from_slice(&bytes).unwrap();
         let edges = BrepRenderData {
             edge_polylines: vec![vec![Vec3::ZERO, Vec3::new(0.0, 30.0, 0.0)]],
         };
@@ -782,6 +804,7 @@ mod tests {
         assert_padded_fit(view, &points);
 
         let hidden = triangle_glb(&triangles, 0.0, nodes);
+        let hidden = gltf::Gltf::from_slice(&hidden).unwrap();
         let view = ViewProjection::from_model(&hidden, &edges, 1280, 720).unwrap();
         assert_padded_fit(view, &edges.edge_polylines[0]);
     }
@@ -806,14 +829,16 @@ mod tests {
 
     #[test]
     fn silhouettes_weld_primitive_seams_and_keep_brep_edges_blue() {
-        let glb = triangle_glb(&square_triangles(), 1.0, r#"{"mesh":0}"#);
+        let bytes = triangle_glb(&square_triangles(), 1.0, r#"{"mesh":0}"#);
+        let glb = gltf::Gltf::from_slice(&bytes).unwrap();
         let view = silhouette_view();
-        let pass = render_faces(&glb, view).unwrap();
+        let pass = render_faces(glb, view).unwrap();
         assert_eq!(pass.silhouettes.len(), 4, "the shared diagonal is not a silhouette");
         let edges = BrepRenderData {
             edge_polylines: vec![vec![Vec3::new(-10.0, -10.0, 0.0), Vec3::new(10.0, -10.0, 0.0)]],
         };
-        let image = render_image(&glb, &edges, view).unwrap();
+        let glb = gltf::Gltf::from_slice(&bytes).unwrap();
+        let image = render_image(glb, &edges, view).unwrap();
         assert_eq!(*image.get_pixel(16, 6), SILHOUETTE_COLOR);
         assert_eq!(*image.get_pixel(16, 26), EDGE_COLOR);
         assert_eq!(*image.get_pixel(16, 16), Rgba([255, 0, 0, 255]));
@@ -839,7 +864,8 @@ mod tests {
     #[test]
     fn transparent_meshes_have_no_silhouettes() {
         let glb = triangle_glb(&square_triangles(), 0.0, r#"{"mesh":0}"#);
-        let mut pass = render_faces(&glb, silhouette_view()).unwrap();
+        let glb = gltf::Gltf::from_slice(&glb).unwrap();
+        let mut pass = render_faces(glb, silhouette_view()).unwrap();
         assert!(pass.silhouettes.is_empty());
         draw_silhouettes(&mut pass, silhouette_view());
         assert!(pass.image.pixels().all(|pixel| *pixel == BACKGROUND));
@@ -850,8 +876,9 @@ mod tests {
         // The child instance covers the first instance and is ten units nearer.
         let nodes = r#"{"mesh":0,"children":[1]},{"mesh":0,"translation":[0,0,0.01],"scale":[1.5,1.5,1]}"#;
         let glb = triangle_glb(&square_triangles(), 1.0, nodes);
+        let glb = gltf::Gltf::from_slice(&glb).unwrap();
         let view = silhouette_view();
-        let mut pass = render_faces(&glb, view).unwrap();
+        let mut pass = render_faces(glb, view).unwrap();
         assert_eq!(pass.silhouettes.len(), 8);
         draw_silhouettes(&mut pass, view);
         assert_eq!(*pass.image.get_pixel(16, 6), Rgba([255, 0, 0, 255]));
@@ -914,12 +941,33 @@ mod tests {
     fn parses_glb_argument() {
         let options = parse_args(vec!["model.glb".into()]).unwrap().unwrap();
         assert_eq!(options.glb, PathBuf::from("model.glb"));
+        assert_eq!((options.image_size.x, options.image_size.y), (1024, 1024));
+    }
+
+    #[test]
+    fn parses_image_dimensions() {
+        let options = parse_args(vec!["model.glb".into(), "1280".into(), "720".into()])
+            .unwrap()
+            .unwrap();
+        assert_eq!((options.image_size.x, options.image_size.y), (1280, 720));
+    }
+
+    #[test]
+    fn rejects_invalid_image_dimensions() {
+        for invalid in ["0", "-1", "1.5", "abc", "4294967296"] {
+            for dimensions in [[invalid, "720"], ["1280", invalid]] {
+                parse_args(vec!["model.glb".into(), dimensions[0].into(), dimensions[1].into()]).unwrap_err();
+            }
+        }
     }
 
     #[test]
     fn rejects_extra_arguments() {
         parse_args(vec!["one.glb".into(), "two.glb".into()]).unwrap_err();
         parse_args(vec!["model.kcl".into()]).unwrap_err();
+        parse_args(vec![]).unwrap_err();
+        parse_args(vec!["model.glb".into(), "1280".into()]).unwrap_err();
+        parse_args(vec!["model.glb".into(), "1280".into(), "720".into(), "extra".into()]).unwrap_err();
     }
 
     #[test]
