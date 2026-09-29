@@ -1,7 +1,6 @@
 import {
   defineRegistryItem,
   defineRegistryItemFactory,
-  defineRuntimeRegistryItem,
   provide,
   provideService,
 } from '@kittycad/registry'
@@ -80,20 +79,18 @@ export const authExtension = defineRegistryItemFactory((ctx) => {
   )
 
   return {
-    item: defineRuntimeRegistryItem({
-      id: 'auth-extension',
-      provides: [
-        provide(authSessionExpiredListenersValueSpec, expireAuthSession, {
-          key: 'auth-extension:expire-auth-session',
-        }),
-      ],
-      providesServices: [provideService(authService, serviceImpl)],
-      dispose: () => {
-        sessionExpiredSubscription()
-        authSubscription.unsubscribe()
-        authActor.stop()
-      },
-    }),
+    id: 'auth-extension',
+    provides: [
+      provide(authSessionExpiredListenersValueSpec, expireAuthSession, {
+        key: 'auth-extension:expire-auth-session',
+      }),
+    ],
+    providesServices: [provideService(authService, serviceImpl)],
+    dispose: () => {
+      sessionExpiredSubscription()
+      authSubscription.unsubscribe()
+      authActor.stop()
+    },
   }
 }, 'auth-extension')
 

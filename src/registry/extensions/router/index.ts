@@ -1,7 +1,6 @@
 import {
   defineRegistryItem,
   defineRegistryItemFactory,
-  defineRuntimeRegistryItem,
   provideService,
 } from '@kittycad/registry'
 import { signal } from '@preact/signals-core'
@@ -163,11 +162,9 @@ export const routerExtension = defineRegistryItemFactory(() => {
   const serviceImpl = createRouterRegistryService()
 
   return {
-    item: defineRuntimeRegistryItem({
-      id: 'router-extension',
-      providesServices: [provideService(routerService, serviceImpl)],
-      dispose: serviceImpl.reset,
-    }),
+    id: 'router-extension',
+    providesServices: [provideService(routerService, serviceImpl)],
+    dispose: serviceImpl.reset,
   }
 }, 'router-extension')
 
