@@ -60,7 +60,7 @@ flowchart LR
     %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlockBody, SketchBlockBodyItem { index: 6 }, ExpressionStatementExpr]
   32["SketchBlockConstraint Coincident<br>[759, 795, 0]"]
     %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlockBody, SketchBlockBodyItem { index: 7 }, ExpressionStatementExpr]
-  33["NamedView "Anchor only"<br>Baseline: Show<br>[914, 1058, 0]"]
+  33["NamedView "Anchor only"<br>Baseline: Show<br>[934, 1078, 0]"]
     %% [ProgramBodyItem { index: 5 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   1 <--x 33
   2 --- 3

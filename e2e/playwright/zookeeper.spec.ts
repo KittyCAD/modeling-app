@@ -1,5 +1,4 @@
 import { expect, test } from '@e2e/playwright/zoo-test'
-import { OPFS_CLOUD_FEATURE_FLAG } from '@src/lib/constants'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 
 // See zookeeper/text_to_cad/zookeeper_magic_bypass.py
@@ -8,7 +7,6 @@ const ZK_MOCK_REPLY_MARKER =
 const ZOOKEEPER_TEST_TAGS = ['@desktop', '@web', '@zookeeper']
 
 test.describe('Zookeeper tests', { tag: ZOOKEEPER_TEST_TAGS }, () => {
-  test.use({ userFeatures: [OPFS_CLOUD_FEATURE_FLAG] })
   test('Happy path: new project, easy prompt, good result', async ({
     page,
     editor,

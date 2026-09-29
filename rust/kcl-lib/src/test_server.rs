@@ -246,23 +246,6 @@ pub async fn kcl_doc_execute_and_snapshot(
     result
 }
 
-/// Executes a kcl program and takes a snapshot of the result.
-/// This returns the bytes of the snapshot.
-pub async fn execute_and_snapshot_legacy_sim_test(
-    code: &str,
-    current_file: Option<PathBuf>,
-) -> Result<image::DynamicImage, ExecError> {
-    let program = Program::parse_no_errs(code).map_err(KclErrorWithOutputs::no_outputs)?;
-    let version = program.language_version().map_err(KclErrorWithOutputs::no_outputs)?;
-    let ctx = new_context_engine_graphics(true, current_file, version).await?;
-    let res = execute_locally_and_render_on_engine(&ctx, program, None)
-        .await
-        .map(|(_, _, img)| img)
-        .map_err(|err| err.error);
-    ctx.close().await;
-    res
-}
-
 /// Executes a KCL program and takes a snapshot without closing the engine
 /// connection. If OK, the caller must close the returned context.
 /// If Err, the context will already be closed within this function.

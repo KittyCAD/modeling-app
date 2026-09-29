@@ -1,0 +1,5 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Variables in memory after executing stdlib_kcl_error_right_code_path.kcl
+---
+{}

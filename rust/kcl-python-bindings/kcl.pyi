@@ -75,11 +75,6 @@ __all__ = [
     "execute_and_snapshot",
     "execute_and_snapshot_views",
     "execute_code",
-    "execute_code_and_bounding_box",
-    "execute_code_and_export",
-    "execute_code_and_measure",
-    "execute_code_and_snapshot",
-    "execute_code_and_snapshot_views",
     "format",
     "format_dir",
     "get_sketch_constraint_status",
@@ -478,6 +473,16 @@ class KclSession:
         r"""
         Saved diagnostics, constraint reports, and sketch rendering from this execution.
         Available after close(); accessing it neither re-executes KCL nor copies the execution state.
+        """
+    @property
+    def api_call_id(self) -> typing.Optional[builtins.str]:
+        r"""
+        Engine API call ID for correlating this modeling session with engine logs.
+        """
+    @property
+    def websocket_upgrade_request_id(self) -> typing.Optional[builtins.str]:
+        r"""
+        Request ID for the HTTP request that upgraded to this engine WebSocket.
         """
     async def __aenter__(self) -> KclSession:
         r"""
@@ -1398,33 +1403,6 @@ async def execute_code(code: builtins.str, *, geometry_only: builtins.bool = ...
     Execute the kcl code.
     """
 
-async def execute_code_and_bounding_box(code: builtins.str, entity_ids: typing.Optional[typing.Sequence[builtins.str]] = None, output_unit: typing.Optional[UnitLength] = None, *, geometry_only: builtins.bool = ...) -> zooBoundingBoxResponse:
-    r"""
-    Execute the kcl code and return the model's bounding box.
-    """
-
-async def execute_code_and_export(code: builtins.str, export_format: zooFileExportFormat, *, geometry_only: builtins.bool = ...) -> builtins.list[RawFile]:
-    r"""
-    Execute the kcl code and export it to a specific file format.
-    """
-
-async def execute_code_and_measure(code: builtins.str, request: zooPhysicalPropertiesRequest, *, geometry_only: builtins.bool = ...) -> zooPhysicalPropertiesResponse:
-    r"""
-    Execute the kcl code and measure physical properties of the resulting model.
-    """
-
-async def execute_code_and_snapshot(code: builtins.str, image_format: zooImageFormat, *, zoom: typing.Optional[builtins.bool] = None, highlight_edges: typing.Optional[builtins.bool] = None) -> builtins.list[builtins.int]:
-    r"""
-    Execute the kcl code and snapshot it in a specific format.
-    """
-
-async def execute_code_and_snapshot_views(code: builtins.str, image_format: zooImageFormat, snapshot_options: typing.Sequence[SnapshotOptions], *, zoom: typing.Optional[builtins.bool] = None, highlight_edges: typing.Optional[builtins.bool] = None) -> builtins.list[builtins.list[builtins.int]]:
-    r"""
-    Execute the kcl code and snapshot it in a specific format.
-    Returns one image for each camera angle you provide.
-    If you don't provide any camera angles, a default head-on camera angle will be used.
-    """
-
 def format(code: builtins.str) -> builtins.str:
     r"""
     Format the kcl code. This will return the formatted code.
@@ -1511,6 +1489,8 @@ class KclError(builtins.Exception):
     def __new__(cls, _message: typing.Any, retryable: builtins.bool = False) -> KclError: ...
     @property
     def sketch_constraint_report(self) -> SketchConstraintReport | None: ...
+    def render_sketch_png(self, sketch_name: builtins.str, *, instance_index: typing.Optional[builtins.int] = None) -> builtins.list[builtins.int]:
+        r"""Render a sketch created before execution failed as a PNG."""
     def is_retryable(self) -> builtins.bool: ...
 
 class PanicException(BaseException):

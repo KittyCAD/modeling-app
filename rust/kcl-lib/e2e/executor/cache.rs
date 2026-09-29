@@ -924,7 +924,7 @@ import \"rectangle2.kcl\"
 async fn kcl_test_cache_rename_named_view_reports_the_new_name() {
     let code = |view_name: &str| {
         format!(
-            r#"@settings(experimentalFeatures = allow)
+            r#"@settings(kclVersion = "3.0-preview")
 
 plateSketch = sketch(on = XY) {{
   edge1 = line(start = [var 0mm, var 0mm], end = [var 40mm, var 0mm])

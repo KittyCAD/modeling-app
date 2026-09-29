@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties fillets_referencing_other_fillets_v3.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": 0.5,
+      "y": -1.9999999999999996,
+      "z": 2.0625
+    },
+    "dimensions": {
+      "x": 9.0,
+      "y": 4.000000000000001,
+      "z": 4.125
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 105.44365082587603
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 0.006333394973759866
+  }
+}

@@ -92,6 +92,10 @@ export class Registry implements ValueSpecReader, ServiceReader {
     ReadonlySignal<readonly DebugValueSpecItem[]>
   >()
   private readonly serviceSignals = new Map<symbol, ReadonlySignal<unknown>>()
+  private readonly sanitizedServices = new WeakMap<
+    object,
+    Map<symbol, object>
+  >()
   private readonly debugServiceItems = new Map<
     symbol,
     ReadonlySignal<readonly DebugServiceItem[]>
@@ -424,11 +428,7 @@ export class Registry implements ValueSpecReader, ServiceReader {
               )
             }
 
-            return sanitizeServiceImplementation(
-              this,
-              service,
-              item.implementation
-            )
+            return this.sanitizeService(service, item.implementation)
           })
         ) as unknown as T
       }
@@ -440,10 +440,28 @@ export class Registry implements ValueSpecReader, ServiceReader {
         )
       }
 
-      return sanitizeServiceImplementation(this, service, provider) as T
+      return this.sanitizeService(service, provider) as T
     } finally {
       this.resolvingServices.delete(service.id)
     }
+  }
+
+  private sanitizeService<T extends object>(
+    service: Service<T>,
+    implementation: T
+  ): T {
+    // Unrelated slot changes must not invalidate consumers' service dependencies.
+    let services = this.sanitizedServices.get(implementation)
+    if (!services) {
+      services = new Map()
+      this.sanitizedServices.set(implementation, services)
+    }
+    let sanitized = services.get(service.id)
+    if (!sanitized) {
+      sanitized = sanitizeServiceImplementation(this, service, implementation)
+      services.set(service.id, sanitized)
+    }
+    return sanitized as T
   }
 
   /** Create or reuse a runtime instance for one registry item factory. */

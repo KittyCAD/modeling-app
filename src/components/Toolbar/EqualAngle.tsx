@@ -28,8 +28,14 @@ export function equalAngleInfo({
       enabled: boolean
     }
   | Error {
+  if (selectionRanges.graphSelections.some(({ codeRef }) => !codeRef?.range)) {
+    return new Error(
+      'Equal angle requires selections that can be mapped back to code.'
+    )
+  }
+
   const paths = selectionRanges.graphSelections.map(({ codeRef }) =>
-    getNodePathFromSourceRange(kclManager.ast, codeRef.range)
+    getNodePathFromSourceRange(kclManager.ast, codeRef!.range)
   )
   const _nodes = paths.map((pathToNode) => {
     const tmp = getNodeFromPath<Expr>(kclManager.ast, pathToNode, wasmInstance)

@@ -28,7 +28,7 @@ sideOn = view::named(
  * switcher has to render apart. `panel.kcl` declares one, this file declares the
  * other, and `Top` is unique so it stays unprefixed.
  */
-const MAIN_KCL = `@settings(experimentalFeatures = allow)
+const MAIN_KCL = `@settings(kclVersion = "3.0-preview")
 
 import panelFront from "panel.kcl"
 
@@ -59,7 +59,7 @@ importedFront = panelFront
 /** `MAIN_KCL` with the `Top` declaration taken out, as an edit would. */
 const MAIN_KCL_WITHOUT_TOP = MAIN_KCL.replace(`${TOP_VIEW_KCL}\n\n`, '')
 
-const PANEL_KCL = `@settings(experimentalFeatures = allow)
+const PANEL_KCL = `@settings(kclVersion = "3.0-preview")
 
 export panelFront = view::named(
   "Front",
@@ -72,7 +72,7 @@ export panelFront = view::named(
  * A Top view with its own target and distance, which is the case the quaternion
  * route has to honour instead of re-centring on the current camera target.
  */
-const TOP_TARGET_KCL = `@settings(experimentalFeatures = allow)
+const TOP_TARGET_KCL = `@settings(kclVersion = "3.0-preview")
 
 plateSketch = sketch(on = XY) {
   edge1 = line(start = [var 0mm, var 0mm], end = [var 40mm, var 0mm])

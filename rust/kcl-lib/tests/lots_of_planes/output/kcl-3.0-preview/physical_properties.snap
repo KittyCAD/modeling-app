@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties lots_of_planes.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": -10.915,
+      "y": 11.5765,
+      "z": 1.09
+    },
+    "dimensions": {
+      "x": 40.53,
+      "y": 50.587,
+      "z": 38.26
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 975.504264189908
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 0.7502470545141712
+  }
+}

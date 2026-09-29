@@ -1,0 +1,14 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Error from executing double_delete.kcl
+---
+KCL Engine error
+
+  × engine: command RemoveSceneObjects resulted in errors:
+  │  No such object exists
+    ╭─[12:1]
+ 11 │ // Delete it again.
+ 12 │ delete(cylinder)
+    · ────────┬───────
+    ·         ╰── tests/double_delete/input.kcl
+    ╰────

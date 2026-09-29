@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties plumbus_fillets.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": 0.0,
+      "y": 6.083615110331706,
+      "z": 3.749999764473596
+    },
+    "dimensions": {
+      "x": 62.13250516799596,
+      "y": 64.16723028790551,
+      "z": 12.500000471052807
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 5501.385078032328
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 18.005138111025847
+  }
+}

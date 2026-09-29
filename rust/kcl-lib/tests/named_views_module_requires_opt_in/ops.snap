@@ -3,33 +3,6 @@ source: kcl-lib/src/simulation_tests.rs
 description: Operations executed named_views_module_requires_opt_in.kcl
 ---
 {
-  "rust/kcl-lib/tests/named_views_module_requires_opt_in/input.kcl": [
-    {
-      "type": "VariableDeclaration",
-      "name": "orientation",
-      "value": {
-        "type": "Enum",
-        "enum_name": "Orientation",
-        "variant": "Front"
-      },
-      "visibility": "default",
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 0
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          }
-        ]
-      },
-      "sourceRange": []
-    }
-  ],
   "std::math": [
     {
       "type": "VariableDeclaration",

@@ -1,3 +1,5 @@
+import { resolveOPFSHandle as walk } from '@src/lib/fs-zds/opfsHandle'
+
 const OPFS_PATH_SEPARATOR = '/'
 
 type WriteFileRequest = {
@@ -10,48 +12,6 @@ type WriteFileRequest = {
 type WorkerResponse =
   | { id: number; ok: true }
   | { id: number; ok: false; error: string }
-
-const walk = async (
-  targetPath: string
-): Promise<undefined | FileSystemDirectoryHandle | FileSystemFileHandle> => {
-  let current = await navigator.storage.getDirectory()
-  let cwd = ''
-  let looped = true
-  let currentChanged = true
-
-  if (targetPath.split(OPFS_PATH_SEPARATOR).length === 2) {
-    return current
-  }
-
-  while (looped && currentChanged) {
-    const entries = current.entries()
-    looped = false
-    currentChanged = false
-    for await (const [name, handle] of entries) {
-      looped = true
-      const currentPath = `${cwd}${OPFS_PATH_SEPARATOR}${name}`
-
-      if (targetPath.startsWith(currentPath) === false) {
-        continue
-      }
-
-      if (targetPath === currentPath) {
-        return handle
-      }
-
-      if (handle instanceof FileSystemDirectoryHandle) {
-        cwd = currentPath
-        current = handle
-        currentChanged = true
-        break
-      }
-
-      return undefined
-    }
-  }
-
-  return undefined
-}
 
 const writeWithHandle = async (
   handle: FileSystemFileHandle,

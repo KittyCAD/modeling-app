@@ -14,7 +14,6 @@ import type { Configuration } from '@src/lang/wasm'
 import {
   COOKIE_NAME_PREFIX,
   IS_PLAYWRIGHT_KEY,
-  OPFS_CLOUD_FEATURE_FLAG,
   SIDEBAR_BUTTON_SUFFIX,
   TOKEN_PERSIST_KEY,
   VERCEL_PLAYWRIGHT_TOKEN_QUERY_PARAM,
@@ -51,7 +50,6 @@ import {
 import { test } from '@e2e/playwright/zoo-test'
 import { createLayoutWithMetadata } from '@src/lib/layout'
 import { playwrightLayoutConfig } from '@src/lib/layout/configs/playwright'
-import { PERSONAL_CLOUD_PROJECT_LIBRARY_TITLE } from '@src/lib/projectLibraries'
 
 export const PLAYWRIGHT_LAYOUT_CONFIG_NAME = 'test'
 
@@ -109,10 +107,10 @@ async function waitForPageLoad(page: Page) {
   })
 }
 
-async function waitForHomeLoad(page: Page) {
-  await expect(page.getByTestId('home-section')).toBeVisible({
-    timeout: 20_000,
-  })
+async function waitForAppLoad(page: Page) {
+  const home = page.getByTestId('home-section')
+  const modelingScene = page.getByRole('button', { name: 'Start Sketch' })
+  await expect(home.or(modelingScene)).toBeVisible({ timeout: 20_000 })
 }
 
 export async function waitForWebKitBillingToSettle(page: Page) {
@@ -153,6 +151,12 @@ export async function sendCustomCmd(page: Page, cmd: EngineCommand) {
   await expect(page.getByTestId('custom-cmd-input')).toHaveValue(json)
   await page.getByTestId('custom-cmd-send-button').scrollIntoViewIfNeeded()
   await page.getByTestId('custom-cmd-send-button').click()
+}
+
+export async function sendSceneCommand(page: Page, cmd: EngineCommand) {
+  await page.evaluate(async (cmd) => {
+    await window.engineCommandManager.sendSceneCommand(cmd)
+  }, cmd)
 }
 
 async function clearCommandLogs(page: Page) {
@@ -425,12 +429,12 @@ async function waitForAuthAndLsp(page: Page) {
     if (token) {
       // Vercel is external to Playwright, so the token is provided in the URL
       await page.goto(`/?${VERCEL_PLAYWRIGHT_TOKEN_QUERY_PARAM}=${token}`)
-      await waitForHomeLoad(page)
+      await waitForAppLoad(page)
     }
   }
 
   await page.goto('/')
-  await waitForHomeLoad(page)
+  await waitForAppLoad(page)
   return waitForLspPromise
 }
 
@@ -1008,19 +1012,6 @@ export async function mockClientErrorReports(context: BrowserContext) {
   })
 }
 
-// Temporary function to confirm the feature flag is enabled
-export async function expectCloudFeatureEnabled(page: Page) {
-  await page.goto('/')
-  await expect(
-    page,
-    `'${OPFS_CLOUD_FEATURE_FLAG}' feature not enabled: / did not redirect to /home`
-  ).toHaveURL(/\/home$/)
-  await expect(
-    page.getByText(PERSONAL_CLOUD_PROJECT_LIBRARY_TITLE, { exact: true }),
-    `'${OPFS_CLOUD_FEATURE_FLAG}' feature not enabled: "${PERSONAL_CLOUD_PROJECT_LIBRARY_TITLE}" not visible`
-  ).toBeVisible()
-}
-
 // settingsOverrides may need to be augmented to take more generic items,
 // but we'll be strict for now
 export async function setup(
@@ -1398,20 +1389,15 @@ export async function doAndWaitForImageDiff(
         return actualDiffCount > diffCount
       }
 
-      // run isImageDiff every 50ms until it returns true or 5 seconds have passed (100 times)
-      let count = 0
-      const interval = setInterval(() => {
-        ;(async () => {
-          count++
-          if (await isImageDiff()) {
-            clearInterval(interval)
-            resolve(true)
-          } else if (count > 100) {
-            clearInterval(interval)
-            resolve(false)
-          }
-        })().catch(reportRejection)
-      }, 50)
+      // Run sequentially so slow screenshots do not overlap and starve Electron.
+      for (let count = 0; count <= 100; count++) {
+        if (await isImageDiff()) {
+          resolve(true)
+          return
+        }
+        await new Promise((resolve) => setTimeout(resolve, 50))
+      }
+      resolve(false)
     })().catch(reportRejection)
   })
 }

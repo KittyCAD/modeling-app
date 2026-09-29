@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties extrude_custom_plane.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": 0.6566218827113488,
+      "y": 0.202918934551622,
+      "z": 0.8968429999999998
+    },
+    "dimensions": {
+      "x": 1.5132437654226978,
+      "y": 1.794162130896756,
+      "z": 1.7936859999999997
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 6.94060754824477
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 0.0006875004894083917
+  }
+}
