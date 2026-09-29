@@ -2504,13 +2504,31 @@ extrude001 = baseExtrude
 fillet001 = ${edgeTreatmentType}(extrude001, ${parameterName} = 6, tags = [seg02])
 chamfer001 = chamfer(extrude001, length = 5, tags = [seg01OppositeEdge])`
 
-          await runDeleteEdgeTreatmentTest(
-            code,
-            edgeTreatmentSnippet,
-            expectedCode,
-            instanceInThisFile,
-            kclManagerInThisFile
-          )
+          const { instance, kclManager, engineCommandManager } =
+            await buildTheWorldAndConnectToEngine({
+              code,
+              webrtc: false,
+              pool: 'cpu',
+            })
+          try {
+            const websocket = engineCommandManager.connection?.websocket
+            if (!websocket) throw new Error('Expected an engine WebSocket')
+            expect(new URL(websocket.url).searchParams.get('kcl_version')).toBe(
+              '3.0-preview'
+            )
+            await runDeleteEdgeTreatmentTest(
+              code,
+              edgeTreatmentSnippet,
+              expectedCode,
+              instance,
+              kclManager
+            )
+          } finally {
+            engineCommandManager.tearDown({
+              route: 'user-requested',
+              initiatedBy: 'client',
+            })
+          }
         }, 10_000)
         it(`should delete a non-piped ${edgeTreatmentType} from a body with multiple treatments under KCL 3.0`, async () => {
           const code = `@settings(kclVersion = "3.0-preview")
@@ -2548,13 +2566,31 @@ extrude001 = baseExtrude
   |> fillet(radius = 5, tags = [seg02OppositeEdge])
 chamfer001 = chamfer(extrude001, length = 5, tags = [seg01OppositeEdge])`
 
-          await runDeleteEdgeTreatmentTest(
-            code,
-            edgeTreatmentSnippet,
-            expectedCode,
-            instanceInThisFile,
-            kclManagerInThisFile
-          )
+          const { instance, kclManager, engineCommandManager } =
+            await buildTheWorldAndConnectToEngine({
+              code,
+              webrtc: false,
+              pool: 'cpu',
+            })
+          try {
+            const websocket = engineCommandManager.connection?.websocket
+            if (!websocket) throw new Error('Expected an engine WebSocket')
+            expect(new URL(websocket.url).searchParams.get('kcl_version')).toBe(
+              '3.0-preview'
+            )
+            await runDeleteEdgeTreatmentTest(
+              code,
+              edgeTreatmentSnippet,
+              expectedCode,
+              instance,
+              kclManager
+            )
+          } finally {
+            engineCommandManager.tearDown({
+              route: 'user-requested',
+              initiatedBy: 'client',
+            })
+          }
         }, 10_000)
         // Revolve-specific test
         it(`should delete a ${edgeTreatmentType} from a revolved C-shape with rectangular profile`, async () => {

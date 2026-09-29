@@ -4,7 +4,8 @@ import { expect, test } from '@e2e/playwright/zoo-test'
 /**
  * Test KCL code - creates a scene with solid3d, surface, and split edges
  */
-const testCode = `sketch001 = startSketchOn(YZ)
+const testCode = `@settings(kclVersion = "3.0-preview")
+sketch001 = startSketchOn(YZ)
     profile001 = startProfile(sketch001, at = [-21.99, 8.01])
     |> angledLine(angle = 0deg, length = 8.96, tag = $rectangleSegmentA001)
     |> angledLine(angle = segAng(rectangleSegmentA001) - 90deg, length = 9.8)
@@ -145,7 +146,7 @@ test.describe('Face API edge selection', { tag: '@web' }, () => {
       await editor.expectEditor.toContain(`revolve`)
       await editor.expectEditor.toContain(`sideFaces = [seg01]`)
       await editor.expectEditor.toContain(
-        `endFaces = [rectangleSegmentA002, seg02]`
+        `endFaces = [seg02, rectangleSegmentA002]`
       )
       await expect(page.locator('.cm-lint-marker-error')).toHaveCount(0)
     })
