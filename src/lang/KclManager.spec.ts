@@ -400,6 +400,35 @@ describe('KclManager engine language version', () => {
     expect(sentVersions(send)).toEqual(['3.0-preview', '2.0', '3.0-preview'])
   })
 
+  it('waits for the version before accepting a program through the sketch API', async () => {
+    const { kclManager } = createKclManagerTestHarness()
+    const ast = await kclManager.safeParse(
+      '@settings(kclVersion = "3.0-preview")\nx = 1'
+    )
+    if (!ast) throw new Error('Expected a valid program')
+    const settings = jsAppSettings(kclManager.systemDeps.settings)
+    const acknowledgement = createDeferred<[WebSocketResponse]>()
+    const send = mockEngine(kclManager).mockReturnValueOnce(
+      acknowledgement.promise
+    )
+
+    const pending = kclManager.rustContext.hackSetProgram(ast, settings)
+    const rejected = expect(pending).rejects.toMatchObject({
+      message: expect.stringContaining('Unsupported KCL version'),
+    })
+    await vi.waitFor(() => expect(sentVersions(send)).toEqual(['3.0-preview']))
+    expect(send).toHaveBeenCalledOnce()
+    acknowledgement.reject([
+      { success: false, errors: [{ message: 'Unsupported KCL version' }] },
+    ])
+    await rejected
+
+    await expect(
+      kclManager.rustContext.hackSetProgram(ast, settings)
+    ).resolves.toMatchObject({ type: 'Success' })
+    expect(sentVersions(send)).toEqual(['3.0-preview', '3.0-preview'])
+  })
+
   it('switches back after evaluation fails following a successful version change', async () => {
     const { kclManager } = createKclManagerTestHarness(
       '@settings(kclVersion = 2.0)\nx = 1'

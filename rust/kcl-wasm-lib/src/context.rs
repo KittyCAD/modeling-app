@@ -45,7 +45,7 @@ impl ExecutionCallbacks for JsExecutionCallbacks {
 
 #[wasm_bindgen]
 pub struct Context {
-    pub(crate) engine: Arc<kcl_lib::wasm_engine::EngineConnection>,
+    engine: Arc<kcl_lib::wasm_engine::EngineConnection>,
     response_context: Arc<kcl_lib::wasm_engine::ResponseContext>,
     fs: kcl_lib::FileSystemHandle,
     mock_engine: Arc<kcl_lib::wasm_engine::EngineConnection>,
@@ -174,6 +174,9 @@ impl Context {
 
         let frontend = Arc::clone(&self.frontend);
         let mut guard = frontend.write().await;
+        self.sync_engine_kcl_version(&program)
+            .await
+            .map_err(KclErrorWithOutputs::no_outputs)?;
         guard.engine_execute(&ctx, program).await
     }
 
@@ -263,5 +266,30 @@ impl Context {
             Ok(outcome) => JsValue::from_serde(&outcome).map_err(|e| e.to_string()),
             Err(err) => Err(serde_json::to_string(&err).map_err(|serde_err| serde_err.to_string())?),
         }
+    }
+}
+
+impl Context {
+    /// Confirm the app's program version before execution or checkpoint publication.
+    /// The TS transport skips unchanged versions and owns the state across reconnects.
+    pub(crate) async fn sync_engine_kcl_version(&self, program: &Program) -> Result<(), KclError> {
+        use kittycad_modeling_cmds::KclVersion;
+        use kittycad_modeling_cmds::ModelingCmd;
+        use kittycad_modeling_cmds::each_cmd::SetKclVersion;
+
+        let version = match program.language_version()? {
+            kcl_lib::KclVersion::V1 => KclVersion::V1,
+            kcl_lib::KclVersion::V2 => KclVersion::V2,
+            kcl_lib::KclVersion::V3Preview => KclVersion::V3Preview,
+        };
+        self.engine
+            .send_modeling_cmd(
+                &kcl_lib::EngineBatchContext::new(),
+                uuid::Uuid::new_v4(),
+                program.ast.as_source_range(),
+                &ModelingCmd::from(SetKclVersion::builder().kcl_version(version).build()),
+            )
+            .await?;
+        Ok(())
     }
 }

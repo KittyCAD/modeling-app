@@ -158,6 +158,9 @@ impl Context {
 
         let frontend = Arc::clone(&self.frontend);
         let mut guard = frontend.write().await;
+        self.sync_engine_kcl_version(&program)
+            .await
+            .map_err(|e| js_value_from_serde(&KclErrorWithOutputs::no_outputs(e)))?;
         let result = guard
             .hack_set_program(&ctx, program)
             .await
@@ -1039,8 +1042,7 @@ impl Context {
             .restore_sketch_checkpoint(checkpoint_id)
             .await
             .map_err(|e: Error| js_value_from_serde(&e))?;
-        guard
-            .sync_engine_kcl_version(&self.engine)
+        self.sync_engine_kcl_version(guard.program())
             .await
             .map_err(|e| js_value_from_serde(&e))?;
 
