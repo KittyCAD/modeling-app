@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties face_api_fillet_edge_ref_requires_two_end_faces.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": -0.5855923379430235,
+      "y": 4.40390702020781,
+      "z": 2.4564964094215
+    },
+    "dimensions": {
+      "x": 5.245406432626082,
+      "y": 5.71513841612488,
+      "z": 3.144628931088228
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 25.67731905393951
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 0.006333594505629481
+  }
+}

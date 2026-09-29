@@ -242,6 +242,26 @@ describe('Extrude surface arguments', () => {
       extrudeSelectionRequiresMethod({
         argumentsToSubmit: {
           sketches: {
+            graphSelections: [
+              {
+                entityRef: {
+                  type: 'edge',
+                  side_faces: ['face-1', 'face-2'],
+                },
+                codeRef: { range: [0, 1, 0], pathToNode: [] },
+              },
+            ],
+            otherSelections: [],
+          },
+          length: parsedLength(),
+        },
+      })
+    ).toBe(true)
+
+    expect(
+      extrudeSelectionRequiresMethod({
+        argumentsToSubmit: {
+          sketches: {
             graphSelections: [],
             otherSelections: [
               {
@@ -311,6 +331,47 @@ describe('Extrude surface arguments', () => {
         },
       })
     ).toBe(false)
+  })
+
+  it('keeps bodyType optional for a Face API region without a legacy artifact', () => {
+    expect(
+      extrudeSelectionRequiresBodyType({
+        argumentsToSubmit: {
+          sketches: {
+            graphSelections: [
+              {
+                entityRef: { type: 'solid2d', solid2d_id: 'region-entity' },
+                codeRef: { range: [0, 1, 0], pathToNode: [] },
+              },
+            ],
+            otherSelections: [],
+          },
+          length: parsedLength(),
+        },
+      })
+    ).toBe(false)
+  })
+
+  it('requires bodyType for a Face API edge without a legacy artifact', () => {
+    expect(
+      extrudeSelectionRequiresBodyType({
+        argumentsToSubmit: {
+          sketches: {
+            graphSelections: [
+              {
+                entityRef: {
+                  type: 'edge',
+                  side_faces: ['face-1', 'face-2'],
+                },
+                codeRef: { range: [0, 1, 0], pathToNode: [] },
+              },
+            ],
+            otherSelections: [],
+          },
+          length: parsedLength(),
+        },
+      })
+    ).toBe(true)
   })
 
   it('requires bodyType for valid segment selections before artifact data is available', () => {
@@ -549,9 +610,15 @@ describe('stdlib command arg derivation', () => {
     ][] = [
       ['Extrude', {}, false],
       ['Extrude', { draftAngle: parsedLength('45deg') }, true],
+      ['Extrude', { sketches: selectionsForArtifact() }, false],
       ['Extrude', { direction: selectionsForArtifact() }, false],
+      ['Revolve', { axis: selectionsForArtifact() }, false],
+      ['Helix', { axis: selectionsForArtifact() }, false],
       ['Fillet', { edges: selectionsForArtifact() }, false],
       ['Fillet', { version: parsedLength('2') }, true],
+      ['Chamfer', { edges: selectionsForArtifact() }, false],
+      ['Chamfer', { version: parsedLength('2') }, true],
+      ['Mirror 3D', { across: selectionsForArtifact() }, false],
       ['Helical Gear', {}, true],
     ]
 

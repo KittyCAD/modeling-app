@@ -1966,6 +1966,12 @@ impl SketchApi for FrontendState {
 }
 
 impl FrontendState {
+    /// Evaluate an input expression using the current model's settings and cached variables.
+    pub async fn evaluate_expression(&self, ctx: &ExecutorContext, mut program: Program) -> ExecResult<ExecOutcome> {
+        program.ast.inner_attrs.clone_from(&self.program.ast.inner_attrs);
+        ctx.run_mock(&program, &MockConfig::default()).await
+    }
+
     pub async fn hack_set_program(&mut self, ctx: &ExecutorContext, program: Program) -> ExecResult<SetProgramOutcome> {
         self.program = program.clone();
 
@@ -5548,7 +5554,7 @@ fn add_wall_and_cap_face_objects(scene_objects: &mut Vec<crate::front::Object>, 
                     downstream_composite_code_ref_for_source(artifact_graph, wall.sweep_id).unwrap_or(&sweep.code_ref);
                 let path_code_ref = artifact_graph
                     .get(&segment.path_id)
-                    .or_else(|| artifact_graph.get(&sweep.path_id))
+                    .or_else(|| sweep.path_id.and_then(|path_id| artifact_graph.get(&path_id)))
                     .and_then(|artifact| match artifact {
                         Artifact::Path(path) => Some(&path.code_ref),
                         _ => None,
@@ -7375,7 +7381,7 @@ mod tests {
             Artifact::Sweep(Sweep {
                 id,
                 sub_type: SweepSubType::Extrusion,
-                path_id: ArtifactId::new(Uuid::new_v4()),
+                path_id: Some(ArtifactId::new(Uuid::new_v4())),
                 surface_ids: Vec::new(),
                 edge_ids: Vec::new(),
                 code_ref: code_ref.clone(),

@@ -480,6 +480,7 @@ export class App implements AppSubsystems {
     this.lastSettings = getAllCurrentSettings(
       getOnlySettingsFromContext(this.settings.actor.getSnapshot().context)
     )
+    this.unsubscribeFromSettings?.unsubscribe()
     this.unsubscribeFromSettings = this.settings.actor.subscribe(
       this.onSettingsUpdate
     )
@@ -595,8 +596,14 @@ export class App implements AppSubsystems {
             systemIOActor: this.systemIOActor,
             getCurrentProjectDirectoryName: () =>
               this.settings.actor.getSnapshot().context.currentProject?.name,
+            getCurrentProjectPath: () =>
+              this.settings.actor.getSnapshot().context.currentProject?.path,
             getCurrentProjectLibraryId: () =>
               this.currentProjectLibraryIdSignal.value,
+            getProjectLibraries: () =>
+              projectLibrariesFromSettings(
+                this.settings.actor.getSnapshot().context.app.libraries.current
+              ),
             getCreateProjectLibraryTargets: this.getCreateProjectLibraryTargets,
             getHomeProjectActions: () =>
               this.registry.get(homeProjectActionsService),
