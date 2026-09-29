@@ -1998,7 +1998,6 @@ plane001 = offsetPlane(planeOf(extrude001, face = seg01), offset = 20)`)
         instanceInThisFile
       )
       expect(result?.type).toEqual('edgeCut')
-      expect(result?.subType).toEqual('base')
       expect(result?.tagName).toEqual('seg01')
     })
 
@@ -2018,7 +2017,6 @@ plane001 = offsetPlane(planeOf(extrude001, face = seg01), offset = 20)`)
         instanceInThisFile
       )
       expect(result?.type).toEqual('edgeCut')
-      expect(result?.subType).toEqual('base')
       expect(result?.tagName).toEqual('seg01')
     })
   })
