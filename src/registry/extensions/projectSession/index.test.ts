@@ -2,7 +2,7 @@ import { Registry } from '@kittycad/registry'
 import type { ZDSProject } from '@src/lang/KclManager'
 import { projectSession } from '@src/registry/contracts/projectSession'
 import projectSessionRegistryItem from '@src/registry/extensions/projectSession'
-import { afterEach, describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 
 describe('project session extension', () => {
   let registry: Registry | undefined
@@ -51,5 +51,44 @@ describe('project session extension', () => {
 
     expect(session.getCurrentProjectLibraryId()).toBeUndefined()
     expect(session.currentProjectLibraryId.value).toBeUndefined()
+  })
+
+  it('owns opening the project and its optional initial editor', async () => {
+    registry = new Registry()
+    registry.configure([projectSessionRegistryItem])
+
+    const session = registry.get(projectSession)
+    const editor = { code: 'part = 1' }
+    const openEditor = vi.fn(async () => editor)
+    const openedProject = {
+      openEditor,
+    } as unknown as ZDSProject
+    const openProject = vi.fn(async () => openedProject)
+    const closeProject = vi.fn()
+    session.bindRuntime({ openProject, closeProject })
+    const throwIfSuperseded = vi.fn()
+    const project = { name: 'bracket' } as never
+    const providedEditor = {} as never
+
+    const result = await session.openProject({
+      project,
+      initialEditor: {
+        path: '/projects/bracket/part.kcl',
+        providedEditor,
+      },
+      throwIfSuperseded,
+    })
+
+    expect(openProject).toHaveBeenCalledWith(project, throwIfSuperseded)
+    expect(openEditor).toHaveBeenCalledWith(
+      '/projects/bracket/part.kcl',
+      providedEditor,
+      undefined,
+      true,
+      throwIfSuperseded
+    )
+    expect(result).toEqual({ project: openedProject, editor })
+    session.closeProject()
+    expect(closeProject).toHaveBeenCalledTimes(1)
   })
 })

@@ -30,6 +30,7 @@ import { statusBarGlobalItemsValueSpec } from '@src/registry/contracts/statusBar
 import { wasmPromiseValueSpec } from '@src/registry/contracts/wasm'
 import { useSelector } from '@xstate/react'
 import { createActor } from 'xstate'
+import { createSettingsPersistence } from './persistence'
 
 export const settingsExtension = defineRegistryItemFactory((ctx) => {
   const settingsSignal = signal<SettingsType>(createSettings())
@@ -39,6 +40,24 @@ export const settingsExtension = defineRegistryItemFactory((ctx) => {
   const getWasmPromise = () =>
     ctx.valueSpecs.get(wasmPromiseValueSpec) ??
     Promise.reject(new Error('Missing WASM promise registry value.'))
+
+  let loadOrCreateSettings: SettingsRegistryService['loadOrCreate'] | undefined
+  const loadOrCreate: SettingsRegistryService['loadOrCreate'] = (
+    projectPath
+  ) => {
+    loadOrCreateSettings ??= createSettingsPersistence({
+      fileOperations: ctx.services.get(fileOperationsService),
+      wasmInstancePromise: getWasmPromise(),
+      defaultProjectLibraries: ctx.valueSpecs.get(
+        projectLibrarySettingDefaultsValueSpec
+      ),
+      projectLibrarySettingDefaultPolicies: ctx.valueSpecs.get(
+        projectLibrarySettingDefaultPoliciesValueSpec
+      ),
+      extensionSettings: ctx.valueSpecs.get(settingsValueSpec),
+    })
+    return loadOrCreateSettings(projectPath)
+  }
 
   const ensureActor = () => {
     if (settingsActor) {
@@ -87,6 +106,7 @@ export const settingsExtension = defineRegistryItemFactory((ctx) => {
       ensureActor()
       return settingsSignal.value
     },
+    loadOrCreate,
     send: (...args: Parameters<SettingsActorType['send']>) =>
       ensureActor().send(...args),
     useSettings: () =>
