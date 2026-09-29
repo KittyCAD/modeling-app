@@ -43,11 +43,16 @@ use crate::std_utils::untyped_point_to_unit;
 
 /// Unitless convergence tolerance used for KCL 2 sketch solving.
 pub const SOLVER_CONVERGENCE_TOLERANCE: f64 = 1e-8;
-/// Physical KCL 3 point-point coincidence tolerance for each coordinate, in millimeters.
-pub(crate) const POINT_POINT_2D_COINCIDENT_TOLERANCE_MM: f64 = 1e-8;
-/// Euclidean distance containing the KCL 3 per-coordinate coincidence region, in millimeters.
+
+/// KCL 3 point-point coincidence tolerance, in millimeters.
+/// This measures the maximum difference between px and qx, or py and qy, aka the "max norm" or "Chebyshev distance".
+pub(crate) const POINT_POINT_2D_COINCIDENT_CHEBYSHEV_TOLERANCE_MM: f64 = 1e-8;
+
+/// KCL 3 point-point coincidence tolerance, in millimeters.
+/// This measures the maximum distance on the 2D plane between P and Q, aka the "Euclidean distance".
 pub(crate) const POINT_POINT_2D_COINCIDENT_EUCLIDEAN_TOLERANCE_MM: f64 =
-    POINT_POINT_2D_COINCIDENT_TOLERANCE_MM * std::f64::consts::SQRT_2;
+    POINT_POINT_2D_COINCIDENT_CHEBYSHEV_TOLERANCE_MM * std::f64::consts::SQRT_2;
+
 const CONTROL_POINT_SPLINE_SAMPLES_PER_SPAN: usize = 24;
 
 fn build_open_uniform_knot_vector(control_count: usize, degree: usize) -> Vec<f64> {
