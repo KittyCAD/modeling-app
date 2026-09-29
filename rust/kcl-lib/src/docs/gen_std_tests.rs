@@ -899,7 +899,7 @@ async fn test_code_in_topics() {
         let text = std::fs::read_to_string(&path).unwrap();
 
         for (i, (eg, attr)) in find_examples(&text, &path).into_iter().enumerate() {
-            if attr.contains("noRender") || !attr.contains("kcl") {
+            if attr.contains("norun") || !attr.contains("kcl") {
                 continue;
             }
 
