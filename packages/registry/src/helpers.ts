@@ -13,6 +13,9 @@ import type {
   RegistryItem,
   RegistryItemDefinition,
   RegistryItemFactory,
+  RegistryItemFactoryDefinition,
+  RegistryDependencies,
+  RegistryDependencySignals,
   RegistryItemKey,
   RegistryDisposer,
   Service,
@@ -119,7 +122,7 @@ export interface SlotToggleController {
  */
 export function sanitizeServiceImplementation<T extends object>(
   container: Registry,
-  service: Service<T>,
+  service: Service<unknown>,
   implementation: T
 ): T {
   const out: Record<PropertyKey, unknown> = {}
@@ -180,17 +183,47 @@ export function sanitizeServiceImplementation<T extends object>(
 /** Helpers for authoring registry items. */
 export function defineRegistryItemFactory(
   factory: RegistryItemFactory,
-  itemKey?: RegistryItemKey,
-  dependencies: readonly RegistryItem[] = []
+  itemKey?: RegistryItemKey
+): RegistryItemFactory
+export function defineRegistryItemFactory<D extends RegistryDependencies>(
+  definition: RegistryItemFactoryDefinition<D>
+): RegistryItemFactory
+export function defineRegistryItemFactory<D extends RegistryDependencies>(
+  definition: RegistryItemFactory | RegistryItemFactoryDefinition<D>,
+  itemKey?: RegistryItemKey
 ): RegistryItemFactory {
+  const dependencies = Object.freeze(
+    Object.fromEntries(
+      Object.entries(definition.dependencies ?? {}).map(
+        ([name, dependency]) => [name, Object.freeze({ ...dependency })]
+      )
+    )
+  )
+  const factory: RegistryItemFactory =
+    typeof definition === 'function'
+      ? definition
+      : (ctx) => {
+          const inputs = Object.fromEntries(
+            Object.entries(dependencies).map(([name, { token }]) => [
+              name,
+              'multiple' in token
+                ? computed(() => ctx.services.get(token))
+                : ctx.valueSpecs.signal(token),
+            ])
+          ) as RegistryDependencySignals<D>
+          return definition.create(Object.freeze(inputs))
+        }
   Object.defineProperty(factory, 'itemKey', {
-    value: itemKey ?? factory,
+    value:
+      typeof definition === 'function'
+        ? (itemKey ?? factory)
+        : (definition.id ?? factory),
     enumerable: false,
     configurable: false,
     writable: false,
   })
   Object.defineProperty(factory, 'dependencies', {
-    value: Object.freeze([...dependencies]),
+    value: dependencies,
     enumerable: false,
     configurable: false,
     writable: false,
