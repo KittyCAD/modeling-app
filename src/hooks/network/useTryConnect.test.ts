@@ -21,7 +21,10 @@ vi.mock('@src/lib/settings/settingsUtils', () => ({
   getSettingsFromActorContext: vi.fn(),
   jsAppSettings: vi.fn(),
 }))
-vi.mock('@src/lib/trap', () => ({ reportRejection: vi.fn() }))
+vi.mock(import('@src/lib/trap'), async (importOriginal) => ({
+  ...(await importOriginal()),
+  reportRejection: vi.fn(),
+}))
 
 describe('tryConnecting', () => {
   it('stops the initial retry loop after a terminal connection error', async () => {
