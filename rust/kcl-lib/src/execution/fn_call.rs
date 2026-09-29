@@ -1658,6 +1658,7 @@ mod test {
                 execution_callbacks: Default::default(),
                 executor_kind: crate::execution::machine::ExecutorKind::resolve(),
                 machine_call_depth_limit: crate::execution::machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
+                configure_engine_render: true,
             };
             let mut exec_state = ExecState::new(&exec_ctxt);
             exec_state.mod_local.stack = Stack::new_for_tests();
@@ -2861,6 +2862,7 @@ plane = startSketchOn(XY)
             execution_callbacks: Default::default(),
             executor_kind: crate::execution::machine::ExecutorKind::resolve(),
             machine_call_depth_limit: crate::execution::machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
+            configure_engine_render: true,
         };
         let mut exec_state = ExecState::new(&exec_ctxt);
         exec_state.set_deprecation_version_override(Some("2.0"));
