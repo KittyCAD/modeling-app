@@ -2601,7 +2601,7 @@ hide(sketch001)`
     toolbar,
     cmdBar,
   }) => {
-    const initialCode = `@settings(defaultLengthUnit = mm, experimentalFeatures = allow)
+    const initialCode = `@settings(defaultLengthUnit = mm, experimentalFeatures = allow, kclVersion = "3.0-preview")
 
 sketch001 = sketch(on = XY) {
   bottom = line(start = [0, 0], end = [30, 0])
@@ -2618,7 +2618,7 @@ chamfer001 = chamfer(
 )
 fillet001 = fillet(
   chamfer001,
-  edges = [{ sideFaces = [region001.tags.top, endCap] }],
+  edges = [{ sideFaces = [region001.tags.right, endCap] }],
   radius = 2,
 )
 hide(sketch001)`
