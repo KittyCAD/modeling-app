@@ -1149,6 +1149,18 @@ impl ExecutorSettings {
             self.project_directory = Some(current_file);
         }
     }
+
+    /// We could set this from ModelingSettings,
+    /// but the user shouldn't have to think about this.
+    /// This is a cost optimization on our end that we enable only
+    /// when it doesn't impact the user experience that's been requested.
+    /// So this field has to be set by kcl-lib clients with
+    /// task-specific context for user expectations - we can't
+    /// generically determine from inside this crate whether or not it is desirable.
+    pub fn with_geometry_only(mut self) -> Self {
+        self.geometry_only = true;
+        self
+    }
 }
 
 /// Either reuse a complete outcome or pass owned state into execution.
