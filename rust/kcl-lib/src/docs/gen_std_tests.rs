@@ -260,6 +260,7 @@ fn generate_example(index: usize, src: &str, props: &ExampleProperties, file_nam
     };
 
     let gltf_path = if props.no_render || props.engine_render {
+        // these render modes produce no gltf
         String::new()
     } else {
         // Refers to the specific path of zoo.dev that assets are served under.
