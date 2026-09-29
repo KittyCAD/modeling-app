@@ -1,8 +1,9 @@
 import { Registry } from '@kittycad/registry'
-import { routerService } from '@src/registry/contracts/router'
-import routerRegistryItem, { createRouterRegistryService } from '.'
+import { appUrlService } from '@src/registry/contracts/appUrl'
+import { settingsNavigationUrlContribution } from '@src/registry/extensions/settings/overlay'
 import type { Location } from 'react-router-dom'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import routerRegistryItem, { createAppUrlService } from '.'
 
 const testLocation = (pathname: string): Location => ({
   pathname,
@@ -35,23 +36,23 @@ describe('router extension', () => {
     registry = new Registry()
     registry.configure([routerRegistryItem])
 
-    const router = registry.get(routerService)
+    const appUrl = registry.get(appUrlService)
     const location = testLocation('/settings')
     const navigate = vi.fn()
 
-    expect(router.location.value).toMatchObject({
+    expect(appUrl.location.value).toMatchObject({
       pathname: '/browser',
       search: '?tab=unit',
       hash: '#anchor',
       state: { from: 'browser' },
       key: 'browser-key',
     })
-    expect(router.getLocation()).toBe(router.location.value)
-    expect(router.isReady.value).toBe(false)
+    expect(appUrl.getLocation()).toBe(appUrl.location.value)
+    expect(appUrl.isReady.value).toBe(false)
 
-    void router.navigate('/home?from=fallback#top')
+    void appUrl.navigate('/home?from=fallback#top')
 
-    expect(router.location.value).toMatchObject({
+    expect(appUrl.location.value).toMatchObject({
       pathname: '/home',
       search: '?from=fallback',
       hash: '#top',
@@ -59,13 +60,13 @@ describe('router extension', () => {
     })
 
     const state = { source: 'fallback' }
-    void router.navigate(
+    void appUrl.navigate(
       { pathname: '/replace', search: '?x=1', hash: '#hash' },
       { replace: true, state }
     )
 
     expect(window.history.state).toEqual(state)
-    expect(router.location.value).toMatchObject({
+    expect(appUrl.location.value).toMatchObject({
       pathname: '/replace',
       search: '?x=1',
       hash: '#hash',
@@ -76,49 +77,97 @@ describe('router extension', () => {
       .spyOn(window.history, 'go')
       .mockImplementation(() => undefined)
 
-    void router.navigate(-1)
+    void appUrl.navigate(-1)
 
     expect(historyGo).toHaveBeenCalledWith(-1)
     historyGo.mockRestore()
 
-    router.setLocation(location)
-    const disposeNavigate = router.setNavigate(navigate)
+    appUrl.setLocation(location)
+    const disposeNavigate = appUrl.setNavigate(navigate)
 
-    expect(router.location.value).toBe(location)
-    expect(router.isReady.value).toBe(true)
+    expect(appUrl.location.value).toBe(location)
+    expect(appUrl.isReady.value).toBe(true)
 
-    void router.navigate('/home')
-    void router.navigate(-1)
+    void appUrl.navigate('/home')
+    void appUrl.navigate(-1)
 
     expect(navigate).toHaveBeenCalledWith('/home', undefined)
     expect(navigate).toHaveBeenCalledWith(-1)
 
     disposeNavigate()
 
-    expect(router.isReady.value).toBe(false)
-    void router.navigate('/fallback-again')
-    expect(router.location.value.pathname).toBe('/fallback-again')
+    expect(appUrl.isReady.value).toBe(false)
+    void appUrl.navigate('/fallback-again')
+    expect(appUrl.location.value.pathname).toBe('/fallback-again')
   })
 
   it('does not reset a newer navigate function from an older cleanup', () => {
-    const router = createRouterRegistryService()
+    const appUrl = createAppUrlService()
     const firstNavigate = vi.fn()
     const secondNavigate = vi.fn()
 
-    const disposeFirstNavigate = router.setNavigate(firstNavigate)
-    const disposeSecondNavigate = router.setNavigate(secondNavigate)
+    const disposeFirstNavigate = appUrl.setNavigate(firstNavigate)
+    const disposeSecondNavigate = appUrl.setNavigate(secondNavigate)
 
     disposeFirstNavigate()
-    void router.navigate('/home')
+    void appUrl.navigate('/home')
 
     expect(firstNavigate).not.toHaveBeenCalled()
     expect(secondNavigate).toHaveBeenCalledWith('/home', undefined)
-    expect(router.isReady.value).toBe(true)
+    expect(appUrl.isReady.value).toBe(true)
 
     disposeSecondNavigate()
 
-    expect(router.isReady.value).toBe(false)
-    void router.navigate('/after-dispose')
-    expect(router.location.value.pathname).toBe('/after-dispose')
+    expect(appUrl.isReady.value).toBe(false)
+    expect(
+      appUrl.readInitialUrl({
+        requestUrl: 'https://app.zoo.dev/home',
+        usesHashRouter: false,
+      })
+    ).toMatchObject({
+      type: 'launch',
+      destination: { type: 'home' },
+    })
+    void appUrl.navigate('/after-dispose')
+    expect(appUrl.location.value.pathname).toBe('/after-dispose')
+  })
+
+  it('freezes startup URL contributions on the first read', () => {
+    const navigationIntents = [settingsNavigationUrlContribution]
+    const appUrl = createAppUrlService({
+      getNavigationIntents: () => navigationIntents,
+    })
+
+    expect(
+      appUrl.readInitialUrl({
+        requestUrl: 'https://app.zoo.dev/home/settings',
+        usesHashRouter: false,
+      })
+    ).toMatchObject({
+      type: 'launch',
+      additionalIntents: [
+        {
+          intent: { id: 'settings.open' },
+          input: {},
+        },
+      ],
+    })
+
+    navigationIntents.length = 0
+
+    expect(
+      appUrl.readInitialUrl({
+        requestUrl: 'https://app.zoo.dev/home/settings',
+        usesHashRouter: false,
+      })
+    ).toMatchObject({
+      type: 'launch',
+      additionalIntents: [
+        {
+          intent: { id: 'settings.open' },
+          input: {},
+        },
+      ],
+    })
   })
 })

@@ -20,7 +20,7 @@ import {
   authSessionExpiredListenersValueSpec,
 } from '@src/registry/contracts/auth'
 import { fileOperationsService } from '@src/registry/contracts/fileOperations'
-import { routerService } from '@src/registry/contracts/router'
+import { appUrlService } from '@src/registry/contracts/appUrl'
 import { useSelector } from '@xstate/react'
 import { createActor } from 'xstate'
 import { createDesktopSignIn } from './desktopSignIn'
@@ -92,7 +92,7 @@ export const authExtension = defineRegistryItemFactory((ctx) => {
   )
   const startSignInContribution = createStartSignInIntentContribution(
     defaultStartSignInDependencies(
-      () => ctx.services.get(routerService),
+      () => ctx.services.get(appUrlService),
       desktopSignIn.start
     )
   )
