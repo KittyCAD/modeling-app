@@ -692,23 +692,26 @@ test.describe(
         const complexPlmFileName = 'cube_Complex-PLM_Name_-001.sldprt'
         const camelCasedSolidworksFileName = 'cubeComplexPLMName001'
 
-      await test.step('Setup parts and expect empty assembly scene', async () => {
-        const projectName = 'assembly'
-        await folderSetupFn(async (dir) => {
-          const bracketDir = path.join(dir, projectName)
-          await fsp.mkdir(bracketDir, { recursive: true })
-          await Promise.all([
-            fsp.mkdir(path.join(bracketDir, 'folder.prt')),
-            fsp.copyFile(
-              testsInputPath('cube.step'),
-              path.join(bracketDir, 'cube.step')
-            ),
-            fsp.copyFile(
-              testsInputPath('cube.sldprt'),
-              path.join(bracketDir, complexPlmFileName)
-            ),
-            fsp.writeFile(path.join(bracketDir, 'main.kcl'), ''),
-          ])
+        await test.step('Setup parts and expect empty assembly scene', async () => {
+          const projectName = 'assembly'
+          await folderSetupFn(async (dir) => {
+            const bracketDir = path.join(dir, projectName)
+            await fsp.mkdir(bracketDir, { recursive: true })
+            await Promise.all([
+              fsp.mkdir(path.join(bracketDir, 'folder.prt')),
+              fsp.copyFile(
+                testsInputPath('cube.step'),
+                path.join(bracketDir, 'cube.step')
+              ),
+              fsp.copyFile(
+                testsInputPath('cube.sldprt'),
+                path.join(bracketDir, complexPlmFileName)
+              ),
+              fsp.writeFile(path.join(bracketDir, 'main.kcl'), ''),
+            ])
+          })
+          await homePage.openProject(projectName)
+          await scene.settled()
         })
 
         await test.step('Import step part as module', async () => {
@@ -725,65 +728,45 @@ test.describe(
           @(targetRepresentation = mesh)
           import "cube.step" as cube
         `,
-          { shouldNormalise: true }
-        )
-        await toolbar.closePane(DefaultLayoutPaneID.Code)
-        await scene.settled()
-
-        await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
-      })
-
-      await test.step('Import second foreign part from the context menu', async () => {
-        await toolbar.openPane(DefaultLayoutPaneID.Files)
-        await toolbar.expectFileTreeState([
-          'folder.prt',
-          complexPlmFileName,
-          'cube.step',
-          'main.kcl',
-        ])
-        const importPrompt = page.getByText('Import into my current file')
-        const importAction = page.getByRole('button', {
-          name: 'Import in current file',
-          exact: true,
-        })
-        const folder = page.getByRole('treeitem', {
-          name: 'folder.prt',
-          exact: true,
-        })
-        await folder.click()
-        await expect(folder).toHaveAttribute('aria-expanded', 'true')
-        await expect(importPrompt).not.toBeVisible()
-        await folder.click({ button: 'right' })
-        await expect(page.getByTestId('context-menu-rename')).toBeVisible()
-        await expect(importAction).not.toBeVisible()
-        await page.keyboard.press('Escape')
-
-        await toolbar.openFile(complexPlmFileName)
-        await expect(importPrompt).not.toBeVisible()
-        await page
-          .getByRole('treeitem', { name: complexPlmFileName, exact: true })
-          .click({ button: 'right' })
-        await importAction.click()
-
-        // Check getPathFilenameInVariableCase output
-        const parsedValueFromFile =
-          await cmdBar.currentArgumentInput.inputValue()
-        expect(parsedValueFromFile).toEqual(camelCasedSolidworksFileName)
+            { shouldNormalise: true }
+          )
+          await toolbar.closePane(DefaultLayoutPaneID.Code)
+          await scene.settled()
 
           await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
         })
 
-        await test.step('Import second foreign part by clicking', async () => {
+        await test.step('Import second foreign part from the context menu', async () => {
           await toolbar.openPane(DefaultLayoutPaneID.Files)
           await toolbar.expectFileTreeState([
+            'folder.prt',
             complexPlmFileName,
             'cube.step',
             'main.kcl',
           ])
-          await toolbar.openFile(complexPlmFileName)
+          const importPrompt = page.getByText('Import into my current file')
+          const importAction = page.getByRole('button', {
+            name: 'Import in current file',
+            exact: true,
+          })
+          const folder = page.getByRole('treeitem', {
+            name: 'folder.prt',
+            exact: true,
+          })
+          await folder.click()
+          await expect(folder).toHaveAttribute('aria-expanded', 'true')
+          await expect(importPrompt).not.toBeVisible()
+          await folder.click({ button: 'right' })
+          await expect(page.getByTestId('context-menu-rename')).toBeVisible()
+          await expect(importAction).not.toBeVisible()
+          await page.keyboard.press('Escape')
 
-          // Go through the ToastInsert prompt
-          await page.getByText('Import into my current file').click()
+          await toolbar.openFile(complexPlmFileName)
+          await expect(importPrompt).not.toBeVisible()
+          await page
+            .getByRole('treeitem', { name: complexPlmFileName, exact: true })
+            .click({ button: 'right' })
+          await importAction.click()
 
           // Check getPathFilenameInVariableCase output
           const parsedValueFromFile =
