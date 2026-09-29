@@ -48,15 +48,15 @@ type KITTYCAD_GLTF_EDGE = {
   name?: string
 } & (
   | {
-    closed?: false // Omitted means open
-    start: number
-    end: number
-  }
+      closed?: false // Omitted means open
+      start: number
+      end: number
+    }
   | {
-    closed: true // closed curves are allowed not to have vertices
-    start?: number | null
-    end?: number | null
-  }
+      closed: true // closed curves are allowed not to have vertices
+      start?: number | null
+      end?: number | null
+    }
 )
 
 type KIITYCAD_GLTF_VERTEX = [number, number, number]

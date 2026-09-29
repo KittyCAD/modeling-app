@@ -57,16 +57,15 @@ export class EdgeRenderer {
       if (curve) {
         if (curve.type === 'line') {
           if (edge.closed) {
-            const {origin, direction} = curve.line
+            const { origin, direction } = curve.line
             for (const t of edge.t) {
               positions.push(
                 origin[0] + direction[0] * t,
                 origin[1] + direction[1] * t,
-                origin[2] + direction[2] * t,
+                origin[2] + direction[2] * t
               )
             }
-          }
-          else {
+          } else {
             const start = brep.vertices[edge.start]
             const end = brep.vertices[edge.end]
             positions.push(...start, ...end)
@@ -74,7 +73,7 @@ export class EdgeRenderer {
         }
       }
     }
-    this.geometry.setPositions(positions);
+    this.geometry.setPositions(positions)
     //console.log('gltf', gltf, positions)
   }
 

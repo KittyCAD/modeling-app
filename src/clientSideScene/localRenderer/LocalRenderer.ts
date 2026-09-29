@@ -537,7 +537,7 @@ export class LocalRenderer {
   ) {
     aoPass.radius.value = this.ambientOcclusionRadius
     aoPass.thickness.value = this.ambientOcclusionRadius * 3
-    aoPass.distanceFallOff.value = 0.5
+    //aoPass.distanceFallOff.value = 0.5
     aoPass.scale.value = 1
     aoPass.samples.value = LOCAL_WEBGPU_GTAO_SAMPLES
     if (denoisePass) {
@@ -567,7 +567,7 @@ export class LocalRenderer {
 
     // Local geometry is expressed in meters. Keep the sampling radius
     // proportional to the part instead of GTAO's room-scale default.
-    this.ambientOcclusionRadius = Math.max(modelScale * 0.05, 0.00001)
+    this.ambientOcclusionRadius = Math.max(modelScale * 0.5, 0.00001)
     if (this.ambientOcclusionPipeline) {
       this.configureAmbientOcclusion(
         this.ambientOcclusionPipeline.aoPass,
@@ -1022,7 +1022,7 @@ export class LocalRenderer {
       this.clearModel()
       this.currentModel = gltf.scene
       this.scene?.add(gltf.scene)
-      
+
       this.edgeRenderer?.buildEdges(gltf)
       this.edgeRenderer?.addTo(gltf.scene)
 

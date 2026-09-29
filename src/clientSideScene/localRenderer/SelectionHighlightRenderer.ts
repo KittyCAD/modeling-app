@@ -418,7 +418,7 @@ function createLineMaterial(color: number, outputColorSpace: string) {
     color: 0xffffff,
     linewidth: HIGHLIGHT_LINE_WIDTH_PX,
   })
-  material.lineColorNode = renderOutput(
+  material.colorNode = renderOutput(
     vec4(uniform(new Color(color)), 1),
     NoToneMapping,
     outputColorSpace
