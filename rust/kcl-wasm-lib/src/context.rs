@@ -46,6 +46,7 @@ impl ExecutionCallbacks for JsExecutionCallbacks {
 #[wasm_bindgen]
 pub struct Context {
     engine: Arc<kcl_lib::wasm_engine::EngineConnection>,
+    engine_manager: kcl_lib::wasm_engine::EngineCommandManager,
     response_context: Arc<kcl_lib::wasm_engine::ResponseContext>,
     fs: kcl_lib::FileSystemHandle,
     mock_engine: Arc<kcl_lib::wasm_engine::EngineConnection>,
@@ -76,9 +77,10 @@ impl Context {
         let response_context = Arc::new(kcl_lib::wasm_engine::ResponseContext::new());
         Ok(Self {
             engine: Arc::new(kcl_lib::wasm_engine::EngineConnection::new_wasm_transport(
-                engine_manager,
+                engine_manager.clone(),
                 response_context.clone(),
             )),
+            engine_manager,
             fs: kcl_lib::new_file_system_handle(FileManager::new(fs_manager)),
             mock_engine: Arc::new(kcl_lib::wasm_engine::EngineConnection::new_mock()),
             geometry_only: geometry_only.unwrap_or_default(),
@@ -93,6 +95,7 @@ impl Context {
     pub fn clone_with_execute_callbacks(&self, execution_callbacks: JsExecutionCallbacks) -> Self {
         Self {
             engine: self.engine.clone(),
+            engine_manager: self.engine_manager.clone(),
             response_context: self.response_context.clone(),
             fs: self.fs.clone(),
             mock_engine: self.mock_engine.clone(),
@@ -273,23 +276,8 @@ impl Context {
     /// Confirm the app's program version before execution or checkpoint publication.
     /// The TS transport skips unchanged versions and owns the state across reconnects.
     pub(crate) async fn sync_engine_kcl_version(&self, program: &Program) -> Result<(), KclError> {
-        use kittycad_modeling_cmds::KclVersion;
-        use kittycad_modeling_cmds::ModelingCmd;
-        use kittycad_modeling_cmds::each_cmd::SetKclVersion;
-
-        let version = match program.language_version()? {
-            kcl_lib::KclVersion::V1 => KclVersion::V1,
-            kcl_lib::KclVersion::V2 => KclVersion::V2,
-            kcl_lib::KclVersion::V3Preview => KclVersion::V3Preview,
-        };
-        self.engine
-            .send_modeling_cmd(
-                &kcl_lib::EngineBatchContext::new(),
-                uuid::Uuid::new_v4(),
-                program.ast.as_source_range(),
-                &ModelingCmd::from(SetKclVersion::builder().kcl_version(version).build()),
-            )
-            .await?;
-        Ok(())
+        self.engine_manager
+            .ensure_kcl_version(program.language_version()?, program.ast.as_source_range())
+            .await
     }
 }

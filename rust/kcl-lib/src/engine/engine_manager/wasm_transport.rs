@@ -47,6 +47,28 @@ extern "C" {
 
     #[wasm_bindgen(method, js_name = startNewSession, catch)]
     fn start_new_session(this: &EngineCommandManager) -> Result<js_sys::Promise, js_sys::Error>;
+
+    #[wasm_bindgen(method, js_name = ensureKclVersion, catch)]
+    fn ensure_kcl_version_from_wasm(
+        this: &EngineCommandManager,
+        version: &str,
+    ) -> Result<js_sys::Promise, js_sys::Error>;
+}
+
+impl EngineCommandManager {
+    pub async fn ensure_kcl_version(
+        &self,
+        version: crate::KclVersion,
+        source_range: SourceRange,
+    ) -> Result<(), KclError> {
+        let promise = self
+            .ensure_kcl_version_from_wasm(version.as_str())
+            .map_err(|e| KclError::new_engine(KclErrorDetails::new(e.to_string().into(), vec![source_range])))?;
+        crate::wasm::JsFuture::from(promise)
+            .await
+            .map_err(|e| WasmTransport::js_error_to_kcl_error(e, source_range))?;
+        Ok(())
+    }
 }
 
 #[wasm_bindgen]
