@@ -2487,7 +2487,7 @@ extrude001 = extrude(region001, length = 30)`
     toolbar,
     cmdBar,
   }) => {
-    const initialCode = `@settings(defaultLengthUnit = in, experimentalFeatures = allow)
+    const initialCode = `@settings(defaultLengthUnit = in, experimentalFeatures = allow, kclVersion = "3.0-preview")
 
 sketch001 = sketch(on = XY) {
   line1 = line(start = [-12in, -6in], end = [-12in, 6in])
@@ -2499,7 +2499,7 @@ region001 = region(point = [0in, 0in], sketch = sketch001)
 extrude001 = extrude(region001, length = -12in, tagEnd = $capEnd001)
 chamfer001 = chamfer(
   extrude001,
-  edges = [{ sideFaces = [capEnd001, region001.tags.line2] }],
+  edges = [{ sideFaces = [capEnd001, region001.tags.line4] }],
   length = 5in,
 )`
 
