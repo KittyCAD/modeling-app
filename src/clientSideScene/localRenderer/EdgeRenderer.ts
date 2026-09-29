@@ -4,6 +4,8 @@ import { LineSegmentsGeometry } from 'three/examples/jsm/lines/LineSegmentsGeome
 import { LineSegments2 } from 'three/examples/jsm/lines/webgpu/LineSegments2.js'
 import { Line2NodeMaterial } from 'three/webgpu'
 import { KITTYCAD_GLTF } from './KITTYCAD_GLTF'
+import { sampleEdge } from './sampleEdge'
+import { isErr } from '@src/lib/trap'
 
 const LIGHT_THEME_EDGE_COLOR = new Color(0x1c1c1c)
 const DARK_THEME_EDGE_COLOR = new Color(0xf9f9f9)
@@ -36,6 +38,7 @@ export class EdgeRenderer {
 
   // TODO defer building if edges are not visible
   public buildEdges(gltf: KITTYCAD_GLTF) {
+    console.log(">>>", gltf)
     const brep = gltf.userData.gltfExtensions.KITTYCAD_boundary_representation
     // for (const solid of brep.solids) {
     //   for (const [shellIndex, _] of solid.shells) {
@@ -55,22 +58,35 @@ export class EdgeRenderer {
     for (const edge of brep.edges) {
       const curve = brep.curves3D[edge.curve[0]]
       if (curve) {
-        if (curve.type === 'line') {
-          if (edge.closed) {
-            const { origin, direction } = curve.line
-            for (const t of edge.t) {
-              positions.push(
-                origin[0] + direction[0] * t,
-                origin[1] + direction[1] * t,
-                origin[2] + direction[2] * t
-              )
-            }
-          } else {
-            const start = brep.vertices[edge.start]
-            const end = brep.vertices[edge.end]
-            positions.push(...start, ...end)
-          }
+        const points = sampleEdge(edge, curve, brep.vertices)
+        if (isErr(points)) {
+          //console.error(`Edge ${index}: ${points.message}`)
+          continue
         }
+        // Convert a polyline into independent segment pairs.
+        for (let i = 1; i < points.length; i++) {
+          const a = points[i - 1]
+          const b = points[i]
+          positions.push(a.x, a.y, a.z, b.x, b.y, b.z)
+        }
+        // if (curve.type === 'line') {
+        //   if (edge.closed) {
+        //     const { origin, direction } = curve.line
+        //     for (const t of edge.t) {
+        //       positions.push(
+        //         origin[0] + direction[0] * t,
+        //         origin[1] + direction[1] * t,
+        //         origin[2] + direction[2] * t
+        //       )
+        //     }
+        //   } else {
+        //     const start = brep.vertices[edge.start]
+        //     const end = brep.vertices[edge.end]
+        //     positions.push(...start, ...end)
+        //   }
+        // }
+      } else {
+        console.error(`Missing edge ${edge.curve[0]}`)
       }
     }
     this.geometry.setPositions(positions)
