@@ -1231,10 +1231,6 @@ export function getEntityRefId(entityRef: EntityReference): string | undefined {
   }
 }
 
-function entityRefToArtifactId(entityRef: EntityReference): string | undefined {
-  return getEntityRefId(entityRef)
-}
-
 function sortedIds(ids: readonly string[] | undefined): string {
   return [...(ids ?? [])].sort().join(',')
 }
@@ -1302,7 +1298,7 @@ export function resolveToCodeRef(
     s.codeRef ??
     (s.entityRef && artifactGraph
       ? getCodeRefsByArtifactId(
-          entityRefToArtifactId(s.entityRef) ?? '',
+          getEntityRefId(s.entityRef) ?? '',
           artifactGraph
         )?.[0]
       : undefined)
@@ -1310,7 +1306,7 @@ export function resolveToCodeRef(
   const artifact = s.artifact
     ? s.artifact
     : s.entityRef && artifactGraph
-      ? artifactGraph.get(entityRefToArtifactId(s.entityRef) ?? '')
+      ? artifactGraph.get(getEntityRefId(s.entityRef) ?? '')
       : codeRef.range && artifactGraph
         ? (getArtifactFromRange(codeRef.range, artifactGraph) ?? undefined)
         : undefined
@@ -1485,7 +1481,7 @@ export function getVariableExprsFromSelection(
 
     const directArtifact =
       preferDirectSegment && s.entityRef != null
-        ? artifactGraph.get(entityRefToArtifactId(s.entityRef) ?? '')
+        ? artifactGraph.get(getEntityRefId(s.entityRef) ?? '')
         : undefined
     const segmentArtifact =
       directArtifact?.type === 'segment'
