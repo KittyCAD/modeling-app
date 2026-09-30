@@ -8,6 +8,7 @@ import {
   getArtifactFromRange,
   getOriginalSegmentArtifact,
 } from '@src/lang/std/artifactGraph'
+import { engineIdForArtifact } from '@src/lang/std/kclNamedViews'
 import {
   addFlipSurface,
   addJoinSurfaces,
@@ -448,7 +449,11 @@ sketch001 = sketch(on = XY) {
       cmd_id: uuidv4(),
       cmd: {
         type: 'solid3d_get_opposite_edge',
-        object_id: surface.id,
+        object_id: engineIdForArtifact({
+          id: surface.id,
+          artifact: surface,
+          artifactGraph,
+        }),
         edge_id: wall.segId,
         face_id: wall.id,
       },
@@ -457,7 +462,9 @@ sketch001 = sketch(on = XY) {
       !isModelingResponse(response) ||
       response.resp.data.modeling_response.type !== 'solid3d_get_opposite_edge'
     ) {
-      throw new Error('Could not query the opposite surface edge')
+      throw new Error(
+        `Could not query the opposite surface edge: ${JSON.stringify(response)}`
+      )
     }
     const edgeId = response.resp.data.modeling_response.data.edge
     if (!edgeId) throw new Error('Missing opposite surface edge')
