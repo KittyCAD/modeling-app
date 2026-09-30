@@ -1926,12 +1926,25 @@ impl ExecutorContext {
                 exec_state.add_path_to_source_id(resolved_path.clone(), id);
                 let source = resolved_path.source(&self.fs, source_range).await?;
                 exec_state.add_id_to_source(id, source.clone());
-                let (_, parsed, never_type_ranges) = crate::parsing::parse_str_syntax(&source.source, id).unwrap();
-                crate::parsing::validate_never_type_ranges(
+                let Ok((_, parsed, never_type_ranges)) = crate::parsing::parse_str_syntax(&source.source, id) else {
+                    let message = "Failed to parse source for {resolved_path}";
+                    debug_assert!(false, "{message}");
+                    return Err(KclError::new_internal(KclErrorDetails::new(
+                        message.to_owned(),
+                        vec![source_range],
+                    )));
+                };
+                let Ok(_) = crate::parsing::validate_never_type_ranges(
                     &never_type_ranges,
                     crate::parsing::SyntaxSource::BundledStdlib,
-                )
-                .unwrap();
+                ) else {
+                    let message = "Failed to validate never type ranges for {resolved_path}";
+                    debug_assert!(false, "{message}");
+                    return Err(KclError::new_internal(KclErrorDetails::new(
+                        message.to_owned(),
+                        vec![source_range],
+                    )));
+                };
                 exec_state.add_module(id, resolved_path.clone(), ModuleRepr::Kcl(parsed, None));
                 Ok(id)
             }
