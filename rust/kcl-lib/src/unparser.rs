@@ -4104,6 +4104,31 @@ return union([right, left])
     }
 
     #[test]
+    fn long_constraint_in_sketch_block() {
+        let input_code = "\
+sketch001 = sketch(on = XZ) {
+  angleDimension(
+  lines = [line1, line2],
+  sector = 2,
+  inverse = true,
+  labelPosition = [137.6mm, 121.05mm],
+) == 60deg
+}";
+        let expected = "\
+sketch001 = sketch(on = XZ) {
+  angleDimension(
+    lines = [line1, line2],
+    sector = 2,
+    inverse = true,
+    labelPosition = [137.6mm, 121.05mm],
+  ) == 60deg
+}";
+        let ast = crate::parsing::top_level_parse(input_code).unwrap();
+        let actual = ast.recast_top(&FormatOptions::new(), 0);
+        assert_eq!(expected, actual);
+    }
+
+    #[test]
     fn first_in_pipeline_indent() {
         // These code snippets are identical, except that one passes the gear into a clone,
         // and the other doesn't.
