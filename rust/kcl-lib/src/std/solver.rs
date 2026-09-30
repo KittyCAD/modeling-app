@@ -43,8 +43,16 @@ use crate::std_utils::untyped_point_to_unit;
 
 /// Unitless convergence tolerance used for KCL 2 sketch solving.
 pub const SOLVER_CONVERGENCE_TOLERANCE: f64 = 1e-8;
-/// Physical point-point coincidence tolerance for KCL 3, in millimeters.
-pub(crate) const POINT_POINT_2D_COINCIDENT_TOLERANCE_MM: f64 = 1e-8;
+
+/// KCL 3 point-point coincidence tolerance, in millimeters.
+/// This measures the maximum difference between px and qx, or py and qy, aka the "max norm" or "Chebyshev distance".
+pub(crate) const POINT_POINT_2D_COINCIDENT_CHEBYSHEV_TOLERANCE_MM: f64 = 1e-8;
+
+/// KCL 3 point-point coincidence tolerance, in millimeters.
+/// This measures the maximum distance on the 2D plane between P and Q, aka the "Euclidean distance".
+pub(crate) const POINT_POINT_2D_COINCIDENT_EUCLIDEAN_TOLERANCE_MM: f64 =
+    POINT_POINT_2D_COINCIDENT_CHEBYSHEV_TOLERANCE_MM * std::f64::consts::SQRT_2;
+
 const CONTROL_POINT_SPLINE_SAMPLES_PER_SPAN: usize = 24;
 
 fn build_open_uniform_knot_vector(control_count: usize, degree: usize) -> Vec<f64> {
@@ -153,7 +161,7 @@ pub(crate) async fn create_segments_in_engine(
     }
 
     let contact_tolerance_mm = if exec_state.entry_point_version_is_v3_or_higher() {
-        POINT_POINT_2D_COINCIDENT_TOLERANCE_MM
+        POINT_POINT_2D_COINCIDENT_EUCLIDEAN_TOLERANCE_MM
     } else {
         SOLVER_CONVERGENCE_TOLERANCE
     };
@@ -532,6 +540,7 @@ mod tests {
     use super::sample_control_point_spline_points;
     use crate::ExecState;
     use crate::ExecutorContext;
+    use crate::KclVersion;
     use crate::execution::Path;
     use crate::execution::Plane;
     use crate::execution::Segment;
@@ -543,6 +552,7 @@ mod tests {
     use crate::front::ArcDirection;
     use crate::front::ControlPointSplineCtor;
     use crate::front::Expr;
+    use crate::front::LineCtor;
     use crate::front::Number;
     use crate::front::ObjectId;
     use crate::front::Point2d;
@@ -644,6 +654,81 @@ mod tests {
         assert!(!ccw, "clockwise arc should sweep clockwise");
         assert_eq!(base.from, [5.0, 0.0]);
         assert!((base.to[0] - -5.0).abs() < 1e-9 && base.to[1].abs() < 1e-9);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn v3_segment_continuity_uses_euclidean_coincidence_tolerance() {
+        for (version, code, expected_jump_count) in [
+            (KclVersion::V2, "@settings(kclVersion = 2.0)\nx = 1\n", 1),
+            (
+                KclVersion::V3Preview,
+                "@settings(kclVersion = \"3.0-preview\")\nx = 1\n",
+                0,
+            ),
+        ] {
+            let ctx = ExecutorContext::new_mock(None).await;
+            let mut exec_state = ExecState::new(&ctx);
+            let program = crate::Program::parse_no_errs(code).unwrap();
+            exec_state.set_entry_point_kcl_version(&program).unwrap();
+
+            let sketch_id = exec_state.next_uuid();
+            let plane = Plane::from_plane_data_skipping_engine(PlaneData::XY, &mut exec_state).unwrap();
+            let sketch_surface = SketchSurface::Plane(Box::new(plane));
+            let mm = |value| TyF64::new(value, NumericType::length(UnitLength::Millimeters));
+            let point = |x, y| Point2d {
+                x: Expr::Var(Number::from((x, UnitLength::Millimeters))),
+                y: Expr::Var(Number::from((y, UnitLength::Millimeters))),
+            };
+            let line = |start: [f64; 2], end: [f64; 2], object_id| Segment {
+                id: uuid::Uuid::new_v4(),
+                object_id: ObjectId(object_id),
+                kind: SegmentKind::Line {
+                    start: [mm(start[0]), mm(start[1])],
+                    end: [mm(end[0]), mm(end[1])],
+                    ctor: Box::new(LineCtor {
+                        start: point(start[0], start[1]),
+                        end: point(end[0], end[1]),
+                        construction: None,
+                    }),
+                    start_object_id: ObjectId(object_id + 1),
+                    end_object_id: ObjectId(object_id + 2),
+                    start_freedom: None,
+                    end_freedom: None,
+                    construction: false,
+                },
+                surface: sketch_surface.clone(),
+                sketch_id,
+                sketch: None,
+                tag: None,
+                node_path: None,
+                meta: vec![],
+            };
+            let coordinate_gap = 0.9e-8;
+            let mut segments = vec![
+                line([0.0, 0.0], [1.0, 0.0], 100),
+                line([1.0 + coordinate_gap, coordinate_gap], [2.0, 0.0], 103),
+            ];
+
+            let sketch = create_segments_in_engine(
+                &sketch_surface,
+                sketch_id,
+                &mut segments,
+                &IndexMap::new(),
+                &ctx,
+                &mut exec_state,
+                SourceRange::default(),
+            )
+            .await
+            .unwrap()
+            .expect("expected sketch output");
+
+            assert_eq!(
+                sketch.synthetic_jump_path_ids.len(),
+                expected_jump_count,
+                "version={version:?}"
+            );
+            ctx.close().await;
+        }
     }
 
     #[tokio::test(flavor = "multi_thread")]
