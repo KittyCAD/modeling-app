@@ -1050,7 +1050,12 @@ export class LocalRenderer {
     try {
       // Like viewer2: one whole-scene binary glTF export, without UUID extras.
       const files = await this.kclManager.rustContext.export(
-        { type: 'gltf', storage: 'binary', presentation: 'compact' },
+        {
+          type: 'gltf',
+          storage: 'binary',
+          presentation: 'compact',
+          include_uuids: true,
+        },
         jsAppSettings(this.kclManager.systemDeps.settings)
       )
       if (!isCurrent()) return

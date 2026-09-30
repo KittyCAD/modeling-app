@@ -38,7 +38,7 @@ type KITTYCAD_GLTF_SHELL = {
 type KITTYCAD_GLTF_FACE = {
   surface: OrientedIndex
   loops: OrientedIndex[]
-}
+} & KITTYCAD_UUID_EXTRAS
 
 type KITTYCAD_GLTF_LOOP = {
   edges: number[][]
@@ -59,9 +59,17 @@ export type KITTYCAD_GLTF_EDGE = {
       start?: number | null
       end?: number | null
     }
-)
+) & KITTYCAD_UUID_EXTRAS
 
 export type KIITYCAD_GLTF_VERTEX = [number, number, number]
+
+export type KITTYCAD_UUID_EXTRAS = {
+  extras: {
+    KITTYCAD: {
+      uuid: string;
+    }
+  }
+}
 
 type KIITYCAD_GLTF_SURFACE = {
   type: 'plane'
@@ -70,7 +78,7 @@ type KIITYCAD_GLTF_SURFACE = {
     yAxis: KIITYCAD_GLTF_VERTEX
     origin: KIITYCAD_GLTF_VERTEX
   }
-}
+} & KITTYCAD_UUID_EXTRAS
 
 export type KITTYCAD_GLTF_CURVE3D =
   | {
