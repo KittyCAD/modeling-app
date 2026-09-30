@@ -118,7 +118,7 @@ type AddFunctionInput<Add extends (...args: never[]) => unknown> =
 //   draftAngle?: KclCommandValue
 // }
 // ```
-// Below we inspect the parameters explicitely:
+// Below we inspect the parameters explicitly:
 // - `NoInfer` prevents this comparison from contributing to inference of `Add`.
 // - `nodeToEdit` is excluded as it's specific command-bar plumbing for edits
 // For an incomplete addExtrude input type, missing `draftAngle`,
