@@ -89,7 +89,7 @@ export async function buildTheWorldAndConnectToEngine({
 }: {
   webrtc?: boolean
   pool?: 'cpu'
-  /** Sets the connection's initial version; changing versions needs a new connection. */
+  /** Sets the connection's initial version; Rust handles subsequent version changes. */
   code?: string
 } = {}) {
   const WASM_PATH = join(process.cwd(), 'public/kcl_wasm_lib_bg.wasm')
