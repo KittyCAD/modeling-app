@@ -218,7 +218,7 @@ pub(crate) fn transforms_from_callback_value<T: GeometryTrait>(
 
     let transforms = transforms
         .into_iter()
-        .map(|obj| transform_from_obj_fields::<T>(obj, source_ranges.clone(), exec_state))
+        .map(|obj| transform_from_obj_fields::<T>(&obj, source_ranges.clone(), exec_state))
         .collect::<Result<_, KclError>>()?;
     Ok(transforms)
 }
@@ -427,7 +427,7 @@ async fn make_transform<T: GeometryTrait>(
 }
 
 fn transform_from_obj_fields<T: GeometryTrait>(
-    transform: KclObjectFields,
+    transform: &KclObjectFields,
     source_ranges: Vec<SourceRange>,
     exec_state: &mut ExecState,
 ) -> Result<Transform, KclError> {

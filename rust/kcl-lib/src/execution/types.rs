@@ -1770,7 +1770,8 @@ impl KclValue {
                     })?;
 
                     Ok(KclValue::Object {
-                        value: [("origin".to_owned(), origin), ("direction".to_owned(), direction)].into(),
+                        value: HashMap::from([("origin".to_owned(), origin), ("direction".to_owned(), direction)])
+                            .into(),
                         meta: meta.clone(),
                         constrainable: false,
                         object_kind: Default::default(),
@@ -1802,7 +1803,8 @@ impl KclValue {
                     })?;
 
                     Ok(KclValue::Object {
-                        value: [("origin".to_owned(), origin), ("direction".to_owned(), direction)].into(),
+                        value: HashMap::from([("origin".to_owned(), origin), ("direction".to_owned(), direction)])
+                            .into(),
                         meta: meta.clone(),
                         constrainable: false,
                         object_kind: Default::default(),
@@ -2002,7 +2004,7 @@ impl KclValue {
                 })
             }
             KclValue::KclNone { meta, .. } if tys.is_empty() => Ok(KclValue::Object {
-                value: HashMap::new(),
+                value: HashMap::new().into(),
                 meta: meta.clone(),
                 constrainable,
                 object_kind: Default::default(),
@@ -2113,7 +2115,7 @@ mod test {
                 ty: RuntimeType::solid(),
             },
             KclValue::Object {
-                value: crate::execution::KclObjectFields::new(),
+                value: crate::execution::KclObjectFields::new().into(),
                 meta: Vec::new(),
                 constrainable: false,
                 object_kind: Default::default(),
@@ -2278,7 +2280,7 @@ mod test {
             &none,
             &oty,
             &KclValue::Object {
-                value: HashMap::new(),
+                value: HashMap::new().into(),
                 meta: Vec::new(),
                 constrainable: false,
                 object_kind: Default::default(),
@@ -2293,26 +2295,26 @@ mod test {
         let (ctx, mut exec_state) = new_exec_state().await;
 
         let obj0 = KclValue::Object {
-            value: HashMap::new(),
+            value: HashMap::new().into(),
             meta: Vec::new(),
             constrainable: false,
             object_kind: Default::default(),
         };
         let obj1 = KclValue::Object {
-            value: [(
+            value: HashMap::from([(
                 "foo".to_owned(),
                 KclValue::Bool {
                     value: true,
                     meta: Vec::new(),
                 },
-            )]
+            )])
             .into(),
             meta: Vec::new(),
             constrainable: false,
             object_kind: Default::default(),
         };
         let obj2 = KclValue::Object {
-            value: [
+            value: HashMap::from([
                 (
                     "foo".to_owned(),
                     KclValue::Bool {
@@ -2336,7 +2338,7 @@ mod test {
                         meta: Vec::new(),
                     },
                 ),
-            ]
+            ])
             .into(),
             meta: Vec::new(),
             constrainable: false,
@@ -2941,7 +2943,7 @@ mod test {
                 // projection instead of being deleted.
                 "an object field, which projects nothing",
                 KclValue::Object {
-                    value: HashMap::from([("c".to_owned(), red.clone())]),
+                    value: HashMap::from([("c".to_owned(), red.clone())]).into(),
                     constrainable: false,
                     object_kind: Default::default(),
                     meta: Vec::new(),
@@ -3086,7 +3088,7 @@ mod test {
 
         // Coercion
         let a2d = KclValue::Object {
-            value: [
+            value: HashMap::from([
                 (
                     "origin".to_owned(),
                     KclValue::HomArray {
@@ -3123,14 +3125,14 @@ mod test {
                         ty: RuntimeType::Primitive(PrimitiveType::Number(NumericType::mm())),
                     },
                 ),
-            ]
+            ])
             .into(),
             meta: Vec::new(),
             constrainable: false,
             object_kind: Default::default(),
         };
         let a3d = KclValue::Object {
-            value: [
+            value: HashMap::from([
                 (
                     "origin".to_owned(),
                     KclValue::HomArray {
@@ -3177,7 +3179,7 @@ mod test {
                         ty: RuntimeType::Primitive(PrimitiveType::Number(NumericType::mm())),
                     },
                 ),
-            ]
+            ])
             .into(),
             meta: Vec::new(),
             constrainable: false,
