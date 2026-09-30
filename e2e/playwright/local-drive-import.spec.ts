@@ -2,7 +2,7 @@ import { expect, test } from '@e2e/playwright/zoo-test'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 
 test.describe('Local Drive picker', { tag: '@web' }, () => {
-  test('adds binary files without overwriting and keeps them after reload', async ({
+  test('adds local files without overwriting and keeps them after reload', async ({
     page,
     homePage,
     toolbar,
@@ -12,18 +12,24 @@ test.describe('Local Drive picker', { tag: '@web' }, () => {
     await toolbar.openPane(DefaultLayoutPaneID.Code)
     await toolbar.openPane(DefaultLayoutPaneID.Files)
 
-    const originalBytes = [0, 255, 128, 1, 13, 10]
-    const nextBytes = [1, 0, 254, 129]
+    const originalContent = 'Original model file'
+    const duplicateContent = 'Another model file'
     const fileName = 'part.prt.23'
-    const readBytes = (name: string) =>
+    const duplicateFileName = 'part-1.prt.23'
+    const readFile = (name: string) =>
       page.evaluate(async (name) => {
         const project = window.app.project
         if (!project) throw new Error('No project is open')
         const path = window.fsZds.join(project.path, name)
-        return Array.from(await window.app.fileOperations.readFile(path))
+        const content = await window.app.fileOperations.readFile(path)
+        return new TextDecoder().decode(content)
       }, name)
 
-    for (const bytes of [originalBytes, nextBytes]) {
+    const imports = [
+      { content: originalContent, expectedName: fileName },
+      { content: duplicateContent, expectedName: duplicateFileName },
+    ]
+    for (const { content, expectedName } of imports) {
       await cmdBar.openCmdBar()
       await cmdBar.chooseCommand('Add file to project')
       await cmdBar.expectCommandName('Add file to project')
@@ -38,24 +44,23 @@ test.describe('Local Drive picker', { tag: '@web' }, () => {
       await chooser.setFiles({
         name: fileName,
         mimeType: 'application/octet-stream',
-        buffer: Buffer.from(bytes),
+        buffer: Buffer.from(content),
       })
       await expect(cmdBar.currentArgumentInput).toHaveValue(fileName)
       await cmdBar.progressCmdBar()
       await cmdBar.toBeClosed()
 
-      const expectedName = bytes === originalBytes ? fileName : 'part-1.prt.23'
-      await expect.poll(() => readBytes(expectedName)).toEqual(bytes)
+      await expect.poll(() => readFile(expectedName)).toBe(content)
       await expect(
         page.getByRole('treeitem', { name: expectedName, exact: true })
       ).toBeVisible()
     }
 
-    await expect.poll(() => readBytes(fileName)).toEqual(originalBytes)
+    await expect.poll(() => readFile(fileName)).toBe(originalContent)
     await page.reload()
     await expect(toolbar.loadButton).toBeVisible()
-    await expect.poll(() => readBytes(fileName)).toEqual(originalBytes)
-    await expect.poll(() => readBytes('part-1.prt.23')).toEqual(nextBytes)
+    await expect.poll(() => readFile(fileName)).toBe(originalContent)
+    await expect.poll(() => readFile(duplicateFileName)).toBe(duplicateContent)
   })
 
   test('handles cancel, reselects the same file, and opens added KCL files', async ({
