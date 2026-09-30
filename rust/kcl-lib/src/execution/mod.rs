@@ -79,6 +79,7 @@ pub(crate) use state::PendingEdgeRefactorMeta;
 pub(crate) use state::PendingLegacyAngleRefactorMeta;
 pub use state::RefactorMetadata;
 pub(crate) use state::TangencyMode;
+pub(crate) use state::computed_kcl_version;
 pub(crate) use state::declared_kcl_version;
 
 use crate::CompilationIssue;
@@ -97,6 +98,7 @@ use crate::execution::cache::CacheResult;
 use crate::execution::cad_op::OperationExt;
 use crate::execution::import_graph::Universe;
 use crate::execution::import_graph::UniverseMap;
+use crate::execution::modeling::kcl_version_to_modeling_cmd;
 use crate::execution::typed_path::TypedPath;
 use crate::front::Number;
 use crate::front::Object;
@@ -1428,6 +1430,7 @@ impl ExecutorContext {
 
     pub async fn send_clear_scene(
         &self,
+        kcl_version: Option<KclVersion>,
         exec_state: &mut ExecState,
         source_range: crate::execution::SourceRange,
     ) -> Result<(), KclError> {
@@ -1437,11 +1440,14 @@ impl ExecutorContext {
         exec_state.global.root_module_artifacts.clear();
         exec_state.global.artifacts.clear();
 
+        let modeling_kcl_version = kcl_version.map(kcl_version_to_modeling_cmd);
+
         self.engine
             .clear_scene(
                 &self.engine_batch,
                 &mut exec_state.mod_local.id_generator,
                 source_range,
+                modeling_kcl_version,
                 self.settings.geometry_only,
             )
             .await?;
@@ -1659,10 +1665,12 @@ impl ExecutorContext {
                     let old = CacheInformation {
                         ast: &cached_state.main.ast,
                         settings: &cached_state.settings,
+                        kcl_version: cached_state.kcl_version,
                     };
                     let new = CacheInformation {
                         ast: &program.ast,
                         settings: &self.settings,
+                        kcl_version: program.kcl_version,
                     };
 
                     // Get the program that actually changed from the old and new information.
@@ -1690,6 +1698,7 @@ impl ExecutorContext {
                                 (
                                     clear_scene,
                                     crate::Program {
+                                        kcl_version: program.kcl_version,
                                         ast: changed_program,
                                         original_file_contents: program.original_file_contents,
                                     },
@@ -1762,6 +1771,7 @@ impl ExecutorContext {
                                 (
                                     true,
                                     crate::Program {
+                                        kcl_version: program.kcl_version,
                                         ast: changed_program,
                                         original_file_contents: program.original_file_contents,
                                     },
@@ -1821,7 +1831,7 @@ impl ExecutorContext {
                     let (exec_state, universe_info, preserve_mem) = match import_check_info {
                         Some((new_universe, new_universe_map, mut new_exec_state)) => {
                             // Clear the scene if the imports changed.
-                            self.send_clear_scene(&mut new_exec_state, Default::default())
+                            self.send_clear_scene(Some(program.kcl_version), &mut new_exec_state, Default::default())
                                 .await
                                 .map_err(KclErrorWithOutputs::no_outputs)?;
 
@@ -1836,7 +1846,7 @@ impl ExecutorContext {
                             let mut exec_state = cached_state.reconstitute_exec_state(self);
                             exec_state.reset(self);
 
-                            self.send_clear_scene(&mut exec_state, Default::default())
+                            self.send_clear_scene(Some(program.kcl_version), &mut exec_state, Default::default())
                                 .await
                                 .map_err(KclErrorWithOutputs::no_outputs)?;
 
@@ -1857,7 +1867,7 @@ impl ExecutorContext {
                 }
                 None => {
                     let mut exec_state = ExecState::new(self);
-                    self.send_clear_scene(&mut exec_state, Default::default())
+                    self.send_clear_scene(Some(program.kcl_version), &mut exec_state, Default::default())
                         .await
                         .map_err(KclErrorWithOutputs::no_outputs)?;
 
@@ -1891,6 +1901,7 @@ impl ExecutorContext {
             cache::write_old_ast(GlobalState::new(
                 (*exec_state).clone(),
                 self.settings.clone(),
+                original_program.kcl_version,
                 original_program.ast,
                 result.0,
             ))
@@ -6324,8 +6335,9 @@ face = disc()
     #[tokio::test(flavor = "multi_thread")]
     async fn never_type_resolution_rejects_an_unvalidated_v2_ast() {
         let source = "@settings(kclVersion = 2.0)\nfn stop(): never {}\n";
-        let (ast, _) = crate::parsing::parse_str_syntax(source, ModuleId::default()).unwrap();
+        let (kcl_version, ast, _) = crate::parsing::parse_str_syntax(source, ModuleId::default()).unwrap();
         let program = crate::Program {
+            kcl_version,
             ast,
             original_file_contents: source.to_owned(),
         };
@@ -9798,7 +9810,13 @@ x = [1, 2]: NewT
             },
         );
 
-        let cached = cache::GlobalState::new(exec_state, ctx.settings.clone(), program.ast.clone(), main_ref);
+        let cached = cache::GlobalState::new(
+            exec_state,
+            ctx.settings.clone(),
+            program.kcl_version,
+            program.ast.clone(),
+            main_ref,
+        );
         let mem = cached.mock_memory_state().unwrap();
         assert_eq!(mem.std_not_yet_added["cube"].added_in, version("3.0"));
 

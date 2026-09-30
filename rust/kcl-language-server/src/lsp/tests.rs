@@ -3216,6 +3216,7 @@ async fn kcl_test_kcl_lsp_code_unchanged_but_has_diagnostics_reexecute() {
     server.ast_map.insert(
         "file:///test.kcl".to_string(),
         crate::Program {
+            kcl_version: Default::default(),
             ast: Default::default(),
             original_file_contents: Default::default(),
         },
