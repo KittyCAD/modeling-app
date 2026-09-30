@@ -635,7 +635,7 @@ extrude001 = extrude(region001, length = 100)`
         `
         helix001 = helix(
           axis = {
-            sideFaces = [capEnd001, region001.tags.line3]
+            sideFaces = [region001.tags.line3, capEnd001]
           },
           revolutions = 20,
           angleStart = 0,
@@ -710,7 +710,7 @@ extrude001 = extrude(region001, length = 100)`
         `
         helix001 = helix(
           axis = {
-            sideFaces = [capEnd001, region001.tags.line3]
+            sideFaces = [region001.tags.line3, capEnd001]
           },
           revolutions = 20,
           angleStart = 0,
@@ -1031,7 +1031,7 @@ region001 = region(segments = [sketch001.circle1])`
 hide(sketch001)
 region001 = region(segments = [sketch001.line1, sketch001.line2])
 extrude001 = extrude(region001, length = -12)`
-    const firstFilletDeclaration = `fillet001 = fillet(extrude001, edges=[{sideFaces=[extrude001.faces.capEnd001,region001.tags.line2]}], radius=5,)`
+    const firstFilletDeclaration = `fillet001 = fillet(extrude001, edges=[{sideFaces=[region001.tags.line2,extrude001.faces.capEnd001]}], radius=5,)`
     const secondFilletDeclaration = `fillet002 = fillet(extrude001, edges=[{sideFaces=[region001.tags.line2,extrude001.faces.capStart001]}], radius=5,)`
 
     // Locators
@@ -1112,7 +1112,9 @@ extrude001 = extrude(region001, length = -12)`
       oldValue: string,
       newValue: string
     ) {
+      // await scene.waitForExecutionDoneAfter(async () =>
       await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
+      // )
       const operationButton = await toolbar.getFeatureTreeOperation(
         'Fillet',
         featureTreeIndex
@@ -1130,6 +1132,7 @@ extrude001 = extrude(region001, length = -12)`
       })
       await page.keyboard.insertText(newValue)
       await cmdBar.progressCmdBar()
+      // await page.pause()
       await cmdBar.expectState({
         stage: 'review',
         headerArguments: {
@@ -1758,7 +1761,7 @@ extrude001 = extrude(region001, length = 5)`
 
       expect(normalizedCode).toContain('fillet001=fillet(extrude001,')
       expect(normalizedCode).toContain(
-        'edges=[{sideFaces=[region001.tags.line3,region001.tags.line1]}]'
+        'edges=[{sideFaces=[region001.tags.line1,region001.tags.line3]}]'
       )
       expect(normalizedCode).toContain('radius=1000,')
       expect(normalizedCode).not.toContain('tags=[')
@@ -2685,14 +2688,14 @@ region002 = region(point = [-20.0275mm, 10mm], sketch = sketch002)`
   region002,
   angle = 360deg,
   axis = {
-    sideFaces = [capEnd001, region001.tags.line1]
+    sideFaces = [region001.tags.line1, capEnd001]
   },
 )`
     const newCodeToFindAfterEdit = `revolve001 = revolve(
   region002,
   angle = 360deg,
   axis = {
-    sideFaces = [capEnd001, region001.tags.line1]
+    sideFaces = [region001.tags.line1, capEnd001]
   },
 )`
 
