@@ -98,6 +98,7 @@ use crate::execution::cache::CacheResult;
 use crate::execution::cad_op::OperationExt;
 use crate::execution::import_graph::Universe;
 use crate::execution::import_graph::UniverseMap;
+use crate::execution::modeling::kcl_version_to_modeling_cmd;
 use crate::execution::typed_path::TypedPath;
 use crate::front::Number;
 use crate::front::Object;
@@ -1429,6 +1430,7 @@ impl ExecutorContext {
 
     pub async fn send_clear_scene(
         &self,
+        kcl_version: Option<KclVersion>,
         exec_state: &mut ExecState,
         source_range: crate::execution::SourceRange,
     ) -> Result<(), KclError> {
@@ -1438,11 +1440,14 @@ impl ExecutorContext {
         exec_state.global.root_module_artifacts.clear();
         exec_state.global.artifacts.clear();
 
+        let modeling_kcl_version = kcl_version.map(kcl_version_to_modeling_cmd);
+
         self.engine
             .clear_scene(
                 &self.engine_batch,
                 &mut exec_state.mod_local.id_generator,
                 source_range,
+                modeling_kcl_version,
                 self.settings.geometry_only,
             )
             .await?;
@@ -1826,7 +1831,7 @@ impl ExecutorContext {
                     let (exec_state, universe_info, preserve_mem) = match import_check_info {
                         Some((new_universe, new_universe_map, mut new_exec_state)) => {
                             // Clear the scene if the imports changed.
-                            self.send_clear_scene(&mut new_exec_state, Default::default())
+                            self.send_clear_scene(Some(program.kcl_version), &mut new_exec_state, Default::default())
                                 .await
                                 .map_err(KclErrorWithOutputs::no_outputs)?;
 
@@ -1841,7 +1846,7 @@ impl ExecutorContext {
                             let mut exec_state = cached_state.reconstitute_exec_state(self);
                             exec_state.reset(self);
 
-                            self.send_clear_scene(&mut exec_state, Default::default())
+                            self.send_clear_scene(Some(program.kcl_version), &mut exec_state, Default::default())
                                 .await
                                 .map_err(KclErrorWithOutputs::no_outputs)?;
 
@@ -1862,7 +1867,7 @@ impl ExecutorContext {
                 }
                 None => {
                     let mut exec_state = ExecState::new(self);
-                    self.send_clear_scene(&mut exec_state, Default::default())
+                    self.send_clear_scene(Some(program.kcl_version), &mut exec_state, Default::default())
                         .await
                         .map_err(KclErrorWithOutputs::no_outputs)?;
 
