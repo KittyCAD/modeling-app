@@ -670,12 +670,12 @@ impl Node<Program> {
     /// Set the KCL version in place.
     pub(crate) fn set_kcl_version(&mut self, kcl_version: Option<KclVersion>) -> Result<(), KclError> {
         let mut found = false;
+        // We don't currently support removing the kclVersion.
+        let kcl_version = kcl_version.unwrap_or_default();
         for node in self.inner_attrs.iter_mut().rev() {
             if node.name() == Some(annotations::SETTINGS) {
-                if let Some(version) = kcl_version {
-                    node.inner
-                        .add_or_update(annotations::SETTINGS_VERSION, kcl_version_expr(version)?);
-                }
+                node.inner
+                    .add_or_update(annotations::SETTINGS_VERSION, kcl_version_expr(kcl_version)?);
                 // Previous source range no longer makes sense, but we want to
                 // preserve other things like comments.
                 node.reset_source();
@@ -686,11 +686,9 @@ impl Node<Program> {
 
         if !found {
             let mut settings = Annotation::new(annotations::SETTINGS);
-            if let Some(version) = kcl_version {
-                settings
-                    .inner
-                    .add_or_update(annotations::SETTINGS_VERSION, kcl_version_expr(version)?);
-            }
+            settings
+                .inner
+                .add_or_update(annotations::SETTINGS_VERSION, kcl_version_expr(kcl_version)?);
 
             self.inner_attrs.push(settings);
         }
