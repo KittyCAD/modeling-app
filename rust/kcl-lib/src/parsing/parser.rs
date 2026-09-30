@@ -955,14 +955,14 @@ pub(crate) fn unsigned_number_literal(i: &mut TokenSlice) -> ModalResult<Node<Li
 
 fn sketch_var(i: &mut TokenSlice) -> ModalResult<Node<SketchVar>> {
     let var_token = keyword(i, "var")?;
-    let literal = opt(preceded(require_whitespace, numeric_literal)).parse_next(i)?;
-    let end = literal.as_ref().map(|t| t.end).unwrap_or(var_token.end);
+    let expr = opt(preceded(require_whitespace, expression)).parse_next(i)?;
+    let end = expr.as_ref().map(|t| t.end).unwrap_or(var_token.end);
     if !ParseContext::is_in_sketch_block() {
         ParseContext::experimental(
             "sketch var",
             SourceRange::new(var_token.start, end, var_token.module_id),
         );
-    } else if literal.is_none() {
+    } else if expr.is_none() {
         ParseContext::experimental(
             "sketch var without initial value",
             SourceRange::new(var_token.start, end, var_token.module_id),
@@ -971,7 +971,7 @@ fn sketch_var(i: &mut TokenSlice) -> ModalResult<Node<SketchVar>> {
 
     Ok(Node::new(
         SketchVar {
-            initial: literal.map(BoxNode::new),
+            initial: expr.map(BoxNode::new),
             digest: None,
         },
         var_token.start,
