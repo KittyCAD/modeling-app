@@ -1094,7 +1094,8 @@ description: Operations executed error_large_fillet_radius.kcl
           }
         ]
       },
-      "sourceRange": []
+      "sourceRange": [],
+      "isError": true
     }
   ],
   "std::math": [
