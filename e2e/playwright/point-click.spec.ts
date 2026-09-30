@@ -1112,7 +1112,9 @@ extrude001 = extrude(region001, length = -12)`
       oldValue: string,
       newValue: string
     ) {
-      await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
+      await scene.waitForExecutionDoneAfter(() =>
+        toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
+      )
       const operationButton = await toolbar.getFeatureTreeOperation(
         'Fillet',
         featureTreeIndex
@@ -1130,6 +1132,7 @@ extrude001 = extrude(region001, length = -12)`
       })
       await page.keyboard.insertText(newValue)
       await cmdBar.progressCmdBar()
+      // await page.pause()
       await cmdBar.expectState({
         stage: 'review',
         headerArguments: {
