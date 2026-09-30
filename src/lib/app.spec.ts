@@ -207,42 +207,6 @@ function expectedRuntimeFlags(
   })
 }
 
-function electronSetupTeardown() {
-  const app = createAppForTest()
-  const previousElectron = window.electron
-  const setup = () => {
-    const syncActivePlugins = vi.fn().mockResolvedValue(undefined)
-    window.electron = {
-      os: {
-        isLinux: true,
-        isMac: false,
-        isWindows: false,
-      },
-      packageJson: {
-        name: 'zoo-modeling-app',
-      },
-      getAppTestProperty: vi.fn().mockResolvedValue(undefined),
-      pluginIpc: {
-        invoke: vi.fn(),
-        syncActivePlugins,
-      },
-      watchFileOn: vi.fn(),
-      watchFileOff: vi.fn(),
-    } satisfies Partial<
-      typeof window.electron
-    > as unknown as typeof window.electron
-
-    return app
-  }
-
-  const teardown = () => {
-    app.dispose()
-    window.electron = previousElectron
-  }
-
-  return { setup, teardown }
-}
-
 function getCloudSyncPluginSetting(app: App) {
   return (
     app.settings.get().plugins as
