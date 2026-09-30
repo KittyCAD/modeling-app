@@ -1122,7 +1122,12 @@ async fn create_basic_distance_annotation(
                 y: offset[1].to_mm(),
             }
         } else {
-            KPoint2d { x: 100.0, y: 100.0 }
+            // Center the label along the measurement and leave room for its
+            // text perpendicular to it. Match the point-and-click default.
+            KPoint2d {
+                x: 0.0,
+                y: 2.0 * font_size.map(TyF64::to_mm).unwrap_or(DEFAULT_GDT_FONT_SIZE_MM),
+            }
         })
         .precision(precision)
         .font_scale(gdt_font_scale(font_size, args)?)
@@ -2159,6 +2164,47 @@ gdt::flatness(
                 gdt_font_scale_for_height_mm(50.8).into(),
             );
         }
+        Ok(())
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn gdt_distance_default_position_is_centered_and_font_relative() -> Result<(), KclError> {
+        for (unit, font_size, expected_setback) in [
+            ("mm", "", 20.0),
+            ("in", "", 20.0),
+            ("mm", "fontSize = 2mm,", 4.0),
+            ("cm", "fontSize = 0.2,", 4.0),
+            ("in", "fontSize = 0.1in,", 5.08),
+        ] {
+            for between_faces in [false, true] {
+                let mut code = gdt_distance_kcl(unit, "0mm", "[0, 0]")
+                    .replace("  framePosition = [0, 0],\n", "")
+                    .replace("fontSize = 2in,", font_size);
+                if between_faces {
+                    code = code.replace(
+                        "edges = [\n    getCommonEdge(faces = [\n      region001.tags.line4,\n      region001.tags.line1\n    ])\n  ]",
+                        "from = region001.tags.line4, to = region001.tags.line2",
+                    );
+                }
+                let commands = gdt_commands(&code).await;
+                let index = new_annotation_command_index(&commands)?;
+                let dimension = annotation_options(&commands[index])?.dimension.as_ref().unwrap();
+                assert_close(dimension.offset.x, 0.0);
+                assert_close(dimension.offset.y, expected_setback);
+                assert_eq!(dimension.from_entity_id != dimension.to_entity_id, between_faces);
+            }
+        }
+        Ok(())
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn gdt_distance_preserves_explicit_zero_position() -> Result<(), KclError> {
+        let code = gdt_distance_kcl("in", "0mm", "[0, 0]");
+        let commands = gdt_commands(&code).await;
+        let index = new_annotation_command_index(&commands)?;
+        let dimension = annotation_options(&commands[index])?.dimension.as_ref().unwrap();
+        assert_close(dimension.offset.x, 0.0);
+        assert_close(dimension.offset.y, 0.0);
         Ok(())
     }
 

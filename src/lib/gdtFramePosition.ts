@@ -2,7 +2,11 @@ import type { BoundingBox, FaceIsPlanar, Point3d } from '@kittycad/lib'
 
 import type { UnitLength } from '@rust/kcl-lib/bindings/ModelingCmd'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
-import { createArrayExpression, createLiteral } from '@src/lang/create'
+import {
+  createArrayExpression,
+  createBinaryExpression,
+  createLiteral,
+} from '@src/lang/create'
 import { toUtf16 } from '@src/lang/errors'
 import type {
   ArtifactId,
@@ -427,6 +431,52 @@ function createFontSizeCommandValue(
   }
 }
 
+function createDistanceFramePositionCommandValue(
+  fontSize: KclCommandValue | undefined,
+  wasmInstance: ModuleType
+): KclCommandValue | undefined {
+  // Match gdt::distance's runtime default. Keep the expression so units and
+  // references to user parameters survive code generation and later edits.
+  const fontExpr = fontSize
+    ? 'variableName' in fontSize
+      ? fontSize.variableIdentifierAst
+      : fontSize.valueAst
+    : createLiteral(10, wasmInstance, 'Mm')
+  switch (fontExpr.type) {
+    case 'Literal':
+    case 'Name':
+    case 'BinaryExpression':
+    case 'CallExpressionKw':
+    case 'UnaryExpression':
+    case 'MemberExpression':
+    case 'ArrayExpression':
+    case 'ArrayRangeExpression':
+    case 'ObjectExpression':
+    case 'IfExpression':
+    case 'AscribedExpression':
+    case 'SketchVar':
+      break
+    default:
+      // These cannot be operands of an AST BinaryExpression. Leaving the
+      // position implicit uses the same font-relative default in KCL.
+      return undefined
+  }
+  const fontText = fontSize
+    ? 'variableName' in fontSize
+      ? fontSize.variableName
+      : fontSize.valueText
+    : '10mm'
+  const valueText = `[0mm, 2 * (${fontText})]`
+  return {
+    valueAst: createArrayExpression([
+      createLiteral(0, wasmInstance, 'Mm'),
+      createBinaryExpression([createLiteral(2, wasmInstance), '*', fontExpr]),
+    ]),
+    valueText,
+    valueCalculated: valueText,
+  }
+}
+
 function getNormalFromPlanarFace(face: FaceIsPlanar): Point3d | undefined {
   const normal = face.z_axis
   if (
@@ -543,6 +593,7 @@ export async function withDefaultGdtFrameDefaults<T extends GdtCommandData>({
   sourceCode,
   outputUnit = DEFAULT_DEFAULT_LENGTH_UNIT,
   wasmInstance,
+  distance = false,
 }: {
   data: T
   engineCommandManager: ConnectionManager
@@ -550,6 +601,7 @@ export async function withDefaultGdtFrameDefaults<T extends GdtCommandData>({
   sourceCode?: string
   outputUnit?: UnitLength
   wasmInstance: ModuleType
+  distance?: boolean
 }): Promise<T> {
   const selections = getSelectionsFromGdtData(data)
   const entityIds = getEngineEntityIdsForGdtSelections(selections)
@@ -595,7 +647,7 @@ export async function withDefaultGdtFrameDefaults<T extends GdtCommandData>({
   }
 
   const needsSelectionBoundingBox =
-    !hasResolvedFramePlane || !nextData.framePosition
+    !hasResolvedFramePlane || (!distance && !nextData.framePosition)
   const selectionBoundingBox = needsSelectionBoundingBox
     ? await getBoundingBoxForGdtEntities({
         engineCommandManager,
@@ -625,7 +677,7 @@ export async function withDefaultGdtFrameDefaults<T extends GdtCommandData>({
       ? getAverageBoundingBoxDimension(selectionBoundingBox.dimensions)
       : undefined
 
-  if (!nextData.framePosition && averageDimension !== undefined) {
+  if (!distance && !nextData.framePosition && averageDimension !== undefined) {
     const [xSign, ySign] = framePositionSigns ?? [1, 1]
 
     nextData = {
@@ -649,15 +701,23 @@ export async function withDefaultGdtFrameDefaults<T extends GdtCommandData>({
       ? getAverageBoundingBoxDimension(modelBoundingBox.dimensions)
       : undefined
 
-    if (modelAverageDimension === undefined) {
-      return nextData
+    if (modelAverageDimension !== undefined) {
+      nextData = {
+        ...nextData,
+        fontSize: createFontSizeCommandValue(
+          modelAverageDimension,
+          outputUnit,
+          wasmInstance
+        ),
+      }
     }
+  }
 
+  if (distance && !nextData.framePosition) {
     nextData = {
       ...nextData,
-      fontSize: createFontSizeCommandValue(
-        modelAverageDimension,
-        outputUnit,
+      framePosition: createDistanceFramePositionCommandValue(
+        nextData.fontSize,
         wasmInstance
       ),
     }
