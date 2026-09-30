@@ -387,7 +387,8 @@ export function addSplit({
   const hasTools = Boolean(
     !mNodeToEdit &&
       tools &&
-      (tools.graphSelections.length > 0 || tools.otherSelections.length > 0)
+      ((tools.graphSelections?.length ?? 0) > 0 ||
+        (tools.otherSelections?.length ?? 0) > 0)
   )
   const selectionGroups: BooleanSelectionGroup[] = [
     { selections: targets, ...vars },

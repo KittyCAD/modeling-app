@@ -22,6 +22,7 @@ async fn run_with_freedom_analysis(kcl: &str) -> Vec<(ObjectId, Freedom)> {
         execution_callbacks: Default::default(),
         executor_kind: ExecutorKind::resolve(),
         machine_call_depth_limit: crate::execution::machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
+        configure_engine_render: true,
     };
 
     let mock_config = MockConfig {

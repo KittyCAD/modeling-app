@@ -1658,6 +1658,7 @@ mod test {
                 execution_callbacks: Default::default(),
                 executor_kind: crate::execution::machine::ExecutorKind::resolve(),
                 machine_call_depth_limit: crate::execution::machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
+                configure_engine_render: true,
             };
             let mut exec_state = ExecState::new(&exec_ctxt);
             exec_state.mod_local.stack = Stack::new_for_tests();
@@ -2084,6 +2085,40 @@ body = extrude(region1, length = 5mm)
             body.faces.is_empty(),
             "body faces should only be populated for tagged calls"
         );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn sketch_segment_extrude_exposes_its_generated_face() {
+        let program = r#"@settings(defaultLengthUnit = mm)
+sketch001 = sketch(on = XY) {
+  line1 = line(start = [0, 0], end = [20, 0])
+  line2 = line(start = [20, 0], end = [20, 12])
+}
+surface001 = extrude(
+  sketch001.line1,
+  length = 10,
+  bodyType = SURFACE,
+  method = NEW,
+)
+generatedFace = surface001.faces.line1
+surface002 = extrude(
+  {
+    sideFaces = [surface001.faces.line1],
+    index = 2
+  },
+  length = 5,
+  bodyType = SURFACE,
+  method = NEW,
+)
+"#;
+
+        let result = parse_execute(program).await.unwrap();
+        let surface = get_var(&result, "surface001");
+        let KclValue::Solid { value: surface } = surface else {
+            panic!("expected `surface001` to be a solid");
+        };
+        assert!(surface.faces.contains_key("line1"));
+        assert_vars_are_tags(&result, &["generatedFace"]);
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -2827,6 +2862,7 @@ plane = startSketchOn(XY)
             execution_callbacks: Default::default(),
             executor_kind: crate::execution::machine::ExecutorKind::resolve(),
             machine_call_depth_limit: crate::execution::machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
+            configure_engine_render: true,
         };
         let mut exec_state = ExecState::new(&exec_ctxt);
         exec_state.set_deprecation_version_override(Some("2.0"));

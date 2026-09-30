@@ -4,11 +4,18 @@ description: Error from executing error_large_fillet_radius.kcl
 ---
 KCL Engine error
 
-  × engine: The Zoo engine cannot handle this 3D subtraction yet.
-  │ Edge cut failed
-    ╭─[21:13]
- 20 │ extrude001 = extrude(region001, length = 5, tagEnd = $capEnd001)
- 21 │ fillet001 = fillet(extrude001, tags = getCommonEdge(faces = [region001.tags.line1, capEnd001]), radius = 13)
-    ·             ────────────────────────────────────────────────┬───────────────────────────────────────────────
-    ·                                                             ╰── tests/error_large_fillet_radius/input.kcl
+  × engine: Fillet creation failed. This can happen when the radius is too
+  │ large compared to the surrounding geometry.
+    ╭─[23:13]
+ 22 │     edgeForSurface = extrude001.sketch.tags.line2
+ 23 │     fillet001 = fillet(extrude001, tags = getCommonEdge(faces = [region001.tags.line1, capEnd001]), radius = 13)
+    ·                 ────────────────────────────────────────────────┬───────────────────────────────────────────────
+    ·                                                                 ╰── tests/error_large_fillet_radius/input.kcl
+ 24 │ ╭─▶ surface001 = extrude(
+ 25 │ │     edgeForSurface,
+ 26 │ │     length = 1,
+ 27 │ │     bodyType = SURFACE,
+ 28 │ │     method = NEW,
+ 29 │ ├─▶ )
+    · ╰──── tests/error_large_fillet_radius/input.kcl
     ╰────

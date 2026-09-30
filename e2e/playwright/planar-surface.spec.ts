@@ -8,6 +8,7 @@ test.describe('Planar Surface point-and-click', { tag: '@desktop' }, () => {
   for (const boundary of [
     {
       name: 'the base circle edge of a moved solid',
+      bodyName: 'extrude001',
       code: `sketch001 = sketch(on = XZ) {
   circle1 = circle(start = [10mm, 0mm], center = [0mm, 0mm])
 }
@@ -17,10 +18,11 @@ extrude001 = extrude(region001, length = 5mm)
   |> translate(x = 25mm)`,
       points: [{ x: 35, y: 0, z: 0 }],
       viewOffset: { x: 0, y: 100, z: 0 },
-      curves: ['extrude001.sketch.tags.circle1'],
+      mixedSelections: false,
     },
     {
       name: 'the opposite circle edge of a cloned solid',
+      bodyName: 'extrude002',
       code: `sketch001 = sketch(on = XZ) {
   circle1 = circle(start = [10mm, 0mm], center = [0mm, 0mm])
 }
@@ -31,10 +33,11 @@ extrude002 = clone(extrude001) |> translate(x = 25mm)
 hidden002 = hide(extrude001)`,
       points: [{ x: 35, y: -5, z: 0 }],
       viewOffset: { x: 0, y: -100, z: 0 },
-      curves: ['getOppositeEdge(extrude002.sketch.tags.circle1)'],
+      mixedSelections: false,
     },
     {
       name: 'an ordered boundary of a cloned solid',
+      bodyName: 'extrude002',
       code: `sketch001 = sketch(on = XY) {
   line1 = line(start = [-10mm, -10mm], end = [10mm, -10mm])
   line2 = line(start = [10mm, -10mm], end = [10mm, 10mm])
@@ -53,12 +56,11 @@ hidden002 = hide(extrude001)`,
         { x: 15, y: 0, z: 5 },
       ],
       viewOffset: { x: 0, y: -50, z: 100 },
-      curves: [1, 2, 3, 4].map(
-        (index) => `getOppositeEdge(extrude002.sketch.tags.line${index})`
-      ),
+      mixedSelections: false,
     },
     {
       name: 'a chamfered boundary with mapped and fallback edges',
+      bodyName: null,
       code: `sketch001 = sketch(on = XY) {
   line1 = line(start = [-10mm, -10mm], end = [10mm, -10mm])
   line2 = line(start = [10mm, -10mm], end = [10mm, 10mm])
@@ -77,7 +79,7 @@ chamfer001 = chamfer(extrude001, tags = getCommonEdge(faces = [region001.tags.li
         { x: -10, y: 0, z: 5 },
       ],
       viewOffset: { x: 0, y: -50, z: 100 },
-      curves: null,
+      mixedSelections: true,
     },
   ]) {
     test(`create by clicking ${boundary.name} in the viewport`, async ({
@@ -166,7 +168,7 @@ chamfer001 = chamfer(extrude001, tags = getCommonEdge(faces = [region001.tags.li
         ).toBeVisible()
       }
 
-      if (!boundary.curves) {
+      if (boundary.mixedSelections) {
         const selection = await page.evaluate(
           () =>
             window.app.singletons.kclManager.modelingState?.context
@@ -186,15 +188,38 @@ chamfer001 = chamfer(extrude001, tags = getCommonEdge(faces = [region001.tags.li
       await cmdBar.submit()
       await scene.settled()
       await editor.openPane()
-      if (boundary.curves) {
-        await editor.expectEditor.toContain(
-          `surface001 = planarSurface([${boundary.curves.join(', ')}])`,
-          { shouldNormalise: true }
+      await editor.expectEditor.toContain('surface001 = planarSurface([')
+      await expect
+        .poll(() =>
+          page.evaluate((bodyName) => {
+            const declaration = window.app.singletons.kclManager.ast.body.find(
+              (statement) =>
+                statement.type === 'VariableDeclaration' &&
+                statement.declaration.id.name === 'surface001'
+            )
+            const call =
+              declaration?.type === 'VariableDeclaration'
+                ? declaration.declaration.init
+                : null
+            const curves =
+              call?.type === 'CallExpressionKw' &&
+              call.unlabeled?.type === 'ArrayExpression'
+                ? call.unlabeled.elements
+                : []
+            return {
+              count: curves.length,
+              referencesSelectedBody:
+                bodyName === null ||
+                JSON.stringify(curves).includes(`"name":"${bodyName}"`),
+            }
+          }, boundary.bodyName)
         )
-      } else {
-        await editor.expectEditor.toContain('surface001 = planarSurface([')
-        await editor.expectEditor.toContain('edge001 = edgeId(')
-      }
+        .toEqual({
+          count: boundary.points.length,
+          referencesSelectedBody: true,
+        })
+      if (boundary.mixedSelections)
+        await editor.expectEditor.toContain('edgeId(')
       await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
       await expect(
         await toolbar.getFeatureTreeOperation('surface001', 0)

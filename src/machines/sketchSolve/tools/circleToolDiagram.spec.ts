@@ -174,7 +174,7 @@ describe('circleTool - XState', () => {
     it('should return to ready for center click after creating the circle', async () => {
       const centerPoint = createPointApiObject({ id: 1, x: 10, y: 20 })
       const startPoint = createPointApiObject({ id: 2, x: 30, y: 40 })
-      const circleObj = createCircleApiObject({ id: 3, center: 1, start: 2 })
+      const circleObj = createCircleApiObject({ id: 3, start: 2 })
 
       const { machine, sceneInfra, rustContext, kclManager } =
         createTestMachine({

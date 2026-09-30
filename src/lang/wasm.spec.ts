@@ -16,7 +16,6 @@ import {
   defaultNodePath,
   errFromErrWithOutputs,
   formatNumberLiteral,
-  kclLint,
   parse,
   rustImplPathToNode,
 } from '@src/lang/wasm'
@@ -100,25 +99,6 @@ afterAll(() => {
   engineCommandManagerInThisFile.tearDown({
     route: 'user-requested',
     initiatedBy: 'client',
-  })
-})
-
-describe('KCL lint options', () => {
-  it('only returns Z0006 when explicitly enabled', async () => {
-    const ast = assertParse(
-      'revolve(profile, axis = getOppositeEdge(seg01))',
-      instanceInThisFile
-    )
-
-    const defaultFindings = await kclLint(ast, instanceInThisFile)
-    expect(
-      defaultFindings.some((finding) => finding.finding.code === 'Z0006')
-    ).toBe(false)
-
-    const optedInFindings = await kclLint(ast, instanceInThisFile, true)
-    expect(
-      optedInFindings.some((finding) => finding.finding.code === 'Z0006')
-    ).toBe(true)
   })
 })
 

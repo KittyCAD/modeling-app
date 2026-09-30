@@ -19,9 +19,11 @@ import {
   getAllOperations,
   recast,
 } from '@src/lang/wasm'
+import { artifactToEntityRef } from '@src/lang/queryAst'
 import type RustContext from '@src/lib/rustContext'
 import {
-  getEventForSelectWithPoint,
+  getEventForQueryEntityTypeWithPoint,
+  getPrimitiveSelectionForEntity,
   getOrderedGraphAndPrimitiveSelections,
 } from '@src/lib/selections'
 import {
@@ -33,7 +35,10 @@ import {
 } from '@src/lib/testHelpers'
 import { err } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import type { Selections } from '@src/machines/modelingSharedTypes'
+import { isModelingResponse } from '@src/lib/kcSdkGuards'
+import { uuidv4 } from '@src/lib/utils'
+import type { ArtifactGraph } from '@src/lang/wasm'
+import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
 import { modelingMachine } from '@src/machines/modelingMachine'
 import { generateModelingMachineDefaultContext } from '@src/machines/modelingSharedContext'
 import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
@@ -106,7 +111,7 @@ extrude001 = extrude(profile001, length = 1, bodyType = SURFACE)`
       const surface: Selections = {
         graphSelections: [
           {
-            artifact: artifact,
+            entityRef: artifactToEntityRef(artifact!.type, artifact!.id),
             codeRef: artifact!.codeRef,
           },
         ],
@@ -219,7 +224,10 @@ extrude002 = extrude(profile002, length = 1, bodyType = SURFACE)`
       const pathArtifacts = [...artifactGraph.values()].filter(
         (n) => n.type === 'path'
       )
-      const selection = createSelectionFromPathArtifact(pathArtifacts)
+      const selection = createSelectionFromPathArtifact(
+        pathArtifacts,
+        artifactGraph
+      )
       const result = addJoinSurfaces({
         ast,
         artifactGraph,
@@ -416,6 +424,61 @@ sketch001 = sketch(on = XY) {
       instanceInThisFile,
       kclManagerInThisFile
     )
+  }
+
+  async function oppositeEdgeSelection(
+    artifactGraph: ArtifactGraph,
+    surface = [...artifactGraph.values()].findLast(
+      (artifact): artifact is Extract<Artifact, { type: 'sweep' }> =>
+        artifact.type === 'sweep'
+    ),
+    segmentId?: string
+  ): Promise<Selection> {
+    if (!surface) throw new Error('Missing surface')
+    const wall = surface.surfaceIds
+      .map((id) => artifactGraph.get(id))
+      .find(
+        (artifact): artifact is Extract<Artifact, { type: 'wall' }> =>
+          artifact?.type === 'wall' &&
+          (!segmentId || artifact.segId === segmentId)
+      )
+    if (!wall) throw new Error('Missing surface wall')
+    const response = await engineCommandManagerInThisFile.sendSceneCommand({
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: {
+        type: 'solid3d_get_opposite_edge',
+        object_id: surface.id,
+        edge_id: wall.segId,
+        face_id: wall.id,
+      },
+    })
+    if (
+      !isModelingResponse(response) ||
+      response.resp.data.modeling_response.type !== 'solid3d_get_opposite_edge'
+    ) {
+      throw new Error('Could not query the opposite surface edge')
+    }
+    const edgeId = response.resp.data.modeling_response.data.edge
+    if (!edgeId) throw new Error('Missing opposite surface edge')
+    const primitive = await getPrimitiveSelectionForEntity(
+      edgeId,
+      engineCommandManagerInThisFile,
+      artifactGraph
+    )
+    if (!primitive?.parentEntityId) throw new Error('Missing edge topology')
+    return {
+      entityRef: { type: 'edge', side_faces: [] },
+      engineEntityId: edgeId,
+      engineTopologyFallback: {
+        parentId: primitive.parentEntityId,
+        primitiveIndex: primitive.primitiveIndex,
+      },
+    }
+  }
+
+  function topologyEdgeExpression(selection: Selection, body = 'extrude001') {
+    return `edgeId(${body}, index = ${selection.engineTopologyFallback!.primitiveIndex})`
   }
 
   it.each([
@@ -732,15 +795,25 @@ surface001 = planarSurface(region001)`
     ).toBeUndefined()
   })
 
-  it('preserves viewport click order when a closed loop mixes mapped and primitive edges', async () => {
+  it('preserves viewport click order when a closed loop mixes mapped and topology-fallback edges', async () => {
     const { ast, artifactGraph } = await setup(`${triangle}
 region001 = region(point = [2mm, 2mm], sketch = sketch001)
-extrude001 = extrude(region001, length = 5mm, bodyType = SURFACE)`)
+extrude001 = extrude(region001, length = 5mm)`)
     expect(kclManagerInThisFile.errors).toEqual([])
-    const edges = [...artifactGraph.values()]
+    const surface = [...artifactGraph.values()].find(
+      (artifact): artifact is Extract<Artifact, { type: 'sweep' }> =>
+        artifact.type === 'sweep'
+    )
+    if (!surface) throw new Error('Missing surface')
+    const faces = surface.surfaceIds.map((id) => artifactGraph.get(id))
+    const cap = faces.find(
+      (artifact) => artifact?.type === 'cap' && artifact.subType === 'end'
+    )
+    if (!cap) throw new Error('Missing end cap')
+    const walls = faces
       .filter(
-        (artifact): artifact is Extract<Artifact, { type: 'sweepEdge' }> =>
-          artifact.type === 'sweepEdge' && artifact.subType === 'opposite'
+        (artifact): artifact is Extract<Artifact, { type: 'wall' }> =>
+          artifact?.type === 'wall'
       )
       .sort((left, right) => {
         const leftSegment = getOriginalSegmentArtifact(
@@ -755,10 +828,12 @@ extrude001 = extrude(region001, length = 5mm, bodyType = SURFACE)`)
           throw new Error('Missing source segment')
         return leftSegment.codeRef.range[0] - rightSegment.codeRef.range[0]
       })
-    expect(edges).toHaveLength(3)
-    // Preserve real engine geometry while exercising the viewport fallback for
-    // an edge whose ID has no artifact mapping, as happens after edge treatments.
-    artifactGraph.delete(edges[1].id)
+    expect(walls).toHaveLength(3)
+    const edges: Selection[] = []
+    for (const wall of walls)
+      edges.push(
+        await oppositeEdgeSelection(artifactGraph, surface, wall.segId)
+      )
     const actor = createActor(modelingMachine, {
       input: generateModelingMachineDefaultContext({
         ...worldInThisFile,
@@ -766,11 +841,18 @@ extrude001 = extrude(region001, length = 5mm, bodyType = SURFACE)`)
       }),
     }).start()
     const clickEdge = async (index: number, isShiftDown = true) => {
-      const event = await getEventForSelectWithPoint(
-        {
-          type: 'select_with_point',
-          data: { entity_id: edges[index].id },
-        },
+      const event = await getEventForQueryEntityTypeWithPoint(
+        index === 1
+          ? {
+              entity_id: edges[index].engineEntityId!,
+              reference: { type: 'edge', side_faces: [] },
+            }
+          : {
+              reference: {
+                type: 'edge',
+                side_faces: [walls[index].id, cap.id],
+              },
+            },
         {
           engineCommandManager: engineCommandManagerInThisFile,
           kclManager: kclManagerInThisFile,
@@ -784,6 +866,9 @@ extrude001 = extrude(region001, length = 5mm, bodyType = SURFACE)`)
       expect(event.data.selectionType).toBe(
         index === 1 ? 'enginePrimitiveSelection' : 'singleCodeCursor'
       )
+      if (event.data.selectionType === 'singleCodeCursor') {
+        event.data.selection.engineEntityId = edges[index].engineEntityId
+      }
       actor.send({ ...event, data: { ...event.data, isShiftDown } })
     }
     const selectedEdgeIds = () =>
@@ -802,26 +887,51 @@ extrude001 = extrude(region001, length = 5mm, bodyType = SURFACE)`)
       if (err(result)) throw result
       const newCode = recast(result.modifiedAst, instanceInThisFile)
       if (err(newCode)) throw newCode
-      return newCode
+      const call = result.modifiedAst.body.findLast(
+        (statement) => statement.type === 'VariableDeclaration'
+      )
+      if (
+        call?.type !== 'VariableDeclaration' ||
+        call.declaration.init.type !== 'CallExpressionKw' ||
+        call.declaration.init.unlabeled?.type !== 'ArrayExpression'
+      ) {
+        throw new Error('Missing planar surface edge array')
+      }
+      return {
+        newCode,
+        names: call.declaration.init.unlabeled.elements.map((expr) =>
+          expr.type === 'CallExpressionKw' ? expr.callee.name.name : expr.type
+        ),
+      }
     }
     try {
       await clickEdge(0, false)
       await clickEdge(1)
       await clickEdge(2)
-      expect(selectedEdgeIds()).toEqual(edges.map((edge) => edge.id))
-      expect(createSurface().replace(/\s/g, '')).toContain(
-        'planarSurface([getOppositeEdge(extrude001.sketch.tags.line1),edge001,getOppositeEdge(extrude001.sketch.tags.line3)])'
+      expect(selectedEdgeIds()).toEqual(
+        edges.map((edge) => edge.engineEntityId)
       )
+      expect(createSurface().names).toEqual([
+        'getCommonEdge',
+        'Name',
+        'getCommonEdge',
+      ])
       await clickEdge(0)
       await clickEdge(0)
-      expect(selectedEdgeIds()).toEqual([edges[1].id, edges[2].id, edges[0].id])
+      expect(selectedEdgeIds()).toEqual([
+        edges[1].engineEntityId,
+        edges[2].engineEntityId,
+        edges[0].engineEntityId,
+      ])
       await clickEdge(1)
       await clickEdge(1)
-      expect(selectedEdgeIds()).toEqual([edges[2].id, edges[0].id, edges[1].id])
-      const newCode = createSurface()
-      expect(newCode.replace(/\s/g, '')).toContain(
-        'planarSurface([getOppositeEdge(extrude001.sketch.tags.line3),getOppositeEdge(extrude001.sketch.tags.line1),edge001])'
-      )
+      expect(selectedEdgeIds()).toEqual([
+        edges[2].engineEntityId,
+        edges[0].engineEntityId,
+        edges[1].engineEntityId,
+      ])
+      const { newCode, names } = createSurface()
+      expect(names).toEqual(['getCommonEdge', 'getCommonEdge', 'Name'])
       await getAstAndArtifactGraph(
         newCode,
         instanceInThisFile,
@@ -864,23 +974,151 @@ profile001 = circle(sketch001, center = [0, 0], radius = 10)`)
   it('uses the selected opposite surface edge as a singleton array', async () => {
     const { ast, artifactGraph } = await setup(`${circle}
 extrude001 = extrude(sketch001.circle1, length = 5mm, bodyType = SURFACE)`)
-    const edge = [...artifactGraph.values()].find(
-      (artifact) =>
-        artifact.type === 'sweepEdge' && artifact.subType === 'opposite'
-    )
-    if (!edge) throw new Error('Missing surface edge')
+    const edge = await oppositeEdgeSelection(artifactGraph)
     const result = addPlanarSurface({
       ast,
       artifactGraph,
-      curves: createSelectionFromArtifacts([edge], artifactGraph),
+      curves: { graphSelections: [edge], otherSelections: [] },
       wasmInstance: instanceInThisFile,
     })
     if (err(result)) throw result
     expect(recast(result.modifiedAst, instanceInThisFile)).toContain(
-      `surface001 = planarSurface([
-  getOppositeEdge(extrude001.sketch.tags.circle1)
-])`
+      `surface001 = planarSurface([${topologyEdgeExpression(edge)}])`
     )
+    expect(
+      await mockExecAstAndReportErrors(
+        result.modifiedAst,
+        rustContextInThisFile
+      )
+    ).toBeUndefined()
+  })
+
+  it.each([
+    'extrude001 = extrude(region001, length = 5mm) |> translate(x = 25mm)',
+    'original = extrude(region001, length = 5mm)\nextrude001 = clone(original) |> translate(x = 25mm)',
+  ])(
+    'keeps Face API edge tags on the selected body: %s',
+    async (surfaceCode) => {
+      const { ast, artifactGraph } = await setup(`${circle}
+region001 = region(point = [0mm, 0mm], sketch = sketch001)
+${surfaceCode}`)
+      const surface = [...artifactGraph.values()].findLast(
+        (artifact) => artifact.type === 'sweep'
+      )
+      if (surface?.type !== 'sweep') throw new Error('Missing body')
+      const faces = surface.surfaceIds.map((id) => artifactGraph.get(id))
+      const wall = faces.find((face) => face?.type === 'wall')
+      const cap = faces.find(
+        (face) => face?.type === 'cap' && face.subType === 'end'
+      )
+      if (!wall || !cap) throw new Error('Missing body faces')
+      const result = addPlanarSurface({
+        ast,
+        artifactGraph,
+        curves: {
+          graphSelections: [
+            { entityRef: { type: 'edge', side_faces: [wall.id, cap.id] } },
+          ],
+          otherSelections: [],
+        },
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) throw result
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      if (err(newCode)) throw newCode
+      expect(newCode).toContain('getCommonEdge(faces = [')
+      expect(newCode).toContain('extrude001.sketch.tags.circle1')
+      expect(newCode).toContain('extrude001.faces.')
+      await getAstAndArtifactGraph(
+        newCode,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      expect(kclManagerInThisFile.errors).toEqual([])
+    }
+  )
+
+  it.each([
+    { name: 'a Face API disambiguation index', sideFaces: [], index: 123 },
+    {
+      name: 'unmapped adjacent faces',
+      sideFaces: ['missing-face-1', 'missing-face-2'],
+      index: undefined,
+    },
+  ])('uses body topology for $name', async ({ sideFaces, index }) => {
+    const { ast, artifactGraph } = await setup(`${circle}
+extrude001 = extrude(sketch001.circle1, length = 5mm, bodyType = SURFACE)`)
+    const edge = await oppositeEdgeSelection(artifactGraph)
+    if (edge.entityRef?.type !== 'edge')
+      throw new Error('Missing edge reference')
+    edge.entityRef.side_faces = sideFaces
+    edge.entityRef.index = index
+    const result = addPlanarSurface({
+      ast,
+      artifactGraph,
+      curves: { graphSelections: [edge], otherSelections: [] },
+      wasmInstance: instanceInThisFile,
+    })
+    if (err(result)) throw result
+    const code = recast(result.modifiedAst, instanceInThisFile)
+    expect(code).toContain(topologyEdgeExpression(edge))
+    expect(code).not.toContain('index = 123')
+    const withoutTopology = { ...edge, engineTopologyFallback: undefined }
+    expect(
+      addPlanarSurface({
+        ast,
+        artifactGraph,
+        curves: { graphSelections: [withoutTopology], otherSelections: [] },
+        wasmInstance: instanceInThisFile,
+      })
+    ).toBeInstanceOf(Error)
+  })
+
+  it('uses topology for an edge from the second operand of a Boolean body', async () => {
+    const code = `@settings(kclVersion = 2.0)
+sketch001 = sketch(on = XY) {
+  circle1 = circle(start = [10mm, 0mm], center = [0mm, 0mm])
+}
+region001 = region(point = [0mm, 0mm], sketch = sketch001)
+extrude001 = extrude(region001, length = 10mm)
+sketch002 = sketch(on = XY) {
+  circle2 = circle(start = [4mm, 0mm], center = [0mm, 0mm])
+}
+region002 = region(point = [0mm, 0mm], sketch = sketch002)
+extrude002 = extrude(region002, length = 10mm)
+part = subtract(extrude001, tools = extrude002)`
+    const { ast, artifactGraph } = await setup(code)
+    const tool = [...artifactGraph.values()].findLast(
+      (artifact) => artifact.type === 'sweep'
+    )
+    const part = [...artifactGraph.values()].find(
+      (artifact) => artifact.type === 'compositeSolid'
+    )
+    if (tool?.type !== 'sweep' || !part) throw new Error('Missing Boolean body')
+    const faces = tool.surfaceIds.map((id) => artifactGraph.get(id))
+    const wall = faces.find((face) => face?.type === 'wall')
+    const cap = faces.find(
+      (face) => face?.type === 'cap' && face.subType === 'end'
+    )
+    if (!wall || !cap) throw new Error('Missing tool faces')
+    const result = addPlanarSurface({
+      ast,
+      artifactGraph,
+      curves: {
+        graphSelections: [
+          {
+            entityRef: { type: 'edge', side_faces: [wall.id, cap.id] },
+            engineTopologyFallback: { parentId: part.id, primitiveIndex: 0 },
+          },
+        ],
+        otherSelections: [],
+      },
+      wasmInstance: instanceInThisFile,
+    })
+    if (err(result)) throw result
+    const newCode = recast(result.modifiedAst, instanceInThisFile)
+    expect(newCode).toContain('planarSurface([edgeId(part, index = 0)])')
+    expect(newCode).not.toContain('part.sketch.tags.circle2')
     expect(
       await mockExecAstAndReportErrors(
         result.modifiedAst,
@@ -942,16 +1180,20 @@ surface001 = planarSurface([edge001])`
       )
       if (!surface || surface.type !== 'sweep')
         throw new Error('Missing surface')
-      const edge = [...artifactGraph.values()].find((artifact) =>
-        edgeType === 'base'
-          ? artifact.type === 'segment' && artifact.pathId === surface.pathId
-          : artifact.type === 'sweepEdge' && artifact.subType === 'opposite'
+      const base = [...artifactGraph.values()].find(
+        (artifact) =>
+          artifact.type === 'segment' && artifact.pathId === surface.pathId
       )
-      if (!edge) throw new Error('Missing surface edge')
+      if (!base) throw new Error('Missing base surface edge')
+      const edge =
+        edgeType === 'base'
+          ? createSelectionFromArtifacts([base], artifactGraph)
+              .graphSelections[0]
+          : await oppositeEdgeSelection(artifactGraph, surface)
       const result = addPlanarSurface({
         ast,
         artifactGraph,
-        curves: createSelectionFromArtifacts([edge], artifactGraph),
+        curves: { graphSelections: [edge], otherSelections: [] },
         wasmInstance: instanceInThisFile,
       })
       if (err(result)) throw result
@@ -960,7 +1202,7 @@ surface001 = planarSurface([edge001])`
       const edgeExpr =
         edgeType === 'base'
           ? '%.sketch.tags.circle1'
-          : 'getOppositeEdge(%.sketch.tags.circle1)'
+          : topologyEdgeExpression(edge, '%')
       expect(newCode).toContain(
         `${surfaceCode}\n  |> planarSurface([${edgeExpr}])`
       )
@@ -980,15 +1222,18 @@ second = extrude(sketch001.line2, length = 5mm, bodyType = SURFACE)
 third = extrude(sketch001.line3, length = 5mm, bodyType = SURFACE)`
     const { ast, artifactGraph } = await setup(code)
     expect(kclManagerInThisFile.errors).toEqual([])
-    const edges = [...artifactGraph.values()].filter(
-      (artifact) =>
-        artifact.type === 'sweepEdge' && artifact.subType === 'opposite'
+    const surfaces = [...artifactGraph.values()].filter(
+      (artifact): artifact is Extract<Artifact, { type: 'sweep' }> =>
+        artifact.type === 'sweep'
     )
+    const edges: Selection[] = []
+    for (const surface of surfaces)
+      edges.push(await oppositeEdgeSelection(artifactGraph, surface))
     expect(edges).toHaveLength(3)
     const result = addPlanarSurface({
       ast,
       artifactGraph,
-      curves: createSelectionFromArtifacts(edges, artifactGraph),
+      curves: { graphSelections: edges, otherSelections: [] },
       wasmInstance: instanceInThisFile,
     })
     expect(result).toEqual(
@@ -1007,11 +1252,7 @@ third = extrude(sketch001.line3, length = 5mm, bodyType = SURFACE)`
       const { ast, artifactGraph } = await setup(`${circle}
 extrude(sketch001.circle1, length = 5mm, bodyType = SURFACE)
 laterTolerance = 0.01mm`)
-      const edge = [...artifactGraph.values()].find(
-        (artifact) =>
-          artifact.type === 'sweepEdge' && artifact.subType === 'opposite'
-      )
-      if (!edge) throw new Error('Missing surface edge')
+      const edge = await oppositeEdgeSelection(artifactGraph)
       const value = await getKclCommandValue(
         '0.01mm',
         instanceInThisFile,
@@ -1037,7 +1278,7 @@ laterTolerance = 0.01mm`)
       const result = addPlanarSurface({
         ast,
         artifactGraph,
-        curves: createSelectionFromArtifacts([edge], artifactGraph),
+        curves: { graphSelections: [edge], otherSelections: [] },
         tolerance,
         wasmInstance: instanceInThisFile,
       })
@@ -1101,16 +1342,19 @@ profile001 = circle(sketch001, center = [0, 0], radius = 10${tagArg})
 extrude001 = extrude(profile001, length = 5, bodyType = SURFACE)
   |> translate(x = 25mm)`)
       expect(kclManagerInThisFile.errors).toEqual([])
-      const edge = [...artifactGraph.values()].find((artifact) =>
-        edgeType === 'base'
-          ? artifact.type === 'segment'
-          : artifact.type === 'sweepEdge' && artifact.subType === 'opposite'
+      const base = [...artifactGraph.values()].find(
+        (artifact) => artifact.type === 'segment'
       )
-      if (!edge) throw new Error('Missing surface edge')
+      if (!base) throw new Error('Missing base edge')
+      const edge =
+        edgeType === 'base'
+          ? createSelectionFromArtifacts([base], artifactGraph)
+              .graphSelections[0]
+          : await oppositeEdgeSelection(artifactGraph)
       const result = addPlanarSurface({
         ast,
         artifactGraph,
-        curves: createSelectionFromArtifacts([edge], artifactGraph),
+        curves: { graphSelections: [edge], otherSelections: [] },
         wasmInstance: instanceInThisFile,
       })
       if (err(result)) throw result
@@ -1119,8 +1363,8 @@ extrude001 = extrude(profile001, length = 5, bodyType = SURFACE)
       const tagName = tagArg ? 'profileEdge' : 'seg01'
       const tagExpr = `extrude001.sketch.tags.${tagName}`
       const edgeExpr =
-        edgeType === 'base' ? tagExpr : `getOppositeEdge(${tagExpr})`
-      expect(newCode).toContain(`tag = $${tagName}`)
+        edgeType === 'base' ? tagExpr : topologyEdgeExpression(edge)
+      if (edgeType === 'base') expect(newCode).toContain(`tag = $${tagName}`)
       expect(newCode).toContain(
         recast(
           assertParse(

@@ -16,7 +16,8 @@ import {
 } from '@src/lib/constants'
 import type { HotkeySequence } from '@src/lib/hotkeys'
 import { isDesktop } from '@src/lib/isDesktop'
-import { getSelectedDefaultPlane, selectSketchPlane } from '@src/lib/selections'
+import { selectSketchPlane } from '@src/lib/selectSketchPlane'
+import { getSelectedDefaultPlane } from '@src/lib/selections'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import type { modelingMachine } from '@src/machines/modelingMachine'
@@ -34,7 +35,7 @@ import {
   MODE_SKETCH_SOLVE_KEYMAP_SCOPE,
   MODE_SKETCHING_KEYMAP_SCOPE,
 } from '@src/registry/contracts/keymap'
-import { TOOLBAR_COMMAND_IDS } from '@src/registry/extensions/commands/toolbarCommands'
+import { TOOLBAR_COMMAND_IDS } from '@src/registry/extensions/commands/toolbarCommandIds'
 import { useMemo } from 'react'
 import type { EventFrom, StateFrom } from 'xstate'
 
@@ -511,7 +512,10 @@ export function isLegacySketchEditRequest({
 >): boolean {
   return (
     Boolean(editorHasFocus && sketchPathId) &&
-    !isSketchBlockSelected(modelingState.context.selectionRanges)
+    !isSketchBlockSelected(
+      modelingState.context.selectionRanges,
+      modelingState.context.kclManager.artifactGraph
+    )
   )
 }
 
@@ -588,7 +592,8 @@ export function buildToolbarConfig(
               editorHasFocus,
             } = props
             const isSketchBlock = isSketchBlockSelected(
-              modelingState.context.selectionRanges
+              modelingState.context.selectionRanges,
+              modelingState.context.kclManager.artifactGraph
             )
             const selectedSketchTarget =
               getSelectedSketchTarget(modelingState.context.selectionRanges)
@@ -636,7 +641,8 @@ export function buildToolbarConfig(
               : undefined,
           title: ({ editorHasFocus, sketchPathId, modelingState }) => {
             const isSketchBlock = isSketchBlockSelected(
-              modelingState.context.selectionRanges
+              modelingState.context.selectionRanges,
+              modelingState.context.kclManager.artifactGraph
             )
 
             if ((editorHasFocus && sketchPathId) || isSketchBlock) {
@@ -647,7 +653,8 @@ export function buildToolbarConfig(
           },
           tooltipTitle: ({ editorHasFocus, sketchPathId, modelingState }) => {
             const isSketchBlock = isSketchBlockSelected(
-              modelingState.context.selectionRanges
+              modelingState.context.selectionRanges,
+              modelingState.context.kclManager.artifactGraph
             )
 
             if ((editorHasFocus && sketchPathId) || isSketchBlock) {

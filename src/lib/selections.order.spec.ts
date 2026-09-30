@@ -14,6 +14,7 @@ import { describe, expect, it } from 'vitest'
 const empty: Selections = { graphSelections: [], otherSelections: [] }
 const graph = (id: string): Selection => ({
   engineEntityId: id,
+  entityRef: { type: 'solid2d_edge', edge_id: id },
   codeRef: { range: [1, 2, 0], pathToNode: [] },
 })
 const primitive = (id: string): EnginePrimitiveSelection => ({
@@ -120,7 +121,7 @@ describe('mixed selection order', () => {
     ).toEqual(['a', 'c', 'b'])
   })
 
-  it('distinguishes engine entities sharing the same code range', () => {
+  it('uses engine and entity reference identities instead of shared or missing code ranges', () => {
     const previous = reconcileSelectionOrder(empty, {
       graphSelections: [graph('copy1')],
       otherSelections: [primitive('b')],
@@ -130,5 +131,31 @@ describe('mixed selection order', () => {
       graphSelections: [...previous.graphSelections, graph('copy2')],
     })
     expect(ids(next)).toEqual(['copy1', 'b', 'copy2'])
+
+    const referenceOnly: Selection = {
+      entityRef: { type: 'edge', side_faces: ['front', 'back'] },
+    }
+    const mixed = reconcileSelectionOrder(empty, {
+      graphSelections: [referenceOnly],
+      otherSelections: [primitive('b')],
+    })
+    const rebuilt: Selection = {
+      entityRef: { type: 'edge', side_faces: ['back', 'front'] },
+    }
+    const reconciled = reconcileSelectionOrder(mixed, {
+      graphSelections: [graph('new'), rebuilt],
+      otherSelections: mixed.otherSelections,
+    })
+    expect(
+      getOrderedGraphAndPrimitiveSelections(reconciled).map((selection) =>
+        'type' in selection
+          ? selection.entityId
+          : (selection.engineEntityId ?? selection.entityRef)
+      )
+    ).toEqual([rebuilt.entityRef, 'b', 'new'])
+    expect(referenceOnly.entityRef).toEqual({
+      type: 'edge',
+      side_faces: ['front', 'back'],
+    })
   })
 })

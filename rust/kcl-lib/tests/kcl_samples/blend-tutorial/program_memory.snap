@@ -141,6 +141,12 @@ description: Variables in memory after executing blend-tutorial.kcl
           "type": "extrudePlane"
         }
       ],
+      "faces": {
+        "line1": {
+          "type": "TagIdentifier",
+          "value": "line1"
+        }
+      },
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
@@ -259,6 +265,12 @@ description: Variables in memory after executing blend-tutorial.kcl
           "type": "extrudePlane"
         }
       ],
+      "faces": {
+        "line1": {
+          "type": "TagIdentifier",
+          "value": "line1"
+        }
+      },
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
@@ -377,6 +389,12 @@ description: Variables in memory after executing blend-tutorial.kcl
           "type": "extrudePlane"
         }
       ],
+      "faces": {
+        "line1": {
+          "type": "TagIdentifier",
+          "value": "line1"
+        }
+      },
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
@@ -1462,6 +1480,12 @@ description: Variables in memory after executing blend-tutorial.kcl
               "type": "extrudePlane"
             }
           ],
+          "faces": {
+            "line1": {
+              "type": "TagIdentifier",
+              "value": "line1"
+            }
+          },
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
@@ -1580,6 +1604,12 @@ description: Variables in memory after executing blend-tutorial.kcl
               "type": "extrudePlane"
             }
           ],
+          "faces": {
+            "line1": {
+              "type": "TagIdentifier",
+              "value": "line1"
+            }
+          },
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",

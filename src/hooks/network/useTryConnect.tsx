@@ -1,5 +1,7 @@
+import type { KclVersion } from '@rust/kcl-lib/bindings/KclVersion'
 import type { useAppState } from '@src/AppState'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
+import { getKclLanguageVersion } from '@src/lang/kclLanguageVersion'
 import type { KclManager } from '@src/lang/KclManager'
 import { useSingletons } from '@src/lib/boot'
 import { ClientErrorCode, reportClientError } from '@src/lib/clientErrors'
@@ -15,7 +17,7 @@ import {
   getSettingsFromActorContext,
   jsAppSettings,
 } from '@src/lib/settings/settingsUtils'
-import { reportRejection } from '@src/lib/trap'
+import { isErr, reportRejection } from '@src/lib/trap'
 import type { SettingsActorType } from '@src/machines/settingsMachine'
 import { useRef } from 'react'
 
@@ -30,6 +32,7 @@ const attemptToConnectToEngine = async ({
   setIsSceneReady,
   timeToConnect,
   engineCommandManager,
+  kclVersion,
   rustContext,
 }: {
   authToken: string
@@ -39,6 +42,7 @@ const attemptToConnectToEngine = async ({
   setIsSceneReady: React.Dispatch<React.SetStateAction<boolean>>
   timeToConnect: number
   engineCommandManager: ConnectionManager
+  kclVersion?: KclVersion
   rustContext: RustContext
 }) => {
   const codecError = await preflightEngineVideoCodecSupport()
@@ -91,6 +95,7 @@ const attemptToConnectToEngine = async ({
             setAppState({ isStreamReady: true })
           },
           rustContext,
+          kclVersion,
         })
 
         if (!videoRef.current) {
@@ -255,6 +260,8 @@ export async function tryConnecting({
           numberOfConnectionAttempts.current + 1
 
         try {
+          const instance = await rustContext.wasmInstancePromise
+          const kclVersion = getKclLanguageVersion(kclManager.code, instance)
           // Has a time to connect window, if it does not connect, it will go to the next attempt
           await attemptToConnectToEngine({
             authToken: authToken,
@@ -264,6 +271,8 @@ export async function tryConnecting({
             setIsSceneReady,
             timeToConnect,
             engineCommandManager,
+            // Invalid source can still connect; execution reports its diagnostics.
+            kclVersion: isErr(kclVersion) ? undefined : kclVersion,
             rustContext,
           })
 
