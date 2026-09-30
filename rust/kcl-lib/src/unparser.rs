@@ -1132,7 +1132,7 @@ impl MemberExpression {
 }
 
 impl BinaryExpression {
-    fn recast(&self, buf: &mut String, options: &FormatOptions, _indentation_level: usize, ctxt: ExprContext) {
+    fn recast(&self, buf: &mut String, options: &FormatOptions, indentation_level: usize, ctxt: ExprContext) {
         let maybe_wrap_it = |a: String, doit: bool| -> String { if doit { format!("({a})") } else { a } };
 
         // It would be better to always preserve the user's parentheses but since we've dropped that
@@ -1161,9 +1161,12 @@ impl BinaryExpression {
         };
 
         let mut left = String::new();
-        self.left.recast(&mut left, options, 0, ctxt);
+        self.left.recast(&mut left, options, indentation_level, ctxt);
         let mut right = String::new();
-        self.right.recast(&mut right, options, 0, ctxt);
+        self.right.recast(&mut right, options, indentation_level, ctxt);
+        // The enclosing expression supplies leading indentation; preserve indentation on subsequent lines.
+        let left = left.trim_start().to_owned();
+        let right = right.trim_start().to_owned();
         write!(
             buf,
             "{} {} {}",
@@ -4122,7 +4125,8 @@ sketch001 = sketch(on = XZ) {
     inverse = true,
     labelPosition = [137.6mm, 121.05mm],
   ) == 60deg
-}";
+}
+";
         let ast = crate::parsing::top_level_parse(input_code).unwrap();
         let actual = ast.recast_top(&FormatOptions::new(), 0);
         assert_eq!(expected, actual);
