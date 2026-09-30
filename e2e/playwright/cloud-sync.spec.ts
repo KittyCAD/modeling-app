@@ -214,7 +214,7 @@ test(
 )
 
 test(
-  'loads paginated remote-only projects into an empty local list and materializes opened clones',
+  'streams remote-only projects into an empty local list and materializes opened clones',
   { tag: ['@web'] },
   async ({ context, page }, testInfo) => {
     const remoteProjects: CloudProject[] = [
@@ -269,7 +269,6 @@ test(
     const { calls: apiCalls } = await routeCloudProjects(context, {
       remoteProjects,
       remoteListGate,
-      listPageSize: 2,
       brokenArchiveProjectIds: ['remote-empty-broken'],
     })
 
@@ -310,20 +309,20 @@ test(
       )
       .toBe(false)
 
-    await openHomeProject(page, 'Remote empty two')
+    await openHomeProject(page, 'Remote empty one')
     await expect
       .poll(() => apiCalls.downloads, { timeout: CLOUD_SYNC_E2E_TIMEOUT })
-      .toEqual(['remote-empty-two'])
+      .toEqual(['remote-empty-one'])
     await expectProjectFileRoute(page)
 
     const localFiles = await readOpfsTextFiles(page, {
-      remoteTwo: `${PROJECT_DIR}/remote-empty-two/main.kcl`,
-      remoteTwoToml: `${PROJECT_DIR}/remote-empty-two/project.toml`,
+      remoteOne: `${PROJECT_DIR}/remote-empty-one/main.kcl`,
+      remoteOneToml: `${PROJECT_DIR}/remote-empty-one/project.toml`,
     })
 
-    expect(localFiles.remoteTwo).toContain('remoteEmptyTwo = 1')
-    expect(localFiles.remoteTwoToml).toContain(
-      'project_id = "remote-empty-two"'
+    expect(localFiles.remoteOne).toContain('remoteEmptyOne = 1')
+    expect(localFiles.remoteOneToml).toContain(
+      'project_id = "remote-empty-one"'
     )
 
     const remoteListResponsesAfterMaterialization = apiCalls.remoteListResponses
@@ -333,10 +332,10 @@ test(
     await expectCloudSyncHomeReady(page)
     await expect
       .poll(() => projectTitles(page), { timeout: CLOUD_SYNC_E2E_TIMEOUT })
-      .toEqual(expect.arrayContaining(['Remote empty two']))
+      .toEqual(expect.arrayContaining(['Remote empty one']))
     await expect
       .poll(async () => (await projectTitles(page))[0])
-      .toBe('Remote empty two')
+      .toBe('Remote empty one')
     expect(apiCalls.remoteListResponses).toBe(
       remoteListResponsesAfterMaterialization
     )
