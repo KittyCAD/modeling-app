@@ -1232,7 +1232,7 @@ export function getEntityRefId(entityRef: EntityReference): string | undefined {
 }
 
 function sortedIds(ids: readonly string[] | undefined): string {
-  return ids?.toSorted().join(',')
+  return ids?.toSorted().join(',') || ''
 }
 
 /**
