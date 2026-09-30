@@ -1027,7 +1027,7 @@ export function createEdgeRefObjectExpression(
         'Not every face in the edge reference could be expressed without editing the file'
       )
     }
-    if (!programTextUnchanged(ast, currentAst, wasmInstance)) {
+    if (!programTextEqual(ast, currentAst, wasmInstance)) {
       return new Error('Edge reference would edit the file')
     }
   }
@@ -1039,7 +1039,7 @@ export function createEdgeRefObjectExpression(
   }
 }
 
-export function programTextUnchanged(
+export function programTextEqual(
   before: Node<Program>,
   after: Node<Program>,
   wasmInstance: ModuleType

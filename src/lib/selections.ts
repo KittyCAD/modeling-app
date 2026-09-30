@@ -39,7 +39,7 @@ import {
 import {
   createEdgeRefObjectExpression,
   entityReferenceToEdgeRefPayload,
-  programTextUnchanged,
+  programTextEqual,
 } from '@src/lang/modifyAst/edges'
 import { modifyAstWithTagsForSelection } from '@src/lang/modifyAst/tagManagement'
 import {
@@ -777,7 +777,12 @@ function createExistingFaceReferenceExpr(
   if (isErr(result) || result.exprs.length === 0) {
     return null
   }
-  if (!programTextUnchanged(kclManager.ast, result.modifiedAst, wasmInstance)) {
+  if (!programTextEqual(kclManager.ast, result.modifiedAst, wasmInstance)) {
+    return null
+  }
+  if (result.exprs.length !== 1) {
+    // modifyAstWithTagsForSelection can return multiple expressions since edges are made up of multiple tags
+    // but because we've already narrowed this down to a face we're only expecting 1
     return null
   }
 
