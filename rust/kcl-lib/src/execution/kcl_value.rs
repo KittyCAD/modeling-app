@@ -49,10 +49,10 @@ use crate::parsing::ast::types::BoxNode;
 use crate::parsing::ast::types::DefaultParamVal;
 use crate::parsing::ast::types::FunctionExpression;
 use crate::parsing::ast::types::KclNone;
+use crate::parsing::ast::types::KclValue;
 use crate::parsing::ast::types::Literal;
 use crate::parsing::ast::types::LiteralValue;
 use crate::parsing::ast::types::Node;
-use crate::parsing::ast::types::NumericLiteral;
 use crate::parsing::ast::types::TagDeclarator;
 use crate::parsing::ast::types::TagNode;
 use crate::parsing::ast::types::Type;
@@ -928,21 +928,19 @@ impl KclValue {
         }
     }
 
-    pub(crate) fn from_sketch_var_literal(
-        literal: &Node<NumericLiteral>,
+    pub(crate) fn from_sketch_var_kclvalue_number(
+        evaluated_number: KCLValue::Number,
         id: SketchVarId,
         node_path: Option<crate::NodePath>,
         exec_state: &ExecState,
     ) -> Self {
-        let meta = vec![literal.metadata()];
-        let ty = NumericType::from_parsed(literal.suffix, &exec_state.mod_local.settings);
         KclValue::SketchVar {
             value: Box::new(SketchVar {
                 id,
-                initial_value: literal.value,
+                initial_value: evaluated_number.value,
                 node_path,
-                meta,
-                ty,
+                meta: evaluated_number.meta,
+                ty: evaluated_number.ty,
             }),
         }
     }
