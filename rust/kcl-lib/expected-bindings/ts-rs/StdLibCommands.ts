@@ -1996,6 +1996,18 @@ export default {
         "removedIn": null
       },
       {
+        "name": "demoPointAndClickDrift",
+        "ty": "bool",
+        "docs": "Temporary argument used to demonstrate point-and-click drift detection.",
+        "required": false,
+        "special": false,
+        "experimental": false,
+        "addedIn": null,
+        "deprecated": false,
+        "deprecatedSince": null,
+        "removedIn": null
+      },
+      {
         "name": "bodyType",
         "ty": "string",
         "docs": "What type of body to produce (solid or surface). Defaults to \"solid\".",

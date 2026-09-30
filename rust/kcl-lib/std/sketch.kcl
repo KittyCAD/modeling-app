@@ -947,6 +947,8 @@ export fn extrude(
   /// Whether or not to hide the seams between the original and resulting object.
   /// Only used if a face is extruded and method = MERGE
   hideSeams?: bool,
+  /// Temporary argument used to demonstrate point-and-click drift detection.
+  demoPointAndClickDrift?: bool,
   /// What type of body to produce (solid or surface).
   /// Defaults to "solid".
   bodyType?: string = "solid",
