@@ -30,6 +30,7 @@ import type { SaveSettingsPayload } from '@src/lib/settings/settingsTypes'
 import {
   getAllCurrentSettings,
   jsAppSettings,
+  watchSettingsFileWhileIdle,
 } from '@src/lib/settings/settingsUtils'
 import { reportRejection } from '@src/lib/trap'
 import { uuidv4 } from '@src/lib/utils'
@@ -279,6 +280,14 @@ export class App implements AppSubsystems {
     )
     void this.wasmPromise
       .then(this.setActiveWasmInstance)
+      .then(async () => {
+        // Subscribe to user settings file changes while the settings actor is idle
+        // for the duration of the App's life.
+        this.settings
+          .userFilePath()
+          .then((path) => watchSettingsFileWhileIdle(this.settings.actor, path))
+          .catch(reportRejection)
+      })
       .catch(reportRejection)
     this.syncUserFeaturesFromAuth(this.auth.actor.getSnapshot())
 
@@ -385,6 +394,8 @@ export class App implements AppSubsystems {
     }
   }
 
+  private unsubscribeSystemIO: Subscription | undefined
+
   async openProject(
     projectIORef: Project,
     assertCurrent: () => void = () => {}
@@ -458,7 +469,8 @@ export class App implements AppSubsystems {
 
     // TODO: Rework the systemIOActor to fit into the system better,
     // so that the project doesn't need to subscribe to it.
-    this.systemIOActor.subscribe(({ context }) => {
+    this.unsubscribeSystemIO?.unsubscribe()
+    this.unsubscribeSystemIO = this.systemIOActor.subscribe(({ context }) => {
       const foundProject = (context.folders ?? []).find(
         (p) =>
           p.name === projectIORefSignal.value.name &&
@@ -480,6 +492,7 @@ export class App implements AppSubsystems {
     this.lastSettings = getAllCurrentSettings(
       getOnlySettingsFromContext(this.settings.actor.getSnapshot().context)
     )
+    this.unsubscribeFromSettings?.unsubscribe()
     this.unsubscribeFromSettings = this.settings.actor.subscribe(
       this.onSettingsUpdate
     )
@@ -520,6 +533,8 @@ export class App implements AppSubsystems {
     this.disposeProjectHistoryExtensions = undefined
     this.unsubscribeFromSettings?.unsubscribe()
     this.unsubscribeFromSettings = undefined
+    this.unsubscribeSystemIO?.unsubscribe()
+    this.unsubscribeSystemIO = undefined
     this.setCloudSyncOpenedProject(undefined)
     this.project?.close()
     this.project = undefined

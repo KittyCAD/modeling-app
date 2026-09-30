@@ -18,6 +18,7 @@ export type SettingsRegistryService = {
   get: () => SettingsType
   send: SettingsActorType['send']
   useSettings: () => SettingsType
+  userFilePath: () => Promise<string>
 }
 
 /**
