@@ -62,7 +62,7 @@ test.describe('Face API edge selection', { tag: '@web' }, () => {
     await homePage.goToModelingScene()
     await scene.settled()
     await page.waitForTimeout(500)
-    editor.replaceCode('', testCode)
+    await editor.replaceCode('', testCode)
     await editor.expectEditor.toContain('solid001 = subtract')
 
     // Set camera so that we can select what we need to.
