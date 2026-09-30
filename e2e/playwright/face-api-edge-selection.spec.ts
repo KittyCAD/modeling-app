@@ -76,7 +76,7 @@ test.describe('Face API edge selection', { tag: '@web' }, () => {
       const [clickProfile] = scene.makeMouseHelpers(0.49, 0.79, {
         format: 'ratio',
       })
-      const [clickEdge, mv] = scene.makeMouseHelpers(0.1999, 0.4151, {
+      const [clickEdge, mv] = scene.makeMouseHelpers(0.0625, 0.422, {
         format: 'ratio',
         steps: 5,
       })
@@ -159,7 +159,7 @@ test.describe('Face API edge selection', { tag: '@web' }, () => {
       const [clickProfile2] = scene.makeMouseHelpers(0.3816, 0.4, {
         format: 'ratio',
       })
-      const [clickEdge2] = scene.makeMouseHelpers(0.4809, 0.8303, {
+      const [clickEdge2] = scene.makeMouseHelpers(0.6748, 0.6455, {
         format: 'ratio',
       })
 
