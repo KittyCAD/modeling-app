@@ -339,7 +339,7 @@ lazy_static::lazy_static! {
     };
 }
 
-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug, PartialEq, Serialize)]
 pub struct Program {
     pub kcl_version: KclVersion,
     #[serde(flatten)]
@@ -349,6 +349,33 @@ pub struct Program {
     // Because in the case of the root file, we don't want to read the file from disk again.
     #[serde(skip)]
     pub original_file_contents: String,
+}
+
+impl<'de> Deserialize<'de> for Program {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        #[derive(Deserialize)]
+        struct ProgramHelper {
+            kcl_version: Option<KclVersion>,
+            #[serde(flatten)]
+            ast: parsing::ast::types::Node<parsing::ast::types::Program>,
+        }
+
+        let program = ProgramHelper::deserialize(deserializer)?;
+        // TypeScript ASTs can omit this field. Share Rust's version resolution
+        // so annotations and the default are interpreted consistently.
+        let kcl_version = program
+            .kcl_version
+            .unwrap_or_else(|| execution::computed_kcl_version(&program.ast));
+
+        Ok(Self {
+            kcl_version,
+            ast: program.ast,
+            original_file_contents: String::new(),
+        })
+    }
 }
 
 impl Program {
@@ -499,6 +526,44 @@ pub fn version() -> &'static str {
 #[cfg(test)]
 mod test {
     use super::*;
+
+    #[test]
+    fn program_deserializes_ast_without_kcl_version() {
+        for code in [
+            "",
+            "x = 1\n",
+            "@settings(defaultLengthUnit = mm)\nx = 1\n",
+            "@settings(kclVersion = 1.0)\nx = 1\n",
+            "@settings(kclVersion = 2.0)\nx = 1\n",
+            "@settings(kclVersion = \"3.0-preview\")\nx = 1\n",
+            "@settings(kclVersion = \"3-preview\")\nx = 1\n",
+            "@settings(kclVersion = 2.0)\n@settings(kclVersion = \"3.0-preview\")\nx = 1\n",
+            "@settings(kclVersion = \"3.0-preview\")\n@settings(kclVersion = 2.0)\nx = 1\n",
+            "@settings(kclVersion = 2.0)\n@settings(defaultLengthUnit = in)\nx = 1\n",
+            "@settings(kclVersion = 99.0)\nx = 1\n",
+        ] {
+            let parsed = Program::parse_no_errs(code).unwrap();
+            // TypeScript consumers construct ASTs without the wrapper's version field.
+            let json = serde_json::to_value(&parsed.ast).unwrap();
+            let deserialized: Program = serde_json::from_str(&json.to_string()).unwrap();
+
+            assert_eq!(deserialized.kcl_version, parsed.kcl_version, "{code}");
+            assert_eq!(deserialized.recast(), parsed.recast(), "{code}");
+        }
+    }
+
+    #[test]
+    fn program_deserialization_preserves_explicit_kcl_version() {
+        let mut program = Program::parse_no_errs("x = 1\n").unwrap();
+        program.kcl_version = KclVersion::V2;
+
+        let json = serde_json::to_value(&program).unwrap();
+        let deserialized: Program = serde_json::from_str(&json.to_string()).unwrap();
+
+        assert_eq!(deserialized.kcl_version, KclVersion::V2);
+        assert_eq!(deserialized.recast(), program.recast());
+        assert!(deserialized.original_file_contents.is_empty());
+    }
 
     #[test]
     fn entry_point_language_version() {
