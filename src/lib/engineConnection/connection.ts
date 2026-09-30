@@ -3,7 +3,6 @@ import type {
   WebSocketRequest,
   WebSocketResponse,
 } from '@kittycad/lib/dist/types/src'
-import type { KclVersion } from '@rust/kcl-lib/bindings/KclVersion'
 import { EngineDebugger } from '@src/lib/debugger'
 import {
   createOnConnectionStateChange,
@@ -117,7 +116,6 @@ export class Connection extends EventTarget {
     callbackOnUnitTestingConnection,
     unitTestWebrtc,
     unitTestPool,
-    unitTestKclVersion,
     handleMessage,
     getCloudProjectId,
   }: {
@@ -130,7 +128,6 @@ export class Connection extends EventTarget {
     callbackOnUnitTestingConnection?: (message: string) => void
     unitTestWebrtc?: boolean
     unitTestPool?: 'cpu'
-    unitTestKclVersion?: KclVersion
     handleMessage: (event: MessageEvent<any>) => void
     getCloudProjectId: () => string | undefined
   }) {
@@ -170,8 +167,7 @@ export class Connection extends EventTarget {
       this.connectUnitTesting(
         callbackOnUnitTestingConnection,
         unitTestWebrtc,
-        unitTestPool,
-        unitTestKclVersion
+        unitTestPool
       )
       this.isUsingUnitTestingConnection = true
     }
@@ -180,19 +176,14 @@ export class Connection extends EventTarget {
   connectUnitTesting(
     callback: (message: string) => void,
     webrtc = true,
-    pool?: 'cpu',
-    kclVersion?: KclVersion
+    pool?: 'cpu'
   ) {
     const webrtcQuery = webrtc ? '' : '&webrtc=false'
     // The API derives the engine's geometry_only setting from the CPU pool.
     const poolQuery = pool ? `&pool=${pool}` : ''
     const postEffectQuery = pool ? '' : '&post_effect=ssao'
-    const versionQuery =
-      kclVersion === undefined
-        ? ''
-        : `&kcl_version=${encodeURIComponent(kclVersion)}`
     const url = withKittycadWebSocketURL(
-      `?video_res_width=${256}&video_res_height=${256}${postEffectQuery}${webrtcQuery}${poolQuery}${versionQuery}`
+      `?video_res_width=${256}&video_res_height=${256}${postEffectQuery}${webrtcQuery}${poolQuery}`
     )
     this.websocket = new WebSocket(url, [])
     this.websocket.binaryType = 'arraybuffer'

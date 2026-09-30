@@ -18,7 +18,6 @@ body001 = extrude(region001, length = 5)`
 it('switches KCL versions in both directions on the same engine connection', async () => {
   const { instance, kclManager, engineCommandManager } =
     await buildTheWorldAndConnectToEngine({
-      code: codeForVersion('2.0'),
       webrtc: false,
       pool: 'cpu',
     })
@@ -26,8 +25,8 @@ it('switches KCL versions in both directions on the same engine connection', asy
     const connection = engineCommandManager.connection
     if (!connection?.websocket) throw new Error('Expected an engine WebSocket')
     expect(
-      new URL(connection.websocket.url).searchParams.get('kcl_version')
-    ).toBe('2.0')
+      new URL(connection.websocket.url).searchParams.has('kcl_version')
+    ).toBe(false)
 
     const send = vi.spyOn(connection, 'send')
     const versions: KclVersion[] = ['2.0', '3.0-preview', '2.0']
