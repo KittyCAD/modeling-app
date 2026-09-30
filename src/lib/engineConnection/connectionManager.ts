@@ -9,6 +9,7 @@ import {
 } from '@msgpack/msgpack'
 import { maybeHandleLocalSelectionCommand } from '@src/clientSideScene/localSelectionCommandProxy'
 import type { useModelingContext } from '@src/hooks/useModelingContext'
+import type { KclVersion } from '@rust/kcl-lib/bindings/KclVersion'
 import { defaultSourceRange } from '@src/lang/sourceRange'
 import type { EngineCommand, ResponseMap } from '@src/lang/std/artifactGraph'
 import type { CommandLog } from '@src/lang/std/commandLog'
@@ -196,6 +197,7 @@ export class ConnectionManager extends EventTarget {
     unitTestPool,
     rustContext,
     geometryOnly = false,
+    kclVersion,
   }: {
     width: number
     height: number
@@ -206,6 +208,7 @@ export class ConnectionManager extends EventTarget {
     unitTestPool?: 'cpu'
     rustContext?: RustContext
     geometryOnly?: boolean
+    kclVersion?: KclVersion
   }) {
     EngineDebugger.addLog({
       label: 'connectionManager',
@@ -244,7 +247,7 @@ export class ConnectionManager extends EventTarget {
 
     const handleMessage = this.createMessageHandler(rustContext)
 
-    const url = this.generateWebsocketURL(geometryOnly)
+    const url = this.generateWebsocketURL(geometryOnly, kclVersion)
     this.connection = new Connection({
       url,
       token,
@@ -256,6 +259,7 @@ export class ConnectionManager extends EventTarget {
       callbackOnUnitTestingConnection,
       unitTestWebrtc,
       unitTestPool,
+      unitTestKclVersion: kclVersion,
       handleMessage,
       getCloudProjectId: () =>
         this.systemDeps.settingsActor.getSnapshot().context.currentProject
@@ -397,19 +401,20 @@ export class ConnectionManager extends EventTarget {
 
   private dispatchUnreliableSubscribers(result: UnreliableResponses) {
     Object.values(this.unreliableSubscriptions[result.type] || {}).forEach(
-      // TODO: There is only one response that uses the unreliable channel atm,
-      // highlight_set_entity, if there are more it's likely they will all have the same
-      // sequence logic, but I'm not sure if we use a single global sequence or a sequence
-      // per unreliable subscription.
+      // Hover/highlight responses may arrive out of order on the unreliable
+      // channel. Only apply the newest sequenced result we have seen.
       (callback) => {
+        const sequence = (result.data as { sequence?: number } | undefined)
+          ?.sequence
         if (
           result.type === 'highlight_set_entity' &&
-          result?.data?.sequence &&
-          result?.data.sequence > this.inSequence
+          typeof sequence === 'number'
         ) {
-          this.inSequence = result.data.sequence
-          callback(result)
-        } else if (result.type !== 'highlight_set_entity') {
+          if (sequence > this.inSequence) {
+            this.inSequence = sequence
+            callback(result)
+          }
+        } else {
           callback(result)
         }
       }
@@ -425,14 +430,21 @@ export class ConnectionManager extends EventTarget {
     })
   }
 
-  generateWebsocketURL(geometryOnly = false) {
+  generateWebsocketURL(geometryOnly = false, kclVersion?: KclVersion) {
+    const versionQuery =
+      kclVersion === undefined
+        ? ''
+        : `&kcl_version=${encodeURIComponent(kclVersion)}`
     if (geometryOnly) {
-      return withKittycadWebSocketURL('?geometry_only=true&webrtc=false')
+      return withKittycadWebSocketURL(
+        `?geometry_only=true&webrtc=false${versionQuery}`
+      )
     }
     let additionalSettings = this.settings.enableSSAO ? '&post_effect=ssao' : ''
     additionalSettings +=
       '&show_grid=' + (this.settings.showScaleGrid ? 'true' : 'false')
     additionalSettings += '&webrtc=true'
+    additionalSettings += versionQuery
     const url = withKittycadWebSocketURL(
       `?video_res_width=${this.streamDimensions.width}&video_res_height=${this.streamDimensions.height}${additionalSettings}`
     )
@@ -1053,9 +1065,6 @@ export class ConnectionManager extends EventTarget {
       height: 256,
       setStreamIsReady: () => {
         console.warn('This is a NO OP. Should not be called in web.')
-      },
-      callbackOnUnitTestingConnection: () => {
-        console.log('what is happening, why is rust doing this!')
       },
     })
   }

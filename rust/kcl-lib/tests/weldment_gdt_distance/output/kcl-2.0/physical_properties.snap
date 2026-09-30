@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties weldment_gdt_distance.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": 5.9177410951815546,
+      "y": 4.019503628369421,
+      "z": 1.5046637407504022
+    },
+    "dimensions": {
+      "x": 11.835482190363107,
+      "y": 8.039007256738842,
+      "z": 3.0093274815008044
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 131.59628710823768
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 0.05425189782629301
+  }
+}

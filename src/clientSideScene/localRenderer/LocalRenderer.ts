@@ -20,6 +20,7 @@ import {
 import { SelectionHighlightRenderer } from '@src/clientSideScene/localRenderer/SelectionHighlightRenderer'
 import type { KclExecutionDoneDetail, KclManager } from '@src/lang/KclManager'
 import { KclManagerEvents } from '@src/lang/KclManager'
+import { artifactToEntityRef } from '@src/lang/queryAst'
 import { EngineDebugger } from '@src/lib/debugger'
 import { DprDetector } from '@src/lib/DprDetector'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
@@ -243,6 +244,22 @@ export class LocalRenderer {
     this.updatePlaneSelection()
   }
 
+  private getLocalEntityReference(entityId: string) {
+    if (this.planeRenderer?.planes.has(entityId)) {
+      return { type: 'plane' as const, plane_id: entityId }
+    }
+    const artifact = this.kclManager.artifactGraph.get(entityId)
+    if (!artifact) {
+      return undefined
+    }
+    const reference = artifactToEntityRef(
+      artifact.type,
+      entityId,
+      artifact.type === 'segment' ? artifact.pathId : undefined
+    )
+    return reference?.type === 'helix' ? undefined : reference
+  }
+
   private readonly handleLocalSelectionCommand: LocalSelectionCommandProvider['handleCommand'] =
     async (command, { streamDimensions }) => {
       if (command.type !== 'modeling_cmd_req') return null
@@ -255,9 +272,28 @@ export class LocalRenderer {
         // The modeling-machine selection is supplied by LocalWebGPUScene.
         return {}
       }
+      if (cmd.type === 'query_entity_type') {
+        const reference = this.getLocalEntityReference(cmd.entity_id)
+        if (!reference) return null
+        const response = {
+          type: 'query_entity_type',
+          data: { reference },
+        } satisfies Extract<OkModelingCmdResponse, { type: 'query_entity_type' }>
+        return {
+          websocketResponse: {
+            success: true,
+            request_id: command.cmd_id,
+            resp: {
+              type: 'modeling',
+              data: { modeling_response: response },
+            },
+          },
+        }
+      }
       if (
         cmd.type !== 'highlight_set_entity' &&
-        cmd.type !== 'select_with_point'
+        cmd.type !== 'select_with_point' &&
+        cmd.type !== 'query_entity_type_with_point'
       )
         return null
       const isHover = cmd.type === 'highlight_set_entity'
@@ -308,12 +344,25 @@ export class LocalRenderer {
           },
         }
       }
-      const response = {
-        type: 'select_with_point',
-        data: { entity_id: entityId ?? undefined },
-      } satisfies Extract<OkModelingCmdResponse, { type: 'select_with_point' }>
+      const response: OkModelingCmdResponse =
+        cmd.type === 'select_with_point'
+          ? ({
+              type: 'select_with_point',
+              data: { entity_id: entityId ?? undefined },
+            } satisfies Extract<OkModelingCmdResponse, { type: 'select_with_point' }>)
+          : {
+              type: 'query_entity_type_with_point',
+              data: {
+                reference: entityId
+                  ? this.getLocalEntityReference(entityId)
+                  : undefined,
+              },
+            } satisfies Extract<
+              OkModelingCmdResponse,
+              { type: 'query_entity_type_with_point' }
+            >
       return {
-        modelingResponse: response,
+        modelingResponse: { type: response.type, data: { ...response.data } },
         websocketResponse: {
           success: true,
           request_id: command.cmd_id,

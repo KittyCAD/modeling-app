@@ -6,6 +6,7 @@ import { defaultSourceRange } from '@src/lang/sourceRange'
 import { topLevelRange } from '@src/lang/util'
 import { loadAndInitialiseWasmInstance } from '@src/lang/wasmUtilsNode'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import type { Selections } from '@src/machines/modelingSharedTypes'
 const WASM_PATH = join(process.cwd(), 'public/kcl_wasm_lib_bg.wasm')
 
 import {
@@ -732,13 +733,15 @@ describe('operations.test.ts', () => {
 
       const argDefaultValues = result.data.argDefaultValues as {
         direction?: {
-          graphSelections: Array<{ artifact: Artifact }>
+          graphSelections: Array<{
+            entityRef?: { type: string; segment_id?: string }
+          }>
         }
       }
       expect(result.data.name).toBe('Extrude')
-      expect(argDefaultValues.direction?.graphSelections[0].artifact.id).toBe(
-        'segment-id'
-      )
+      expect(
+        argDefaultValues.direction?.graphSelections[0].entityRef?.segment_id
+      ).toBe('segment-id')
     })
 
     it('preserves sweep edge profiles and direction in the command defaults', async () => {
@@ -1053,6 +1056,177 @@ describe('operations.test.ts', () => {
   })
 
   describe('GDT edit flow', () => {
+    it.each(['gdt::straightness', 'gdt::distance'])(
+      'recovers mixed UUID, tagged, and Face API edges in order for %s',
+      async (operationName) => {
+        const { rustContext } = await buildTheWorldAndNoEngineConnection()
+        const code = `${operationName}(edges = edgeRefs, tolerance = 0.1mm)`
+        const operation = stdlib(operationName)
+        if (operation.type !== 'StdLibCall') {
+          throw new Error('Expected operation to be a StdLibCall')
+        }
+        const uuidEdge = segmentArtifact('uuid-edge-id')
+        const taggedEdge = segmentArtifact('tagged-edge-id')
+        const sideA = segmentArtifact('side-a-id')
+        const sideB = segmentArtifact('side-b-id')
+        operation.labeledArgs = {
+          edges: {
+            value: {
+              type: 'Array',
+              value: [
+                { type: 'Uuid', value: uuidEdge.id },
+                {
+                  type: 'Object',
+                  value: {
+                    sideFaces: {
+                      type: 'Array',
+                      value: [
+                        {
+                          type: 'TagIdentifier',
+                          value: 'sideA',
+                          artifact_id: sideA.id,
+                        },
+                        {
+                          type: 'TagIdentifier',
+                          value: 'sideB',
+                          artifact_id: sideB.id,
+                        },
+                      ],
+                    },
+                    endFaces: {
+                      type: 'Array',
+                      value: [
+                        {
+                          type: 'TagIdentifier',
+                          value: 'bound',
+                          artifact_id: 'bound-id',
+                        },
+                      ],
+                    },
+                    index: { type: 'Number', value: 1, ty: { type: 'Any' } },
+                  },
+                },
+                {
+                  type: 'TagIdentifier',
+                  value: 'taggedEdge',
+                  artifact_id: taggedEdge.id,
+                },
+              ],
+            },
+            sourceRange: rangeOfText(code, 'edgeRefs'),
+          },
+          tolerance: {
+            value: { type: 'Number', value: 0.1, ty: { type: 'Any' } },
+            sourceRange: rangeOfText(code, '0.1mm'),
+          },
+        }
+
+        const result = await enterEditFlow({
+          operation,
+          code,
+          artifactGraph: toArtifactGraph([uuidEdge, taggedEdge, sideA, sideB]),
+          rustContext,
+        })
+        if (isErr(result)) throw result
+        if (result.type !== 'Find and select command') {
+          throw new Error(`Expected edit flow event, got ${result.type}`)
+        }
+        const defaults = result.data.argDefaultValues as {
+          objects?: Selections
+        }
+        expect(
+          defaults.objects?.graphSelections.map(
+            (selection) => selection.entityRef
+          )
+        ).toEqual([
+          {
+            type: 'segment',
+            path_id: uuidEdge.pathId,
+            segment_id: uuidEdge.id,
+          },
+          {
+            type: 'edge',
+            side_faces: [sideA.id, sideB.id],
+            end_faces: ['bound-id'],
+            index: 1,
+          },
+          {
+            type: 'segment',
+            path_id: taggedEdge.pathId,
+            segment_id: taggedEdge.id,
+          },
+        ])
+      }
+    )
+
+    it.each([false, true])(
+      'recovers mixed Distance endpoints in order (Face API edge first: %s)',
+      async (edgeFirst) => {
+        const { rustContext } = await buildTheWorldAndNoEngineConnection()
+        const code =
+          'gdt::distance(from = first, to = second, tolerance = 0.1mm)'
+        const operation = stdlib('gdt::distance')
+        if (operation.type !== 'StdLibCall') {
+          throw new Error('Expected operation to be a StdLibCall')
+        }
+        const face = capArtifact('cap-id', 'sweep-id')
+        const path = pathArtifact('path-id')
+        const sweep = sweepArtifact('sweep-id', 'path-id')
+        const side = segmentArtifact('side-id')
+        const faceValue: OpKclValue = { type: 'Face', artifact_id: face.id }
+        const edgeValue: OpKclValue = {
+          type: 'Object',
+          value: {
+            sideFaces: {
+              type: 'Array',
+              value: [
+                { type: 'TagIdentifier', value: 'side', artifact_id: side.id },
+                { type: 'TagIdentifier', value: 'cap', artifact_id: face.id },
+              ],
+            },
+          },
+        }
+        operation.labeledArgs = {
+          from: {
+            value: edgeFirst ? edgeValue : faceValue,
+            sourceRange: rangeOfText(code, 'first'),
+          },
+          to: {
+            value: edgeFirst ? faceValue : edgeValue,
+            sourceRange: rangeOfText(code, 'second'),
+          },
+          tolerance: {
+            value: { type: 'Number', value: 0.1, ty: { type: 'Any' } },
+            sourceRange: rangeOfText(code, '0.1mm'),
+          },
+        }
+
+        const result = await enterEditFlow({
+          operation,
+          code,
+          artifactGraph: toArtifactGraph([face, path, sweep, side]),
+          rustContext,
+        })
+        if (isErr(result)) throw result
+        if (result.type !== 'Find and select command') {
+          throw new Error(`Expected edit flow event, got ${result.type}`)
+        }
+        const defaults = result.data.argDefaultValues as {
+          objects?: Selections
+        }
+        const faceSelection = expect.objectContaining({ artifact: face })
+        const edgeSelection = {
+          entityRef: { type: 'edge', side_faces: [side.id, face.id] },
+          codeRef: side.codeRef,
+        }
+        expect(defaults.objects?.graphSelections).toEqual(
+          edgeFirst
+            ? [edgeSelection, faceSelection]
+            : [faceSelection, edgeSelection]
+        )
+      }
+    )
+
     it('continues when geometry selections cannot be retrieved', async () => {
       const { rustContext } = await buildTheWorldAndNoEngineConnection()
       const code = 'gdt::straightness(faces = [missingFace], tolerance = 0.1mm)'

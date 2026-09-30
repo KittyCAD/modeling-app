@@ -182,7 +182,7 @@ describe('local GLB loading', () => {
           cmd_id: 'pick-request',
           cmd: click
             ? {
-                type: 'select_with_point',
+                type: 'query_entity_type_with_point',
                 selected_at_window: { x: 10, y: 20 },
                 selection_type: 'add',
               }
@@ -218,12 +218,31 @@ describe('local GLB loading', () => {
       expect(f.highlights.setHover).toHaveBeenLastCalledWith(f.target)
       const result = await f.pick(true)
       expect(result?.modelingResponse).toEqual({
-        type: 'select_with_point',
-        data: { entity_id: id },
+        type: 'query_entity_type_with_point',
+        data: { reference: { type: 'plane', plane_id: id } },
       })
       expect(result?.websocketResponse).toMatchObject({
         success: true,
         request_id: 'pick-request',
+      })
+      const hoverReference = await f.state.handleLocalSelectionCommand(
+        {
+          type: 'modeling_cmd_req',
+          cmd_id: 'hover-reference',
+          cmd: { type: 'query_entity_type', entity_id: id },
+        },
+        { streamDimensions: { width: 800, height: 600 } }
+      )
+      expect(hoverReference?.websocketResponse).toMatchObject({
+        success: true,
+        resp: {
+          data: {
+            modeling_response: {
+              type: 'query_entity_type',
+              data: { reference: { type: 'plane', plane_id: id } },
+            },
+          },
+        },
       })
       f.renderer.setSelectedPlane(id)
       expect(f.highlights.setSelection).toHaveBeenLastCalledWith([f.target])
@@ -362,8 +381,8 @@ describe('local GLB loading', () => {
       diagnostics: { stale: false },
     })
     expect((await f.pick(true))?.modelingResponse).toEqual({
-      type: 'select_with_point',
-      data: { entity_id: undefined },
+      type: 'query_entity_type_with_point',
+      data: { reference: undefined },
     })
     f.renderer.dispose()
   })

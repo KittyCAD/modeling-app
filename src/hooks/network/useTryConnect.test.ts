@@ -1,3 +1,4 @@
+import type { KclVersion } from '@rust/kcl-lib/bindings/KclVersion'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import { tryConnecting, useTryConnect } from '@src/hooks/network/useTryConnect'
 import { useSingletons } from '@src/lib/boot'
@@ -5,6 +6,7 @@ import { reapplyActiveViewAfterReconnect } from '@src/lib/kclNamedViewActivation
 import { resetCameraPosition } from '@src/lib/resetCameraPosition'
 import { renderHook } from '@testing-library/react'
 import type { KclManager } from '@src/lang/KclManager'
+import { getKclLanguageVersion } from '@src/lang/kclLanguageVersion'
 import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 import {
   type EngineConnectionError,
@@ -19,6 +21,9 @@ vi.mock('@src/lib/boot', () => ({ useSingletons: vi.fn() }))
 vi.mock('@src/lib/engineConnection/videoCodecSupport', () => ({
   preflightEngineVideoCodecSupport: vi.fn(),
 }))
+vi.mock('@src/lang/kclLanguageVersion', () => ({
+  getKclLanguageVersion: vi.fn(),
+}))
 vi.mock('@src/lib/kclNamedViewActivation', () => ({
   reapplyActiveViewAfterReconnect: vi.fn(),
 }))
@@ -29,11 +34,15 @@ vi.mock('@src/lib/settings/settingsUtils', () => ({
   getSettingsFromActorContext: vi.fn(),
   jsAppSettings: vi.fn(),
 }))
-vi.mock('@src/lib/trap', () => ({ reportRejection: vi.fn() }))
+vi.mock(import('@src/lib/trap'), async (importOriginal) => ({
+  ...(await importOriginal()),
+  reportRejection: vi.fn(),
+}))
 
 describe('tryConnecting', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    vi.mocked(getKclLanguageVersion).mockReturnValue('2.0')
   })
 
   it('uses the latest requested mode and restores camera setup on reconnect', async () => {
@@ -50,10 +59,12 @@ describe('tryConnecting', () => {
     }
     const rustContext = {
       clearSceneAndBustCache: vi.fn().mockResolvedValue(undefined),
+      wasmInstancePromise: Promise.resolve({}),
     }
     const kclManager = {
       engineCommandManager: manager,
       rustContext,
+      code: 'kclVersion 2.0',
       executeCode: vi.fn().mockResolvedValue(undefined),
     }
     vi.mocked(useSingletons).mockReturnValue({
@@ -89,7 +100,7 @@ describe('tryConnecting', () => {
         })
       ).resolves.toBe('connected')
       expect(manager.start).toHaveBeenLastCalledWith(
-        expect.objectContaining({ geometryOnly })
+        expect.objectContaining({ geometryOnly, kclVersion: '2.0' })
       )
       expect(resetCameraPosition).toHaveBeenCalledTimes(geometryOnly ? 0 : 1)
       expect(reapplyActiveViewAfterReconnect).toHaveBeenCalledTimes(
@@ -100,6 +111,73 @@ describe('tryConnecting', () => {
     expect(kclManager.executeCode).toHaveBeenCalledTimes(3)
     expect(manager.tearDown).not.toHaveBeenCalled()
     unmount()
+  })
+
+  it.each<{
+    source: string
+    version: KclVersion | Error
+    expectedVersion: KclVersion | undefined
+  }>([
+    { source: 'valid', version: '2.0', expectedVersion: '2.0' },
+    {
+      source: 'invalid',
+      version: new Error('Invalid KCL version'),
+      expectedVersion: undefined,
+    },
+  ])('stops terminal retries with $source source', async (testCase) => {
+    vi.mocked(getKclLanguageVersion).mockReturnValue(testCase.version)
+    const connectionError: EngineConnectionError = {
+      kind: EngineConnectionErrorKind.BackendDisconnect,
+      message: 'backend disconnected',
+      terminal: true,
+    }
+    const manager = {
+      started: false,
+      connection: undefined,
+      lastConnectionError: undefined as EngineConnectionError | undefined,
+      start: vi.fn(async () => {
+        manager.lastConnectionError = connectionError
+        throw new Error('connection failed')
+      }),
+      tearDown: vi.fn(),
+    }
+    const setShowManualConnect = vi.fn()
+    const numberOfConnectionAttempts = { current: 0 }
+
+    await expect(
+      tryConnecting({
+        abnormalCloseRetries: { current: 0 },
+        isConnecting: { current: false },
+        numberOfConnectionAttempts,
+        authToken: 'token',
+        videoWrapperRef: {
+          current: { clientWidth: 256, clientHeight: 256 } as HTMLDivElement,
+        },
+        setAppState: vi.fn(),
+        videoRef: { current: null },
+        setIsSceneReady: vi.fn(),
+        timeToConnect: 1_000,
+        settingsActor: {} as SettingsActorType,
+        setShowManualConnect,
+        sceneInfra: {} as SceneInfra,
+        engineCommandManager: manager as unknown as ConnectionManager,
+        kclManager: { code: 'test source' } as KclManager,
+        rustContext: {
+          wasmInstancePromise: Promise.resolve({}),
+        } as RustContext,
+      })
+    ).rejects.toEqual(connectionError)
+
+    expect(manager.start).toHaveBeenCalledOnce()
+    expect(manager.start).toHaveBeenCalledWith(
+      expect.objectContaining({
+        geometryOnly: false,
+        kclVersion: testCase.expectedVersion,
+      })
+    )
+    expect(manager.tearDown).not.toHaveBeenCalled()
+    expect(numberOfConnectionAttempts.current).toBe(0)
+    expect(setShowManualConnect).toHaveBeenCalledWith(true)
   })
 
   it.each([true, false])(
@@ -150,14 +228,16 @@ describe('tryConnecting', () => {
           setShowManualConnect,
           sceneInfra: {} as SceneInfra,
           engineCommandManager: manager as unknown as ConnectionManager,
-          kclManager: {} as KclManager,
-          rustContext: {} as RustContext,
+          kclManager: { code: 'kclVersion 2.0' } as KclManager,
+          rustContext: {
+            wasmInstancePromise: Promise.resolve({}),
+          } as RustContext,
         })
       ).rejects.toEqual(connectionError)
 
       expect(manager.start).toHaveBeenCalledOnce()
       expect(manager.start).toHaveBeenCalledWith(
-        expect.objectContaining({ geometryOnly })
+        expect.objectContaining({ geometryOnly, kclVersion: '2.0' })
       )
       expect(preflightEngineVideoCodecSupport).toHaveBeenCalledTimes(
         geometryOnly ? 0 : 1

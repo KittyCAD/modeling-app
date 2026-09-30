@@ -4,7 +4,8 @@ import { beforeEach, expect, test, vi } from 'vitest'
 import { useEngineConnectionSubscriptions } from '@src/hooks/useEngineConnectionSubscriptions'
 
 const useModelingContext = vi.hoisted(() => vi.fn())
-const getEventForSelectWithPoint = vi.hoisted(() => vi.fn())
+const getEventForQueryEntityTypeWithPoint = vi.hoisted(() => vi.fn())
+const normalizeEntityReference = vi.hoisted(() => vi.fn())
 const selectSketchPlane = vi.hoisted(() => vi.fn())
 
 vi.mock('@src/hooks/useModelingContext', () => ({ useModelingContext }))
@@ -16,9 +17,12 @@ vi.mock('@src/lib/boot', () => ({
   }),
 }))
 vi.mock('@src/lib/selections', () => ({
-  getEventForSelectWithPoint,
-  selectSketchPlane,
+  engineTopologyFallbackFromReference: vi.fn(() => null),
+  getEventForQueryEntityTypeWithPoint,
+  normalizeEntityReference,
+  showSketchOnImportForFace: vi.fn(() => false),
 }))
+vi.mock('@src/lib/selectSketchPlane', () => ({ selectSketchPlane }))
 
 beforeEach(() => {
   vi.clearAllMocks()
@@ -39,9 +43,12 @@ test('stores a post-selected primitive before starting a sketch', async () => {
     },
   }
   const engineEvent = {
-    type: 'select_with_point',
+    type: 'query_entity_type_with_point',
     data: {
-      entity_id: 'face-id',
+      reference: {
+        type: 'face',
+        face_id: 'face-id',
+      },
     },
   }
   const unsubscribe = vi.fn()
@@ -81,7 +88,8 @@ test('stores a post-selected primitive before starting a sketch', async () => {
       },
     },
   })
-  getEventForSelectWithPoint.mockResolvedValue(selectionEvent)
+  getEventForQueryEntityTypeWithPoint.mockResolvedValue(selectionEvent)
+  normalizeEntityReference.mockReturnValue(engineEvent.data.reference)
   selectSketchPlane.mockResolvedValue(undefined)
 
   const { unmount } = renderHook(() => useEngineConnectionSubscriptions())
@@ -101,5 +109,45 @@ test('stores a post-selected primitive before starting a sketch', async () => {
     selectSketchPlane.mock.invocationCallOrder[0]
   )
 
+  unmount()
+})
+
+test('does not overwrite sketch solve segment selection from an engine click', () => {
+  const callbacks = new Map<string, (event: unknown) => void>()
+  const unsubscribe = vi.fn()
+  const send = vi.fn()
+  useModelingContext.mockReturnValue({
+    send,
+    state: { matches: (state: string) => state === 'sketchSolveMode' },
+    context: {
+      engineCommandManager: {
+        subscribeTo: vi.fn(({ event, callback }) => {
+          callbacks.set(event, callback)
+          return unsubscribe
+        }),
+        subscribeToUnreliable: vi.fn(() => unsubscribe),
+      },
+      kclManager: {},
+      rustContext: { planesCreated: { add: vi.fn(() => unsubscribe) } },
+      wasmInstance: {},
+      store: { useSketchSolveMode: { current: true } },
+    },
+  })
+
+  const { unmount } = renderHook(() => useEngineConnectionSubscriptions())
+  act(() => {
+    callbacks.get('query_entity_type_with_point')?.({
+      type: 'query_entity_type_with_point',
+      data: {
+        reference: {
+          type: 'segment',
+          path_id: 'path-id',
+          segment_id: 'segment-id',
+        },
+      },
+    })
+  })
+  expect(getEventForQueryEntityTypeWithPoint).not.toHaveBeenCalled()
+  expect(send).not.toHaveBeenCalled()
   unmount()
 })

@@ -102,8 +102,9 @@ describe('ConnectionManager', () => {
 
     // The same manager can construct either kind of session after a mode change.
     for (const geometryOnly of [true, false, true]) {
-      const url = new URL(manager.generateWebsocketURL(geometryOnly))
+      const url = new URL(manager.generateWebsocketURL(geometryOnly, '2.0'))
       expect(url.searchParams.get('webrtc')).toBe(String(!geometryOnly))
+      expect(url.searchParams.get('kcl_version')).toBe('2.0')
       expect(url.searchParams.get('geometry_only')).toBe(
         geometryOnly ? 'true' : null
       )
