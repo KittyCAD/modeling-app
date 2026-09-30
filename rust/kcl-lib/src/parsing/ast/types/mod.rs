@@ -5491,6 +5491,47 @@ startSketchOn(XY)
         );
     }
 
+    #[test]
+    fn test_set_kcl_version_none_resets_existing_version_to_default() {
+        let mut program = parse(
+            r#"@settings(defaultLengthUnit = in, kclVersion = "3.0-preview")
+
+x = 1
+"#,
+        );
+
+        program.set_kcl_version(None).unwrap();
+
+        let meta_settings = program.meta_settings().unwrap().unwrap();
+        assert_eq!(meta_settings.kcl_version, KclVersion::default());
+        assert_eq!(meta_settings.default_length_units, UnitLength::Inches);
+        assert_eq!(
+            program.recast_top(&Default::default(), 0),
+            r#"@settings(defaultLengthUnit = in, kclVersion = 1.0)
+
+x = 1
+"#
+        );
+    }
+
+    #[test]
+    fn test_set_kcl_version_none_adds_default_version() {
+        let mut program = parse("x = 1");
+        assert!(program.meta_settings().unwrap().is_none());
+
+        program.set_kcl_version(None).unwrap();
+
+        let meta_settings = program.meta_settings().unwrap().unwrap();
+        assert_eq!(meta_settings.kcl_version, KclVersion::default());
+        assert_eq!(
+            program.recast_top(&Default::default(), 0),
+            r#"@settings(kclVersion = 1.0)
+
+x = 1
+"#
+        );
+    }
+
     #[tokio::test(flavor = "multi_thread")]
     async fn test_parse_get_meta_settings_rejects_unsupported_kcl_version() {
         let program = crate::parsing::top_level_parse(
