@@ -1112,9 +1112,9 @@ extrude001 = extrude(region001, length = -12)`
       oldValue: string,
       newValue: string
     ) {
-      await scene.waitForExecutionDoneAfter(() =>
-        toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
-      )
+      // await scene.waitForExecutionDoneAfter(async () =>
+      await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
+      // )
       const operationButton = await toolbar.getFeatureTreeOperation(
         'Fillet',
         featureTreeIndex
