@@ -73,7 +73,7 @@ test.describe('Face API edge selection', { tag: '@web' }, () => {
     )
 
     await test.step('First revolve: profile and edge using ratio clicks', async () => {
-      const [clickProfile] = scene.makeMouseHelpers(0.49, 0.79, {
+      const [clickProfile] = scene.makeMouseHelpers(0.4671, 0.75, {
         format: 'ratio',
       })
       const [clickEdge, mv] = scene.makeMouseHelpers(0.0625, 0.422, {
@@ -98,7 +98,9 @@ test.describe('Face API edge selection', { tag: '@web' }, () => {
       await cmdBar.expectState(state)
       await scene.settled()
 
+      await toolbar.expectSelection('No selection')
       await clickProfile()
+      await toolbar.expectSelection('1 profile')
 
       // Update state after profile selection
       state.currentArgKey = 'axisOrEdge'
@@ -116,8 +118,10 @@ test.describe('Face API edge selection', { tag: '@web' }, () => {
       await cmdBar.expectState(state)
 
       // select edge
+      await toolbar.expectSelection('1 profile')
       await mv()
       await clickEdge()
+      await toolbar.expectSelection('1 edge')
 
       // Update state after edge selection
       state.currentArgKey = 'angle'
@@ -184,7 +188,10 @@ test.describe('Face API edge selection', { tag: '@web' }, () => {
       await cmdBar.expectState(state)
       await scene.settled()
 
+      await toolbar.expectSelection('1 edge')
       await clickProfile2()
+      await toolbar.expectSelection('1 profile')
+      await page.waitForTimeout(500)
 
       // Update state after profile selection
       state.currentArgKey = 'axisOrEdge'
@@ -202,7 +209,9 @@ test.describe('Face API edge selection', { tag: '@web' }, () => {
       await cmdBar.expectState(state)
 
       // Click edge using ratio clicks
+      await toolbar.expectSelection('1 profile')
       await clickEdge2()
+      await toolbar.expectSelection('1 edge')
 
       // Update state after edge selection
       state.currentArgKey = 'angle'
