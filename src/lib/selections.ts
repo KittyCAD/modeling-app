@@ -39,6 +39,7 @@ import {
 import {
   createEdgeRefObjectExpression,
   entityReferenceToEdgeRefPayload,
+  programTextUnchanged,
 } from '@src/lang/modifyAst/edges'
 import { modifyAstWithTagsForSelection } from '@src/lang/modifyAst/tagManagement'
 import {
@@ -811,17 +812,6 @@ function getDirectTagExprFromSourceSurface({
     : null
 }
 
-function programSourceUnchanged(
-  before: Node<Program>,
-  after: Node<Program>,
-  wasmInstance: ModuleType
-): boolean {
-  const beforeCode = recast(before, wasmInstance)
-  const afterCode = recast(after, wasmInstance)
-  if (isErr(beforeCode) || isErr(afterCode)) return false
-  return beforeCode === afterCode
-}
-
 function createExistingFaceReferenceExpr(
   context: SelectionExpressionBuilderContext
 ): Expr | null {
@@ -862,7 +852,7 @@ function createExistingFaceReferenceExpr(
     return null
   }
   if (
-    !programSourceUnchanged(kclManager.ast, result.modifiedAst, wasmInstance)
+    !programTextUnchanged(kclManager.ast, result.modifiedAst, wasmInstance)
   ) {
     return null
   }

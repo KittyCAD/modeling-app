@@ -1039,7 +1039,7 @@ export function createEdgeRefObjectExpression(
   }
 }
 
-function programTextUnchanged(
+export function programTextUnchanged(
   before: Node<Program>,
   after: Node<Program>,
   wasmInstance: ModuleType
