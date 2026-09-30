@@ -47,7 +47,11 @@ import {
   normalizeEntityReference,
   sendQueryEntityTypeWithPoint,
 } from '@src/lib/selections'
-import { Themes, getResolvedTheme, getThemeBackgroundColor} from '@src/lib/theme'
+import {
+  Themes,
+  getResolvedTheme,
+  getThemeBackgroundColor,
+} from '@src/lib/theme'
 import { err, reportRejection } from '@src/lib/trap'
 import { EngineConnectionManagerEvents } from '@src/lib/engineConnection/utils'
 import type {

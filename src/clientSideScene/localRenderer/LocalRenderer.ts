@@ -278,7 +278,10 @@ export class LocalRenderer {
         const response = {
           type: 'query_entity_type',
           data: { reference },
-        } satisfies Extract<OkModelingCmdResponse, { type: 'query_entity_type' }>
+        } satisfies Extract<
+          OkModelingCmdResponse,
+          { type: 'query_entity_type' }
+        >
         return {
           websocketResponse: {
             success: true,
@@ -349,8 +352,11 @@ export class LocalRenderer {
           ? ({
               type: 'select_with_point',
               data: { entity_id: entityId ?? undefined },
-            } satisfies Extract<OkModelingCmdResponse, { type: 'select_with_point' }>)
-          : {
+            } satisfies Extract<
+              OkModelingCmdResponse,
+              { type: 'select_with_point' }
+            >)
+          : ({
               type: 'query_entity_type_with_point',
               data: {
                 reference: entityId
@@ -360,7 +366,7 @@ export class LocalRenderer {
             } satisfies Extract<
               OkModelingCmdResponse,
               { type: 'query_entity_type_with_point' }
-            >
+            >)
       return {
         modelingResponse: { type: response.type, data: { ...response.data } },
         websocketResponse: {
