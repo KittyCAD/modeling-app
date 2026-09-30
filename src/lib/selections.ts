@@ -851,9 +851,7 @@ function createExistingFaceReferenceExpr(
   if (isErr(result) || result.exprs.length === 0) {
     return null
   }
-  if (
-    !programTextUnchanged(kclManager.ast, result.modifiedAst, wasmInstance)
-  ) {
+  if (!programTextUnchanged(kclManager.ast, result.modifiedAst, wasmInstance)) {
     return null
   }
 
