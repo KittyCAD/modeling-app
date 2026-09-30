@@ -670,7 +670,7 @@ impl Node<Program> {
     /// Set the KCL version in place.
     pub(crate) fn set_kcl_version(&mut self, kcl_version: Option<KclVersion>) -> Result<(), KclError> {
         let mut found = false;
-        for node in &mut self.inner_attrs {
+        for node in self.inner_attrs.iter_mut().rev() {
             if node.name() == Some(annotations::SETTINGS) {
                 if let Some(version) = kcl_version {
                     node.inner
