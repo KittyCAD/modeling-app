@@ -108,6 +108,17 @@ export class ConnectionManager extends EventTarget {
   commandLogs: CommandLog[] = []
 
   connection: Connection | undefined
+  private reconnectingConnection: Connection | undefined
+  private readonly activeExecutions = new Set<symbol>()
+  private readonly activeRecoveries = new Set<symbol>()
+
+  get isReconnectPending(): boolean {
+    return (
+      this.reconnectingConnection !== undefined &&
+      this.reconnectingConnection === this.connection
+    )
+  }
+
   lastConnectionError: EngineConnectionError | undefined
   private connectionStartedAt = performance.now()
   private shutdownReported = false
@@ -171,6 +182,84 @@ export class ConnectionManager extends EventTarget {
     this.id = uuidv4()
     this.callbackOnUnitTestingConnection = null
     this.lastConnectionError = undefined
+  }
+
+  trackExecution(): () => void {
+    const execution = Symbol('execution')
+    this.activeExecutions.add(execution)
+
+    return () => {
+      if (this.activeExecutions.delete(execution)) {
+        this.tryReconnectWhenIdle()
+      }
+    }
+  }
+
+  // Capture existing execution identifiers and remove only those.
+  // Also capture pending modeling commands at the time of failure
+  // so cleanup cannot accidentally reject newer commands.
+  captureFailedExecutionCleanup(): () => void {
+    const recovery = Symbol('wasm recovery')
+    this.activeRecoveries.add(recovery)
+    const failedExecutions = [...this.activeExecutions]
+    const failedCommands = Object.entries(this.pendingCommands).filter(
+      ([, pending]) => !pending.isSceneCommand
+    )
+
+    return () => {
+      if (!this.activeRecoveries.has(recovery)) {
+        return
+      }
+      for (const [commandId, pending] of failedCommands) {
+        if (this.pendingCommands[commandId] !== pending) {
+          continue
+        }
+
+        pending.reject([
+          {
+            success: false,
+            errors: [
+              {
+                error_code: 'internal_api',
+                message:
+                  'KCL execution failed because the Wasm runtime crashed.',
+              },
+            ],
+          },
+        ])
+        delete this.pendingCommands[commandId]
+      }
+
+      for (const execution of failedExecutions) {
+        this.activeExecutions.delete(execution)
+      }
+      this.activeRecoveries.delete(recovery)
+      this.tryReconnectWhenIdle()
+    }
+  }
+
+  private tryReconnectWhenIdle() {
+    const connection = this.reconnectingConnection
+    if (
+      !connection ||
+      connection !== this.connection ||
+      this.activeExecutions.size > 0 ||
+      this.activeRecoveries.size > 0 ||
+      Object.keys(this.pendingCommands).length > 0
+    ) {
+      return
+    }
+    // Close the original connection when there are no
+    // tracked executions or pending commands.
+    connection.closeForReconnect()
+  }
+
+  private handleReconnectRequested(connection: Connection) {
+    if (this.connection !== connection) {
+      return
+    }
+    this.reconnectingConnection = connection
+    this.tryReconnectWhenIdle()
   }
 
   setInSequence(sequence: number) {
@@ -245,6 +334,7 @@ export class ConnectionManager extends EventTarget {
       handleOnDataChannelMessage: this.handleOnDataChannelMessage.bind(this),
       recordShutdownTrigger: this.recordShutdownTrigger.bind(this),
       tearDownManager: this.tearDown.bind(this),
+      onReconnectRequested: this.handleReconnectRequested.bind(this),
       rejectPendingCommand: this.rejectPendingCommand.bind(this),
       callbackOnUnitTestingConnection,
       unitTestWebrtc,
@@ -761,13 +851,28 @@ export class ConnectionManager extends EventTarget {
 
     const { promise, resolve, reject } = promiseFactory<any>()
     let isSettled = false
+    const commandConnection = this.connection
+
+    const checkReconnectAfterSettlement = () => {
+      // The response handler resolves or rejects the command
+      // before deleting it from pendingCommands.
+      // Deferring the check lets that synchronous cleanup finish first.
+      queueMicrotask(() => {
+        if (this.connection === commandConnection) {
+          this.tryReconnectWhenIdle()
+        }
+      })
+    }
+
     const wrappedResolved = (value: any) => {
       resolve(value)
       isSettled = true
+      checkReconnectAfterSettlement()
     }
     const wrappedReject = (value: any) => {
       reject(value)
       isSettled = true
+      checkReconnectAfterSettlement()
     }
 
     if (this.pendingCommands[id]) {
@@ -805,7 +910,10 @@ export class ConnectionManager extends EventTarget {
           // TODO: Send this to a logging or error tracking service
           const errorMessage = `sendCommand rejected, you hit the timeout: ${JSON.stringify(message.command)}`
           console.error(errorMessage)
-          reject(errorMessage)
+          wrappedReject(errorMessage)
+          if (this.pendingCommands[id]?.promise === promise) {
+            delete this.pendingCommands[id]
+          }
         }
       }, PENDING_COMMAND_TIMEOUT)
     }
@@ -1194,6 +1302,9 @@ export class ConnectionManager extends EventTarget {
     this.removeAllEventListeners()
     this.connection?.disconnectAll()
     this.connection = undefined
+    this.reconnectingConnection = undefined
+    this.activeExecutions.clear()
+    this.activeRecoveries.clear()
 
     // It is possible all connections never even started, but we still want
     // to signal to the whole application we are "offline".
