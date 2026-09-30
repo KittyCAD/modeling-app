@@ -72,7 +72,8 @@ type StdLibCommandArgValue<Arg extends { readonly ty: string | null }> =
         ? KclCommandValue
         : Selections
 
-// Turns the filtered stdlib args into an object type, with checks on `required`
+// Turns the filtered stdlib args into an object type: `required: true` args become
+// required properties, while `required: false` args become optional properties.
 type PointAndClickCommandArgs<Name extends ModelingStdLibCommandName> = {
   [Arg in PointAndClickStdLibCommandArg<Name> as Arg['required'] extends true
     ? Arg['name']
@@ -83,8 +84,8 @@ type PointAndClickCommandArgs<Name extends ModelingStdLibCommandName> = {
     : never]?: StdLibCommandArgValue<Arg>
 }
 
-// Below we use the UI command name for all types, which forces
-// everything through the drif config.
+// Below we use the UI command name for all stdlib-derived base types, which
+// forces them through the drift config.
 
 type Override<Base, Overrides> = Omit<Base, keyof Overrides> & Overrides
 

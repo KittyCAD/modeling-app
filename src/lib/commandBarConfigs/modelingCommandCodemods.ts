@@ -119,7 +119,7 @@ type AddFunctionInput<Add extends (...args: never[]) => unknown> =
 // }
 // ```
 // Below we inspect the parameters explicitely:
-// - `NoInfer` prevents TS from widering the function type.
+// - `NoInfer` prevents this comparison from contributing to inference of `Add`.
 // - `nodeToEdit` is excluded as it's specific command-bar plumbing for edits
 // For an incomplete addExtrude input type, missing `draftAngle`,
 // it would produce `'draftAngle'`.
@@ -131,9 +131,9 @@ type MissingCommandArgs<
   keyof AddFunctionInput<NoInfer<Add>> | 'nodeToEdit'
 >
 
-// Then we check on the result against never.
+// Then we require a `never` property for each missing argument.
 // For our example, it would result in `typeof addExtrude & { draftAngle: never }`,
-// so tsc fails.
+// so tsc fails because addExtrude has no required `draftAngle` property.
 type CompleteAddFunction<
   Name extends CommandName,
   Add extends (...args: never[]) => unknown,
