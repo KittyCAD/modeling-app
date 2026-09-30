@@ -30,6 +30,7 @@ import type { SaveSettingsPayload } from '@src/lib/settings/settingsTypes'
 import {
   getAllCurrentSettings,
   jsAppSettings,
+  watchSettingsFileWhileIdle,
 } from '@src/lib/settings/settingsUtils'
 import { reportRejection } from '@src/lib/trap'
 import { uuidv4 } from '@src/lib/utils'
@@ -279,6 +280,14 @@ export class App implements AppSubsystems {
     )
     void this.wasmPromise
       .then(this.setActiveWasmInstance)
+      .then(async () => {
+        // Subscribe to user settings file changes while the settings actor is idle
+        // for the duration of the App's life.
+        this.settings
+          .userFilePath()
+          .then((path) => watchSettingsFileWhileIdle(this.settings.actor, path))
+          .catch(reportRejection)
+      })
       .catch(reportRejection)
     this.syncUserFeaturesFromAuth(this.auth.actor.getSnapshot())
 
@@ -480,6 +489,7 @@ export class App implements AppSubsystems {
     this.lastSettings = getAllCurrentSettings(
       getOnlySettingsFromContext(this.settings.actor.getSnapshot().context)
     )
+    this.unsubscribeFromSettings?.unsubscribe()
     this.unsubscribeFromSettings = this.settings.actor.subscribe(
       this.onSettingsUpdate
     )
