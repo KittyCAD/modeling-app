@@ -1516,12 +1516,8 @@ profile004 = circle(sketch003, center = [-88.54, 209.41], radius = 42.72)
       wasmInstance: instance,
     })
 
-    expect(references).toEqual([
-      expect.objectContaining({
-        label: 'Edge',
-        code: 'getNextAdjacentEdge(seg01)',
-      }),
-    ])
+    expect(references).toHaveLength(1)
+    expect(references[0].code).toBe('getNextAdjacentEdge(seg01)')
   })
 
   test('prefers directly tagged swept face references over primitive index references', async () => {

@@ -33,6 +33,7 @@ import {
   getSketchSegmentName,
   getSketchSegmentNameFromSourceSurface,
   getVariableExprsFromSelection,
+  isEnginePrimitiveSelection,
   resolveToCodeRef,
   traverse,
   valueOrVariable,
@@ -72,8 +73,7 @@ import { KCL_DEFAULT_CONSTANT_PREFIXES } from '@src/lib/constants'
 import {
   getBodySelectionFromPrimitiveParentEntityId,
   getEngineTopologyFallbackNormalized,
-  isEnginePrimitiveSelection,
-} from '@src/lib/selections'
+} from '@src/lib/primitiveBodySelection'
 import { err, isErr } from '@src/lib/trap'
 import { isArray } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
