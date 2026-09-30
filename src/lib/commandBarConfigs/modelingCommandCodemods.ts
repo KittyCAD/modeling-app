@@ -110,8 +110,19 @@ type AddFunction<
 type AddFunctionInput<Add extends (...args: never[]) => unknown> =
   Parameters<Add>[0]
 
-// Function parameters are structurally typed, so normal assignability allows
-// add* functions to omit properties. Compare their input keys explicitly.
+// The following two `MissingCommandArgs` and `CompleteAddFunction` are the actual guard.
+// Taking this for instance as a mini-Extrude example case.
+//`
+// type Expected = {
+//   length: KclCommandValue
+//   draftAngle?: KclCommandValue
+// }
+// ```
+// Below we inspect the parameters explicitely:
+// - `NoInfer` prevents TS from widering the function type.
+// - `nodeToEdit` is excluded as it's specific command-bar plumbing for edits
+// For an incomplete addExtrude input type, missing `draftAngle`,
+// it would produce `'draftAngle'`.
 type MissingCommandArgs<
   Name extends CommandName,
   Add extends (...args: never[]) => unknown,
@@ -120,6 +131,9 @@ type MissingCommandArgs<
   keyof AddFunctionInput<NoInfer<Add>> | 'nodeToEdit'
 >
 
+// Then we check on the result against never.
+// For our example, it would result in `typeof addExtrude & { draftAngle: never }`,
+// so tsc fails.
 type CompleteAddFunction<
   Name extends CommandName,
   Add extends (...args: never[]) => unknown,
