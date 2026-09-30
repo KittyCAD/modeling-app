@@ -16,10 +16,9 @@ import type {
 } from '@src/lib/constants'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 
-// Adapts generated KCL stdlib metadata into command-bar argument shapes.
-// Intentional omissions and deprecated inclusions come from the drift config.
 type DriftConfig = typeof modelingCommandStdLibDriftConfig
 
+// Extracts either `omittedStdLibArgs` or `deprecatedStdLibArgs` for one command, or `never`.
 type ConfiguredArgNames<
   Name extends ModelingStdLibCommandName,
   Key extends 'omittedStdLibArgs' | 'deprecatedStdLibArgs',
@@ -30,14 +29,18 @@ type ConfiguredArgNames<
   ? ArgName
   : never
 
+// Maps display names like `Boolean Subtract` to KCL names like `subtract`
 type ConfiguredStdLibName<Name extends ModelingStdLibCommandName> =
   DriftConfig[Name]['stdLibName'] & StdLibCommandName
 
+// Retrieves the generated union of arguments for the KCL function
 type StdLibArgForCommand<Name extends ModelingStdLibCommandName> =
   (typeof STD_LIB_COMMANDS)[ConfiguredStdLibName<Name>]['args'][number]
 
-// The drift config is the source of truth: active args are included by default,
-// deprecated args opt in, and explicit omissions always win.
+// Filters that union of args:
+// - explicit omission through `omittedStdLibArgs` win
+// - active args are included automatically
+// - deprecated args are excluded unless explicitely listed in `deprecatedStdLibArgs`
 type PointAndClickStdLibCommandArg<
   Name extends ModelingStdLibCommandName,
   Arg = StdLibArgForCommand<Name>,
@@ -54,6 +57,7 @@ type PointAndClickStdLibCommandArg<
         : never
   : never
 
+// Maps KCL types to TS types, with a fallback to Selections
 type StdLibCommandArgValue<Arg extends { readonly ty: string | null }> =
   Arg['ty'] extends 'bool'
     ? boolean
@@ -68,6 +72,7 @@ type StdLibCommandArgValue<Arg extends { readonly ty: string | null }> =
         ? KclCommandValue
         : Selections
 
+// Turns the filtered stdlib args into an object type, with checks on `required`
 type PointAndClickCommandArgs<Name extends ModelingStdLibCommandName> = {
   [Arg in PointAndClickStdLibCommandArg<Name> as Arg['required'] extends true
     ? Arg['name']
@@ -77,6 +82,9 @@ type PointAndClickCommandArgs<Name extends ModelingStdLibCommandName> = {
     ? Arg['name']
     : never]?: StdLibCommandArgValue<Arg>
 }
+
+// Below we use the UI command name for all types, which forces
+// everything through the drif config.
 
 type Override<Base, Overrides> = Omit<Base, keyof Overrides> & Overrides
 
