@@ -1977,15 +1977,18 @@ impl ExecutorContext {
             .map(|_| ())
     }
 
-    fn default_tolerance_command(exec_state: &ExecState) -> Option<ModelingCmd> {
-        exec_state.entry_point_version_is_v3_or_higher().then(|| {
-            let tolerance = kcmc::shared::Tolerance::builder()
-                .point_point_2d_coincident(kcmc::length_unit::LengthUnit(
-                    crate::std::solver::POINT_POINT_2D_COINCIDENT_EUCLIDEAN_TOLERANCE_MM,
-                ))
-                .build();
-            ModelingCmd::from(mcmd::SetDefaultSystemProperties::builder().tolerance(tolerance).build())
-        })
+    fn default_tolerance_command(exec_state: &ExecState) -> ModelingCmd {
+        let point_point_2d_coincident = if exec_state.entry_point_version_is_v3_or_higher() {
+            crate::std::solver::POINT_POINT_2D_COINCIDENT_EUCLIDEAN_TOLERANCE_MM
+        } else {
+            crate::std::solver::OLD_TOOLPATHS_TOLERANCE_KCL_2_AND_EARLIER
+        };
+
+        let tolerance = kcmc::shared::Tolerance::builder()
+            .point_point_2d_coincident(kcmc::length_unit::LengthUnit(point_point_2d_coincident))
+            .build();
+
+        ModelingCmd::from(mcmd::SetDefaultSystemProperties::builder().tolerance(tolerance).build())
     }
 
     async fn run_concurrent_inner(
@@ -2003,11 +2006,9 @@ impl ExecutorContext {
             .map_err(KclErrorWithOutputs::no_outputs)?;
 
         // Apply the physical tolerance before imported modules send geometry commands.
-        if let Some(cmd) = Self::default_tolerance_command(exec_state) {
-            self.send_execution_boundary(cmd)
-                .await
-                .map_err(KclErrorWithOutputs::no_outputs)?;
-        }
+        self.send_execution_boundary(Self::default_tolerance_command(exec_state))
+            .await
+            .map_err(KclErrorWithOutputs::no_outputs)?;
 
         // Reuse our cached universe if we have one.
 
@@ -5560,19 +5561,15 @@ startSketchOn(XY)
     }
 
     #[tokio::test]
-    async fn default_tolerance_command_is_sent_only_for_kcl_3() {
+    async fn default_tolerance_command_behavior() {
         let ctx = ExecutorContext::new_mock(None).await;
         let mut exec_state = ExecState::new(&ctx);
 
-        for version in [None, Some(KclVersion::V1), Some(KclVersion::V2)] {
-            exec_state.global.entry_point_kcl_version = version;
-            assert!(ExecutorContext::default_tolerance_command(&exec_state).is_none());
-        }
-
+        // Check the V3 behaviour
         exec_state.global.entry_point_kcl_version = Some(KclVersion::V3Preview);
         for unit in [kcl_api::UnitLength::Millimeters, kcl_api::UnitLength::Inches] {
             exec_state.mod_local.settings.default_length_units = unit;
-            let Some(ModelingCmd::SetDefaultSystemProperties(properties)) =
+            let ModelingCmd::SetDefaultSystemProperties(properties) =
                 ExecutorContext::default_tolerance_command(&exec_state)
             else {
                 panic!("expected KCL 3 default system properties command");
@@ -5581,6 +5578,24 @@ startSketchOn(XY)
             approx::assert_relative_eq!(
                 tolerance.point_point_2d_coincident.0,
                 1e-8 * std::f64::consts::SQRT_2,
+                epsilon = 0.0,
+                max_relative = 1e-12
+            );
+        }
+
+        // Check the V2 behavior.
+        exec_state.global.entry_point_kcl_version = Some(KclVersion::V2);
+        for unit in [kcl_api::UnitLength::Millimeters, kcl_api::UnitLength::Inches] {
+            exec_state.mod_local.settings.default_length_units = unit;
+            let ModelingCmd::SetDefaultSystemProperties(properties) =
+                ExecutorContext::default_tolerance_command(&exec_state)
+            else {
+                panic!("expected KCL 2 default system properties command");
+            };
+            let tolerance = properties.tolerance.expect("expected KCL 2 tolerance");
+            approx::assert_relative_eq!(
+                tolerance.point_point_2d_coincident.0,
+                0.0001,
                 epsilon = 0.0,
                 max_relative = 1e-12
             );
