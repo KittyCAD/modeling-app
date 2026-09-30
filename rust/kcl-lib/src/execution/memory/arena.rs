@@ -71,7 +71,7 @@
 //!
 //! Example:
 //!
-//! ```no_run
+//! ```noRender
 //! a = 10
 //!
 //! fn foo() {

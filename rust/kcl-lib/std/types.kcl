@@ -10,7 +10,7 @@
 /// The `any` type is the type of all possible values in KCL. I.e., if a function accepts an argument
 /// with type `any`, then it can accept any value.
 ///
-/// ```kcl,norun,sketchSyntaxAgnostic
+/// ```kcl,noRender,sketchSyntaxAgnostic
 /// fn acceptAnything(@input: any) {
 ///   return true
 /// }
@@ -69,7 +69,7 @@ export type bool
 ///
 /// Strings may be delimited using either single or double quotes.
 ///
-/// ```kcl,norun,sketchSyntaxAgnostic
+/// ```kcl,noRender,sketchSyntaxAgnostic
 /// "hello,"
 /// 'world!'
 /// ```
@@ -83,7 +83,7 @@ export type string
 /// The syntax for declaring a tag is `$myTag`. You would use it in the following
 /// way:
 ///
-/// ```norun,inline,legacySketch
+/// ```noRender,inline,legacySketch
 /// startSketchOn(XZ)
 ///   |> startProfile(at = origin)
 ///   |> angledLine(angle = 0, length = 191.26, tag = $rectangleSegmentA001)
@@ -103,12 +103,12 @@ export type string
 ///
 /// ### Tag Scope
 ///
-/// Tags are scoped globally if in the root context meaning in this example you can 
+/// Tags are scoped globally if in the root context meaning in this example you can
 /// use the tag `rectangleSegmentA001` in any function or expression in the file.
 ///
 /// However if the code was written like this:
 ///
-/// ```norun,inline,legacySketch
+/// ```noRender,inline,legacySketch
 /// fn rect(origin) {
 ///   return startSketchOn(XZ)
 ///     |> startProfile(at = origin)
@@ -126,7 +126,7 @@ export type string
 ///     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
 ///     |> close()
 /// }
-/// 
+///
 /// rect(origin = [0, 0])
 /// rect(origin = [20, 0])
 /// ```
@@ -138,7 +138,7 @@ export type string
 /// Tags are accessible through the sketch group they are declared in.
 /// For example the following code works.
 ///
-/// ```norun,inline,legacySketch
+/// ```noRender,inline,legacySketch
 /// fn rect(origin) {
 ///   return startSketchOn(XZ)
 ///     |> startProfile(at = origin)
@@ -156,10 +156,10 @@ export type string
 ///     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
 ///     |> close()
 /// }
-/// 
+///
 /// rect(origin = [0, 0])
 /// myRect = rect(origin = [20, 0])
-/// 
+///
 /// myRect
 ///   |> extrude(length = 10)
 ///   |> fillet(radius = 0.5, tags = [myRect.tags.rectangleSegmentA001])
@@ -219,7 +219,7 @@ export type fn
 /// e.g., `-XY`.
 /// - you can define an entirely custom plane, e.g.,
 ///
-/// ```kcl,inline,norun,sketchSyntaxAgnostic
+/// ```kcl,inline,noRender,sketchSyntaxAgnostic
 /// myXY = {
 ///   origin = { x = 0, y = 0, z = 0 },
 ///   xAxis = { x = 1, y = 0, z = 0 },
@@ -373,7 +373,7 @@ export type Point3d = [number(Length); 3]
 /// ```
 ///
 /// The number components of the origin and direction must be usable as lengths.
-/// 
+///
 /// A 3D axis can be used in contexts that require a 2D axis. The Z component is ignored.
 @(impl = std_rust)
 export type Axis2d
@@ -392,7 +392,7 @@ export type Axis2d
 /// ```
 ///
 /// The number components of the origin and direction must be usable as lengths.
-/// 
+///
 /// A 3D axis can be used in contexts that require a 2D axis. The Z component is ignored.
 @(impl = std_rust)
 export type Axis3d
