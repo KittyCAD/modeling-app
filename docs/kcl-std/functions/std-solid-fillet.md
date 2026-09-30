@@ -211,9 +211,9 @@ sketch001 = sketch(on = XY) {
   distance([seg01.start, seg01.end]) == 80
   distance([topRightInset.start, topRightInset.end]) == 26.43mm
   distance([
-  innerRightDrop.start,
-  innerRightDrop.end
-]) == 50
+    innerRightDrop.start,
+    innerRightDrop.end
+  ]) == 50
   distance([lowerSpan.start, lowerSpan.end]) == 273.67mm
   distance([innerLeftRise.start, innerLeftRise.end]) == 50
   distance([topLeftInset.start, topLeftInset.end]) == 26.98mm
@@ -288,9 +288,9 @@ sketch001 = sketch(on = XY) {
   distance([seg01.start, seg01.end]) == 80
   distance([topRightInset.start, topRightInset.end]) == 26.43mm
   distance([
-  innerRightDrop.start,
-  innerRightDrop.end
-]) == 50
+    innerRightDrop.start,
+    innerRightDrop.end
+  ]) == 50
   distance([lowerSpan.start, lowerSpan.end]) == 273.67mm
   distance([innerLeftRise.start, innerLeftRise.end]) == 50
   distance([topLeftInset.start, topLeftInset.end]) == 26.98mm
