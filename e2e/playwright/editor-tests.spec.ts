@@ -150,7 +150,7 @@ sketch001 = startSketchOn(XY)
     await u.openDebugPanel()
     await expect
       .poll(() =>
-        page.locator('[data-receive-command-type="scene_clear_all"]').count()
+        page.locator('[data-receive-command-type="set_kcl_version"]').count()
       )
       .toBe(2)
     await expect
@@ -175,7 +175,7 @@ sketch001 = startSketchOn(XY)
       page.locator('[data-message-type="execution-done"]')
     ).toHaveCount(3)
     await expect(
-      page.locator('[data-receive-command-type="scene_clear_all"]')
+      page.locator('[data-receive-command-type="set_kcl_version"]')
     ).toHaveCount(2)
   })
 
@@ -203,7 +203,7 @@ sketch001 = startSketchOn(XY)
     // Ensure we execute the first time.
     await u.openDebugPanel()
     await expect(
-      page.locator('[data-receive-command-type="scene_clear_all"]')
+      page.locator('[data-receive-command-type="set_kcl_version"]')
     ).toHaveCount(2)
     await expect(
       page.locator('[data-message-type="execution-done"]')
@@ -231,7 +231,7 @@ sketch001 = startSketchOn(XY)
       page.locator('[data-message-type="execution-done"]')
     ).toHaveCount(3)
     await expect(
-      page.locator('[data-receive-command-type="scene_clear_all"]')
+      page.locator('[data-receive-command-type="set_kcl_version"]')
     ).toHaveCount(2)
   })
 
