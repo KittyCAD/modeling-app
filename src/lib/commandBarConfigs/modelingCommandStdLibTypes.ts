@@ -40,7 +40,7 @@ type StdLibArgForCommand<Name extends ModelingStdLibCommandName> =
 // Filters that union of args:
 // - explicit omission through `omittedStdLibArgs` win
 // - active args are included automatically
-// - deprecated args are excluded unless explicitely listed in `deprecatedStdLibArgs`
+// - deprecated args are excluded unless explicitly listed in `deprecatedStdLibArgs`
 type PointAndClickStdLibCommandArg<
   Name extends ModelingStdLibCommandName,
   Arg = StdLibArgForCommand<Name>,
