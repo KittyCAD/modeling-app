@@ -405,10 +405,14 @@ export class App implements AppSubsystems {
     assertCurrent()
 
     const projectIORefSignal = signal(ownedProject)
+
     const nextProject = await ZDSProject.open(projectIORefSignal, this)
     assertCurrent()
 
     this.disposeProjectHistoryExtensions?.()
+    // We only ever allow one project to be open at a time in the app,
+    // so we gotta clean up after ourselves and close any open project.
+    this.project?.close()
     this.project = nextProject
     this.setCloudSyncOpenedProject(ownedProject)
 
