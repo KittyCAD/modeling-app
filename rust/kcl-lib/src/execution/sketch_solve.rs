@@ -31,7 +31,7 @@ use crate::front::Freedom;
 use crate::front::Object;
 use crate::front::ObjectKind;
 use crate::std::args::TyF64;
-use crate::std::solver::POINT_POINT_2D_COINCIDENT_TOLERANCE_MM;
+use crate::std::solver::POINT_POINT_2D_COINCIDENT_CHEBYSHEV_TOLERANCE_MM;
 use crate::std::solver::SOLVER_CONVERGENCE_TOLERANCE;
 
 /// Freedom analysis results from solving a sketch constraint system. The `Vec`
@@ -60,7 +60,10 @@ fn solver_unit(exec_state: &ExecState) -> UnitLength {
 
 pub(crate) fn solver_convergence_tolerance(exec_state: &ExecState) -> f64 {
     if exec_state.entry_point_version_is_v3_or_higher() {
-        UnitLength::Millimeters.convert_to(solver_unit(exec_state), POINT_POINT_2D_COINCIDENT_TOLERANCE_MM)
+        UnitLength::Millimeters.convert_to(
+            solver_unit(exec_state),
+            POINT_POINT_2D_COINCIDENT_CHEBYSHEV_TOLERANCE_MM,
+        )
     } else {
         SOLVER_CONVERGENCE_TOLERANCE
     }

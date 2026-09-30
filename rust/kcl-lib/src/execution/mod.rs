@@ -1981,7 +1981,7 @@ impl ExecutorContext {
         exec_state.entry_point_version_is_v3_or_higher().then(|| {
             let tolerance = kcmc::shared::Tolerance::builder()
                 .point_point_2d_coincident(kcmc::length_unit::LengthUnit(
-                    crate::std::solver::POINT_POINT_2D_COINCIDENT_TOLERANCE_MM,
+                    crate::std::solver::POINT_POINT_2D_COINCIDENT_EUCLIDEAN_TOLERANCE_MM,
                 ))
                 .build();
             ModelingCmd::from(mcmd::SetDefaultSystemProperties::builder().tolerance(tolerance).build())
@@ -5580,7 +5580,7 @@ startSketchOn(XY)
             let tolerance = properties.tolerance.expect("expected KCL 3 tolerance");
             approx::assert_relative_eq!(
                 tolerance.point_point_2d_coincident.0,
-                1e-8,
+                1e-8 * std::f64::consts::SQRT_2,
                 epsilon = 0.0,
                 max_relative = 1e-12
             );
