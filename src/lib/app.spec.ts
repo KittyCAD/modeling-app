@@ -257,6 +257,25 @@ function hasDefaultDirectoryLibrarySetting(app: App) {
 }
 
 describe('project system', () => {
+  it('always closes a the last project before opening a new one', async () => {
+    const app = createAppForTest()
+    vi.fn(window.electron?.watchFileOn).mockImplementation(() => {})
+    vi.fn(window.electron?.watchFileOff).mockImplementation(() => {})
+
+    const project1 = await app.openProject(mockProject)
+    const closeFn = vi.spyOn(project1, 'close')
+    const projectPath = 'some-other-one'
+    await app.openProject({
+      ...mockProject,
+      name: 'bracket',
+      path: projectPath,
+      default_file: fsZds.join(projectPath, 'main.kcl'),
+    })
+    expect(closeFn).toHaveBeenCalled()
+
+    app.closeProject()
+    app.dispose()
+  })
   it('uses registry runtime dependencies by default', () => {
     const app = createAppForTest()
 

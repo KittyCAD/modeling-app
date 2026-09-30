@@ -394,6 +394,8 @@ export class App implements AppSubsystems {
     }
   }
 
+  private unsubscribeSystemIO: Subscription | undefined
+
   async openProject(
     projectIORef: Project,
     assertCurrent: () => void = () => {}
@@ -405,10 +407,14 @@ export class App implements AppSubsystems {
     assertCurrent()
 
     const projectIORefSignal = signal(ownedProject)
+
     const nextProject = await ZDSProject.open(projectIORefSignal, this)
     assertCurrent()
 
     this.disposeProjectHistoryExtensions?.()
+    // We only ever allow one project to be open at a time in the app,
+    // so we gotta clean up after ourselves and close any open project.
+    this.project?.close()
     this.project = nextProject
     this.setCloudSyncOpenedProject(ownedProject)
 
@@ -467,7 +473,8 @@ export class App implements AppSubsystems {
 
     // TODO: Rework the systemIOActor to fit into the system better,
     // so that the project doesn't need to subscribe to it.
-    this.systemIOActor.subscribe(({ context }) => {
+    this.unsubscribeSystemIO?.unsubscribe()
+    this.unsubscribeSystemIO = this.systemIOActor.subscribe(({ context }) => {
       const foundProject = (context.folders ?? []).find(
         (p) =>
           p.name === projectIORefSignal.value.name &&
@@ -530,6 +537,8 @@ export class App implements AppSubsystems {
     this.disposeProjectHistoryExtensions = undefined
     this.unsubscribeFromSettings?.unsubscribe()
     this.unsubscribeFromSettings = undefined
+    this.unsubscribeSystemIO?.unsubscribe()
+    this.unsubscribeSystemIO = undefined
     this.setCloudSyncOpenedProject(undefined)
     this.project?.close()
     this.project = undefined
