@@ -358,17 +358,15 @@ impl<'de> Deserialize<'de> for Program {
     {
         #[derive(Deserialize)]
         struct ProgramHelper {
-            kcl_version: Option<KclVersion>,
             #[serde(flatten)]
             ast: parsing::ast::types::Node<parsing::ast::types::Program>,
         }
 
         let program = ProgramHelper::deserialize(deserializer)?;
-        // TypeScript ASTs can omit this field. Share Rust's version resolution
-        // so annotations and the default are interpreted consistently.
-        let kcl_version = program
-            .kcl_version
-            .unwrap_or_else(|| execution::computed_kcl_version(&program.ast));
+        // TypeScript ASTs can omit this field or set it incorrectly. Use our
+        // version resolution so annotations and the default are interpreted
+        // consistently and correctly.
+        let kcl_version = execution::computed_kcl_version(&program.ast);
 
         Ok(Self {
             kcl_version,
@@ -553,16 +551,30 @@ mod test {
     }
 
     #[test]
-    fn program_deserialization_preserves_explicit_kcl_version() {
-        let mut program = Program::parse_no_errs("x = 1\n").unwrap();
-        program.kcl_version = KclVersion::V2;
+    fn program_deserialization_recomputes_kcl_version() {
+        for (code, supplied_version, expected_version) in [
+            ("x = 1\n", KclVersion::V2, KclVersion::V1),
+            (
+                "@settings(kclVersion = 2.0)\nx = 1\n",
+                KclVersion::V3Preview,
+                KclVersion::V2,
+            ),
+            (
+                "@settings(kclVersion = \"3.0-preview\")\nx = 1\n",
+                KclVersion::V2,
+                KclVersion::V3Preview,
+            ),
+        ] {
+            let mut program = Program::parse_no_errs(code).unwrap();
+            program.kcl_version = supplied_version;
 
-        let json = serde_json::to_value(&program).unwrap();
-        let deserialized: Program = serde_json::from_str(&json.to_string()).unwrap();
+            let json = serde_json::to_value(&program).unwrap();
+            let deserialized: Program = serde_json::from_str(&json.to_string()).unwrap();
 
-        assert_eq!(deserialized.kcl_version, KclVersion::V2);
-        assert_eq!(deserialized.recast(), program.recast());
-        assert!(deserialized.original_file_contents.is_empty());
+            assert_eq!(deserialized.kcl_version, expected_version, "{code}");
+            assert_eq!(deserialized.recast(), program.recast(), "{code}");
+            assert!(deserialized.original_file_contents.is_empty());
+        }
     }
 
     #[test]
