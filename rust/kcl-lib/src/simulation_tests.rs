@@ -6963,6 +6963,27 @@ mod gdt_face_api_edge_specifier {
         super::execute(TEST_NAME).await
     }
 }
+mod weldment_gdt_distance {
+    const TEST_NAME: &str = "weldment_gdt_distance";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME).await
+    }
+}
 mod error_large_fillet_radius {
     const TEST_NAME: &str = "error_large_fillet_radius";
 
@@ -10048,6 +10069,27 @@ mod double_delete {
 }
 mod fillets_referencing_other_fillets {
     const TEST_NAME: &str = "fillets_referencing_other_fillets";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME).await
+    }
+}
+mod hex_fillet {
+    const TEST_NAME: &str = "hex_fillet";
 
     /// Test parsing KCL.
     #[test]

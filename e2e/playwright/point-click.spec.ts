@@ -1032,7 +1032,7 @@ hide(sketch001)
 region001 = region(segments = [sketch001.line1, sketch001.line2])
 extrude001 = extrude(region001, length = -12)`
     const firstFilletDeclaration = `fillet001 = fillet(extrude001, edges=[{sideFaces=[region001.tags.line2,extrude001.faces.capEnd001]}], radius=5,)`
-    const secondFilletDeclaration = `fillet002 = fillet(extrude001, edges=[{sideFaces=[extrude001.faces.capStart001,region001.tags.line2]}], radius=5,)`
+    const secondFilletDeclaration = `fillet002 = fillet(extrude001, edges=[{sideFaces=[region001.tags.line2,extrude001.faces.capStart001]}], radius=5,)`
 
     // Locators
     // TODO: find a way to not have hardcoded pixel values for region edges and sweepEdges
@@ -1112,7 +1112,9 @@ extrude001 = extrude(region001, length = -12)`
       oldValue: string,
       newValue: string
     ) {
+      // await scene.waitForExecutionDoneAfter(async () =>
       await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
+      // )
       const operationButton = await toolbar.getFeatureTreeOperation(
         'Fillet',
         featureTreeIndex
@@ -1130,6 +1132,7 @@ extrude001 = extrude(region001, length = -12)`
       })
       await page.keyboard.insertText(newValue)
       await cmdBar.progressCmdBar()
+      // await page.pause()
       await cmdBar.expectState({
         stage: 'review',
         headerArguments: {
@@ -1789,8 +1792,8 @@ sketch001 = sketch(on = XY) {
 hide(sketch001)
 region001 = region(segments = [sketch001.line1, sketch001.line2])
 extrude001 = extrude(region001, length = -12)`
-    const firstChamferDeclaration = `chamfer001 = chamfer(extrude001, edges=[{sideFaces=[extrude001.faces.capEnd001,region001.tags.line2]}], length=5,)`
-    const secondChamferDeclaration = `chamfer002 = chamfer(extrude001, edges=[{sideFaces=[extrude001.faces.capStart001,region001.tags.line2]}], length=5,)`
+    const firstChamferDeclaration = `chamfer001 = chamfer(extrude001, edges=[{sideFaces=[region001.tags.line2,extrude001.faces.capEnd001]}], length=5,)`
+    const secondChamferDeclaration = `chamfer002 = chamfer(extrude001, edges=[{sideFaces=[region001.tags.line2,extrude001.faces.capStart001]}], length=5,)`
 
     // Locators
     const firstEdgeLocation = { x: 600, y: 193 }
@@ -2487,7 +2490,7 @@ extrude001 = extrude(region001, length = 30)`
     toolbar,
     cmdBar,
   }) => {
-    const initialCode = `@settings(defaultLengthUnit = in, experimentalFeatures = allow)
+    const initialCode = `@settings(defaultLengthUnit = in, experimentalFeatures = allow, kclVersion = "3.0-preview")
 
 sketch001 = sketch(on = XY) {
   line1 = line(start = [-12in, -6in], end = [-12in, 6in])
@@ -2499,7 +2502,7 @@ region001 = region(point = [0in, 0in], sketch = sketch001)
 extrude001 = extrude(region001, length = -12in, tagEnd = $capEnd001)
 chamfer001 = chamfer(
   extrude001,
-  edges = [{ sideFaces = [capEnd001, region001.tags.line2] }],
+  edges = [{ sideFaces = [capEnd001, region001.tags.line4] }],
   length = 5in,
 )`
 
@@ -2542,7 +2545,7 @@ chamfer001 = chamfer(
     toolbar,
     cmdBar,
   }) => {
-    const initialCode = `@settings(defaultLengthUnit = mm, experimentalFeatures = allow)
+    const initialCode = `@settings(defaultLengthUnit = mm, experimentalFeatures = allow, kclVersion = "3.0-preview")
 
 sketch001 = sketch(on = XY) {
   bottom = line(start = [0, 0], end = [24, 0])
@@ -2556,7 +2559,7 @@ chamfer001 = chamfer(
   extrude001,
   edges = [
     { sideFaces = [region001.tags.bottom, endCap] },
-    { sideFaces = [region001.tags.right, endCap] }
+    { sideFaces = [region001.tags.left, endCap] }
   ],
   length = 2,
 )
@@ -2601,7 +2604,7 @@ hide(sketch001)`
     toolbar,
     cmdBar,
   }) => {
-    const initialCode = `@settings(defaultLengthUnit = mm, experimentalFeatures = allow)
+    const initialCode = `@settings(defaultLengthUnit = mm, experimentalFeatures = allow, kclVersion = "3.0-preview")
 
 sketch001 = sketch(on = XY) {
   bottom = line(start = [0, 0], end = [30, 0])
@@ -2618,7 +2621,7 @@ chamfer001 = chamfer(
 )
 fillet001 = fillet(
   chamfer001,
-  edges = [{ sideFaces = [region001.tags.top, endCap] }],
+  edges = [{ sideFaces = [region001.tags.right, endCap] }],
   radius = 2,
 )
 hide(sketch001)`
