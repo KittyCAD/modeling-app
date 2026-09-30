@@ -153,7 +153,7 @@ impl<'tree> Visitable<'tree> for Node<'tree> {
             }
             Node::SketchVar(n) => {
                 if let Some(initial) = &n.initial {
-                    vec![initial.as_ref().into()]
+                    vec![(&initial.inner).into()]
                 } else {
                     vec![]
                 }

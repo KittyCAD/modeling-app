@@ -3368,14 +3368,24 @@ impl Node<SketchVar> {
         };
         let id = sketch_block_state.next_sketch_var_id();
         let sketch_var = if let Some(initial) = &self.initial {
-            let kvcf = ctx.execute_expr(initial, exec_state, &initial.metadata(), &[], StatementKind::Expression).await?;
-            if let KclValue::Number { .. } = *kvcf.value {
-              KclValue::from_sketch_var_kclvalue_number(kvcf.value, id, self.node_path.clone(), exec_state)
+            let kvcf = ctx
+                .execute_expr(initial, exec_state, &initial.metadata(), &[], StatementKind::Expression)
+                .await?;
+            if let KclValue::Number { value, ty, meta } = *kvcf.value {
+                KclValue::SketchVar {
+                    value: Box::new(super::SketchVar {
+                        id,
+                        initial_value: value,
+                        ty,
+                        node_path: self.node_path.clone(),
+                        meta,
+                    }),
+                }
             } else {
-              return Err(KclError::new_semantic(KclErrorDetails::new(
-                  "expression must evaluate to a number".to_owned(),
-                  vec![SourceRange::from(self)],
-              )));
+                return Err(KclError::new_semantic(KclErrorDetails::new(
+                    "expression must evaluate to a number".to_owned(),
+                    vec![SourceRange::from(self)],
+                )));
             }
         } else {
             let metadata = Metadata {

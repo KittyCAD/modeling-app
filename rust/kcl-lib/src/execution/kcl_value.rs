@@ -32,7 +32,6 @@ use crate::execution::SegmentRepr;
 use crate::execution::Sketch;
 use crate::execution::SketchConstraint;
 use crate::execution::SketchVar;
-use crate::execution::SketchVarId;
 use crate::execution::Solid;
 use crate::execution::TagIdentifier;
 use crate::execution::UnsolvedExpr;
@@ -49,7 +48,6 @@ use crate::parsing::ast::types::BoxNode;
 use crate::parsing::ast::types::DefaultParamVal;
 use crate::parsing::ast::types::FunctionExpression;
 use crate::parsing::ast::types::KclNone;
-use crate::parsing::ast::types::KclValue;
 use crate::parsing::ast::types::Literal;
 use crate::parsing::ast::types::LiteralValue;
 use crate::parsing::ast::types::Node;
@@ -925,23 +923,6 @@ impl KclValue {
                     result
                 }
             }
-        }
-    }
-
-    pub(crate) fn from_sketch_var_kclvalue_number(
-        evaluated_number: KCLValue::Number,
-        id: SketchVarId,
-        node_path: Option<crate::NodePath>,
-        exec_state: &ExecState,
-    ) -> Self {
-        KclValue::SketchVar {
-            value: Box::new(SketchVar {
-                id,
-                initial_value: evaluated_number.value,
-                node_path,
-                meta: evaluated_number.meta,
-                ty: evaluated_number.ty,
-            }),
         }
     }
 
