@@ -4,6 +4,7 @@ import {
   LEGACY_SEARCH_PARAM_ZOOKEEPER_PROMPT_KEY,
   SEARCH_PARAM_ZOOKEEPER_PROMPT_KEY,
 } from '@src/lib/constants'
+import type { MigrationController } from '@src/lib/kclMigration/controller'
 import type { SettingsType } from '@src/lib/settings/initialSettings'
 import { ZookeeperConversation } from '@src/lib/zookeeper/components/ZookeeperConversation'
 import { ZookeeperConversationWelcome } from '@src/lib/zookeeper/components/ZookeeperConversationWelcome'
@@ -17,11 +18,14 @@ import {
 import type { ModelingMachineContext } from '@src/machines/modelingSharedTypes'
 import { S } from '@src/machines/utils'
 import { useSelector } from '@xstate/react'
+import type { ReactNode } from 'react'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 
 export const ZookeeperConversationPane = (props: {
   controller: ZookeeperSessionController
+  migrationController?: MigrationController
+  migrationContent?: (chatBusy: boolean) => ReactNode
   selectionRanges: ModelingMachineContext['selectionRanges']
   zookeeperMode: SettingsType['app']['zookeeperMode']
   userAvatarSrc?: string
@@ -185,8 +189,15 @@ export const ZookeeperConversationPane = (props: {
           })
         }}
         welcomeMessage={<ZookeeperConversationWelcome />}
+        afterMessages={props.migrationContent?.(
+          isPromptRunning ||
+            isClearingChat ||
+            isResumingInterruptedTurn ||
+            controller.queue.value.length > 0
+        )}
         onProcess={(prompt, mode, attachments) => {
-          controller.sendOrQueue(prompt, mode, attachments)
+          if (!props.migrationController?.busy)
+            controller.sendOrQueue(prompt, mode, attachments)
         }}
         onClickClearChat={() => {
           setIsConfirmingClearChat(true)
@@ -211,6 +222,7 @@ export const ZookeeperConversationPane = (props: {
         }
         onCancel={() => controller.cancel()}
         disabled={
+          props.migrationController?.busy ||
           needsReconnect ||
           isClearingChat ||
           interruptedTurnAwaitingResume ||
@@ -221,7 +233,11 @@ export const ZookeeperConversationPane = (props: {
         isProcessing={isPromptRunning}
         interruptedTurnAwaitingResume={interruptedTurnAwaitingResume}
         isResumingInterruptedTurn={isResumingInterruptedTurn}
-        onResumeInterruptedTurn={() => controller.resumeInterruptedTurn()}
+        resumeDisabled={props.migrationController?.busy}
+        onResumeInterruptedTurn={() => {
+          if (!props.migrationController?.busy)
+            void controller.resumeInterruptedTurn()
+        }}
         queue={[...controller.queue.value]}
         onRemoveFromQueue={(id) => controller.removeQueued(id)}
         onSteer={(id) => controller.steer(id)}

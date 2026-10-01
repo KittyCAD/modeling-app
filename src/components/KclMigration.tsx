@@ -1,5 +1,5 @@
 import { useSignals } from '@preact/signals-react/runtime'
-import { KclMigrationDialog } from '@src/components/KclMigrationDialog'
+import { KclMigrationPanel } from '@src/components/KclMigrationPanel'
 import { useFileSystemWatcher } from '@src/hooks/useFileSystemWatcher'
 import type { ZDSProject } from '@src/lang/KclManager'
 import type { App } from '@src/lib/app'
@@ -9,10 +9,16 @@ import {
   migrationProject,
 } from '@src/lib/kclMigration/project'
 import { MIGRATION_FEATURE } from '@src/lib/kclMigration/protocol'
-import type { AppHeaderItemProps } from '@src/registry/contracts/appHeader'
+import { kclMigrationService } from '@src/registry/contracts/kclMigration'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 
-export function KclMigrationHeaderItem({ app, className }: AppHeaderItemProps) {
+export function KclMigration({
+  app,
+  chatBusy,
+}: {
+  app: App
+  chatBusy: boolean
+}) {
   useSignals()
   const project = app.projectSignal.value
   // Compare runtime IDs until the SDK publishes the new Feature union member.
@@ -26,7 +32,7 @@ export function KclMigrationHeaderItem({ app, className }: AppHeaderItemProps) {
       app={app}
       project={project}
       enabled={enabled}
-      className={className}
+      chatBusy={chatBusy}
     />
   )
 }
@@ -35,12 +41,12 @@ function ProjectMigration({
   app,
   project,
   enabled,
-  className,
+  chatBusy,
 }: {
   app: App
   project: ZDSProject
   enabled: boolean
-  className: string
+  chatBusy: boolean
 }) {
   useSignals()
   const token = app.auth.token.value
@@ -79,22 +85,21 @@ function ProjectMigration({
       current = false
     }
   }, [app, projectInfo, entrypointCode, executingPath, diskRevision, enabled])
-  const [controller, setController] = useState<MigrationController>()
+  const migration = app.registry.get(kclMigrationService)
+  const controller = migration.controller.value
   useEffect(() => {
-    const owned = new MigrationController(
-      migrationProject(app, project),
-      () => token
+    migration.getOrCreate(
+      project,
+      () => new MigrationController(migrationProject(app, project), () => token)
     )
-    setController(owned)
-    return () => owned.dispose()
-  }, [app, project, token])
+  }, [app, migration, project, token])
   if (!controller) return null
   return (
-    <KclMigrationDialog
+    <KclMigrationPanel
       controller={controller}
       enabled={enabled}
       sourceIsKcl2={sourceIsKcl2}
-      className={className}
+      chatBusy={chatBusy}
     />
   )
 }

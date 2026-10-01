@@ -1,4 +1,6 @@
 import { Menu } from '@headlessui/react'
+import { useSignals } from '@preact/signals-react/runtime'
+import { KclMigration } from '@src/components/KclMigration'
 import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
 import { HeaderMenu } from '@src/components/layout/Panel/HeaderMenu'
 import { useModelingContext } from '@src/hooks/useModelingContext'
@@ -11,17 +13,21 @@ import {
   ZookeeperConversationToMarkdown,
   type ZookeeperManagerActor,
 } from '@src/lib/zookeeper/zookeeperManagerMachine'
+import { kclMigrationService } from '@src/registry/contracts/kclMigration'
 
 export function ZookeeperConversationPaneWrapper(
   props: Pick<AreaTypeComponentProps, 'layout' | 'onClose'> & {
     controller: ZookeeperSessionController
   }
 ) {
-  const { auth, settings } = useApp()
+  useSignals()
+  const app = useApp()
+  const { auth, settings } = app
   const settingsValues = settings.useSettings()
   const user = auth.useUser()
   const { context: contextModeling } = useModelingContext()
   const { controller } = props
+  const migration = app.registry.get(kclMigrationService).controller.value
 
   return (
     <LayoutPanel
@@ -38,6 +44,10 @@ export function ZookeeperConversationPaneWrapper(
       />
       <ZookeeperConversationPane
         controller={controller}
+        migrationController={migration}
+        migrationContent={(chatBusy) => (
+          <KclMigration app={app} chatBusy={chatBusy} />
+        )}
         selectionRanges={contextModeling.selectionRanges}
         zookeeperMode={settingsValues.app.zookeeperMode}
         userAvatarSrc={user?.image}

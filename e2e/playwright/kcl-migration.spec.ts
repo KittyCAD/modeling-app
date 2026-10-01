@@ -1,9 +1,9 @@
-import { OPFS_CLOUD_FEATURE_FLAG } from '@src/lib/constants'
-import { expect, test as base } from '@e2e/playwright/zoo-test'
+import { test as base, expect } from '@e2e/playwright/zoo-test'
 import type {
   MigrationClientMessage,
   MigrationOperation,
 } from '@src/lib/kclMigration/protocol'
+import { DefaultLayoutPaneID } from '@src/lib/layout'
 
 // Exercise app/editor/storage integration without invoking a paid engine or converter.
 const test = base.extend({
@@ -28,10 +28,7 @@ const test = base.extend({
             }
           : pathname === '/user/features'
             ? {
-                features: [
-                  { id: 'zookeeper_kcl_migration' },
-                  { id: OPFS_CLOUD_FEATURE_FLAG },
-                ],
+                features: [{ id: 'zookeeper_kcl_migration' }],
               }
             : pathname === '/meta/announcements' ||
                 pathname === '/announcements'
@@ -55,29 +52,25 @@ const test = base.extend({
   },
 })
 
-test.use({ userFeatures: [OPFS_CLOUD_FEATURE_FLAG] })
-
 const source = '@settings(kclVersion = 2.0)\nlength = 10mm\n'
 const candidate = '@settings(kclVersion = "3.0-preview")\nlength = 11mm\n'
 
 test.describe(
   'Sponsored KCL project migration',
-  { tag: ['@web', '@desktop'] },
+  { tag: ['@web', '@desktop', '@zookeeper'] },
   () => {
     test('captures unsaved and supporting files, reviews, applies and undoes a project', async ({
       page,
       context,
       homePage,
+      toolbar,
     }, testInfo) => {
       await context.route('**/user/features', (route) =>
         route.fulfill({
           status: 200,
           contentType: 'application/json',
           body: JSON.stringify({
-            features: [
-              { id: 'zookeeper_kcl_migration' },
-              { id: OPFS_CLOUD_FEATURE_FLAG },
-            ],
+            features: [{ id: 'zookeeper_kcl_migration' }],
           }),
         })
       )
@@ -162,6 +155,7 @@ test.describe(
           shouldWriteToDisk: false,
         })
       }, source)
+      await toolbar.openPane(DefaultLayoutPaneID.Zookeeper)
       const migrate = page.getByRole('button', { name: 'Migrate to KCL 3' })
       await expect(migrate).toBeVisible()
       for (const code of [
@@ -246,6 +240,11 @@ test.describe(
         page.getByRole('button', { name: 'Undo Migration' })
       ).toBeVisible()
       expect(await editorCode()).toBe(candidate)
+      await toolbar.closePane(DefaultLayoutPaneID.Zookeeper)
+      await toolbar.openPane(DefaultLayoutPaneID.Zookeeper)
+      await expect(
+        page.getByRole('button', { name: 'Undo Migration' })
+      ).toBeVisible()
       await page.getByRole('button', { name: 'Undo Migration' }).click()
       await expect(
         page
