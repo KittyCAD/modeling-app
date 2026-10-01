@@ -306,7 +306,9 @@ async fn do_execute(
     let mut exec_state = ExecState::new(ctx);
     #[cfg(test)]
     exec_state.set_deprecation_version_override(_deprecation_version_override);
-    let _ = ctx.send_clear_scene(&mut exec_state, Default::default()).await;
+    let _ = ctx
+        .send_clear_scene(Some(program.kcl_version), &mut exec_state, Default::default())
+        .await;
     let result = ctx.run(&program, &mut exec_state).await;
     let responses = if result.is_err() {
         #[cfg(feature = "snapshot-engine-responses")]
