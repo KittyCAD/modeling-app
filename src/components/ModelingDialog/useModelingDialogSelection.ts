@@ -304,101 +304,58 @@ export function useModelingDialogSelection({
     ]
   )
 
-  const removeSceneSelection = useCallback(
-    (
-      argName: string,
-      source: CapturedSelectionListItem['source'],
-      selectionIndex: number,
-      selection: Selections | undefined = selectionRanges
-    ) => {
+  const updateSceneSelection = useCallback(
+    (argName: string, selection: Selections) => {
       const arg = selectedCommand?.args?.[argName]
       if (!arg || !isSelectionArgument(arg)) {
         return
       }
+      // Capture the previous collector before replacing the scene selection.
       startSelectingArgument(argName, arg)
-
-      const nextSelection = removeSelectionItem(
-        selection,
-        source,
-        selectionIndex
-      )
-
-      const selectionForScene = nextSelection ?? EMPTY_SELECTION
-
       modelingSend({
         type: 'Set selection',
         data: {
           selectionType: 'completeSelection',
-          selection: selectionForScene,
-        },
-      })
-    },
-    [
-      modelingSend,
-      selectedCommand?.args,
-      selectionRanges,
-      startSelectingArgument,
-    ]
-  )
-
-  const moveSceneSelection = useCallback(
-    (
-      argName: string,
-      source: CapturedSelectionListItem['source'],
-      selectionIndex: number,
-      direction: 'up' | 'down',
-      selection: Selections | undefined = selectionRanges
-    ) => {
-      const arg = selectedCommand?.args?.[argName]
-      if (!arg || !isSelectionArgument(arg)) {
-        return
-      }
-      startSelectingArgument(argName, arg)
-
-      const nextSelection = moveSelectionInSequence(
-        selection,
-        source,
-        selectionIndex,
-        direction
-      )
-      if (!nextSelection) {
-        return
-      }
-
-      modelingSend({
-        type: 'Set selection',
-        data: {
-          selectionType: 'completeSelection',
-          selection: nextSelection,
-        },
-      })
-    },
-    [
-      modelingSend,
-      selectedCommand?.args,
-      selectionRanges,
-      startSelectingArgument,
-    ]
-  )
-
-  const clearSceneSelection = useCallback(
-    (argName: string) => {
-      const arg = selectedCommand?.args?.[argName]
-      if (!arg || !isSelectionArgument(arg)) {
-        return
-      }
-      startSelectingArgument(argName, arg)
-
-      modelingSend({
-        type: 'Set selection',
-        data: {
-          selectionType: 'completeSelection',
-          selection: EMPTY_SELECTION,
+          selection,
         },
       })
     },
     [modelingSend, selectedCommand?.args, startSelectingArgument]
   )
+
+  function removeSceneSelection(
+    argName: string,
+    source: CapturedSelectionListItem['source'],
+    selectionIndex: number,
+    selection: Selections | undefined = selectionRanges
+  ) {
+    updateSceneSelection(
+      argName,
+      removeSelectionItem(selection, source, selectionIndex) ?? EMPTY_SELECTION
+    )
+  }
+
+  function moveSceneSelection(
+    argName: string,
+    source: CapturedSelectionListItem['source'],
+    selectionIndex: number,
+    direction: 'up' | 'down',
+    selection: Selections | undefined = selectionRanges
+  ) {
+    const nextSelection = moveSelectionInSequence(
+      selection,
+      source,
+      selectionIndex,
+      direction
+    )
+    if (nextSelection) {
+      updateSceneSelection(argName, nextSelection)
+    }
+  }
+
+  function clearSceneSelection(argName: string) {
+    updateSceneSelection(argName, EMPTY_SELECTION)
+  }
 
   useLayoutEffect(() => {
     if (!activeSelectionArgName || activeSelectionFieldName) {

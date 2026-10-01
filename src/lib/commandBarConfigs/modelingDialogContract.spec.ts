@@ -6,10 +6,7 @@ import { MachineManager } from '@src/lib/MachineManager'
 import type { CommandBarContext } from '@src/machines/commandBarMachine'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
-import {
-  type ModelingCommandSchema,
-  modelingMachineCommandConfig,
-} from '@src/lib/commandBarConfigs/modelingCommandConfig'
+import { modelingMachineCommandConfig } from '@src/lib/commandBarConfigs/modelingCommandConfig'
 import type {
   CommandArgumentConfig,
   CommandDialogLayout,
@@ -32,25 +29,6 @@ type DialogCommandName =
   | 'Chamfer'
   | 'Appearance'
   | 'Export'
-
-type DialogArgName<Name extends DialogCommandName> = Extract<
-  keyof ModelingCommandSchema[Name],
-  string
->
-
-type DialogFieldExpectation = {
-  hidden: boolean
-  required?: boolean
-}
-
-type DialogScenario<Name extends DialogCommandName> = {
-  name: string
-  authored?: Record<string, unknown>
-  expectedValues: Partial<ModelingCommandSchema[Name]>
-  expectedNormalized?: Record<string, unknown>
-  cleared?: readonly DialogArgName<Name>[]
-  fields?: Partial<Record<DialogArgName<Name>, DialogFieldExpectation>>
-}
 
 type DialogCommandConfig = {
   args?: Record<string, CommandArgumentConfig<unknown, ModelingMachineContext>>
@@ -85,79 +63,6 @@ function dialogContext(
       onSubmit: () => {},
     },
   }
-}
-
-function evaluateField(
-  config: DialogCommandConfig,
-  argName: string,
-  argumentsToSubmit: Record<string, unknown>
-): DialogFieldExpectation {
-  const argConfig = config.args?.[argName]
-  if (!argConfig) {
-    throw new Error(`Missing dialog argument ${argName}`)
-  }
-  const context = {
-    argumentsToSubmit,
-    selectedCommand: { useModelingDialog: true },
-  }
-
-  return {
-    hidden:
-      typeof argConfig.hidden === 'function'
-        ? argConfig.hidden(context)
-        : Boolean(argConfig.hidden),
-    required:
-      typeof argConfig.required === 'function'
-        ? argConfig.required(context)
-        : argConfig.required,
-  }
-}
-
-function runDialogContract<Name extends DialogCommandName>(
-  commandName: Name,
-  scenarios: readonly DialogScenario<Name>[]
-) {
-  describe(`${commandName} dialog contract`, () => {
-    const config = getDialogCommandConfig(commandName)
-    const normalize = (draft: Record<string, unknown>) =>
-      config.dialogLayout?.normalizeArguments?.(draft) ?? { ...draft }
-
-    for (const scenario of scenarios) {
-      it(scenario.name, async () => {
-        const source = {
-          __dialogContractSentinel: 'preserve-me',
-          ...scenario.authored,
-        }
-        const sourceSnapshot = structuredClone(source)
-        const hydrated = await initializeDialogArguments(
-          dialogContext(config, source),
-          instance
-        )
-        const normalized = normalize(hydrated)
-
-        expect(normalized).toMatchObject(scenario.expectedValues)
-        if (scenario.expectedNormalized) {
-          expect(normalized).toMatchObject(scenario.expectedNormalized)
-        }
-        for (const argName of scenario.cleared ?? []) {
-          expect(normalized).toHaveProperty(argName, undefined)
-        }
-        for (const [argName, expected] of Object.entries<
-          DialogFieldExpectation | undefined
-        >(scenario.fields ?? {})) {
-          if (expected) {
-            expect(evaluateField(config, argName, normalized)).toMatchObject(
-              expected
-            )
-          }
-        }
-
-        expect(source).toEqual(sourceSnapshot)
-        expect(normalized.__dialogContractSentinel).toBe('preserve-me')
-        expect(normalize(normalized)).toEqual(normalized)
-      })
-    }
-  })
 }
 
 describe('native modeling arguments', () => {
@@ -252,80 +157,83 @@ describe('Loft dialog contract', () => {
   })
 })
 
-runDialogContract('Appearance', [
-  {
-    name: 'initializes the displayed white color as a real argument',
-    expectedValues: { color: '#ffffff' },
-  },
-  {
-    name: 'preserves the authored color when editing',
-    authored: { nodeToEdit: [], color: '#ff0000' },
-    expectedValues: { color: '#ff0000' },
-  },
-])
+describe('composite dialog defaults', () => {
+  it.each([
+    {
+      command: 'Appearance',
+      authored: {},
+      expected: { color: '#ffffff' },
+    },
+    {
+      command: 'Appearance',
+      authored: { nodeToEdit: [], color: '#ff0000' },
+      expected: { color: '#ff0000' },
+    },
+    {
+      command: 'Revolve',
+      authored: {
+        edge: 'axis-edge',
+        axis: 'X',
+        angle: '90deg',
+        symmetric: true,
+      },
+      expected: {
+        axisOrEdge: 'Edge',
+        axis: undefined,
+        angle: '90deg',
+        symmetric: true,
+      },
+    },
+    {
+      command: 'Hole',
+      authored: {},
+      expected: {
+        holeBody: 'blind',
+        holeType: 'simple',
+        holeBottom: 'flat',
+        counterboreDepth: undefined,
+        counterboreDiameter: undefined,
+        countersinkAngle: undefined,
+        countersinkDiameter: undefined,
+        countersinkHeadClearance: undefined,
+        drillPointAngle: undefined,
+      },
+    },
+    {
+      command: 'Hole',
+      authored: {
+        holeType: 'counterbore',
+        holeBottom: 'drill',
+        counterboreDepth: '1',
+        counterboreDiameter: '2',
+        drillPointAngle: '110deg',
+      },
+      expected: {
+        holeBody: 'blind',
+        holeType: 'counterbore',
+        holeBottom: 'drill',
+        counterboreDepth: '1',
+        counterboreDiameter: '2',
+        drillPointAngle: '110deg',
+        countersinkAngle: undefined,
+        countersinkDiameter: undefined,
+        countersinkHeadClearance: undefined,
+      },
+    },
+  ] as const)(
+    'initializes $command from $authored',
+    async ({ command, authored, expected }) => {
+      const source = structuredClone(authored)
+      const context = dialogContext(getDialogCommandConfig(command), source)
+      const initialized = await initializeDialogArguments(context, instance)
+      const normalized = reconcileDialogArguments(context, initialized)
 
-runDialogContract('Revolve', [
-  {
-    name: 'retains the existing edge-axis selector without replacing native angle fields',
-    authored: {
-      edge: 'axis-edge',
-      axis: 'X',
-      angle: '90deg',
-      symmetric: true,
-    },
-    expectedValues: { axisOrEdge: 'Edge' },
-    expectedNormalized: { angle: '90deg', symmetric: true },
-    cleared: ['axis'],
-    fields: {
-      axis: { hidden: true, required: false },
-      edge: { hidden: false, required: true },
-      angle: { hidden: false, required: false },
-    },
-  },
-])
-
-runDialogContract('Hole', [
-  {
-    name: 'keeps a new hole simple and flat while seeding inactive dimensions',
-    expectedValues: { holeType: 'simple', holeBottom: 'flat' },
-    expectedNormalized: { holeBody: 'blind' },
-    cleared: [
-      'counterboreDepth',
-      'counterboreDiameter',
-      'countersinkAngle',
-      'countersinkDiameter',
-      'countersinkHeadClearance',
-      'drillPointAngle',
-    ],
-    fields: {
-      counterboreDepth: { hidden: true, required: false },
-      countersinkAngle: { hidden: true, required: false },
-      drillPointAngle: { hidden: true, required: false },
-    },
-  },
-  {
-    name: 'preserves an authored counterbore with a drill-point bottom',
-    authored: {
-      holeType: 'counterbore',
-      holeBottom: 'drill',
-      counterboreDepth: '1',
-      counterboreDiameter: '2',
-      drillPointAngle: '110deg',
-    },
-    expectedValues: { holeType: 'counterbore', holeBottom: 'drill' },
-    expectedNormalized: { holeBody: 'blind' },
-    cleared: [
-      'countersinkAngle',
-      'countersinkDiameter',
-      'countersinkHeadClearance',
-    ],
-    fields: {
-      counterboreDepth: { hidden: false, required: true },
-      countersinkAngle: { hidden: true, required: false },
-      drillPointAngle: { hidden: false, required: true },
-    },
-  },
-])
+      expect(normalized).toMatchObject(expected)
+      expect(source).toEqual(authored)
+      expect(reconcileDialogArguments(context, normalized)).toEqual(normalized)
+    }
+  )
+})
 
 describe('Export dialog dependencies', () => {
   it('reconciles storage when the format changes and clears incompatible hidden values', async () => {

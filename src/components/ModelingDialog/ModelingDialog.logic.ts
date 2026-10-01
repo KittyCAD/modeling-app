@@ -1,4 +1,5 @@
 import type { SelectionListItem } from '@kittycad/ui-components'
+import { isSelectionValueEmpty } from '@src/lib/commandBarConfigs/modelingDialogShared'
 import {
   canSubmitSelectionArg,
   getSelectionCountByType,
@@ -11,6 +12,8 @@ import type {
 } from '@src/lib/commandTypes'
 import { isArray } from '@src/lib/utils'
 import type { Selections } from '@src/machines/modelingSharedTypes'
+
+export { isSelectionValueEmpty }
 
 export type SelectionCommandArgument = Extract<
   CommandArgument<unknown>,
@@ -132,22 +135,6 @@ export function invalidReviewValidationState(
     details:
       details ?? (typeof error === 'string' ? undefined : error.reviewDetails),
   }
-}
-
-export function isSelectionValueEmpty(value: unknown): boolean {
-  if (!value || typeof value !== 'object') {
-    return true
-  }
-
-  const selection = value as Partial<Selections>
-  const graphSelections = isArray(selection.graphSelections)
-    ? selection.graphSelections
-    : []
-  const otherSelections = isArray(selection.otherSelections)
-    ? selection.otherSelections
-    : []
-
-  return graphSelections.length === 0 && otherSelections.length === 0
 }
 
 export type CapturedSelectionListItem = SelectionListItem & {

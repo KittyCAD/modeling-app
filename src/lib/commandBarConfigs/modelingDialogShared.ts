@@ -34,7 +34,7 @@ export function isSelections(value: unknown): value is Selections {
   )
 }
 
-function isSelectionValueEmpty(value: unknown): boolean {
+export function isSelectionValueEmpty(value: unknown): boolean {
   if (!value || typeof value !== 'object') {
     return true
   }

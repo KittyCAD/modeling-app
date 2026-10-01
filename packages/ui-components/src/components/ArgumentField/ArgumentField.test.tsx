@@ -5,6 +5,44 @@ import { describe, expect, test, vi } from 'vitest'
 const selectionItems = [{ id: 'face-1', label: 'Face 1' }]
 
 describe('ArgumentField', () => {
+  test.each(['select', 'segmented'] as const)(
+    '%s keeps false distinct from an omitted optional boolean',
+    (controlStyle) => {
+      const onChange = vi.fn()
+      const props = {
+        name: 'symmetric',
+        inputType: 'boolean' as const,
+        controlStyle,
+        label: 'Symmetric',
+        isRequired: false,
+        onChange,
+      }
+      const { rerender } = render(
+        <ArgumentField {...props} value={undefined} />
+      )
+      if (controlStyle === 'segmented') {
+        fireEvent.click(screen.getByRole('button', { name: 'Off' }))
+      } else {
+        const option = screen.getByRole<HTMLOptionElement>('option', {
+          name: 'False',
+        })
+        fireEvent.change(screen.getByRole('combobox'), {
+          target: { value: option.value },
+        })
+      }
+      expect(onChange).toHaveBeenLastCalledWith(false)
+      rerender(<ArgumentField {...props} value={false} />)
+      if (controlStyle === 'segmented') {
+        fireEvent.click(screen.getByRole('button', { name: 'Off' }))
+      } else {
+        fireEvent.change(screen.getByRole('combobox'), {
+          target: { value: '' },
+        })
+      }
+      expect(onChange).toHaveBeenLastCalledWith(undefined)
+    }
+  )
+
   test('starts selection only after explicit activation', () => {
     const onStartSelecting = vi.fn()
     const props = {

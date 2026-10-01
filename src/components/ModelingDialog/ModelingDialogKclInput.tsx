@@ -110,16 +110,9 @@ export function ModelingDialogKclInput({
   const lastReportedValueRef = useRef<unknown>(Symbol('initial-kcl-value'))
   const lastValidationStateRef = useRef<string>('')
   const isSyncingEditorValueRef = useRef(false)
-  const initialEditorValueRef = useRef(value)
-  const initialEditorDisabledRef = useRef(disabled)
-  const initialEditorLabelIdRef = useRef(labelId)
-  const initialEditorAutoFocusRef = useRef(autoFocus)
-  const initialEditorThemeRef = useRef(settingsValues.app.theme.current)
   const compartmentsRef = useRef({
     theme: new Compartment(),
     varMentions: new Compartment(),
-    setValue: new Compartment(),
-    keymap: new Compartment(),
     editable: new Compartment(),
     contentAttributes: new Compartment(),
   })
@@ -262,7 +255,14 @@ export function ModelingDialogKclInput({
       }),
     [prevVariables, wasmInstance]
   )
-  const initialEditorVarMentionDataRef = useRef(varMentionData)
+  const initialEditorProps = useRef({
+    value,
+    disabled,
+    labelId,
+    autoFocus,
+    theme: settingsValues.app.theme.current,
+    varMentionData,
+  })
   const isEmpty = value.trim() === ''
   const canUseUncalculatedValue =
     Boolean(arg.allowUncalculated) && valueNode !== null
@@ -330,54 +330,43 @@ export function ModelingDialogKclInput({
     }
 
     const commandScopes = registry.optional(commandScopeService)
-    const initialDisabled = initialEditorDisabledRef.current
+    const initial = initialEditorProps.current
     const compartments = compartmentsRef.current
     const editor = new EditorView({
       state: EditorState.create({
-        doc: initialEditorValueRef.current,
+        doc: initial.value,
         extensions: [
-          compartments.theme.of(
-            editorTheme[getResolvedTheme(initialEditorThemeRef.current)]
-          ),
-          compartments.varMentions.of(
-            varMentions(initialEditorVarMentionDataRef.current)
-          ),
+          compartments.theme.of(editorTheme[getResolvedTheme(initial.theme)]),
+          compartments.varMentions.of(varMentions(initial.varMentionData)),
           compartments.editable.of([
-            EditorState.readOnly.of(initialDisabled),
-            EditorView.editable.of(!initialDisabled),
+            EditorState.readOnly.of(initial.disabled),
+            EditorView.editable.of(!initial.disabled),
           ]),
           compartments.contentAttributes.of(
-            getKclEditorContentAttributes(
-              initialEditorLabelIdRef.current,
-              initialDisabled
-            )
+            getKclEditorContentAttributes(initial.labelId, initial.disabled)
           ),
-          compartments.setValue.of(
-            EditorView.updateListener.of((update) => {
-              if (update.docChanged && !isSyncingEditorValueRef.current) {
-                onChangeRef.current({
-                  source: 'edit',
-                  value: update.state.doc.toString(),
-                })
-              }
-            })
-          ),
+          EditorView.updateListener.of((update) => {
+            if (update.docChanged && !isSyncingEditorValueRef.current) {
+              onChangeRef.current({
+                source: 'edit',
+                value: update.state.doc.toString(),
+              })
+            }
+          }),
           closeBrackets(),
           keymap.of([...closeBracketsKeymap, ...completionKeymap]),
-          compartments.keymap.of(
-            keymap.of([
-              {
-                key: 'Enter',
-                run: (editorView) => {
-                  if (completionStatus(editorView.state) !== null) {
-                    return false
-                  }
-                  editorView.dom.closest('form')?.requestSubmit()
-                  return true
-                },
+          keymap.of([
+            {
+              key: 'Enter',
+              run: (editorView) => {
+                if (completionStatus(editorView.state) !== null) {
+                  return false
+                }
+                editorView.dom.closest('form')?.requestSubmit()
+                return true
               },
-            ])
-          ),
+            },
+          ]),
           EditorView.lineWrapping,
           tooltips({ parent: document.body }),
         ],
@@ -386,7 +375,7 @@ export function ModelingDialogKclInput({
     })
 
     editorRef.current = editor
-    if (initialEditorAutoFocusRef.current && !initialDisabled) {
+    if (initial.autoFocus && !initial.disabled) {
       editor.focus()
       editor.dispatch({
         selection: { anchor: 0, head: editor.state.doc.length },

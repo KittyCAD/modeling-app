@@ -11,7 +11,7 @@ import {
   profileSelectionRequiresBodyType,
   type ModelingDialogContext,
 } from '@src/lib/commandBarConfigs/modelingDialogShared'
-import type { KclCommandValue } from '@src/lib/commandTypes'
+import { isKclCommandValue } from '@src/lib/commandUtils'
 import {
   KCL_DEFAULT_LENGTH,
   KCL_DEFAULT_ORIGIN_2D,
@@ -20,24 +20,12 @@ import {
 } from '@src/lib/constants'
 import { isEnginePrimitiveSelection } from '@src/lib/selections'
 
-function isExtrudeRequirementKclCommandValue(
-  value: unknown
-): value is KclCommandValue {
-  return (
-    typeof value === 'object' &&
-    value !== null &&
-    'valueAst' in value &&
-    'valueText' in value &&
-    'valueCalculated' in value
-  )
-}
-
 export function extrudeSelectionRequiresBodyType(
   context: ModelingDialogContext
 ): boolean {
   if (
     !isUsingModelingDialog(context) &&
-    !isExtrudeRequirementKclCommandValue(context.argumentsToSubmit.length)
+    !isKclCommandValue(context.argumentsToSubmit.length)
   ) {
     return false
   }
@@ -51,7 +39,7 @@ export function extrudeSelectionRequiresMethod(
   const { argumentsToSubmit } = context
   if (
     !isUsingModelingDialog(context) &&
-    !isExtrudeRequirementKclCommandValue(argumentsToSubmit.length)
+    !isKclCommandValue(argumentsToSubmit.length)
   ) {
     return false
   }

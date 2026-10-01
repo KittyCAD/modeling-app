@@ -199,30 +199,6 @@ describe('modeling dialog label isolation', () => {
       )
     }
   })
-
-  it('keeps the new labels available only through dialog metadata', () => {
-    for (const [commandName, argName, paletteLabel, dialogLabel] of [
-      ['Extrude', 'length', 'length', 'Distance'],
-      ['Extrude', 'method', 'method', 'Operation'],
-      ['Extrude', 'bodyType', 'bodyType', 'Output'],
-      ['Revolve', 'axis', 'Sketch Axis', 'Sketch axis'],
-      ['Sweep', 'relativeTo', 'relativeTo', 'Legacy alignment'],
-      ['Loft', 'vDegree', 'vDegree', 'Interpolation degree'],
-      ['Hole', 'cutAt', 'cutAt', 'Center'],
-      ['Hole', 'holeType', 'holeType', 'Type'],
-      ['Chamfer', 'length', 'length', 'Distance'],
-    ] as const) {
-      const config = modelingMachineCommandConfig[commandName]
-      if (!config || isArray(config)) {
-        throw new Error(`${commandName} should have a single command config`)
-      }
-      const arg = Object.entries(config.args ?? {}).find(
-        ([name]) => name === argName
-      )?.[1]
-      expect(arg?.displayName ?? argName).toBe(paletteLabel)
-      expect(arg?.dialog?.displayName).toBe(dialogLabel)
-    }
-  })
 })
 
 describe('Extrude surface arguments', () => {
@@ -338,20 +314,6 @@ describe('Extrude surface arguments', () => {
       expect(evaluateHidden(argName, {})).toBe(false)
       expect(evaluateRequired(argName, {})).toBe(false)
     }
-  })
-
-  it('uses compact profile collection and puts operation in Result', () => {
-    expect(extrudeConfig().args?.sketches.dialog).toMatchObject({
-      group: 'selection',
-      compactSelection: true,
-    })
-    expect(extrudeConfig().args?.method?.dialog).toMatchObject({
-      group: 'result',
-      controlStyle: 'segmented',
-    })
-    expect(extrudeConfig().dialogLayout).toMatchObject({
-      showCommandDescription: false,
-    })
   })
 
   it('requires bodyType when extruding sketch segments after length is confirmed', () => {
@@ -598,23 +560,6 @@ describe('Revolve dialog arguments', () => {
       : Boolean(required)
   }
 
-  it('uses grouped, compact profile and axis controls', () => {
-    expect(
-      revolveConfig().dialogLayout?.groups.map((group) => group.id)
-    ).toEqual(['selection', 'axis', 'extent', 'result', 'advanced'])
-    expect(revolveConfig().dialogLayout).toMatchObject({
-      showCommandDescription: false,
-    })
-    expect(revolveConfig().args?.sketches.dialog).toMatchObject({
-      group: 'selection',
-      compactSelection: true,
-    })
-    expect(revolveConfig().args?.axisOrEdge.dialog).toMatchObject({
-      group: 'axis',
-      controlStyle: 'segmented',
-    })
-  })
-
   it('keeps the existing axis selector and exposes native angle controls', () => {
     expect(evaluateHidden('axis', { axisOrEdge: 'Axis' })).toBe(false)
     expect(evaluateRequired('axis', { axisOrEdge: 'Axis' })).toBe(true)
@@ -736,26 +681,6 @@ describe('Hole dialog arguments', () => {
         } as never)
       : Boolean(required)
   }
-
-  it('uses grouped placement, hole, bottom, and advanced sections', () => {
-    expect(holeConfig().dialogLayout?.groups.map((group) => group.id)).toEqual([
-      'placement',
-      'hole',
-      'bottom',
-      'advanced',
-    ])
-    expect(holeConfig().dialogLayout).toMatchObject({
-      showCommandDescription: false,
-    })
-    expect(holeConfig().args?.face.dialog).toMatchObject({
-      group: 'placement',
-      compactSelection: true,
-    })
-    expect(holeConfig().args?.holeType?.dialog).toMatchObject({
-      group: 'hole',
-      controlStyle: 'segmented',
-    })
-  })
 
   it('defaults hidden implementation choices to a simple flat blind hole', () => {
     expect(holeConfig().args?.holeBody).toMatchObject({
@@ -1000,39 +925,6 @@ describe('Sweep dialog arguments', () => {
       : Boolean(hidden)
   }
 
-  it('groups the primary geometry, alignment, result, and advanced controls', () => {
-    expect(sweepConfig().dialogLayout?.groups.map((group) => group.id)).toEqual(
-      ['profile', 'path', 'alignment', 'result', 'advanced']
-    )
-    expect(sweepConfig().dialogLayout).toMatchObject({
-      showCommandDescription: false,
-    })
-    expect(sweepConfig().args?.sketches.dialog).toMatchObject({
-      group: 'profile',
-      compactSelection: true,
-      hideLabel: true,
-    })
-    expect(sweepConfig().args?.path.dialog).toMatchObject({
-      group: 'path',
-      compactSelection: true,
-      hideLabel: true,
-    })
-    for (const argName of [
-      'translateProfileToPath',
-      'orientProfilePerpendicular',
-    ] as const) {
-      expect(sweepConfig().args?.[argName]).toMatchObject({
-        inputType: 'boolean',
-        required: false,
-        dialog: { group: 'alignment' },
-      })
-    }
-    expect(sweepConfig().args?.sectional?.dialog).toMatchObject({
-      group: 'advanced',
-      controlStyle: 'segmented',
-    })
-  })
-
   it('shows legacy alignment by itself when editing an old sweep', () => {
     const legacy = { nodeToEdit: [], relativeTo: 'TRAJECTORY' }
     expect(evaluateHidden('relativeTo', legacy)).toBe(false)
@@ -1043,50 +935,6 @@ describe('Sweep dialog arguments', () => {
     expect(evaluateHidden('translateProfileToPath', {})).toBe(false)
     expect(evaluateHidden('orientProfilePerpendicular', {})).toBe(false)
     expect(evaluateHidden('translateProfileToPath', legacy, false)).toBe(false)
-  })
-})
-
-describe('Loft dialog arguments', () => {
-  function loftConfig() {
-    const commandConfig = modelingMachineCommandConfig.Loft
-    if (!commandConfig || isArray(commandConfig)) {
-      throw new Error('Loft should have a single command config')
-    }
-    return commandConfig
-  }
-
-  it('makes ordered profiles the primary workflow', () => {
-    expect(loftConfig().dialogLayout?.groups.map((group) => group.id)).toEqual([
-      'profiles',
-      'result',
-      'advanced',
-    ])
-    expect(loftConfig().dialogLayout).toMatchObject({
-      showCommandDescription: false,
-    })
-    expect(loftConfig().args?.sketches.dialog).toMatchObject({
-      group: 'profiles',
-      selectionEmptyLabel: 'Select at least two profiles',
-      compactSelection: true,
-      hideLabel: true,
-      orderedSelection: true,
-    })
-  })
-
-  it('keeps interpolation controls in More options', () => {
-    for (const argName of [
-      'vDegree',
-      'bezApproximateRational',
-      'baseCurveIndex',
-      'tolerance',
-      'tagStart',
-      'tagEnd',
-    ] as const) {
-      expect(loftConfig().args?.[argName]?.dialog?.group).toBe('advanced')
-    }
-    expect(
-      loftConfig().args?.bezApproximateRational?.dialog?.controlStyle
-    ).toBe('segmented')
   })
 })
 
@@ -1126,19 +974,6 @@ describe('Chamfer dialog arguments', () => {
         } as never)
       : Boolean(required)
   }
-
-  it('uses compact edges, native dimensions, and More options', () => {
-    expect(
-      chamferConfig().dialogLayout?.groups.map((group) => group.id)
-    ).toEqual(['selection', 'size', 'advanced'])
-    expect(chamferConfig().args?.selection.dialog).toMatchObject({
-      group: 'selection',
-      compactSelection: true,
-      hideLabel: true,
-    })
-    expect(chamferConfig().args?.length?.dialog?.group).toBe('size')
-    expect(chamferConfig().args?.version?.dialog?.group).toBe('advanced')
-  })
 
   it('leaves optional native dimensions visible without prepopulating them', () => {
     for (const argName of ['secondLength', 'angle'] as const) {
@@ -1270,70 +1105,10 @@ function pointAndClickStdLibArgs(config: StdLibCommandDriftConfig) {
 }
 
 describe('stdlib command arg derivation', () => {
-  const commandsUsingCanonicalSummary = [
-    'Sweep',
-    'Loft',
-    'Offset plane',
-    'Translate',
-    'Rotate',
-    'Scale',
-    'Clone',
-    'GDT Flatness',
-    'GDT Straightness',
-    'GDT Circularity',
-    'GDT Cylindricity',
-    'GDT Position',
-    'GDT Distance',
-    'GDT Perpendicularity',
-    'GDT Angularity',
-    'GDT Concentricity',
-    'GDT Symmetry',
-    'GDT Runout',
-    'GDT Parallelism',
-    'GDT Annotation',
-    'GDT Note',
-    'Boolean Subtract',
-    'Boolean Union',
-    'Boolean Intersect',
-    'Flip Surface',
-  ] as const satisfies readonly (keyof typeof modelingCommandStdLibDriftConfig)[]
-
-  const commandsUsingProductSummary = [
-    'Extrude',
-    'Revolve',
-    'Shell',
-    'Hole',
-    'Fillet',
-    'Chamfer',
-    'Helix',
-    'Helical Gear',
-    'Herringbone Gear',
-    'Spur Gear',
-    'Ring Gear',
-    'Appearance',
-    'Delete',
-    'Mirror 3D',
-    'Pattern Circular 3D',
-    'Pattern Linear 3D',
-    'GDT Datum',
-    'GDT Profile',
-    'Boolean Split',
-    'Delete Face',
-    'Blend',
-    'Join Surfaces',
-  ] as const satisfies readonly (keyof typeof modelingCommandStdLibDriftConfig)[]
-
   it('routes every stdlib-backed command through its summary adapter', () => {
     const commandNames = Object.keys(modelingCommandStdLibDriftConfig) as Array<
       keyof typeof modelingCommandStdLibDriftConfig
     >
-
-    expect(
-      uniqueSorted([
-        ...commandsUsingCanonicalSummary,
-        ...commandsUsingProductSummary,
-      ])
-    ).toEqual(uniqueSorted(commandNames))
 
     for (const commandName of commandNames) {
       const commandConfig = modelingMachineCommandConfig[commandName]
@@ -1346,24 +1121,6 @@ describe('stdlib command arg derivation', () => {
       expect(stdLibCommandSummary(stdLibName)).toBeTruthy()
       expect(commandConfig.description).toBe(
         modelingStdLibCommandSummary(commandName)
-      )
-    }
-  })
-
-  it('derives canonical summaries and keeps product copy as explicit exceptions', () => {
-    for (const commandName of commandsUsingCanonicalSummary) {
-      const stdLibName =
-        modelingCommandStdLibDriftConfig[commandName].stdLibName
-      const summary = modelingStdLibCommandSummary(commandName)
-      expect(summary).toBe(stdLibCommandSummary(stdLibName))
-      expect(summary).not.toMatch(/[\r\n]|\[[^\]]+\]\([^)]+\)/)
-    }
-
-    for (const commandName of commandsUsingProductSummary) {
-      const stdLibName =
-        modelingCommandStdLibDriftConfig[commandName].stdLibName
-      expect(modelingStdLibCommandSummary(commandName)).not.toBe(
-        stdLibCommandSummary(stdLibName)
       )
     }
   })

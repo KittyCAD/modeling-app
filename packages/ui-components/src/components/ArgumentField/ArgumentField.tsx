@@ -59,13 +59,6 @@ export function isOptionValueEqual(a: unknown, b: unknown): boolean {
   return a === b
 }
 
-function FieldDescription({ description }: { description?: ReactNode }) {
-  if (!description) {
-    return null
-  }
-  return <>{description}</>
-}
-
 function FieldLabel({
   label,
   isRequired,
@@ -111,8 +104,18 @@ export function ArgumentField<Item extends SelectionListItem>({
   const inputClassName =
     'min-h-7 w-full rounded-sm border border-chalkboard-30 bg-transparent px-2 py-1 text-xs leading-tight focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-0 focus-visible:outline-appForeground disabled:cursor-not-allowed disabled:bg-chalkboard-10 disabled:text-chalkboard-60 dark:border-chalkboard-70 dark:disabled:bg-chalkboard-90 dark:disabled:text-chalkboard-50'
 
-  if (inputType === 'options') {
-    const selectedIndex = options.findIndex((option) =>
+  if (inputType === 'options' || inputType === 'boolean') {
+    const choices =
+      inputType === 'boolean'
+        ? [
+            { name: controlStyle === 'segmented' ? 'On' : 'True', value: true },
+            {
+              name: controlStyle === 'segmented' ? 'Off' : 'False',
+              value: false,
+            },
+          ]
+        : options
+    const selectedIndex = choices.findIndex((option) =>
       isOptionValueEqual(option.value, value)
     )
 
@@ -123,14 +126,14 @@ export function ArgumentField<Item extends SelectionListItem>({
           <ChoiceGroup
             name={name}
             value={value}
-            options={options}
+            options={choices}
             onChange={onChange}
             isValueEqual={isOptionValueEqual}
             allowDeselect={!isRequired}
             ariaLabel={typeof label === 'string' ? label : name}
             disabled={disabled}
           />
-          <FieldDescription description={description} />
+          {description}
         </div>
       )
     }
@@ -144,15 +147,19 @@ export function ArgumentField<Item extends SelectionListItem>({
           onChange={(event) => {
             const rawIndex = event.target.value
             onChange(
-              rawIndex === '' ? undefined : options[Number(rawIndex)]?.value
+              rawIndex === '' ? undefined : choices[Number(rawIndex)]?.value
             )
           }}
           className={inputClassName}
         >
           <option value="" disabled={isRequired}>
-            {isRequired ? 'Select an option' : 'Optional'}
+            {!isRequired
+              ? 'Optional'
+              : inputType === 'boolean'
+                ? 'Select true or false'
+                : 'Select an option'}
           </option>
-          {options.map((option, index) => (
+          {choices.map((option, index) => (
             <option
               key={`${name}-${String(option.name)}-${index}`}
               value={String(index)}
@@ -162,56 +169,7 @@ export function ArgumentField<Item extends SelectionListItem>({
             </option>
           ))}
         </select>
-        <FieldDescription description={description} />
-      </label>
-    )
-  }
-
-  if (inputType === 'boolean') {
-    const boolValue = value === true ? 'true' : value === false ? 'false' : ''
-    if (controlStyle === 'segmented') {
-      return (
-        <div className={fieldClassName}>
-          <FieldLabel label={label} isRequired={isRequired} />
-          <ChoiceGroup
-            name={name}
-            value={value === true || value === false ? value : undefined}
-            options={[
-              { name: 'On', value: true },
-              { name: 'Off', value: false },
-            ]}
-            onChange={onChange}
-            allowDeselect={!isRequired}
-            ariaLabel={typeof label === 'string' ? label : name}
-            disabled={disabled}
-          />
-          <FieldDescription description={description} />
-        </div>
-      )
-    }
-
-    return (
-      <label className={fieldClassName}>
-        <FieldLabel label={label} isRequired={isRequired} />
-        <select
-          value={boolValue}
-          disabled={disabled}
-          onChange={(event) =>
-            onChange(
-              event.target.value === ''
-                ? undefined
-                : event.target.value === 'true'
-            )
-          }
-          className={inputClassName}
-        >
-          <option value="" disabled={isRequired}>
-            {isRequired ? 'Select true or false' : 'Optional'}
-          </option>
-          <option value="true">True</option>
-          <option value="false">False</option>
-        </select>
-        <FieldDescription description={description} />
+        {description}
       </label>
     )
   }
@@ -286,7 +244,7 @@ export function ArgumentField<Item extends SelectionListItem>({
             )}
           </div>
         </div>
-        <FieldDescription description={description} />
+        {description}
       </div>
     )
   }
@@ -302,42 +260,7 @@ export function ArgumentField<Item extends SelectionListItem>({
           className={`${inputClassName} min-h-16`}
           placeholder={typeof label === 'string' ? label : name}
         />
-        <FieldDescription description={description} />
-      </label>
-    )
-  }
-
-  if (inputType === 'vector2d' || inputType === 'vector3d') {
-    return (
-      <label className={fieldClassName}>
-        <FieldLabel label={label} isRequired={isRequired} />
-        <input
-          type="text"
-          value={typeof value === 'string' ? value : ''}
-          disabled={disabled}
-          onChange={(event) => onChange(event.target.value)}
-          className={inputClassName}
-          placeholder={inputType === 'vector2d' ? '[x, y]' : '[x, y, z]'}
-        />
-        <FieldDescription description={description} />
-      </label>
-    )
-  }
-
-  if (inputType === 'color') {
-    const colorValue =
-      typeof value === 'string' && value.startsWith('#') ? value : '#ffffff'
-    return (
-      <label className={fieldClassName}>
-        <FieldLabel label={label} isRequired={isRequired} />
-        <input
-          type="color"
-          value={colorValue}
-          disabled={disabled}
-          onChange={(event) => onChange(event.target.value)}
-          className="h-8 w-full rounded-sm border border-chalkboard-30 bg-transparent focus-visible:outline focus-visible:outline-1 focus-visible:outline-appForeground disabled:cursor-not-allowed dark:border-chalkboard-70"
-        />
-        <FieldDescription description={description} />
+        {description}
       </label>
     )
   }
@@ -346,14 +269,34 @@ export function ArgumentField<Item extends SelectionListItem>({
     <label className={fieldClassName}>
       <FieldLabel label={label} isRequired={isRequired} />
       <input
-        type="text"
-        value={typeof value === 'string' ? value : ''}
+        type={inputType === 'color' ? 'color' : 'text'}
+        value={
+          inputType === 'color'
+            ? typeof value === 'string' && value.startsWith('#')
+              ? value
+              : '#ffffff'
+            : typeof value === 'string'
+              ? value
+              : ''
+        }
         disabled={disabled}
         onChange={(event) => onChange(event.target.value)}
-        className={inputClassName}
-        placeholder={typeof label === 'string' ? label : name}
+        className={
+          inputType === 'color'
+            ? 'h-8 w-full rounded-sm border border-chalkboard-30 bg-transparent focus-visible:outline focus-visible:outline-1 focus-visible:outline-appForeground disabled:cursor-not-allowed dark:border-chalkboard-70'
+            : inputClassName
+        }
+        placeholder={
+          inputType === 'vector2d'
+            ? '[x, y]'
+            : inputType === 'vector3d'
+              ? '[x, y, z]'
+              : typeof label === 'string'
+                ? label
+                : name
+        }
       />
-      <FieldDescription description={description} />
+      {description}
     </label>
   )
 }
