@@ -1498,7 +1498,6 @@ test(
     const deleteMenuItem = page.getByRole('button', { name: 'Delete' })
     const deleteConfirmation = page.getByTestId('delete-confirmation')
     const archivedToast = page.getByText('archived successfully')
-    const restoredToast = page.getByText('restored successfully')
     const undoButton = page.getByRole('button', { name: 'arrow turn left' })
     const redoButton = page.getByRole('button', { name: 'arrow turn right' })
 
@@ -1536,8 +1535,7 @@ test(
         !(await fileToDelete.isVisible()) &&
         !(await undoButton.isDisabled())
       )
-
-      await expect(restoredToast).toBeVisible()
+      await expect(fileToDelete).toBeVisible()
 
       await undoButton.click()
       await expect(u.codeLocator).not.toContainText('interleaveA = 1')
