@@ -1,4 +1,4 @@
-import { KclMigrationDialog } from '@src/components/KclMigrationDialog'
+import { KclMigrationPanel } from '@src/components/KclMigrationPanel'
 import {
   migrationFixture,
   sourceCode,
@@ -18,7 +18,12 @@ afterEach(async () => {
 
 it('asks for preview consent, reviews a real response, applies only on acceptance and exposes project Undo', async () => {
   const view = render(
-    <KclMigrationDialog controller={fixture.controller} enabled sourceIsKcl2 />
+    <KclMigrationPanel
+      controller={fixture.controller}
+      chatBusy={false}
+      enabled
+      sourceIsKcl2
+    />
   )
   fireEvent.click(screen.getByRole('button', { name: 'Migrate to KCL 3' }))
   expect(
@@ -46,17 +51,32 @@ it('asks for preview consent, reviews a real response, applies only on acceptanc
   ).toBeVisible()
   expect(await fixture.readMain()).toBe(targetCode)
   view.rerender(
-    <KclMigrationDialog
+    <KclMigrationPanel
+      controller={fixture.controller}
+      chatBusy={false}
+      enabled
+      sourceIsKcl2={false}
+    />
+  )
+  view.unmount()
+  const reopened = render(
+    <KclMigrationPanel
       controller={fixture.controller}
       enabled
       sourceIsKcl2={false}
+      chatBusy={false}
     />
   )
   expect(screen.getByRole('button', { name: 'Undo Migration' })).toBeVisible()
   fireEvent.click(screen.getByRole('button', { name: 'Undo Migration' }))
   await waitFor(async () => expect(await fixture.readMain()).toBe(sourceCode))
-  view.rerender(
-    <KclMigrationDialog controller={fixture.controller} enabled sourceIsKcl2 />
+  reopened.rerender(
+    <KclMigrationPanel
+      controller={fixture.controller}
+      enabled
+      sourceIsKcl2
+      chatBusy={false}
+    />
   )
   await waitFor(() =>
     expect(screen.getByRole('status')).toHaveTextContent(
@@ -68,8 +88,9 @@ it('asks for preview consent, reviews a real response, applies only on acceptanc
 
 it('does not offer migration when the rollout flag is disabled', () => {
   render(
-    <KclMigrationDialog
+    <KclMigrationPanel
       controller={fixture.controller}
+      chatBusy={false}
       enabled={false}
       sourceIsKcl2
     />
@@ -79,11 +100,54 @@ it('does not offer migration when the rollout flag is disabled', () => {
 
 it('does not offer migration for a project without an explicit KCL 2 entrypoint', () => {
   render(
-    <KclMigrationDialog
+    <KclMigrationPanel
       controller={fixture.controller}
+      chatBusy={false}
       enabled
       sourceIsKcl2={false}
     />
   )
   expect(screen.queryByRole('button')).not.toBeInTheDocument()
+})
+
+it('waits for ordinary chat before starting or applying a migration', async () => {
+  const view = render(
+    <KclMigrationPanel
+      controller={fixture.controller}
+      enabled
+      sourceIsKcl2
+      chatBusy
+    />
+  )
+  fireEvent.click(screen.getByRole('button', { name: 'Migrate to KCL 3' }))
+  fireEvent.click(screen.getByRole('checkbox'))
+  expect(
+    screen.getByRole('button', { name: 'Start Free Migration' })
+  ).toBeDisabled()
+  view.rerender(
+    <KclMigrationPanel
+      controller={fixture.controller}
+      enabled
+      sourceIsKcl2
+      chatBusy={false}
+    />
+  )
+  fireEvent.click(screen.getByRole('button', { name: 'Start Free Migration' }))
+  await waitFor(() =>
+    expect(screen.getByRole('status')).toHaveTextContent('Converting')
+  )
+  await act(async () => {
+    fixture.send(successfulOperation(fixture.request))
+  })
+  await screen.findByRole('heading', { name: 'Review Changes' })
+  view.rerender(
+    <KclMigrationPanel
+      controller={fixture.controller}
+      enabled
+      sourceIsKcl2
+      chatBusy
+    />
+  )
+  expect(screen.getByRole('button', { name: 'Apply Migration' })).toBeDisabled()
+  expect(await fixture.readMain()).toBe(sourceCode)
 })

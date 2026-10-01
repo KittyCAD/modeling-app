@@ -4,11 +4,11 @@ Implements the app flow for [text-to-cad#4257](https://github.com/KittyCAD/text-
 
 ## User flow
 
-The API's `zookeeper_kcl_migration` feature flag exposes **Migrate to KCL 3** in the project header only when the entrypoint explicitly declares KCL 2.0, including unsaved edits. Existing migration results and Undo stay accessible after applying KCL 3. The user consents to KCL 3 preview and starts a free migration with a server-enforced 20-minute deadline. Confirmed pre-conversion failures show that the attempt did not count toward the daily limit. API owns eligibility, quotas and billing; this PR adds no paid-tier restriction.
+The API's `zookeeper_kcl_migration` feature flag exposes **Migrate to KCL 3** in the Zookeeper pane only when the entrypoint explicitly declares KCL 2.0, including unsaved edits. Existing migration results and Undo stay accessible after applying KCL 3. The user consents to KCL 3 preview and starts a free migration with a server-enforced 20-minute deadline. Confirmed pre-conversion failures show that the attempt did not count toward the daily limit. API owns eligibility, quotas and billing; this PR adds no paid-tier restriction.
 
 The app captures the complete project, including unsaved KCL buffers and unchanged binary/support files (excluding Git and internal filesystem metadata). It checks the explicit KCL 2 entrypoint and client support for `3.0-preview`. Unsupported paths, symbolic links, unreadable files, or projects over 256 files / 8 MiB fail before submission.
 
-Conversion uses authenticated `/ws/ml/kcl-migration`. The dialog shows status, deadline and cancellation. Disconnect recovery queries the existing operation; it never silently starts another attempt. API cancellation on disconnect means conversion itself does not resume.
+Conversion uses authenticated `/ws/ml/kcl-migration`. The inline migration card shows status, deadline and cancellation. The existing conversation stays intact, and chat input is paused while migration is running or applying. The current backend sends operation status and the final result, not live agent messages or tool calls. After applying, ordinary chat continues using the updated project files; the conversion itself does not receive the previous chat history. Disconnect recovery queries the existing operation; it never silently starts another attempt. API cancellation on disconnect means conversion itself does not resume.
 
 Only a successful response with matching project/snapshot/operation identity and complete validation evidence enters review. Users inspect file diffs and the validation summary, then explicitly apply. Original and candidate ZIP downloads are available.
 
@@ -22,7 +22,7 @@ If a write fails, completed writes are restored where their bytes still match th
 
 ## Integration and release
 
-- `src/lib/kclMigration/`: public protocol, snapshot checks, connection, lifecycle and guarded writes. React renders this state through the header registry contribution.
+- `src/lib/kclMigration/`: public protocol, snapshot checks, connection, lifecycle and guarded writes. React renders this state in the Zookeeper pane. A registry service owns the controller for the open project session, so closing the pane or switching editor tabs preserves review and Undo.
 - Shared changes are limited to a directory-lock callback, no-follow file inspection, and a cloud-sync pause using the existing sync mutex.
 - The public wire types are generated from API #4696 with `scripts/generate-kcl-migration-types.mjs`. Replace this temporary generated subset with published SDK exports when available.
 - Keep the API rollout flag off until compatible backends are deployed and a real backend-to-app smoke test passes. The app never receives internal worker grants or service credentials.

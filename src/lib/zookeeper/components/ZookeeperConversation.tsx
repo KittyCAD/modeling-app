@@ -44,6 +44,7 @@ export interface ZookeeperConversationProps {
   // Callers can provide a local component today, then swap to a remotely
   // authored source later without changing the conversation layout below.
   welcomeMessage?: ReactNode
+  afterMessages?: ReactNode
   onProcess: (
     request: string,
     mode: MlCopilotModeId | undefined,
@@ -56,6 +57,7 @@ export interface ZookeeperConversationProps {
   onOpenBilling?: () => void
   interruptedTurnAwaitingResume?: boolean
   isResumingInterruptedTurn?: boolean
+  resumeDisabled?: boolean
   onResumeInterruptedTurn?: () => void
   connectionError?: string
   accessDeniedCode?: MlCopilotAccessDeniedCode
@@ -785,7 +787,10 @@ export const ZookeeperConversation = (props: ZookeeperConversationProps) => {
                             className="h-7 w-fit focus-visible:outline-appForeground"
                             iconStart={{ icon: 'arrowRight' }}
                             onClick={props.onResumeInterruptedTurn}
-                            disabled={props.isResumingInterruptedTurn}
+                            disabled={
+                              props.isResumingInterruptedTurn ||
+                              props.resumeDisabled
+                            }
                             tabIndex={0}
                           >
                             {props.isResumingInterruptedTurn
@@ -812,6 +817,7 @@ export const ZookeeperConversation = (props: ZookeeperConversationProps) => {
                   </Loading>
                 </div>
               )}
+              {props.afterMessages}
             </div>
           </div>
           {props.queue.length > 0 && (

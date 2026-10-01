@@ -1,6 +1,5 @@
 import { signal } from '@preact/signals-core'
 import { MigrationRecoveryError } from '@src/lib/kclMigration/apply'
-import { isErr } from '@src/lib/trap'
 import {
   connectMigration,
   type MigrationConnection,
@@ -14,6 +13,7 @@ import {
   candidateFiles,
   type ProjectFiles,
 } from '@src/lib/kclMigration/snapshot'
+import { isErr } from '@src/lib/trap'
 
 export interface MigrationSnapshot {
   projectId: string
@@ -57,6 +57,18 @@ export class MigrationController {
   private connection: MigrationConnection | undefined
   private disposed = false
   private cancelled = false
+
+  get busy(): boolean {
+    return [
+      'capturing',
+      'connecting',
+      'running',
+      'cancelling',
+      'disconnected',
+      'applying',
+      'undoing',
+    ].includes(this.phase.value)
+  }
 
   constructor(
     private readonly project: MigrationProject,
