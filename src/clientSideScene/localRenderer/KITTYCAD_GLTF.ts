@@ -1,5 +1,5 @@
-import { Mesh } from 'three'
-import type { GLTF, GLTFReference } from 'three/examples/jsm/loaders/GLTFLoader'
+
+import type { GLTF } from 'three/examples/jsm/loaders/GLTFLoader'
 
 export type KITTYCAD_GLTF = GLTF & {
   userData: {
@@ -71,35 +71,6 @@ export type KITTYCAD_UUID_EXTRAS = {
       uuid: string
     }
   }
-}
-
-/** Attach B-rep face IDs to the corresponding glTF primitive meshes. */
-export function assignFaceUuids(gltf: KITTYCAD_GLTF) {
-  const brep = gltf.userData.gltfExtensions.KITTYCAD_boundary_representation
-  const faceIdsBySolidMesh = new Map<number, number[]>()
-
-  for (const solid of brep.solids) {
-    const faceIds = solid.shells.flatMap(
-      ([shellIndex]) =>
-        brep.shells[shellIndex]?.faces.map(([faceIndex]) => faceIndex) ?? []
-    )
-    faceIdsBySolidMesh.set(solid.mesh, faceIds)
-  }
-
-  gltf.scene.traverse((object) => {
-    if (!(object instanceof Mesh)) return
-    const association = gltf.parser.associations.get(object) as
-      | (GLTFReference & { primitives?: number })
-      | undefined
-    const meshIndex = association?.meshes
-    const primitiveIndex = association?.primitives
-    if (meshIndex === undefined || primitiveIndex === undefined) return
-
-    const faceIndex = faceIdsBySolidMesh.get(meshIndex)?.[primitiveIndex]
-    const face = faceIndex === undefined ? undefined : brep.faces[faceIndex]
-    const uuid = face?.extras?.KITTYCAD?.uuid
-    if (uuid) object.userData.faceUuid = uuid
-  })
 }
 
 type KIITYCAD_GLTF_SURFACE = {

@@ -33,7 +33,7 @@ import {
   BufferGeometry,
   type Camera,
   Material,
-  type Mesh,
+  Mesh,
   NeutralToneMapping,
   type Object3D,
   OrthographicCamera,
@@ -44,7 +44,7 @@ import {
   Vector2,
   Vector3,
 } from 'three'
-import { GLTF, GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
+import { GLTFLoader, GLTFReference } from 'three/examples/jsm/loaders/GLTFLoader.js'
 import type DenoiseNode from 'three/examples/jsm/tsl/display/DenoiseNode.js'
 import { denoise } from 'three/examples/jsm/tsl/display/DenoiseNode.js'
 import type GTAONode from 'three/examples/jsm/tsl/display/GTAONode.js'
@@ -56,7 +56,7 @@ import {
   RenderPipeline,
   WebGPURenderer,
 } from 'three/webgpu'
-import { assignFaceUuids, type KITTYCAD_GLTF } from './KITTYCAD_GLTF'
+import { type KITTYCAD_GLTF } from './KITTYCAD_GLTF'
 
 const WEBGPU_PORT_DEBUG_STORAGE_KEY = 'webgpu-port-debug'
 const WEBGPU_PORT_LOG_PREFIX = '[WEBGPU_POC]'
@@ -1243,4 +1243,45 @@ function convertEngineWorldVectorToGltfWorld(
   scale = 1
 ): Vector3 {
   return new Vector3(vector.x * scale, vector.z * scale, -vector.y * scale)
+}
+
+/** Attach B-rep face IDs to the corresponding glTF primitive meshes. */
+export function assignFaceUuids(gltf: KITTYCAD_GLTF) {
+  const brep = gltf.userData.gltfExtensions.KITTYCAD_boundary_representation
+  const faceIdsBySolidMesh = new Map<number, number[]>()
+
+  for (const solid of brep.solids) {
+    const faceIds = solid.shells.flatMap(
+      ([shellIndex]) =>
+        brep.shells[shellIndex]?.faces.map(([faceIndex]) => faceIndex) ?? []
+    )
+    const primitiveCount =
+      gltf.parser.json.meshes?.[solid.mesh]?.primitives?.length ?? 0
+    if (faceIds.length !== primitiveCount) {
+      console.warn(
+        'B-rep face count does not match glTF mesh primitive count; face UUID assignment may be incorrect.',
+        {
+          meshIndex: solid.mesh,
+          faceCount: faceIds.length,
+          primitiveCount,
+        }
+      )
+    }
+    faceIdsBySolidMesh.set(solid.mesh, faceIds)
+  }
+
+  gltf.scene.traverse((object) => {
+    if (!(object instanceof Mesh)) return
+    const association = gltf.parser.associations.get(object) as
+      | (GLTFReference & { primitives?: number })
+      | undefined
+    const meshIndex = association?.meshes
+    const primitiveIndex = association?.primitives
+    if (meshIndex === undefined || primitiveIndex === undefined) return
+
+    const faceIndex = faceIdsBySolidMesh.get(meshIndex)?.[primitiveIndex]
+    const face = faceIndex === undefined ? undefined : brep.faces[faceIndex]
+    const uuid = face?.extras?.KITTYCAD?.uuid
+    if (uuid) object.userData.faceUuid = uuid
+  })
 }
