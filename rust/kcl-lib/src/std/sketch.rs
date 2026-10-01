@@ -1,7 +1,6 @@
 //! Functions related to sketching.
 
 use std::collections::HashMap;
-use std::f64;
 
 use anyhow::Result;
 use indexmap::IndexMap;
@@ -3152,7 +3151,7 @@ async fn inner_region(
                     original_id: region_id,
                     artifact_id: region_id.into(),
                     origin_sketch_id: None,
-                    on: segment.surface.clone(),
+                    on: segment.surface,
                     paths: imbl::vector![first_path],
                     inner_paths: vec![],
                     units,
