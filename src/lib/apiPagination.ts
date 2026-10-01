@@ -74,7 +74,7 @@ export function listClientItems<T>(
     const body: ApiListResponse<T> | { announcements: T[] } =
       await response.json()
     if (body !== null && typeof body === 'object' && 'announcements' in body) {
-      if (path !== '/announcements') {
+      if (new URL(path, 'https://api.zoo.dev').pathname !== '/announcements') {
         return Promise.reject(new Error('Invalid API list response'))
       }
       return body.announcements

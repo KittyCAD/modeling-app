@@ -13,30 +13,60 @@ const announcement: Announcement = {
 
 describe('API list compatibility', () => {
   test.each([
-    { announcements: [announcement] },
-    { items: [announcement], next_page: null },
-  ])('accepts legacy and paginated announcements', async (body) => {
-    const transport = vi
-      .fn<typeof fetch>()
-      .mockResolvedValue(Response.json(body))
+    {
+      path: '/announcements',
+      body: { announcements: [announcement] },
+    },
+    {
+      path: '/announcements?locale=en',
+      body: { announcements: [announcement] },
+    },
+    {
+      path: '/announcements',
+      body: { items: [announcement], next_page: null },
+    },
+    {
+      path: '/announcements?locale=en',
+      body: { items: [announcement], next_page: null },
+    },
+  ])(
+    'accepts legacy and paginated announcements at $path',
+    async ({ path, body }) => {
+      const transport = vi
+        .fn<typeof fetch>()
+        .mockResolvedValue(Response.json(body))
+      const client = new Client({
+        baseUrl: 'https://api.example.test/proxy/',
+        token: 'test-token',
+        fetch: transport,
+      })
+      const controller = new AbortController()
+
+      await expect(
+        listClientItems<Announcement>(client, path, controller.signal)
+      ).resolves.toEqual([announcement])
+      expect(transport).toHaveBeenCalledWith(
+        `https://api.example.test/proxy${path}`,
+        {
+          method: 'GET',
+          headers: { Authorization: 'Bearer test-token' },
+          signal: controller.signal,
+        }
+      )
+    }
+  )
+
+  test('rejects the announcements envelope at a different endpoint with the same prefix', async () => {
     const client = new Client({
-      baseUrl: 'https://api.example.test/proxy/',
-      token: 'test-token',
-      fetch: transport,
+      baseUrl: 'https://api.example.test',
+      fetch: vi
+        .fn<typeof fetch>()
+        .mockResolvedValue(Response.json({ announcements: [announcement] })),
     })
-    const controller = new AbortController()
 
     await expect(
-      listClientItems<Announcement>(client, '/announcements', controller.signal)
-    ).resolves.toEqual([announcement])
-    expect(transport).toHaveBeenCalledWith(
-      'https://api.example.test/proxy/announcements',
-      {
-        method: 'GET',
-        headers: { Authorization: 'Bearer test-token' },
-        signal: controller.signal,
-      }
-    )
+      listClientItems<Announcement>(client, '/announcements-archive?locale=en')
+    ).rejects.toThrow('Invalid API list response')
   })
 
   test.each([
