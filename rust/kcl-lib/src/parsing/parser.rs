@@ -906,10 +906,7 @@ fn sketch_var(i: &mut TokenSlice) -> ModalResult<Node<SketchVar>> {
 
     Ok(Node::new(
         SketchVar {
-            initial: expr.map(|expr| {
-                let (start, end, module_id) = (expr.start(), expr.end(), expr.module_id());
-                BoxNode::new(Node::new(expr, start, end, module_id))
-            }),
+            initial: expr,
             digest: None,
         },
         var_token.start,
@@ -4799,7 +4796,7 @@ e
         let actual = in_sketch_ctx(|| sketch_var.parse(tokens)).unwrap();
         let initial = actual.inner.initial.unwrap();
         assert!(
-            matches!(&initial.inner, Expr::Literal(literal) if matches!(literal.value, LiteralValue::Number { value, suffix } if value == 1.5 && suffix == NumericSuffix::None))
+            matches!(&initial, Expr::Literal(literal) if matches!(literal.value, LiteralValue::Number { value, suffix } if value == 1.5 && suffix == NumericSuffix::None))
         );
 
         let tokens = crate::parsing::token::lex("var -1.5", ModuleId::default()).unwrap();
@@ -4807,7 +4804,7 @@ e
         let actual = in_sketch_ctx(|| sketch_var.parse(tokens)).unwrap();
         let initial = actual.inner.initial.unwrap();
         assert!(
-            matches!(&initial.inner, Expr::UnaryExpression(unary) if unary.operator == UnaryOperator::Neg && matches!(&unary.argument, BinaryPart::Literal(literal) if matches!(literal.value, LiteralValue::Number { value, suffix } if value == 1.5 && suffix == NumericSuffix::None)))
+            matches!(&initial, Expr::UnaryExpression(unary) if unary.operator == UnaryOperator::Neg && matches!(&unary.argument, BinaryPart::Literal(literal) if matches!(literal.value, LiteralValue::Number { value, suffix } if value == 1.5 && suffix == NumericSuffix::None)))
         );
 
         let tokens = crate::parsing::token::lex("var 1.5ft", ModuleId::default()).unwrap();
@@ -4815,15 +4812,20 @@ e
         let actual = in_sketch_ctx(|| sketch_var.parse(tokens)).unwrap();
         let initial = actual.inner.initial.unwrap();
         assert!(
-            matches!(&initial.inner, Expr::Literal(literal) if matches!(literal.value, LiteralValue::Number { value, suffix } if value == 1.5 && suffix == NumericSuffix::Ft))
+            matches!(&initial, Expr::Literal(literal) if matches!(literal.value, LiteralValue::Number { value, suffix } if value == 1.5 && suffix == NumericSuffix::Ft))
         );
 
         let tokens = crate::parsing::token::lex("var 1 + 2", ModuleId::default()).unwrap();
         let actual = in_sketch_ctx(|| sketch_var.parse(tokens.as_slice())).unwrap();
-        assert!(matches!(
-            &actual.inner.initial.unwrap().inner,
-            Expr::BinaryExpression(_)
-        ));
+        assert!(matches!(&actual.inner.initial.unwrap(), Expr::BinaryExpression(_)));
+    }
+
+    #[test]
+    fn sketch_var_ast_survives_json_round_trip() {
+        let program = crate::parsing::top_level_parse("sketch(on = XY) {\n  width = var 1 + 2\n}\n").unwrap();
+        let json = serde_json::to_string(&program).unwrap();
+        let browser_json = serde_json::to_string(&serde_json::from_str::<serde_json::Value>(&json).unwrap()).unwrap();
+        let _: crate::parsing::ast::types::Program = serde_json::from_str(&browser_json).unwrap();
     }
 
     #[test]
@@ -4895,7 +4897,7 @@ e
             panic!("not a sketch var")
         };
         assert!(
-            matches!(&sketch_var.inner.initial.as_ref().unwrap().inner, Expr::Literal(literal) if matches!(literal.value, LiteralValue::Number { value, suffix } if value == 1.5 && suffix == NumericSuffix::None))
+            matches!(&sketch_var.inner.initial.as_ref().unwrap(), Expr::Literal(literal) if matches!(literal.value, LiteralValue::Number { value, suffix } if value == 1.5 && suffix == NumericSuffix::None))
         );
     }
 

@@ -6559,9 +6559,7 @@ fn process(ctx: &AstMutateContext, node: NodeMut) -> TraversalReturn<Result<AstM
                         *value
                     ))));
                 };
-                sketch_var.initial = Some(BoxNode::new(ast::Node::no_src(ast::Expr::Literal(BoxNode::new(
-                    ast::Node::no_src(literal.into()),
-                )))));
+                sketch_var.initial = Some(ast::Expr::Literal(BoxNode::new(ast::Node::no_src(literal.into()))));
                 return TraversalReturn::new_break(Ok(AstMutateCommandReturn::None));
             }
         }
@@ -6771,10 +6769,10 @@ impl<'a> crate::walk::Visitor<'a> for &FindSketchVarInitialBySourceRange {
         if let crate::walk::Node::SketchVar(sketch_var) = node {
             let initial = sketch_var.initial.as_ref();
             let range = initial
-                .map(|expr| SourceRange::from(expr.as_ref()))
+                .map(SourceRange::from)
                 .unwrap_or_else(|| SourceRange::from(sketch_var));
             if range == self.target {
-                self.found.set(Some(initial.map(|expr| expr.inner.clone())));
+                self.found.set(Some(initial.cloned()));
                 return Ok(false);
             }
         }
@@ -6814,7 +6812,7 @@ impl<'a, 'b> crate::walk::Visitor<'b> for &FindSketchVarInitialByNodePath<'a> {
         {
             self.sketch_var_found.set(true);
             if let Some(initial) = &sketch_var.initial {
-                self.initial_expr.set(Some(initial.inner.clone()));
+                self.initial_expr.set(Some(initial.clone()));
             }
             return Ok(false);
         }
@@ -7009,16 +7007,9 @@ fn to_source_expr(expr: &Expr) -> anyhow::Result<ast::Expr> {
         }))),
         Expr::Var(number) => Ok(ast::Expr::SketchVar(BoxNode::new(ast::Node {
             inner: ast::SketchVar {
-                initial: Some(BoxNode::new(ast::Node {
-                    inner: ast::Expr::Literal(BoxNode::new(ast::Node::no_src(to_source_number(*number)?.into()))),
-                    start: Default::default(),
-                    end: Default::default(),
-                    module_id: Default::default(),
-                    node_path: None,
-                    outer_attrs: Default::default(),
-                    pre_comments: Default::default(),
-                    comment_start: Default::default(),
-                })),
+                initial: Some(ast::Expr::Literal(BoxNode::new(ast::Node::no_src(
+                    to_source_number(*number)?.into(),
+                )))),
                 digest: None,
             },
             start: Default::default(),
@@ -9406,13 +9397,13 @@ sketch(on = XY) {
             fn visit_node(&self, node: crate::walk::Node<'a>) -> anyhow::Result<bool, Self::Error> {
                 if let crate::walk::Node::SketchVar(sketch_var) = node
                     && let (Some(initial), Some(node_path)) = (&sketch_var.initial, &sketch_var.node_path)
-                    && let ast::Expr::Literal(literal) = &initial.inner
+                    && let ast::Expr::Literal(literal) = initial
                     && let ast::LiteralValue::Number { value, .. } = literal.value
                     && (value - self.target).abs() < 1e-9
                 {
                     self.out
                         .borrow_mut()
-                        .push((SourceRange::from(initial.as_ref()), node_path.clone()));
+                        .push((SourceRange::from(initial), node_path.clone()));
                 }
                 for child in node.children().iter() {
                     if !child.visit(*self)? {

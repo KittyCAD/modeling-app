@@ -3369,7 +3369,15 @@ impl Node<SketchVar> {
         let id = sketch_block_state.next_sketch_var_id();
         let sketch_var = if let Some(initial) = &self.initial {
             let kvcf = ctx
-                .execute_expr(initial, exec_state, &initial.metadata(), &[], StatementKind::Expression)
+                .execute_expr(
+                    initial,
+                    exec_state,
+                    &Metadata {
+                        source_range: initial.into(),
+                    },
+                    &[],
+                    StatementKind::Expression,
+                )
                 .await?;
             if let KclValue::Number { value, ty, meta } = *kvcf.value {
                 KclValue::SketchVar {

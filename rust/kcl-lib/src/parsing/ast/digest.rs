@@ -657,7 +657,7 @@ impl Node<Block> {
 impl Node<SketchVar> {
     compute_digest!(|slf, hasher| {
         if let Some(initial) = &mut slf.initial {
-            hasher.update(initial.inner.compute_digest());
+            hasher.update(initial.compute_digest());
         } else {
             hasher.update("no_initial");
         }

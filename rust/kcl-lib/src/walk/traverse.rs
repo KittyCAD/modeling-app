@@ -312,7 +312,7 @@ fn dfs_mut_expr<V: Visitor>(expr: &mut ast::Expr, visitor: &mut V) -> TraversalR
         }
         ast::Expr::SketchVar(node) => {
             if let Some(initial) = &mut node.initial {
-                ret = dfs_mut_expr(&mut initial.inner, visitor);
+                ret = dfs_mut_expr(initial, visitor);
                 if ret.is_break() {
                     return ret;
                 }
