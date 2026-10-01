@@ -1,6 +1,7 @@
 use kcl_error::SourceRange;
 use kcmc::ModelingCmd;
 use kcmc::each_cmd as mcmd;
+use kittycad_modeling_cmds::ok_response::OkModelingCmdResponse;
 use kittycad_modeling_cmds::shared::AnnotationBasicDimension;
 use kittycad_modeling_cmds::shared::AnnotationFeatureControl;
 use kittycad_modeling_cmds::shared::AnnotationFeatureTag;
@@ -12,6 +13,8 @@ use kittycad_modeling_cmds::shared::AnnotationOptions;
 use kittycad_modeling_cmds::shared::AnnotationType;
 use kittycad_modeling_cmds::shared::MbdSymbol;
 use kittycad_modeling_cmds::shared::Point2d as KPoint2d;
+use kittycad_modeling_cmds::units::UnitLength;
+use kittycad_modeling_cmds::websocket::OkWebSocketResponseData;
 use kittycad_modeling_cmds::{self as kcmc};
 
 use crate::ExecState;
@@ -1081,6 +1084,48 @@ async fn inner_distance(
     Ok(annotations)
 }
 
+fn distance_setback(dimensions: [f64; 3]) -> Option<f64> {
+    dimensions
+        .into_iter()
+        .filter(|value| value.is_finite() && *value > 0.0)
+        .reduce(f64::max)
+        .map(|longest| longest * 0.2)
+}
+
+async fn default_distance_setback(
+    from: Option<uuid::Uuid>,
+    to: Option<uuid::Uuid>,
+    exec_state: &mut ExecState,
+    args: &Args,
+) -> f64 {
+    let mut entity_ids: Vec<_> = from.into_iter().chain(to).collect();
+    entity_ids.dedup();
+    loop {
+        let id = exec_state.next_uuid();
+        let response = exec_state
+            .send_modeling_cmd(
+                ModelingCmdMeta::from_args_id(exec_state, args, id),
+                mcmd::BoundingBox::builder()
+                    .entity_ids(entity_ids.clone())
+                    .output_unit(UnitLength::Millimeters)
+                    .build()
+                    .into(),
+            )
+            .await;
+        if let Ok(OkWebSocketResponseData::Modeling {
+            modeling_response: OkModelingCmdResponse::BoundingBox(bounds),
+        }) = response
+            && let Some(setback) = distance_setback([bounds.dimensions.x, bounds.dimensions.y, bounds.dimensions.z])
+        {
+            return setback;
+        }
+        if entity_ids.is_empty() {
+            return 20.0;
+        }
+        entity_ids.clear();
+    }
+}
+
 #[allow(clippy::too_many_arguments)]
 async fn create_basic_distance_annotation(
     from: DistanceEndpoint,
@@ -1098,6 +1143,17 @@ async fn create_basic_distance_annotation(
     let meta = vec![Metadata::from(args.source_range)];
     let annotation_id = exec_state.next_uuid();
     let display_units = exec_state.length_unit();
+    let offset = if let Some(offset) = frame_position {
+        KPoint2d {
+            x: offset[0].to_mm(),
+            y: offset[1].to_mm(),
+        }
+    } else {
+        KPoint2d {
+            x: 0.0,
+            y: default_distance_setback(from.entity_id, to.entity_id, exec_state, args).await,
+        }
+    };
     let dimension = AnnotationBasicDimension::builder()
         .maybe_from_entity_id(from.entity_id)
         .maybe_from_edge_reference(from.edge_reference)
@@ -1116,19 +1172,7 @@ async fn create_basic_distance_annotation(
                 .build(),
         )
         .plane_id(frame_plane_id)
-        .offset(if let Some(offset) = frame_position {
-            KPoint2d {
-                x: offset[0].to_mm(),
-                y: offset[1].to_mm(),
-            }
-        } else {
-            // Center the label along the measurement and leave room for its
-            // text perpendicular to it. Match the point-and-click default.
-            KPoint2d {
-                x: 0.0,
-                y: 2.0 * font_size.map(TyF64::to_mm).unwrap_or(DEFAULT_GDT_FONT_SIZE_MM),
-            }
-        })
+        .offset(offset)
         .precision(precision)
         .font_scale(gdt_font_scale(font_size, args)?)
         .font_point_size(GDT_FONT_TEXTURE_POINT_SIZE)
@@ -2167,14 +2211,22 @@ gdt::flatness(
         Ok(())
     }
 
+    #[test]
+    fn distance_setback_uses_the_longest_valid_bound() {
+        assert_eq!(distance_setback([100.0, 50.0, 0.0]), Some(20.0));
+        assert_eq!(distance_setback([0.0, 0.0, 40.0]), Some(8.0));
+        assert_eq!(distance_setback([f64::NAN, -1.0, 10.0]), Some(2.0));
+        assert_eq!(distance_setback([0.0, f64::INFINITY, -1.0]), None);
+    }
+
     #[tokio::test(flavor = "multi_thread")]
-    async fn gdt_distance_default_position_is_centered_and_font_relative() -> Result<(), KclError> {
+    async fn gdt_distance_default_position_has_a_physical_fallback_without_bounds() -> Result<(), KclError> {
         for (unit, font_size, expected_setback) in [
             ("mm", "", 20.0),
             ("in", "", 20.0),
-            ("mm", "fontSize = 2mm,", 4.0),
-            ("cm", "fontSize = 0.2,", 4.0),
-            ("in", "fontSize = 0.1in,", 5.08),
+            ("mm", "fontSize = 2mm,", 20.0),
+            ("cm", "fontSize = 0.2,", 20.0),
+            ("in", "fontSize = 0.1in,", 20.0),
         ] {
             for between_faces in [false, true] {
                 let mut code = gdt_distance_kcl(unit, "0mm", "[0, 0]")

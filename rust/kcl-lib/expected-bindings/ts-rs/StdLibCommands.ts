@@ -3106,7 +3106,7 @@ export default {
       {
         "name": "framePosition",
         "ty": "Point2d",
-        "docs": "The distance label's local offset `[along, setback]`, in length units. `along` moves the label from the measurement midpoint, positive toward `from` and negative toward `to`; `0` centers it when the text fits. `setback` sets the perpendicular leader extent in `framePlane`; the dimension line lies at 80% of this extent. Its sign chooses the side. When omitted, the default is `[0mm, 2 * fontSize]`, or `[0mm, 20mm]` with the default font size. Explicit positions are preserved, including `[0, 0]`.",
+        "docs": "The distance label's local offset `[along, setback]`, in length units. `along` moves the label from the measurement midpoint, positive toward `from` and negative toward `to`; `0` centers it when the text fits. `setback` sets the perpendicular leader extent in `framePlane`; the dimension line lies at 80% of this extent. Its sign chooses the side. When omitted, the label is centered with a setback of 20% of the longest dimension of the measured entities' bounding box. If those bounds are unavailable, the model bounds are used, then `[0mm, 20mm]` as a fallback. Point-and-click writes the calculated position as literal lengths. Explicit positions are preserved, including `[0, 0]`.",
         "required": false,
         "special": false,
         "experimental": false,

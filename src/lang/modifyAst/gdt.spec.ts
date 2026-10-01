@@ -1438,8 +1438,53 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
   })
 
   describe('Testing addDistanceGdt', () => {
+    it('generates a distance between primitive hole rims on the same body without tolerance', async () => {
+      const twoHoles = `@settings(defaultLengthUnit = mm, kclVersion = 2)
+holeSketch = sketch(on = XY) {
+  outer = circle(start = [20mm, 0mm], center = [0mm, 0mm])
+  leftHole = circle(start = [-3mm, 0mm], center = [-6mm, 0mm])
+  rightHole = circle(start = [9mm, 0mm], center = [6mm, 0mm])
+}
+plate = extrude(region(point = [0mm, 10mm], sketch = holeSketch), length = 5mm)`
+      const { artifactGraph, ast } = await executeCode(
+        twoHoles,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const bodies = [...artifactGraph.values()].filter(
+        (artifact) => artifact.type === 'sweep'
+      )
+      expect(bodies).toHaveLength(1)
+      const objects: Selections = {
+        graphSelections: [],
+        otherSelections: [1, 2].map((primitiveIndex) => ({
+          type: 'enginePrimitive',
+          primitiveType: 'edge',
+          primitiveIndex,
+          parentEntityId: bodies[0].id,
+          entityId: `hole-rim-${primitiveIndex}`,
+        })),
+      }
+      const result = addDistanceGdt({
+        ast,
+        artifactGraph,
+        objects,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) throw result
+      const code = recast(result.modifiedAst, instanceInThisFile)
+      if (err(code)) throw code
+      expect(code.match(/edgeId\(/g)).toHaveLength(2)
+      expect(code).toContain('from = edge001')
+      expect(code).toContain('to = edge002')
+      expect(code).toContain('edgeId(plate, index = 1)')
+      expect(code).toContain('edgeId(plate, index = 2)')
+      expect(code).not.toContain('tolerance =')
+      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
+    })
+
     it.each(['edge length', 'between faces'])(
-      'generates a centered, font-relative default for %s through the command flow',
+      'generates literal bounds-based placement without tolerance for %s through the command flow',
       async (measurement) => {
         const { artifactGraph, ast } = await executeCode(
           box,
@@ -1472,7 +1517,8 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
         if (err(result)) throw result
         const code = recast(result.modifiedAst, instanceInThisFile)
         if (err(code)) throw code
-        expect(code).toContain('framePosition = [0mm, 2 * 2mm]')
+        expect(code).toMatch(/framePosition = \[0mm, [\d.]+mm\]/)
+        expect(code).not.toContain('tolerance =')
         expect(code).toContain('fontSize = 2mm')
         await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
       }

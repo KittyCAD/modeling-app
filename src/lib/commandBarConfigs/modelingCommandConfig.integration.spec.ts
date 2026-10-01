@@ -96,6 +96,36 @@ gdt::datum(face = capEnd001, name = "A")`
 })
 
 describe('GDT tolerance defaults', () => {
+  it('lets distance annotations skip tolerance without prepopulating it', () => {
+    const command = modelingMachineCommandConfig['GDT Distance']
+    if (!command || isArray(command))
+      throw new Error('Expected distance command')
+    expect(command.args?.tolerance?.required).toBe(false)
+    expect(command.args?.tolerance?.prepopulate).toBeFalsy()
+    expect(command.args?.tolerance?.skip).toBeFalsy()
+    expect(command.args?.objects).toMatchObject({
+      selectionTypes: expect.arrayContaining(['enginePrimitiveEdge']),
+    })
+  })
+  it('accepts two engine primitive edges as distance targets', () => {
+    const command = modelingMachineCommandConfig['GDT Distance']
+    if (!command || isArray(command))
+      throw new Error('Expected distance command')
+    const objects = command.args?.objects
+    if (!objects || objects.inputType !== 'selection')
+      throw new Error('Expected distance selection argument')
+    expect(
+      canSubmitSelectionArg(
+        new Map<ResolvedSelectionType, number>([['enginePrimitiveEdge', 2]]),
+        {
+          inputType: 'selection',
+          selectionTypes: objects.selectionTypes,
+          multiple: objects.multiple,
+          required: true,
+        }
+      )
+    ).toBe(true)
+  })
   it('uses the current file unit for the tolerance input default', () => {
     const modelingContext = {
       kclManager: {

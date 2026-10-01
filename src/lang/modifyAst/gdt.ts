@@ -17,6 +17,8 @@ import {
 import {
   createEdgeRefObjectExpression,
   entityReferenceToEdgeRefPayload,
+  getPrimitiveEdgeSelections,
+  insertPrimitiveEdgeVariablesAndOffsetPathToNode,
 } from '@src/lang/modifyAst/edges'
 import { isFaceArtifact } from '@src/lang/modifyAst/faces'
 import { modifyAstWithTagsForSelection } from '@src/lang/modifyAst/tagManagement'
@@ -1363,7 +1365,14 @@ export function addDistanceGdt({
               resolveToCodeRef(selection, artifactGraph)?.artifact
           )
       )
-  if (!mNodeToEdit && targetSelections.length === 0) {
+  const primitiveEdges = mNodeToEdit
+    ? []
+    : getPrimitiveEdgeSelections(selections)
+  if (
+    !mNodeToEdit &&
+    targetSelections.length === 0 &&
+    primitiveEdges.length === 0
+  ) {
     return new Error(
       'No valid selections found. Select one edge, or exactly two faces or edges.'
     )
@@ -1404,7 +1413,10 @@ export function addDistanceGdt({
   }
 
   for (const target of resolvedTargets) {
-    if (resolvedTargets.length === 2 && target.kind === 'edge') {
+    if (
+      resolvedTargets.length + primitiveEdges.length === 2 &&
+      target.kind === 'edge'
+    ) {
       const legacyEdgeResult = buildLegacyGdtEdgeExpressions({
         selections: {
           graphSelections: [target.selection],
@@ -1425,6 +1437,25 @@ export function addDistanceGdt({
     } else {
       targets.push({ kind: target.kind, expr: target.expr })
     }
+  }
+
+  for (const selection of primitiveEdges) {
+    const result = insertPrimitiveEdgeVariablesAndOffsetPathToNode({
+      primitiveEdgeSelections: [selection],
+      bodies: new Map(),
+      modifiedAst,
+      artifactGraph,
+      wasmInstance,
+    })
+    if (err(result)) return result
+    const body = [...result.bodies.values()][0]
+    const expr =
+      body?.tagsExpr.type === 'ArrayExpression'
+        ? body.tagsExpr.elements[0]
+        : body?.tagsExpr
+    if (!expr)
+      return new Error('Could not resolve the selected distance edge in code.')
+    targets.push({ kind: 'edge', expr })
   }
 
   if (targets.length === 0) {

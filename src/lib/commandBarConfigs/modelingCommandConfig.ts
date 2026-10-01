@@ -2013,26 +2013,21 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         overrides: {
           objects: {
             inputType: 'selection',
-            selectionTypes: ['cap', 'wall', 'edgeCut', 'segment', 'sweepEdge'],
+            selectionTypes: [
+              'cap',
+              'wall',
+              'edgeCut',
+              'segment',
+              'sweepEdge',
+              'enginePrimitiveEdge',
+            ],
             multiple: true,
             required: true,
             hidden: isEditingNodeSelection,
           },
-          tolerance: gdtToleranceProps,
+          tolerance: { ...gdtToleranceProps, required: false },
           ...gdtFrameArgOverrides,
-          framePosition: {
-            defaultValue: (commandBarContext) => {
-              const { fontSize } = commandBarContext.argumentsToSubmit
-              const fontText =
-                fontSize &&
-                typeof fontSize === 'object' &&
-                'valueText' in fontSize &&
-                typeof fontSize.valueText === 'string'
-                  ? fontSize.valueText
-                  : KCL_DEFAULT_FONT_SIZE
-              return `[0mm, 2 * (${fontText})]`
-            },
-          },
+          framePosition: { defaultValue: undefined },
         },
       }
     ),

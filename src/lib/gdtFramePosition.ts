@@ -2,11 +2,7 @@ import type { BoundingBox, FaceIsPlanar, Point3d } from '@kittycad/lib'
 
 import type { UnitLength } from '@rust/kcl-lib/bindings/ModelingCmd'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
-import {
-  createArrayExpression,
-  createBinaryExpression,
-  createLiteral,
-} from '@src/lang/create'
+import { createArrayExpression, createLiteral } from '@src/lang/create'
 import { toUtf16 } from '@src/lang/errors'
 import type {
   ArtifactId,
@@ -216,7 +212,15 @@ export function getEngineEntityIdsForGdtSelections(
     ]
   })
 
-  return deduplicateArtifactIds(entityIds)
+  const primitiveIds = selections.otherSelections.flatMap((selection) =>
+    typeof selection === 'object' &&
+    'type' in selection &&
+    selection.type === 'enginePrimitive' &&
+    selection.primitiveType === 'edge'
+      ? [selection.entityId]
+      : []
+  )
+  return deduplicateArtifactIds([...entityIds, ...primitiveIds])
 }
 
 export function getPlanarFaceEntityIdsForGdtSelections(
@@ -432,49 +436,35 @@ function createFontSizeCommandValue(
 }
 
 function createDistanceFramePositionCommandValue(
-  fontSize: KclCommandValue | undefined,
+  setback: number | undefined,
+  outputUnit: UnitLength,
   wasmInstance: ModuleType
-): KclCommandValue | undefined {
-  // Match gdt::distance's runtime default. Keep the expression so units and
-  // references to user parameters survive code generation and later edits.
-  const fontExpr = fontSize
-    ? 'variableName' in fontSize
-      ? fontSize.variableIdentifierAst
-      : fontSize.valueAst
-    : createLiteral(10, wasmInstance, 'Mm')
-  switch (fontExpr.type) {
-    case 'Literal':
-    case 'Name':
-    case 'BinaryExpression':
-    case 'CallExpressionKw':
-    case 'UnaryExpression':
-    case 'MemberExpression':
-    case 'ArrayExpression':
-    case 'ArrayRangeExpression':
-    case 'ObjectExpression':
-    case 'IfExpression':
-    case 'AscribedExpression':
-    case 'SketchVar':
-      break
-    default:
-      // These cannot be operands of an AST BinaryExpression. Leaving the
-      // position implicit uses the same font-relative default in KCL.
-      return undefined
-  }
-  const fontText = fontSize
-    ? 'variableName' in fontSize
-      ? fontSize.variableName
-      : fontSize.valueText
-    : '10mm'
-  const valueText = `[0mm, 2 * (${fontText})]`
+): KclCommandValue {
+  const offset = createLiteral(
+    setback ?? 20,
+    wasmInstance,
+    setback === undefined ? 'Mm' : baseUnitToNumericSuffix(outputUnit),
+    4
+  )
+  const valueText = `[0mm, ${offset.raw}]`
   return {
     valueAst: createArrayExpression([
       createLiteral(0, wasmInstance, 'Mm'),
-      createBinaryExpression([createLiteral(2, wasmInstance), '*', fontExpr]),
+      offset,
     ]),
     valueText,
     valueCalculated: valueText,
   }
+}
+
+function distanceSetback(bounds: BoundingBox | undefined): number | undefined {
+  if (!bounds) return undefined
+  const longest = Math.max(
+    ...[bounds.dimensions.x, bounds.dimensions.y, bounds.dimensions.z].filter(
+      (value) => Number.isFinite(value) && value > 0
+    )
+  )
+  return longest > 0 ? roundOff(longest * 0.2, 4) : undefined
 }
 
 function getNormalFromPlanarFace(face: FaceIsPlanar): Point3d | undefined {
@@ -647,7 +637,7 @@ export async function withDefaultGdtFrameDefaults<T extends GdtCommandData>({
   }
 
   const needsSelectionBoundingBox =
-    !hasResolvedFramePlane || (!distance && !nextData.framePosition)
+    !hasResolvedFramePlane || !nextData.framePosition
   const selectionBoundingBox = needsSelectionBoundingBox
     ? await getBoundingBoxForGdtEntities({
         engineCommandManager,
@@ -690,7 +680,11 @@ export async function withDefaultGdtFrameDefaults<T extends GdtCommandData>({
     }
   }
 
-  if (!nextData.fontSize) {
+  let setback = distanceSetback(selectionBoundingBox)
+  if (
+    !nextData.fontSize ||
+    (distance && !nextData.framePosition && setback === undefined)
+  ) {
     const modelBoundingBox = await getBoundingBoxForGdtEntities({
       engineCommandManager,
       entityIds: [],
@@ -701,7 +695,8 @@ export async function withDefaultGdtFrameDefaults<T extends GdtCommandData>({
       ? getAverageBoundingBoxDimension(modelBoundingBox.dimensions)
       : undefined
 
-    if (modelAverageDimension !== undefined) {
+    setback ??= distanceSetback(modelBoundingBox)
+    if (!nextData.fontSize && modelAverageDimension !== undefined) {
       nextData = {
         ...nextData,
         fontSize: createFontSizeCommandValue(
@@ -717,7 +712,8 @@ export async function withDefaultGdtFrameDefaults<T extends GdtCommandData>({
     nextData = {
       ...nextData,
       framePosition: createDistanceFramePositionCommandValue(
-        nextData.fontSize,
+        setback,
+        outputUnit,
         wasmInstance
       ),
     }
