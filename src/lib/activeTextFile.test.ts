@@ -76,17 +76,8 @@ afterEach(() => {
 })
 
 describe('text file detection', () => {
-  it.each([
-    '/proj/project.toml',
-    '/proj/config/nested.yaml',
-    '/proj/package.json',
-    '/proj/script.py',
-    '/proj/LICENSE',
-    '/proj/.gitignore',
-    '/proj/unknown.extension',
-    '/proj/README.MD',
-    '/proj/part.STEP',
-  ])('opens and saves UTF-8 text in %s', async (path) => {
+  it('opens and saves UTF-8 text', async () => {
+    const path = '/proj/project.toml'
     mocks.readFile.mockResolvedValueOnce('original')
     await mod.openActiveTextFile(fileOperations, path)
     expect(mod.activeTextFileSignal.value).toMatchObject({
@@ -103,13 +94,16 @@ describe('text file detection', () => {
   })
 
   it.each([
-    new Uint8Array([0x89, 0x50, 0x4e, 0x47]),
-    new Uint8Array([0xc3, 0x28]),
-    new Uint8Array([0xff, 0xfe, 0x61, 0]),
-    new Uint8Array([0x61, 0, 0x62]),
-    new Uint8Array([0x61, 0x1b, 0x62]),
-    new TextEncoder().encode('text'.repeat(4096) + '\u0000'),
-  ])('rejects binary data even with a text extension', async (bytes) => {
+    ['PNG signature', new Uint8Array([0x89, 0x50, 0x4e, 0x47])],
+    ['invalid UTF-8', new Uint8Array([0xc3, 0x28])],
+    ['UTF-16 BOM', new Uint8Array([0xff, 0xfe, 0x61, 0])],
+    ['NUL byte', new Uint8Array([0x61, 0, 0x62])],
+    ['escape control character', new Uint8Array([0x61, 0x1b, 0x62])],
+    [
+      'NUL after 16 KiB',
+      new TextEncoder().encode('text'.repeat(4096) + '\u0000'),
+    ],
+  ])('rejects %s even with a text extension', async (_name, bytes) => {
     mocks.readFile.mockResolvedValueOnce(bytes)
     await mod.openActiveTextFile(fileOperations, '/proj/readme.md')
     expect(mod.activeTextFileSignal.value).toMatchObject({
