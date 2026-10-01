@@ -459,12 +459,14 @@ function createDistanceFramePositionCommandValue(
 
 function distanceSetback(bounds: BoundingBox | undefined): number | undefined {
   if (!bounds) return undefined
-  const longest = Math.max(
+  const diagonal = Math.hypot(
     ...[bounds.dimensions.x, bounds.dimensions.y, bounds.dimensions.z].filter(
       (value) => Number.isFinite(value) && value > 0
     )
   )
-  return longest > 0 ? roundOff(longest * 0.2, 4) : undefined
+  // The dimension line is at 80% of the setback. A full bounding-box
+  // diagonal plus 20% clearance keeps it outside even for interior features.
+  return diagonal > 0 ? roundOff(diagonal * 1.5, 4) : undefined
 }
 
 function getNormalFromPlanarFace(face: FaceIsPlanar): Point3d | undefined {
@@ -681,10 +683,7 @@ export async function withDefaultGdtFrameDefaults<T extends GdtCommandData>({
   }
 
   let setback = distanceSetback(selectionBoundingBox)
-  if (
-    !nextData.fontSize ||
-    (distance && !nextData.framePosition && setback === undefined)
-  ) {
+  if (!nextData.fontSize || (distance && !nextData.framePosition)) {
     const modelBoundingBox = await getBoundingBoxForGdtEntities({
       engineCommandManager,
       entityIds: [],
@@ -695,7 +694,10 @@ export async function withDefaultGdtFrameDefaults<T extends GdtCommandData>({
       ? getAverageBoundingBoxDimension(modelBoundingBox.dimensions)
       : undefined
 
-    setback ??= distanceSetback(modelBoundingBox)
+    const modelSetback = distanceSetback(modelBoundingBox)
+    if (modelSetback !== undefined) {
+      setback = Math.max(setback ?? 0, modelSetback)
+    }
     if (!nextData.fontSize && modelAverageDimension !== undefined) {
       nextData = {
         ...nextData,

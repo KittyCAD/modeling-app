@@ -1088,8 +1088,8 @@ fn distance_setback(dimensions: [f64; 3]) -> Option<f64> {
     dimensions
         .into_iter()
         .filter(|value| value.is_finite() && *value > 0.0)
-        .reduce(f64::max)
-        .map(|longest| longest * 0.2)
+        .reduce(f64::hypot)
+        .map(|diagonal| diagonal * 1.5)
 }
 
 async fn default_distance_setback(
@@ -1100,6 +1100,7 @@ async fn default_distance_setback(
 ) -> f64 {
     let mut entity_ids: Vec<_> = from.into_iter().chain(to).collect();
     entity_ids.dedup();
+    let mut setback: Option<f64> = None;
     loop {
         let id = exec_state.next_uuid();
         let response = exec_state
@@ -1115,12 +1116,13 @@ async fn default_distance_setback(
         if let Ok(OkWebSocketResponseData::Modeling {
             modeling_response: OkModelingCmdResponse::BoundingBox(bounds),
         }) = response
-            && let Some(setback) = distance_setback([bounds.dimensions.x, bounds.dimensions.y, bounds.dimensions.z])
+            && let Some(bound_setback) =
+                distance_setback([bounds.dimensions.x, bounds.dimensions.y, bounds.dimensions.z])
         {
-            return setback;
+            setback = Some(setback.unwrap_or(0.0).max(bound_setback));
         }
         if entity_ids.is_empty() {
-            return 20.0;
+            return setback.unwrap_or(20.0);
         }
         entity_ids.clear();
     }
@@ -2212,10 +2214,10 @@ gdt::flatness(
     }
 
     #[test]
-    fn distance_setback_uses_the_longest_valid_bound() {
-        assert_eq!(distance_setback([100.0, 50.0, 0.0]), Some(20.0));
-        assert_eq!(distance_setback([0.0, 0.0, 40.0]), Some(8.0));
-        assert_eq!(distance_setback([f64::NAN, -1.0, 10.0]), Some(2.0));
+    fn distance_setback_clears_the_bounding_box_diagonal() {
+        assert_eq!(distance_setback([30.0, 40.0, 0.0]), Some(75.0));
+        assert_eq!(distance_setback([0.0, 0.0, 40.0]), Some(60.0));
+        assert_eq!(distance_setback([f64::NAN, -1.0, 10.0]), Some(15.0));
         assert_eq!(distance_setback([0.0, f64::INFINITY, -1.0]), None);
     }
 

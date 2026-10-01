@@ -1438,50 +1438,73 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
   })
 
   describe('Testing addDistanceGdt', () => {
-    it('generates a distance between primitive hole rims on the same body without tolerance', async () => {
-      const twoHoles = `@settings(defaultLengthUnit = mm, kclVersion = 2)
+    it.each(['primitive', 'face reference'] as const)(
+      'generates a distance between %s hole rims on the same body without tolerance',
+      async (route) => {
+        const twoHoles = `@settings(defaultLengthUnit = mm, kclVersion = 2)
 holeSketch = sketch(on = XY) {
   outer = circle(start = [20mm, 0mm], center = [0mm, 0mm])
   leftHole = circle(start = [-3mm, 0mm], center = [-6mm, 0mm])
   rightHole = circle(start = [9mm, 0mm], center = [6mm, 0mm])
 }
 plate = extrude(region(point = [0mm, 10mm], sketch = holeSketch), length = 5mm)`
-      const { artifactGraph, ast } = await executeCode(
-        twoHoles,
-        instanceInThisFile,
-        kclManagerInThisFile
-      )
-      const bodies = [...artifactGraph.values()].filter(
-        (artifact) => artifact.type === 'sweep'
-      )
-      expect(bodies).toHaveLength(1)
-      const objects: Selections = {
-        graphSelections: [],
-        otherSelections: [1, 2].map((primitiveIndex) => ({
-          type: 'enginePrimitive',
-          primitiveType: 'edge',
-          primitiveIndex,
-          parentEntityId: bodies[0].id,
-          entityId: `hole-rim-${primitiveIndex}`,
-        })),
+        const { artifactGraph, ast } = await executeCode(
+          twoHoles,
+          instanceInThisFile,
+          kclManagerInThisFile
+        )
+        const bodies = [...artifactGraph.values()].filter(
+          (artifact) => artifact.type === 'sweep'
+        )
+        expect(bodies).toHaveLength(1)
+        const objects: Selections = {
+          graphSelections: [],
+          otherSelections: [1, 2].map((primitiveIndex) => ({
+            type: 'enginePrimitive',
+            primitiveType: 'edge',
+            primitiveIndex,
+            parentEntityId: bodies[0].id,
+            entityId: `hole-rim-${primitiveIndex}`,
+          })),
+        }
+        if (route === 'face reference') {
+          const cap = [...artifactGraph.values()].find(
+            (artifact) => artifact.type === 'cap' && artifact.subType === 'end'
+          )
+          const walls = [...artifactGraph.values()].filter(
+            (artifact) => artifact.type === 'wall'
+          )
+          expect(cap).toBeDefined()
+          expect(walls).toHaveLength(3)
+          objects.otherSelections = []
+          objects.graphSelections = walls.slice(1).map((wall) => ({
+            entityRef: { type: 'edge', side_faces: [cap!.id, wall.id] },
+          }))
+        }
+        const result = addDistanceGdt({
+          ast,
+          artifactGraph,
+          objects,
+          wasmInstance: instanceInThisFile,
+        })
+        if (err(result)) throw result
+        const code = recast(result.modifiedAst, instanceInThisFile)
+        if (err(code)) throw code
+        if (route === 'primitive') {
+          expect(code.match(/edgeId\(/g)).toHaveLength(2)
+          expect(code).toContain('from = edge001')
+          expect(code).toContain('to = edge002')
+          expect(code).toContain('edgeId(plate, index = 1)')
+          expect(code).toContain('edgeId(plate, index = 2)')
+        } else {
+          expect(code.match(/getCommonEdge\(/g)).toHaveLength(2)
+          expect(code).toContain('from = getCommonEdge(')
+          expect(code).toContain('to = getCommonEdge(')
+        }
+        expect(code).not.toContain('tolerance =')
+        await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
       }
-      const result = addDistanceGdt({
-        ast,
-        artifactGraph,
-        objects,
-        wasmInstance: instanceInThisFile,
-      })
-      if (err(result)) throw result
-      const code = recast(result.modifiedAst, instanceInThisFile)
-      if (err(code)) throw code
-      expect(code.match(/edgeId\(/g)).toHaveLength(2)
-      expect(code).toContain('from = edge001')
-      expect(code).toContain('to = edge002')
-      expect(code).toContain('edgeId(plate, index = 1)')
-      expect(code).toContain('edgeId(plate, index = 2)')
-      expect(code).not.toContain('tolerance =')
-      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
-    })
+    )
 
     it.each(['edge length', 'between faces'])(
       'generates literal bounds-based placement without tolerance for %s through the command flow',

@@ -145,14 +145,16 @@ describe('GD&T frame defaults', () => {
           wasmInstance,
         })
         expect(result.fontSize?.valueText).toBe(`5.25${outputUnit}`)
-        expect(result.framePosition?.valueText).toBe(`[0mm, 20${outputUnit}]`)
+        expect(result.framePosition?.valueText).toBe(
+          `[0mm, 167.7051${outputUnit}]`
+        )
         expect(result.framePosition?.valueAst).toMatchObject({
           type: 'ArrayExpression',
           elements: [
             { type: 'Literal', value: { value: 0, suffix: 'Mm' } },
             {
               type: 'Literal',
-              value: { value: 20 },
+              value: { value: 167.7051 },
             },
           ],
         })
@@ -241,11 +243,11 @@ describe('GD&T frame defaults', () => {
         } as unknown as ConnectionManager,
         wasmInstance,
       })
-      expect(result.framePosition?.valueText).toBe('[0mm, 8mm]')
+      expect(result.framePosition?.valueText).toBe('[0mm, 61.8466mm]')
       expect(result.framePosition?.valueAst).toMatchObject({
         elements: [
           { value: { value: 0 } },
-          { type: 'Literal', value: { value: 8, suffix: 'Mm' } },
+          { type: 'Literal', value: { value: 61.8466, suffix: 'Mm' } },
         ],
       })
       expect(result.fontSize).toBe(fontSize)
@@ -276,79 +278,82 @@ describe('GD&T frame defaults', () => {
       }
     )
 
-    it('uses model bounds when the selected edges have no usable bounds', async () => {
-      const sendSceneCommand = vi
-        .fn()
-        .mockResolvedValueOnce({
-          success: true,
-          resp: {
-            type: 'modeling',
-            data: {
-              modeling_response: {
-                type: 'bounding_box',
-                data: { dimensions: { x: 0, y: 0, z: 0 } },
+    it.each([0, 4])(
+      'uses surrounding model bounds even when selected edge bounds span %s mm',
+      async (edgeSize) => {
+        const sendSceneCommand = vi
+          .fn()
+          .mockResolvedValueOnce({
+            success: true,
+            resp: {
+              type: 'modeling',
+              data: {
+                modeling_response: {
+                  type: 'bounding_box',
+                  data: { dimensions: { x: edgeSize, y: edgeSize, z: 0 } },
+                },
               },
             },
-          },
-        })
-        .mockResolvedValue({
-          success: true,
-          resp: {
-            type: 'modeling',
-            data: {
-              modeling_response: {
-                type: 'bounding_box',
-                data: { dimensions: { x: 25, y: 40, z: 10 } },
+          })
+          .mockResolvedValue({
+            success: true,
+            resp: {
+              type: 'modeling',
+              data: {
+                modeling_response: {
+                  type: 'bounding_box',
+                  data: { dimensions: { x: 25, y: 40, z: 10 } },
+                },
               },
             },
+          })
+        const selections: Selections = {
+          graphSelections: [],
+          otherSelections: [
+            {
+              type: 'enginePrimitive',
+              primitiveType: 'edge',
+              primitiveIndex: 0,
+              parentEntityId: 'body',
+              entityId: 'hole-rim',
+            },
+          ],
+        }
+        const result = await withDefaultGdtFrameDefaults<
+          ModelingCommandSchema['GDT Distance']
+        >({
+          data: {
+            objects: selections,
+            framePlane: 'XY',
+            fontSize: kclValue('100mm'),
           },
+          distance: true,
+          engineCommandManager: {
+            sendSceneCommand,
+          } as unknown as ConnectionManager,
+          wasmInstance,
         })
-      const selections: Selections = {
-        graphSelections: [],
-        otherSelections: [
-          {
-            type: 'enginePrimitive',
-            primitiveType: 'edge',
-            primitiveIndex: 0,
-            parentEntityId: 'body',
-            entityId: 'hole-rim',
-          },
-        ],
+        expect(result.framePosition?.valueText).toBe('[0mm, 72.3274mm]')
+        expect(sendSceneCommand).toHaveBeenNthCalledWith(
+          1,
+          expect.objectContaining({
+            cmd: expect.objectContaining({
+              type: 'bounding_box',
+              entity_ids: ['hole-rim'],
+            }),
+          })
+        )
+        expect(sendSceneCommand).toHaveBeenNthCalledWith(
+          2,
+          expect.objectContaining({
+            cmd: expect.objectContaining({
+              type: 'bounding_box',
+              entity_ids: [],
+            }),
+          })
+        )
       }
-      const result = await withDefaultGdtFrameDefaults<
-        ModelingCommandSchema['GDT Distance']
-      >({
-        data: {
-          objects: selections,
-          framePlane: 'XY',
-          fontSize: kclValue('100mm'),
-        },
-        distance: true,
-        engineCommandManager: {
-          sendSceneCommand,
-        } as unknown as ConnectionManager,
-        wasmInstance,
-      })
-      expect(result.framePosition?.valueText).toBe('[0mm, 8mm]')
-      expect(sendSceneCommand).toHaveBeenNthCalledWith(
-        1,
-        expect.objectContaining({
-          cmd: expect.objectContaining({
-            type: 'bounding_box',
-            entity_ids: ['hole-rim'],
-          }),
-        })
-      )
-      expect(sendSceneCommand).toHaveBeenNthCalledWith(
-        2,
-        expect.objectContaining({
-          cmd: expect.objectContaining({
-            type: 'bounding_box',
-            entity_ids: [],
-          }),
-        })
-      )
-    })
+    )
   })
 
   it('averages non-zero bounding box dimensions', () => {

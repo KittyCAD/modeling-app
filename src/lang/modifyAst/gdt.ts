@@ -32,6 +32,7 @@ import type { ArtifactGraph, Expr, PathToNode, Program } from '@src/lang/wasm'
 import { modelingStdLibCall } from '@src/lib/commandBarConfigs/modelingCommandStdLib'
 import type { KclCommandValue } from '@src/lib/commandTypes'
 import { err } from '@src/lib/trap'
+import { getEngineTopologyFallbackNormalized } from '@src/lib/selections'
 import { isArray } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
@@ -1355,19 +1356,36 @@ export function addDistanceGdt({
       otherSelections: [],
     }
 
+  const primitiveEdges = mNodeToEdit
+    ? []
+    : getPrimitiveEdgeSelections(selections)
+  const topologyEdges = new Set<Selection>()
+  if (!mNodeToEdit) {
+    for (const selection of selections.graphSelections) {
+      if (getEdgeRefPayloadFromSelection(selection) === null) continue
+      const topology = getEngineTopologyFallbackNormalized(selection)
+      if (!topology) continue
+      topologyEdges.add(selection)
+      primitiveEdges.push({
+        type: 'enginePrimitive',
+        primitiveType: 'edge',
+        parentEntityId: topology.parentId,
+        primitiveIndex: topology.primitiveIndex,
+        entityId: selection.engineEntityId ?? '',
+      })
+    }
+  }
   const targetSelections = mNodeToEdit
     ? []
     : selections.graphSelections.filter(
         (selection) =>
-          getEdgeRefPayloadFromSelection(selection) !== null ||
-          isFaceArtifact(
-            selection.artifact ??
-              resolveToCodeRef(selection, artifactGraph)?.artifact
-          )
+          !topologyEdges.has(selection) &&
+          (getEdgeRefPayloadFromSelection(selection) !== null ||
+            isFaceArtifact(
+              selection.artifact ??
+                resolveToCodeRef(selection, artifactGraph)?.artifact
+            ))
       )
-  const primitiveEdges = mNodeToEdit
-    ? []
-    : getPrimitiveEdgeSelections(selections)
   if (
     !mNodeToEdit &&
     targetSelections.length === 0 &&
@@ -1433,6 +1451,28 @@ export function addDistanceGdt({
       modifiedAst = legacyEdgeResult.modifiedAst
       for (const expr of legacyEdgeResult.edgeExprs) {
         targets.push({ kind: 'edge', expr })
+      }
+      // Circular rims can have face references without a profile-edge artifact.
+      // Reuse the resolved faces rather than requiring segment tags.
+      if (
+        legacyEdgeResult.edgeExprs.length === 0 &&
+        target.expr.type === 'ObjectExpression'
+      ) {
+        const faces = target.expr.properties.flatMap((property) =>
+          (property.key.name === 'sideFaces' ||
+            property.key.name === 'endFaces') &&
+          property.value.type === 'ArrayExpression'
+            ? property.value.elements
+            : []
+        )
+        if (faces.length >= 2) {
+          targets.push({
+            kind: 'edge',
+            expr: createCallExpressionStdLibKw('getCommonEdge', null, [
+              createLabeledArg('faces', createArrayExpression(faces)),
+            ]),
+          })
+        }
       }
     } else {
       targets.push({ kind: target.kind, expr: target.expr })
