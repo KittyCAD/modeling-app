@@ -90,7 +90,10 @@ fn subtract_output_ids(
     output_ids
 }
 
-fn inherit_face_tags(output: &mut Solid, inputs: &[Solid]) {
+fn inherit_face_tags<'item, I>(output: &mut Solid, inputs: I)
+where
+    I: Iterator<Item = &'item Solid>,
+{
     for input in inputs {
         for (name, tag) in &input.faces {
             // Preserve the first input's tag when multiple bodies use the same name.
@@ -111,7 +114,7 @@ pub(crate) async fn inner_union(
     let solid_out_id = exec_state.next_uuid();
 
     let mut solid = solids[0].clone();
-    inherit_face_tags(&mut solid, &solids);
+    inherit_face_tags(&mut solid, solids.iter());
     solid.set_id(solid_out_id);
     solid.become_new_body(solid_out_id, solid_out_id.into());
     let mut new_solids = vec![solid.clone()];
@@ -207,7 +210,7 @@ pub(crate) async fn inner_intersect(
     let solid_out_id = exec_state.next_uuid();
 
     let mut solid = solids[0].clone();
-    inherit_face_tags(&mut solid, &solids);
+    inherit_face_tags(&mut solid, solids.iter());
     solid.set_id(solid_out_id);
     solid.become_new_body(solid_out_id, solid_out_id.into());
     let mut new_solids = vec![solid.clone()];
@@ -313,6 +316,8 @@ pub(crate) async fn inner_subtract(
                     exec_state.next_uuid()
                 };
                 let mut new_solid = solid.clone();
+                let first = vec![solid];
+                inherit_face_tags(&mut new_solid, first.into_iter().chain(tools.iter()));
                 new_solid.set_id(output_id);
                 new_solid.become_new_body(output_id, output_id.into());
                 new_solid
@@ -367,6 +372,8 @@ pub(crate) async fn inner_subtract(
         .into_iter()
         .map(|output_id| {
             let mut new_solid = solids[0].clone();
+            let first = solids.first().map(|s| vec![s]).unwrap_or_default();
+            inherit_face_tags(&mut new_solid, first.into_iter().chain(tools.iter()));
             new_solid.set_id(output_id);
             new_solid.value_id = solid_out_id;
             new_solid.become_new_body(output_id, output_id.into());
@@ -531,8 +538,7 @@ mod tests {
     use crate::execution::MockConfig;
     use crate::execution::parse_execute;
 
-    async fn assert_csg_inherits_face_tags(operation: &str) {
-        let inputs = r#"@settings(kclVersion = 2.0)
+    const FACE_TAG_INPUTS: &str = r#"@settings(kclVersion = 2.0)
 fn profile(@plane) {
   return sketch(on = plane) {
     bottom = line(start = [-10mm, -10mm], end = [10mm, -10mm])
@@ -552,17 +558,24 @@ second = extrude(secondRegion, length = 5mm, symmetric = true, tagEnd = $secondE
 third = extrude(thirdRegion, length = 5mm, symmetric = true, tagEnd = $thirdEnd)
 untagged = extrude(region(segments = [firstProfile.bottom]), length = 5mm, symmetric = true)
 "#;
+
+    async fn assert_csg_inherits_face_tags(operation: &str) {
         for (input_names, tag_names) in [
             ("first, second", &["first", "second"][..]),
             ("first, second, third", &["first", "second", "third"]),
             ("third, second, first", &["third", "second", "first"]),
             ("untagged, second", &["second"]),
         ] {
-            let mut code = inputs.to_owned();
+            let mut code = FACE_TAG_INPUTS.to_owned();
             for name in tag_names {
                 code.push_str(&format!("{name}Original = {name}.faces.{name}End\n"));
             }
-            code.push_str(&format!("body = {operation}([{input_names}])\n"));
+            if operation == "subtract" {
+                let (target, tools) = input_names.split_once(", ").unwrap();
+                code.push_str(&format!("body = subtract({target}, tools = [{tools}])\n"));
+            } else {
+                code.push_str(&format!("body = {operation}([{input_names}])\n"));
+            }
             for name in tag_names {
                 code.push_str(&format!("{name}FromBody = body.faces.{name}End\n"));
             }
@@ -590,6 +603,39 @@ untagged = extrude(region(segments = [firstProfile.bottom]), length = 5mm, symme
     }
 
     #[tokio::test(flavor = "multi_thread")]
+    async fn subtract_inherits_face_tags_from_all_inputs() {
+        assert_csg_inherits_face_tags("subtract").await;
+        parse_execute(include_str!("../../tests/subtract_inherits_tool_face_tags/input.kcl"))
+            .await
+            .unwrap();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn subtract_inherits_face_tags_from_all_targets_and_tools() {
+        let tag_names = ["first", "second", "third"];
+        let mut code = FACE_TAG_INPUTS.to_owned();
+        for name in tag_names {
+            code.push_str(&format!("{name}Original = {name}.faces.{name}End\n"));
+        }
+        code.push_str("bodies = subtract([first, second], tools = [third, untagged])\n");
+        for index in 0..2 {
+            for name in tag_names {
+                code.push_str(&format!("{name}FromBody{index} = bodies[{index}].faces.{name}End\n"));
+            }
+        }
+        let result = parse_execute(&code).await.unwrap();
+        for index in 0..2 {
+            for name in tag_names {
+                assert_eq!(
+                    result.variable(&format!("{name}FromBody{index}")),
+                    result.variable(&format!("{name}Original")),
+                    "subtract: output {index}, tag {name}"
+                );
+            }
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
     async fn csg_keeps_first_input_for_duplicate_face_tag_names() {
         let inputs = r#"@settings(kclVersion = 2.0)
 fn body(@plane) {
@@ -603,13 +649,18 @@ second = body(YZ)
 firstCap = first.faces.cap
 secondCap = second.faces.cap
 "#;
-        for operation in ["union", "intersect"] {
+        for operation in ["union", "intersect", "subtract"] {
             for (inputs_order, expected, other) in [
                 ("first, second", "firstCap", "secondCap"),
                 ("second, first", "secondCap", "firstCap"),
             ] {
-                let code =
-                    format!("{inputs}\ncombined = {operation}([{inputs_order}])\nselected = combined.faces.cap\n");
+                let expression = if operation == "subtract" {
+                    let (target, tool) = inputs_order.split_once(", ").unwrap();
+                    format!("subtract({target}, tools = {tool})")
+                } else {
+                    format!("{operation}([{inputs_order}])")
+                };
+                let code = format!("{inputs}\ncombined = {expression}\nselected = combined.faces.cap\n");
                 let result = parse_execute(&code).await.unwrap();
                 assert_eq!(result.variable("selected"), result.variable(expected));
                 assert_ne!(result.variable("selected"), result.variable(other));

@@ -1,0 +1,28 @@
+@settings(kclVersion = 2.0)
+
+baseSketch = sketch(on = XY) {
+  bottom = line(start = [-10mm, -10mm], end = [10mm, -10mm])
+  right = line(start = [10mm, -10mm], end = [10mm, 10mm])
+  top = line(start = [10mm, 10mm], end = [-10mm, 10mm])
+  left = line(start = [-10mm, 10mm], end = [-10mm, -10mm])
+}
+baseRegion = region(segments = [baseSketch.bottom])
+base = extrude(baseRegion, length = 10mm, tagEnd = $baseTop)
+
+// Cut a hole through the base. The tool's end cap at x = 5mm becomes a wall
+// of the hole, sharing an edge with the base's top cap at z = 10mm.
+toolSketch = sketch(on = YZ) {
+  bottom = line(start = [-3mm, -1mm], end = [3mm, -1mm])
+  right = line(start = [3mm, -1mm], end = [3mm, 11mm])
+  top = line(start = [3mm, 11mm], end = [-3mm, 11mm])
+  left = line(start = [-3mm, 11mm], end = [-3mm, -1mm])
+}
+toolRegion = region(segments = [toolSketch.bottom])
+tool = extrude(toolRegion, length = 5mm, method = NEW, tagEnd = $toolEnd)
+
+result = subtract(base, tools = tool)
+chamfered = chamfer(
+  result,
+  edges = [{ sideFaces = [result.faces.baseTop, result.faces.toolEnd] }],
+  length = 0.25mm,
+)
