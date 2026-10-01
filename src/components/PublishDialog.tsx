@@ -1,6 +1,6 @@
 import { Popover, Transition } from '@headlessui/react'
 import type { ProjectCategoryResponse } from '@kittycad/lib'
-import { collectApiList } from '@kittycad/lib'
+import { Client, projects } from '@kittycad/lib'
 import {
   MarkdownEditor,
   type MarkdownEditorActions,
@@ -110,21 +110,26 @@ export function PublishDialog({
     setCategoriesError(null)
 
     try {
-      const nextCategories = await collectApiList<ProjectCategoryWithStatus>(
-        withAPIBaseURL('/projects/categories'),
-        async (url) => {
-          const response = await fetchWithSessionExpiration(url, {
+      const client = new Client({
+        token: '',
+        baseUrl: withAPIBaseURL(''),
+        fetch: async (input, init) => {
+          const response = await fetchWithSessionExpiration(input, {
+            ...init,
             cache: 'no-cache',
-            signal,
           })
           if (!response.ok) {
             return Promise.reject(
               new Error(await getResponseErrorMessage(response))
             )
           }
-          return response.json()
-        }
-      )
+          return response
+        },
+      })
+      const nextCategories = await projects.list_project_categories({
+        client,
+        signal,
+      })
       if (signal?.aborted) return
       setCategories(
         [...nextCategories].sort((a, b) => a.sort_order - b.sort_order)

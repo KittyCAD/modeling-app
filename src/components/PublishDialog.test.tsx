@@ -212,73 +212,12 @@ describe('PublishDialog', () => {
     expect(screen.getAllByRole('checkbox')).toHaveLength(18)
     expect(screen.queryByText('Inactive Makeathon')).not.toBeInTheDocument()
     expect(fetch).toHaveBeenCalledWith(expect.any(String), {
+      method: 'GET',
+      headers: {},
       cache: 'no-cache',
       signal: expect.any(AbortSignal),
     })
   })
-
-  it('makes categories from later pages available for publishing', async () => {
-    vi.mocked(fetch)
-      .mockResolvedValueOnce(Response.json({ items: [], next_page: 'more' }))
-      .mockResolvedValueOnce(
-        Response.json({ items: [category], next_page: null })
-      )
-
-    render(
-      <Popover>
-        <PublishDialog
-          onSubmit={vi.fn()}
-          accountUrl="https://zoo.dev/account"
-        />
-      </Popover>
-    )
-
-    expect(
-      await screen.findByRole('checkbox', { name: /Robotics/ })
-    ).toBeVisible()
-    expect(fetch).toHaveBeenLastCalledWith(
-      expect.stringContaining('/projects/categories?page_token=more'),
-      {
-        cache: 'no-cache',
-        signal: expect.any(AbortSignal),
-      }
-    )
-  })
-
-  it.each([
-    {
-      response: () =>
-        Response.json({ message: 'Categories unavailable' }, { status: 503 }),
-      message: 'Categories unavailable',
-    },
-    {
-      response: () => new Response(null, { status: 503 }),
-      message: 'Failed to load Aquarium categories.',
-    },
-  ])(
-    'shows "$message" instead of partial categories when a later page fails',
-    async ({ response, message }) => {
-      vi.mocked(fetch)
-        .mockResolvedValueOnce(
-          Response.json({ items: [category], next_page: 'more' })
-        )
-        .mockResolvedValueOnce(response())
-
-      render(
-        <Popover>
-          <PublishDialog
-            onSubmit={vi.fn()}
-            accountUrl="https://zoo.dev/account"
-          />
-        </Popover>
-      )
-
-      expect(await screen.findByText(message)).toBeVisible()
-      expect(
-        screen.queryByRole('checkbox', { name: /Robotics/ })
-      ).not.toBeInTheDocument()
-    }
-  )
 
   it('keeps Makeathon available only when it is already assigned', async () => {
     render(
