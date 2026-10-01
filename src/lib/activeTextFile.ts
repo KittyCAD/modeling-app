@@ -1,6 +1,5 @@
 import { signal } from '@preact/signals-core'
 
-import { EDITABLE_TEXT_FILE_EXTENSIONS } from '@src/lib/constants'
 import { isPathNotFoundError } from '@src/lib/desktop'
 import fsZds from '@src/lib/fs-zds'
 import { reportRejection } from '@src/lib/trap'
@@ -41,7 +40,11 @@ export type ActiveTextFile =
 
 export const activeTextFileSignal = signal<ActiveTextFile | null>(null)
 
-const decoder = new TextDecoder()
+// Keep a UTF-8 BOM in the buffer so editing does not silently remove it.
+const decoder = new TextDecoder('utf-8', { fatal: true, ignoreBOM: true })
+export const MAX_EDITABLE_TEXT_FILE_BYTES = 1024 * 1024
+const FILE_TOO_LARGE_MESSAGE = 'Text files larger than 1 MiB cannot be edited.'
+const UNSUPPORTED_TEXT_MESSAGE = 'This file is binary or is not UTF-8 text.'
 
 /** Debounce for writing edits to disk, mirroring `KclManager.writeToFile`. */
 const WRITE_DEBOUNCE_MS = 1000
@@ -63,12 +66,6 @@ let pendingWrite: {
   text: string
 } | null = null
 let pendingWriteTimeout: ReturnType<typeof setTimeout> | undefined
-
-/** Whether a file at `path` can be opened + edited as plain text in the code pane. */
-export function isEditableTextFile(path: string): boolean {
-  const lower = path.toLowerCase()
-  return EDITABLE_TEXT_FILE_EXTENSIONS.some((ext) => lower.endsWith(ext))
-}
 
 async function performWrite(
   fileOperations: FileOperationsRegistryService,
@@ -127,7 +124,8 @@ export function scheduleActiveTextFileWrite(
   text: string
 ): void {
   // `peek()` avoids creating a signal subscription from a non-reactive context.
-  if (activeTextFileSignal.peek()?.path !== path) {
+  const activeFile = activeTextFileSignal.peek()
+  if (activeFile?.path !== path || activeFile.status !== 'ready') {
     return
   }
   pendingWrite = { fileOperations, path, text }
@@ -160,10 +158,11 @@ export async function openActiveTextFile(
   fileOperations: FileOperationsRegistryService,
   path: string
 ): Promise<void> {
+  const requestId = ++latestOpenRequestId
   // Persist edits to the outgoing file before switching.
   await flushActiveTextFileWrite()
+  if (requestId !== latestOpenRequestId) return
 
-  const requestId = ++latestOpenRequestId
   const name = fsZds.basename(path)
 
   activeTextFileSignal.value = {
@@ -174,9 +173,36 @@ export async function openActiveTextFile(
   }
 
   try {
-    const text = decoder.decode(await fileOperations.readFile(path))
+    const stat = await fileOperations.stat(path)
+    if (requestId !== latestOpenRequestId) return
+    if (stat.size > MAX_EDITABLE_TEXT_FILE_BYTES) {
+      return setActiveTextFileError(path, name, FILE_TOO_LARGE_MESSAGE)
+    }
+
+    const bytes = await fileOperations.readFile(path)
     if (requestId !== latestOpenRequestId) {
       return
+    }
+    // Recheck the snapshot in case the file grew after stat.
+    if (bytes.byteLength > MAX_EDITABLE_TEXT_FILE_BYTES) {
+      return setActiveTextFileError(path, name, FILE_TOO_LARGE_MESSAGE)
+    }
+
+    let text: string
+    try {
+      text = decoder.decode(bytes)
+      // Allow tabs and line endings, but reject binary control characters.
+      for (const character of text) {
+        const code = character.charCodeAt(0)
+        if (
+          (code < 32 && code !== 9 && code !== 10 && code !== 13) ||
+          (code >= 127 && code <= 159)
+        ) {
+          return setActiveTextFileError(path, name, UNSUPPORTED_TEXT_MESSAGE)
+        }
+      }
+    } catch {
+      return setActiveTextFileError(path, name, UNSUPPORTED_TEXT_MESSAGE)
     }
     activeTextFileSignal.value = {
       path,
@@ -188,12 +214,24 @@ export async function openActiveTextFile(
     if (requestId !== latestOpenRequestId) {
       return
     }
-    activeTextFileSignal.value = {
+    setActiveTextFileError(
       path,
       name,
-      text: '',
-      status: 'error',
-      error: error instanceof Error ? error.message : String(error),
-    }
+      error instanceof Error ? error.message : String(error)
+    )
+  }
+}
+
+function setActiveTextFileError(
+  path: string,
+  name: string,
+  error: string
+): void {
+  activeTextFileSignal.value = {
+    path,
+    name,
+    text: '',
+    status: 'error',
+    error,
   }
 }

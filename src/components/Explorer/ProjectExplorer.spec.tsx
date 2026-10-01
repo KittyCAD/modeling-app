@@ -89,6 +89,43 @@ describe('ProjectExplorer', () => {
     cleanup()
   })
   it.each([
+    { entry: createFile('cube.STEP'), canOpen: true },
+    { entry: createFile('config.json'), canOpen: true },
+    { entry: oneFile, canOpen: false },
+    { entry: createFolder('folder.step'), canOpen: false },
+  ])(
+    'offers Open as Text for $entry.name: $canOpen',
+    async ({ entry, canOpen }) => {
+      const onOpenAsText = vi.fn()
+      project.children = [entry]
+      render(
+        <ProjectExplorer
+          wasmInstance={wasmInstance}
+          project={project}
+          file={oneFile}
+          createFilePressed={-1}
+          createFolderPressed={-1}
+          refreshExplorerPressed={-1}
+          collapsePressed={-1}
+          onRowClicked={() => {}}
+          onRowEnter={() => {}}
+          onOpenAsText={onOpenAsText}
+          readOnly={false}
+          canNavigate={true}
+        />
+      )
+
+      fireEvent.contextMenu(screen.getByRole('treeitem', { name: entry.name }))
+      await screen.findByRole('button', { name: 'Rename' })
+      const action = screen.queryByRole('button', { name: 'Open as Text' })
+      expect(Boolean(action)).toBe(canOpen)
+      if (action) {
+        fireEvent.click(action)
+        expect(onOpenAsText).toHaveBeenCalledWith(entry.path)
+      }
+    }
+  )
+  it.each([
     { entry: createFile('cube.step'), canImport: true },
     { entry: createFile('cube.STEP'), canImport: true },
     { entry: createFile('cube.prt.1'), canImport: true },

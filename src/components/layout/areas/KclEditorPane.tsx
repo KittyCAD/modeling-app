@@ -183,6 +183,9 @@ function TextFileEditor({
       state: EditorState.create({
         doc: activeTextFile.text,
         extensions: [
+          EditorState.lineSeparator.of(
+            activeTextFile.text.match(/\r\n|\r|\n/)?.[0] ?? '\n'
+          ),
           textThemeCompartment.of(
             textEditorThemeExtensions(resolvedTheme, isMarkdown)
           ),
@@ -200,7 +203,7 @@ function TextFileEditor({
               scheduleActiveTextFileWrite(
                 fileOperations,
                 path,
-                update.state.doc.toString()
+                update.state.sliceDoc()
               )
             }
           }),
