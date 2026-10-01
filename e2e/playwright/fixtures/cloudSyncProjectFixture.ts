@@ -1,8 +1,8 @@
 import { randomUUID } from 'node:crypto'
 import { test as base, expect } from '@e2e/playwright/base-test'
 import { token } from '@e2e/playwright/test-utils'
+import { collectApiList } from '@kittycad/lib'
 import type { Response } from '@playwright/test'
-import { collectApiList } from '@src/lib/apiPagination'
 
 interface FirstUploadProject {
   name: string
@@ -71,9 +71,9 @@ export const test = base.extend<{ firstUploadProject: FirstUploadProject }>({
         page.off('response', onResponse)
         // Stop the app's sync loop before deleting only this run's projects.
         const projects = await collectApiList<{ id: string; title: string }>(
-          '/user/projects',
-          async (path) => {
-            const listed = await request.get(`${apiUrl}${path}`, { headers })
+          `${apiUrl}/user/projects`,
+          async (url) => {
+            const listed = await request.get(url, { headers })
             await expect(listed).toBeOK()
             return listed.json()
           }

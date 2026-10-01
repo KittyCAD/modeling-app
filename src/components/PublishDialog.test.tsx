@@ -212,6 +212,8 @@ describe('PublishDialog', () => {
     expect(screen.getAllByRole('checkbox')).toHaveLength(18)
     expect(screen.queryByText('Inactive Makeathon')).not.toBeInTheDocument()
     expect(fetch).toHaveBeenCalledWith(expect.any(String), {
+      method: 'GET',
+      headers: {},
       cache: 'no-cache',
       signal: expect.any(AbortSignal),
     })
@@ -238,7 +240,12 @@ describe('PublishDialog', () => {
     ).toBeVisible()
     expect(fetch).toHaveBeenLastCalledWith(
       expect.stringContaining('/projects/categories?page_token=more'),
-      { cache: 'no-cache', signal: expect.any(AbortSignal) }
+      {
+        method: 'GET',
+        headers: {},
+        cache: 'no-cache',
+        signal: expect.any(AbortSignal),
+      }
     )
   })
 
