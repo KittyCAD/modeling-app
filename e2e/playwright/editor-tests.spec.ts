@@ -1528,15 +1528,10 @@ test(
       await expect(u.codeLocator).not.toContainText('interleaveB = 2')
       await expect(u.codeLocator).toContainText('interleaveA = 1')
 
-      do {
-        await undoButton.click()
-        await page.waitForTimeout(100)
-      } while (
-        !(await fileToDelete.isVisible()) &&
-        !(await undoButton.isDisabled())
-      )
+      await undoButton.click()
       await expect(fileToDelete).toBeVisible()
 
+      await expect(undoButton).toBeEnabled()
       await undoButton.click()
       await expect(u.codeLocator).not.toContainText('interleaveA = 1')
     })
