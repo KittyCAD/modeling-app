@@ -2,7 +2,8 @@
 source: kcl-lib/src/simulation_tests.rs
 description: Result of unparsing error_large_fillet_radius.kcl
 ---
-// FIllet is too large and produces an engine error
+// Fillet is too large and produces an engine error
+@settings(kclVersion = "3.0-preview")
 
 sketch001 = sketch(on = XY) {
   line1 = line(start = [var -2.5mm, var 0mm], end = [var 2.50mm, var 0mm])

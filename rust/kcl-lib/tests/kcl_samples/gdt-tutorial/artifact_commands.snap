@@ -359,11 +359,21 @@ description: Artifact commands gdt-tutorial.kcl
           "dimension": {
             "from_entity_id": "[uuid]",
             "from_entity_leader_pos": {
-              "centroid": {}
+              "normalized_pos": {
+                "pos": {
+                  "x": 0.0,
+                  "y": 0.0
+                }
+              }
             },
             "to_entity_id": "[uuid]",
             "to_entity_leader_pos": {
-              "centroid": {}
+              "normalized_pos": {
+                "pos": {
+                  "x": 1.0,
+                  "y": 0.0
+                }
+              }
             },
             "dimension": {
               "symbol": null,

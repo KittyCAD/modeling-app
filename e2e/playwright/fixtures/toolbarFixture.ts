@@ -156,6 +156,10 @@ export class ToolbarFixture {
     await expect(this.gizmoDisabled).toBeVisible()
   }
 
+  expectSelection = async (selectionText: string) => {
+    await expect(this.selectionStatus).toContainText(selectionText)
+  }
+
   startSketchThenCallbackThenWaitUntilReady = async (
     cb: () => Promise<void>
   ) => {

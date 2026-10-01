@@ -1,6 +1,6 @@
 import { expect, test } from '@e2e/playwright/zoo-test'
 
-const edgeTreatmentCode = `@settings(defaultLengthUnit = mm, kclVersion = 2.0)
+const edgeTreatmentCode = `@settings(defaultLengthUnit = mm, kclVersion = "3.0-preview")
 
 sketch001 = sketch(on = XY) {
   bottom = line(start = [0, 0], end = [30, 0])
@@ -56,7 +56,7 @@ cutBody = subtract(baseBody, tools = toolBody)
 hide(baseSketch)
 hide(toolSketch)`
 
-const standaloneHelixCode = `@settings(defaultLengthUnit = mm, kclVersion = 2.0)
+const standaloneHelixCode = `@settings(defaultLengthUnit = mm, kclVersion = "3.0-preview")
 
 helix001 = helix(
   axis = Z,

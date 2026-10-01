@@ -79,6 +79,7 @@ pub(crate) use state::PendingEdgeRefactorMeta;
 pub(crate) use state::PendingLegacyAngleRefactorMeta;
 pub use state::RefactorMetadata;
 pub(crate) use state::TangencyMode;
+pub(crate) use state::computed_kcl_version;
 pub(crate) use state::declared_kcl_version;
 
 use crate::CompilationIssue;
@@ -97,6 +98,7 @@ use crate::execution::cache::CacheResult;
 use crate::execution::cad_op::OperationExt;
 use crate::execution::import_graph::Universe;
 use crate::execution::import_graph::UniverseMap;
+use crate::execution::modeling::kcl_version_to_modeling_cmd;
 use crate::execution::typed_path::TypedPath;
 use crate::front::Number;
 use crate::front::Object;
@@ -963,6 +965,10 @@ pub struct ExecutorContext {
     /// Call-depth limit for the machine executor's runaway-recursion guard.
     /// Crate-internal policy, not user configuration.
     pub(crate) machine_call_depth_limit: usize,
+    /// If true, send BeginExecution and EndExecution before/after executing
+    /// KCL. This might need to be false if the engine server is disabling
+    /// rendering because it's in a headless context.
+    pub configure_engine_render: bool,
 }
 
 impl std::fmt::Debug for ExecutorContext {
@@ -1177,6 +1183,7 @@ impl ExecutorContext {
             execution_callbacks: Default::default(),
             executor_kind: machine::ExecutorKind::resolve(),
             machine_call_depth_limit: machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
+            configure_engine_render: true,
         }
     }
 
@@ -1192,6 +1199,7 @@ impl ExecutorContext {
             // the executor selected for the run instead of the default.
             executor_kind: self.executor_kind,
             machine_call_depth_limit: self.machine_call_depth_limit,
+            configure_engine_render: true,
         }
     }
 
@@ -1265,6 +1273,7 @@ impl ExecutorContext {
             execution_callbacks: Default::default(),
             executor_kind: machine::ExecutorKind::resolve(),
             machine_call_depth_limit: machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
+            configure_engine_render: true,
         }
     }
 
@@ -1279,6 +1288,7 @@ impl ExecutorContext {
             execution_callbacks: Default::default(),
             executor_kind: machine::ExecutorKind::resolve(),
             machine_call_depth_limit: machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
+            configure_engine_render: true,
         }
     }
 
@@ -1300,6 +1310,7 @@ impl ExecutorContext {
             execution_callbacks: Default::default(),
             executor_kind: machine::ExecutorKind::resolve(),
             machine_call_depth_limit: machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
+            configure_engine_render: true,
         })
     }
 
@@ -1314,6 +1325,7 @@ impl ExecutorContext {
             execution_callbacks: Default::default(),
             executor_kind: machine::ExecutorKind::resolve(),
             machine_call_depth_limit: machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
+            configure_engine_render: true,
         }
     }
 
@@ -1418,6 +1430,7 @@ impl ExecutorContext {
 
     pub async fn send_clear_scene(
         &self,
+        kcl_version: Option<KclVersion>,
         exec_state: &mut ExecState,
         source_range: crate::execution::SourceRange,
     ) -> Result<(), KclError> {
@@ -1427,11 +1440,14 @@ impl ExecutorContext {
         exec_state.global.root_module_artifacts.clear();
         exec_state.global.artifacts.clear();
 
+        let modeling_kcl_version = kcl_version.map(kcl_version_to_modeling_cmd);
+
         self.engine
             .clear_scene(
                 &self.engine_batch,
                 &mut exec_state.mod_local.id_generator,
                 source_range,
+                modeling_kcl_version,
                 self.settings.geometry_only,
             )
             .await?;
@@ -1600,9 +1616,13 @@ impl ExecutorContext {
     /// frames are not held underneath deep KCL execution in debug builds.
     pub async fn run_with_caching(&self, program: crate::Program) -> Result<ExecOutcome, KclErrorWithOutputs> {
         assert!(!self.is_mock());
-        let result = self
-            .with_engine_execution(Box::pin(self.run_with_caching_inner(program)))
-            .await;
+        let exec_fut = self.run_with_caching_inner(program);
+        let result = if self.configure_engine_render {
+            self.with_engine_execution(Box::pin(exec_fut)).await
+        } else {
+            exec_fut.await
+        };
+
         if result.is_err() {
             cache::bust_cache().await;
         }
@@ -1645,10 +1665,12 @@ impl ExecutorContext {
                     let old = CacheInformation {
                         ast: &cached_state.main.ast,
                         settings: &cached_state.settings,
+                        kcl_version: cached_state.kcl_version,
                     };
                     let new = CacheInformation {
                         ast: &program.ast,
                         settings: &self.settings,
+                        kcl_version: program.kcl_version,
                     };
 
                     // Get the program that actually changed from the old and new information.
@@ -1676,6 +1698,7 @@ impl ExecutorContext {
                                 (
                                     clear_scene,
                                     crate::Program {
+                                        kcl_version: program.kcl_version,
                                         ast: changed_program,
                                         original_file_contents: program.original_file_contents,
                                     },
@@ -1748,6 +1771,7 @@ impl ExecutorContext {
                                 (
                                     true,
                                     crate::Program {
+                                        kcl_version: program.kcl_version,
                                         ast: changed_program,
                                         original_file_contents: program.original_file_contents,
                                     },
@@ -1807,7 +1831,7 @@ impl ExecutorContext {
                     let (exec_state, universe_info, preserve_mem) = match import_check_info {
                         Some((new_universe, new_universe_map, mut new_exec_state)) => {
                             // Clear the scene if the imports changed.
-                            self.send_clear_scene(&mut new_exec_state, Default::default())
+                            self.send_clear_scene(Some(program.kcl_version), &mut new_exec_state, Default::default())
                                 .await
                                 .map_err(KclErrorWithOutputs::no_outputs)?;
 
@@ -1822,7 +1846,7 @@ impl ExecutorContext {
                             let mut exec_state = cached_state.reconstitute_exec_state(self);
                             exec_state.reset(self);
 
-                            self.send_clear_scene(&mut exec_state, Default::default())
+                            self.send_clear_scene(Some(program.kcl_version), &mut exec_state, Default::default())
                                 .await
                                 .map_err(KclErrorWithOutputs::no_outputs)?;
 
@@ -1843,7 +1867,7 @@ impl ExecutorContext {
                 }
                 None => {
                     let mut exec_state = ExecState::new(self);
-                    self.send_clear_scene(&mut exec_state, Default::default())
+                    self.send_clear_scene(Some(program.kcl_version), &mut exec_state, Default::default())
                         .await
                         .map_err(KclErrorWithOutputs::no_outputs)?;
 
@@ -1877,6 +1901,7 @@ impl ExecutorContext {
             cache::write_old_ast(GlobalState::new(
                 (*exec_state).clone(),
                 self.settings.clone(),
+                original_program.kcl_version,
                 original_program.ast,
                 result.0,
             ))
@@ -1913,13 +1938,12 @@ impl ExecutorContext {
         universe_info: Option<(Universe, UniverseMap)>,
         preserve_mem: PreserveMem,
     ) -> Result<(EnvironmentRef, Option<ModelingSessionData>), KclErrorWithOutputs> {
-        self.with_engine_execution(Box::pin(self.run_concurrent_inner(
-            program,
-            exec_state,
-            universe_info,
-            preserve_mem,
-        )))
-        .await
+        let execution_fut = self.run_concurrent_inner(program, exec_state, universe_info, preserve_mem);
+        if self.configure_engine_render {
+            self.with_engine_execution(Box::pin(execution_fut)).await
+        } else {
+            execution_fut.await
+        }
     }
 
     /// Enclose the entire execution, including scene setup and cached settings updates.
@@ -1968,7 +1992,7 @@ impl ExecutorContext {
         exec_state.entry_point_version_is_v3_or_higher().then(|| {
             let tolerance = kcmc::shared::Tolerance::builder()
                 .point_point_2d_coincident(kcmc::length_unit::LengthUnit(
-                    crate::std::solver::POINT_POINT_2D_COINCIDENT_TOLERANCE_MM,
+                    crate::std::solver::POINT_POINT_2D_COINCIDENT_EUCLIDEAN_TOLERANCE_MM,
                 ))
                 .build();
             ModelingCmd::from(mcmd::SetDefaultSystemProperties::builder().tolerance(tolerance).build())
@@ -2622,6 +2646,7 @@ pub(crate) fn new_mock_executor_context(
         execution_callbacks: Default::default(),
         executor_kind,
         machine_call_depth_limit: crate::execution::machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
+        configure_engine_render: true,
     }
 }
 
@@ -3114,6 +3139,7 @@ mod tests {
             execution_callbacks: Default::default(),
             executor_kind: machine::ExecutorKind::resolve(),
             machine_call_depth_limit: crate::execution::machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
+            configure_engine_render: true,
         };
         let mut exec_state = ExecState::new_with_memory_backend(&ctx, backend);
         let (env_ref, _) = ctx.run(&program, &mut exec_state).await.unwrap();
@@ -5565,7 +5591,7 @@ startSketchOn(XY)
             let tolerance = properties.tolerance.expect("expected KCL 3 tolerance");
             approx::assert_relative_eq!(
                 tolerance.point_point_2d_coincident.0,
-                1e-8,
+                1e-8 * std::f64::consts::SQRT_2,
                 epsilon = 0.0,
                 max_relative = 1e-12
             );
@@ -5865,6 +5891,7 @@ face = disc()
             execution_callbacks: Default::default(),
             executor_kind: machine::ExecutorKind::resolve(),
             machine_call_depth_limit: crate::execution::machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
+            configure_engine_render: true,
         }
     }
 
@@ -6308,8 +6335,9 @@ face = disc()
     #[tokio::test(flavor = "multi_thread")]
     async fn never_type_resolution_rejects_an_unvalidated_v2_ast() {
         let source = "@settings(kclVersion = 2.0)\nfn stop(): never {}\n";
-        let (ast, _) = crate::parsing::parse_str_syntax(source, ModuleId::default()).unwrap();
+        let (kcl_version, ast, _) = crate::parsing::parse_str_syntax(source, ModuleId::default()).unwrap();
         let program = crate::Program {
+            kcl_version,
             ast,
             original_file_contents: source.to_owned(),
         };
@@ -8172,6 +8200,7 @@ type Color { | Red | Green | Red }
             execution_callbacks: Default::default(),
             executor_kind: machine::ExecutorKind::resolve(),
             machine_call_depth_limit: crate::execution::machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
+            configure_engine_render: true,
         };
         let mut exec_state = ExecState::new(&ctx);
         // Close the context even if execution panics, then let the panic
@@ -9781,7 +9810,13 @@ x = [1, 2]: NewT
             },
         );
 
-        let cached = cache::GlobalState::new(exec_state, ctx.settings.clone(), program.ast.clone(), main_ref);
+        let cached = cache::GlobalState::new(
+            exec_state,
+            ctx.settings.clone(),
+            program.kcl_version,
+            program.ast.clone(),
+            main_ref,
+        );
         let mem = cached.mock_memory_state().unwrap();
         assert_eq!(mem.std_not_yet_added["cube"].added_in, version("3.0"));
 

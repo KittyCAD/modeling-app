@@ -1,0 +1,59 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing weldment_gdt_distance.kcl
+---
+@settings(kclVersion = 2.0)
+
+sketch001 = sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 4.75mm], end = [var 6.74mm, var 4.75mm])
+  line2 = line(start = [var 6.74mm, var 4.75mm], end = [var 6.74mm, var 0mm])
+  line3 = line(start = [var 6.74mm, var 0mm], end = [var 0mm, var 0mm])
+  line4 = line(start = [var 0mm, var 0mm], end = [var 0mm, var 4.75mm])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  parallel([line2, line4])
+  parallel([line3, line1])
+  perpendicular([line1, line2])
+  horizontal(line3)
+  circle1 = circle(start = [var 1.88mm, var 3.75mm], center = [var 1.25mm, var 3.75mm])
+  circle2 = circle(start = [var 1.88mm, var 1mm], center = [var 1.25mm, var 1mm])
+  circle3 = circle(start = [var 4.86mm, var 3.75mm], center = [var 5.49mm, var 3.75mm])
+  circle4 = circle(start = [var 4.86mm, var 1mm], center = [var 5.49mm, var 1mm])
+  vertical([circle4.center, circle3.center])
+  vertical([circle1.center, circle2.center])
+  equalRadius([circle1, circle2])
+  equalRadius([circle3, circle4])
+  horizontal([circle2.center, circle4.center])
+  horizontal([circle1.center, circle3.center])
+  equalRadius([circle1, circle3])
+  coincident([line4.start, ORIGIN])
+  distance([line4, line2], labelPosition = [4.53mm, 6.69mm]) == 6.74mm
+  distance([line1, line3], labelPosition = [7.7mm, 3.25mm]) == 4.75mm
+  distance([circle2.center, line3], labelPosition = [-0.94mm, 0.54mm]) == 1mm
+  distance([circle1.center, line1], labelPosition = [-0.91mm, 4.21mm]) == 1
+  distance([circle1.center, line4], labelPosition = [0.62mm, 2.53mm]) == 1.25mm
+  distance([circle3.center, line2], labelPosition = [6.11mm, 2.63mm]) == 1.25
+  distance([circle3.center, line1], labelPosition = [7.25mm, 3.94mm]) == 1mm
+  distance([circle4.center, line3], labelPosition = [7.22mm, 0.5mm]) == 1mm
+  diameter(circle1) == 1.25
+  horizontal([circle1.start, circle1.center])
+  horizontal([circle3.start, circle3.center])
+  horizontal([circle2.start, circle2.center])
+  horizontal([circle4.start, circle4.center])
+}
+hidden001 = hide(sketch001)
+region001 = region(segments = [sketch001.line1, sketch001.line2], direction = CW)
+extrude001 = extrude(region001, length = 2, tagEnd = $capEnd001)
+gdt::distance(
+  tolerance = 0.1mm,
+  framePosition = [4.0996, 4.0996],
+  fontSize = 0.3148mm,
+  from = {
+    sideFaces = [region001.tags.circle3, capEnd001]
+  },
+  to = {
+    sideFaces = [region001.tags.circle1, capEnd001]
+  },
+)

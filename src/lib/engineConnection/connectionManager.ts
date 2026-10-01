@@ -8,6 +8,7 @@ import {
   encode as msgpackEncode,
 } from '@msgpack/msgpack'
 import type { useModelingContext } from '@src/hooks/useModelingContext'
+import type { KclVersion } from '@rust/kcl-lib/bindings/KclVersion'
 import { defaultSourceRange } from '@src/lang/sourceRange'
 import type { EngineCommand, ResponseMap } from '@src/lang/std/artifactGraph'
 import type { CommandLog } from '@src/lang/std/commandLog'
@@ -189,6 +190,7 @@ export class ConnectionManager extends EventTarget {
     unitTestWebrtc,
     unitTestPool,
     rustContext,
+    kclVersion,
   }: {
     width: number
     height: number
@@ -198,6 +200,7 @@ export class ConnectionManager extends EventTarget {
     unitTestWebrtc?: boolean
     unitTestPool?: 'cpu'
     rustContext?: RustContext
+    kclVersion?: KclVersion
   }) {
     EngineDebugger.addLog({
       label: 'connectionManager',
@@ -235,7 +238,7 @@ export class ConnectionManager extends EventTarget {
 
     const handleMessage = this.createMessageHandler(rustContext)
 
-    const url = this.generateWebsocketURL()
+    const url = this.generateWebsocketURL(kclVersion)
     this.connection = new Connection({
       url,
       token,
@@ -403,10 +406,13 @@ export class ConnectionManager extends EventTarget {
     )
   }
 
-  generateWebsocketURL() {
+  generateWebsocketURL(kclVersion: KclVersion | undefined) {
     let additionalSettings = this.settings.enableSSAO ? '&post_effect=ssao' : ''
     additionalSettings +=
       '&show_grid=' + (this.settings.showScaleGrid ? 'true' : 'false')
+    if (kclVersion !== undefined) {
+      additionalSettings += `&kcl_version=${encodeURIComponent(kclVersion)}`
+    }
     const url = withKittycadWebSocketURL(
       `?video_res_width=${this.streamDimensions.width}&video_res_height=${this.streamDimensions.height}${additionalSettings}`
     )

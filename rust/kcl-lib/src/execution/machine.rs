@@ -3176,6 +3176,7 @@ result = countdown(9000)
             execution_callbacks: Default::default(),
             executor_kind: ExecutorKind::Machine,
             machine_call_depth_limit: 10_000,
+            configure_engine_render: true,
         };
         let mut exec_state = ExecState::new(&exec_ctxt);
         let (env_ref, _) = exec_ctxt.run(&program, &mut exec_state).await.unwrap();
