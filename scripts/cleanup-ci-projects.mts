@@ -1,10 +1,5 @@
 import { ApiError, Client, projects, users } from '@kittycad/lib'
-import type {
-  ProjectShareLinkResponse,
-  ProjectSummaryResponse,
-} from '@kittycad/lib'
-
-import { listClientItems } from '../src/lib/apiPagination.ts'
+import type { ProjectSummaryResponse } from '@kittycad/lib'
 
 const DEVELOPMENT_API = 'https://api.dev.zoo.dev'
 const RETENTION_MS = 60 * 60 * 1000
@@ -57,17 +52,17 @@ async function main() {
   console.log(`${apply ? 'Cleanup' : 'Dry run'} for CI account ${user.id}`)
 
   const cutoff = Date.now() - RETENTION_MS
-  const candidates = (
-    await listClientItems<ProjectSummaryResponse>(client, '/user/projects')
-  ).filter((project) => isCleanupCandidate(project, cutoff))
+  const candidates = (await projects.list_projects({ client })).filter(
+    (project) => isCleanupCandidate(project, cutoff)
+  )
   let deleted = 0
   let eligible = 0
   for (const project of candidates) {
     try {
-      const shares = await listClientItems<ProjectShareLinkResponse>(
+      const shares = await projects.list_project_share_links({
         client,
-        `/user/projects/${project.id}/share-links`
-      )
+        id: project.id,
+      })
       if (shares.length !== 0) continue
 
       // Recheck immediately before deletion so activity since the initial list

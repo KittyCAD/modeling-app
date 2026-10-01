@@ -7,12 +7,13 @@ import isomorphicFetch from 'isomorphic-fetch'
 
 export function createKCClient(
   token?: string,
-  baseUrlOverride?: string
+  baseUrlOverride?: string,
+  requestDefaults?: Pick<RequestInit, 'cache'>
 ): Client {
   const baseUrl = baseUrlOverride || env().VITE_ZOO_API_BASE_URL
   const injectedFetch = (async (input: any, init?: any) => {
     const impl = typeof fetch !== 'undefined' ? fetch : isomorphicFetch
-    const opts: RequestInit = { ...(init || {}) }
+    const opts: RequestInit = { ...requestDefaults, ...(init || {}) }
     if (!isDesktop()) {
       opts.credentials = 'include'
     }

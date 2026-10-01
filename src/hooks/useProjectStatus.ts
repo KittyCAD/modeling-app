@@ -3,7 +3,6 @@ import type {
   ProjectSummaryResponse,
 } from '@kittycad/lib'
 import { projects } from '@kittycad/lib'
-import { listClientItems } from '@src/lib/apiPagination'
 import { createKCClient } from '@src/lib/kcClient'
 import { useEffect, useMemo, useState } from 'react'
 
@@ -64,7 +63,7 @@ export function useProjectStatus(
 
 /**
  * Fetches publication statuses when Home contains a remote-linked project.
- * Loads the complete project index instead of fetching each project individually.
+ * Uses a single `list_projects` call rather than N individual calls.
  */
 export function useProjectStatuses(
   homeProjects: readonly RemoteProjectReference[] | undefined,
@@ -95,10 +94,7 @@ export function useProjectStatuses(
     async function fetchStatuses() {
       try {
         const client = createKCClient(token)
-        const result = await listClientItems<ProjectSummaryResponse>(
-          client,
-          '/user/projects'
-        )
+        const result = await projects.list_projects({ client })
         if (!cancelled) {
           setRemoteProjects(result)
         }
