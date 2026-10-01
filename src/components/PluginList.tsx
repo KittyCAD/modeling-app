@@ -6,7 +6,7 @@ import type {
 } from '@kittycad/registry'
 import { Toggle } from '@src/components/Toggle/Toggle'
 import { useApp } from '@src/lib/boot'
-import type { Setting } from '@src/lib/settings/initialSettings'
+import type { Setting } from '@src/lib/settings/Setting'
 import type { DynamicBooleanSetEvent } from '@src/lib/settings/settingsTypes'
 import { shouldHideSetting } from '@src/lib/settings/settingsUtils'
 import { userFeaturesContextHas } from '@src/machines/userFeaturesMachine'

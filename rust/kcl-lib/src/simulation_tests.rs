@@ -676,7 +676,12 @@ async fn execute_test(test: &Test) {
             panic!("Couldn't parse KclVersion from config: {version}");
         };
         let mut run = test.clone();
-        run.output_dir = test.output_dir.join(format!("kcl-{version}"));
+        // Drop prerelease suffixes (e.g. "3.0-preview" -> "3.0") for on-disk paths.
+        let dir_version = kcl_version
+            .as_str()
+            .strip_suffix("-preview")
+            .unwrap_or(kcl_version.as_str());
+        run.output_dir = test.output_dir.join(format!("kcl-{dir_version}"));
         std::fs::create_dir_all(&run.output_dir).unwrap();
         execute_once(&run, Some(kcl_version)).await;
     }

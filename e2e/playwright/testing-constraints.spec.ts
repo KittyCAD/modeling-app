@@ -993,7 +993,10 @@ profile001 = startProfile(sketch001, at = [-47.54, -26.74])
     }
   })
 })
-test.describe('Electron constraint tests', () => {
+test.describe('Electron constraint tests', { tag: '@desktop' }, () => {
+  // KCL 1.0 sketch in the fixture needs the legacy sketch flag for segment labels.
+  test.use({ userFeatures: [LEGACY_SKETCH_MODE_FEATURE_FLAG] })
+
   test('Able to double click label to set constraint', async ({
     page,
     homePage,

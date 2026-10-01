@@ -50,11 +50,11 @@ describe('convertLegacyAngleToAngleDimension', () => {
     if (err(code)) throw code
 
     expect(code).toContain(`angleDimension(
-  lines = [line1, line2],
-  sector = 2,
-  inverse = true,
-  labelPosition = [10mm, 11mm],
-) == targetAngle`)
+    lines = [line1, line2],
+    sector = 2,
+    inverse = true,
+    labelPosition = [10mm, 11mm],
+  ) == targetAngle`)
   })
 
   it('omits inverse for the default directed angle', () => {
