@@ -92,7 +92,7 @@ export class SelectionHighlightRenderer {
     toneMapped: false,
   })
   private selectedKeys = new Set<string>()
-  private hoveredKey: string | null = null
+  private hoveredKeys = new Set<string>()
   private frameOutputTarget: RenderTarget | null = null
   private frameAutoClear = true
 
@@ -208,15 +208,36 @@ export class SelectionHighlightRenderer {
   }
 
   setHover(target: Mesh | null) {
-    this.hoveredKey = target?.uuid ?? null
+    this.hoveredKeys.clear()
+    if (target) {
+      const faceUuid = target.userData.faceUuid
+      if (typeof faceUuid === 'string') {
+        // Periodic surfaces can be split into several meshes with one face ID.
+        for (const source of this.sourceByOverlay.values()) {
+          if (source.userData.faceUuid === faceUuid) {
+            this.hoveredKeys.add(source.uuid)
+          }
+        }
+      } else {
+        this.hoveredKeys.add(target.uuid)
+      }
+    }
     this.updateSceneMembership()
   }
 
   setTargets(targets: Mesh[]) {
     this.clearModel()
     for (const mesh of targets) {
-      const overlay = new Mesh(mesh.geometry, this.maskMaterial)
+      const overlay =
+        mesh instanceof LineSegments2
+          ? new LineSegments2(mesh.geometry, this.hoverLineMaterial)
+          : new Mesh(mesh.geometry, this.maskMaterial)
       overlay.matrixAutoUpdate = false
+      if (mesh instanceof LineSegments2) {
+        overlay.frustumCulled = false
+        overlay.renderOrder = 2
+        this.lineKeys.add(mesh.uuid)
+      }
       this.overlayByKey.set(mesh.uuid, overlay)
       this.sourceByOverlay.set(overlay, mesh)
     }
@@ -302,7 +323,7 @@ export class SelectionHighlightRenderer {
     this.overlayByKey.clear()
     this.lineKeys.clear()
     this.selectedKeys.clear()
-    this.hoveredKey = null
+    this.hoveredKeys.clear()
     this.geometries.forEach((geometry) => {
       geometry.dispose()
     })
@@ -343,13 +364,11 @@ export class SelectionHighlightRenderer {
       }
     }
 
-    if (this.hoveredKey && !this.selectedKeys.has(this.hoveredKey)) {
-      const object = this.overlayByKey.get(this.hoveredKey)
+    for (const key of this.hoveredKeys) {
+      if (this.selectedKeys.has(key)) continue
+      const object = this.overlayByKey.get(key)
       if (object) {
-        if (
-          this.lineKeys.has(this.hoveredKey) &&
-          object instanceof LineSegments2
-        ) {
+        if (this.lineKeys.has(key) && object instanceof LineSegments2) {
           object.material = this.hoverLineMaterial
           this.hoverLineScene.add(object)
         } else {

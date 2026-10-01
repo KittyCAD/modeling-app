@@ -10,14 +10,22 @@ import { isErr } from '@src/lib/trap'
 const LIGHT_THEME_EDGE_COLOR = new Color(0x1c1c1c)
 const DARK_THEME_EDGE_COLOR = new Color(0xf9f9f9)
 
+export type EdgeSelectionTarget = {
+  object: LineSegments2
+  ranges: Array<{ firstSegment: number; segmentCount: number }>
+}
+
 export class EdgeRenderer {
   readonly lines: LineSegments2
 
   private readonly group = new Group()
   private readonly geometry = new LineSegmentsGeometry()
   private readonly material: Line2NodeMaterial
+  private readonly selectionMaterial = new Line2NodeMaterial()
+  private selectionTargets: EdgeSelectionTarget[] = []
 
   constructor(backgroundColor: string, visible = true) {
+    this.geometry.setPositions([])
     this.material = new Line2NodeMaterial({
       color: getEdgeColorForBackground(backgroundColor),
       linewidth: LOCAL_WEBGPU_EDGE_LINE_WIDTH_PX,
@@ -34,6 +42,11 @@ export class EdgeRenderer {
     this.lines.renderOrder = 2
     this.group.name = 'edge_batch'
     this.group.visible = visible
+    this.selectionMaterial.visible = false
+  }
+
+  getSelectionTargets() {
+    return this.selectionTargets
   }
 
   // TODO defer building if edges are not visible
@@ -55,6 +68,9 @@ export class EdgeRenderer {
     //   }
     // }
     const positions: number[] = []
+    const positionsByUuid = new Map<string, number[]>()
+    const rangesByUuid = new Map<string, EdgeSelectionTarget['ranges']>()
+    this.clearSelectionTargets()
     for (const edge of brep.edges) {
       const curve = brep.curves3D[edge.curve[0]]
       if (curve) {
@@ -64,33 +80,43 @@ export class EdgeRenderer {
           continue
         }
         // Convert a polyline into independent segment pairs.
+        const firstSegment = positions.length / 6
+        const edgePositions: number[] = []
         for (let i = 1; i < points.length; i++) {
           const a = points[i - 1]
           const b = points[i]
-          positions.push(a.x, a.y, a.z, b.x, b.y, b.z)
+          edgePositions.push(a.x, a.y, a.z, b.x, b.y, b.z)
         }
-        // if (curve.type === 'line') {
-        //   if (edge.closed) {
-        //     const { origin, direction } = curve.line
-        //     for (const t of edge.t) {
-        //       positions.push(
-        //         origin[0] + direction[0] * t,
-        //         origin[1] + direction[1] * t,
-        //         origin[2] + direction[2] * t
-        //       )
-        //     }
-        //   } else {
-        //     const start = brep.vertices[edge.start]
-        //     const end = brep.vertices[edge.end]
-        //     positions.push(...start, ...end)
-        //   }
-        // }
+        positions.push(...edgePositions)
+        const uuid = edge.extras?.KITTYCAD?.uuid
+        if (uuid && edgePositions.length > 0) {
+          const uuidPositions = positionsByUuid.get(uuid) ?? []
+          uuidPositions.push(...edgePositions)
+          positionsByUuid.set(uuid, uuidPositions)
+          const ranges = rangesByUuid.get(uuid) ?? []
+          ranges.push({
+            firstSegment,
+            segmentCount: edgePositions.length / 6,
+          })
+          rangesByUuid.set(uuid, ranges)
+        }
       } else {
         console.error(`Missing edge ${edge.curve[0]}`)
       }
     }
     this.geometry.setPositions(positions)
-    //console.log('gltf', gltf, positions)
+    for (const [uuid, edgePositions] of positionsByUuid) {
+      const geometry = new LineSegmentsGeometry()
+      geometry.setPositions(edgePositions)
+      const object = new LineSegments2(geometry, this.selectionMaterial)
+      object.userData.edgeUuid = uuid
+      object.frustumCulled = false
+      this.group.add(object)
+      this.selectionTargets.push({
+        object,
+        ranges: rangesByUuid.get(uuid) ?? [],
+      })
+    }
   }
 
   addTo(parent: Object3D) {
@@ -100,6 +126,15 @@ export class EdgeRenderer {
 
   removeFromParent() {
     this.group.removeFromParent()
+    this.clearSelectionTargets()
+  }
+
+  private clearSelectionTargets() {
+    for (const target of this.selectionTargets) {
+      target.object.removeFromParent()
+      target.object.geometry.dispose()
+    }
+    this.selectionTargets = []
   }
 
   setBackgroundColor(backgroundColor: string) {
@@ -115,6 +150,7 @@ export class EdgeRenderer {
     this.group.clear()
     this.geometry.dispose()
     this.material.dispose()
+    this.selectionMaterial.dispose()
   }
 }
 

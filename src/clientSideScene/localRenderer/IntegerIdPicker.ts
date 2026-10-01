@@ -3,6 +3,7 @@ import {
   type Camera,
   Color,
   DoubleSide,
+  InstancedBufferAttribute,
   type Material,
   Mesh,
   NearestFilter,
@@ -13,12 +14,15 @@ import {
   UnsignedIntType,
   Vector2,
 } from 'three'
-import { outputStruct, uint } from 'three/tsl'
-import type { LineSegments2 } from 'three/examples/jsm/lines/webgpu/LineSegments2.js'
+import type { EdgeSelectionTarget } from '@src/clientSideScene/localRenderer/EdgeRenderer'
+import { LineSegmentsGeometry } from 'three/examples/jsm/lines/LineSegmentsGeometry.js'
+import { LineSegments2 } from 'three/examples/jsm/lines/webgpu/LineSegments2.js'
+import { attribute, outputStruct, uint, varying } from 'three/tsl'
 import {
   Line2NodeMaterial,
   NodeMaterial,
   RenderTarget,
+  type Node,
   type WebGPURenderer,
 } from 'three/webgpu'
 
@@ -72,6 +76,7 @@ export class IntegerIdPicker {
   private targetById: Array<Mesh | null> = [null]
   private renderTarget: RenderTarget | null = null
   private edgeObject: LineSegments2 | null = null
+  private edgesVisible = true
   private geometryStats: IntegerIdPickerGeometryStats | null = null
   private idSceneBuildDurationMs = 0
   private dirty = true
@@ -83,7 +88,11 @@ export class IntegerIdPicker {
   }
 
   // Share geometry; only the small ID materials and scene nodes are owned here.
-  setTargets(targets: Mesh[], occluder: Object3D | null) {
+  setTargets(
+    targets: Mesh[],
+    occluder: Object3D | null,
+    edges?: { source: LineSegments2; targets: EdgeSelectionTarget[] }
+  ) {
     this.clearModel()
     const startedAt = performance.now()
     const stats: IntegerIdPickerGeometryStats = {
@@ -124,18 +133,80 @@ export class IntegerIdPicker {
         (source.geometry.index?.count ?? positions?.count ?? 0) / 3
     }
     const occluderMaterial = createMaterial(0)
+    const targetSet = new Set(targets)
     occluder?.traverseVisible((object) => {
-      if (object instanceof Mesh) addMesh(object, occluderMaterial)
+      if (
+        object instanceof Mesh &&
+        !(object instanceof LineSegments2) &&
+        !targetSet.has(object)
+      ) {
+        addMesh(object, occluderMaterial)
+      }
     })
     for (const target of targets) {
       const id = this.targetById.push(target) - 1
       addMesh(target, createMaterial(id))
+    }
+    if (edges) {
+      const segmentCount =
+        edges.source.geometry.getAttribute('instanceStart')?.count ?? 0
+      const selectionIds = new Uint32Array(segmentCount)
+      for (const edge of edges.targets) {
+        const id = this.targetById.push(edge.object) - 1
+        for (const { firstSegment, segmentCount: count } of edge.ranges) {
+          selectionIds.fill(id, firstSegment, firstSegment + count)
+        }
+      }
+      if (segmentCount > 0) {
+        const geometry = new LineSegmentsGeometry()
+        for (const name of ['instanceStart', 'instanceEnd']) {
+          const sourceAttribute = edges.source.geometry.getAttribute(name)
+          if (sourceAttribute) geometry.setAttribute(name, sourceAttribute)
+        }
+        geometry.instanceCount = segmentCount
+        geometry.boundingBox = edges.source.geometry.boundingBox
+        geometry.boundingSphere = edges.source.geometry.boundingSphere
+        geometry.setAttribute(
+          'selectionId',
+          new InstancedBufferAttribute(selectionIds, 1)
+        )
+        const material = new Line2NodeMaterial({
+          linewidth: SELECTION_LINE_WIDTH_AT_REFERENCE_PX,
+        })
+        material.worldUnits = false
+        material.alphaToCoverage = false
+        material.depthTest = true
+        material.depthWrite = true
+        material.transparent = false
+        material.blending = NoBlending
+        material.toneMapped = false
+        material.polygonOffset = true
+        material.polygonOffsetFactor = -1
+        material.polygonOffsetUnits = -1
+        const selectionId = varying(
+          attribute('selectionId', 'uint') as unknown as Node<'uint'>
+        ) as unknown as Node<'uint'>
+        material.outputNode = outputStruct(uint(selectionId)) as Node
+        const object = new LineSegments2(geometry, material)
+        object.frustumCulled = false
+        object.renderOrder = 2
+        object.visible = this.edgesVisible
+        this.edgeObject = object
+        this.sourceByProxy.set(object, edges.source)
+        this.geometries.push(geometry)
+        this.materials.add(material)
+        this.scene.add(object)
+      }
+      stats.edgeCount = edges.targets.length
+      stats.edgeSegmentCount = segmentCount
+      stats.edgeSegmentBufferBytes = selectionIds.byteLength
     }
     this.geometryStats = stats
     this.idSceneBuildDurationMs = performance.now() - startedAt
   }
 
   setEdgesVisible(visible: boolean) {
+    this.edgesVisible = visible
     if (this.edgeObject) {
       this.edgeObject.visible = visible
     }
@@ -287,7 +358,8 @@ export class IntegerIdPicker {
       source.traverseAncestors((parent) => {
         if (!parent.visible) proxy.visible = false
       })
-      proxy.visible &&= source.visible
+      proxy.visible &&=
+        source.visible && (proxy !== this.edgeObject || this.edgesVisible)
     }
     const previousTarget = this.renderer.getRenderTarget()
     const previousAutoClear = this.renderer.autoClear

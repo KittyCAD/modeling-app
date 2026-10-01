@@ -56,7 +56,7 @@ import {
   RenderPipeline,
   WebGPURenderer,
 } from 'three/webgpu'
-import { KITTYCAD_GLTF } from './KITTYCAD_GLTF'
+import { assignFaceUuids, type KITTYCAD_GLTF } from './KITTYCAD_GLTF'
 
 const WEBGPU_PORT_DEBUG_STORAGE_KEY = 'webgpu-port-debug'
 const WEBGPU_PORT_LOG_PREFIX = '[WEBGPU_POC]'
@@ -237,9 +237,27 @@ export class LocalRenderer {
       this.planeRenderer.planes.values(),
       ({ mesh }) => mesh
     )
+    this.currentModel?.traverse((object) => {
+      if (
+        (object as Mesh).isMesh &&
+        typeof object.userData.faceUuid === 'string'
+      ) {
+        targets.push(object as Mesh)
+      }
+    })
+    const edgeTargets = this.edgeRenderer?.getSelectionTargets() ?? []
 
-    this.integerIdPicker?.setTargets(targets, this.currentModel)
-    this.selectionHighlightRenderer?.setTargets(targets)
+    this.integerIdPicker?.setTargets(
+      targets,
+      this.currentModel,
+      this.edgeRenderer
+        ? { source: this.edgeRenderer.lines, targets: edgeTargets }
+        : undefined
+    )
+    this.selectionHighlightRenderer?.setTargets([
+      ...targets,
+      ...edgeTargets.map(({ object }) => object),
+    ])
     this.clearPlaneHover()
     this.updatePlaneSelection()
   }
@@ -333,7 +351,14 @@ export class LocalRenderer {
       )
         return {}
       const target = result?.target ?? null
-      const entityId = target?.name || null
+      const entityId =
+        (typeof target?.userData.edgeUuid === 'string' &&
+          target.userData.edgeUuid) ||
+        (typeof target?.userData.faceUuid === 'string' &&
+          target.userData.faceUuid) ||
+        (target && this.planeRenderer?.planes.has(target.name)
+          ? target.name
+          : null)
       if (isHover) {
         if (this.hoveredPlane !== target) {
           this.hoveredPlane = target
@@ -1080,6 +1105,7 @@ export class LocalRenderer {
       }
 
       this.clearModel()
+      assignFaceUuids(gltf)
       this.currentModel = gltf.scene
       this.scene?.add(gltf.scene)
 
