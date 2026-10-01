@@ -50,28 +50,53 @@ a sharp, straight transitional edge.
 
 ```kcl
 // Chamfer a mounting plate.
+@settings(kclVersion = "3.0-preview")
+
 width = 20
 length = 10
 thickness = 1
 chamferLength = 2
 
-mountingPlateSketch = startSketchOn(XY)
-  |> startProfile(at = [-width / 2, -length / 2])
-  |> line(endAbsolute = [width / 2, -length / 2], tag = $edge1)
-  |> line(endAbsolute = [width / 2, length / 2], tag = $edge2)
-  |> line(endAbsolute = [-width / 2, length / 2], tag = $edge3)
-  |> close(tag = $edge4)
+plateSketch = sketch(on = XY) {
+  line1 = line(start = [var -10mm, var -5mm], end = [var 10mm, var -5mm])
+  line2 = line(start = [var 10mm, var -5mm], end = [var 10mm, var 5mm])
+  line3 = line(start = [var 10mm, var 5mm], end = [var -10mm, var 5mm])
+  line4 = line(start = [var -10mm, var 5mm], end = [var -10mm, var -5mm])
+}
 
-mountingPlate = extrude(mountingPlateSketch, length = thickness)
-  |> chamfer(
-       length = chamferLength,
-       tags = [
-         getNextAdjacentEdge(edge1),
-         getNextAdjacentEdge(edge2),
-         getNextAdjacentEdge(edge3),
-         getNextAdjacentEdge(edge4)
-       ],
-     )
+plateRegion = region(segments = [plateSketch.line4, plateSketch.line1])
+plate = extrude(plateRegion, length = thickness, tagEnd = $capEnd001)
+
+cornerChamfer = chamfer(
+  plate,
+  edges = [
+    {
+      sideFaces = [
+        plateRegion.tags.line1,
+        plateRegion.tags.line2
+      ]
+    },
+    {
+      sideFaces = [
+        plateRegion.tags.line2,
+        plateRegion.tags.line3
+      ]
+    },
+    {
+      sideFaces = [
+        plateRegion.tags.line3,
+        plateRegion.tags.line4
+      ]
+    },
+    {
+      sideFaces = [
+        plateRegion.tags.line4,
+        plateRegion.tags.line1
+      ]
+    }
+  ],
+  length = chamferLength,
+)
 
 ```
 
@@ -90,31 +115,44 @@ mountingPlate = extrude(mountingPlateSketch, length = thickness)
 </model-viewer>
 
 ```kcl
-// Sketch on the face of a chamfer.
-fn cube(pos, scale) {
-  sg = startSketchOn(XY)
-    |> startProfile(at = pos)
-    |> line(end = [0, scale])
-    |> line(end = [scale, 0])
-    |> line(end = [0, -scale])
+// Specify a custom chamfer angle.
+@settings(kclVersion = "3.0-preview")
 
-  return sg
+cubeSide = 20mm
+
+squareSketch = sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 20mm, var 0mm])
+  line2 = line(start = [var 20mm, var 0mm], end = [var 20mm, var 20mm])
+  line3 = line(start = [var 20mm, var 20mm], end = [var 0mm, var 20mm])
+  line4 = line(start = [var 0mm, var 20mm], end = [var 0mm, var 0mm])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  parallel([line2, line4])
+  parallel([line3, line1])
+  perpendicular([line1, line2])
+  horizontal(line3)
+  coincident([line1.start, ORIGIN])
+  equalLength([line2, line3])
+  distance([line2.start, line2.end]) == cubeSide
 }
-
-part001 = cube(pos = [0, 0], scale = 20)
-  |> close(tag = $line1)
-  |> extrude(length = 20)
-  // We tag the chamfer to reference it later.
-  |> chamfer(length = 10, tags = [getOppositeEdge(line1)], tag = $chamfer1)
-
-sketch001 = startSketchOn(part001, face = chamfer1)
-  |> startProfile(at = [10, 10])
-  |> line(end = [2, 0])
-  |> line(end = [0, 2])
-  |> line(end = [-2, 0])
-  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-  |> close()
-  |> extrude(length = 10)
+hide(squareSketch)
+squareRegion = region(segments = [squareSketch.line1, squareSketch.line2])
+cube = extrude(squareRegion, length = cubeSide, tagEnd = $capEnd001)
+chamferOnCube = chamfer(
+  cube,
+  edges = [
+    {
+      sideFaces = [
+        squareRegion.tags.line1,
+        cube.faces.capEnd001
+      ]
+    }
+  ],
+  length = 10,
+  angle = 30deg,
+)
 
 ```
 
@@ -133,21 +171,54 @@ sketch001 = startSketchOn(part001, face = chamfer1)
 </model-viewer>
 
 ```kcl
-// Specify a custom chamfer angle.
-fn cube(pos, scale) {
-  sg = startSketchOn(XY)
-    |> startProfile(at = pos)
-    |> line(end = [0, scale])
-    |> line(end = [scale, 0])
-    |> line(end = [0, -scale])
+// An example of tangent chaining chamfers
+@settings(kclVersion = "3.0-preview")
 
-  return sg
+depth = 4
+width = 5
+chamferLength = 1
+
+sketch001 = sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 5mm, var 0mm])
+  coincident([line1.start, ORIGIN])
+  horizontal([line1.end, ORIGIN])
+  arc1 = arc(start = [var 5mm, var 0mm], end = [var 5mm, var 4mm], center = [var 5mm, var 2mm])
+  coincident([line1.end, arc1.start])
+  tangent([line1, arc1])
+  line2 = line(start = [var 5mm, var 4mm], end = [var 0mm, var 4mm])
+  coincident([line2.start, arc1.end])
+  vertical([line2.end, ORIGIN])
+  line3 = line(start = [var 0mm, var 4mm], end = [var 0mm, var 0mm])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line1.start])
+  horizontal(line2)
+  tangent([line2, arc1])
+  distance([line3.start, line3.end]) == depth
+  distance([line2.start, line2.end]) == width
+  equalLength([line1, line2])
 }
+hidden001 = hide(sketch001)
+region001 = region(segments = [sketch001.line1, sketch001.arc1])
+extrude001 = extrude(region001, length = depth, tagEnd = $capEnd001)
 
-part001 = cube(pos = [0, 0], scale = 20)
-  |> close(tag = $line1)
-  |> extrude(length = 20)
-  |> chamfer(length = 10, angle = 30deg, tags = [getOppositeEdge(line1)])
+chamfer001 = chamfer(
+  extrude001,
+  edges = [
+    {
+      sideFaces = [
+        region001.tags.line1,
+        extrude001.faces.capEnd001
+      ]
+    },
+    {
+      sideFaces = [
+        region001.tags.line3,
+        extrude001.faces.capEnd001
+      ]
+    }
+  ],
+  length = chamferLength,
+)
 
 ```
 
@@ -166,32 +237,55 @@ part001 = cube(pos = [0, 0], scale = 20)
 </model-viewer>
 
 ```kcl
-baseProfile = sketch(on = XY) {
-  edge1 = line(start = [var 0mm, var 0mm], end = [var 6mm, var 0mm])
-  edge2 = line(start = [var 6mm, var 0mm], end = [var 6mm, var 4mm])
-  edge3 = line(start = [var 6mm, var 4mm], end = [var 0mm, var 4mm])
-  edge4 = line(start = [var 0mm, var 4mm], end = [var 0mm, var 0mm])
-  coincident([edge1.end, edge2.start])
-  coincident([edge2.end, edge3.start])
-  coincident([edge3.end, edge4.start])
-  coincident([edge4.end, edge1.start])
-  horizontal(edge1)
-  vertical(edge2)
-  horizontal(edge3)
-  vertical(edge4)
+// The same as the last example, except with tangent chaining disabled
+@settings(kclVersion = "3.0-preview")
+
+depth = 4
+width = 5
+chamferLength = 1
+
+sketch001 = sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 5mm, var 0mm])
+  coincident([line1.start, ORIGIN])
+  horizontal([line1.end, ORIGIN])
+  arc1 = arc(start = [var 5mm, var 0mm], end = [var 5mm, var 4mm], center = [var 5mm, var 2mm])
+  coincident([line1.end, arc1.start])
+  tangent([line1, arc1])
+  line2 = line(start = [var 5mm, var 4mm], end = [var 0mm, var 4mm])
+  coincident([line2.start, arc1.end])
+  vertical([line2.end, ORIGIN])
+  line3 = line(start = [var 0mm, var 4mm], end = [var 0mm, var 0mm])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line1.start])
+  horizontal(line2)
+  tangent([line2, arc1])
+  distance([line3.start, line3.end]) == depth
+  distance([line2.start, line2.end]) == width
+  equalLength([line1, line2])
 }
+hidden001 = hide(sketch001)
+region001 = region(segments = [sketch001.line1, sketch001.arc1])
+extrude001 = extrude(region001, length = depth, tagEnd = $capEnd001)
 
-block = extrude(region(segments = [baseProfile.edge1, baseProfile.edge2]), length = 3mm, tagEnd = $top)
-
-tabProfile = startSketchOn(block, face = top)
-  |> startProfile(at = [1mm, 1mm])
-  |> line(end = [4mm, 0mm], tag = $tabEdge)
-  |> line(end = [0mm, 1mm])
-  |> line(end = [-4mm, 0mm])
-  |> close()
-
-blockWithTab = extrude(tabProfile, length = 1mm)
-chamfered = chamfer(blockWithTab, length = 0.5mm, tags = [getNextAdjacentEdge(tabEdge)])
+chamfer001 = chamfer(
+  extrude001,
+  edges = [
+    {
+      sideFaces = [
+        region001.tags.line1,
+        extrude001.faces.capEnd001
+      ]
+    },
+    {
+      sideFaces = [
+        region001.tags.line3,
+        extrude001.faces.capEnd001
+      ]
+    }
+  ],
+  length = chamferLength,
+  tangentChain = false,
+)
 
 ```
 
@@ -210,6 +304,7 @@ chamfered = chamfer(blockWithTab, length = 0.5mm, tags = [getNextAdjacentEdge(ta
 </model-viewer>
 
 ```kcl
+// An example of chamfers with KCL 2.0 syntax.
 @settings(defaultLengthUnit = mm, kclVersion = 2.0)
 
 // Chamfer the top circular edge of an extruded 8 mm shaft.
@@ -265,6 +360,90 @@ rightShaft = chamfer(rightShaftBase, length = 1mm, tags = [rightTopEdge])
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-solid-chamfer4.png"
+  shadow-intensity="1"
+  camera-controls
+  touch-action="pan-y"
+>
+</model-viewer>
+
+```kcl
+// Chamfer a mounting plate with KCL 1.0 syntax.
+width = 20
+length = 10
+thickness = 1
+chamferLength = 2
+
+mountingPlateSketch = startSketchOn(XY)
+  |> startProfile(at = [-width / 2, -length / 2])
+  |> line(endAbsolute = [width / 2, -length / 2], tag = $edge1)
+  |> line(endAbsolute = [width / 2, length / 2], tag = $edge2)
+  |> line(endAbsolute = [-width / 2, length / 2], tag = $edge3)
+  |> close(tag = $edge4)
+
+mountingPlate = extrude(mountingPlateSketch, length = thickness)
+  |> chamfer(
+       length = chamferLength,
+       tags = [
+         getNextAdjacentEdge(edge1),
+         getNextAdjacentEdge(edge2),
+         getNextAdjacentEdge(edge3),
+         getNextAdjacentEdge(edge4)
+       ],
+     )
+
+```
+
+
+<model-viewer
+  class="kcl-example"
+  alt="Example showing a rendered KCL program that uses the chamfer function"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-chamfer5_output.glb"
+  ar
+  environment-image="/moon_1k.hdr"
+  poster="/kcl-test-outputs/serial_test_example_fn_std-solid-chamfer5.png"
+  shadow-intensity="1"
+  camera-controls
+  touch-action="pan-y"
+>
+</model-viewer>
+
+```kcl
+// Sketch on the face of a chamfer with KCL 1.0 syntax.
+fn cube(pos, scale) {
+  sg = startSketchOn(XY)
+    |> startProfile(at = pos)
+    |> line(end = [0, scale])
+    |> line(end = [scale, 0])
+    |> line(end = [0, -scale])
+
+  return sg
+}
+
+part001 = cube(pos = [0, 0], scale = 20)
+  |> close(tag = $line1)
+  |> extrude(length = 20)
+  // We tag the chamfer to reference it later.
+  |> chamfer(length = 10, tags = [getOppositeEdge(line1)], tag = $chamfer1)
+
+sketch001 = startSketchOn(part001, face = chamfer1)
+  |> startProfile(at = [10, 10])
+  |> line(end = [2, 0])
+  |> line(end = [0, 2])
+  |> line(end = [-2, 0])
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+  |> extrude(length = 10)
+
+```
+
+
+<model-viewer
+  class="kcl-example"
+  alt="Example showing a rendered KCL program that uses the chamfer function"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-chamfer6_output.glb"
+  ar
+  environment-image="/moon_1k.hdr"
+  poster="/kcl-test-outputs/serial_test_example_fn_std-solid-chamfer6.png"
   shadow-intensity="1"
   camera-controls
   touch-action="pan-y"

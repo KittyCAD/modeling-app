@@ -64,7 +64,7 @@ plateSketch = sketch(on = XY) {
 plateRegion = region(segments = [plateSketch.line4, plateSketch.line1])
 plate = extrude(plateRegion, length = thickness)
 
-fillet001 = fillet(
+cornerFillet = fillet(
   plate,
   edges = [
     {
@@ -132,7 +132,7 @@ plateSketch = sketch(on = XY) {
 plateRegion = region(segments = [plateSketch.line4, plateSketch.line1])
 plate = extrude(plateRegion, length = thickness, tagEnd = $capEnd001)
 
-fillet001 = fillet(
+cornerFillet = fillet(
   plate,
   edges = [
     {
@@ -162,7 +162,7 @@ fillet001 = fillet(
   ],
   radius = cornerFilletRadius,
 )
-fillet002 = fillet(
+topFillet = fillet(
   plate,
   tags = getCommonEdge(faces = [
     plateRegion.tags.line1,
@@ -207,7 +207,7 @@ plateSketch = sketch(on = XY) {
 plateRegion = region(segments = [plateSketch.line4, plateSketch.line1])
 plate = extrude(plateRegion, length = thickness, tagEnd = $capEnd001)
 
-fillet001 = fillet(
+cornerFillet = fillet(
   plate,
   edges = [
     {
@@ -237,7 +237,7 @@ fillet001 = fillet(
   ],
   radius = cornerFilletRadius,
 )
-fillet002 = fillet(
+topFillet = fillet(
   plate,
   tags = getCommonEdge(faces = [
     plateRegion.tags.line1,
@@ -343,7 +343,7 @@ revolve001 = revolve(profile001, angle = 360deg, axis = X)
 ```kcl
 // Same as previous example, but with the fillet and revolve call
 // in separate commands, with an intermediate variable.
-@settings(kclVersion = "3.0-preview", experimentalFeatures = allow)
+@settings(kclVersion = "3.0-preview")
 
 sketch001 = sketch(on = XY) {
   seg02 = line(start = [var -131.92mm, var 32.75mm], end = [var 195.16mm, var 32.75mm])
