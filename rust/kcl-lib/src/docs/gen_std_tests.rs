@@ -798,9 +798,7 @@ fn test_render_function_page_marks_arg_lifecycle() {
     let page = render_function_page(&function, "std-foo", &crate::docs::kcl_doc::walk_stdlib()).unwrap();
 
     assert!(
-        page.contains(
-            "| `newArg` | `number` | **Added in KCL 3.0.** A new argument accepting `Face \\| Tag`. | No |"
-        ),
+        page.contains("| `newArg` | `number` | **Added in KCL 3.0.** A new argument accepting `Face \\| Tag`. | No |"),
         "expected the added-in marker, got:\n{page}"
     );
     // Markers follow the parameter's lifecycle: added, deprecated, removed.
