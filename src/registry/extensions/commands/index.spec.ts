@@ -44,6 +44,7 @@ function createCommandBarContext({
 }): CommandBarContext {
   const context: CommandBarContext = {
     commands: [],
+    commandInvocationId: 0,
     wasmInstancePromise: Promise.resolve({} as ModuleType),
     machineManager: new MachineManager(),
     argumentsToSubmit: {},
