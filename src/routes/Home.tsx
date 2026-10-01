@@ -545,14 +545,6 @@ const Home = () => {
           name: 'app.theme',
         },
       })
-    } else if (data.menuLabel === 'File.Add file to project') {
-      commands.send({
-        type: 'Find and select command',
-        data: {
-          name: 'add-kcl-file-to-project',
-          groupId: 'application',
-        },
-      })
     }
   }
   useMenuListener(cb)

@@ -27,11 +27,7 @@ import { PERSONAL_CLOUD_PROJECT_LIBRARY_ID } from '@src/lib/projectLibraries'
 import { getProjectDirectoryNameFromTitle } from '@src/lib/projectName'
 import { DEFAULT_WEB_PROJECT_NAME } from '@src/lib/routeLoaders'
 import { err } from '@src/lib/trap'
-import {
-  SystemIOMachineEvents,
-  SystemIOMachineStates,
-  waitForIdleState,
-} from '@src/machines/systemIO/utils'
+import { waitForIdleState } from '@src/machines/systemIO/utils'
 import { cloudSyncService } from '@src/registry/contracts/cloudSync'
 import { useEffect } from 'react'
 import toast from 'react-hot-toast'
@@ -292,7 +288,6 @@ export function useQueryParamEffects() {
       pendingWebLayoutProjectCreation = undefined
     }
 
-    let shouldCreateDefaultWebProject = false
     const samplePath = commandData.argDefaultValues?.sample
     const requestedProjectName = commandData.argDefaultValues?.projectName
     const shouldCreateWebSampleProject =
@@ -366,20 +361,16 @@ export function useQueryParamEffects() {
       }
     }
 
-    // Web-only: prefill command data to automatically add to the demo project
-    if (!isDesktop() && commandData.name === 'add-kcl-file-to-project') {
-      const currentProjectName =
-        app.settings.actor.getSnapshot().context.currentProject?.name
+    if (commandData.name === 'add-kcl-file-to-project') {
+      if (!app.project) {
+        cleanupQueryParams()
+        return
+      }
       const requestedBrowserProject =
         commandData.argDefaultValues?.projectName === 'browser' ||
         commandData.argDefaultValues?.projectName === DEFAULT_WEB_PROJECT_NAME
-      if (requestedBrowserProject) {
-        shouldCreateDefaultWebProject = !currentProjectName
-        commandData.argDefaultValues.projectName =
-          currentProjectName ?? DEFAULT_WEB_PROJECT_NAME
-      }
-      if (commandData.argDefaultValues?.projectName) {
-        commandData.argDefaultValues.method = 'existingProject'
+      if (!isDesktop() && requestedBrowserProject) {
+        commandData.argDefaultValues.projectName = app.project.name
       }
     }
 
@@ -407,8 +398,7 @@ export function useQueryParamEffects() {
       const systemIO = app.systemIOActor
       const foldersIncludeProject = (folders: { name: string }[] | undefined) =>
         (folders ?? []).some((f) => f.name === projectFolderName)
-      let hasRequestedProjectCreate = false
-      const sendOrCreateProject = (
+      const sendWhenProjectIsReady = (
         snapshot: ReturnType<typeof systemIO.getSnapshot>
       ) => {
         if (foldersIncludeProject(snapshot.context.folders)) {
@@ -416,31 +406,15 @@ export function useQueryParamEffects() {
           return true
         }
 
-        if (
-          shouldCreateDefaultWebProject &&
-          !hasRequestedProjectCreate &&
-          projectFolderName === DEFAULT_WEB_PROJECT_NAME &&
-          snapshot.matches(SystemIOMachineStates.idle) &&
-          snapshot.context.folders !== undefined
-        ) {
-          hasRequestedProjectCreate = true
-          systemIO.send({
-            type: SystemIOMachineEvents.createProject,
-            data: {
-              requestedProjectName: DEFAULT_WEB_PROJECT_NAME,
-            },
-          })
-        }
-
         return false
       }
 
-      if (sendOrCreateProject(systemIO.getSnapshot())) {
+      if (sendWhenProjectIsReady(systemIO.getSnapshot())) {
         return
       }
 
       const subscription = systemIO.subscribe((snapshot) => {
-        if (sendOrCreateProject(snapshot)) {
+        if (sendWhenProjectIsReady(snapshot)) {
           subscription.unsubscribe()
         }
       })

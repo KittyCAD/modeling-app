@@ -112,6 +112,7 @@ test.describe(
         await homePage.projectsLoaded()
         await homePage.isNativeFileMenuCreated()
         await expectNewWindowMenuItem(nativeMenu)
+        expect(await nativeMenu.getItem('File.Add file to project')).toBeNull()
 
         const windowCountBefore = tronApp.electron.windows().length
         const newWindow = await nativeMenu.clickAndWait('File.New window', () =>
