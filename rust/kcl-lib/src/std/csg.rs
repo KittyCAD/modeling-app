@@ -603,14 +603,6 @@ untagged = extrude(region(segments = [firstProfile.bottom]), length = 5mm, symme
     }
 
     #[tokio::test(flavor = "multi_thread")]
-    async fn subtract_inherits_face_tags_from_all_inputs() {
-        assert_csg_inherits_face_tags("subtract").await;
-        parse_execute(include_str!("../../tests/subtract_inherits_tool_face_tags/input.kcl"))
-            .await
-            .unwrap();
-    }
-
-    #[tokio::test(flavor = "multi_thread")]
     async fn subtract_inherits_face_tags_from_all_targets_and_tools() {
         let tag_names = ["first", "second", "third"];
         let mut code = FACE_TAG_INPUTS.to_owned();
