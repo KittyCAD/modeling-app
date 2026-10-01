@@ -1475,22 +1475,25 @@ profile001 = startProfile(sketch001, at = [0, 0])
 
 test(
   'Undo/redo recovers deleted files interleaved with code edits',
-  { tag: '@desktop' },
-  async ({ page, homePage, toolbar, editor, folderSetupFn }) => {
+  { tag: '@web' },
+  async ({ page, homePage, toolbar, editor, folderSetupFn, fs, scene }) => {
     await folderSetupFn(async (dir) => {
-      const projectDir = join(dir, 'History Project')
-      await fsp.mkdir(projectDir, { recursive: true })
-      await fsp.copyFile(
-        executorInputPath('cylinder.kcl'),
-        join(projectDir, 'main.kcl')
+      const projectDir = await fs.join(dir, 'History Project')
+      await fs.mkdir(projectDir, { recursive: true })
+      await fs.writeFile(
+        await fs.join(projectDir, 'main.kcl'),
+        await fsp.readFile(executorInputPath('cylinder.kcl'))
       )
-      await fsp.copyFile(
-        executorInputPath('basic_fillet_cube_end.kcl'),
-        join(projectDir, 'fileToDelete.kcl')
+      await fs.writeFile(
+        await fs.join(projectDir, 'fileToDelete.kcl'),
+        await fsp.readFile(executorInputPath('basic_fillet_cube_end.kcl'))
       )
     })
 
     const u = await getUtils(page)
+    await page.setBodyDimensions({ width: 1200, height: 500 })
+    await homePage.projectsLoaded()
+
     const fileToDelete = u.locatorFile('fileToDelete.kcl')
     const deleteMenuItem = page.getByRole('button', { name: 'Delete' })
     const deleteConfirmation = page.getByTestId('delete-confirmation')
@@ -1501,6 +1504,7 @@ test(
 
     await test.step('Open project and edit main.kcl', async () => {
       await homePage.openProject('History Project')
+      await scene.settled()
       await editor.openPane()
       await editor.expectEditor.toContain('extrude')
       await editor.codeContent.focus()
@@ -1547,9 +1551,9 @@ test(
     })
 
     await test.step('Redo re-applies the delete', async () => {
-      await page.waitForTimeout(1_000)
       await redoButton.click()
-
+      await expect(u.codeLocator).toContainText('interleaveA = 1')
+      await redoButton.click()
       await expect(fileToDelete).not.toBeAttached()
     })
   }
