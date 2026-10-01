@@ -212,8 +212,6 @@ describe('PublishDialog', () => {
     expect(screen.getAllByRole('checkbox')).toHaveLength(18)
     expect(screen.queryByText('Inactive Makeathon')).not.toBeInTheDocument()
     expect(fetch).toHaveBeenCalledWith(expect.any(String), {
-      method: 'GET',
-      headers: {},
       cache: 'no-cache',
       signal: expect.any(AbortSignal),
     })
@@ -241,37 +239,46 @@ describe('PublishDialog', () => {
     expect(fetch).toHaveBeenLastCalledWith(
       expect.stringContaining('/projects/categories?page_token=more'),
       {
-        method: 'GET',
-        headers: {},
         cache: 'no-cache',
         signal: expect.any(AbortSignal),
       }
     )
   })
 
-  it('shows an error instead of partial categories when a later page fails', async () => {
-    vi.mocked(fetch)
-      .mockResolvedValueOnce(
-        Response.json({ items: [category], next_page: 'more' })
-      )
-      .mockResolvedValueOnce(
-        Response.json({ message: 'Categories unavailable' }, { status: 503 })
+  it.each([
+    {
+      response: () =>
+        Response.json({ message: 'Categories unavailable' }, { status: 503 }),
+      message: 'Categories unavailable',
+    },
+    {
+      response: () => new Response(null, { status: 503 }),
+      message: 'Failed to load Aquarium categories.',
+    },
+  ])(
+    'shows "$message" instead of partial categories when a later page fails',
+    async ({ response, message }) => {
+      vi.mocked(fetch)
+        .mockResolvedValueOnce(
+          Response.json({ items: [category], next_page: 'more' })
+        )
+        .mockResolvedValueOnce(response())
+
+      render(
+        <Popover>
+          <PublishDialog
+            onSubmit={vi.fn()}
+            accountUrl="https://zoo.dev/account"
+          />
+        </Popover>
       )
 
-    render(
-      <Popover>
-        <PublishDialog
-          onSubmit={vi.fn()}
-          accountUrl="https://zoo.dev/account"
-        />
-      </Popover>
-    )
-
-    expect(await screen.findByText('Categories unavailable')).toBeVisible()
-    expect(
-      screen.queryByRole('checkbox', { name: /Robotics/ })
-    ).not.toBeInTheDocument()
-  })
+      expect(await screen.findByText(message)).toBeVisible()
+      expect(
+        screen.queryByRole('checkbox', { name: /Robotics/ })
+      ).not.toBeInTheDocument()
+    }
+  )
 
   it('keeps Makeathon available only when it is already assigned', async () => {
     render(

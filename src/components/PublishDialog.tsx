@@ -1,6 +1,6 @@
 import { Popover, Transition } from '@headlessui/react'
 import type { ProjectCategoryResponse } from '@kittycad/lib'
-import { Client, projects } from '@kittycad/lib'
+import { collectApiList } from '@kittycad/lib'
 import {
   MarkdownEditor,
   type MarkdownEditorActions,
@@ -110,16 +110,21 @@ export function PublishDialog({
     setCategoriesError(null)
 
     try {
-      const client = new Client({
-        token: '',
-        baseUrl: withAPIBaseURL(''),
-        fetch: (input, init) =>
-          fetchWithSessionExpiration(input, { ...init, cache: 'no-cache' }),
-      })
-      const nextCategories = await projects.list_project_categories({
-        client,
-        signal,
-      })
+      const nextCategories = await collectApiList<ProjectCategoryWithStatus>(
+        withAPIBaseURL('/projects/categories'),
+        async (url) => {
+          const response = await fetchWithSessionExpiration(url, {
+            cache: 'no-cache',
+            signal,
+          })
+          if (!response.ok) {
+            return Promise.reject(
+              new Error(await getResponseErrorMessage(response))
+            )
+          }
+          return response.json()
+        }
+      )
       if (signal?.aborted) return
       setCategories(
         [...nextCategories].sort((a, b) => a.sort_order - b.sort_order)
@@ -557,6 +562,24 @@ function formatDate(value: string) {
     day: 'numeric',
     year: 'numeric',
   }).format(date)
+}
+
+async function getResponseErrorMessage(response: Response) {
+  try {
+    const body = (await response.json()) as { message?: string }
+    if (body.message) {
+      return body.message
+    }
+  } catch {}
+
+  try {
+    const text = await response.text()
+    if (text) {
+      return text
+    }
+  } catch {}
+
+  return 'Failed to load Aquarium categories.'
 }
 
 function CheckIcon() {

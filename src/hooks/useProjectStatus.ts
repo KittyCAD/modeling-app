@@ -63,7 +63,7 @@ export function useProjectStatus(
 
 /**
  * Fetches publication statuses when Home contains a remote-linked project.
- * Loads the complete project index instead of fetching each project individually.
+ * Uses a single `list_projects` call rather than N individual calls.
  */
 export function useProjectStatuses(
   homeProjects: readonly RemoteProjectReference[] | undefined,
