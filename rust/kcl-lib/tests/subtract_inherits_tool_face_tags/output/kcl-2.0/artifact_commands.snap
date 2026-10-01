@@ -68,8 +68,8 @@ description: Artifact commands subtract_inherits_tool_face_tags.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -10.0,
-          "y": -10.0,
+          "x": 0.0,
+          "y": 0.0,
           "z": 0.0
         }
       }
@@ -90,8 +90,8 @@ description: Artifact commands subtract_inherits_tool_face_tags.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 10.0,
-            "y": -10.0,
+            "x": 15.15,
+            "y": 0.0,
             "z": 0.0
           },
           "relative": false
@@ -107,8 +107,8 @@ description: Artifact commands subtract_inherits_tool_face_tags.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 10.0,
-            "y": 10.0,
+            "x": 15.15,
+            "y": 15.87,
             "z": 0.0
           },
           "relative": false
@@ -124,8 +124,8 @@ description: Artifact commands subtract_inherits_tool_face_tags.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -10.0,
-            "y": 10.0,
+            "x": 0.0,
+            "y": 15.87,
             "z": 0.0
           },
           "relative": false
@@ -141,12 +141,21 @@ description: Artifact commands subtract_inherits_tool_face_tags.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -10.0,
-            "y": -10.0,
+            "x": 0.0,
+            "y": 0.0,
             "z": 0.0
           },
           "relative": false
         }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
       }
     },
     {
@@ -184,7 +193,7 @@ description: Artifact commands subtract_inherits_tool_face_tags.kcl
       "command": {
         "type": "extrude",
         "target": "[uuid]",
-        "distance": 10.0,
+        "distance": 5.0,
         "faces": null,
         "opposite": "None",
         "extrude_method": "merge",
@@ -235,14 +244,14 @@ description: Artifact commands subtract_inherits_tool_face_tags.kcl
           "z": 0.0
         },
         "x_axis": {
-          "x": 0.0,
-          "y": 1.0,
+          "x": 1.0,
+          "y": 0.0,
           "z": 0.0
         },
         "y_axis": {
           "x": 0.0,
-          "y": 0.0,
-          "z": 1.0
+          "y": 1.0,
+          "z": 0.0
         },
         "size": 60.0,
         "clobber": false,
@@ -268,9 +277,9 @@ description: Artifact commands subtract_inherits_tool_face_tags.kcl
         "animated": false,
         "adjust_camera": false,
         "planar_normal": {
-          "x": 1.0,
+          "x": 0.0,
           "y": 0.0,
-          "z": 0.0
+          "z": 1.0
         }
       }
     },
@@ -288,8 +297,8 @@ description: Artifact commands subtract_inherits_tool_face_tags.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -3.0,
-          "y": -1.0,
+          "x": -7.63,
+          "y": 11.01,
           "z": 0.0
         }
       }
@@ -310,8 +319,8 @@ description: Artifact commands subtract_inherits_tool_face_tags.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 3.0,
-            "y": -1.0,
+            "x": 17.36,
+            "y": 11.01,
             "z": 0.0
           },
           "relative": false
@@ -327,8 +336,8 @@ description: Artifact commands subtract_inherits_tool_face_tags.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 3.0,
-            "y": 11.0,
+            "x": 17.36,
+            "y": 3.82,
             "z": 0.0
           },
           "relative": false
@@ -344,8 +353,8 @@ description: Artifact commands subtract_inherits_tool_face_tags.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -3.0,
-            "y": 11.0,
+            "x": -7.63,
+            "y": 3.82,
             "z": 0.0
           },
           "relative": false
@@ -361,12 +370,21 @@ description: Artifact commands subtract_inherits_tool_face_tags.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -3.0,
-            "y": -1.0,
+            "x": -7.63,
+            "y": 11.01,
             "z": 0.0
           },
           "relative": false
         }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
       }
     },
     {
@@ -378,7 +396,7 @@ description: Artifact commands subtract_inherits_tool_face_tags.kcl
         "segment": "[uuid]",
         "intersection_segment": "[uuid]",
         "intersection_index": -1,
-        "curve_clockwise": false,
+        "curve_clockwise": true,
         "version": "V1"
       }
     },
@@ -392,9 +410,9 @@ description: Artifact commands subtract_inherits_tool_face_tags.kcl
         "animated": false,
         "adjust_camera": false,
         "planar_normal": {
-          "x": 1.0,
+          "x": 0.0,
           "y": 0.0,
-          "z": 0.0
+          "z": 1.0
         }
       }
     },
@@ -404,7 +422,7 @@ description: Artifact commands subtract_inherits_tool_face_tags.kcl
       "command": {
         "type": "extrude",
         "target": "[uuid]",
-        "distance": 5.0,
+        "distance": 4.0,
         "faces": null,
         "opposite": "None",
         "extrude_method": "new",
@@ -474,11 +492,9 @@ description: Artifact commands subtract_inherits_tool_face_tags.kcl
           }
         ],
         "cut_type": {
-          "chamfer": {
-            "distance": 0.25,
-            "second_distance": null,
-            "angle": null,
-            "swap": false
+          "fillet": {
+            "radius": 1.0,
+            "second_length": null
           }
         },
         "tolerance": 0.0000001,

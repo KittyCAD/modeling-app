@@ -1854,7 +1854,7 @@ description: Operations executed subtract_inherits_tool_face_tags.kcl
     },
     {
       "type": "StdLibCall",
-      "name": "chamfer",
+      "name": "fillet",
       "unlabeledArg": {
         "value": {
           "type": "Solid",
@@ -1877,7 +1877,7 @@ description: Operations executed subtract_inherits_tool_face_tags.kcl
                     "value": [
                       {
                         "type": "TagIdentifier",
-                        "value": "line2",
+                        "value": "line3",
                         "artifact_id": "[uuid]"
                       },
                       {
@@ -1893,10 +1893,10 @@ description: Operations executed subtract_inherits_tool_face_tags.kcl
           },
           "sourceRange": []
         },
-        "length": {
+        "radius": {
           "value": {
             "type": "Number",
-            "value": 0.1,
+            "value": 1.0,
             "ty": {
               "type": "Default",
               "value": {

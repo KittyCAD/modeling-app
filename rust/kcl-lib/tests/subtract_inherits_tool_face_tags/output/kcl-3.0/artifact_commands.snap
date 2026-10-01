@@ -492,11 +492,9 @@ description: Artifact commands subtract_inherits_tool_face_tags.kcl
           }
         ],
         "cut_type": {
-          "chamfer": {
-            "distance": 0.1,
-            "second_distance": null,
-            "angle": null,
-            "swap": false
+          "fillet": {
+            "radius": 1.0,
+            "second_length": null
           }
         },
         "tolerance": 0.0000001,

@@ -14,7 +14,7 @@ description: Result of parsing subtract_inherits_tool_face_tags.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
-            "name": "baseSketch",
+            "name": "sketch001",
             "start": 0,
             "type": "Identifier"
           },
@@ -63,7 +63,7 @@ description: Result of parsing subtract_inherits_tool_face_tags.kcl
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
-                      "name": "bottom",
+                      "name": "line1",
                       "start": 0,
                       "type": "Identifier"
                     },
@@ -83,48 +83,40 @@ description: Result of parsing subtract_inherits_tool_face_tags.kcl
                             "commentStart": 0,
                             "elements": [
                               {
-                                "argument": {
+                                "commentStart": 0,
+                                "end": 0,
+                                "initial": {
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "10mm",
+                                  "raw": "0mm",
                                   "start": 0,
-                                  "type": "Literal",
-                                  "type": "Literal",
-                                  "value": {
-                                    "value": 10.0,
-                                    "suffix": "Mm"
-                                  }
+                                  "suffix": "Mm",
+                                  "type": "NumericLiteral",
+                                  "value": 0.0
                                 },
-                                "commentStart": 0,
-                                "end": 0,
                                 "moduleId": 0,
-                                "operator": "-",
                                 "start": 0,
-                                "type": "UnaryExpression",
-                                "type": "UnaryExpression"
+                                "type": "SketchVar",
+                                "type": "SketchVar"
                               },
                               {
-                                "argument": {
+                                "commentStart": 0,
+                                "end": 0,
+                                "initial": {
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "10mm",
+                                  "raw": "0mm",
                                   "start": 0,
-                                  "type": "Literal",
-                                  "type": "Literal",
-                                  "value": {
-                                    "value": 10.0,
-                                    "suffix": "Mm"
-                                  }
+                                  "suffix": "Mm",
+                                  "type": "NumericLiteral",
+                                  "value": 0.0
                                 },
-                                "commentStart": 0,
-                                "end": 0,
                                 "moduleId": 0,
-                                "operator": "-",
                                 "start": 0,
-                                "type": "UnaryExpression",
-                                "type": "UnaryExpression"
+                                "type": "SketchVar",
+                                "type": "SketchVar"
                               }
                             ],
                             "end": 0,
@@ -150,37 +142,38 @@ description: Result of parsing subtract_inherits_tool_face_tags.kcl
                               {
                                 "commentStart": 0,
                                 "end": 0,
-                                "moduleId": 0,
-                                "raw": "10mm",
-                                "start": 0,
-                                "type": "Literal",
-                                "type": "Literal",
-                                "value": {
-                                  "value": 10.0,
-                                  "suffix": "Mm"
-                                }
-                              },
-                              {
-                                "argument": {
+                                "initial": {
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "10mm",
+                                  "raw": "15.15mm",
                                   "start": 0,
-                                  "type": "Literal",
-                                  "type": "Literal",
-                                  "value": {
-                                    "value": 10.0,
-                                    "suffix": "Mm"
-                                  }
+                                  "suffix": "Mm",
+                                  "type": "NumericLiteral",
+                                  "value": 15.15
                                 },
+                                "moduleId": 0,
+                                "start": 0,
+                                "type": "SketchVar",
+                                "type": "SketchVar"
+                              },
+                              {
                                 "commentStart": 0,
                                 "end": 0,
+                                "initial": {
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "moduleId": 0,
+                                  "raw": "0mm",
+                                  "start": 0,
+                                  "suffix": "Mm",
+                                  "type": "NumericLiteral",
+                                  "value": 0.0
+                                },
                                 "moduleId": 0,
-                                "operator": "-",
                                 "start": 0,
-                                "type": "UnaryExpression",
-                                "type": "UnaryExpression"
+                                "type": "SketchVar",
+                                "type": "SketchVar"
                               }
                             ],
                             "end": 0,
@@ -236,7 +229,7 @@ description: Result of parsing subtract_inherits_tool_face_tags.kcl
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
-                      "name": "right",
+                      "name": "line2",
                       "start": 0,
                       "type": "Identifier"
                     },
@@ -258,37 +251,38 @@ description: Result of parsing subtract_inherits_tool_face_tags.kcl
                               {
                                 "commentStart": 0,
                                 "end": 0,
-                                "moduleId": 0,
-                                "raw": "10mm",
-                                "start": 0,
-                                "type": "Literal",
-                                "type": "Literal",
-                                "value": {
-                                  "value": 10.0,
-                                  "suffix": "Mm"
-                                }
-                              },
-                              {
-                                "argument": {
+                                "initial": {
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "10mm",
+                                  "raw": "15.15mm",
                                   "start": 0,
-                                  "type": "Literal",
-                                  "type": "Literal",
-                                  "value": {
-                                    "value": 10.0,
-                                    "suffix": "Mm"
-                                  }
+                                  "suffix": "Mm",
+                                  "type": "NumericLiteral",
+                                  "value": 15.15
                                 },
+                                "moduleId": 0,
+                                "start": 0,
+                                "type": "SketchVar",
+                                "type": "SketchVar"
+                              },
+                              {
                                 "commentStart": 0,
                                 "end": 0,
+                                "initial": {
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "moduleId": 0,
+                                  "raw": "0mm",
+                                  "start": 0,
+                                  "suffix": "Mm",
+                                  "type": "NumericLiteral",
+                                  "value": 0.0
+                                },
                                 "moduleId": 0,
-                                "operator": "-",
                                 "start": 0,
-                                "type": "UnaryExpression",
-                                "type": "UnaryExpression"
+                                "type": "SketchVar",
+                                "type": "SketchVar"
                               }
                             ],
                             "end": 0,
@@ -314,28 +308,38 @@ description: Result of parsing subtract_inherits_tool_face_tags.kcl
                               {
                                 "commentStart": 0,
                                 "end": 0,
+                                "initial": {
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "moduleId": 0,
+                                  "raw": "15.15mm",
+                                  "start": 0,
+                                  "suffix": "Mm",
+                                  "type": "NumericLiteral",
+                                  "value": 15.15
+                                },
                                 "moduleId": 0,
-                                "raw": "10mm",
                                 "start": 0,
-                                "type": "Literal",
-                                "type": "Literal",
-                                "value": {
-                                  "value": 10.0,
-                                  "suffix": "Mm"
-                                }
+                                "type": "SketchVar",
+                                "type": "SketchVar"
                               },
                               {
                                 "commentStart": 0,
                                 "end": 0,
+                                "initial": {
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "moduleId": 0,
+                                  "raw": "15.87mm",
+                                  "start": 0,
+                                  "suffix": "Mm",
+                                  "type": "NumericLiteral",
+                                  "value": 15.87
+                                },
                                 "moduleId": 0,
-                                "raw": "10mm",
                                 "start": 0,
-                                "type": "Literal",
-                                "type": "Literal",
-                                "value": {
-                                  "value": 10.0,
-                                  "suffix": "Mm"
-                                }
+                                "type": "SketchVar",
+                                "type": "SketchVar"
                               }
                             ],
                             "end": 0,
@@ -391,7 +395,7 @@ description: Result of parsing subtract_inherits_tool_face_tags.kcl
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
-                      "name": "top",
+                      "name": "line3",
                       "start": 0,
                       "type": "Identifier"
                     },
@@ -413,28 +417,38 @@ description: Result of parsing subtract_inherits_tool_face_tags.kcl
                               {
                                 "commentStart": 0,
                                 "end": 0,
+                                "initial": {
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "moduleId": 0,
+                                  "raw": "15.15mm",
+                                  "start": 0,
+                                  "suffix": "Mm",
+                                  "type": "NumericLiteral",
+                                  "value": 15.15
+                                },
                                 "moduleId": 0,
-                                "raw": "10mm",
                                 "start": 0,
-                                "type": "Literal",
-                                "type": "Literal",
-                                "value": {
-                                  "value": 10.0,
-                                  "suffix": "Mm"
-                                }
+                                "type": "SketchVar",
+                                "type": "SketchVar"
                               },
                               {
                                 "commentStart": 0,
                                 "end": 0,
+                                "initial": {
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "moduleId": 0,
+                                  "raw": "15.87mm",
+                                  "start": 0,
+                                  "suffix": "Mm",
+                                  "type": "NumericLiteral",
+                                  "value": 15.87
+                                },
                                 "moduleId": 0,
-                                "raw": "10mm",
                                 "start": 0,
-                                "type": "Literal",
-                                "type": "Literal",
-                                "value": {
-                                  "value": 10.0,
-                                  "suffix": "Mm"
-                                }
+                                "type": "SketchVar",
+                                "type": "SketchVar"
                               }
                             ],
                             "end": 0,
@@ -458,39 +472,40 @@ description: Result of parsing subtract_inherits_tool_face_tags.kcl
                             "commentStart": 0,
                             "elements": [
                               {
-                                "argument": {
+                                "commentStart": 0,
+                                "end": 0,
+                                "initial": {
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "10mm",
+                                  "raw": "0mm",
                                   "start": 0,
-                                  "type": "Literal",
-                                  "type": "Literal",
-                                  "value": {
-                                    "value": 10.0,
-                                    "suffix": "Mm"
-                                  }
+                                  "suffix": "Mm",
+                                  "type": "NumericLiteral",
+                                  "value": 0.0
                                 },
-                                "commentStart": 0,
-                                "end": 0,
                                 "moduleId": 0,
-                                "operator": "-",
                                 "start": 0,
-                                "type": "UnaryExpression",
-                                "type": "UnaryExpression"
+                                "type": "SketchVar",
+                                "type": "SketchVar"
                               },
                               {
                                 "commentStart": 0,
                                 "end": 0,
+                                "initial": {
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "moduleId": 0,
+                                  "raw": "15.87mm",
+                                  "start": 0,
+                                  "suffix": "Mm",
+                                  "type": "NumericLiteral",
+                                  "value": 15.87
+                                },
                                 "moduleId": 0,
-                                "raw": "10mm",
                                 "start": 0,
-                                "type": "Literal",
-                                "type": "Literal",
-                                "value": {
-                                  "value": 10.0,
-                                  "suffix": "Mm"
-                                }
+                                "type": "SketchVar",
+                                "type": "SketchVar"
                               }
                             ],
                             "end": 0,
@@ -546,7 +561,7 @@ description: Result of parsing subtract_inherits_tool_face_tags.kcl
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
-                      "name": "left",
+                      "name": "line4",
                       "start": 0,
                       "type": "Identifier"
                     },
@@ -566,39 +581,40 @@ description: Result of parsing subtract_inherits_tool_face_tags.kcl
                             "commentStart": 0,
                             "elements": [
                               {
-                                "argument": {
+                                "commentStart": 0,
+                                "end": 0,
+                                "initial": {
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "10mm",
+                                  "raw": "0mm",
                                   "start": 0,
-                                  "type": "Literal",
-                                  "type": "Literal",
-                                  "value": {
-                                    "value": 10.0,
-                                    "suffix": "Mm"
-                                  }
+                                  "suffix": "Mm",
+                                  "type": "NumericLiteral",
+                                  "value": 0.0
                                 },
-                                "commentStart": 0,
-                                "end": 0,
                                 "moduleId": 0,
-                                "operator": "-",
                                 "start": 0,
-                                "type": "UnaryExpression",
-                                "type": "UnaryExpression"
+                                "type": "SketchVar",
+                                "type": "SketchVar"
                               },
                               {
                                 "commentStart": 0,
                                 "end": 0,
+                                "initial": {
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "moduleId": 0,
+                                  "raw": "15.87mm",
+                                  "start": 0,
+                                  "suffix": "Mm",
+                                  "type": "NumericLiteral",
+                                  "value": 15.87
+                                },
                                 "moduleId": 0,
-                                "raw": "10mm",
                                 "start": 0,
-                                "type": "Literal",
-                                "type": "Literal",
-                                "value": {
-                                  "value": 10.0,
-                                  "suffix": "Mm"
-                                }
+                                "type": "SketchVar",
+                                "type": "SketchVar"
                               }
                             ],
                             "end": 0,
@@ -622,48 +638,40 @@ description: Result of parsing subtract_inherits_tool_face_tags.kcl
                             "commentStart": 0,
                             "elements": [
                               {
-                                "argument": {
+                                "commentStart": 0,
+                                "end": 0,
+                                "initial": {
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "10mm",
+                                  "raw": "0mm",
                                   "start": 0,
-                                  "type": "Literal",
-                                  "type": "Literal",
-                                  "value": {
-                                    "value": 10.0,
-                                    "suffix": "Mm"
-                                  }
+                                  "suffix": "Mm",
+                                  "type": "NumericLiteral",
+                                  "value": 0.0
                                 },
-                                "commentStart": 0,
-                                "end": 0,
                                 "moduleId": 0,
-                                "operator": "-",
                                 "start": 0,
-                                "type": "UnaryExpression",
-                                "type": "UnaryExpression"
+                                "type": "SketchVar",
+                                "type": "SketchVar"
                               },
                               {
-                                "argument": {
+                                "commentStart": 0,
+                                "end": 0,
+                                "initial": {
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "10mm",
+                                  "raw": "0mm",
                                   "start": 0,
-                                  "type": "Literal",
-                                  "type": "Literal",
-                                  "value": {
-                                    "value": 10.0,
-                                    "suffix": "Mm"
-                                  }
+                                  "suffix": "Mm",
+                                  "type": "NumericLiteral",
+                                  "value": 0.0
                                 },
-                                "commentStart": 0,
-                                "end": 0,
                                 "moduleId": 0,
-                                "operator": "-",
                                 "start": 0,
-                                "type": "UnaryExpression",
-                                "type": "UnaryExpression"
+                                "type": "SketchVar",
+                                "type": "SketchVar"
                               }
                             ],
                             "end": 0,
@@ -709,6 +717,941 @@ description: Result of parsing subtract_inherits_tool_face_tags.kcl
                   "start": 0,
                   "type": "VariableDeclaration",
                   "type": "VariableDeclaration"
+                },
+                {
+                  "commentStart": 0,
+                  "end": 0,
+                  "expression": {
+                    "arguments": [],
+                    "callee": {
+                      "abs_path": false,
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": "coincident",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name"
+                    },
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "start": 0,
+                    "type": "CallExpressionKw",
+                    "type": "CallExpressionKw",
+                    "unlabeled": {
+                      "commentStart": 0,
+                      "elements": [
+                        {
+                          "commentStart": 0,
+                          "computed": false,
+                          "end": 0,
+                          "moduleId": 0,
+                          "object": {
+                            "abs_path": false,
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "name": {
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "name": "line1",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
+                            "start": 0,
+                            "type": "Name",
+                            "type": "Name"
+                          },
+                          "property": {
+                            "abs_path": false,
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "name": {
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "name": "end",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
+                            "start": 0,
+                            "type": "Name",
+                            "type": "Name"
+                          },
+                          "start": 0,
+                          "type": "MemberExpression",
+                          "type": "MemberExpression"
+                        },
+                        {
+                          "commentStart": 0,
+                          "computed": false,
+                          "end": 0,
+                          "moduleId": 0,
+                          "object": {
+                            "abs_path": false,
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "name": {
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "name": "line2",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
+                            "start": 0,
+                            "type": "Name",
+                            "type": "Name"
+                          },
+                          "property": {
+                            "abs_path": false,
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "name": {
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "name": "start",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
+                            "start": 0,
+                            "type": "Name",
+                            "type": "Name"
+                          },
+                          "start": 0,
+                          "type": "MemberExpression",
+                          "type": "MemberExpression"
+                        }
+                      ],
+                      "end": 0,
+                      "moduleId": 0,
+                      "start": 0,
+                      "type": "ArrayExpression",
+                      "type": "ArrayExpression"
+                    }
+                  },
+                  "moduleId": 0,
+                  "start": 0,
+                  "type": "ExpressionStatement",
+                  "type": "ExpressionStatement"
+                },
+                {
+                  "commentStart": 0,
+                  "end": 0,
+                  "expression": {
+                    "arguments": [],
+                    "callee": {
+                      "abs_path": false,
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": "coincident",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name"
+                    },
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "start": 0,
+                    "type": "CallExpressionKw",
+                    "type": "CallExpressionKw",
+                    "unlabeled": {
+                      "commentStart": 0,
+                      "elements": [
+                        {
+                          "commentStart": 0,
+                          "computed": false,
+                          "end": 0,
+                          "moduleId": 0,
+                          "object": {
+                            "abs_path": false,
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "name": {
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "name": "line2",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
+                            "start": 0,
+                            "type": "Name",
+                            "type": "Name"
+                          },
+                          "property": {
+                            "abs_path": false,
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "name": {
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "name": "end",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
+                            "start": 0,
+                            "type": "Name",
+                            "type": "Name"
+                          },
+                          "start": 0,
+                          "type": "MemberExpression",
+                          "type": "MemberExpression"
+                        },
+                        {
+                          "commentStart": 0,
+                          "computed": false,
+                          "end": 0,
+                          "moduleId": 0,
+                          "object": {
+                            "abs_path": false,
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "name": {
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "name": "line3",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
+                            "start": 0,
+                            "type": "Name",
+                            "type": "Name"
+                          },
+                          "property": {
+                            "abs_path": false,
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "name": {
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "name": "start",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
+                            "start": 0,
+                            "type": "Name",
+                            "type": "Name"
+                          },
+                          "start": 0,
+                          "type": "MemberExpression",
+                          "type": "MemberExpression"
+                        }
+                      ],
+                      "end": 0,
+                      "moduleId": 0,
+                      "start": 0,
+                      "type": "ArrayExpression",
+                      "type": "ArrayExpression"
+                    }
+                  },
+                  "moduleId": 0,
+                  "start": 0,
+                  "type": "ExpressionStatement",
+                  "type": "ExpressionStatement"
+                },
+                {
+                  "commentStart": 0,
+                  "end": 0,
+                  "expression": {
+                    "arguments": [],
+                    "callee": {
+                      "abs_path": false,
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": "coincident",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name"
+                    },
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "start": 0,
+                    "type": "CallExpressionKw",
+                    "type": "CallExpressionKw",
+                    "unlabeled": {
+                      "commentStart": 0,
+                      "elements": [
+                        {
+                          "commentStart": 0,
+                          "computed": false,
+                          "end": 0,
+                          "moduleId": 0,
+                          "object": {
+                            "abs_path": false,
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "name": {
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "name": "line3",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
+                            "start": 0,
+                            "type": "Name",
+                            "type": "Name"
+                          },
+                          "property": {
+                            "abs_path": false,
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "name": {
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "name": "end",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
+                            "start": 0,
+                            "type": "Name",
+                            "type": "Name"
+                          },
+                          "start": 0,
+                          "type": "MemberExpression",
+                          "type": "MemberExpression"
+                        },
+                        {
+                          "commentStart": 0,
+                          "computed": false,
+                          "end": 0,
+                          "moduleId": 0,
+                          "object": {
+                            "abs_path": false,
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "name": {
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "name": "line4",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
+                            "start": 0,
+                            "type": "Name",
+                            "type": "Name"
+                          },
+                          "property": {
+                            "abs_path": false,
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "name": {
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "name": "start",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
+                            "start": 0,
+                            "type": "Name",
+                            "type": "Name"
+                          },
+                          "start": 0,
+                          "type": "MemberExpression",
+                          "type": "MemberExpression"
+                        }
+                      ],
+                      "end": 0,
+                      "moduleId": 0,
+                      "start": 0,
+                      "type": "ArrayExpression",
+                      "type": "ArrayExpression"
+                    }
+                  },
+                  "moduleId": 0,
+                  "start": 0,
+                  "type": "ExpressionStatement",
+                  "type": "ExpressionStatement"
+                },
+                {
+                  "commentStart": 0,
+                  "end": 0,
+                  "expression": {
+                    "arguments": [],
+                    "callee": {
+                      "abs_path": false,
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": "coincident",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name"
+                    },
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "start": 0,
+                    "type": "CallExpressionKw",
+                    "type": "CallExpressionKw",
+                    "unlabeled": {
+                      "commentStart": 0,
+                      "elements": [
+                        {
+                          "commentStart": 0,
+                          "computed": false,
+                          "end": 0,
+                          "moduleId": 0,
+                          "object": {
+                            "abs_path": false,
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "name": {
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "name": "line4",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
+                            "start": 0,
+                            "type": "Name",
+                            "type": "Name"
+                          },
+                          "property": {
+                            "abs_path": false,
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "name": {
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "name": "end",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
+                            "start": 0,
+                            "type": "Name",
+                            "type": "Name"
+                          },
+                          "start": 0,
+                          "type": "MemberExpression",
+                          "type": "MemberExpression"
+                        },
+                        {
+                          "commentStart": 0,
+                          "computed": false,
+                          "end": 0,
+                          "moduleId": 0,
+                          "object": {
+                            "abs_path": false,
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "name": {
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "name": "line1",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
+                            "start": 0,
+                            "type": "Name",
+                            "type": "Name"
+                          },
+                          "property": {
+                            "abs_path": false,
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "name": {
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "name": "start",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
+                            "start": 0,
+                            "type": "Name",
+                            "type": "Name"
+                          },
+                          "start": 0,
+                          "type": "MemberExpression",
+                          "type": "MemberExpression"
+                        }
+                      ],
+                      "end": 0,
+                      "moduleId": 0,
+                      "start": 0,
+                      "type": "ArrayExpression",
+                      "type": "ArrayExpression"
+                    }
+                  },
+                  "moduleId": 0,
+                  "start": 0,
+                  "type": "ExpressionStatement",
+                  "type": "ExpressionStatement"
+                },
+                {
+                  "commentStart": 0,
+                  "end": 0,
+                  "expression": {
+                    "arguments": [],
+                    "callee": {
+                      "abs_path": false,
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": "parallel",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name"
+                    },
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "start": 0,
+                    "type": "CallExpressionKw",
+                    "type": "CallExpressionKw",
+                    "unlabeled": {
+                      "commentStart": 0,
+                      "elements": [
+                        {
+                          "abs_path": false,
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "name": {
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "name": "line2",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "path": [],
+                          "start": 0,
+                          "type": "Name",
+                          "type": "Name"
+                        },
+                        {
+                          "abs_path": false,
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "name": {
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "name": "line4",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "path": [],
+                          "start": 0,
+                          "type": "Name",
+                          "type": "Name"
+                        }
+                      ],
+                      "end": 0,
+                      "moduleId": 0,
+                      "start": 0,
+                      "type": "ArrayExpression",
+                      "type": "ArrayExpression"
+                    }
+                  },
+                  "moduleId": 0,
+                  "start": 0,
+                  "type": "ExpressionStatement",
+                  "type": "ExpressionStatement"
+                },
+                {
+                  "commentStart": 0,
+                  "end": 0,
+                  "expression": {
+                    "arguments": [],
+                    "callee": {
+                      "abs_path": false,
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": "parallel",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name"
+                    },
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "start": 0,
+                    "type": "CallExpressionKw",
+                    "type": "CallExpressionKw",
+                    "unlabeled": {
+                      "commentStart": 0,
+                      "elements": [
+                        {
+                          "abs_path": false,
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "name": {
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "name": "line3",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "path": [],
+                          "start": 0,
+                          "type": "Name",
+                          "type": "Name"
+                        },
+                        {
+                          "abs_path": false,
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "name": {
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "name": "line1",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "path": [],
+                          "start": 0,
+                          "type": "Name",
+                          "type": "Name"
+                        }
+                      ],
+                      "end": 0,
+                      "moduleId": 0,
+                      "start": 0,
+                      "type": "ArrayExpression",
+                      "type": "ArrayExpression"
+                    }
+                  },
+                  "moduleId": 0,
+                  "start": 0,
+                  "type": "ExpressionStatement",
+                  "type": "ExpressionStatement"
+                },
+                {
+                  "commentStart": 0,
+                  "end": 0,
+                  "expression": {
+                    "arguments": [],
+                    "callee": {
+                      "abs_path": false,
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": "perpendicular",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name"
+                    },
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "start": 0,
+                    "type": "CallExpressionKw",
+                    "type": "CallExpressionKw",
+                    "unlabeled": {
+                      "commentStart": 0,
+                      "elements": [
+                        {
+                          "abs_path": false,
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "name": {
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "name": "line1",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "path": [],
+                          "start": 0,
+                          "type": "Name",
+                          "type": "Name"
+                        },
+                        {
+                          "abs_path": false,
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "name": {
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "name": "line2",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "path": [],
+                          "start": 0,
+                          "type": "Name",
+                          "type": "Name"
+                        }
+                      ],
+                      "end": 0,
+                      "moduleId": 0,
+                      "start": 0,
+                      "type": "ArrayExpression",
+                      "type": "ArrayExpression"
+                    }
+                  },
+                  "moduleId": 0,
+                  "start": 0,
+                  "type": "ExpressionStatement",
+                  "type": "ExpressionStatement"
+                },
+                {
+                  "commentStart": 0,
+                  "end": 0,
+                  "expression": {
+                    "arguments": [],
+                    "callee": {
+                      "abs_path": false,
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": "horizontal",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name"
+                    },
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "start": 0,
+                    "type": "CallExpressionKw",
+                    "type": "CallExpressionKw",
+                    "unlabeled": {
+                      "abs_path": false,
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": "line3",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name",
+                      "type": "Name"
+                    }
+                  },
+                  "moduleId": 0,
+                  "start": 0,
+                  "type": "ExpressionStatement",
+                  "type": "ExpressionStatement"
+                },
+                {
+                  "commentStart": 0,
+                  "end": 0,
+                  "expression": {
+                    "arguments": [],
+                    "callee": {
+                      "abs_path": false,
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": "coincident",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name"
+                    },
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "start": 0,
+                    "type": "CallExpressionKw",
+                    "type": "CallExpressionKw",
+                    "unlabeled": {
+                      "commentStart": 0,
+                      "elements": [
+                        {
+                          "commentStart": 0,
+                          "computed": false,
+                          "end": 0,
+                          "moduleId": 0,
+                          "object": {
+                            "abs_path": false,
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "name": {
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "name": "line1",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
+                            "start": 0,
+                            "type": "Name",
+                            "type": "Name"
+                          },
+                          "property": {
+                            "abs_path": false,
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "name": {
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "name": "start",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
+                            "start": 0,
+                            "type": "Name",
+                            "type": "Name"
+                          },
+                          "start": 0,
+                          "type": "MemberExpression",
+                          "type": "MemberExpression"
+                        },
+                        {
+                          "abs_path": false,
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "name": {
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "name": "ORIGIN",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "path": [],
+                          "start": 0,
+                          "type": "Name",
+                          "type": "Name"
+                        }
+                      ],
+                      "end": 0,
+                      "moduleId": 0,
+                      "start": 0,
+                      "type": "ArrayExpression",
+                      "type": "ArrayExpression"
+                    }
+                  },
+                  "moduleId": 0,
+                  "start": 0,
+                  "type": "ExpressionStatement",
+                  "type": "ExpressionStatement"
                 }
               ],
               "moduleId": 0,
@@ -742,7 +1685,75 @@ description: Result of parsing subtract_inherits_tool_face_tags.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
-            "name": "baseRegion",
+            "name": "hidden001",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "init": {
+            "arguments": [],
+            "callee": {
+              "abs_path": false,
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": {
+                "commentStart": 0,
+                "end": 0,
+                "moduleId": 0,
+                "name": "hide",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
+              "start": 0,
+              "type": "Name"
+            },
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "CallExpressionKw",
+            "type": "CallExpressionKw",
+            "unlabeled": {
+              "abs_path": false,
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": {
+                "commentStart": 0,
+                "end": 0,
+                "moduleId": 0,
+                "name": "sketch001",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
+              "start": 0,
+              "type": "Name",
+              "type": "Name"
+            }
+          },
+          "moduleId": 0,
+          "start": 0,
+          "type": "VariableDeclarator"
+        },
+        "end": 0,
+        "kind": "const",
+        "moduleId": 0,
+        "start": 0,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "commentStart": 0,
+        "declaration": {
+          "commentStart": 0,
+          "end": 0,
+          "id": {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "name": "region001",
             "start": 0,
             "type": "Identifier"
           },
@@ -775,7 +1786,7 @@ description: Result of parsing subtract_inherits_tool_face_tags.kcl
                           "commentStart": 0,
                           "end": 0,
                           "moduleId": 0,
-                          "name": "baseSketch",
+                          "name": "sketch001",
                           "start": 0,
                           "type": "Identifier"
                         },
@@ -793,7 +1804,52 @@ description: Result of parsing subtract_inherits_tool_face_tags.kcl
                           "commentStart": 0,
                           "end": 0,
                           "moduleId": 0,
-                          "name": "bottom",
+                          "name": "line4",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
+                        "start": 0,
+                        "type": "Name",
+                        "type": "Name"
+                      },
+                      "start": 0,
+                      "type": "MemberExpression",
+                      "type": "MemberExpression"
+                    },
+                    {
+                      "commentStart": 0,
+                      "computed": false,
+                      "end": 0,
+                      "moduleId": 0,
+                      "object": {
+                        "abs_path": false,
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "name": "sketch001",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
+                        "start": 0,
+                        "type": "Name",
+                        "type": "Name"
+                      },
+                      "property": {
+                        "abs_path": false,
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "name": "line1",
                           "start": 0,
                           "type": "Identifier"
                         },
@@ -860,7 +1916,7 @@ description: Result of parsing subtract_inherits_tool_face_tags.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
-            "name": "base",
+            "name": "extrude001",
             "start": 0,
             "type": "Identifier"
           },
@@ -880,34 +1936,14 @@ description: Result of parsing subtract_inherits_tool_face_tags.kcl
                   "commentStart": 0,
                   "end": 0,
                   "moduleId": 0,
-                  "raw": "10mm",
+                  "raw": "5",
                   "start": 0,
                   "type": "Literal",
                   "type": "Literal",
                   "value": {
-                    "value": 10.0,
-                    "suffix": "Mm"
+                    "value": 5.0,
+                    "suffix": "None"
                   }
-                }
-              },
-              {
-                "type": "LabeledArg",
-                "label": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "name": "tagEnd",
-                  "start": 0,
-                  "type": "Identifier"
-                },
-                "arg": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "start": 0,
-                  "type": "TagDeclarator",
-                  "type": "TagDeclarator",
-                  "value": "baseTop"
                 }
               }
             ],
@@ -943,7 +1979,7 @@ description: Result of parsing subtract_inherits_tool_face_tags.kcl
                 "commentStart": 0,
                 "end": 0,
                 "moduleId": 0,
-                "name": "baseRegion",
+                "name": "region001",
                 "start": 0,
                 "type": "Identifier"
               },
@@ -973,7 +2009,7 @@ description: Result of parsing subtract_inherits_tool_face_tags.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
-            "name": "toolSketch",
+            "name": "sketch002",
             "start": 0,
             "type": "Identifier"
           },
@@ -998,7 +2034,7 @@ description: Result of parsing subtract_inherits_tool_face_tags.kcl
                     "commentStart": 0,
                     "end": 0,
                     "moduleId": 0,
-                    "name": "YZ",
+                    "name": "XY",
                     "start": 0,
                     "type": "Identifier"
                   },
@@ -1022,7 +2058,7 @@ description: Result of parsing subtract_inherits_tool_face_tags.kcl
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
-                      "name": "bottom",
+                      "name": "line1",
                       "start": 0,
                       "type": "Identifier"
                     },
@@ -1042,48 +2078,40 @@ description: Result of parsing subtract_inherits_tool_face_tags.kcl
                             "commentStart": 0,
                             "elements": [
                               {
-                                "argument": {
+                                "commentStart": 0,
+                                "end": 0,
+                                "initial": {
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "3mm",
+                                  "raw": "-7.63mm",
                                   "start": 0,
-                                  "type": "Literal",
-                                  "type": "Literal",
-                                  "value": {
-                                    "value": 3.0,
-                                    "suffix": "Mm"
-                                  }
+                                  "suffix": "Mm",
+                                  "type": "NumericLiteral",
+                                  "value": -7.63
                                 },
-                                "commentStart": 0,
-                                "end": 0,
                                 "moduleId": 0,
-                                "operator": "-",
                                 "start": 0,
-                                "type": "UnaryExpression",
-                                "type": "UnaryExpression"
+                                "type": "SketchVar",
+                                "type": "SketchVar"
                               },
                               {
-                                "argument": {
+                                "commentStart": 0,
+                                "end": 0,
+                                "initial": {
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "1mm",
+                                  "raw": "11.01mm",
                                   "start": 0,
-                                  "type": "Literal",
-                                  "type": "Literal",
-                                  "value": {
-                                    "value": 1.0,
-                                    "suffix": "Mm"
-                                  }
+                                  "suffix": "Mm",
+                                  "type": "NumericLiteral",
+                                  "value": 11.01
                                 },
-                                "commentStart": 0,
-                                "end": 0,
                                 "moduleId": 0,
-                                "operator": "-",
                                 "start": 0,
-                                "type": "UnaryExpression",
-                                "type": "UnaryExpression"
+                                "type": "SketchVar",
+                                "type": "SketchVar"
                               }
                             ],
                             "end": 0,
@@ -1109,37 +2137,38 @@ description: Result of parsing subtract_inherits_tool_face_tags.kcl
                               {
                                 "commentStart": 0,
                                 "end": 0,
-                                "moduleId": 0,
-                                "raw": "3mm",
-                                "start": 0,
-                                "type": "Literal",
-                                "type": "Literal",
-                                "value": {
-                                  "value": 3.0,
-                                  "suffix": "Mm"
-                                }
-                              },
-                              {
-                                "argument": {
+                                "initial": {
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "1mm",
+                                  "raw": "17.36mm",
                                   "start": 0,
-                                  "type": "Literal",
-                                  "type": "Literal",
-                                  "value": {
-                                    "value": 1.0,
-                                    "suffix": "Mm"
-                                  }
+                                  "suffix": "Mm",
+                                  "type": "NumericLiteral",
+                                  "value": 17.36
                                 },
+                                "moduleId": 0,
+                                "start": 0,
+                                "type": "SketchVar",
+                                "type": "SketchVar"
+                              },
+                              {
                                 "commentStart": 0,
                                 "end": 0,
+                                "initial": {
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "moduleId": 0,
+                                  "raw": "11.01mm",
+                                  "start": 0,
+                                  "suffix": "Mm",
+                                  "type": "NumericLiteral",
+                                  "value": 11.01
+                                },
                                 "moduleId": 0,
-                                "operator": "-",
                                 "start": 0,
-                                "type": "UnaryExpression",
-                                "type": "UnaryExpression"
+                                "type": "SketchVar",
+                                "type": "SketchVar"
                               }
                             ],
                             "end": 0,
@@ -1195,7 +2224,7 @@ description: Result of parsing subtract_inherits_tool_face_tags.kcl
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
-                      "name": "right",
+                      "name": "line2",
                       "start": 0,
                       "type": "Identifier"
                     },
@@ -1217,37 +2246,38 @@ description: Result of parsing subtract_inherits_tool_face_tags.kcl
                               {
                                 "commentStart": 0,
                                 "end": 0,
-                                "moduleId": 0,
-                                "raw": "3mm",
-                                "start": 0,
-                                "type": "Literal",
-                                "type": "Literal",
-                                "value": {
-                                  "value": 3.0,
-                                  "suffix": "Mm"
-                                }
-                              },
-                              {
-                                "argument": {
+                                "initial": {
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "1mm",
+                                  "raw": "17.36mm",
                                   "start": 0,
-                                  "type": "Literal",
-                                  "type": "Literal",
-                                  "value": {
-                                    "value": 1.0,
-                                    "suffix": "Mm"
-                                  }
+                                  "suffix": "Mm",
+                                  "type": "NumericLiteral",
+                                  "value": 17.36
                                 },
+                                "moduleId": 0,
+                                "start": 0,
+                                "type": "SketchVar",
+                                "type": "SketchVar"
+                              },
+                              {
                                 "commentStart": 0,
                                 "end": 0,
+                                "initial": {
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "moduleId": 0,
+                                  "raw": "11.01mm",
+                                  "start": 0,
+                                  "suffix": "Mm",
+                                  "type": "NumericLiteral",
+                                  "value": 11.01
+                                },
                                 "moduleId": 0,
-                                "operator": "-",
                                 "start": 0,
-                                "type": "UnaryExpression",
-                                "type": "UnaryExpression"
+                                "type": "SketchVar",
+                                "type": "SketchVar"
                               }
                             ],
                             "end": 0,
@@ -1273,28 +2303,38 @@ description: Result of parsing subtract_inherits_tool_face_tags.kcl
                               {
                                 "commentStart": 0,
                                 "end": 0,
+                                "initial": {
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "moduleId": 0,
+                                  "raw": "17.36mm",
+                                  "start": 0,
+                                  "suffix": "Mm",
+                                  "type": "NumericLiteral",
+                                  "value": 17.36
+                                },
                                 "moduleId": 0,
-                                "raw": "3mm",
                                 "start": 0,
-                                "type": "Literal",
-                                "type": "Literal",
-                                "value": {
-                                  "value": 3.0,
-                                  "suffix": "Mm"
-                                }
+                                "type": "SketchVar",
+                                "type": "SketchVar"
                               },
                               {
                                 "commentStart": 0,
                                 "end": 0,
+                                "initial": {
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "moduleId": 0,
+                                  "raw": "3.82mm",
+                                  "start": 0,
+                                  "suffix": "Mm",
+                                  "type": "NumericLiteral",
+                                  "value": 3.82
+                                },
                                 "moduleId": 0,
-                                "raw": "11mm",
                                 "start": 0,
-                                "type": "Literal",
-                                "type": "Literal",
-                                "value": {
-                                  "value": 11.0,
-                                  "suffix": "Mm"
-                                }
+                                "type": "SketchVar",
+                                "type": "SketchVar"
                               }
                             ],
                             "end": 0,
@@ -1350,7 +2390,7 @@ description: Result of parsing subtract_inherits_tool_face_tags.kcl
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
-                      "name": "top",
+                      "name": "line3",
                       "start": 0,
                       "type": "Identifier"
                     },
@@ -1372,28 +2412,38 @@ description: Result of parsing subtract_inherits_tool_face_tags.kcl
                               {
                                 "commentStart": 0,
                                 "end": 0,
+                                "initial": {
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "moduleId": 0,
+                                  "raw": "17.36mm",
+                                  "start": 0,
+                                  "suffix": "Mm",
+                                  "type": "NumericLiteral",
+                                  "value": 17.36
+                                },
                                 "moduleId": 0,
-                                "raw": "3mm",
                                 "start": 0,
-                                "type": "Literal",
-                                "type": "Literal",
-                                "value": {
-                                  "value": 3.0,
-                                  "suffix": "Mm"
-                                }
+                                "type": "SketchVar",
+                                "type": "SketchVar"
                               },
                               {
                                 "commentStart": 0,
                                 "end": 0,
+                                "initial": {
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "moduleId": 0,
+                                  "raw": "3.82mm",
+                                  "start": 0,
+                                  "suffix": "Mm",
+                                  "type": "NumericLiteral",
+                                  "value": 3.82
+                                },
                                 "moduleId": 0,
-                                "raw": "11mm",
                                 "start": 0,
-                                "type": "Literal",
-                                "type": "Literal",
-                                "value": {
-                                  "value": 11.0,
-                                  "suffix": "Mm"
-                                }
+                                "type": "SketchVar",
+                                "type": "SketchVar"
                               }
                             ],
                             "end": 0,
@@ -1417,39 +2467,40 @@ description: Result of parsing subtract_inherits_tool_face_tags.kcl
                             "commentStart": 0,
                             "elements": [
                               {
-                                "argument": {
+                                "commentStart": 0,
+                                "end": 0,
+                                "initial": {
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "3mm",
+                                  "raw": "-7.63mm",
                                   "start": 0,
-                                  "type": "Literal",
-                                  "type": "Literal",
-                                  "value": {
-                                    "value": 3.0,
-                                    "suffix": "Mm"
-                                  }
+                                  "suffix": "Mm",
+                                  "type": "NumericLiteral",
+                                  "value": -7.63
                                 },
-                                "commentStart": 0,
-                                "end": 0,
                                 "moduleId": 0,
-                                "operator": "-",
                                 "start": 0,
-                                "type": "UnaryExpression",
-                                "type": "UnaryExpression"
+                                "type": "SketchVar",
+                                "type": "SketchVar"
                               },
                               {
                                 "commentStart": 0,
                                 "end": 0,
+                                "initial": {
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "moduleId": 0,
+                                  "raw": "3.82mm",
+                                  "start": 0,
+                                  "suffix": "Mm",
+                                  "type": "NumericLiteral",
+                                  "value": 3.82
+                                },
                                 "moduleId": 0,
-                                "raw": "11mm",
                                 "start": 0,
-                                "type": "Literal",
-                                "type": "Literal",
-                                "value": {
-                                  "value": 11.0,
-                                  "suffix": "Mm"
-                                }
+                                "type": "SketchVar",
+                                "type": "SketchVar"
                               }
                             ],
                             "end": 0,
@@ -1505,7 +2556,7 @@ description: Result of parsing subtract_inherits_tool_face_tags.kcl
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
-                      "name": "left",
+                      "name": "line4",
                       "start": 0,
                       "type": "Identifier"
                     },
@@ -1525,39 +2576,40 @@ description: Result of parsing subtract_inherits_tool_face_tags.kcl
                             "commentStart": 0,
                             "elements": [
                               {
-                                "argument": {
+                                "commentStart": 0,
+                                "end": 0,
+                                "initial": {
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "3mm",
+                                  "raw": "-7.63mm",
                                   "start": 0,
-                                  "type": "Literal",
-                                  "type": "Literal",
-                                  "value": {
-                                    "value": 3.0,
-                                    "suffix": "Mm"
-                                  }
+                                  "suffix": "Mm",
+                                  "type": "NumericLiteral",
+                                  "value": -7.63
                                 },
-                                "commentStart": 0,
-                                "end": 0,
                                 "moduleId": 0,
-                                "operator": "-",
                                 "start": 0,
-                                "type": "UnaryExpression",
-                                "type": "UnaryExpression"
+                                "type": "SketchVar",
+                                "type": "SketchVar"
                               },
                               {
                                 "commentStart": 0,
                                 "end": 0,
+                                "initial": {
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "moduleId": 0,
+                                  "raw": "3.82mm",
+                                  "start": 0,
+                                  "suffix": "Mm",
+                                  "type": "NumericLiteral",
+                                  "value": 3.82
+                                },
                                 "moduleId": 0,
-                                "raw": "11mm",
                                 "start": 0,
-                                "type": "Literal",
-                                "type": "Literal",
-                                "value": {
-                                  "value": 11.0,
-                                  "suffix": "Mm"
-                                }
+                                "type": "SketchVar",
+                                "type": "SketchVar"
                               }
                             ],
                             "end": 0,
@@ -1581,48 +2633,40 @@ description: Result of parsing subtract_inherits_tool_face_tags.kcl
                             "commentStart": 0,
                             "elements": [
                               {
-                                "argument": {
+                                "commentStart": 0,
+                                "end": 0,
+                                "initial": {
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "3mm",
+                                  "raw": "-7.63mm",
                                   "start": 0,
-                                  "type": "Literal",
-                                  "type": "Literal",
-                                  "value": {
-                                    "value": 3.0,
-                                    "suffix": "Mm"
-                                  }
+                                  "suffix": "Mm",
+                                  "type": "NumericLiteral",
+                                  "value": -7.63
                                 },
-                                "commentStart": 0,
-                                "end": 0,
                                 "moduleId": 0,
-                                "operator": "-",
                                 "start": 0,
-                                "type": "UnaryExpression",
-                                "type": "UnaryExpression"
+                                "type": "SketchVar",
+                                "type": "SketchVar"
                               },
                               {
-                                "argument": {
+                                "commentStart": 0,
+                                "end": 0,
+                                "initial": {
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "1mm",
+                                  "raw": "11.01mm",
                                   "start": 0,
-                                  "type": "Literal",
-                                  "type": "Literal",
-                                  "value": {
-                                    "value": 1.0,
-                                    "suffix": "Mm"
-                                  }
+                                  "suffix": "Mm",
+                                  "type": "NumericLiteral",
+                                  "value": 11.01
                                 },
-                                "commentStart": 0,
-                                "end": 0,
                                 "moduleId": 0,
-                                "operator": "-",
                                 "start": 0,
-                                "type": "UnaryExpression",
-                                "type": "UnaryExpression"
+                                "type": "SketchVar",
+                                "type": "SketchVar"
                               }
                             ],
                             "end": 0,
@@ -1668,6 +2712,834 @@ description: Result of parsing subtract_inherits_tool_face_tags.kcl
                   "start": 0,
                   "type": "VariableDeclaration",
                   "type": "VariableDeclaration"
+                },
+                {
+                  "commentStart": 0,
+                  "end": 0,
+                  "expression": {
+                    "arguments": [],
+                    "callee": {
+                      "abs_path": false,
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": "coincident",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name"
+                    },
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "start": 0,
+                    "type": "CallExpressionKw",
+                    "type": "CallExpressionKw",
+                    "unlabeled": {
+                      "commentStart": 0,
+                      "elements": [
+                        {
+                          "commentStart": 0,
+                          "computed": false,
+                          "end": 0,
+                          "moduleId": 0,
+                          "object": {
+                            "abs_path": false,
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "name": {
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "name": "line1",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
+                            "start": 0,
+                            "type": "Name",
+                            "type": "Name"
+                          },
+                          "property": {
+                            "abs_path": false,
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "name": {
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "name": "end",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
+                            "start": 0,
+                            "type": "Name",
+                            "type": "Name"
+                          },
+                          "start": 0,
+                          "type": "MemberExpression",
+                          "type": "MemberExpression"
+                        },
+                        {
+                          "commentStart": 0,
+                          "computed": false,
+                          "end": 0,
+                          "moduleId": 0,
+                          "object": {
+                            "abs_path": false,
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "name": {
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "name": "line2",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
+                            "start": 0,
+                            "type": "Name",
+                            "type": "Name"
+                          },
+                          "property": {
+                            "abs_path": false,
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "name": {
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "name": "start",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
+                            "start": 0,
+                            "type": "Name",
+                            "type": "Name"
+                          },
+                          "start": 0,
+                          "type": "MemberExpression",
+                          "type": "MemberExpression"
+                        }
+                      ],
+                      "end": 0,
+                      "moduleId": 0,
+                      "start": 0,
+                      "type": "ArrayExpression",
+                      "type": "ArrayExpression"
+                    }
+                  },
+                  "moduleId": 0,
+                  "start": 0,
+                  "type": "ExpressionStatement",
+                  "type": "ExpressionStatement"
+                },
+                {
+                  "commentStart": 0,
+                  "end": 0,
+                  "expression": {
+                    "arguments": [],
+                    "callee": {
+                      "abs_path": false,
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": "coincident",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name"
+                    },
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "start": 0,
+                    "type": "CallExpressionKw",
+                    "type": "CallExpressionKw",
+                    "unlabeled": {
+                      "commentStart": 0,
+                      "elements": [
+                        {
+                          "commentStart": 0,
+                          "computed": false,
+                          "end": 0,
+                          "moduleId": 0,
+                          "object": {
+                            "abs_path": false,
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "name": {
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "name": "line2",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
+                            "start": 0,
+                            "type": "Name",
+                            "type": "Name"
+                          },
+                          "property": {
+                            "abs_path": false,
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "name": {
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "name": "end",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
+                            "start": 0,
+                            "type": "Name",
+                            "type": "Name"
+                          },
+                          "start": 0,
+                          "type": "MemberExpression",
+                          "type": "MemberExpression"
+                        },
+                        {
+                          "commentStart": 0,
+                          "computed": false,
+                          "end": 0,
+                          "moduleId": 0,
+                          "object": {
+                            "abs_path": false,
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "name": {
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "name": "line3",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
+                            "start": 0,
+                            "type": "Name",
+                            "type": "Name"
+                          },
+                          "property": {
+                            "abs_path": false,
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "name": {
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "name": "start",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
+                            "start": 0,
+                            "type": "Name",
+                            "type": "Name"
+                          },
+                          "start": 0,
+                          "type": "MemberExpression",
+                          "type": "MemberExpression"
+                        }
+                      ],
+                      "end": 0,
+                      "moduleId": 0,
+                      "start": 0,
+                      "type": "ArrayExpression",
+                      "type": "ArrayExpression"
+                    }
+                  },
+                  "moduleId": 0,
+                  "start": 0,
+                  "type": "ExpressionStatement",
+                  "type": "ExpressionStatement"
+                },
+                {
+                  "commentStart": 0,
+                  "end": 0,
+                  "expression": {
+                    "arguments": [],
+                    "callee": {
+                      "abs_path": false,
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": "coincident",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name"
+                    },
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "start": 0,
+                    "type": "CallExpressionKw",
+                    "type": "CallExpressionKw",
+                    "unlabeled": {
+                      "commentStart": 0,
+                      "elements": [
+                        {
+                          "commentStart": 0,
+                          "computed": false,
+                          "end": 0,
+                          "moduleId": 0,
+                          "object": {
+                            "abs_path": false,
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "name": {
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "name": "line3",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
+                            "start": 0,
+                            "type": "Name",
+                            "type": "Name"
+                          },
+                          "property": {
+                            "abs_path": false,
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "name": {
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "name": "end",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
+                            "start": 0,
+                            "type": "Name",
+                            "type": "Name"
+                          },
+                          "start": 0,
+                          "type": "MemberExpression",
+                          "type": "MemberExpression"
+                        },
+                        {
+                          "commentStart": 0,
+                          "computed": false,
+                          "end": 0,
+                          "moduleId": 0,
+                          "object": {
+                            "abs_path": false,
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "name": {
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "name": "line4",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
+                            "start": 0,
+                            "type": "Name",
+                            "type": "Name"
+                          },
+                          "property": {
+                            "abs_path": false,
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "name": {
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "name": "start",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
+                            "start": 0,
+                            "type": "Name",
+                            "type": "Name"
+                          },
+                          "start": 0,
+                          "type": "MemberExpression",
+                          "type": "MemberExpression"
+                        }
+                      ],
+                      "end": 0,
+                      "moduleId": 0,
+                      "start": 0,
+                      "type": "ArrayExpression",
+                      "type": "ArrayExpression"
+                    }
+                  },
+                  "moduleId": 0,
+                  "start": 0,
+                  "type": "ExpressionStatement",
+                  "type": "ExpressionStatement"
+                },
+                {
+                  "commentStart": 0,
+                  "end": 0,
+                  "expression": {
+                    "arguments": [],
+                    "callee": {
+                      "abs_path": false,
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": "coincident",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name"
+                    },
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "start": 0,
+                    "type": "CallExpressionKw",
+                    "type": "CallExpressionKw",
+                    "unlabeled": {
+                      "commentStart": 0,
+                      "elements": [
+                        {
+                          "commentStart": 0,
+                          "computed": false,
+                          "end": 0,
+                          "moduleId": 0,
+                          "object": {
+                            "abs_path": false,
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "name": {
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "name": "line4",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
+                            "start": 0,
+                            "type": "Name",
+                            "type": "Name"
+                          },
+                          "property": {
+                            "abs_path": false,
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "name": {
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "name": "end",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
+                            "start": 0,
+                            "type": "Name",
+                            "type": "Name"
+                          },
+                          "start": 0,
+                          "type": "MemberExpression",
+                          "type": "MemberExpression"
+                        },
+                        {
+                          "commentStart": 0,
+                          "computed": false,
+                          "end": 0,
+                          "moduleId": 0,
+                          "object": {
+                            "abs_path": false,
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "name": {
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "name": "line1",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
+                            "start": 0,
+                            "type": "Name",
+                            "type": "Name"
+                          },
+                          "property": {
+                            "abs_path": false,
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "name": {
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "name": "start",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
+                            "start": 0,
+                            "type": "Name",
+                            "type": "Name"
+                          },
+                          "start": 0,
+                          "type": "MemberExpression",
+                          "type": "MemberExpression"
+                        }
+                      ],
+                      "end": 0,
+                      "moduleId": 0,
+                      "start": 0,
+                      "type": "ArrayExpression",
+                      "type": "ArrayExpression"
+                    }
+                  },
+                  "moduleId": 0,
+                  "start": 0,
+                  "type": "ExpressionStatement",
+                  "type": "ExpressionStatement"
+                },
+                {
+                  "commentStart": 0,
+                  "end": 0,
+                  "expression": {
+                    "arguments": [],
+                    "callee": {
+                      "abs_path": false,
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": "parallel",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name"
+                    },
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "start": 0,
+                    "type": "CallExpressionKw",
+                    "type": "CallExpressionKw",
+                    "unlabeled": {
+                      "commentStart": 0,
+                      "elements": [
+                        {
+                          "abs_path": false,
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "name": {
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "name": "line2",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "path": [],
+                          "start": 0,
+                          "type": "Name",
+                          "type": "Name"
+                        },
+                        {
+                          "abs_path": false,
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "name": {
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "name": "line4",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "path": [],
+                          "start": 0,
+                          "type": "Name",
+                          "type": "Name"
+                        }
+                      ],
+                      "end": 0,
+                      "moduleId": 0,
+                      "start": 0,
+                      "type": "ArrayExpression",
+                      "type": "ArrayExpression"
+                    }
+                  },
+                  "moduleId": 0,
+                  "start": 0,
+                  "type": "ExpressionStatement",
+                  "type": "ExpressionStatement"
+                },
+                {
+                  "commentStart": 0,
+                  "end": 0,
+                  "expression": {
+                    "arguments": [],
+                    "callee": {
+                      "abs_path": false,
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": "parallel",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name"
+                    },
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "start": 0,
+                    "type": "CallExpressionKw",
+                    "type": "CallExpressionKw",
+                    "unlabeled": {
+                      "commentStart": 0,
+                      "elements": [
+                        {
+                          "abs_path": false,
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "name": {
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "name": "line3",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "path": [],
+                          "start": 0,
+                          "type": "Name",
+                          "type": "Name"
+                        },
+                        {
+                          "abs_path": false,
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "name": {
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "name": "line1",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "path": [],
+                          "start": 0,
+                          "type": "Name",
+                          "type": "Name"
+                        }
+                      ],
+                      "end": 0,
+                      "moduleId": 0,
+                      "start": 0,
+                      "type": "ArrayExpression",
+                      "type": "ArrayExpression"
+                    }
+                  },
+                  "moduleId": 0,
+                  "start": 0,
+                  "type": "ExpressionStatement",
+                  "type": "ExpressionStatement"
+                },
+                {
+                  "commentStart": 0,
+                  "end": 0,
+                  "expression": {
+                    "arguments": [],
+                    "callee": {
+                      "abs_path": false,
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": "perpendicular",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name"
+                    },
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "start": 0,
+                    "type": "CallExpressionKw",
+                    "type": "CallExpressionKw",
+                    "unlabeled": {
+                      "commentStart": 0,
+                      "elements": [
+                        {
+                          "abs_path": false,
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "name": {
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "name": "line1",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "path": [],
+                          "start": 0,
+                          "type": "Name",
+                          "type": "Name"
+                        },
+                        {
+                          "abs_path": false,
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "name": {
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "name": "line2",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "path": [],
+                          "start": 0,
+                          "type": "Name",
+                          "type": "Name"
+                        }
+                      ],
+                      "end": 0,
+                      "moduleId": 0,
+                      "start": 0,
+                      "type": "ArrayExpression",
+                      "type": "ArrayExpression"
+                    }
+                  },
+                  "moduleId": 0,
+                  "start": 0,
+                  "type": "ExpressionStatement",
+                  "type": "ExpressionStatement"
+                },
+                {
+                  "commentStart": 0,
+                  "end": 0,
+                  "expression": {
+                    "arguments": [],
+                    "callee": {
+                      "abs_path": false,
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": "horizontal",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name"
+                    },
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "start": 0,
+                    "type": "CallExpressionKw",
+                    "type": "CallExpressionKw",
+                    "unlabeled": {
+                      "abs_path": false,
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": "line3",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name",
+                      "type": "Name"
+                    }
+                  },
+                  "moduleId": 0,
+                  "start": 0,
+                  "type": "ExpressionStatement",
+                  "type": "ExpressionStatement"
                 }
               ],
               "moduleId": 0,
@@ -1688,10 +3560,6 @@ description: Result of parsing subtract_inherits_tool_face_tags.kcl
         "end": 0,
         "kind": "const",
         "moduleId": 0,
-        "preComments": [
-          "// Cut a hole through the base. The tool's end cap at x = 5mm becomes a wall",
-          "// of the hole, sharing an edge with the base's top cap at z = 10mm."
-        ],
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -1705,7 +3573,75 @@ description: Result of parsing subtract_inherits_tool_face_tags.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
-            "name": "toolRegion",
+            "name": "hidden002",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "init": {
+            "arguments": [],
+            "callee": {
+              "abs_path": false,
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": {
+                "commentStart": 0,
+                "end": 0,
+                "moduleId": 0,
+                "name": "hide",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
+              "start": 0,
+              "type": "Name"
+            },
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "CallExpressionKw",
+            "type": "CallExpressionKw",
+            "unlabeled": {
+              "abs_path": false,
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": {
+                "commentStart": 0,
+                "end": 0,
+                "moduleId": 0,
+                "name": "sketch002",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
+              "start": 0,
+              "type": "Name",
+              "type": "Name"
+            }
+          },
+          "moduleId": 0,
+          "start": 0,
+          "type": "VariableDeclarator"
+        },
+        "end": 0,
+        "kind": "const",
+        "moduleId": 0,
+        "start": 0,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "commentStart": 0,
+        "declaration": {
+          "commentStart": 0,
+          "end": 0,
+          "id": {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "name": "region002",
             "start": 0,
             "type": "Identifier"
           },
@@ -1738,7 +3674,7 @@ description: Result of parsing subtract_inherits_tool_face_tags.kcl
                           "commentStart": 0,
                           "end": 0,
                           "moduleId": 0,
-                          "name": "toolSketch",
+                          "name": "sketch002",
                           "start": 0,
                           "type": "Identifier"
                         },
@@ -1756,7 +3692,52 @@ description: Result of parsing subtract_inherits_tool_face_tags.kcl
                           "commentStart": 0,
                           "end": 0,
                           "moduleId": 0,
-                          "name": "bottom",
+                          "name": "line1",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
+                        "start": 0,
+                        "type": "Name",
+                        "type": "Name"
+                      },
+                      "start": 0,
+                      "type": "MemberExpression",
+                      "type": "MemberExpression"
+                    },
+                    {
+                      "commentStart": 0,
+                      "computed": false,
+                      "end": 0,
+                      "moduleId": 0,
+                      "object": {
+                        "abs_path": false,
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "name": "sketch002",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
+                        "start": 0,
+                        "type": "Name",
+                        "type": "Name"
+                      },
+                      "property": {
+                        "abs_path": false,
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "name": "line2",
                           "start": 0,
                           "type": "Identifier"
                         },
@@ -1775,6 +3756,35 @@ description: Result of parsing subtract_inherits_tool_face_tags.kcl
                   "start": 0,
                   "type": "ArrayExpression",
                   "type": "ArrayExpression"
+                }
+              },
+              {
+                "type": "LabeledArg",
+                "label": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "name": "direction",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "arg": {
+                  "abs_path": false,
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "name": {
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "name": "CW",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name",
+                  "type": "Name"
                 }
               }
             ],
@@ -1823,7 +3833,7 @@ description: Result of parsing subtract_inherits_tool_face_tags.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
-            "name": "tool",
+            "name": "extrude002",
             "start": 0,
             "type": "Identifier"
           },
@@ -1843,13 +3853,13 @@ description: Result of parsing subtract_inherits_tool_face_tags.kcl
                   "commentStart": 0,
                   "end": 0,
                   "moduleId": 0,
-                  "raw": "5mm",
+                  "raw": "4",
                   "start": 0,
                   "type": "Literal",
                   "type": "Literal",
                   "value": {
-                    "value": 5.0,
-                    "suffix": "Mm"
+                    "value": 4.0,
+                    "suffix": "None"
                   }
                 }
               },
@@ -1899,7 +3909,7 @@ description: Result of parsing subtract_inherits_tool_face_tags.kcl
                   "start": 0,
                   "type": "TagDeclarator",
                   "type": "TagDeclarator",
-                  "value": "toolEnd"
+                  "value": "tagEnd001"
                 }
               }
             ],
@@ -1935,7 +3945,7 @@ description: Result of parsing subtract_inherits_tool_face_tags.kcl
                 "commentStart": 0,
                 "end": 0,
                 "moduleId": 0,
-                "name": "toolRegion",
+                "name": "region002",
                 "start": 0,
                 "type": "Identifier"
               },
@@ -1965,7 +3975,7 @@ description: Result of parsing subtract_inherits_tool_face_tags.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
-            "name": "result",
+            "name": "solid001",
             "start": 0,
             "type": "Identifier"
           },
@@ -1990,7 +4000,7 @@ description: Result of parsing subtract_inherits_tool_face_tags.kcl
                     "commentStart": 0,
                     "end": 0,
                     "moduleId": 0,
-                    "name": "tool",
+                    "name": "extrude002",
                     "start": 0,
                     "type": "Identifier"
                   },
@@ -2033,7 +4043,7 @@ description: Result of parsing subtract_inherits_tool_face_tags.kcl
                 "commentStart": 0,
                 "end": 0,
                 "moduleId": 0,
-                "name": "base",
+                "name": "extrude001",
                 "start": 0,
                 "type": "Identifier"
               },
@@ -2063,7 +4073,7 @@ description: Result of parsing subtract_inherits_tool_face_tags.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
-            "name": "chamfered",
+            "name": "fillet001",
             "start": 0,
             "type": "Identifier"
           },
@@ -2123,7 +4133,7 @@ description: Result of parsing subtract_inherits_tool_face_tags.kcl
                                       "commentStart": 0,
                                       "end": 0,
                                       "moduleId": 0,
-                                      "name": "result",
+                                      "name": "region002",
                                       "start": 0,
                                       "type": "Identifier"
                                     },
@@ -2141,7 +4151,7 @@ description: Result of parsing subtract_inherits_tool_face_tags.kcl
                                       "commentStart": 0,
                                       "end": 0,
                                       "moduleId": 0,
-                                      "name": "faces",
+                                      "name": "tags",
                                       "start": 0,
                                       "type": "Identifier"
                                     },
@@ -2163,7 +4173,7 @@ description: Result of parsing subtract_inherits_tool_face_tags.kcl
                                     "commentStart": 0,
                                     "end": 0,
                                     "moduleId": 0,
-                                    "name": "baseTop",
+                                    "name": "line3",
                                     "start": 0,
                                     "type": "Identifier"
                                   },
@@ -2195,7 +4205,7 @@ description: Result of parsing subtract_inherits_tool_face_tags.kcl
                                       "commentStart": 0,
                                       "end": 0,
                                       "moduleId": 0,
-                                      "name": "result",
+                                      "name": "solid001",
                                       "start": 0,
                                       "type": "Identifier"
                                     },
@@ -2235,7 +4245,7 @@ description: Result of parsing subtract_inherits_tool_face_tags.kcl
                                     "commentStart": 0,
                                     "end": 0,
                                     "moduleId": 0,
-                                    "name": "toolEnd",
+                                    "name": "tagEnd001",
                                     "start": 0,
                                     "type": "Identifier"
                                   },
@@ -2275,7 +4285,7 @@ description: Result of parsing subtract_inherits_tool_face_tags.kcl
                   "commentStart": 0,
                   "end": 0,
                   "moduleId": 0,
-                  "name": "length",
+                  "name": "radius",
                   "start": 0,
                   "type": "Identifier"
                 },
@@ -2283,13 +4293,13 @@ description: Result of parsing subtract_inherits_tool_face_tags.kcl
                   "commentStart": 0,
                   "end": 0,
                   "moduleId": 0,
-                  "raw": "0.25mm",
+                  "raw": "1",
                   "start": 0,
                   "type": "Literal",
                   "type": "Literal",
                   "value": {
-                    "value": 0.25,
-                    "suffix": "Mm"
+                    "value": 1.0,
+                    "suffix": "None"
                   }
                 }
               }
@@ -2303,7 +4313,7 @@ description: Result of parsing subtract_inherits_tool_face_tags.kcl
                 "commentStart": 0,
                 "end": 0,
                 "moduleId": 0,
-                "name": "chamfer",
+                "name": "fillet",
                 "start": 0,
                 "type": "Identifier"
               },
@@ -2326,7 +4336,7 @@ description: Result of parsing subtract_inherits_tool_face_tags.kcl
                 "commentStart": 0,
                 "end": 0,
                 "moduleId": 0,
-                "name": "result",
+                "name": "solid001",
                 "start": 0,
                 "type": "Identifier"
               },
@@ -2382,14 +4392,11 @@ description: Result of parsing subtract_inherits_tool_face_tags.kcl
               "commentStart": 0,
               "end": 0,
               "moduleId": 0,
-              "raw": "2.0",
+              "raw": "\"3.0-preview\"",
               "start": 0,
               "type": "Literal",
               "type": "Literal",
-              "value": {
-                "value": 2.0,
-                "suffix": "None"
-              }
+              "value": "3.0-preview"
             }
           }
         ],
@@ -2398,35 +4405,6 @@ description: Result of parsing subtract_inherits_tool_face_tags.kcl
       }
     ],
     "moduleId": 0,
-    "nonCodeMeta": {
-      "nonCodeNodes": {
-        "2": [
-          {
-            "commentStart": 0,
-            "end": 0,
-            "moduleId": 0,
-            "start": 0,
-            "type": "NonCodeNode",
-            "value": {
-              "type": "newLine"
-            }
-          }
-        ],
-        "5": [
-          {
-            "commentStart": 0,
-            "end": 0,
-            "moduleId": 0,
-            "start": 0,
-            "type": "NonCodeNode",
-            "value": {
-              "type": "newLine"
-            }
-          }
-        ]
-      },
-      "startNodes": []
-    },
     "start": 0,
     "type": "Program"
   }
