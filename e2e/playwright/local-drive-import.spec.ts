@@ -2,23 +2,24 @@ import { expect, test } from '@e2e/playwright/zoo-test'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 
 test.describe('Local Drive picker', { tag: '@web' }, () => {
-  test('opens the picker and adds a local model file', async ({
+  test('creates a project from a local model file', async ({
     page,
     homePage,
     toolbar,
     cmdBar,
     fs,
   }) => {
-    await homePage.createAndGoToProject('local-drive')
-    await toolbar.openPane(DefaultLayoutPaneID.Code)
-    await toolbar.openPane(DefaultLayoutPaneID.Files)
+    await homePage.projectsLoaded()
 
     const fileName = 'part.step'
     const content = 'Imported model file'
     await cmdBar.openCmdBar()
     await cmdBar.chooseCommand('Add file to project')
-    const chooserPromise = page.waitForEvent('filechooser')
     await cmdBar.selectOption({ name: 'Local Drive', exact: true }).click()
+    await cmdBar.selectOption({ name: 'New project' }).click()
+    await cmdBar.currentArgumentInput.fill('local-drive')
+    const chooserPromise = page.waitForEvent('filechooser')
+    await cmdBar.progressCmdBar()
     const chooser = await chooserPromise
     await chooser.setFiles({
       name: fileName,
@@ -29,6 +30,8 @@ test.describe('Local Drive picker', { tag: '@web' }, () => {
     await cmdBar.progressCmdBar()
     await cmdBar.toBeClosed()
 
+    await expect(page).toHaveURL(/local-drive.*main\.kcl$/)
+    await toolbar.openPane(DefaultLayoutPaneID.Files)
     await expect(
       page.getByRole('treeitem', { name: fileName, exact: true })
     ).toBeVisible()

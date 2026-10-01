@@ -2,6 +2,7 @@ import env from '@src/env'
 import { relevantFileExtensions } from '@src/lang/wasmUtils'
 import type { App } from '@src/lib/app'
 import type { Command } from '@src/lib/commandTypes'
+import { PROJECT_ENTRYPOINT } from '@src/lib/constants'
 import {
   writeEnvironmentConfigurationKittycadWebSocketUrl,
   writeEnvironmentConfigurationZookeeperWebSocketUrl,
@@ -25,6 +26,7 @@ import {
   safeEncodeForRouterPaths,
 } from '@src/lib/paths'
 import { getProjectDirectoryOptions } from '@src/lib/projectDisplayName'
+import type { ProjectLibraryInitialProject } from '@src/lib/projectLibraries'
 import { reportRejection, trap } from '@src/lib/trap'
 import { isArray, returnSelfOrGetHostNameFromURL } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
@@ -154,10 +156,44 @@ export function createApplicationCommands({
           ? getUniqueProjectName(requestedProjectName, folders ?? [])
           : requestedProjectName
 
+        const createImportedProject = async (
+          initialProject: ProjectLibraryInitialProject
+        ) => {
+          const target = createProjectLibraryTargets()[0]
+          if (!target) {
+            return Promise.reject(
+              new Error(
+                'Add a writable project library before creating a project.'
+              )
+            )
+          }
+          const project = await target.createProject.run({
+            library: target.library,
+            requestedProjectName,
+            requestedProjectTitle: requestedProjectName,
+            initialProject,
+          })
+          if (project?.default_file) {
+            await app.registry
+              .get(routerService)
+              .navigate(
+                `${PATHS.FILE}/${safeEncodeForRouterPaths(project.default_file)}`
+              )
+          }
+        }
+
         if (data.source === 'kcl-samples') {
           const kclSample = findKclSample(data.sample)
           if (!kclSample || kclSample.files.length === 0) {
             toast.error("Couldn't find KCL sample.")
+          } else if (isProjectNew) {
+            await downloadKclSample(data.sample, {
+              assetUrlPrefix: isDesktop() ? '.' : '',
+            })
+              .then(({ initialProject }) =>
+                createImportedProject(initialProject)
+              )
+              .catch(trap)
           } else {
             onSubmitKCLSampleCreation({
               sample: data.sample,
@@ -192,7 +228,19 @@ export function createApplicationCommands({
               selectedFile instanceof File
                 ? new Uint8Array(await selectedFile.arrayBuffer())
                 : await fileOperations.readFile(selectedFile)
-            if (isKCL) {
+            if (isProjectNew) {
+              await createImportedProject({
+                files: [
+                  {
+                    requestedFileName: fileNameWithExtension,
+                    requestedData: new Uint8Array(content),
+                  },
+                ],
+                entrypointFilePath: isKCL
+                  ? fileNameWithExtension
+                  : PROJECT_ENTRYPOINT,
+              })
+            } else if (isKCL) {
               app.systemIOActor.send({
                 type: SystemIOMachineEvents.importFileFromURL,
                 data: {
@@ -273,13 +321,10 @@ export function createApplicationCommands({
         inputType: 'options',
         required: true,
         skip: true,
-        defaultValue: window.electron ? undefined : 'existingProject',
-        options: window.electron
-          ? [
-              { name: 'New project', value: 'newProject', isCurrent: true },
-              { name: 'Existing project', value: 'existingProject' },
-            ]
-          : [{ name: 'Existing project', value: 'existingProject' }],
+        options: [
+          { name: 'New project', value: 'newProject', isCurrent: true },
+          { name: 'Existing project', value: 'existingProject' },
+        ],
         valueSummary(value) {
           return value === 'newProject' ? 'New project' : 'Existing project'
         },
