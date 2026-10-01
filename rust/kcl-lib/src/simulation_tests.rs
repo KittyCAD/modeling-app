@@ -3,8 +3,10 @@ use std::panic::AssertUnwindSafe;
 use std::panic::catch_unwind;
 use std::path::Path;
 use std::path::PathBuf;
+use std::str::FromStr;
 
 use indexmap::IndexMap;
+use kcl_api::KclVersion;
 use kittycad_modeling_cmds::ModelingCmd;
 use kittycad_modeling_cmds::each_cmd as mcmd;
 use kittycad_modeling_cmds::ok_response::OkModelingCmdResponse;
@@ -670,10 +672,18 @@ async fn execute_test(test: &Test) {
         return;
     }
     for version in &test.kcl_versions {
+        let Ok(kcl_version) = KclVersion::from_str(version.as_str()) else {
+            panic!("Couldn't parse KclVersion from config: {version}");
+        };
         let mut run = test.clone();
-        run.output_dir = test.output_dir.join(format!("kcl-{version}"));
+        // Drop prerelease suffixes (e.g. "3.0-preview" -> "3.0") for on-disk paths.
+        let dir_version = kcl_version
+            .as_str()
+            .strip_suffix("-preview")
+            .unwrap_or(kcl_version.as_str());
+        run.output_dir = test.output_dir.join(format!("kcl-{dir_version}"));
         std::fs::create_dir_all(&run.output_dir).unwrap();
-        execute_once(&run, Some(version.as_str())).await;
+        execute_once(&run, Some(kcl_version)).await;
     }
 }
 
@@ -744,15 +754,15 @@ async fn physical_properties(ctx: &ExecutorContext) -> Option<serde_json::Value>
     }))
 }
 
-async fn execute_once(test: &Test, kcl_version: Option<&str>) {
+async fn execute_once(test: &Test, kcl_version: Option<KclVersion>) {
     let input = test.read();
     let mut ast = crate::Program::parse_no_errs(&input).unwrap();
     let program_to_lint = ast.clone();
     eprintln!("=========");
     eprintln!("Running test {}", test.name);
     if let Some(kcl_version) = kcl_version {
-        eprintln!("\t kclVersion: {kcl_version}");
-        ast = ast.change_kcl_version(Some(kcl_version.to_owned())).unwrap();
+        eprintln!("\t kclVersion: {}", kcl_version.as_str());
+        ast = ast.change_kcl_version(Some(kcl_version)).unwrap();
     }
     if test.input_dir != test.output_dir {
         eprintln!("\tInput dir: {}", test.input_dir.display());

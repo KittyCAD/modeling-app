@@ -53,6 +53,7 @@ import type { DeepPartial } from '@src/lib/types'
 import { isArray } from '@src/lib/utils'
 import { distance2d } from '@src/lib/utils2d'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import type { KclVersion } from '@rust/kcl-lib/bindings/KclVersion'
 
 export type { ArrayExpression } from '@rust/kcl-lib/bindings/ArrayExpression'
 export type {
@@ -1149,7 +1150,7 @@ export function changeDefaultUnits(
  */
 export function changeKclVersion(
   kcl: string,
-  version: string | null,
+  version: KclVersion | null,
   wasmInstance: ModuleType
 ): string | Error {
   try {

@@ -2505,34 +2505,54 @@ description: Result of parsing error_large_fillet_radius.kcl
     ],
     "commentStart": 0,
     "end": 0,
-    "moduleId": 0,
-    "nonCodeMeta": {
-      "nonCodeNodes": {},
-      "startNodes": [
-        {
+    "innerAttrs": [
+      {
+        "commentStart": 0,
+        "end": 0,
+        "moduleId": 0,
+        "name": {
           "commentStart": 0,
           "end": 0,
           "moduleId": 0,
+          "name": "settings",
           "start": 0,
-          "type": "NonCodeNode",
-          "value": {
-            "type": "blockComment",
-            "value": "FIllet is too large and produces an engine error",
-            "style": "line"
-          }
+          "type": "Identifier"
         },
-        {
-          "commentStart": 0,
-          "end": 0,
-          "moduleId": 0,
-          "start": 0,
-          "type": "NonCodeNode",
-          "value": {
-            "type": "newLine"
+        "preComments": [
+          "// Fillet is too large and produces an engine error"
+        ],
+        "properties": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "key": {
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": "kclVersion",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "moduleId": 0,
+            "start": 0,
+            "type": "ObjectProperty",
+            "value": {
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "raw": "\"3.0-preview\"",
+              "start": 0,
+              "type": "Literal",
+              "type": "Literal",
+              "value": "3.0-preview"
+            }
           }
-        }
-      ]
-    },
+        ],
+        "start": 0,
+        "type": "Annotation"
+      }
+    ],
+    "moduleId": 0,
     "start": 0,
     "type": "Program"
   }

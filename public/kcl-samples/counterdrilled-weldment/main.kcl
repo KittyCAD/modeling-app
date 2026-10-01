@@ -63,9 +63,9 @@ plateSketch = sketch(on = XY) {
   ])
   horizontal(innerHoleRadiusGuide)
   horizontalDistance([
-  innerHoleRadiusGuide.start,
-  innerHoleRadiusGuide.end
-]) == tubeInnerDiameter / 2
+    innerHoleRadiusGuide.start,
+    innerHoleRadiusGuide.end
+  ]) == tubeInnerDiameter / 2
   radius(innerHole) == tubeInnerDiameter / 2
 }
 
@@ -110,9 +110,9 @@ holeSeedSketch = sketch(on = holeSeedPlane) {
   horizontalDistance([holeOffsetX.start, holeOffsetX.end]) == -boltSpacingX / 2
   verticalDistance([holeOffsetY.start, holeOffsetY.end]) == -boltSpacingY / 2
   horizontalDistance([
-  holeRadiusGuide.start,
-  holeRadiusGuide.end
-]) == boltDiameter / 2
+    holeRadiusGuide.start,
+    holeRadiusGuide.end
+  ]) == boltDiameter / 2
   radius(holeCircle) == boltDiameter / 2
 }
 
@@ -161,9 +161,9 @@ counterdrillSeedSketch = sketch(on = holeSeedPlane) {
   horizontalDistance([holeOffsetX.start, holeOffsetX.end]) == -boltSpacingX / 2
   verticalDistance([holeOffsetY.start, holeOffsetY.end]) == -boltSpacingY / 2
   horizontalDistance([
-  counterdrillRadiusGuide.start,
-  counterdrillRadiusGuide.end
-]) == counterdrillDiameter / 2
+    counterdrillRadiusGuide.start,
+    counterdrillRadiusGuide.end
+  ]) == counterdrillDiameter / 2
   radius(counterdrillCircle) == counterdrillDiameter / 2
 }
 
@@ -217,13 +217,13 @@ pinholeSketch = sketch(on = YZ) {
   vertical(pinholeCenterGuide)
   horizontal(pinholeRadiusGuide)
   verticalDistance([
-  pinholeCenterGuide.start,
-  pinholeCenterGuide.end
-]) == pinholeHeight
+    pinholeCenterGuide.start,
+    pinholeCenterGuide.end
+  ]) == pinholeHeight
   horizontalDistance([
-  pinholeRadiusGuide.start,
-  pinholeRadiusGuide.end
-]) == boltDiameter / 2
+    pinholeRadiusGuide.start,
+    pinholeRadiusGuide.end
+  ]) == boltDiameter / 2
   radius(pinholeCircle) == boltDiameter / 2
 }
 
@@ -253,13 +253,13 @@ centralTubeSketch = sketch(on = offsetPlane(XY, offset = stockThickness)) {
   horizontal(outerRadiusGuide)
   horizontal(innerRadiusGuide)
   horizontalDistance([
-  outerRadiusGuide.start,
-  outerRadiusGuide.end
-]) == tubeOuterRadius
+    outerRadiusGuide.start,
+    outerRadiusGuide.end
+  ]) == tubeOuterRadius
   horizontalDistance([
-  innerRadiusGuide.start,
-  innerRadiusGuide.end
-]) == tubeInnerDiameter / 2
+    innerRadiusGuide.start,
+    innerRadiusGuide.end
+  ]) == tubeInnerDiameter / 2
   radius(outerCircle) == tubeOuterRadius
   radius(innerCircle) == tubeInnerDiameter / 2
 }
