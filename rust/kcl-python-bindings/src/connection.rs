@@ -195,37 +195,67 @@ impl KclSession {
 /// Execute this KCL project.
 /// Return an executed KCL project with its connection still available.
 /// You can call follow-up methods, like exporting or snapshotting or measuring, on the returned session.
+/// `token` and `base_url` override the client environment settings for this session.
+/// Omitted values retain the client's existing environment defaults.
 #[pyo3_stub_gen::derive::gen_stub_pyfunction]
 #[gen_stub(override_return_type(type_repr = "KclSession"))]
-#[pyfunction(signature = (path, *, mock=false, highlight_edges=None, video_res_width=None, video_res_height=None))]
+#[pyfunction(signature = (path, *, mock=false, highlight_edges=None, video_res_width=None, video_res_height=None, token=None, base_url=None))]
 pub async fn new_kcl_session(
     path: String,
     mock: bool,
     highlight_edges: Option<bool>,
     video_res_width: Option<u32>,
     video_res_height: Option<u32>,
+    token: Option<String>,
+    base_url: Option<String>,
 ) -> PyResult<KclSession> {
     let input = KclInput::Path(path);
-    spawn_py(async move { new_kcl_session_impl(input, mock, highlight_edges, video_res_width, video_res_height).await })
+    spawn_py(async move {
+        new_kcl_session_impl(
+            input,
+            mock,
+            highlight_edges,
+            video_res_width,
+            video_res_height,
+            token,
+            base_url,
+        )
         .await
+    })
+    .await
 }
 
 /// Execute this KCL source code string.
 /// Return an executed KCL project with its connection still available.
 /// You can call follow-up methods, like exporting or snapshotting or measuring, on the returned session.
+/// `token` and `base_url` override the client environment settings for this session.
+/// Omitted values retain the client's existing environment defaults.
 #[pyo3_stub_gen::derive::gen_stub_pyfunction]
 #[gen_stub(override_return_type(type_repr = "KclSession"))]
-#[pyfunction(signature = (code, *, mock=false, highlight_edges=None, video_res_width=None, video_res_height=None))]
+#[pyfunction(signature = (code, *, mock=false, highlight_edges=None, video_res_width=None, video_res_height=None, token=None, base_url=None))]
 pub async fn new_kcl_session_code(
     code: String,
     mock: bool,
     highlight_edges: Option<bool>,
     video_res_width: Option<u32>,
     video_res_height: Option<u32>,
+    token: Option<String>,
+    base_url: Option<String>,
 ) -> PyResult<KclSession> {
     let input = KclInput::Code(code);
-    spawn_py(async move { new_kcl_session_impl(input, mock, highlight_edges, video_res_width, video_res_height).await })
+    spawn_py(async move {
+        new_kcl_session_impl(
+            input,
+            mock,
+            highlight_edges,
+            video_res_width,
+            video_res_height,
+            token,
+            base_url,
+        )
         .await
+    })
+    .await
 }
 
 /// Execute this KCL project.
@@ -236,6 +266,8 @@ pub async fn new_kcl_session_impl(
     highlight_edges: Option<bool>,
     video_res_width: Option<u32>,
     video_res_height: Option<u32>,
+    token: Option<String>,
+    base_url: Option<String>,
 ) -> PyResult<KclSession> {
     // I/O or parse failures should raise an exception.
     // There's no more useful data to include.
@@ -260,6 +292,8 @@ pub async fn new_kcl_session_impl(
         program
             .language_version()
             .map_err(|err| into_miette_for_parse(&filename, &code, err))?,
+        token,
+        base_url,
     )
     .await
     .map_err(to_py_exception)?;
@@ -313,6 +347,8 @@ mod tests {
         let mut session = new_kcl_session_impl(
             KclInput::Code("@settings(kclVersion = 2.0)\nvalue = 1".to_owned()),
             true,
+            None,
+            None,
             None,
             None,
             None,
