@@ -72,7 +72,7 @@ const stdLibArgInputType = (ty: StdLibCommandArg['ty']) => {
   if (ty === 'TagDecl') {
     return 'tagDeclarator'
   }
-  if (ty === 'Point2d') {
+  if (ty === 'Point2d' || ty === '[number(Length); 2]') {
     return 'vector2d'
   }
   if (ty === 'Point3d') {
@@ -112,6 +112,17 @@ export function stdLibCommandArgAvailable<Name extends StdLibCommandName>(
     (arg) => arg.name === argName
   )
   return arg !== undefined && isKclVersionAvailable(version, arg, instance)
+}
+
+/** Return a literal default as KCL source, without evaluating or decoding it. */
+export function stdLibCommandArgDefaultSource<Name extends StdLibCommandName>(
+  stdLibName: Name,
+  argName: (typeof STD_LIB_COMMANDS)[Name]['args'][number]['name']
+): string | undefined {
+  const arg = STD_LIB_COMMANDS[stdLibName].args.find(
+    (candidate) => candidate.name === argName
+  )
+  return arg && 'defaultValue' in arg ? arg.defaultValue.source : undefined
 }
 
 const hasExistingEditFlowArgument = (
@@ -217,6 +228,14 @@ export function stdLibCommandArgs<CommandArgs extends object>(
     args,
     options.flowArgOrder
   ) as CommandArgConfigs<CommandArgs>
+}
+
+export function stdLibCommandSummary(
+  stdLibName: StdLibCommandName
+): string | undefined {
+  const command = STD_LIB_COMMANDS[stdLibName]
+  const summary: unknown = 'summary' in command ? command.summary : undefined
+  return typeof summary === 'string' && summary.trim() ? summary : undefined
 }
 
 export const modelingCommandStdLibDriftConfig = {
@@ -604,6 +623,43 @@ export const modelingCommandStdLibDriftConfig = {
 export type ModelingStdLibCommandName =
   keyof typeof modelingCommandStdLibDriftConfig
 
+/**
+ * Command-palette copy that intentionally differs from the canonical KCL
+ * summary. Keep these exceptions here rather than changing public KCL docs to
+ * fit the command UI.
+ */
+const modelingCommandSummaryOverrides: Partial<
+  Record<ModelingStdLibCommandName, string>
+> = {
+  Extrude: 'Pull a sketch into 3D along its normal or perpendicular.',
+  Revolve: 'Create a 3D surface or solid by rotating a sketch around an axis.',
+  Shell: 'Hollow out a 3D solid.',
+  Hole: 'Cut a standard hole into a solid at a 2D position on one of its faces.',
+  Fillet: 'Fillet edge',
+  Chamfer: 'Create a straight bevel along one or more edges.',
+  Helix: 'Create a helix or spiral in 3D about an axis.',
+  'Helical Gear': 'Create a helical gear.',
+  'Herringbone Gear': 'Create a herringbone gear.',
+  'Spur Gear': 'Create a spur gear.',
+  'Ring Gear': 'Create a ring gear.',
+  Appearance:
+    'Set the appearance of a solid. This only works on solids, not sketches or individual paths.',
+  Delete: 'Delete selected bodies from the scene.',
+  'Mirror 3D': 'Mirror solids across a plane or edge.',
+  'Pattern Circular 3D':
+    'Create a circular pattern of 3D solids around an axis.',
+  'Pattern Linear 3D': 'Create a linear pattern of 3D solids along an axis.',
+  'GDT Datum':
+    'Add datum geometric dimensioning & tolerancing annotation to a face.',
+  'GDT Profile':
+    'Add profile geometric dimensioning & tolerancing annotation to faces or edges.',
+  'Boolean Split':
+    "Split a target body into two parts: the part that overlaps with the tool, and the part that doesn't.",
+  'Delete Face': 'Delete a face from a body, leaving an open surface.',
+  Blend: 'Blend two selected surface edges into a new surface.',
+  'Join Surfaces': 'Join selected surfaces into one polysurface.',
+}
+
 export function modelingStdLibCommandName<
   CommandName extends keyof typeof modelingCommandStdLibDriftConfig,
 >(
@@ -620,6 +676,16 @@ export function modelingStdLibCall(
   const name = parts.pop() ?? stdLibName
 
   return { name, path: parts }
+}
+
+/** Uses the concise KCL summary unless the command has product-specific copy. */
+export function modelingStdLibCommandSummary(
+  commandName: ModelingStdLibCommandName
+) {
+  return (
+    modelingCommandSummaryOverrides[commandName] ??
+    stdLibCommandSummary(modelingStdLibCommandName(commandName))
+  )
 }
 
 export function modelingStdLibCommandArgs<CommandArgs extends object>(
