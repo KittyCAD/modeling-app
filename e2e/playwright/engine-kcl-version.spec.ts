@@ -52,14 +52,8 @@ test(
 
     await homePage.openProject('engine-kcl-version')
     await scene.settled()
-    // Startup may retry the connection; edits must preserve the ready session.
-    const initialSocketCount = socketUrls.length
-    expect(initialSocketCount).toBeGreaterThan(0)
-    expect(
-      new URL(socketUrls[initialSocketCount - 1]).searchParams.get(
-        'kcl_version'
-      )
-    ).toBe('2.0')
+    expect(socketUrls).toHaveLength(1)
+    expect(new URL(socketUrls[0]).searchParams.get('kcl_version')).toBe('2.0')
     await expect.poll(() => versions.at(-1)).toBe('2.0')
     await expect(page.locator('.cm-lint-marker-error')).toHaveCount(0)
     versions.length = 0
@@ -75,6 +69,6 @@ test(
     expect(versions).toEqual(['3.0-preview', '2.0'])
     await expect(page.locator('.cm-lint-marker-error')).toHaveCount(0)
 
-    expect(socketUrls).toHaveLength(initialSocketCount)
+    expect(socketUrls).toHaveLength(1)
   }
 )
